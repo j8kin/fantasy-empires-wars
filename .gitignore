@@ -19,7 +19,7 @@
 .env.production.local
 
 #images
-.xcf
+/resources/*.xcf*
 
 npm-debug.log*
 yarn-debug.log*
