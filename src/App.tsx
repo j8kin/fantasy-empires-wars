@@ -8,7 +8,6 @@ import ManaPanel from './components/ManaPanel';
 function App() {
   return (
     <React.Fragment>
-      <header> This is heading1</header>
       <ManaPanel />
       <body className="App-header">
         <MainMap />
