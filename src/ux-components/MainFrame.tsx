@@ -1,5 +1,5 @@
 import { ImageBackground } from 'react-native';
-const MainMap = () => {
+const MainFrame = () => {
   return (
     <div id="MainMap">
       <ImageBackground
@@ -13,4 +13,4 @@ const MainMap = () => {
   );
 };
 
-export default MainMap;
+export default MainFrame;
