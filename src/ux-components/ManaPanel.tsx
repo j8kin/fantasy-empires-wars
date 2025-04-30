@@ -1,9 +1,9 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
 
 import ManaVial from './ManaVial';
 import ManaPanelCorner from './ManaPanelCorner';
 import ManaPanelTile from './ManaPanelTile';
+import BorderCanvas from './BorderCanvas';
 
 import CelticPatternCorner from '../assets/images/CelticPatternCorner.png';
 import CelticPatternVertical from '../assets/images/CelticPatternVertical.png';
@@ -11,10 +11,6 @@ import CelticPatternVertical from '../assets/images/CelticPatternVertical.png';
 import styles from './Background.module.css';
 
 const ManaPanel: React.FC = () => {
-  const frameWidth = Dimensions.get('window').width;
-  const tileWidth = 181;
-  const numTiles = Math.ceil(frameWidth / tileWidth) - 1;
-
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.src = '/assets/images/fallback.png';
     e.currentTarget.alt = 'Fallback Image';
@@ -22,32 +18,8 @@ const ManaPanel: React.FC = () => {
 
   return (
     <div style={frameContainerStyle} id="ManaPanel">
-      {Array.from({ length: numTiles }).map((_, index) => {
-        const leftPosition = 20 + index * tileWidth;
-
-        return (
-          <React.Fragment key={index}>
-            <ManaPanelTile
-              src={CelticPatternVertical}
-              alt="Horizontal Side Top"
-              style={{
-                ...horizontalTileStyle,
-                ...horizontalTopTileStyle,
-                left: leftPosition,
-              }}
-            />
-            <ManaPanelTile
-              src={CelticPatternVertical}
-              alt="Horizontal Side Bottom"
-              style={{
-                ...horizontalTileStyle,
-                ...horizontalBottomTileStyle,
-                left: leftPosition,
-              }}
-            />
-          </React.Fragment>
-        );
-      })}
+      <BorderCanvas isTop={true} />
+      <BorderCanvas isTop={false} />
       <ManaPanelCorner
         src={CelticPatternCorner}
         alt="Top Left Corner"
@@ -127,20 +99,6 @@ const bottomRightStyle: React.CSSProperties = {
   bottom: 0,
   right: 0,
   transform: 'rotate(180deg)', // Rotate for correct orientation
-};
-const horizontalTileStyle: React.CSSProperties = {
-  position: 'absolute',
-  width: '50px', // Match the width of the image
-  height: '100%', // Match the height of the image
-  zIndex: 2, // Ensure it is below the corners but above other elements
-  transform: 'rotate(90deg)',
-};
-const horizontalTopTileStyle: React.CSSProperties = {
-  top: '-75px', // Align the tiles at the top
-};
-
-const horizontalBottomTileStyle: React.CSSProperties = {
-  bottom: '-75px', // Align the tiles at the top
 };
 
 const verticalStyle: React.CSSProperties = {
