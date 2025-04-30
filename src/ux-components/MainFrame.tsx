@@ -1,11 +1,14 @@
 import { ImageBackground } from 'react-native';
+
+import styles from './Background.module.css';
+
 const MainFrame = () => {
   return (
-    <div id="MainMap">
+    <div id="MainFrame" className={styles.backgroundStyle} style={{ width: '100%' }}>
       <ImageBackground
         style={{
-          height: 1000,
-          width: 1000,
+          height: 100,
+          width: 100,
         }}
         source={require('../assets/images/CelticBackground.png')}
       />
