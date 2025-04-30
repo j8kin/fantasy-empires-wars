@@ -7,7 +7,7 @@ const MainFrame = () => {
           height: 1000,
           width: 1000,
         }}
-        source={require('../maps/fantasy-map.jpg')}
+        source={require('../assets/images/CelticBackground.png')}
       />
     </div>
   );

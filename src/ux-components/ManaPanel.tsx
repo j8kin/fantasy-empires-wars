@@ -7,7 +7,8 @@ import ManaPanelTile from './ManaPanelTile';
 
 import CelticPatternCorner from '../assets/images/CelticPatternCorner.png';
 import CelticPatternVertical from '../assets/images/CelticPatternVertical.png';
-import CelticBackground from '../assets/images/CelticBackground.png';
+
+import styles from './Background.module.css';
 
 const ManaPanel: React.FC = () => {
   const frameWidth = Dimensions.get('window').width;
@@ -69,7 +70,7 @@ const ManaPanel: React.FC = () => {
         alt="Right Vertical"
         style={{ ...verticalStyle, ...rightStyle }}
       />
-      <div style={manaVialsContainerStyle}>
+      <div className={styles.backgroundStyle} style={vialPanelStyle}>
         <ManaVial color="black" percentage={75} />
         <ManaVial color="white" percentage={50} />
         <ManaVial color="blue" percentage={100} />
@@ -97,17 +98,11 @@ const frameContainerStyle: React.CSSProperties = {
   height: '200px',
   boxSizing: 'border-box',
 };
-const manaVialsContainerStyle: React.CSSProperties = {
-  display: 'flex', // Use flexbox to align items in a row
-  justifyContent: 'center', // Center the ManaVials horizontally
-  alignItems: 'center', // Center the ManaVials vertically (optional)
+const vialPanelStyle: React.CSSProperties = {
   gap: '20px', // Add spacing between ManaVials
   padding: '55px', // Add padding around the container
-  backgroundImage: `url(${CelticBackground})`,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  backgroundRepeat: 'no-repeat',
 };
+
 const cornerStyle: React.CSSProperties = {
   position: 'absolute',
   width: '50px',
