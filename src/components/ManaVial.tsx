@@ -14,7 +14,7 @@ const ManaVial: React.FC<ManaVialProps> = ({ color, percentage }) => {
     borderRadius: '50%',
     position: 'relative',
     overflow: 'hidden', // Ensures the fill doesn't overflow the ball
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+    boxShadow: '6px 8px 12px rgba(0, 0, 0, 0.7)',
     border: '2px solid rgba(0, 0, 0, 0.1)',
   };
 

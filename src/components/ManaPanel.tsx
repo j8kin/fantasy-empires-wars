@@ -1,10 +1,13 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
+
 import ManaVial from './ManaVial';
-import CelticPatternCorner from '../assets/images/CelticPatternCorner.png';
-import CelticPatternVertical from '../assets/images/CelticPatternVertical.png';
 import ManaPanelCorner from './ManaPanelCorner';
 import ManaPanelTile from './ManaPanelTile';
+
+import CelticPatternCorner from '../assets/images/CelticPatternCorner.png';
+import CelticPatternVertical from '../assets/images/CelticPatternVertical.png';
+import CelticBackground from '../assets/images/CelticBackground.png';
 
 const ManaPanel: React.FC = () => {
   const frameWidth = Dimensions.get('window').width;
@@ -98,8 +101,12 @@ const manaVialsContainerStyle: React.CSSProperties = {
   display: 'flex', // Use flexbox to align items in a row
   justifyContent: 'center', // Center the ManaVials horizontally
   alignItems: 'center', // Center the ManaVials vertically (optional)
-  gap: '10px', // Add spacing between ManaVials
-  padding: '20px', // Add padding around the container
+  gap: '20px', // Add spacing between ManaVials
+  padding: '55px', // Add padding around the container
+  backgroundImage: `url(${CelticBackground})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
 };
 const cornerStyle: React.CSSProperties = {
   position: 'absolute',
