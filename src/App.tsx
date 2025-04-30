@@ -7,8 +7,10 @@ import ManaPanel from './ux-components/ManaPanel';
 function App() {
   return (
     <React.Fragment>
-      <ManaPanel />
-      <MainFrame />
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <ManaPanel />
+        <MainFrame />
+      </div>
     </React.Fragment>
   );
 }

@@ -13,7 +13,7 @@ import styles from './Background.module.css';
 const ManaPanel: React.FC = () => {
   const frameWidth = Dimensions.get('window').width;
   const tileWidth = 181;
-  const numTiles = Math.ceil(frameWidth / tileWidth);
+  const numTiles = Math.ceil(frameWidth / tileWidth) - 1;
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.src = '/assets/images/fallback.png';
@@ -23,7 +23,7 @@ const ManaPanel: React.FC = () => {
   return (
     <div style={frameContainerStyle} id="ManaPanel">
       {Array.from({ length: numTiles }).map((_, index) => {
-        const leftPosition = index * tileWidth;
+        const leftPosition = 20 + index * tileWidth;
 
         return (
           <React.Fragment key={index}>
@@ -140,7 +140,7 @@ const horizontalTopTileStyle: React.CSSProperties = {
 };
 
 const horizontalBottomTileStyle: React.CSSProperties = {
-  top: '75px', // Align the tiles at the top
+  bottom: '-75px', // Align the tiles at the top
 };
 
 const verticalStyle: React.CSSProperties = {
