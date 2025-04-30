@@ -1,8 +1,6 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
 
 const Radius = 100;
-//const tableWidth = (Dimensions.get('window').width / 5).toFixed(0);
 
 interface ManaVialProps {
   color: string; // Base color of the ball (e.g., 'rgb(0, 0, 255)')

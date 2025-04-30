@@ -1,6 +1,5 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
-import Table from 'react-bootstrap/Table';
 import ManaVial from './ManaVial';
 import CelticPatternCorner from '../assets/images/CelticPatternCorner.png'; // Import the image
 import CelticPatternVertical from '../assets/images/CelticPatternVertical.png'; // Import the image
@@ -10,7 +9,7 @@ const ManaPanel = () => {
   const numTiles = Math.ceil(frameWidth / tileWidth); // Calculate the number of tiles needed
 
   return (
-    <div style={frameContainerStyle}>
+    <div style={frameContainerStyle} id="ManaPanel">
       {/* Top Horizontal Sides */}
       {Array.from({ length: numTiles }).map((_, index) => (
         <img
@@ -96,12 +95,12 @@ const manaVialsContainerStyle: React.CSSProperties = {
   padding: '20px', // Add padding around the container
 };
 
-const contentStyle: React.CSSProperties = {
-  position: 'relative',
-  zIndex: 1,
-  padding: '20px',
-  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-};
+//const contentStyle: React.CSSProperties = {
+//  position: 'relative',
+//  zIndex: 1,
+//  padding: '20px',
+//  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+//};
 
 const cornerStyle: React.CSSProperties = {
   position: 'absolute',
@@ -132,14 +131,14 @@ const bottomRightStyle: React.CSSProperties = {
   transform: 'rotate(180deg)', // Rotate for correct orientation
 };
 
-const topHorizontalContainerStyle: React.CSSProperties = {
-  display: 'flex', // Use flexbox to align items in a row
-  justifyContent: 'center', // Center the ManaVials horizontally
-  alignItems: 'center', // Center the ManaVials vertically (optional)
-  //gap: '10px', // Add spacing between ManaVials
-  //padding: '20px', // Add padding around the container
-  zIndex: 2, // Ensure it is below the corners but above other elements
-};
+//const topHorizontalContainerStyle: React.CSSProperties = {
+//  display: 'flex', // Use flexbox to align items in a row
+//  justifyContent: 'center', // Center the ManaVials horizontally
+//  alignItems: 'center', // Center the ManaVials vertically (optional)
+//  //gap: '10px', // Add spacing between ManaVials
+//  //padding: '20px', // Add padding around the container
+//  zIndex: 2, // Ensure it is below the corners but above other elements
+//};
 
 const horizontalTileStyle: React.CSSProperties = {
   position: 'absolute',
