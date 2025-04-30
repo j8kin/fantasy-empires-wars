@@ -7,8 +7,8 @@ import ManaPanel from './components/ManaPanel';
 function App() {
   return (
     <React.Fragment>
-      <ManaPanel/>
-      <MainMap/>
+      <ManaPanel />
+      <MainMap />
     </React.Fragment>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Radius = 100;
+const Radius = 80;
 
 interface ManaVialProps {
   color: string; // Base color of the ball (e.g., 'rgb(0, 0, 255)')
@@ -40,10 +40,10 @@ const ManaVial: React.FC<ManaVialProps> = ({ color, percentage }) => {
   };
 
   return (
-      <div style={ballStyle}>
-        <div style={fillStyle}></div>
-        <span style={valueStyle}>{percentage}%</span>
-      </div>
+    <div style={ballStyle}>
+      <div style={fillStyle}></div>
+      <span style={valueStyle}>{percentage}%</span>
+    </div>
   );
 };
 

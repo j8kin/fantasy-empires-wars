@@ -10,24 +10,39 @@ const ManaPanel = () => {
 
   return (
     <div style={frameContainerStyle} id="ManaPanel">
-      {/* Top Horizontal Sides */}
-      {Array.from({ length: numTiles }).map((_, index) => (
-        <img
-          key={index}
-          src={CelticPatternVertical}
-          alt="Horizontal Side"
-          style={{
-            ...horizontalTileStyle,
-            left: index * tileWidth, // Dynamically position each tile
-          }}
-        />
-      ))}
+      {Array.from({ length: numTiles }).map((_, index) => {
+        const leftPosition = index * tileWidth; // Extracted calculation
 
+        return (
+          <React.Fragment key={index}>
+            {/* Top Horizontal Side */}
+            <img
+              src={CelticPatternVertical}
+              alt="Horizontal Side Top"
+              style={{
+                ...horizontalTileStyle,
+                ...horizontalTopTileStyle,
+                left: leftPosition, // Use the extracted variable
+              }}
+            />
+            {/* Bottom Horizontal Side */}
+            <img
+              src={CelticPatternVertical}
+              alt="Horizontal Side Bottom"
+              style={{
+                ...horizontalTileStyle,
+                ...horizontalBottomTileStyle,
+                left: leftPosition, // Use the extracted variable
+              }}
+            />
+          </React.Fragment>
+        );
+      })}
       {/* Top Corners */}
       <img
         src={CelticPatternCorner}
         alt="Top Left Corner"
-        style={{...cornerStyle, ...topLeftStyle}}
+        style={{ ...cornerStyle, ...topLeftStyle }}
         onError={(e) => {
           e.currentTarget.src = '/assets/images/fallback.png'; // Fallback image
           e.currentTarget.alt = 'Fallback Image';
@@ -36,7 +51,7 @@ const ManaPanel = () => {
       <img
         src={CelticPatternCorner}
         alt="Top Right Corner"
-        style={{...cornerStyle, ...topRightStyle}}
+        style={{ ...cornerStyle, ...topRightStyle }}
         onError={(e) => {
           e.currentTarget.src = '/assets/images/fallback.png'; // Fallback image
           e.currentTarget.alt = 'Fallback Image';
@@ -46,12 +61,12 @@ const ManaPanel = () => {
       <img
         src={CelticPatternVertical}
         alt="Left Vertical"
-        style={{...verticalStyle, ...leftStyle}}
+        style={{ ...verticalStyle, ...leftStyle }}
       />
       <img
         src={CelticPatternVertical}
         alt="Right Vertical"
-        style={{...verticalStyle, ...rightStyle}}
+        style={{ ...verticalStyle, ...rightStyle }}
       />
 
       {/* Mana Vials */}
@@ -67,12 +82,12 @@ const ManaPanel = () => {
       <img
         src={CelticPatternCorner}
         alt="Bottom Left Corner"
-        style={{...cornerStyle, ...bottomLeftStyle}}
+        style={{ ...cornerStyle, ...bottomLeftStyle }}
       />
       <img
         src={CelticPatternCorner}
         alt="Bottom Right Corner"
-        style={{...cornerStyle, ...bottomRightStyle}}
+        style={{ ...cornerStyle, ...bottomRightStyle }}
       />
     </div>
   );
@@ -142,11 +157,18 @@ const bottomRightStyle: React.CSSProperties = {
 
 const horizontalTileStyle: React.CSSProperties = {
   position: 'absolute',
-  top: '-68px', // Align the tiles at the top
+  //top: '-68px', // Align the tiles at the top
   width: '50px', // Match the width of the image
   height: '100%', // Match the height of the image
   zIndex: 2, // Ensure it is below the corners but above other elements
   transform: 'rotate(90deg)',
+};
+const horizontalTopTileStyle: React.CSSProperties = {
+  top: '-68px', // Align the tiles at the top
+};
+
+const horizontalBottomTileStyle: React.CSSProperties = {
+  top: '67px', // Align the tiles at the top
 };
 
 const verticalStyle: React.CSSProperties = {
