@@ -1,6 +1,7 @@
 {
   "name": "fantasy-empires-wars",
   "version": "0.1.0",
+  "homepage": "https://j8kin.github.io/fantasy-empires-wars",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
@@ -20,13 +21,16 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "jest": "^29.4.3"
+    "jest": "^29.4.3",
+    "gh-pages": "^6.3.0"
   },
   "eslintConfig": {
     "extends": [
