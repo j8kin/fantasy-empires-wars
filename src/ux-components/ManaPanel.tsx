@@ -18,8 +18,8 @@ const ManaPanel: React.FC = () => {
 
   return (
     <div style={frameContainerStyle} id="ManaPanel">
-      <BorderCanvas isTop={true} />
-      <BorderCanvas isTop={false} />
+      <BorderCanvas isTop={true} isRotated={true} />
+      <BorderCanvas isTop={false} isRotated={true} />
       <ManaPanelCorner
         src={CelticPatternCorner}
         alt="Top Left Corner"

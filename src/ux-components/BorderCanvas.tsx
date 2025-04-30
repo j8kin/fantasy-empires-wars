@@ -5,17 +5,20 @@ import CelticPatternVertical from '../assets/images/CelticPatternVertical.png';
 
 interface BorderCanvasProps {
   isTop: boolean;
+  isRotated: boolean;
 }
 
-const BorderCanvas: React.FC<BorderCanvasProps> = ({ isTop }) => {
+const BorderCanvas: React.FC<BorderCanvasProps> = ({ isTop, isRotated }) => {
   const tileWidth = 180;
+  const tileHeight = 50;
+  const slideCanvas = '-65px';
   const frameWidth = Dimensions.get('window').width;
   const numTiles = Math.ceil(frameWidth / tileWidth) - 1;
 
   return (
     <>
       {Array.from({ length: numTiles }).map((_, index) => {
-        const leftPosition = 50 + index * tileWidth;
+        const position = tileHeight + index * tileWidth;
 
         return (
           <ManaPanelTile
@@ -24,14 +27,14 @@ const BorderCanvas: React.FC<BorderCanvasProps> = ({ isTop }) => {
             alt={isTop ? 'Horizontal Side Top' : 'Horizontal Side Bottom'}
             style={{
               position: 'absolute',
-              width: '50px',
-              height: '180px',
+              width: isRotated ? tileHeight : tileWidth,
+              height: isRotated ? tileWidth : tileHeight,
               zIndex: 2,
-              transform: 'rotate(90deg)',
-              left: leftPosition,
+              transform: isRotated ? 'rotate(90deg)' : undefined,
+              left: position,
               ...(isTop
-                ? { top: '-65px' } // Styles for top row
-                : { bottom: '-65px' }), // Styles for bottom row
+                ? { top: slideCanvas } // Styles for top row
+                : { bottom: slideCanvas }), // Styles for bottom row
             }}
           />
         );

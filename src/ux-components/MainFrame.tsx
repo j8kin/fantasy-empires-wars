@@ -4,7 +4,7 @@ import BorderCanvas from './BorderCanvas';
 const MainFrame = () => {
   return (
     <div id="MainFrame" className={styles.backgroundStyle} style={{ flex: 1 }}>
-      <BorderCanvas isTop={false} />
+      <BorderCanvas isTop={false} isRotated={true} />
     </div>
   );
 };
