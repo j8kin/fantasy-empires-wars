@@ -91,8 +91,7 @@ const ManaPanel: React.FC = () => {
 const frameContainerStyle: React.CSSProperties = {
   position: 'relative',
   width: '100%',
-  height: 'auto',
-  padding: '20px',
+  height: '200px',
   boxSizing: 'border-box',
 };
 const manaVialsContainerStyle: React.CSSProperties = {
@@ -129,18 +128,17 @@ const bottomRightStyle: React.CSSProperties = {
 };
 const horizontalTileStyle: React.CSSProperties = {
   position: 'absolute',
-  //top: '-68px', // Align the tiles at the top
   width: '50px', // Match the width of the image
   height: '100%', // Match the height of the image
   zIndex: 2, // Ensure it is below the corners but above other elements
   transform: 'rotate(90deg)',
 };
 const horizontalTopTileStyle: React.CSSProperties = {
-  top: '-68px', // Align the tiles at the top
+  top: '-75px', // Align the tiles at the top
 };
 
 const horizontalBottomTileStyle: React.CSSProperties = {
-  top: '67px', // Align the tiles at the top
+  top: '75px', // Align the tiles at the top
 };
 
 const verticalStyle: React.CSSProperties = {
