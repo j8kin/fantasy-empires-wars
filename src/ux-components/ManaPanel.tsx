@@ -26,8 +26,11 @@ const frameContainerStyle: React.CSSProperties = {
 };
 
 const vialPanelStyle: React.CSSProperties = {
-  gap: '20px', // Add spacing between ManaVials
-  padding: '15px', // Add padding around the container
+  display: 'flex', // Use flexbox layout
+  flexDirection: 'row', // Arrange items in a row
+  justifyContent: 'center', // Center items horizontally
+  gap: '30px', // Add spacing between ManaVials
+  padding: '3px', // Add padding around the container
 };
 
 export default ManaPanel;
