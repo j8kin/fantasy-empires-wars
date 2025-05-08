@@ -1,18 +1,10 @@
 import React from 'react';
 
 import './App.css';
-import MainFrame from './ux-components/MainFrame';
-import ManaPanel from './ux-components/ManaPanel';
+import MainCanvas from './ux-components/MainCanvas';
 
 function App() {
-  return (
-    <React.Fragment>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <ManaPanel />
-        <MainFrame />
-      </div>
-    </React.Fragment>
-  );
+  return <MainCanvas />;
 }
 
 export default App;

@@ -8,8 +8,8 @@ describe('App Component', () => {
     expect(document.querySelector('#ManaPanel')).not.toBeNull();
   });
 
-  it('renders the MainFrame component', () => {
+  it('renders the MainMap component', () => {
     render(<App />);
-    expect(document.querySelector('#MainFrame')).not.toBeNull();
+    expect(document.querySelector('#MainMap')).not.toBeNull();
   });
 });

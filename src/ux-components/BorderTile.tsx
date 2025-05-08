@@ -1,13 +1,13 @@
 import React from 'react';
 
-interface ManaPanelTileProps {
+interface BorderTileProps {
   src: string;
   alt: string;
   style: React.CSSProperties;
 }
 
-const ManaPanelTile: React.FC<ManaPanelTileProps> = ({ src, alt, style }) => {
+const BorderTile: React.FC<BorderTileProps> = ({ src, alt, style }) => {
   return <img src={src} alt={alt} style={style} />;
 };
 
-export default ManaPanelTile;
+export default BorderTile;
