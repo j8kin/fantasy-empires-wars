@@ -5,11 +5,11 @@ import CelticPatternCorner from '../assets/images/CelticPatternCorner.png';
 const BorderCornerCanvas: React.FC<BorderCanvasProps> = ({
   isLeft,
   isTop,
-  leftOffset,
-  topOffset,
+  xOffset,
+  yOffset,
 }) => {
-  leftOffset = leftOffset == null ? 0 : leftOffset;
-  topOffset = topOffset == null ? 0 : topOffset;
+  xOffset = xOffset == null ? 0 : xOffset;
+  yOffset = yOffset == null ? 0 : yOffset;
 
   return (
     <BorderTile
@@ -17,10 +17,10 @@ const BorderCornerCanvas: React.FC<BorderCanvasProps> = ({
       alt={(isLeft ? 'Left ' : 'Right ') + (isTop ? 'Top ' : 'Bottom ') + 'Corner'}
       style={{
         ...cornerStyle,
-        top: isTop ? topOffset : undefined,
-        bottom: !isTop ? topOffset : undefined,
-        left: isLeft ? leftOffset : undefined,
-        right: !isLeft ? leftOffset : undefined,
+        top: isTop ? yOffset : undefined,
+        bottom: !isTop ? yOffset : undefined,
+        left: isLeft ? xOffset : undefined,
+        right: !isLeft ? xOffset : undefined,
       }}
     />
   );

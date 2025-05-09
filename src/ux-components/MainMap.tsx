@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
-import styles from './MainMap.module.css';
+import styles from './css/MainMap.module.css';
 import HexTile from './HexTile';
 
 const MainMap: React.FC = () => {

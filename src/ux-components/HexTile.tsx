@@ -1,5 +1,6 @@
 import React from 'react';
-import styles from './Hexagonal.module.css';
+import styles from './css/Hexagonal.module.css';
+
 const HexTile: React.FC<{ image?: string }> = ({ image }) => {
   return (
     <div className={styles.hexTile}>

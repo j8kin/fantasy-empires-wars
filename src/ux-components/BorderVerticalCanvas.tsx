@@ -9,12 +9,12 @@ const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
   const tileHeight = 180;
   const frameLength = Dimensions.get('window').height;
   const numTiles = Math.ceil(frameLength / tileHeight) - 1;
-  const slideCanvas = (frameLength - numTiles * tileHeight) / 2;
+  const yOffset = (frameLength - numTiles * tileHeight) / 2;
 
   return (
     <>
       {Array.from({ length: numTiles }).map((_, index) => {
-        const position = slideCanvas + index * tileHeight;
+        const position = yOffset + index * tileHeight;
 
         return (
           <BorderTile

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Background.module.css';
+import styles from './css/Background.module.css';
 import BorderVerticalCanvas from './BorderVerticalCanvas';
 import BorderHorizontalCanvas from './BorderHorizontalCanvas';
 import BorderCornerCanvas from './BorderCornerCanvas';
@@ -26,9 +26,9 @@ const MainCanvas: React.FC = () => {
       {/* Add ManaPanel */}
       <ManaPanel />
       {/* Add Split ManaPanel and MainMap with Border */}
-      <BorderHorizontalCanvas isTop={true} topOffset={145} />
-      <BorderCornerCanvas isTop={true} isLeft={true} topOffset={145} />
-      <BorderCornerCanvas isTop={true} isLeft={false} topOffset={145} />
+      <BorderHorizontalCanvas isTop={true} yOffset={145} />
+      <BorderCornerCanvas isTop={true} isLeft={true} yOffset={145} />
+      <BorderCornerCanvas isTop={true} isLeft={false} yOffset={145} />
 
       {/* Add MainMap */}
       <MainMap />

@@ -3,13 +3,14 @@ import { Dimensions } from 'react-native';
 import BorderTile from './BorderTile';
 import CelticPatternVertical from '../assets/images/CelticPatternVertical.png';
 import { BorderCanvasProps } from './BorderCanvasProps';
-const BorderHorizontalCanvas: React.FC<BorderCanvasProps> = ({ isTop, topOffset }) => {
+
+const BorderHorizontalCanvas: React.FC<BorderCanvasProps> = ({ isTop, yOffset }) => {
   const tileWidth = 50;
   const tileHeight = 180;
   const frameLength = Dimensions.get('window').width;
   const numTiles = Math.ceil(frameLength / tileHeight) - 1;
   const initialLeftOffset = (frameLength - numTiles * tileHeight) / 2 + tileHeight / 4;
-  const initialTopOffset = (tileWidth - tileHeight) / 2 + (topOffset == null ? 0 : topOffset);
+  const initialTopOffset = (tileWidth - tileHeight) / 2 + (yOffset == null ? 0 : yOffset);
 
   return (
     <>
