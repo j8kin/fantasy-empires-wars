@@ -18,13 +18,17 @@ const MainCanvas: React.FC = () => {
       <BorderVerticalCanvas isLeft={false} />
       <BorderHorizontalCanvas isTop={true} />
       <BorderHorizontalCanvas isTop={false} />
-      <BorderCornerCanvas isTopCorner={true} isLeftCorner={true} />
-      <BorderCornerCanvas isTopCorner={true} isLeftCorner={false} />
-      <BorderCornerCanvas isTopCorner={false} isLeftCorner={true} />
-      <BorderCornerCanvas isTopCorner={false} isLeftCorner={false} />
+      <BorderCornerCanvas isTop={true} isLeft={true} />
+      <BorderCornerCanvas isTop={true} isLeft={false} />
+      <BorderCornerCanvas isTop={false} isLeft={true} />
+      <BorderCornerCanvas isTop={false} isLeft={false} />
 
       {/* Add ManaPanel */}
       <ManaPanel />
+      {/* Add Split ManaPanel and MainMap with Border */}
+      <BorderHorizontalCanvas isTop={true} topOffset={145} />
+      <BorderCornerCanvas isTop={true} isLeft={true} topOffset={145} />
+      <BorderCornerCanvas isTop={true} isLeft={false} topOffset={145} />
 
       {/* Add MainMap */}
       <MainMap />

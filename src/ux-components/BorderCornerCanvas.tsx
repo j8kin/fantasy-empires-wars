@@ -1,22 +1,26 @@
 import React from 'react';
+import BorderTile from './BorderTile';
+import { BorderCanvasProps } from './BorderCanvasProps';
 import CelticPatternCorner from '../assets/images/CelticPatternCorner.png';
-interface BorderCanvasCornerProps {
-  isLeftCorner: boolean;
-  isTopCorner: boolean;
-  topSlide?: number;
-}
+const BorderCornerCanvas: React.FC<BorderCanvasProps> = ({
+  isLeft,
+  isTop,
+  leftOffset,
+  topOffset,
+}) => {
+  leftOffset = leftOffset == null ? 0 : leftOffset;
+  topOffset = topOffset == null ? 0 : topOffset;
 
-const BorderCornerCanvas: React.FC<BorderCanvasCornerProps> = ({ isLeftCorner, isTopCorner }) => {
   return (
-    <img
+    <BorderTile
       src={CelticPatternCorner}
-      alt={(isLeftCorner ? 'Left ' : 'Right ') + (isTopCorner ? 'Top ' : 'Bottom ') + 'Corner'}
+      alt={(isLeft ? 'Left ' : 'Right ') + (isTop ? 'Top ' : 'Bottom ') + 'Corner'}
       style={{
         ...cornerStyle,
-        top: isTopCorner ? 0 : undefined,
-        bottom: !isTopCorner ? 0 : undefined,
-        left: isLeftCorner ? 0 : undefined,
-        right: !isLeftCorner ? 0 : undefined,
+        top: isTop ? topOffset : undefined,
+        bottom: !isTop ? topOffset : undefined,
+        left: isLeft ? leftOffset : undefined,
+        right: !isLeft ? leftOffset : undefined,
       }}
     />
   );
