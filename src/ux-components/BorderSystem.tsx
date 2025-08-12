@@ -3,9 +3,18 @@ import BorderVerticalCanvas from './BorderVerticalCanvas';
 import BorderHorizontalCanvas from './BorderHorizontalCanvas';
 import BorderCornerCanvas from './BorderCornerCanvas';
 
+// Layout constants for consistent sizing
+export const LAYOUT_CONSTANTS = {
+  BORDER_WIDTH: 50,
+  MANA_PANEL_HEIGHT: 200,
+  MANA_PANEL_TOP_MARGIN: 50,
+  get MANA_PANEL_BOTTOM_Y() {
+    return this.MANA_PANEL_HEIGHT + this.MANA_PANEL_TOP_MARGIN;
+  }
+};
+
 const BorderSystem: React.FC = () => {
-  // Get the height of ManaPanel (assuming 200px height + 50px top offset = 250px)
-  const manaPanelBottomY = 250;
+  const manaPanelBottomY = LAYOUT_CONSTANTS.MANA_PANEL_BOTTOM_Y;
 
   return (
     <>

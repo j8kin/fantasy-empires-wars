@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { LAYOUT_CONSTANTS } from './BorderSystem';
 import ManaVial from './ManaVial';
 
 const ManaPanel: React.FC = () => {
@@ -18,10 +18,10 @@ const ManaPanel: React.FC = () => {
 
 const frameContainerStyle: React.CSSProperties = {
   position: 'absolute',
-  width: '85%',
-  height: '200px',
-  left: '50px',
-  top: '50px',
+  left: LAYOUT_CONSTANTS.BORDER_WIDTH,
+  top: LAYOUT_CONSTANTS.MANA_PANEL_TOP_MARGIN,
+  right: LAYOUT_CONSTANTS.BORDER_WIDTH,
+  height: LAYOUT_CONSTANTS.MANA_PANEL_HEIGHT,
   boxSizing: 'border-box',
 };
 
