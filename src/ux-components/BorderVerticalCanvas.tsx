@@ -7,9 +7,9 @@ import { BorderCanvasProps } from './BorderCanvasProps';
 const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
   const tileWidth = 50;
   const tileHeight = 180;
-  const frameLength = Dimensions.get('window').height;
-  const numTiles = Math.ceil(frameLength / tileHeight) - 1;
-  const yOffset = (frameLength - numTiles * tileHeight) / 2;
+  const frameLength = window.innerHeight; // Use window.innerHeight instead of Dimensions for full height
+  const numTiles = Math.ceil(frameLength / tileHeight);
+  const yOffset = 0; // Start from top corner
 
   return (
     <>

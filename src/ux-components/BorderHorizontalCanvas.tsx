@@ -7,9 +7,9 @@ import { BorderCanvasProps } from './BorderCanvasProps';
 const BorderHorizontalCanvas: React.FC<BorderCanvasProps> = ({ isTop, yOffset }) => {
   const tileWidth = 50;
   const tileHeight = 180;
-  const frameLength = Dimensions.get('window').width;
-  const numTiles = Math.ceil(frameLength / tileHeight) - 1;
-  const initialLeftOffset = (frameLength - numTiles * tileHeight) / 2 + tileHeight / 4;
+  const frameLength = window.innerWidth; // Use window.innerWidth for full width
+  const numTiles = Math.ceil(frameLength / tileHeight);
+  const initialLeftOffset = 0; // Start from left border
   const initialTopOffset = (tileWidth - tileHeight) / 2 + (yOffset == null ? 0 : yOffset);
 
   return (
