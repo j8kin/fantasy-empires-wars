@@ -9,7 +9,7 @@ const MainCanvas: React.FC = () => {
     <div
       className={styles.backgroundStyle}
       style={{ 
-        width: '100vw',
+        width: '100vw', 
         height: '100vh',
         position: 'relative',
         overflow: 'hidden' // Prevent any scrolling
