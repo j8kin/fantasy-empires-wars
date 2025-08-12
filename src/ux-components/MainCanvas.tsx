@@ -8,7 +8,12 @@ const MainCanvas: React.FC = () => {
   return (
     <div
       className={styles.backgroundStyle}
-      style={{ width: '100vw', height: '100vh', position: 'relative' }}
+      style={{ 
+        width: '100vw',
+        height: '100vh',
+        position: 'relative',
+        overflow: 'hidden' // Prevent any scrolling
+      }}
       id="MainCanvas"
     >
       {/* Separate border system from content */}

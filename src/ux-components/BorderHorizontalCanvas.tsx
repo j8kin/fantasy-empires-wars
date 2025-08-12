@@ -7,15 +7,20 @@ import { BorderCanvasProps } from './BorderCanvasProps';
 const BorderHorizontalCanvas: React.FC<BorderCanvasProps> = ({ isTop, yOffset }) => {
   const tileWidth = 50;
   const tileHeight = 180;
-  const frameLength = window.innerWidth; // Use window.innerWidth for full width
-  const numTiles = Math.ceil(frameLength / tileHeight);
-  const initialLeftOffset = 0; // Start from left border
+  const availableWidth = window.innerWidth;
+  // Use tileWidth (50px) as spacing since that's the actual width after rotation
+  const tileSpacing = tileWidth;
+  const numTiles = Math.floor(availableWidth / tileSpacing);
+  const initialLeftOffset = 0;
   const initialTopOffset = (tileWidth - tileHeight) / 2 + (yOffset == null ? 0 : yOffset);
 
   return (
     <>
       {Array.from({ length: numTiles }).map((_, index) => {
-        const position = initialLeftOffset + index * tileHeight;
+        const position = initialLeftOffset + index * tileSpacing;
+
+        // Skip tiles that would extend beyond viewport
+        if (position + tileWidth > availableWidth) return null;
 
         return (
           <BorderTile
