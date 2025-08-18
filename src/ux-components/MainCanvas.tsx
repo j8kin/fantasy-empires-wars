@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './css/Background.module.css';
 import BorderSystem from './BorderSystem';
-import ManaPanel from './ManaPanel';
+import ManaPanel, { MapSize } from './ManaPanel';
 import MainMap from './MainMap';
 
 const MainCanvas: React.FC = () => {
+  const [mapSize, setMapSize] = useState<MapSize>('medium');
+
   return (
     <div
       className={styles.backgroundStyle}
@@ -20,8 +22,8 @@ const MainCanvas: React.FC = () => {
       <BorderSystem />
       
       {/* Content components */}
-      <ManaPanel />
-      <MainMap />
+      <ManaPanel mapSize={mapSize} onMapSizeChange={setMapSize} />
+      <MainMap mapSize={mapSize} />
     </div>
   );
 };

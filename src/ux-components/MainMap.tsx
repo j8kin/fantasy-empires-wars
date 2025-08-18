@@ -3,16 +3,35 @@ import { LAYOUT_CONSTANTS } from './BorderSystem';
 import styles from './css/MainMap.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
+import { MapSize } from './ManaPanel';
 
-const MainMap: React.FC = () => {
+interface MainMapProps {
+  mapSize: MapSize;
+}
+
+const getMapDimensions = (mapSize: MapSize): { rows: number; cols: number } => {
+  switch (mapSize) {
+    case 'small':
+      return { rows: 4, cols: 4 };
+    case 'medium':
+      return { rows: 6, cols: 6 };
+    case 'large':
+      return { rows: 8, cols: 8 };
+    case 'huge':
+      return { rows: 12, cols: 12 };
+    default:
+      return { rows: 6, cols: 6 };
+  }
+};
+
+const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
   // Calculate dimensions to fit within borders and below ManaPanel
   const topPosition = LAYOUT_CONSTANTS.MANA_PANEL_BOTTOM_Y + LAYOUT_CONSTANTS.BORDER_WIDTH;
   const leftPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
   const rightPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
   const bottomPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
 
-  const rows = 8; // Increased number of rows for better visualization
-  const cols = 8; // Increased number of columns for better visualization
+  const { rows, cols } = getMapDimensions(mapSize);
   const hexGrid = [];
 
   // Loop to generate rows and columns of hex tiles
