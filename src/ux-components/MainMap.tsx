@@ -14,7 +14,7 @@ const getMapDimensions = (mapSize: MapSize): { rows: number; cols: number } => {
     case 'small':
       return { rows: 4, cols: 4 };
     case 'medium':
-      return { rows: 6, cols: 6 };
+      return { rows: 9, cols: 18 };
     case 'large':
       return { rows: 8, cols: 8 };
     case 'huge':
