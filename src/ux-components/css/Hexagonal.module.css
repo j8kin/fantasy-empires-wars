@@ -1,15 +1,15 @@
 /* MainMap.css */
 .hexTile {
-  width: 100px; /* Width of the hexagon */
-  height: 115.47px; /* Height of the hexagon (calculated as width * sqrt(3) for pointy-topped) */
+  width: var(--hex-tile-width, 100px); /* Dynamic width based on map size */
+  height: var(--hex-tile-height, 115.47px); /* Dynamic height based on map size */
   background-color: #8c8c8c; /* Default background color */
   clip-path: polygon(
-    50% 0%,    /* Top point */
-    100% 25%,  /* Top-right */
-    100% 75%,  /* Bottom-right */
-    50% 100%,  /* Bottom point */
-    0% 75%,    /* Bottom-left */
-    0% 25%     /* Top-left */
+    50% 0%,   /* Top point */
+    100% 25%, /* Top-right */
+    100% 75%, /* Bottom-right */
+    50% 100%, /* Bottom point */
+    0% 75%,   /* Bottom-left */
+    0% 25% /* Top-left */
   );
   display: inline-block;
   position: relative;
@@ -29,9 +29,9 @@
 
 .hex-row {
   display: flex;
-  margin-bottom: -28.87px; /* Negative margin to make rows overlap (height * 0.25) */
+  margin-bottom: var(--hex-row-margin, -28.87px); /* Dynamic negative margin based on tile size */
 }
 
 .hex-row:nth-child(even) {
-  margin-left: 50px; /* Offset for even rows to create proper hexagonal grid */
+  margin-left: var(--hex-row-offset, 50px); /* Dynamic offset for even rows based on tile size */
 }
