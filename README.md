@@ -13,7 +13,7 @@ A fantasy-themed strategy game interface built with React TypeScript. Features a
 
 🎮 **[View Live Demo](https://j8kin.github.io/fantasy-empires-wars)**
 
-*Experience the game interface with interactive hexagonal tiles and mana management system.*
+_Experience the game interface with interactive hexagonal tiles and mana management system._
 
 ## Getting Started
 
@@ -25,12 +25,14 @@ A fantasy-themed strategy game interface built with React TypeScript. Features a
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/j8kin/fantasy-empires-wars.git
 cd fantasy-empires-wars
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 # or
@@ -40,6 +42,7 @@ yarn install
 ### Development
 
 Start the development server:
+
 ```bash
 npm start
 # or
@@ -51,6 +54,7 @@ The application will open at [http://localhost:3000](http://localhost:3000). The
 ### Building for Production
 
 Build the application for production:
+
 ```bash
 npm run build
 # or
@@ -62,6 +66,7 @@ The build artifacts will be stored in the `build/` directory, optimized for depl
 ### Testing
 
 Run the test suite:
+
 ```bash
 npm test
 # or
@@ -73,6 +78,7 @@ This launches the test runner in interactive watch mode. Tests will re-run autom
 ### Code Formatting
 
 Format code with Prettier:
+
 ```bash
 npm run format
 # or
@@ -80,6 +86,7 @@ yarn format
 ```
 
 Check code formatting:
+
 ```bash
 npm run format-check
 # or
@@ -89,6 +96,7 @@ yarn format-check
 ### Deployment
 
 Deploy to GitHub Pages:
+
 ```bash
 npm run deploy
 # or

@@ -21,8 +21,8 @@ const ManaPanel: React.FC<ManaPanelProps> = ({ mapSize, onMapSizeChange }) => {
       </div>
       <div style={mapSelectorStyle}>
         <label style={labelStyle}>Map Size:</label>
-        <select 
-          value={mapSize} 
+        <select
+          value={mapSize}
           onChange={(e) => onMapSizeChange(e.target.value as MapSize)}
           style={selectStyle}
         >

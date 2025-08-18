@@ -10,7 +10,7 @@ export const LAYOUT_CONSTANTS = {
   MANA_PANEL_TOP_MARGIN: 50,
   get MANA_PANEL_BOTTOM_Y() {
     return this.MANA_PANEL_HEIGHT + this.MANA_PANEL_TOP_MARGIN;
-  }
+  },
 };
 
 const BorderSystem: React.FC = () => {
@@ -24,10 +24,10 @@ const BorderSystem: React.FC = () => {
 
       {/* Top horizontal border */}
       <BorderHorizontalCanvas isTop={true} yOffset={0} />
-      
+
       {/* Middle horizontal border between ManaPanel and MainMap */}
       <BorderHorizontalCanvas isTop={true} yOffset={manaPanelBottomY} />
-      
+
       {/* Bottom horizontal border */}
       <BorderHorizontalCanvas isTop={false} yOffset={0} />
 

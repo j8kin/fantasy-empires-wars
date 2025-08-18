@@ -17,13 +17,13 @@ const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
 
         // For the last tile, adjust height if it would extend beyond viewport
         const isLastTile = index === numTiles - 1;
-        const adjustedHeight = isLastTile && position + tileHeight > availableHeight
-          ? availableHeight - position
-          : tileHeight;
+        const adjustedHeight =
+          isLastTile && position + tileHeight > availableHeight
+            ? availableHeight - position
+            : tileHeight;
 
         // Skip if no height left for tile
         if (adjustedHeight <= 0) return null;
-
 
         return (
           <BorderTile

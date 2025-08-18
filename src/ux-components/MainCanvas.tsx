@@ -10,17 +10,17 @@ const MainCanvas: React.FC = () => {
   return (
     <div
       className={styles.backgroundStyle}
-      style={{ 
-        width: '100vw', 
+      style={{
+        width: '100vw',
         height: '100vh',
         position: 'relative',
-        overflow: 'hidden' // Prevent any scrolling
+        overflow: 'hidden', // Prevent any scrolling
       }}
       id="MainCanvas"
     >
       {/* Separate border system from content */}
       <BorderSystem />
-      
+
       {/* Content components */}
       <ManaPanel mapSize={mapSize} onMapSizeChange={setMapSize} />
       <MainMap mapSize={mapSize} />
