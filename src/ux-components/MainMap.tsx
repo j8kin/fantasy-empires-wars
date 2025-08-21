@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LAYOUT_CONSTANTS } from './BorderSystem';
 import styles from './css/MainMap.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
 import { MapSize } from './ManaPanel';
-import { LAND_TYPES } from '../types/LandType';
+import { useMapState } from '../hooks/useMapState';
+import { createTileId } from '../types/HexTileState';
 
 interface MainMapProps {
   mapSize: MapSize;
@@ -54,6 +55,14 @@ const getHexTileSize = (mapSize: MapSize): { width: number; height: number } => 
 };
 
 const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
+  const { mapState, changeMapSize } = useMapState(mapSize);
+
+  useEffect(() => {
+    if (mapState.mapSize !== mapSize) {
+      changeMapSize(mapSize);
+    }
+  }, [mapSize, mapState.mapSize, changeMapSize]);
+  
   // Calculate dimensions to fit within borders and below ManaPanel
   const topPosition = LAYOUT_CONSTANTS.MANA_PANEL_BOTTOM_Y + LAYOUT_CONSTANTS.BORDER_WIDTH;
   const leftPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
@@ -64,21 +73,17 @@ const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
   const { width: tileWidth, height: tileHeight } = getHexTileSize(mapSize);
   const hexGrid = [];
 
-  // Get array of land types for random selection
-  const landTypeKeys = Object.keys(LAND_TYPES);
-
-  // Loop to generate rows and columns of hex tiles
+  // Loop to generate rows and columns of hex tiles using map state
   for (let row = 0; row < rows; row++) {
     const hexRow = [];
     // For even rows, we might want fewer columns to maintain the pattern
     const colsInThisRow = row % 2 === 0 ? cols : cols - 1;
 
     for (let col = 0; col < colsInThisRow; col++) {
-      // Randomly select a land type
-      const randomLandTypeKey = landTypeKeys[Math.floor(Math.random() * landTypeKeys.length)];
-      const randomLandType = LAND_TYPES[randomLandTypeKey];
+      const tileId = createTileId(row, col);
+      const tileState = mapState.tiles[tileId];
       
-      hexRow.push(<HexTile key={`${row}-${col}`} landType={randomLandType} />);
+      hexRow.push(<HexTile key={tileId} landType={tileState?.landType} />);
     }
 
     hexGrid.push(
