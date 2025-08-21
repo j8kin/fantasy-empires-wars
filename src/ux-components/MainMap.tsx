@@ -83,7 +83,7 @@ const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
       const tileId = createTileId(row, col);
       const tileState = mapState.tiles[tileId];
       
-      hexRow.push(<HexTile key={tileId} landType={tileState?.landType} />);
+      hexRow.push(<HexTile key={tileId} landType={tileState?.landType} tileState={tileState} />);
     }
 
     hexGrid.push(
