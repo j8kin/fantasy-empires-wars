@@ -18,7 +18,7 @@
   box-sizing: border-box; /* Ensure dimensions are calculated correctly */
 }
 
-.hex-tile img {
+.hexTileImg {
   position: absolute;
   top: 0;
   left: 0;

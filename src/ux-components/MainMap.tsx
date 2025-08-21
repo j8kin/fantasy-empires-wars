@@ -4,6 +4,7 @@ import styles from './css/MainMap.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
 import { MapSize } from './ManaPanel';
+import { LAND_TYPES } from '../types/LandType';
 
 interface MainMapProps {
   mapSize: MapSize;
@@ -63,6 +64,9 @@ const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
   const { width: tileWidth, height: tileHeight } = getHexTileSize(mapSize);
   const hexGrid = [];
 
+  // Get array of land types for random selection
+  const landTypeKeys = Object.keys(LAND_TYPES);
+
   // Loop to generate rows and columns of hex tiles
   for (let row = 0; row < rows; row++) {
     const hexRow = [];
@@ -70,7 +74,11 @@ const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
     const colsInThisRow = row % 2 === 0 ? cols : cols - 1;
 
     for (let col = 0; col < colsInThisRow; col++) {
-      hexRow.push(<HexTile key={`${row}-${col}`} />);
+      // Randomly select a land type
+      const randomLandTypeKey = landTypeKeys[Math.floor(Math.random() * landTypeKeys.length)];
+      const randomLandType = LAND_TYPES[randomLandTypeKey];
+      
+      hexRow.push(<HexTile key={`${row}-${col}`} landType={randomLandType} />);
     }
 
     hexGrid.push(
