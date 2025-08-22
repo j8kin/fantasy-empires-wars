@@ -23,7 +23,7 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Mountains',
     alignment: 'lawful',
     imageName: 'mountains.png',
-    relatedLands: ['hills', 'volcano'],
+    relatedLands: ['hills', 'volcano', 'lava'],
     goldPerTurn: { min: 4, max: 6 },
   },
   greenforest: {
@@ -71,7 +71,7 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Lava Fields',
     alignment: 'chaotic',
     imageName: 'lava.png',
-    relatedLands: ['volcano', 'darkforest'],
+    relatedLands: ['volcano', 'darkforest', 'mountains'],
     goldPerTurn: { min: 1, max: 3 },
   },
   volcano: {
