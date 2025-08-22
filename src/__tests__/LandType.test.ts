@@ -1,4 +1,4 @@
-import { LAND_TYPES, LandType } from '../types/LandType';
+import { LAND_TYPES } from '../types/LandType';
 
 describe('LandType Data Integrity', () => {
   describe('LAND_TYPES Object Structure', () => {
