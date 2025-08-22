@@ -1,4 +1,11 @@
-export type BuildingType = 'wizard-tower' | 'barracks' | 'castle-wall' | 'watch-tower' | 'market' | 'temple' | 'mine';
+export type BuildingType =
+  | 'wizard-tower'
+  | 'barracks'
+  | 'castle-wall'
+  | 'watch-tower'
+  | 'market'
+  | 'temple'
+  | 'mine';
 
 export interface Building {
   id: string;
@@ -16,15 +23,15 @@ export const BUILDING_TYPES: { [key: string]: Building } = {
     name: 'Wizard Tower',
     goldCost: 150,
     goldPerTurn: 5,
-    description: 'Provides magical defense and research capabilities'
+    description: 'Provides magical defense and research capabilities',
   },
-  'barracks': {
+  barracks: {
     id: 'barracks',
     type: 'barracks',
     name: 'Barracks',
     goldCost: 100,
     goldPerTurn: 0,
-    description: 'Allows recruitment of military units'
+    description: 'Allows recruitment of military units',
   },
   'castle-wall': {
     id: 'castle-wall',
@@ -32,7 +39,7 @@ export const BUILDING_TYPES: { [key: string]: Building } = {
     name: 'Castle Wall',
     goldCost: 200,
     goldPerTurn: 0,
-    description: 'Provides strong defensive bonuses'
+    description: 'Provides strong defensive bonuses',
   },
   'watch-tower': {
     id: 'watch-tower',
@@ -40,30 +47,30 @@ export const BUILDING_TYPES: { [key: string]: Building } = {
     name: 'Watch Tower',
     goldCost: 80,
     goldPerTurn: 2,
-    description: 'Increases vision range and provides early warning'
+    description: 'Increases vision range and provides early warning',
   },
-  'market': {
+  market: {
     id: 'market',
     type: 'market',
     name: 'Market',
     goldCost: 120,
     goldPerTurn: 10,
-    description: 'Generates gold through trade'
+    description: 'Generates gold through trade',
   },
-  'temple': {
+  temple: {
     id: 'temple',
     type: 'temple',
     name: 'Temple',
     goldCost: 180,
     goldPerTurn: 3,
-    description: 'Provides spiritual bonuses and healing'
+    description: 'Provides spiritual bonuses and healing',
   },
-  'mine': {
+  mine: {
     id: 'mine',
     type: 'mine',
     name: 'Mine',
     goldCost: 140,
     goldPerTurn: 8,
-    description: 'Extracts resources from the land'
-  }
+    description: 'Extracts resources from the land',
+  },
 };

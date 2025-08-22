@@ -62,7 +62,7 @@ const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
       changeMapSize(mapSize);
     }
   }, [mapSize, mapState.mapSize, changeMapSize]);
-  
+
   // Calculate dimensions to fit within borders and below ManaPanel
   const topPosition = LAYOUT_CONSTANTS.MANA_PANEL_BOTTOM_Y + LAYOUT_CONSTANTS.BORDER_WIDTH;
   const leftPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
@@ -82,7 +82,7 @@ const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
     for (let col = 0; col < colsInThisRow; col++) {
       const tileId = createTileId(row, col);
       const tileState = mapState.tiles[tileId];
-      
+
       hexRow.push(<HexTile key={tileId} landType={tileState?.landType} tileState={tileState} />);
     }
 

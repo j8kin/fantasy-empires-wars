@@ -30,7 +30,7 @@ export const UNIT_TYPES: { [key: string]: Unit } = {
     defense: 6,
     health: 25,
     goldCost: 40,
-    movement: 2
+    movement: 2,
   },
   archer: {
     id: 'archer',
@@ -40,7 +40,7 @@ export const UNIT_TYPES: { [key: string]: Unit } = {
     defense: 4,
     health: 20,
     goldCost: 50,
-    movement: 3
+    movement: 3,
   },
   knight: {
     id: 'knight',
@@ -50,7 +50,7 @@ export const UNIT_TYPES: { [key: string]: Unit } = {
     defense: 10,
     health: 40,
     goldCost: 120,
-    movement: 3
+    movement: 3,
   },
   mage: {
     id: 'mage',
@@ -60,7 +60,7 @@ export const UNIT_TYPES: { [key: string]: Unit } = {
     defense: 3,
     health: 18,
     goldCost: 100,
-    movement: 2
+    movement: 2,
   },
   scout: {
     id: 'scout',
@@ -70,7 +70,7 @@ export const UNIT_TYPES: { [key: string]: Unit } = {
     defense: 3,
     health: 15,
     goldCost: 25,
-    movement: 5
+    movement: 5,
   },
   catapult: {
     id: 'catapult',
@@ -80,6 +80,6 @@ export const UNIT_TYPES: { [key: string]: Unit } = {
     defense: 2,
     health: 30,
     goldCost: 200,
-    movement: 1
-  }
+    movement: 1,
+  },
 };

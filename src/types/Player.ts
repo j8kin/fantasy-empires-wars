@@ -11,5 +11,5 @@ export const NEUTRAL_PLAYER: Player = {
   name: 'Uncontrolled',
   color: '#888888',
   gold: 0,
-  isActive: false
+  isActive: false,
 };

@@ -18,12 +18,14 @@ const calculateBaseLandGold = (landTypeId: string): number => {
     hills: 4,
     swamp: 1,
     lava: 2,
-    volcano: 6
+    volcano: 6,
   };
   return goldMap[landTypeId] || 2;
 };
 
-const initializeMap = (mapSize: 'small' | 'medium' | 'large' | 'huge'): { [key: string]: HexTileState } => {
+const initializeMap = (
+  mapSize: 'small' | 'medium' | 'large' | 'huge'
+): { [key: string]: HexTileState } => {
   const { rows, cols } = getMapDimensions(mapSize);
   const tiles: { [key: string]: HexTileState } = {};
 
@@ -32,7 +34,7 @@ const initializeMap = (mapSize: 'small' | 'medium' | 'large' | 'huge'): { [key: 
     for (let col = 0; col < colsInRow; col++) {
       const tileId = createTileId(row, col);
       const landType = getRandomLandType();
-      
+
       tiles[tileId] = {
         id: tileId,
         row,
@@ -41,7 +43,7 @@ const initializeMap = (mapSize: 'small' | 'medium' | 'large' | 'huge'): { [key: 
         controlledBy: NEUTRAL_PLAYER,
         goldPerTurn: calculateBaseLandGold(landType.id),
         buildings: [],
-        army: { units: [], totalCount: 0 }
+        army: { units: [], totalCount: 0 },
       };
     }
   }
@@ -55,33 +57,36 @@ export const useMapState = (initialMapSize: 'small' | 'medium' | 'large' | 'huge
     currentPlayer: NEUTRAL_PLAYER,
     players: [NEUTRAL_PLAYER],
     turn: 1,
-    mapSize: initialMapSize
+    mapSize: initialMapSize,
   }));
 
   const updateTile = useCallback((tileId: string, updates: Partial<HexTileState>) => {
-    setMapState(prev => ({
+    setMapState((prev) => ({
       ...prev,
       tiles: {
         ...prev.tiles,
         [tileId]: {
           ...prev.tiles[tileId],
-          ...updates
-        }
-      }
+          ...updates,
+        },
+      },
     }));
   }, []);
 
-  const setTileController = useCallback((tileId: string, player: Player) => {
-    updateTile(tileId, { controlledBy: player });
-  }, [updateTile]);
+  const setTileController = useCallback(
+    (tileId: string, player: Player) => {
+      updateTile(tileId, { controlledBy: player });
+    },
+    [updateTile]
+  );
 
   const addBuildingToTile = useCallback((tileId: string, building: any) => {
-    setMapState(prev => {
+    setMapState((prev) => {
       const tile = prev.tiles[tileId];
       if (!tile) return prev;
 
       const newGoldPerTurn = tile.goldPerTurn + building.goldPerTurn;
-      
+
       return {
         ...prev,
         tiles: {
@@ -89,58 +94,70 @@ export const useMapState = (initialMapSize: 'small' | 'medium' | 'large' | 'huge
           [tileId]: {
             ...tile,
             buildings: [...tile.buildings, building],
-            goldPerTurn: newGoldPerTurn
-          }
-        }
+            goldPerTurn: newGoldPerTurn,
+          },
+        },
       };
     });
   }, []);
 
-  const updateTileArmy = useCallback((tileId: string, army: any) => {
-    updateTile(tileId, { army });
-  }, [updateTile]);
+  const updateTileArmy = useCallback(
+    (tileId: string, army: any) => {
+      updateTile(tileId, { army });
+    },
+    [updateTile]
+  );
 
   const changeMapSize = useCallback((newSize: 'small' | 'medium' | 'large' | 'huge') => {
-    setMapState(prev => ({
+    setMapState((prev) => ({
       ...prev,
       tiles: initializeMap(newSize),
-      mapSize: newSize
+      mapSize: newSize,
     }));
   }, []);
 
   const addPlayer = useCallback((player: Player) => {
-    setMapState(prev => ({
+    setMapState((prev) => ({
       ...prev,
-      players: [...prev.players, player]
+      players: [...prev.players, player],
     }));
   }, []);
 
   const setCurrentPlayer = useCallback((player: Player) => {
-    setMapState(prev => ({
+    setMapState((prev) => ({
       ...prev,
-      currentPlayer: player
+      currentPlayer: player,
     }));
   }, []);
 
   const nextTurn = useCallback(() => {
-    setMapState(prev => ({
+    setMapState((prev) => ({
       ...prev,
-      turn: prev.turn + 1
+      turn: prev.turn + 1,
     }));
   }, []);
 
-  const getTile = useCallback((row: number, col: number) => {
-    const tileId = createTileId(row, col);
-    return mapState.tiles[tileId];
-  }, [mapState.tiles]);
+  const getTile = useCallback(
+    (row: number, col: number) => {
+      const tileId = createTileId(row, col);
+      return mapState.tiles[tileId];
+    },
+    [mapState.tiles]
+  );
 
-  const getPlayerTiles = useCallback((player: Player) => {
-    return Object.values(mapState.tiles).filter(tile => tile.controlledBy.id === player.id);
-  }, [mapState.tiles]);
+  const getPlayerTiles = useCallback(
+    (player: Player) => {
+      return Object.values(mapState.tiles).filter((tile) => tile.controlledBy.id === player.id);
+    },
+    [mapState.tiles]
+  );
 
-  const getTotalPlayerGold = useCallback((player: Player) => {
-    return getPlayerTiles(player).reduce((total, tile) => total + tile.goldPerTurn, 0);
-  }, [getPlayerTiles]);
+  const getTotalPlayerGold = useCallback(
+    (player: Player) => {
+      return getPlayerTiles(player).reduce((total, tile) => total + tile.goldPerTurn, 0);
+    },
+    [getPlayerTiles]
+  );
 
   const mapDimensions = useMemo(() => getMapDimensions(mapState.mapSize), [mapState.mapSize]);
 
@@ -157,6 +174,6 @@ export const useMapState = (initialMapSize: 'small' | 'medium' | 'large' | 'huge
     getTile,
     getPlayerTiles,
     getTotalPlayerGold,
-    mapDimensions
+    mapDimensions,
   };
 };
