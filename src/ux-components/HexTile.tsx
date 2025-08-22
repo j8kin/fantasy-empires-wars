@@ -9,6 +9,7 @@ import lavaImg from '../maps/lava.png';
 import mountainsImg from '../maps/mountains.png';
 import plainsImg from '../maps/plains.png';
 import swampImg from '../maps/swamp.png';
+import desertImg from '../maps/desert.png';
 import volcanoImg from '../maps/volcano.png';
 import LandCharacteristicsPopup from './LandCharacteristicsPopup';
 
@@ -30,6 +31,7 @@ const HexTile: React.FC<HexTileProps> = ({ landType, image, tileState }) => {
     'mountains.png': mountainsImg,
     'plains.png': plainsImg,
     'swamp.png': swampImg,
+    'desert.png': desertImg,
     'volcano.png': volcanoImg,
   };
 

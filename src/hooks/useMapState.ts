@@ -17,10 +17,11 @@ const calculateBaseLandGold = (landTypeId: string): number => {
     darkforest: 1,
     hills: 4,
     swamp: 1,
+    desert: 0,
     lava: 2,
-    volcano: 6,
+    volcano: 0,
   };
-  return goldMap[landTypeId] || 2;
+  return goldMap[landTypeId] || 0;
 };
 
 const initializeMap = (

@@ -11,6 +11,7 @@ describe('LandType Data Integrity', () => {
         'greenforest',
         'swamp',
         'lava',
+        'desert',
         'volcano',
       ];
 
@@ -121,6 +122,7 @@ describe('LandType Data Integrity', () => {
       expect(LAND_TYPES.swamp.alignment).toBe('chaotic');
       expect(LAND_TYPES.darkforest.alignment).toBe('chaotic');
       expect(LAND_TYPES.greenforest.alignment).toBe('neutral');
+      expect(LAND_TYPES.desert.alignment).toBe('neutral');
     });
   });
 
@@ -132,6 +134,7 @@ describe('LandType Data Integrity', () => {
       expect(LAND_TYPES.darkforest.name).toBe('Dark Forest');
       expect(LAND_TYPES.hills.name).toBe('Hills');
       expect(LAND_TYPES.swamp.name).toBe('Swamp');
+      expect(LAND_TYPES.desert.name).toBe('Desert');
       expect(LAND_TYPES.lava.name).toBe('Lava Fields');
       expect(LAND_TYPES.volcano.name).toBe('Volcano');
     });
