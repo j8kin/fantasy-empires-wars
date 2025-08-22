@@ -29,6 +29,7 @@ describe('LandType Data Integrity', () => {
         expect(landData).toHaveProperty('alignment');
         expect(landData).toHaveProperty('relatedLands');
         expect(landData).toHaveProperty('imageName');
+        expect(landData).toHaveProperty('goldPerTurn');
 
         // Check property types
         expect(typeof landData.id).toBe('string');
@@ -36,6 +37,7 @@ describe('LandType Data Integrity', () => {
         expect(typeof landData.alignment).toBe('string');
         expect(Array.isArray(landData.relatedLands)).toBe(true);
         expect(typeof landData.imageName).toBe('string');
+        expect(typeof landData.goldPerTurn).toBe('object');
       });
     });
 
@@ -161,7 +163,64 @@ describe('LandType Data Integrity', () => {
         expect(landData.alignment).toBeTruthy();
         expect(landData.imageName).toBeTruthy();
         expect(Array.isArray(landData.relatedLands)).toBe(true);
+        expect(landData.goldPerTurn).toBeTruthy();
       });
+    });
+  });
+
+  describe('Gold Per Turn Ranges', () => {
+    it('should have valid goldPerTurn range structure', () => {
+      Object.values(LAND_TYPES).forEach((landData) => {
+        expect(landData.goldPerTurn).toHaveProperty('min');
+        expect(landData.goldPerTurn).toHaveProperty('max');
+        expect(typeof landData.goldPerTurn.min).toBe('number');
+        expect(typeof landData.goldPerTurn.max).toBe('number');
+      });
+    });
+
+    it('should have min value less than or equal to max value', () => {
+      Object.values(LAND_TYPES).forEach((landData) => {
+        expect(landData.goldPerTurn.min).toBeLessThanOrEqual(landData.goldPerTurn.max);
+      });
+    });
+
+    it('should have non-negative gold values', () => {
+      Object.values(LAND_TYPES).forEach((landData) => {
+        expect(landData.goldPerTurn.min).toBeGreaterThanOrEqual(0);
+        expect(landData.goldPerTurn.max).toBeGreaterThanOrEqual(0);
+      });
+    });
+
+    it('should have reasonable gold ranges', () => {
+      Object.values(LAND_TYPES).forEach((landData) => {
+        // Gold ranges should be between 0 and 10 for game balance
+        expect(landData.goldPerTurn.min).toBeLessThanOrEqual(10);
+        expect(landData.goldPerTurn.max).toBeLessThanOrEqual(10);
+        
+        // Range should not be too wide (max difference of 3)
+        const range = landData.goldPerTurn.max - landData.goldPerTurn.min;
+        expect(range).toBeLessThanOrEqual(3);
+      });
+    });
+
+    it('should have expected gold ranges for specific land types', () => {
+      // Test specific ranges based on land type characteristics
+      expect(LAND_TYPES.plains.goldPerTurn).toEqual({ min: 2, max: 4 });
+      expect(LAND_TYPES.mountains.goldPerTurn).toEqual({ min: 4, max: 6 });
+      expect(LAND_TYPES.greenforest.goldPerTurn).toEqual({ min: 1, max: 3 });
+      expect(LAND_TYPES.darkforest.goldPerTurn).toEqual({ min: 0, max: 2 });
+      expect(LAND_TYPES.hills.goldPerTurn).toEqual({ min: 3, max: 5 });
+      expect(LAND_TYPES.swamp.goldPerTurn).toEqual({ min: 0, max: 2 });
+      expect(LAND_TYPES.desert.goldPerTurn).toEqual({ min: 0, max: 1 });
+      expect(LAND_TYPES.lava.goldPerTurn).toEqual({ min: 1, max: 3 });
+      expect(LAND_TYPES.volcano.goldPerTurn).toEqual({ min: 0, max: 1 });
+    });
+
+    it('should have gold ranges that reflect land type productivity', () => {
+      // More productive lands should have higher ranges
+      expect(LAND_TYPES.mountains.goldPerTurn.max).toBeGreaterThan(LAND_TYPES.desert.goldPerTurn.max);
+      expect(LAND_TYPES.hills.goldPerTurn.max).toBeGreaterThan(LAND_TYPES.swamp.goldPerTurn.max);
+      expect(LAND_TYPES.plains.goldPerTurn.min).toBeGreaterThan(LAND_TYPES.volcano.goldPerTurn.min);
     });
   });
 });

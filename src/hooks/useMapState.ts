@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { MapState, HexTileState, createTileId, getMapDimensions } from '../types/HexTileState';
-import { LAND_TYPES } from '../types/LandType';
+import { LAND_TYPES, LandType } from '../types/LandType';
 import { NEUTRAL_PLAYER, Player } from '../types/Player';
 
 const getRandomLandType = () => {
@@ -9,19 +9,9 @@ const getRandomLandType = () => {
   return LAND_TYPES[randomKey];
 };
 
-const calculateBaseLandGold = (landTypeId: string): number => {
-  const goldMap: { [key: string]: number } = {
-    plains: 3,
-    mountains: 5,
-    greenforest: 2,
-    darkforest: 1,
-    hills: 4,
-    swamp: 1,
-    desert: 0,
-    lava: 2,
-    volcano: 0,
-  };
-  return goldMap[landTypeId] || 0;
+const calculateBaseLandGold = (landType: LandType): number => {
+  const { min, max } = landType.goldPerTurn;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 const initializeMap = (
@@ -42,7 +32,7 @@ const initializeMap = (
         col,
         landType,
         controlledBy: NEUTRAL_PLAYER,
-        goldPerTurn: calculateBaseLandGold(landType.id),
+        goldPerTurn: calculateBaseLandGold(landType),
         buildings: [],
         army: { units: [], totalCount: 0 },
       };
