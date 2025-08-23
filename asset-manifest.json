@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.7d2c00dc.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.8c2f14e2.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.ce29767c.js",
     "static/js/787.969f331f.chunk.js": "/fantasy-empires-wars/static/js/787.969f331f.chunk.js",
     "static/media/CelticPatternVertical.png": "/fantasy-empires-wars/static/media/CelticPatternVertical.8f1fe8a5abcd3ac8d2e6.png",
     "static/media/mountains.png": "/fantasy-empires-wars/static/media/mountains.cb0004bfb6cc45c2c665.png",
     "static/media/CelticPatternCorner.png": "/fantasy-empires-wars/static/media/CelticPatternCorner.7f5e78759ba8a80d09b9.png",
     "static/media/desert.png": "/fantasy-empires-wars/static/media/desert.4a0372e1115947c767d0.png",
-    "static/media/greenforest.png": "/fantasy-empires-wars/static/media/greenforest.812d075d238b23aa77b3.png",
+    "static/media/greenforest.png": "/fantasy-empires-wars/static/media/greenforest.fadbc879ca0c99ad07ff.png",
     "static/media/hills.png": "/fantasy-empires-wars/static/media/hills.1a952e555c30fb1bc971.png",
     "static/media/swamp.png": "/fantasy-empires-wars/static/media/swamp.c1783a4617892e5655e2.png",
     "static/media/volcano.png": "/fantasy-empires-wars/static/media/volcano.d146c486f9d64de12681.png",
@@ -17,11 +17,11 @@
     "static/media/darkforest.png": "/fantasy-empires-wars/static/media/darkforest.769c5f60d2d7fe472995.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.7d2c00dc.css.map": "/fantasy-empires-wars/static/css/main.7d2c00dc.css.map",
-    "main.8c2f14e2.js.map": "/fantasy-empires-wars/static/js/main.8c2f14e2.js.map",
+    "main.ce29767c.js.map": "/fantasy-empires-wars/static/js/main.ce29767c.js.map",
     "787.969f331f.chunk.js.map": "/fantasy-empires-wars/static/js/787.969f331f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.7d2c00dc.css",
-    "static/js/main.8c2f14e2.js"
+    "static/js/main.ce29767c.js"
   ]
 }
