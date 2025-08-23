@@ -196,7 +196,7 @@ describe('LandType Data Integrity', () => {
         // Gold ranges should be between 0 and 10 for game balance
         expect(landData.goldPerTurn.min).toBeLessThanOrEqual(10);
         expect(landData.goldPerTurn.max).toBeLessThanOrEqual(10);
-        
+
         // Range should not be too wide (max difference of 3)
         const range = landData.goldPerTurn.max - landData.goldPerTurn.min;
         expect(range).toBeLessThanOrEqual(3);
@@ -218,7 +218,9 @@ describe('LandType Data Integrity', () => {
 
     it('should have gold ranges that reflect land type productivity', () => {
       // More productive lands should have higher ranges
-      expect(LAND_TYPES.mountains.goldPerTurn.max).toBeGreaterThan(LAND_TYPES.desert.goldPerTurn.max);
+      expect(LAND_TYPES.mountains.goldPerTurn.max).toBeGreaterThan(
+        LAND_TYPES.desert.goldPerTurn.max
+      );
       expect(LAND_TYPES.hills.goldPerTurn.max).toBeGreaterThan(LAND_TYPES.swamp.goldPerTurn.max);
       expect(LAND_TYPES.plains.goldPerTurn.min).toBeGreaterThan(LAND_TYPES.volcano.goldPerTurn.min);
     });
