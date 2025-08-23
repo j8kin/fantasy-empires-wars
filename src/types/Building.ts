@@ -1,11 +1,9 @@
 export type BuildingType =
-  | 'wizard-tower'
+  | 'mage-tower'
   | 'barracks'
   | 'castle-wall'
   | 'watch-tower'
-  | 'market'
-  | 'temple'
-  | 'mine';
+  | 'stronghold';
 
 export interface Building {
   id: string;
@@ -17,13 +15,13 @@ export interface Building {
 }
 
 export const BUILDING_TYPES: { [key: string]: Building } = {
-  'wizard-tower': {
-    id: 'wizard-tower',
-    type: 'wizard-tower',
-    name: 'Wizard Tower',
+  'mage-tower': {
+    id: 'mage-tower',
+    type: 'mage-tower',
+    name: 'Mage Tower',
     goldCost: 150,
     goldPerTurn: 5,
-    description: 'Provides magical defense and research capabilities',
+    description: 'Allows recruitment of Mage units',
   },
   barracks: {
     id: 'barracks',
@@ -49,28 +47,12 @@ export const BUILDING_TYPES: { [key: string]: Building } = {
     goldPerTurn: 2,
     description: 'Increases vision range and provides early warning',
   },
-  market: {
-    id: 'market',
-    type: 'market',
-    name: 'Market',
-    goldCost: 120,
-    goldPerTurn: 10,
-    description: 'Generates gold through trade',
-  },
-  temple: {
-    id: 'temple',
-    type: 'temple',
-    name: 'Temple',
-    goldCost: 180,
-    goldPerTurn: 3,
-    description: 'Provides spiritual bonuses and healing',
-  },
-  mine: {
-    id: 'mine',
-    type: 'mine',
-    name: 'Mine',
+  stronghold: {
+    id: 'stronghold',
+    type: 'stronghold',
+    name: 'Stronghold',
     goldCost: 140,
-    goldPerTurn: 8,
-    description: 'Extracts resources from the land',
+    goldPerTurn: 0, 
+    description: 'Protect army and produce gold',
   },
 };
