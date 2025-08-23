@@ -45,7 +45,7 @@ export const LAND_TYPES: { [key: string]: LandType } = {
   hills: {
     id: 'hills',
     name: 'Hills',
-    alignment: 'lawful',
+    alignment: 'neutral',
     imageName: 'hills.png',
     relatedLands: ['plains', 'mountains', 'swamp', 'desert'],
     goldPerTurn: { min: 3, max: 5 },
