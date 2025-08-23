@@ -29,7 +29,7 @@ export const LAND_TYPES: { [key: string]: LandType } = {
   greenforest: {
     id: 'greenforest',
     name: 'Green Forest',
-    alignment: 'neutral',
+    alignment: 'lawful',
     imageName: 'greenforest.png',
     relatedLands: ['plains', 'darkforest', 'desert'],
     goldPerTurn: { min: 1, max: 3 },
