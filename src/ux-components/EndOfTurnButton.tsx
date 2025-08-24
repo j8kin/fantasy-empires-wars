@@ -7,9 +7,16 @@ interface EndOfTurnButtonProps {
 }
 
 const EndOfTurnButton: React.FC<EndOfTurnButtonProps> = ({ onClick, style }) => {
+  const handleEndTurnClick = () => {
+    alert('End of Turn button is pressed!');
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleEndTurnClick}
       style={{
         ...buttonStyle,
         ...style,
