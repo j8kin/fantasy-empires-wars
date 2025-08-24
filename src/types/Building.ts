@@ -1,9 +1,4 @@
-export type BuildingType =
-  | 'mage-tower'
-  | 'barracks'
-  | 'castle-wall'
-  | 'watch-tower'
-  | 'stronghold';
+export type BuildingType = 'mage-tower' | 'barracks' | 'castle-wall' | 'watch-tower' | 'stronghold';
 
 export interface Building {
   id: string;
@@ -52,7 +47,7 @@ export const BUILDING_TYPES: { [key: string]: Building } = {
     type: 'stronghold',
     name: 'Stronghold',
     goldCost: 140,
-    goldPerTurn: 0, 
+    goldPerTurn: 0,
     description: 'Protect army and produce gold',
   },
 };

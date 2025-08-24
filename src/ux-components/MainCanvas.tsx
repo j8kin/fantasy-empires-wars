@@ -30,7 +30,7 @@ const MainCanvas: React.FC = () => {
       <EndOfTurnButton
         style={{
           left: '50%',
-          top: `${LAYOUT_CONSTANTS.MANA_PANEL_BOTTOM_Y+LAYOUT_CONSTANTS.BORDER_WIDTH/2}px`,
+          top: `${LAYOUT_CONSTANTS.MANA_PANEL_BOTTOM_Y + LAYOUT_CONSTANTS.BORDER_WIDTH / 2}px`,
           transform: 'translate(-50%, -50%)',
         }}
         onClick={() => {
