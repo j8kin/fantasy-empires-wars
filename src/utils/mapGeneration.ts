@@ -33,29 +33,28 @@ const getHexNeighbors = (row: number, col: number): { row: number; col: number }
   }
 };
 
-const isValidPosition = (row: number, col: number, rows: number, cols: number): boolean => {
+const isValidPosition = (mapSize: MapSize, row: number, col: number): boolean => {
+  const { rows, cols } = getMapDimensions(mapSize);
   if (row < 0 || row >= rows) return false;
   const colsInRow = row % 2 === 0 ? cols : cols - 1;
   return col >= 0 && col < colsInRow;
 };
 
 const getValidNeighbors = (
+  mapSize: MapSize,
   row: number,
-  col: number,
-  rows: number,
-  cols: number
+  col: number
 ): { row: number; col: number }[] => {
-  return getHexNeighbors(row, col).filter((pos) => isValidPosition(pos.row, pos.col, rows, cols));
+  return getHexNeighbors(row, col).filter((pos) => isValidPosition(mapSize, pos.row, pos.col));
 };
 
 const getEmptyNeighbors = (
+  mapSize: MapSize,
   row: number,
   col: number,
-  tiles: { [key: string]: HexTileState },
-  rows: number,
-  cols: number
+  tiles: { [key: string]: HexTileState }
 ): { row: number; col: number }[] | null => {
-  const validNeighbors = getValidNeighbors(row, col, rows, cols);
+  const validNeighbors = getValidNeighbors(mapSize, row, col);
   const noneNeighbors = validNeighbors.filter((pos) => {
     const tileId = createTileId(pos.row, pos.col);
     return tiles[tileId] && tiles[tileId].landType.id === 'none';
@@ -68,13 +67,12 @@ const getEmptyNeighbors = (
 };
 
 const getRandomNoneNeighbor = (
+  mapSize: MapSize,
   row: number,
   col: number,
-  tiles: { [key: string]: HexTileState },
-  rows: number,
-  cols: number
+  tiles: { [key: string]: HexTileState }
 ): { row: number; col: number } | null => {
-  const noneNeighbors = getEmptyNeighbors(row, col, tiles, rows, cols);
+  const noneNeighbors = getEmptyNeighbors(mapSize, row, col, tiles);
 
   if (noneNeighbors == null) return null;
 
@@ -131,7 +129,7 @@ export const initializeMap = (mapSize: MapSize): { [key: string]: HexTileState }
 
   // 2. Place up to 6 lava tiles connected to volcano
   const lavaPositions: { row: number; col: number }[] = [];
-  const candidateLavaPositions = getValidNeighbors(volcanoRow, volcanoCol, rows, cols);
+  const candidateLavaPositions = getValidNeighbors(mapSize, volcanoRow, volcanoCol);
 
   // Randomly select and place lava tiles (up to 6)
   const numLava = Math.min(6, Math.floor(Math.random() * 4) + 2); // 2-5 lava tiles
@@ -145,12 +143,12 @@ export const initializeMap = (mapSize: MapSize): { [key: string]: HexTileState }
   }
 
   // 3. Set Mountains and DarkForest on Neighbor lands near volcano and lava lands
-  getEmptyNeighbors(volcanoRow, volcanoCol, tiles, rows, cols)?.forEach((neighbor) => {
+  getEmptyNeighbors(mapSize, volcanoRow, volcanoCol, tiles)?.forEach((neighbor) => {
     tiles[createTileId(neighbor.row, neighbor.col)].landType = LAND_TYPES.mountains;
   });
 
   for (const lavaPos of lavaPositions) {
-    getEmptyNeighbors(lavaPos.row, lavaPos.col, tiles, rows, cols)?.forEach((neighbor) => {
+    getEmptyNeighbors(mapSize, lavaPos.row, lavaPos.col, tiles)?.forEach((neighbor) => {
       const nMountains = getNumberOfLands(tiles, LAND_TYPES.mountains);
       tiles[createTileId(neighbor.row, neighbor.col)].landType =
         nMountains < 6 ? LAND_TYPES.mountains : LAND_TYPES.darkforest;
@@ -172,13 +170,7 @@ export const initializeMap = (mapSize: MapSize): { [key: string]: HexTileState }
 
       // place 6 land of the same time nearby
       for (let i = 0; i < 5 && getNumberOfLands(tiles, landType) < maxTilesPerType; i++) {
-        const emptyNeighbor = getRandomNoneNeighbor(
-          startLand.row,
-          startLand.col,
-          tiles,
-          rows,
-          cols
-        );
+        const emptyNeighbor = getRandomNoneNeighbor(mapSize, startLand.row, startLand.col, tiles);
         if (emptyNeighbor == null) break;
         tiles[createTileId(emptyNeighbor.row, emptyNeighbor.col)].landType = landType;
         startLand = tiles[createTileId(emptyNeighbor.row, emptyNeighbor.col)];
