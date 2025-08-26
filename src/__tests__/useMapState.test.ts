@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useMapState } from '../hooks/useMapState';
 import { LAND_TYPES } from '../types/LandType';
+import { HexTileState } from '../types/HexTileState';
 
 describe('useMapState Gold Generation', () => {
   describe('Map Initialization', () => {
@@ -50,7 +51,7 @@ describe('useMapState Gold Generation', () => {
       const tiles = Object.values(result.current.mapState.tiles);
 
       // Group tiles by land type
-      const tilesByLandType: { [key: string]: any[] } = {};
+      const tilesByLandType: { [key: string]: HexTileState[] } = {};
       tiles.forEach((tile) => {
         if (!tilesByLandType[tile.landType.id]) {
           tilesByLandType[tile.landType.id] = [];
@@ -118,7 +119,6 @@ describe('useMapState Gold Generation', () => {
 
       // Get initial tiles
       const initialTiles = Object.values(result.current.mapState.tiles);
-      const initialGoldValues = initialTiles.map((tile) => tile.goldPerTurn);
 
       // Change map size
       act(() => {
@@ -127,7 +127,6 @@ describe('useMapState Gold Generation', () => {
 
       // Get new tiles
       const newTiles = Object.values(result.current.mapState.tiles);
-      const newGoldValues = newTiles.map((tile) => tile.goldPerTurn);
 
       // Should have different gold values (high probability)
       // Since we're changing map size, we'll have different tiles entirely
