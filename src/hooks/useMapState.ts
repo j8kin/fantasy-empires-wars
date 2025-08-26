@@ -1,9 +1,10 @@
 import { useState, useCallback, useMemo } from 'react';
-import { MapState, HexTileState, createTileId, getMapDimensions } from '../types/HexTileState';
+import { MapState, HexTileState, createTileId } from '../types/HexTileState';
 import { NEUTRAL_PLAYER, Player } from '../types/Player';
 import { initializeMap } from '../utils/mapGeneration';
+import { MapSize, getMapDimensions } from '../types/MapSize';
 
-export const useMapState = (initialMapSize: 'small' | 'medium' | 'large' | 'huge' = 'medium') => {
+export const useMapState = (initialMapSize: MapSize = 'medium') => {
   const [mapState, setMapState] = useState<MapState>(() => ({
     tiles: initializeMap(initialMapSize),
     currentPlayer: NEUTRAL_PLAYER,
@@ -60,7 +61,7 @@ export const useMapState = (initialMapSize: 'small' | 'medium' | 'large' | 'huge
     [updateTile]
   );
 
-  const changeMapSize = useCallback((newSize: 'small' | 'medium' | 'large' | 'huge') => {
+  const changeMapSize = useCallback((newSize: MapSize) => {
     setMapState((prev) => ({
       ...prev,
       tiles: initializeMap(newSize),

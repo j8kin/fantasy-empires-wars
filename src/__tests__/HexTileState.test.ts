@@ -1,4 +1,5 @@
-import { createTileId, getMapDimensions } from '../types/HexTileState';
+import { createTileId } from '../types/HexTileState';
+import { getMapDimensions } from '../types/MapSize';
 
 describe('HexTileState Utility Functions', () => {
   describe('createTileId', () => {

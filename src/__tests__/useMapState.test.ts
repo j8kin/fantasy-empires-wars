@@ -2,6 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useMapState } from '../hooks/useMapState';
 import { LAND_TYPES } from '../types/LandType';
 import { HexTileState } from '../types/HexTileState';
+import { MapSize } from '../types/MapSize';
 
 describe('useMapState Gold Generation', () => {
   describe('Map Initialization', () => {
@@ -91,12 +92,7 @@ describe('useMapState Gold Generation', () => {
 
   describe('Map Size Variations', () => {
     it('should generate appropriate gold values for all map sizes', () => {
-      const mapSizes: ('small' | 'medium' | 'large' | 'huge')[] = [
-        'small',
-        'medium',
-        'large',
-        'huge',
-      ];
+      const mapSizes: MapSize[] = ['small', 'medium', 'large', 'huge'];
 
       mapSizes.forEach((size) => {
         const { result } = renderHook(() => useMapState(size));

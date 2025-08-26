@@ -13,7 +13,7 @@ describe('LandType Data Integrity', () => {
         'lava',
         'desert',
         'volcano',
-        'none'
+        'none',
       ];
 
       expectedLandTypes.forEach((landType) => {

@@ -4,12 +4,12 @@
   height: var(--hex-tile-height, 115.47px); /* Dynamic height based on map size */
   background-color: #8c8c8c; /* Default background color */
   clip-path: polygon(
-    50% 0%,   /* Top point */
-    100% 25%, /* Top-right */
-    100% 75%, /* Bottom-right */
-    50% 100%, /* Bottom point */
-    0% 75%,   /* Bottom-left */
-    0% 25% /* Top-left */
+    /* Top point */ 50% 0%,
+    /* Top-right */ 100% 25%,
+    /* Bottom-right */ 100% 75%,
+    /* Bottom point */ 50% 100%,
+    /* Bottom-left */ 0% 75%,
+    /* Top-left */ 0% 25%
   );
   display: inline-block;
   position: relative;

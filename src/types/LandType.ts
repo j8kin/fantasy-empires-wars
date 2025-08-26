@@ -15,7 +15,7 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'none',
     alignment: 'neutral',
     imageName: 'none.png',
-    goldPerTurn: { min: 0, max: 0 }
+    goldPerTurn: { min: 0, max: 0 },
   },
   plains: {
     id: 'plains',

@@ -1,6 +1,7 @@
-import { HexTileState, createTileId, getMapDimensions } from '../types/HexTileState';
+import { HexTileState, createTileId } from '../types/HexTileState';
 import { LAND_TYPES, LandType } from '../types/LandType';
 import { NEUTRAL_PLAYER } from '../types/Player';
+import { MapSize, getMapDimensions } from '../types/MapSize';
 
 const calculateBaseLandGold = (landType: LandType): number => {
   const { min, max } = landType.goldPerTurn;
@@ -53,7 +54,7 @@ const getEmptyNeighbors = (
   tiles: { [key: string]: HexTileState },
   rows: number,
   cols: number
-):{ row: number; col: number }[] | null  => {
+): { row: number; col: number }[] | null => {
   const validNeighbors = getValidNeighbors(row, col, rows, cols);
   const noneNeighbors = validNeighbors.filter((pos) => {
     const tileId = createTileId(pos.row, pos.col);
@@ -90,11 +91,9 @@ const getRandomEmptyLandType = (tiles: { [key: string]: HexTileState }): HexTile
   if (empyLands.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * empyLands.length);
   return empyLands[randomIndex];
-}
+};
 
-export const initializeMap = (
-  mapSize: 'small' | 'medium' | 'large' | 'huge'
-): { [key: string]: HexTileState } => {
+export const initializeMap = (mapSize: MapSize): { [key: string]: HexTileState } => {
   const { rows, cols } = getMapDimensions(mapSize);
   const tiles: { [key: string]: HexTileState } = {};
 
@@ -153,8 +152,9 @@ export const initializeMap = (
   for (const lavaPos of lavaPositions) {
     getEmptyNeighbors(lavaPos.row, lavaPos.col, tiles, rows, cols)?.forEach((neighbor) => {
       const nMountains = getNumberOfLands(tiles, LAND_TYPES.mountains);
-      tiles[createTileId(neighbor.row, neighbor.col)].landType = nMountains < 6 ? LAND_TYPES.mountains: LAND_TYPES.darkforest;
-    })
+      tiles[createTileId(neighbor.row, neighbor.col)].landType =
+        nMountains < 6 ? LAND_TYPES.mountains : LAND_TYPES.darkforest;
+    });
   }
 
   // 4. Get remaining land types (excluding volcano and lava)
@@ -171,18 +171,25 @@ export const initializeMap = (
       tiles[startLand.id].landType = landType;
 
       // place 6 land of the same time nearby
-      for (let i = 0; (i < 5 && getNumberOfLands(tiles, landType) < maxTilesPerType); i++) {
-          const emptyNeighbor = getRandomNoneNeighbor(startLand.row, startLand.col, tiles, rows, cols);
-          if (emptyNeighbor == null) break;
-          tiles[createTileId(emptyNeighbor.row, emptyNeighbor.col)].landType = landType;
-          startLand = tiles[createTileId(emptyNeighbor.row, emptyNeighbor.col)];
+      for (let i = 0; i < 5 && getNumberOfLands(tiles, landType) < maxTilesPerType; i++) {
+        const emptyNeighbor = getRandomNoneNeighbor(
+          startLand.row,
+          startLand.col,
+          tiles,
+          rows,
+          cols
+        );
+        if (emptyNeighbor == null) break;
+        tiles[createTileId(emptyNeighbor.row, emptyNeighbor.col)].landType = landType;
+        startLand = tiles[createTileId(emptyNeighbor.row, emptyNeighbor.col)];
       }
     }
   });
 
   // if we have empty lands fill with deserts
-  Object.values(tiles).filter((tile) => tile.landType.id === LAND_TYPES.none.id).forEach((tile) => tile.landType = LAND_TYPES.desert);
-
+  Object.values(tiles)
+    .filter((tile) => tile.landType.id === LAND_TYPES.none.id)
+    .forEach((tile) => (tile.landType = LAND_TYPES.desert));
 
   // Calculate gold for all tiles
   Object.values(tiles).forEach((tile) => {

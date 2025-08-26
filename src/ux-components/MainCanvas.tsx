@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import styles from './css/Background.module.css';
 import BorderSystem, { LAYOUT_CONSTANTS } from './BorderSystem';
-import ManaPanel, { MapSize } from './ManaPanel';
+import ManaPanel from './ManaPanel';
 import MainMap from './MainMap';
 import EndOfTurnButton from './EndOfTurnButton';
+import { MapSize } from '../types/MapSize';
 
 const MainCanvas: React.FC = () => {
   const [mapSize, setMapSize] = useState<MapSize>('medium');

@@ -1,8 +1,7 @@
 import React from 'react';
 import { LAYOUT_CONSTANTS } from './BorderSystem';
 import ManaVial from './ManaVial';
-
-export type MapSize = 'small' | 'medium' | 'large' | 'huge';
+import { MapSize } from '../types/MapSize';
 
 interface ManaPanelProps {
   mapSize: MapSize;

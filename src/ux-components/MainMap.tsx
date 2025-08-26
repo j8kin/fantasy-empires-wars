@@ -3,28 +3,13 @@ import { LAYOUT_CONSTANTS } from './BorderSystem';
 import styles from './css/MainMap.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
-import { MapSize } from './ManaPanel';
+import { MapSize, getMapDimensions } from '../types/MapSize';
 import { useMapState } from '../hooks/useMapState';
 import { createTileId } from '../types/HexTileState';
 
 interface MainMapProps {
   mapSize: MapSize;
 }
-
-const getMapDimensions = (mapSize: MapSize): { rows: number; cols: number } => {
-  switch (mapSize) {
-    case 'small':
-      return { rows: 6, cols: 13 };
-    case 'medium':
-      return { rows: 9, cols: 18 };
-    case 'large':
-      return { rows: 11, cols: 23 };
-    case 'huge':
-      return { rows: 15, cols: 31 };
-    default:
-      return { rows: 9, cols: 18 };
-  }
-};
 
 const getHexTileSize = (mapSize: MapSize): { width: number; height: number } => {
   // Base size for small map, decrease as map size increases
