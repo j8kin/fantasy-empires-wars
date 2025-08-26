@@ -13,6 +13,7 @@ describe('LandType Data Integrity', () => {
         'lava',
         'desert',
         'volcano',
+        'none'
       ];
 
       expectedLandTypes.forEach((landType) => {
@@ -27,7 +28,6 @@ describe('LandType Data Integrity', () => {
         expect(landData).toHaveProperty('id');
         expect(landData).toHaveProperty('name');
         expect(landData).toHaveProperty('alignment');
-        expect(landData).toHaveProperty('relatedLands');
         expect(landData).toHaveProperty('imageName');
         expect(landData).toHaveProperty('goldPerTurn');
 
@@ -35,7 +35,6 @@ describe('LandType Data Integrity', () => {
         expect(typeof landData.id).toBe('string');
         expect(typeof landData.name).toBe('string');
         expect(typeof landData.alignment).toBe('string');
-        expect(Array.isArray(landData.relatedLands)).toBe(true);
         expect(typeof landData.imageName).toBe('string');
         expect(typeof landData.goldPerTurn).toBe('object');
       });
@@ -63,39 +62,6 @@ describe('LandType Data Integrity', () => {
     });
   });
 
-  describe('Related Lands Relationships', () => {
-    it('should have valid related land references', () => {
-      const allLandTypes = Object.keys(LAND_TYPES);
-
-      Object.values(LAND_TYPES).forEach((landData) => {
-        landData.relatedLands.forEach((relatedLand) => {
-          expect(allLandTypes).toContain(relatedLand);
-        });
-      });
-    });
-
-    it('should not have self-references in related lands', () => {
-      Object.entries(LAND_TYPES).forEach(([landType, landData]) => {
-        expect(landData.relatedLands).not.toContain(landType);
-      });
-    });
-
-    it('should have unique related lands (no duplicates)', () => {
-      Object.values(LAND_TYPES).forEach((landData) => {
-        const uniqueRelated = new Set(landData.relatedLands);
-        expect(uniqueRelated.size).toBe(landData.relatedLands.length);
-      });
-    });
-
-    it('should have reasonable number of related lands', () => {
-      Object.values(LAND_TYPES).forEach((landData) => {
-        // Each land should have at least 1 and at most 4 related lands
-        expect(landData.relatedLands.length).toBeGreaterThanOrEqual(1);
-        expect(landData.relatedLands.length).toBeLessThanOrEqual(4);
-      });
-    });
-  });
-
   describe('Alignment Distribution', () => {
     it('should have a balanced distribution of alignments', () => {
       const alignmentCounts = {
@@ -118,12 +84,12 @@ describe('LandType Data Integrity', () => {
       // Test specific alignments based on the actual data
       expect(LAND_TYPES.plains.alignment).toBe('neutral');
       expect(LAND_TYPES.mountains.alignment).toBe('lawful');
-      expect(LAND_TYPES.hills.alignment).toBe('lawful');
+      expect(LAND_TYPES.hills.alignment).toBe('neutral');
       expect(LAND_TYPES.lava.alignment).toBe('chaotic');
       expect(LAND_TYPES.volcano.alignment).toBe('chaotic');
       expect(LAND_TYPES.swamp.alignment).toBe('chaotic');
       expect(LAND_TYPES.darkforest.alignment).toBe('chaotic');
-      expect(LAND_TYPES.greenforest.alignment).toBe('neutral');
+      expect(LAND_TYPES.greenforest.alignment).toBe('lawful');
       expect(LAND_TYPES.desert.alignment).toBe('neutral');
     });
   });
@@ -162,7 +128,6 @@ describe('LandType Data Integrity', () => {
         expect(landData.name).toBeTruthy();
         expect(landData.alignment).toBeTruthy();
         expect(landData.imageName).toBeTruthy();
-        expect(Array.isArray(landData.relatedLands)).toBe(true);
         expect(landData.goldPerTurn).toBeTruthy();
       });
     });

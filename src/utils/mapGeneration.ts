@@ -47,18 +47,50 @@ const getValidNeighbors = (
   return getHexNeighbors(row, col).filter((pos) => isValidPosition(pos.row, pos.col, rows, cols));
 };
 
-// Check if a land type can be placed next to existing neighbors
-const canPlaceLandType = (
-  landType: LandType,
+const getEmptyNeighbors = (
   row: number,
   col: number,
   tiles: { [key: string]: HexTileState },
   rows: number,
   cols: number
-): boolean => {
-  // Temporarily ignore relatedLands restrictions for better land distribution
-  return true;
+):{ row: number; col: number }[] | null  => {
+  const validNeighbors = getValidNeighbors(row, col, rows, cols);
+  const noneNeighbors = validNeighbors.filter((pos) => {
+    const tileId = createTileId(pos.row, pos.col);
+    return tiles[tileId] && tiles[tileId].landType.id === 'none';
+  });
+
+  if (noneNeighbors.length === 0) {
+    return null;
+  }
+  return noneNeighbors;
 };
+
+const getRandomNoneNeighbor = (
+  row: number,
+  col: number,
+  tiles: { [key: string]: HexTileState },
+  rows: number,
+  cols: number
+): { row: number; col: number } | null => {
+  const noneNeighbors = getEmptyNeighbors(row, col, tiles, rows, cols);
+
+  if (noneNeighbors == null) return null;
+
+  const randomIndex = Math.floor(Math.random() * noneNeighbors.length);
+  return noneNeighbors[randomIndex];
+};
+
+const getNumberOfLands = (tiles: { [key: string]: HexTileState }, landType: LandType): number => {
+  return Object.values(tiles).filter((tile) => tile.landType.id === landType.id).length;
+};
+
+const getRandomEmptyLandType = (tiles: { [key: string]: HexTileState }): HexTileState | null => {
+  const empyLands = Object.values(tiles).filter((tile) => tile.landType.id === LAND_TYPES.none.id);
+  if (empyLands.length === 0) return null;
+  const randomIndex = Math.floor(Math.random() * empyLands.length);
+  return empyLands[randomIndex];
+}
 
 export const initializeMap = (
   mapSize: 'small' | 'medium' | 'large' | 'huge'
@@ -82,7 +114,7 @@ export const initializeMap = (
         id: tileId,
         row,
         col,
-        landType: LAND_TYPES.plains, // Temporary, will be overwritten
+        landType: LAND_TYPES.none, // Temporary, will be overwritten
         controlledBy: NEUTRAL_PLAYER,
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
@@ -113,158 +145,44 @@ export const initializeMap = (
     lavaPositions.push(lavaPos);
   }
 
-  // 3. Get remaining land types (excluding volcano and lava)
-  const remainingLandTypes = Object.values(LAND_TYPES).filter(
-    (lt) => lt.id !== 'volcano' && lt.id !== 'lava'
-  );
-
-  // 4. Calculate distribution with 15% limit for each land type
-  const volcanoLavaTiles = 1 + lavaPositions.length;
-  const remainingTiles = totalTiles - volcanoLavaTiles;
-  const maxTilesPerType = Math.floor(totalTiles * 0.15); // 15% of total tiles
-
-  // Create distribution array with 15% limit
-  const landTypeDistribution: LandType[] = [];
-  const landTypeCounts: { [key: string]: number } = {};
-
-  // Initialize counts
-  remainingLandTypes.forEach((landType) => {
-    landTypeCounts[landType.id] = 0;
+  // 3. Set Mountains and DarkForest on Neighbor lands near volcano and lava lands
+  getEmptyNeighbors(volcanoRow, volcanoCol, tiles, rows, cols)?.forEach((neighbor) => {
+    tiles[createTileId(neighbor.row, neighbor.col)].landType = LAND_TYPES.mountains;
   });
 
-  // Distribute tiles with 15% limit
-  let tilesAssigned = 0;
-  while (tilesAssigned < remainingTiles) {
-    let assigned = false;
-
-    // Shuffle land types for fair distribution when hitting limits
-    const shuffledLandTypes = [...remainingLandTypes].sort(() => Math.random() - 0.5);
-
-    for (const landType of shuffledLandTypes) {
-      if (tilesAssigned >= remainingTiles) break;
-
-      if (landTypeCounts[landType.id] < maxTilesPerType) {
-        landTypeDistribution.push(landType);
-        landTypeCounts[landType.id]++;
-        tilesAssigned++;
-        assigned = true;
-      }
-    }
-
-    // If no land type can take more tiles (all at 15% limit),
-    // distribute remaining tiles to plains as fallback
-    if (!assigned && tilesAssigned < remainingTiles) {
-      const plainsType = LAND_TYPES.plains;
-      const remainingToAssign = remainingTiles - tilesAssigned;
-      for (let i = 0; i < remainingToAssign; i++) {
-        landTypeDistribution.push(plainsType);
-      }
-      break;
-    }
+  for (const lavaPos of lavaPositions) {
+    getEmptyNeighbors(lavaPos.row, lavaPos.col, tiles, rows, cols)?.forEach((neighbor) => {
+      const nMountains = getNumberOfLands(tiles, LAND_TYPES.mountains);
+      tiles[createTileId(neighbor.row, neighbor.col)].landType = nMountains < 6 ? LAND_TYPES.mountains: LAND_TYPES.darkforest;
+    })
   }
 
-  // 5. Place remaining tiles using clustering approach
-  const unplacedTiles: { row: number; col: number }[] = [];
+  // 4. Get remaining land types (excluding volcano and lava)
+  const remainingLandTypes = Object.values(LAND_TYPES).filter(
+    (lt) => lt.id !== 'volcano' && lt.id !== 'lava' && lt.id !== 'none'
+  );
 
-  // Collect all unplaced positions
-  for (let row = 0; row < rows; row++) {
-    const colsInRow = row % 2 === 0 ? cols : cols - 1;
-    for (let col = 0; col < colsInRow; col++) {
-      const tileId = createTileId(row, col);
-      if (tiles[tileId].landType.id === 'plains') {
-        // Still temporary
-        unplacedTiles.push({ row, col });
+  const maxTilesPerType = Math.floor(totalTiles / remainingLandTypes.length);
+
+  remainingLandTypes.forEach((landType) => {
+    while (getNumberOfLands(tiles, landType) < maxTilesPerType) {
+      let startLand = getRandomEmptyLandType(tiles);
+      if (startLand == null) break;
+      tiles[startLand.id].landType = landType;
+
+      // place 6 land of the same time nearby
+      for (let i = 0; (i < 5 && getNumberOfLands(tiles, landType) < maxTilesPerType); i++) {
+          const emptyNeighbor = getRandomNoneNeighbor(startLand.row, startLand.col, tiles, rows, cols);
+          if (emptyNeighbor == null) break;
+          tiles[createTileId(emptyNeighbor.row, emptyNeighbor.col)].landType = landType;
+          startLand = tiles[createTileId(emptyNeighbor.row, emptyNeighbor.col)];
       }
     }
-  }
+  });
 
-  // Shuffle both arrays for randomization
-  const shuffledUnplaced = unplacedTiles.sort(() => Math.random() - 0.5);
-  const shuffledDistribution = landTypeDistribution.sort(() => Math.random() - 0.5);
+  // if we have empty lands fill with deserts
+  Object.values(tiles).filter((tile) => tile.landType.id === LAND_TYPES.none.id).forEach((tile) => tile.landType = LAND_TYPES.desert);
 
-  // Place tiles in clusters
-  let distributionIndex = 0;
-  const placedTiles = new Set<string>();
-
-  for (const position of shuffledUnplaced) {
-    const tileId = createTileId(position.row, position.col);
-    if (placedTiles.has(tileId)) continue;
-
-    if (distributionIndex >= shuffledDistribution.length) break;
-
-    const landType = shuffledDistribution[distributionIndex];
-
-    // Check if we can place this land type here (considering relatedLands)
-    if (canPlaceLandType(landType, position.row, position.col, tiles, rows, cols)) {
-      tiles[tileId].landType = landType;
-      placedTiles.add(tileId);
-      distributionIndex++;
-
-      // Try to create a cluster of 4-5 tiles of the same type
-      const clusterSize = Math.min(4 + Math.floor(Math.random() * 2), 5); // 4-5 tiles
-      let currentClusterSize = 1;
-
-      const neighbors = getValidNeighbors(position.row, position.col, rows, cols);
-      const shuffledNeighbors = neighbors.sort(() => Math.random() - 0.5);
-
-      for (const neighbor of shuffledNeighbors) {
-        if (currentClusterSize >= clusterSize) break;
-        if (distributionIndex >= shuffledDistribution.length) break;
-
-        const neighborId = createTileId(neighbor.row, neighbor.col);
-        if (placedTiles.has(neighborId)) continue;
-        if (tiles[neighborId].landType.id !== 'plains') continue; // Already placed
-
-        const nextLandType = shuffledDistribution[distributionIndex];
-
-        // Prefer same land type for clustering, but check compatibility
-        if (
-          nextLandType.id === landType.id &&
-          canPlaceLandType(nextLandType, neighbor.row, neighbor.col, tiles, rows, cols)
-        ) {
-          tiles[neighborId].landType = nextLandType;
-          placedTiles.add(neighborId);
-          distributionIndex++;
-          currentClusterSize++;
-        }
-      }
-    } else {
-      // Try next land type if current one doesn't fit
-      let foundCompatible = false;
-      for (let i = 1; i < Math.min(10, shuffledDistribution.length - distributionIndex); i++) {
-        const altLandType = shuffledDistribution[distributionIndex + i];
-        if (canPlaceLandType(altLandType, position.row, position.col, tiles, rows, cols)) {
-          // Swap the land types in distribution
-          shuffledDistribution[distributionIndex + i] = shuffledDistribution[distributionIndex];
-          shuffledDistribution[distributionIndex] = altLandType;
-
-          tiles[tileId].landType = altLandType;
-          placedTiles.add(tileId);
-          distributionIndex++;
-          foundCompatible = true;
-          break;
-        }
-      }
-
-      if (!foundCompatible) {
-        // Fallback: place plains (most compatible)
-        tiles[tileId].landType = LAND_TYPES.plains;
-        placedTiles.add(tileId);
-      }
-    }
-  }
-
-  // Fill any remaining tiles with plains
-  for (let row = 0; row < rows; row++) {
-    const colsInRow = row % 2 === 0 ? cols : cols - 1;
-    for (let col = 0; col < colsInRow; col++) {
-      const tileId = createTileId(row, col);
-      if (tiles[tileId].landType.id === 'plains' && !placedTiles.has(tileId)) {
-        // Keep as plains
-        placedTiles.add(tileId);
-      }
-    }
-  }
 
   // Calculate gold for all tiles
   Object.values(tiles).forEach((tile) => {

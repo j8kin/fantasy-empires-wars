@@ -5,17 +5,23 @@ export interface LandType {
   name: string;
   alignment: AlignmentType;
   imageName: string;
-  relatedLands: string[];
   goldPerTurn: { min: number; max: number };
 }
 
 export const LAND_TYPES: { [key: string]: LandType } = {
+  // none is used only for map generation
+  none: {
+    id: 'none',
+    name: 'none',
+    alignment: 'neutral',
+    imageName: 'none.png',
+    goldPerTurn: { min: 0, max: 0 }
+  },
   plains: {
     id: 'plains',
     name: 'Plains',
     alignment: 'neutral',
     imageName: 'plains.png',
-    relatedLands: ['hills', 'greenforest', 'swamp', 'desert'],
     goldPerTurn: { min: 2, max: 4 },
   },
   mountains: {
@@ -23,7 +29,6 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Mountains',
     alignment: 'lawful',
     imageName: 'mountains.png',
-    relatedLands: ['hills', 'volcano', 'lava'],
     goldPerTurn: { min: 4, max: 6 },
   },
   greenforest: {
@@ -31,7 +36,6 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Green Forest',
     alignment: 'lawful',
     imageName: 'greenforest.png',
-    relatedLands: ['plains', 'darkforest', 'desert'],
     goldPerTurn: { min: 1, max: 3 },
   },
   darkforest: {
@@ -39,7 +43,6 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Dark Forest',
     alignment: 'chaotic',
     imageName: 'darkforest.png',
-    relatedLands: ['greenforest', 'lava', 'desert'],
     goldPerTurn: { min: 0, max: 2 },
   },
   hills: {
@@ -47,7 +50,6 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Hills',
     alignment: 'neutral',
     imageName: 'hills.png',
-    relatedLands: ['plains', 'mountains', 'swamp', 'desert'],
     goldPerTurn: { min: 3, max: 5 },
   },
   swamp: {
@@ -55,7 +57,6 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Swamp',
     alignment: 'chaotic',
     imageName: 'swamp.png',
-    relatedLands: ['plains', 'hills'],
     goldPerTurn: { min: 0, max: 2 },
   },
   desert: {
@@ -63,7 +64,6 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Desert',
     alignment: 'neutral',
     imageName: 'desert.png',
-    relatedLands: ['plains', 'hills', 'greenforest', 'darkforest'],
     goldPerTurn: { min: 0, max: 1 },
   },
   lava: {
@@ -71,7 +71,6 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Lava Fields',
     alignment: 'chaotic',
     imageName: 'lava.png',
-    relatedLands: ['volcano', 'darkforest', 'mountains'],
     goldPerTurn: { min: 1, max: 3 },
   },
   volcano: {
@@ -79,7 +78,6 @@ export const LAND_TYPES: { [key: string]: LandType } = {
     name: 'Volcano',
     alignment: 'chaotic',
     imageName: 'volcano.png',
-    relatedLands: ['lava', 'mountains'],
     goldPerTurn: { min: 0, max: 1 },
   },
 };
