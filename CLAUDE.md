@@ -6,7 +6,7 @@ A fantasy-themed strategic warfare game built with web technologies.
 
 ## Development Setup
 
-- Working directory: `/Users/eugene.karpenko/_work/fantasy-empires-wars`
+- Working directory: `TBD`
 - Git repository: Yes (master branch)
 - Platform: macOS (Darwin 24.6.0)
 
