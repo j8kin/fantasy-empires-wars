@@ -65,6 +65,7 @@ Veteran units are enhanced into Elite if they win 2 battles. Two groups of veter
 In Barracks and Mage-tower you may recruit melee heroes and mage heroes.
 
 Each hero is treated as one unit in Army.
+Mellee Heroes could atack not only in infront of them, but also in radius 2 from them.
 
 When a Hero is recruited, it has level 1 and can be max level 32.
 
