@@ -1,14 +1,8 @@
 import React from 'react';
 import { LAYOUT_CONSTANTS } from './BorderSystem';
 import ManaVial from './ManaVial';
-import { MapSize } from '../types/MapSize';
 
-interface ManaPanelProps {
-  mapSize: MapSize;
-  onMapSizeChange: (size: MapSize) => void;
-}
-
-const ManaPanel: React.FC<ManaPanelProps> = ({ mapSize, onMapSizeChange }) => {
+const ManaPanel: React.FC = () => {
   return (
     <div style={frameContainerStyle} id="ManaPanel">
       <div style={vialPanelStyle}>
@@ -38,29 +32,4 @@ const vialPanelStyle: React.CSSProperties = {
   gap: '30px', // Add spacing between ManaVials
   padding: '3px', // Add padding around the container
 };
-
-const mapSelectorStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '10px',
-  marginTop: '20px',
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: '16px',
-  fontWeight: 'bold',
-  color: '#333',
-};
-
-const selectStyle: React.CSSProperties = {
-  fontSize: '14px',
-  padding: '5px 10px',
-  borderRadius: '5px',
-  border: '2px solid #333',
-  backgroundColor: '#fff',
-  color: '#333',
-  cursor: 'pointer',
-};
-
 export default ManaPanel;

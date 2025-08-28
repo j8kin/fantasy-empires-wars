@@ -6,8 +6,7 @@ import MainMap from './MainMap';
 import EndOfTurnButton from './EndOfTurnButton';
 import StartGameWindow from './StartGameWindow';
 import { MapSize } from '../types/MapSize';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { Player } from '../types/Player';
+import { GamePlayer } from '../types/GamePlayer';
 
 interface StartGameConfig {
   mapSize: MapSize;
@@ -20,7 +19,7 @@ const MainCanvas: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [mapSize, setMapSize] = useState<MapSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [gameConfig, setGameConfig] = useState<StartGameConfig | null>(null);
+  const [, setGameConfig] = useState<StartGameConfig | null>(null);
 
   const handleStartGame = useCallback((config: StartGameConfig) => {
     setGameConfig(config);
@@ -49,7 +48,7 @@ const MainCanvas: React.FC = () => {
       <BorderSystem />
 
       {/* Content components */}
-      <ManaPanel mapSize={mapSize} onMapSizeChange={setMapSize} />
+      <ManaPanel />
       <MainMap mapSize={mapSize} key={`map-${mapSize}-${gameStarted}`} />
 
       {/* End of Turn Button positioned in middle of second horizontal canvas */}
