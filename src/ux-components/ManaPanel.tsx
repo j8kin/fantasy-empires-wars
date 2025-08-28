@@ -18,19 +18,6 @@ const ManaPanel: React.FC<ManaPanelProps> = ({ mapSize, onMapSizeChange }) => {
         <ManaVial color="green" percentage={25} />
         <ManaVial color="red" percentage={5} />
       </div>
-      <div style={mapSelectorStyle}>
-        <label style={labelStyle}>Map Size:</label>
-        <select
-          value={mapSize}
-          onChange={(e) => onMapSizeChange(e.target.value as MapSize)}
-          style={selectStyle}
-        >
-          <option value="small">Small</option>
-          <option value="medium">Medium</option>
-          <option value="large">Large</option>
-          <option value="huge">Huge</option>
-        </select>
-      </div>
     </div>
   );
 };

@@ -1,0 +1,331 @@
+/* StartGameWindow.module.css */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.window {
+  position: relative;
+  width: 90vw;
+  max-width: 1200px;
+  height: 85vh;
+  max-height: 800px;
+  background: linear-gradient(135deg, #2c1810 0%, #1a0f0a 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.content {
+  position: relative;
+  padding: 60px 80px 40px 80px;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #d4af37;
+  text-align: center;
+  margin: 0 0 2rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.horizontalControls {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.horizontalControls .section {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #f4e4bc;
+  margin-bottom: 0.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.dropdown {
+  width: 100%;
+  max-width: 300px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #3a2818 0%, #2a1810 100%);
+  color: #f4e4bc;
+  border: 2px solid #8b7355;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dropdown:hover {
+  border-color: #d4af37;
+  background: linear-gradient(135deg, #4a3020 0%, #3a2018 100%);
+}
+
+.dropdown:focus {
+  border-color: #d4af37;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+}
+
+.playerSelection {
+  display: flex;
+  gap: 2rem;
+  height: 300px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid #8b7355;
+  padding: 1rem;
+}
+
+.playerListContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.playerList {
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.playerListItem {
+  background: linear-gradient(135deg, #3a2818 0%, #2a1810 100%);
+  border: 2px solid #8b7355;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.playerListItem:hover {
+  border-color: #d4af37;
+  background: linear-gradient(135deg, #4a3020 0%, #3a2018 100%);
+  transform: translateX(4px);
+}
+
+.playerListItem.selected {
+  border-color: #d4af37;
+  background: linear-gradient(135deg, #4a3020 0%, #3a2018 100%);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+.playerSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.playerDetailsContainer {
+  flex: 1;
+  min-width: 0;
+  border-left: 1px solid #8b7355;
+  padding-left: 1rem;
+}
+
+.playerDetails {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.playerDetailHeader {
+  margin-bottom: 1rem;
+}
+
+.selectedPlayerName {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #f4e4bc;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  margin: 0 0 0.5rem 0;
+}
+
+.selectedPlayerClass {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid currentColor;
+  display: inline-block;
+}
+
+.selectedAvatarContainer {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.selectedAvatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #8b7355;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.selectedPlayerDescription {
+  font-size: 1rem;
+  color: #c9b896;
+  line-height: 1.5;
+  font-style: italic;
+  flex-grow: 1;
+}
+
+.playerName {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f4e4bc;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  margin-bottom: 0.25rem;
+}
+
+.playerClass {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.playerLevel {
+  font-size: 0.8rem;
+  color: #d4af37;
+  font-weight: 600;
+}
+
+.colorPicker {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.colorOption {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #8b7355;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.colorOption:hover {
+  border-color: #d4af37;
+  transform: scale(1.1);
+}
+
+.colorOption.selectedColor {
+  border-color: #d4af37;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+  transform: scale(1.2);
+}
+
+.colorOption.selectedColor::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #8b7355;
+}
+
+.startButton,
+.cancelButton {
+  padding: 1rem 2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.startButton {
+  background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+  color: #2c1810;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.startButton:hover {
+  background: linear-gradient(135deg, #e6c14a 0%, #d4af37 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+}
+
+.cancelButton {
+  background: linear-gradient(135deg, #666 0%, #555 100%);
+  color: #f4e4bc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cancelButton:hover {
+  background: linear-gradient(135deg, #777 0%, #666 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Scrollbar styling */
+.content::-webkit-scrollbar,
+.playerList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content::-webkit-scrollbar-track,
+.playerList::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb,
+.playerList::-webkit-scrollbar-thumb {
+  background: #8b7355;
+  border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb:hover,
+.playerList::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}
