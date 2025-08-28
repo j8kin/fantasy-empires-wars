@@ -113,9 +113,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
             </div>
 
             <div className={styles.section}>
-              <label className={styles.label}>
-                Opponents (Max {maxOpponents}):
-              </label>
+              <label className={styles.label}>Opponents (Max {maxOpponents}):</label>
               <select
                 className={styles.dropdown}
                 value={numberOfOpponents}
@@ -210,7 +208,6 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
               ))}
             </div>
           </div>
-
 
           {/* Action Buttons */}
           <div className={styles.buttons}>
