@@ -101,7 +101,7 @@ const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
     >
       {/* Add content or placeholders for map elements */}
       {/*<p>Main Map will be implemented here.</p>*/}
-      <div className="main-map">{hexGrid}</div>
+      <div>{hexGrid}</div>
     </div>
   );
 };
