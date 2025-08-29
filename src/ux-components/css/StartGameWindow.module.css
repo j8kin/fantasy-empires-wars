@@ -185,11 +185,11 @@
 }
 
 .selectedAvatar {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   border: 3px solid #8b7355;
-  object-fit: cover;
+  object-fit: contain;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
