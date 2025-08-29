@@ -171,7 +171,7 @@ describe('Building Data Integrity', () => {
 
           expect(
             moreExpensive.goldPerTurn > cheaper.goldPerTurn || expensiveRatio >= cheaperRatio * 0.8 // Allow some variance
-          ).toBe(true);
+          ).toBeTruthy();
         }
       }
     });

@@ -19,7 +19,7 @@ const MainCanvas: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [mapSize, setMapSize] = useState<MapSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [, setGameConfig] = useState<StartGameConfig | null>(null);
+  const [gameConfig, setGameConfig] = useState<StartGameConfig | null>(null);
 
   const handleStartGame = useCallback((config: StartGameConfig) => {
     setGameConfig(config);
@@ -48,7 +48,10 @@ const MainCanvas: React.FC = () => {
       <BorderSystem />
 
       {/* Content components */}
-      <ManaPanel />
+      <ManaPanel
+        selectedPlayer={gameConfig?.selectedPlayer}
+        playerColor={gameConfig?.playerColor}
+      />
       <MainMap mapSize={mapSize} key={`map-${mapSize}-${gameStarted}`} />
 
       {/* End of Turn Button positioned in middle of second horizontal canvas */}

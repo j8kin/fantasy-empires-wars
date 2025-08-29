@@ -4,6 +4,7 @@ import { GamePlayer, PREDEFINED_PLAYERS, PLAYER_COLORS } from '../types/GamePlay
 import BorderVerticalCanvas from './BorderVerticalCanvas';
 import BorderHorizontalCanvas from './BorderHorizontalCanvas';
 import BorderCornerCanvas from './BorderCornerCanvas';
+import PlayerAvatar from './PlayerAvatar';
 import styles from './css/StartGameWindow.module.css';
 
 interface StartGameConfig {
@@ -171,18 +172,13 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
                     </div>
                   </div>
 
-                  {selectedPlayer.avatar && (
-                    <div className={styles.selectedAvatarContainer}>
-                      <img
-                        src={selectedPlayer.avatar}
-                        alt={selectedPlayer.name}
-                        className={styles.selectedAvatar}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
+                  <PlayerAvatar
+                    player={selectedPlayer}
+                    size={120}
+                    shape="circle"
+                    borderColor="#d4af37"
+                    className={styles.selectedAvatarContainer}
+                  />
 
                   <div className={styles.selectedPlayerDescription}>
                     {selectedPlayer.description}
