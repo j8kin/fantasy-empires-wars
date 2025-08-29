@@ -210,15 +210,17 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
           </div>
 
           {/* Action Buttons */}
-          <div className={styles.buttons}>
+          <div className={styles.buttonContainer}>
             {onCancel && (
               <button className={styles.cancelButton} onClick={onCancel}>
                 Cancel
               </button>
             )}
-            <button className={styles.startButton} onClick={handleStartGame}>
-              Start Game
-            </button>
+            <div className={styles.centerButton}>
+              <button className={styles.startButton} onClick={handleStartGame}>
+                Start Game
+              </button>
+            </div>
           </div>
         </div>
       </div>
