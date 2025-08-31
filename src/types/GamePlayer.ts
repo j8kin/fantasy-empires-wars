@@ -1,9 +1,10 @@
 import fighterAvatar from '../assets/avatars/fighter.png';
-import necromancerAvatar from '../assets/avatars/necromancer.png';
+import necromancerAvatar from '../assets/avatars/necromancerW.png';
 import dwarfAvatar from '../assets/avatars/dwarf.png';
 import elfAvatar from '../assets/avatars/elf.png';
+import rogueAvatar from '../assets/avatars/rodueW.png';
 import orcAvatar from '../assets/avatars/orc.png';
-import clericAvatar from '../assets/avatars/cleric.png';
+import clericAvatar from '../assets/avatars/clericW.png';
 import enchanterAvatar from '../assets/avatars/enchanter.png';
 
 export type PlayerClass = 'lawful' | 'neutral' | 'chaotic';
@@ -48,8 +49,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     defaultColor: '#E67E22',
   },
   {
-    id: 'elara',
-    name: 'Elara Starshot',
+    id: 'vex',
+    name: 'Vex the Cunning',
     class: 'lawful',
     level: 7,
     description: 'An elven ranger dedicated to protecting the ancient forests and their secrets.',
@@ -85,13 +86,13 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     defaultColor: '#3498DB',
   },
   {
-    id: 'vex',
-    name: 'Vex the Cunning',
+    id: 'elara',
+    name: 'Elara Starshot',
     class: 'chaotic',
     level: 6,
     description:
       'A sly rogue who uses wit and stealth to achieve goals through any means necessary.',
-    avatar: elfAvatar,
+    avatar: rogueAvatar,
     defaultColor: '#95A5A6',
   },
 ];
