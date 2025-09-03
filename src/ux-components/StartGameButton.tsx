@@ -9,12 +9,7 @@ interface StartGameButtonProps {
 const StartGameButton: React.FC<StartGameButtonProps> = ({ onClick }) => {
   return (
     <div className={styles.startGameButtonContainer}>
-      <img
-        src={StartGame}
-        alt="Start Game"
-        className={styles.startGameImage}
-        onClick={onClick}
-      />
+      <img src={StartGame} alt="Start Game" className={styles.startGameImage} onClick={onClick} />
     </div>
   );
 };
