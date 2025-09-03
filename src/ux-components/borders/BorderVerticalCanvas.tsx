@@ -5,7 +5,6 @@ import { BorderCanvasProps } from './BorderCanvasProps';
 import './css/BorderStyles.css';
 
 const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
-  const tileWidth = 50;
   const tileHeight = 180;
   const availableHeight = window.innerHeight;
   const numTiles = Math.ceil(availableHeight / tileHeight);
