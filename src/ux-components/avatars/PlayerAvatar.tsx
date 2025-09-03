@@ -1,5 +1,6 @@
 import React from 'react';
 import { GamePlayer } from '../../types/GamePlayer';
+import styles from './css/PlayerAvatar.module.css';
 
 type AvatarShape = 'circle' | 'rectangle';
 
@@ -24,28 +25,21 @@ const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
     return null;
   }
 
-  const containerStyle: React.CSSProperties = {
+  const dynamicStyles: React.CSSProperties = {
     width: `${size}px`,
     height: `${size}px`,
-    borderRadius: shape === 'circle' ? '50%' : '8px',
-    overflow: 'hidden',
-    border: `2px solid ${borderColor}`,
-    flexShrink: 0,
+    borderColor,
     ...style,
   };
 
-  const imageStyle: React.CSSProperties = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'contain',
-  };
+  const containerClassName = `${styles.container} ${styles[`container--${shape}`]} ${className || ''}`;
 
   return (
-    <div style={containerStyle} className={className}>
+    <div style={dynamicStyles} className={containerClassName}>
       <img
         src={player.avatar}
         alt={player.name}
-        style={imageStyle}
+        className={styles.image}
         onError={(e) => {
           e.currentTarget.style.display = 'none';
         }}

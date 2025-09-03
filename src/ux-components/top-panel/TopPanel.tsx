@@ -11,7 +11,7 @@ interface TopPanelProps {
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ selectedPlayer }) => {
-  const frameContainerStyle: React.CSSProperties = {
+  const dynamicStyles: React.CSSProperties = {
     left: LAYOUT_CONSTANTS.BORDER_WIDTH,
     top: LAYOUT_CONSTANTS.MANA_PANEL_TOP_MARGIN,
     right: LAYOUT_CONSTANTS.BORDER_WIDTH,
@@ -19,11 +19,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ selectedPlayer }) => {
   };
 
   return (
-    <div
-      style={frameContainerStyle}
-      id="TopPanel"
-      className={`${styles.frameContainer} top-bar-panel`}
-    >
+    <div style={dynamicStyles} id="TopPanel" className={`${styles.frameContainer} top-bar-panel`}>
       <div className={styles.panelContainer}>
         {/* Left Side - Player Info */}
         {selectedPlayer && (

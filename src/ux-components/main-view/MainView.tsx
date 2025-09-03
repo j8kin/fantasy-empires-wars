@@ -34,16 +34,7 @@ const MainView: React.FC = () => {
   }, []);
 
   return (
-    <div
-      className={styles.backgroundStyle}
-      style={{
-        width: '100vw',
-        height: '100vh',
-        position: 'relative',
-        overflow: 'hidden', // Prevent any scrolling
-      }}
-      id="MainCanvas"
-    >
+    <div className={styles.backgroundStyle} id="MainCanvas">
       {/* Separate border system from content */}
       <BorderSystem />
 
@@ -68,22 +59,7 @@ const MainView: React.FC = () => {
 
       {/* Add a button to show start window again for testing */}
       {gameStarted && (
-        <button
-          style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            padding: '10px 20px',
-            background: '#d4af37',
-            color: '#2c1810',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            zIndex: 100,
-          }}
-          onClick={handleShowStartWindow}
-        >
+        <button className={styles.newGameButton} onClick={handleShowStartWindow}>
           New Game
         </button>
       )}

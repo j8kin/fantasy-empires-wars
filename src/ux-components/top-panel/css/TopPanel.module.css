@@ -1,9 +1,5 @@
 .frameContainer {
   position: absolute;
-  left: var(--border-width);
-  top: var(--mana-panel-top-margin);
-  right: var(--border-width);
-  height: var(--mana-panel-height);
   box-sizing: border-box;
 }
 
