@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { LandType } from '../types/LandType';
-import { HexTileState } from '../types/HexTileState';
+import { LandType } from '../../types/LandType';
+import { HexTileState } from '../../types/HexTileState';
 import styles from './css/LandCharacteristicsPopup.module.css';
 
 interface LandCharacteristicsPopupProps {

@@ -1,15 +1,15 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import MainCanvas from '../ux-components/MainCanvas';
+import MainView from '../ux-components/main-view/MainView';
 
 describe('App Component', () => {
-  it('renders the ManaPanel component', () => {
-    render(<MainCanvas />);
-    expect(document.querySelector('#ManaPanel')).not.toBeNull();
+  it('renders the TopPanel component', () => {
+    render(<MainView />);
+    expect(document.querySelector('#TopPanel')).not.toBeNull();
   });
 
-  it('renders the MainMap component', () => {
-    render(<MainCanvas />);
-    expect(document.querySelector('#MainMap')).not.toBeNull();
+  it('renders the Battlefield component', () => {
+    render(<MainView />);
+    expect(document.querySelector('#Battlefield')).not.toBeNull();
   });
 });

@@ -1,15 +1,15 @@
 import React, { useState, useCallback } from 'react';
-import { MapSize } from '../../types/MapSize';
+import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, PREDEFINED_PLAYERS, PLAYER_COLORS } from '../../types/GamePlayer';
 import BorderVerticalCanvas from '../borders/BorderVerticalCanvas';
 import BorderHorizontalCanvas from '../borders/BorderHorizontalCanvas';
 import BorderCornerCanvas from '../borders/BorderCornerCanvas';
-import PlayerAvatar from '../PlayerAvatar';
+import PlayerAvatar from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
 import styles from './css/StartGameWindow.module.css';
 
 interface StartGameConfig {
-  mapSize: MapSize;
+  mapSize: BattlefieldSize;
   selectedPlayer: GamePlayer;
   playerColor: string;
   numberOfOpponents: number;
@@ -20,7 +20,7 @@ interface StartGameWindowProps {
   onCancel?: () => void;
 }
 
-const getMaxOpponents = (mapSize: MapSize): number => {
+const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   switch (mapSize) {
     case 'small':
       return 2;
@@ -36,7 +36,7 @@ const getMaxOpponents = (mapSize: MapSize): number => {
 };
 
 const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel }) => {
-  const [mapSize, setMapSize] = useState<MapSize>('medium');
+  const [mapSize, setMapSize] = useState<BattlefieldSize>('medium');
   const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(PREDEFINED_PLAYERS[0]);
   const [playerColor, setPlayerColor] = useState<string>(PREDEFINED_PLAYERS[0].defaultColor);
   const [numberOfOpponents, setNumberOfOpponents] = useState<number>(2);
@@ -44,7 +44,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
   const maxOpponents = getMaxOpponents(mapSize);
 
   const handleMapSizeChange = useCallback(
-    (newMapSize: MapSize) => {
+    (newMapSize: BattlefieldSize) => {
       setMapSize(newMapSize);
       const newMaxOpponents = getMaxOpponents(newMapSize);
       if (numberOfOpponents > newMaxOpponents) {
@@ -105,7 +105,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
               <select
                 className={styles.dropdown}
                 value={mapSize}
-                onChange={(e) => handleMapSizeChange(e.target.value as MapSize)}
+                onChange={(e) => handleMapSizeChange(e.target.value as BattlefieldSize)}
               >
                 <option value="small">Small (6x13)</option>
                 <option value="medium">Medium (9x18)</option>

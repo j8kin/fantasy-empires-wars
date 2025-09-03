@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useMapState } from '../hooks/useMapState';
 import { LAND_TYPES } from '../types/LandType';
 import { HexTileState } from '../types/HexTileState';
-import { MapSize } from '../types/MapSize';
+import { BattlefieldSize } from '../types/BattlefieldSize';
 
 describe('useMapState Gold Generation', () => {
   describe('Map Initialization', () => {
@@ -92,7 +92,7 @@ describe('useMapState Gold Generation', () => {
 
   describe('Map Size Variations', () => {
     it('should generate appropriate gold values for all map sizes', () => {
-      const mapSizes: MapSize[] = ['small', 'medium', 'large', 'huge'];
+      const mapSizes: BattlefieldSize[] = ['small', 'medium', 'large', 'huge'];
 
       mapSizes.forEach((size) => {
         const { result } = renderHook(() => useMapState(size));
@@ -118,7 +118,7 @@ describe('useMapState Gold Generation', () => {
 
       // Change map size
       act(() => {
-        result.current.changeMapSize('medium');
+        result.current.changeBattlefieldSize('medium');
       });
 
       // Get new tiles

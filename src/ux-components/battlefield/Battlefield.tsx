@@ -1,22 +1,22 @@
 import React, { useEffect } from 'react';
-import { LAYOUT_CONSTANTS } from './borders/BorderSystem';
-import styles from './css/MainMap.module.css';
+import { LAYOUT_CONSTANTS } from '../borders/BorderSystem';
+import styles from './css/Battlefield.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
-import { MapSize, getMapDimensions } from '../types/MapSize';
-import { useMapState } from '../hooks/useMapState';
-import { createTileId } from '../types/HexTileState';
+import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
+import { useMapState } from '../../hooks/useMapState';
+import { createTileId } from '../../types/HexTileState';
 
-interface MainMapProps {
-  mapSize: MapSize;
+interface BattlefieldProps {
+  battlefieldSize: BattlefieldSize;
 }
 
-const getHexTileSize = (mapSize: MapSize): { width: number; height: number } => {
+const getHexTileSize = (battlefieldSize: BattlefieldSize): { width: number; height: number } => {
   // Base size for small map, decrease as map size increases
   const baseWidth = 100;
   let scaleFactor: number;
 
-  switch (mapSize) {
+  switch (battlefieldSize) {
     case 'small':
       scaleFactor = 1.4; // Largest tiles for smallest map
       break;
@@ -39,23 +39,23 @@ const getHexTileSize = (mapSize: MapSize): { width: number; height: number } => 
   return { width, height };
 };
 
-const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
-  const { mapState, changeMapSize } = useMapState(mapSize);
+const Battlefield: React.FC<BattlefieldProps> = ({ battlefieldSize }) => {
+  const { mapState, changeBattlefieldSize } = useMapState(battlefieldSize);
 
   useEffect(() => {
-    if (mapState.mapSize !== mapSize) {
-      changeMapSize(mapSize);
+    if (mapState.mapSize !== battlefieldSize) {
+      changeBattlefieldSize(battlefieldSize);
     }
-  }, [mapSize, mapState.mapSize, changeMapSize]);
+  }, [battlefieldSize, mapState.mapSize, changeBattlefieldSize]);
 
-  // Calculate dimensions to fit within borders and below ManaPanel
+  // Calculate dimensions to fit within borders and below TopPanel
   const topPosition = LAYOUT_CONSTANTS.MANA_PANEL_BOTTOM_Y + LAYOUT_CONSTANTS.BORDER_WIDTH;
   const leftPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
   const rightPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
   const bottomPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
 
-  const { rows, cols } = getMapDimensions(mapSize);
-  const { width: tileWidth, height: tileHeight } = getHexTileSize(mapSize);
+  const { rows, cols } = getBattlefieldDimensions(battlefieldSize);
+  const { width: tileWidth, height: tileHeight } = getHexTileSize(battlefieldSize);
   const hexGrid = [];
 
   // Loop to generate rows and columns of hex tiles using map state
@@ -80,7 +80,7 @@ const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
 
   return (
     <div
-      id="MainMap"
+      id="Battlefield"
       className={styles.mapContainer}
       style={
         {
@@ -105,4 +105,4 @@ const MainMap: React.FC<MainMapProps> = ({ mapSize }) => {
     </div>
   );
 };
-export default MainMap;
+export default Battlefield;

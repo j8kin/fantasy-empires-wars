@@ -1,29 +1,29 @@
 import React, { useState, useCallback } from 'react';
 import styles from './css/Background.module.css';
-import BorderSystem, { LAYOUT_CONSTANTS } from './borders/BorderSystem';
-import ManaPanel from './ManaPanel';
-import MainMap from './MainMap';
-import EndOfTurnButton from './buttons/EndOfTurnButton';
-import StartGameWindow from './dialogs/StartGameWindow';
-import { MapSize } from '../types/MapSize';
-import { GamePlayer } from '../types/GamePlayer';
+import BorderSystem, { LAYOUT_CONSTANTS } from '../borders/BorderSystem';
+import TopPanel from '../top-panel/TopPanel';
+import Battlefield from '../battlefield/Battlefield';
+import EndOfTurnButton from '../buttons/EndOfTurnButton';
+import StartGameWindow from '../dialogs/StartGameWindow';
+import { BattlefieldSize } from '../../types/BattlefieldSize';
+import { GamePlayer } from '../../types/GamePlayer';
 
 interface StartGameConfig {
-  mapSize: MapSize;
+  mapSize: BattlefieldSize;
   selectedPlayer: GamePlayer;
   playerColor: string;
   numberOfOpponents: number;
 }
 
-const MainCanvas: React.FC = () => {
+const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
-  const [mapSize, setMapSize] = useState<MapSize>('medium');
+  const [battlefieldSize, setBattlefieldSize] = useState<BattlefieldSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameConfig, setGameConfig] = useState<StartGameConfig | null>(null);
 
   const handleStartGame = useCallback((config: StartGameConfig) => {
     setGameConfig(config);
-    setMapSize(config.mapSize);
+    setBattlefieldSize(config.mapSize);
     setShowStartWindow(false);
     setGameStarted(true);
     console.log('Starting game with config:', config);
@@ -48,11 +48,11 @@ const MainCanvas: React.FC = () => {
       <BorderSystem />
 
       {/* Content components */}
-      <ManaPanel
-        selectedPlayer={gameConfig?.selectedPlayer}
-        playerColor={gameConfig?.playerColor}
+      <TopPanel selectedPlayer={gameConfig?.selectedPlayer} playerColor={gameConfig?.playerColor} />
+      <Battlefield
+        battlefieldSize={battlefieldSize}
+        key={`map-${battlefieldSize}-${gameStarted}`}
       />
-      <MainMap mapSize={mapSize} key={`map-${mapSize}-${gameStarted}`} />
 
       {/* End of Turn Button positioned in middle of second horizontal canvas */}
       <EndOfTurnButton
@@ -94,4 +94,4 @@ const MainCanvas: React.FC = () => {
   );
 };
 
-export default MainCanvas;
+export default MainView;

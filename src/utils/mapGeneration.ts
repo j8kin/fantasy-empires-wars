@@ -1,7 +1,7 @@
 import { HexTileState, createTileId } from '../types/HexTileState';
 import { LAND_TYPES, LandType } from '../types/LandType';
 import { NEUTRAL_PLAYER } from '../types/Player';
-import { MapSize, getMapDimensions } from '../types/MapSize';
+import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 
 const calculateBaseLandGold = (landType: LandType): number => {
   const { min, max } = landType.goldPerTurn;
@@ -33,15 +33,15 @@ const getHexNeighbors = (row: number, col: number): { row: number; col: number }
   }
 };
 
-const isValidPosition = (mapSize: MapSize, row: number, col: number): boolean => {
-  const { rows, cols } = getMapDimensions(mapSize);
+const isValidPosition = (mapSize: BattlefieldSize, row: number, col: number): boolean => {
+  const { rows, cols } = getBattlefieldDimensions(mapSize);
   if (row < 0 || row >= rows) return false;
   const colsInRow = row % 2 === 0 ? cols : cols - 1;
   return col >= 0 && col < colsInRow;
 };
 
 const getValidNeighbors = (
-  mapSize: MapSize,
+  mapSize: BattlefieldSize,
   row: number,
   col: number
 ): { row: number; col: number }[] => {
@@ -49,7 +49,7 @@ const getValidNeighbors = (
 };
 
 const getEmptyNeighbors = (
-  mapSize: MapSize,
+  mapSize: BattlefieldSize,
   row: number,
   col: number,
   tiles: { [key: string]: HexTileState }
@@ -67,7 +67,7 @@ const getEmptyNeighbors = (
 };
 
 const getRandomNoneNeighbor = (
-  mapSize: MapSize,
+  mapSize: BattlefieldSize,
   row: number,
   col: number,
   tiles: { [key: string]: HexTileState }
@@ -91,8 +91,8 @@ const getRandomEmptyLandType = (tiles: { [key: string]: HexTileState }): HexTile
   return empyLands[randomIndex];
 };
 
-export const initializeMap = (mapSize: MapSize): { [key: string]: HexTileState } => {
-  const { rows, cols } = getMapDimensions(mapSize);
+export const initializeMap = (mapSize: BattlefieldSize): { [key: string]: HexTileState } => {
+  const { rows, cols } = getBattlefieldDimensions(mapSize);
   const tiles: { [key: string]: HexTileState } = {};
 
   // Calculate total number of tiles

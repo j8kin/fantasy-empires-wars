@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import MainCanvas from './ux-components/MainCanvas';
+import MainView from './ux-components/main-view/MainView';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
-    <MainCanvas />
+    <MainView />
   </React.StrictMode>
 );
 

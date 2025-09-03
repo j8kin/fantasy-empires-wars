@@ -2,9 +2,9 @@ import { useState, useCallback, useMemo } from 'react';
 import { MapState, HexTileState, createTileId } from '../types/HexTileState';
 import { NEUTRAL_PLAYER, Player } from '../types/Player';
 import { initializeMap } from '../utils/mapGeneration';
-import { MapSize, getMapDimensions } from '../types/MapSize';
+import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 
-export const useMapState = (initialMapSize: MapSize = 'medium') => {
+export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
   const [mapState, setMapState] = useState<MapState>(() => ({
     tiles: initializeMap(initialMapSize),
     currentPlayer: NEUTRAL_PLAYER,
@@ -61,7 +61,7 @@ export const useMapState = (initialMapSize: MapSize = 'medium') => {
     [updateTile]
   );
 
-  const changeMapSize = useCallback((newSize: MapSize) => {
+  const changeBattlefieldSize = useCallback((newSize: BattlefieldSize) => {
     setMapState((prev) => ({
       ...prev,
       tiles: initializeMap(newSize),
@@ -112,7 +112,10 @@ export const useMapState = (initialMapSize: MapSize = 'medium') => {
     [getPlayerTiles]
   );
 
-  const mapDimensions = useMemo(() => getMapDimensions(mapState.mapSize), [mapState.mapSize]);
+  const mapDimensions = useMemo(
+    () => getBattlefieldDimensions(mapState.mapSize),
+    [mapState.mapSize]
+  );
 
   return {
     mapState,
@@ -120,7 +123,7 @@ export const useMapState = (initialMapSize: MapSize = 'medium') => {
     setTileController,
     addBuildingToTile,
     updateTileArmy,
-    changeMapSize,
+    changeBattlefieldSize: changeBattlefieldSize,
     addPlayer,
     setCurrentPlayer,
     nextTurn,

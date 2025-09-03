@@ -1,7 +1,9 @@
-export type MapSize = 'small' | 'medium' | 'large' | 'huge';
+export type BattlefieldSize = 'small' | 'medium' | 'large' | 'huge';
 
-export const getMapDimensions = (mapSize: MapSize): { rows: number; cols: number } => {
-  switch (mapSize) {
+export const getBattlefieldDimensions = (
+  battlefieldSize: BattlefieldSize
+): { rows: number; cols: number } => {
+  switch (battlefieldSize) {
     case 'small':
       return { rows: 6, cols: 13 };
     case 'medium':

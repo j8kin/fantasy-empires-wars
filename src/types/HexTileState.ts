@@ -2,7 +2,7 @@ import { LandType } from './LandType';
 import { Building } from './Building';
 import { Army } from './Army';
 import { Player } from './Player';
-import { MapSize } from './MapSize';
+import { BattlefieldSize } from './BattlefieldSize';
 
 export interface HexTileState {
   id: string;
@@ -20,7 +20,7 @@ export interface MapState {
   currentPlayer: Player;
   players: Player[];
   turn: number;
-  mapSize: MapSize;
+  mapSize: BattlefieldSize;
 }
 
 export const createTileId = (row: number, col: number): string => `${row}-${col}`;

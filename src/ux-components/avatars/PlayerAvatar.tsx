@@ -1,5 +1,5 @@
 import React from 'react';
-import { GamePlayer } from '../types/GamePlayer';
+import { GamePlayer } from '../../types/GamePlayer';
 
 type AvatarShape = 'circle' | 'rectangle';
 

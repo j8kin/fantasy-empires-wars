@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import ManaVial from '../ux-components/ManaVial';
+import ManaVial from '../ux-components/top-panel/ManaVial';
 
 describe('ManaVial Component - Basic Tests', () => {
   it('should render with percentage text', () => {
@@ -23,25 +23,17 @@ describe('ManaVial Component - Basic Tests', () => {
     expect(screen.getByText('100%')).toBeInTheDocument();
   });
 
-  it('should render vial container with correct size', () => {
+  it('should render vial container with correct class', () => {
     const { container } = render(<ManaVial color="red" percentage={50} />);
 
     const vialContainer = container.firstChild as HTMLElement;
-    expect(vialContainer).toHaveStyle({
-      width: '80px',
-      height: '80px',
-      borderRadius: '50%',
-    });
+    expect(vialContainer).toHaveClass('ball');
   });
 
-  it('should render with text styling', () => {
+  it('should render text with correct class', () => {
     const { container } = render(<ManaVial color="blue" percentage={25} />);
 
     const textSpan = container.querySelector('span') as HTMLElement;
-    expect(textSpan).toHaveStyle({
-      fontSize: '24px',
-      color: 'white',
-      fontWeight: 'bold',
-    });
+    expect(textSpan).toHaveClass('value');
   });
 });
