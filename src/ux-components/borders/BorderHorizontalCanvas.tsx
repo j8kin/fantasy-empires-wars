@@ -1,7 +1,8 @@
 import React from 'react';
 import BorderTile from './BorderTile';
-import CelticPatternVertical from '../assets/images/CelticPatternVertical.png';
+import CelticPatternVertical from '../../assets/images/CelticPatternVertical.png';
 import { BorderCanvasProps } from './BorderCanvasProps';
+import './css/BorderStyles.css';
 
 const BorderHorizontalCanvas: React.FC<BorderCanvasProps> = ({ isTop, yOffset }) => {
   const tileWidth = 50;
@@ -23,12 +24,8 @@ const BorderHorizontalCanvas: React.FC<BorderCanvasProps> = ({ isTop, yOffset })
             key={index}
             src={CelticPatternVertical}
             alt={isTop ? 'Horizontal Side Top' : 'Horizontal Side Bottom'}
+            className={`border-horizontal ${isTop ? 'border-horizontal--top' : 'border-horizontal--bottom'}`}
             style={{
-              position: 'absolute',
-              width: tileWidth,
-              height: tileHeight,
-              zIndex: 2,
-              transform: 'rotate(90deg)',
               left: position,
               ...(isTop
                 ? { top: initialTopOffset } // Styles for top row

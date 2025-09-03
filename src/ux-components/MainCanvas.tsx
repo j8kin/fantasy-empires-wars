@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import styles from './css/Background.module.css';
-import BorderSystem, { LAYOUT_CONSTANTS } from './BorderSystem';
+import BorderSystem, { LAYOUT_CONSTANTS } from './borders/BorderSystem';
 import ManaPanel from './ManaPanel';
 import MainMap from './MainMap';
-import EndOfTurnButton from './EndOfTurnButton';
-import StartGameWindow from './StartGameWindow';
+import EndOfTurnButton from './buttons/EndOfTurnButton';
+import StartGameWindow from './dialogs/StartGameWindow';
 import { MapSize } from '../types/MapSize';
 import { GamePlayer } from '../types/GamePlayer';
 

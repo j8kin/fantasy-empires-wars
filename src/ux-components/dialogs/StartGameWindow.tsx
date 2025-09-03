@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { MapSize } from '../types/MapSize';
-import { GamePlayer, PREDEFINED_PLAYERS, PLAYER_COLORS } from '../types/GamePlayer';
-import BorderVerticalCanvas from './BorderVerticalCanvas';
-import BorderHorizontalCanvas from './BorderHorizontalCanvas';
-import BorderCornerCanvas from './BorderCornerCanvas';
-import PlayerAvatar from './PlayerAvatar';
-import StartGameButton from './StartGameButton';
+import { MapSize } from '../../types/MapSize';
+import { GamePlayer, PREDEFINED_PLAYERS, PLAYER_COLORS } from '../../types/GamePlayer';
+import BorderVerticalCanvas from '../borders/BorderVerticalCanvas';
+import BorderHorizontalCanvas from '../borders/BorderHorizontalCanvas';
+import BorderCornerCanvas from '../borders/BorderCornerCanvas';
+import PlayerAvatar from '../PlayerAvatar';
+import StartGameButton from '../buttons/StartGameButton';
 import styles from './css/StartGameWindow.module.css';
 
 interface StartGameConfig {

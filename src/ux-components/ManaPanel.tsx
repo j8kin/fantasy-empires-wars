@@ -1,5 +1,5 @@
 import React from 'react';
-import { LAYOUT_CONSTANTS } from './BorderSystem';
+import { LAYOUT_CONSTANTS } from './borders/BorderSystem';
 import ManaVial from './ManaVial';
 import { GamePlayer } from '../types/GamePlayer';
 import PlayerAvatar from './PlayerAvatar';

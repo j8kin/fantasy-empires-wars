@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './css/StartGameButton.module.css';
-import StartGame from '../assets/images/StartGame.png';
+import StartGame from '../../assets/images/StartGame.png';
 
 interface StartGameButtonProps {
   onClick: () => void;

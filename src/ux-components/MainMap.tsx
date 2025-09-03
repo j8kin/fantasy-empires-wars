@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { LAYOUT_CONSTANTS } from './BorderSystem';
+import { LAYOUT_CONSTANTS } from './borders/BorderSystem';
 import styles from './css/MainMap.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';

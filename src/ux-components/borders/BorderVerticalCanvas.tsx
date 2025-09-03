@@ -1,7 +1,8 @@
 import React from 'react';
 import BorderTile from './BorderTile';
-import CelticPatternVertical from '../assets/images/CelticPatternVertical.png';
+import CelticPatternVertical from '../../assets/images/CelticPatternVertical.png';
 import { BorderCanvasProps } from './BorderCanvasProps';
+import './css/BorderStyles.css';
 
 const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
   const tileWidth = 50;
@@ -30,13 +31,10 @@ const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
             key={index}
             src={CelticPatternVertical}
             alt={isLeft ? 'Vertical Side Left' : 'Vertical Side Right'}
+            className={`border-vertical ${isLeft ? 'border-vertical--left' : 'border-vertical--right'}`}
             style={{
-              position: 'absolute',
-              width: tileWidth,
               height: adjustedHeight,
               top: position,
-              zIndex: 2,
-              ...(isLeft ? { left: 0 } : { right: 0 }),
             }}
           />
         );
