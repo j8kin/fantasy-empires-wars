@@ -261,9 +261,12 @@
 }
 
 .buttonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
-  margin-top: 2rem;
-  padding-top: 1rem;
+  margin-top: 1rem;
+  padding-top: 0.5rem;
   border-top: 1px solid #8b7355;
 }
 

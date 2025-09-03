@@ -29,8 +29,8 @@ const EndOfTurnButton: React.FC<EndOfTurnButtonProps> = ({ onClick, style }) => 
 
 const buttonStyle: React.CSSProperties = {
   position: 'absolute',
-  width: '100px',
-  height: '100px',
+  width: '110px',
+  height: '55px',
   background: 'none',
   border: 'none',
   padding: 0,

@@ -5,6 +5,7 @@ import BorderVerticalCanvas from './BorderVerticalCanvas';
 import BorderHorizontalCanvas from './BorderHorizontalCanvas';
 import BorderCornerCanvas from './BorderCornerCanvas';
 import PlayerAvatar from './PlayerAvatar';
+import StartGameButton from './StartGameButton';
 import styles from './css/StartGameWindow.module.css';
 
 interface StartGameConfig {
@@ -212,11 +213,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
                 Cancel
               </button>
             )}
-            <div className={styles.centerButton}>
-              <button className={styles.startButton} onClick={handleStartGame}>
-                Start Game
-              </button>
-            </div>
+            <StartGameButton onClick={handleStartGame} />
           </div>
         </div>
       </div>
