@@ -6,6 +6,12 @@ import rogueAvatar from '../assets/avatars/rodueW.png';
 import orcAvatar from '../assets/avatars/orc.png';
 import clericAvatar from '../assets/avatars/clericW.png';
 import enchanterAvatar from '../assets/avatars/enchanter.png';
+import clericMaleAvatar from '../assets/avatars/cleric.png';
+import cleric2Avatar from '../assets/avatars/clericW2.png';
+import druidAvatar from '../assets/avatars/druid.png';
+import necromancerMaleAvatar from '../assets/avatars/necromancer.png';
+import pyromancerAvatar from '../assets/avatars/pyromancer.png';
+import pyromancerFemaleAvatar from '../assets/avatars/pyromancerW.png';
 
 export type PlayerClass = 'lawful' | 'neutral' | 'chaotic';
 
@@ -83,7 +89,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     description:
       'A wandering mage who seeks to master all schools of magic through experimentation.',
     avatar: enchanterAvatar,
-    defaultColor: '#3498DB',
+    defaultColor: '#4A90E2',
   },
   {
     id: 'elara',
@@ -95,15 +101,69 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     avatar: rogueAvatar,
     defaultColor: '#95A5A6',
   },
+  {
+    id: 'marcus',
+    name: 'Marcus the Divine',
+    class: 'lawful',
+    level: 13,
+    description: 'A devoted priest who spreads hope and healing throughout the lands.',
+    avatar: clericMaleAvatar,
+    defaultColor: '#F1C40F',
+  },
+  {
+    id: 'lydia',
+    name: 'Lydia Moonwhisper',
+    class: 'lawful',
+    level: 9,
+    description: 'A compassionate healer who tends to the wounded with divine grace.',
+    avatar: cleric2Avatar,
+    defaultColor: '#8B4A9C',
+  },
+  {
+    id: 'elderoak',
+    name: 'Elderoak the Wise',
+    class: 'neutral',
+    level: 14,
+    description: 'An ancient druid who maintains the balance between civilization and nature.',
+    avatar: druidAvatar,
+    defaultColor: '#27AE60',
+  },
+  {
+    id: 'valdris',
+    name: 'Valdris Bonecaller',
+    class: 'chaotic',
+    level: 16,
+    description: 'A sinister necromancer who commands the undead and delves into forbidden arts.',
+    avatar: necromancerMaleAvatar,
+    defaultColor: '#2F4F4F',
+  },
+  {
+    id: 'ignatius',
+    name: 'Ignatius Flameforge',
+    class: 'neutral',
+    level: 11,
+    description: 'A master of fire magic who forges spells as skillfully as weapons.',
+    avatar: pyromancerAvatar,
+    defaultColor: '#E67E22',
+  },
+  {
+    id: 'ember',
+    name: 'Ember Fireheart',
+    class: 'chaotic',
+    level: 10,
+    description: 'A fierce sorceress whose burning passion fuels her destructive fire magic.',
+    avatar: pyromancerFemaleAvatar,
+    defaultColor: '#C0392B',
+  },
 ];
 
 export const PLAYER_COLORS = [
   '#4A90E2', // Blue
-  '#E67E22', // Orange
-  '#27AE60', // Green
   '#C0392B', // Red
+  '#27AE60', // Green
+  '#E67E22', // Orange
   '#8B4A9C', // Purple
   '#F1C40F', // Yellow
-  '#3498DB', // Light Blue
   '#95A5A6', // Gray
+  '#2F4F4F', // Dark Slate Gray
 ];

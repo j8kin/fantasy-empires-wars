@@ -21,18 +21,23 @@ interface StartGameWindowProps {
 }
 
 const getMaxOpponents = (mapSize: BattlefieldSize): number => {
-  switch (mapSize) {
-    case 'small':
-      return 2;
-    case 'medium':
-      return 4;
-    case 'large':
-      return 6;
-    case 'huge':
-      return 8;
-    default:
-      return 2;
-  }
+  const mapBasedMax = (() => {
+    switch (mapSize) {
+      case 'small':
+        return 2;
+      case 'medium':
+        return 4;
+      case 'large':
+        return 6;
+      case 'huge':
+        return 8;
+      default:
+        return 2;
+    }
+  })();
+
+  // Limit to available colors (8 colors total, 1 for human player = 7 max opponents)
+  return Math.min(mapBasedMax, PLAYER_COLORS.length - 1);
 };
 
 const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel }) => {
