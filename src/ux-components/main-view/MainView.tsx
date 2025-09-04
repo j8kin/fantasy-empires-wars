@@ -39,7 +39,13 @@ const MainView: React.FC = () => {
       <BorderSystem />
 
       {/* Content components */}
-      <TopPanel selectedPlayer={gameConfig?.selectedPlayer} playerColor={gameConfig?.playerColor} />
+      <TopPanel
+        selectedPlayer={gameConfig?.selectedPlayer}
+        playerColor={gameConfig?.playerColor}
+        onNewGame={handleShowStartWindow}
+        onLoadGame={() => console.log('Load Game functionality to be implemented')}
+        onSaveGame={() => console.log('Save Game functionality to be implemented')}
+      />
       <Battlefield
         battlefieldSize={battlefieldSize}
         key={`map-${battlefieldSize}-${gameStarted}`}
@@ -56,13 +62,6 @@ const MainView: React.FC = () => {
           console.log('End turn clicked');
         }}
       />
-
-      {/* Add a button to show start window again for testing */}
-      {gameStarted && (
-        <button className={styles.newGameButton} onClick={handleShowStartWindow}>
-          New Game
-        </button>
-      )}
 
       {/* Start Game Window - shown as overlay */}
       {showStartWindow && <StartGameWindow onStartGame={handleStartGame} />}

@@ -11,17 +11,3 @@
   position: relative;
   overflow: hidden;
 }
-
-.newGameButton {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  background: #d4af37;
-  color: #2c1810;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  z-index: 100;
-}
