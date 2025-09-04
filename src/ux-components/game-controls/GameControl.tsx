@@ -1,8 +1,8 @@
 import React from 'react';
 import styles from './css/GameControl.module.css';
-import NewGame from '../../assets/images/NewGame.png';
-import LoadGame from '../../assets/images/LoadGame.png';
-import SaveGame from '../../assets/images/SaveGame.png';
+import NewGameButton from '../buttons/NewGameButton';
+import LoadGameButton from '../buttons/LoadGameButton';
+import SaveGameButton from '../buttons/SaveGameButton';
 
 interface GameControlProps {
   onNewGame?: () => void;
@@ -11,46 +11,11 @@ interface GameControlProps {
 }
 
 const GameControl: React.FC<GameControlProps> = ({ onNewGame, onLoadGame, onSaveGame }) => {
-  const handleNewGame = () => {
-    if (onNewGame) {
-      onNewGame();
-    }
-  };
-
-  const handleLoadGame = () => {
-    console.log('Load Game clicked');
-    if (onLoadGame) {
-      onLoadGame();
-    }
-  };
-
-  const handleSaveGame = () => {
-    console.log('Save Game clicked');
-    if (onSaveGame) {
-      onSaveGame();
-    }
-  };
-
   return (
     <div className={styles.gameControlContainer}>
-      <img
-        src={NewGame}
-        alt="New Game"
-        className={styles.gameControlButtonImage}
-        onClick={handleNewGame}
-      />
-      <img
-        src={LoadGame}
-        alt="Load Game"
-        className={styles.gameControlButtonImage}
-        onClick={handleLoadGame}
-      />
-      <img
-        src={SaveGame}
-        alt="Save Game"
-        className={styles.gameControlButtonImage}
-        onClick={handleSaveGame}
-      />
+      <NewGameButton onClick={onNewGame} />
+      <LoadGameButton onClick={onLoadGame} />
+      <SaveGameButton onClick={onSaveGame} />
     </div>
   );
 };
