@@ -1,12 +1,9 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
 import NewGame from '../../assets/images/NewGame.png';
+import { GameButtonProps } from './GameButtonProps';
 
-interface NewGameButtonProps {
-  onClick?: () => void;
-}
-
-const NewGameButton: React.FC<NewGameButtonProps> = ({ onClick }) => {
+const NewGameButton: React.FC<GameButtonProps> = ({ onClick }) => {
   const handleNewGame = () => {
     if (onClick) {
       onClick();

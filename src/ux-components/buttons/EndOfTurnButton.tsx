@@ -1,13 +1,9 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
 import EndOfTurn from '../../assets/images/EndOfTurn.png';
+import { GameButtonProps } from './GameButtonProps';
 
-interface EndOfTurnButtonProps {
-  onClick?: () => void;
-  style?: React.CSSProperties;
-}
-
-const EndOfTurnButton: React.FC<EndOfTurnButtonProps> = ({ onClick, style }) => {
+const EndOfTurnButton: React.FC<GameButtonProps> = ({ onClick, style }) => {
   const handleEndTurnClick = () => {
     alert('End of Turn button is pressed!');
     if (onClick) {
