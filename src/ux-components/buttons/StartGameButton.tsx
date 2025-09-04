@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './css/StartGameButton.module.css';
+import styles from './css/GameButton.module.css';
 import StartGame from '../../assets/images/StartGame.png';
 
 interface StartGameButtonProps {
@@ -8,8 +8,8 @@ interface StartGameButtonProps {
 
 const StartGameButton: React.FC<StartGameButtonProps> = ({ onClick }) => {
   return (
-    <div className={styles.startGameButtonContainer}>
-      <img src={StartGame} alt="Start Game" className={styles.startGameImage} onClick={onClick} />
+    <div className={styles.buttonContainerCentered}>
+      <img src={StartGame} alt="Start Game" className={styles.buttonImage} onClick={onClick} />
     </div>
   );
 };

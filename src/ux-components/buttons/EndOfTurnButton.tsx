@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './css/EndOfTurnButton.module.css';
+import styles from './css/GameButton.module.css';
 import EndOfTurn from '../../assets/images/EndOfTurn.png';
 
 interface EndOfTurnButtonProps {
@@ -16,11 +16,11 @@ const EndOfTurnButton: React.FC<EndOfTurnButtonProps> = ({ onClick, style }) => 
   };
 
   return (
-    <div className={styles.endOfTurnButtonContainer} style={style}>
+    <div className={styles.buttonContainer} style={style}>
       <img
         src={EndOfTurn}
         alt="End Turn"
-        className={styles.endOfTurnImage}
+        className={styles.buttonImage}
         onClick={handleEndTurnClick}
       />
     </div>
