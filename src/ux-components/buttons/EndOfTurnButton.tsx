@@ -17,7 +17,12 @@ const EndOfTurnButton: React.FC<EndOfTurnButtonProps> = ({ onClick, style }) => 
 
   return (
     <div className={styles.endOfTurnButtonContainer} style={style}>
-      <img src={EndOfTurn} alt="End Turn" className={styles.endOfTurnImage} onClick={handleEndTurnClick} />
+      <img
+        src={EndOfTurn}
+        alt="End Turn"
+        className={styles.endOfTurnImage}
+        onClick={handleEndTurnClick}
+      />
     </div>
   );
 };
