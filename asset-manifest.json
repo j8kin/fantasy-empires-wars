@@ -1,10 +1,12 @@
 {
   "files": {
-    "main.css": "/fantasy-empires-wars/static/css/main.f5264e9a.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.ae9acfbb.js",
+    "main.css": "/fantasy-empires-wars/static/css/main.967fe7cc.css",
+    "main.js": "/fantasy-empires-wars/static/js/main.bc138c85.js",
     "static/js/787.969f331f.chunk.js": "/fantasy-empires-wars/static/js/787.969f331f.chunk.js",
     "static/media/CelticPatternVertical.png": "/fantasy-empires-wars/static/media/CelticPatternVertical.8f1fe8a5abcd3ac8d2e6.png",
     "static/media/StartGame.png": "/fantasy-empires-wars/static/media/StartGame.7a77e2fd608bec2fa398.png",
+    "static/media/NewGame.png": "/fantasy-empires-wars/static/media/NewGame.8788bddd0db5a39063ab.png",
+    "static/media/SaveGame.png": "/fantasy-empires-wars/static/media/SaveGame.315a78236c4be25db833.png",
     "static/media/enchanter.png": "/fantasy-empires-wars/static/media/enchanter.020c79f3591fb99ef9d7.png",
     "static/media/orc.png": "/fantasy-empires-wars/static/media/orc.7ed076af27d0a660ca8d.png",
     "static/media/cleric.png": "/fantasy-empires-wars/static/media/cleric.6e0d80784b325526c2a4.png",
@@ -14,6 +16,7 @@
     "static/media/clericW2.png": "/fantasy-empires-wars/static/media/clericW2.306a7220b17918557110.png",
     "static/media/druid.png": "/fantasy-empires-wars/static/media/druid.ef1f14b56b35c1d66e9d.png",
     "static/media/rodueW.png": "/fantasy-empires-wars/static/media/rodueW.7ef7537ca9be90c6af4d.png",
+    "static/media/LoadGame.png": "/fantasy-empires-wars/static/media/LoadGame.91731fd35afbe91965ce.png",
     "static/media/dwarf.png": "/fantasy-empires-wars/static/media/dwarf.dfd1fa7dc4df5926bb53.png",
     "static/media/necromancerW.png": "/fantasy-empires-wars/static/media/necromancerW.4de6575e279e16030476.png",
     "static/media/pyromancer.png": "/fantasy-empires-wars/static/media/pyromancer.9af98ba2f3c44fcc189a.png",
@@ -32,12 +35,12 @@
     "static/media/CelticBackground.png": "/fantasy-empires-wars/static/media/CelticBackground.1303f01751ba46f7a77b.png",
     "static/media/darkforest.png": "/fantasy-empires-wars/static/media/darkforest.769c5f60d2d7fe472995.png",
     "index.html": "/fantasy-empires-wars/index.html",
-    "main.f5264e9a.css.map": "/fantasy-empires-wars/static/css/main.f5264e9a.css.map",
-    "main.ae9acfbb.js.map": "/fantasy-empires-wars/static/js/main.ae9acfbb.js.map",
+    "main.967fe7cc.css.map": "/fantasy-empires-wars/static/css/main.967fe7cc.css.map",
+    "main.bc138c85.js.map": "/fantasy-empires-wars/static/js/main.bc138c85.js.map",
     "787.969f331f.chunk.js.map": "/fantasy-empires-wars/static/js/787.969f331f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f5264e9a.css",
-    "static/js/main.ae9acfbb.js"
+    "static/css/main.967fe7cc.css",
+    "static/js/main.bc138c85.js"
   ]
 }
