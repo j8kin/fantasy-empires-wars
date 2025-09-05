@@ -159,20 +159,21 @@ describe('Building Data Integrity', () => {
         .filter((building) => building.goldPerTurn > 0)
         .sort((a, b) => a.goldCost - b.goldCost);
 
+      // Ensure we have at least 2 economic buildings to compare
+      expect(economicBuildings.length).toBeGreaterThanOrEqual(2);
+
       // More expensive economic buildings should generally have higher returns
-      if (economicBuildings.length >= 2) {
-        for (let i = 1; i < economicBuildings.length; i++) {
-          const cheaper = economicBuildings[i - 1];
-          const moreExpensive = economicBuildings[i];
+      for (let i = 1; i < economicBuildings.length; i++) {
+        const cheaper = economicBuildings[i - 1];
+        const moreExpensive = economicBuildings[i];
 
-          // Either higher absolute return or better return-to-cost ratio
-          const cheaperRatio = cheaper.goldPerTurn / cheaper.goldCost;
-          const expensiveRatio = moreExpensive.goldPerTurn / moreExpensive.goldCost;
+        // Either higher absolute return or better return-to-cost ratio
+        const cheaperRatio = cheaper.goldPerTurn / cheaper.goldCost;
+        const expensiveRatio = moreExpensive.goldPerTurn / moreExpensive.goldCost;
 
-          expect(
-            moreExpensive.goldPerTurn > cheaper.goldPerTurn || expensiveRatio >= cheaperRatio * 0.8 // Allow some variance
-          ).toBeTruthy();
-        }
+        expect(
+          moreExpensive.goldPerTurn > cheaper.goldPerTurn || expensiveRatio >= cheaperRatio * 0.8 // Allow some variance
+        ).toBeTruthy();
       }
     });
   });

@@ -60,17 +60,23 @@ describe('useMapState Gold Generation', () => {
         tilesByLandType[tile.landType.id].push(tile);
       });
 
-      // Check each land type
-      Object.keys(LAND_TYPES).forEach((landTypeId) => {
+      // Check each land type that has tiles on the map
+      const landTypesWithTiles = Object.keys(LAND_TYPES).filter((landTypeId) => {
+        const tilesOfType = tilesByLandType[landTypeId];
+        return tilesOfType && tilesOfType.length > 0;
+      });
+
+      // Ensure we have at least some land types to test
+      expect(landTypesWithTiles.length).toBeGreaterThan(0);
+
+      landTypesWithTiles.forEach((landTypeId) => {
         const landType = LAND_TYPES[landTypeId];
         const tilesOfType = tilesByLandType[landTypeId];
 
-        if (tilesOfType && tilesOfType.length > 0) {
-          tilesOfType.forEach((tile) => {
-            expect(tile.goldPerTurn).toBeGreaterThanOrEqual(landType.goldPerTurn.min);
-            expect(tile.goldPerTurn).toBeLessThanOrEqual(landType.goldPerTurn.max);
-          });
-        }
+        tilesOfType.forEach((tile) => {
+          expect(tile.goldPerTurn).toBeGreaterThanOrEqual(landType.goldPerTurn.min);
+          expect(tile.goldPerTurn).toBeLessThanOrEqual(landType.goldPerTurn.max);
+        });
       });
     });
 
@@ -152,16 +158,17 @@ describe('useMapState Gold Generation', () => {
         mountainTiles.forEach((tile) => goldValues.push(tile.goldPerTurn));
       }
 
-      if (goldValues.length > 10) {
-        // Should have values across the range
-        expect(goldValues.some((val) => val === 4)).toBe(true); // min value
-        expect(goldValues.some((val) => val === 6)).toBe(true); // max value
+      // Ensure we have sufficient sample size for statistical analysis
+      expect(goldValues.length).toBeGreaterThan(10);
 
-        // Average should be reasonably close to middle of range (5)
-        const average = goldValues.reduce((sum, val) => sum + val, 0) / goldValues.length;
-        expect(average).toBeGreaterThan(4.5);
-        expect(average).toBeLessThan(5.5);
-      }
+      // Should have values across the range
+      expect(goldValues.some((val) => val === 4)).toBe(true); // min value
+      expect(goldValues.some((val) => val === 6)).toBe(true); // max value
+
+      // Average should be reasonably close to middle of range (5)
+      const average = goldValues.reduce((sum, val) => sum + val, 0) / goldValues.length;
+      expect(average).toBeGreaterThan(4.5);
+      expect(average).toBeLessThan(5.5);
     });
   });
 });

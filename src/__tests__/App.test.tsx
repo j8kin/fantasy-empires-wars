@@ -1,15 +1,15 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import MainView from '../ux-components/main-view/MainView';
 
 describe('App Component', () => {
   it('renders the TopPanel component', () => {
     render(<MainView />);
-    expect(document.querySelector('#TopPanel')).not.toBeNull();
+    expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 
   it('renders the Battlefield component', () => {
     render(<MainView />);
-    expect(document.querySelector('#Battlefield')).not.toBeNull();
+    expect(screen.getByTestId('Battlefield')).toBeInTheDocument();
   });
 });

@@ -81,6 +81,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ battlefieldSize }) => {
   return (
     <div
       id="Battlefield"
+      data-testid="Battlefield"
       className={styles.mapContainer}
       style={
         {

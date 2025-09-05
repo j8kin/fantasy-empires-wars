@@ -1,4 +1,4 @@
-import { UNIT_TYPES, Unit, UnitType } from '../types/Army';
+import { UNIT_TYPES, UnitType } from '../types/Army';
 
 describe('Army Data Integrity', () => {
   describe('UNIT_TYPES Object Structure', () => {
@@ -145,11 +145,11 @@ describe('Army Data Integrity', () => {
     });
 
     it('should have only heroes with mana production', () => {
-      Object.values(UNIT_TYPES).forEach((unit) => {
-        if (unit.mana !== undefined) {
+      Object.values(UNIT_TYPES)
+        .filter((it) => it.mana !== undefined)
+        .forEach((unit) => {
           expect(unit.hero).toBe(true);
-        }
-      });
+        });
     });
 
     it('should have mage heroes produce mana', () => {
@@ -237,13 +237,24 @@ describe('Army Data Integrity', () => {
         // Gold cost should be reasonable compared to stats
         const totalCombatValue = unit.attack + unit.defense + unit.health;
         expect(unit.goldCost).toBeGreaterThan(totalCombatValue * 0.5);
+      });
 
-        // Siege units have special balancing (higher cost for utility)
-        if (unit.type === 'balista' || unit.type === 'catapult') {
-          expect(unit.goldCost).toBeLessThan(totalCombatValue * 15); // Higher tolerance for siege
-        } else {
-          expect(unit.goldCost).toBeLessThan(totalCombatValue * 8); // Normal tolerance
-        }
+      // Siege units have special balancing (higher cost for utility)
+      const siegeUnits = Object.values(UNIT_TYPES).filter(
+        (unit) => unit.type === 'balista' || unit.type === 'catapult'
+      );
+      siegeUnits.forEach((unit) => {
+        const totalCombatValue = unit.attack + unit.defense + unit.health;
+        expect(unit.goldCost).toBeLessThan(totalCombatValue * 15); // Higher tolerance for siege
+      });
+
+      // Non-siege units have normal tolerance
+      const nonSiegeUnits = Object.values(UNIT_TYPES).filter(
+        (unit) => unit.type !== 'balista' && unit.type !== 'catapult'
+      );
+      nonSiegeUnits.forEach((unit) => {
+        const totalCombatValue = unit.attack + unit.defense + unit.health;
+        expect(unit.goldCost).toBeLessThan(totalCombatValue * 8); // Normal tolerance
       });
     });
 
@@ -257,10 +268,14 @@ describe('Army Data Integrity', () => {
     it('should have reasonable movement ranges', () => {
       Object.values(UNIT_TYPES).forEach((unit) => {
         expect(unit.movement).toBeLessThanOrEqual(5); // Max reasonable movement
+      });
 
-        if (unit.type === 'balista' || unit.type === 'catapult') {
-          expect(unit.movement).toBe(0); // Siege engines don't move
-        }
+      // Siege engines should not move
+      const siegeUnits = Object.values(UNIT_TYPES).filter(
+        (unit) => unit.type === 'balista' || unit.type === 'catapult'
+      );
+      siegeUnits.forEach((siege) => {
+        expect(siege.movement).toBe(0); // Siege engines don't move
       });
     });
 
@@ -278,12 +293,14 @@ describe('Army Data Integrity', () => {
     });
 
     it('should have ranged units with appropriate range values', () => {
-      Object.values(UNIT_TYPES).forEach((unit) => {
-        if (unit.range !== undefined) {
-          expect(unit.range).toBeGreaterThanOrEqual(2); // Min useful range (allows for close combat)
-          expect(unit.range).toBeLessThanOrEqual(35); // Max reasonable range
-          expect(unit.rangeDamage).toBeDefined(); // Should have damage if has range
-        }
+      const rangedUnits = Object.values(UNIT_TYPES).filter((unit) => unit.range !== undefined);
+
+      expect(rangedUnits.length).toBeGreaterThan(0); // Ensure we have ranged units to test
+
+      rangedUnits.forEach((unit) => {
+        expect(unit.range).toBeGreaterThanOrEqual(2); // Min useful range (allows for close combat)
+        expect(unit.range).toBeLessThanOrEqual(35); // Max reasonable range
+        expect(unit.rangeDamage).toBeDefined(); // Should have damage if has range
       });
     });
   });
@@ -387,19 +404,25 @@ describe('Army Data Integrity', () => {
     it('should match Unit interface exactly', () => {
       Object.values(UNIT_TYPES).forEach((unit) => {
         // This test ensures the UNIT_TYPES conform to the Unit interface
-        const testUnit: Unit = unit;
-        expect(testUnit).toBeDefined();
+        expect(unit).toBeDefined();
+      });
 
-        // Verify optional properties are handled correctly
-        if (unit.range !== undefined) {
-          expect(typeof unit.range).toBe('number');
-        }
-        if (unit.rangeDamage !== undefined) {
-          expect(typeof unit.rangeDamage).toBe('number');
-        }
-        if (unit.mana !== undefined) {
-          expect(typeof unit.mana).toBe('number');
-        }
+      // Verify optional properties are handled correctly
+      const unitsWithRange = Object.values(UNIT_TYPES).filter((unit) => unit.range !== undefined);
+      unitsWithRange.forEach((unit) => {
+        expect(typeof unit.range).toBe('number');
+      });
+
+      const unitsWithRangeDamage = Object.values(UNIT_TYPES).filter(
+        (unit) => unit.rangeDamage !== undefined
+      );
+      unitsWithRangeDamage.forEach((unit) => {
+        expect(typeof unit.rangeDamage).toBe('number');
+      });
+
+      const unitsWithMana = Object.values(UNIT_TYPES).filter((unit) => unit.mana !== undefined);
+      unitsWithMana.forEach((unit) => {
+        expect(typeof unit.mana).toBe('number');
       });
     });
   });

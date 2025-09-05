@@ -28,7 +28,12 @@ const TopPanel: React.FC<TopPanelProps> = ({
   };
 
   return (
-    <div style={dynamicStyles} id="TopPanel" className={`${styles.frameContainer} top-bar-panel`}>
+    <div
+      id="TopPanel"
+      data-testid="TopPanel"
+      style={dynamicStyles}
+      className={`${styles.frameContainer} top-bar-panel`}
+    >
       <div className={styles.panelContainer}>
         {/* Left Side - Player Info */}
         {selectedPlayer && (
