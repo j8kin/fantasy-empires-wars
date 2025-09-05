@@ -1,0 +1,25 @@
+.opponentsPanelContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1px;
+}
+
+.opponentsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+.avatarRow {
+  display: flex;
+  gap: 1px;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatarContainer {
+  display: flex;
+  justify-content: center;
+}

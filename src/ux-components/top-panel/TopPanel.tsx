@@ -1,10 +1,11 @@
 import React from 'react';
 import { LAYOUT_CONSTANTS } from '../borders/BorderSystem';
-import ManaVial from './ManaVial';
 import { GamePlayer } from '../../types/GamePlayer';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
+import VialPanel from '../vial-panel/VialPanel';
 import styles from './css/TopPanel.module.css';
+import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 
 interface TopPanelProps {
   selectedPlayer?: GamePlayer;
@@ -55,14 +56,9 @@ const TopPanel: React.FC<TopPanelProps> = ({
         )}
 
         {/* Center - Mana Vials */}
-        <div className={styles.vialPanel}>
-          <ManaVial color="black" percentage={75} />
-          <ManaVial color="white" percentage={50} />
-          <ManaVial color="blue" percentage={100} />
-          <ManaVial color="green" percentage={25} />
-          <ManaVial color="red" percentage={5} />
-        </div>
+        <VialPanel />
 
+        <OpponentsPanel selectedPlayer={selectedPlayer} numberOfOpponents={7} />
         {/* Right Side - Game Controls */}
         <GameControl onNewGame={onNewGame} onLoadGame={onLoadGame} onSaveGame={onSaveGame} />
       </div>
