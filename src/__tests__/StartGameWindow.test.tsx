@@ -2,7 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import StartGameWindow from '../ux-components/dialogs/StartGameWindow';
-import { PREDEFINED_PLAYERS, PLAYER_COLORS } from '../types/GamePlayer';
+import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { PLAYER_COLORS } from '../types/PlayerColors';
 
 describe('StartGameWindow', () => {
   const mockOnStartGame = jest.fn();

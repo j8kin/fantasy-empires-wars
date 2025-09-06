@@ -12,6 +12,7 @@ import druidAvatar from '../assets/avatars/druid.png';
 import necromancerMaleAvatar from '../assets/avatars/necromancer.png';
 import pyromancerAvatar from '../assets/avatars/pyromancer.png';
 import pyromancerFemaleAvatar from '../assets/avatars/pyromancerW.png';
+import { PLAYER_COLOR_VALUES } from './PlayerColors';
 
 export type PlayerClass = 'lawful' | 'neutral' | 'chaotic';
 
@@ -157,13 +158,5 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   },
 ];
 
-export const PLAYER_COLORS = [
-  '#4A90E2', // Blue
-  '#C0392B', // Red
-  '#27AE60', // Green
-  '#E67E22', // Orange
-  '#8B4A9C', // Purple
-  '#F1C40F', // Yellow
-  '#95A5A6', // Gray
-  '#2F4F4F', // Dark Slate Gray
-];
+// Re-export for backward compatibility
+export { PLAYER_COLOR_VALUES as PLAYER_COLORS } from './PlayerColors';

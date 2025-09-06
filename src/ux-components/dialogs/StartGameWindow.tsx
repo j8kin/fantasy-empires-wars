@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
-import { GamePlayer, PREDEFINED_PLAYERS, PLAYER_COLORS } from '../../types/GamePlayer';
+import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PLAYER_COLORS } from '../../types/PlayerColors';
 import BorderVerticalCanvas from '../borders/BorderVerticalCanvas';
 import BorderHorizontalCanvas from '../borders/BorderHorizontalCanvas';
 import BorderCornerCanvas from '../borders/BorderCornerCanvas';
@@ -182,7 +183,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
                     player={selectedPlayer}
                     size={120}
                     shape="circle"
-                    borderColor="#d4af37"
+                    borderColor={playerColor}
                     className={styles.selectedAvatarContainer}
                   />
 
@@ -198,14 +199,15 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
           <div className={styles.section}>
             <label className={styles.label}>Your Color:</label>
             <div className={styles.colorPicker}>
-              {PLAYER_COLORS.map((color) => (
+              {PLAYER_COLORS.map((colorObj) => (
                 <div
-                  key={color}
+                  key={colorObj.name}
                   className={`${styles.colorOption} ${
-                    playerColor === color ? styles.selectedColor : ''
+                    playerColor === colorObj.value ? styles.selectedColor : ''
                   }`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => setPlayerColor(color)}
+                  style={{ backgroundColor: colorObj.value }}
+                  onClick={() => setPlayerColor(colorObj.value)}
+                  title={colorObj.displayName}
                 />
               ))}
             </div>
