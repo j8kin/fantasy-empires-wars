@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { PLAYER_COLORS } from '../../types/PlayerColors';
 import BorderVerticalCanvas from '../borders/BorderVerticalCanvas';
 import BorderHorizontalCanvas from '../borders/BorderHorizontalCanvas';
 import BorderCornerCanvas from '../borders/BorderCornerCanvas';
@@ -22,29 +21,23 @@ interface StartGameWindowProps {
 }
 
 const getMaxOpponents = (mapSize: BattlefieldSize): number => {
-  const mapBasedMax = (() => {
-    switch (mapSize) {
-      case 'small':
-        return 2;
-      case 'medium':
-        return 4;
-      case 'large':
-        return 6;
-      case 'huge':
-        return 8;
-      default:
-        return 2;
-    }
-  })();
-
-  // Limit to available colors (8 colors total, 1 for human player = 7 max opponents)
-  return Math.min(mapBasedMax, PLAYER_COLORS.length - 1);
+  switch (mapSize) {
+    case 'small':
+      return 2;
+    case 'medium':
+      return 4;
+    case 'large':
+      return 6;
+    case 'huge':
+      return 7;
+    default:
+      return 2;
+  }
 };
 
 const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel }) => {
   const [mapSize, setMapSize] = useState<BattlefieldSize>('medium');
   const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(PREDEFINED_PLAYERS[0]);
-  const [playerColor, setPlayerColor] = useState<string>(PREDEFINED_PLAYERS[0].defaultColor);
   const [numberOfOpponents, setNumberOfOpponents] = useState<number>(2);
 
   const maxOpponents = getMaxOpponents(mapSize);
@@ -62,18 +55,17 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
 
   const handlePlayerChange = useCallback((player: GamePlayer) => {
     setSelectedPlayer(player);
-    setPlayerColor(player.defaultColor);
   }, []);
 
   const handleStartGame = useCallback(() => {
     const config: StartGameConfig = {
       mapSize,
       selectedPlayer,
-      playerColor,
+      playerColor: selectedPlayer.defaultColor,
       numberOfOpponents,
     };
     onStartGame(config);
-  }, [mapSize, selectedPlayer, playerColor, numberOfOpponents, onStartGame]);
+  }, [mapSize, selectedPlayer, numberOfOpponents, onStartGame]);
 
   const getClassColor = (playerClass: string): string => {
     switch (playerClass) {
@@ -183,7 +175,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
                     player={selectedPlayer}
                     size={120}
                     shape="circle"
-                    borderColor={playerColor}
+                    borderColor={selectedPlayer.defaultColor}
                     className={styles.selectedAvatarContainer}
                   />
 
@@ -195,33 +187,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
             </div>
           </div>
 
-          {/* Player Color Selection */}
-          <div className={styles.section}>
-            <label className={styles.label}>Your Color:</label>
-            <div className={styles.colorPicker}>
-              {PLAYER_COLORS.map((colorObj) => (
-                <div
-                  key={colorObj.name}
-                  className={`${styles.colorOption} ${
-                    playerColor === colorObj.value ? styles.selectedColor : ''
-                  }`}
-                  style={{ backgroundColor: colorObj.value }}
-                  onClick={() => setPlayerColor(colorObj.value)}
-                  title={colorObj.displayName}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className={styles.buttonContainer}>
-            {onCancel && (
-              <button className={styles.cancelButton} onClick={onCancel}>
-                Cancel
-              </button>
-            )}
-            <StartGameButton onClick={handleStartGame} />
-          </div>
+          <StartGameButton onClick={handleStartGame} />
         </div>
       </div>
     </div>

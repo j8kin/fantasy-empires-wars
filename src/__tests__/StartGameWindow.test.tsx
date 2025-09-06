@@ -3,11 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import StartGameWindow from '../ux-components/dialogs/StartGameWindow';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { PLAYER_COLORS } from '../types/PlayerColors';
 
 describe('StartGameWindow', () => {
   const mockOnStartGame = jest.fn();
-  const mockOnCancel = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -37,14 +35,6 @@ describe('StartGameWindow', () => {
     });
   });
 
-  it('renders player color options', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
-    const colorOptions = screen.getAllByRole('generic');
-    // Filter for color picker elements (they have background color style)
-    const colorPickers = colorOptions.filter((el) => el.className.includes('colorOption'));
-    expect(colorPickers.length).toBe(PLAYER_COLORS.length);
-  });
-
   it('calls onStartGame when Start Game button is clicked', () => {
     render(<StartGameWindow onStartGame={mockOnStartGame} />);
     const startButton = screen.getByAltText('Start Game');
@@ -56,27 +46,6 @@ describe('StartGameWindow', () => {
       playerColor: PREDEFINED_PLAYERS[0].defaultColor,
       numberOfOpponents: 2,
     });
-  });
-
-  it('renders cancel button when onCancel prop is provided', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} onCancel={mockOnCancel} />);
-    const cancelButton = screen.getByRole('button', { name: /cancel/i });
-    expect(cancelButton).toBeInTheDocument();
-  });
-
-  it('calls onCancel when cancel button is clicked', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} onCancel={mockOnCancel} />);
-
-    const cancelButton = screen.getByRole('button', { name: /cancel/i });
-    fireEvent.click(cancelButton);
-
-    expect(mockOnCancel).toHaveBeenCalled();
-  });
-
-  it('does not render cancel button when onCancel prop is not provided', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
-    const cancelButton = screen.queryByRole('button', { name: /cancel/i });
-    expect(cancelButton).not.toBeInTheDocument();
   });
 
   it('updates map size when dropdown value changes', () => {
