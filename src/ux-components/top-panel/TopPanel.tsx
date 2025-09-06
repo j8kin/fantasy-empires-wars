@@ -43,7 +43,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
               player={selectedPlayer}
               size={190}
               shape="rectangle"
-              borderColor="#d4af37"
+              borderColor={selectedPlayer.defaultColor}
             />
             <div className={styles.playerDetails}>
               <div className={styles.playerName}>{selectedPlayer.name}</div>
