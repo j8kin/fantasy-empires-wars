@@ -12,7 +12,7 @@ import druidAvatar from '../assets/avatars/druid.png';
 import necromancerMaleAvatar from '../assets/avatars/necromancer.png';
 import pyromancerAvatar from '../assets/avatars/pyromancer.png';
 import pyromancerFemaleAvatar from '../assets/avatars/pyromancerW.png';
-import { PLAYER_COLOR_VALUES } from './PlayerColors';
+import { PlayerColorName } from './PlayerColors';
 
 export type PlayerClass = 'lawful' | 'neutral' | 'chaotic';
 
@@ -23,7 +23,7 @@ export interface GamePlayer {
   level: number; // 1-32
   description: string;
   avatar?: string; // path to avatar image
-  defaultColor: string;
+  defaultColor: PlayerColorName;
 }
 
 export const PREDEFINED_PLAYERS: GamePlayer[] = [
@@ -35,7 +35,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     description:
       'A noble paladin who has sworn to protect the innocent and uphold justice across the realm.',
     avatar: fighterAvatar,
-    defaultColor: '#4A90E2',
+    defaultColor: 'blue',
   },
   {
     id: 'morgana',
@@ -44,7 +44,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 12,
     description: 'A powerful sorceress who seeks forbidden knowledge and commands dark magic.',
     avatar: necromancerAvatar,
-    defaultColor: '#8B4A9C',
+    defaultColor: 'purple',
   },
   {
     id: 'thorin',
@@ -53,7 +53,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 10,
     description: 'A dwarven smith-warrior who values craftsmanship and honor above all else.',
     avatar: dwarfAvatar,
-    defaultColor: '#E67E22',
+    defaultColor: 'orange',
   },
   {
     id: 'vex',
@@ -62,7 +62,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 7,
     description: 'An elven ranger dedicated to protecting the ancient forests and their secrets.',
     avatar: elfAvatar,
-    defaultColor: '#27AE60',
+    defaultColor: 'green',
   },
   {
     id: 'grimjaw',
@@ -71,7 +71,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 15,
     description: 'A brutal orc warlord who leads through fear and seeks to conquer all lands.',
     avatar: orcAvatar,
-    defaultColor: '#C0392B',
+    defaultColor: 'red',
   },
   {
     id: 'serena',
@@ -80,7 +80,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 11,
     description: 'A devout cleric who channels divine power to heal allies and smite evil.',
     avatar: clericAvatar,
-    defaultColor: '#F1C40F',
+    defaultColor: 'yellow',
   },
   {
     id: 'kael',
@@ -90,7 +90,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     description:
       'A wandering mage who seeks to master all schools of magic through experimentation.',
     avatar: enchanterAvatar,
-    defaultColor: '#4A90E2',
+    defaultColor: 'blue',
   },
   {
     id: 'elara',
@@ -100,7 +100,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     description:
       'A sly rogue who uses wit and stealth to achieve goals through any means necessary.',
     avatar: rogueAvatar,
-    defaultColor: '#95A5A6',
+    defaultColor: 'gray',
   },
   {
     id: 'marcus',
@@ -109,7 +109,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 13,
     description: 'A devoted priest who spreads hope and healing throughout the lands.',
     avatar: clericMaleAvatar,
-    defaultColor: '#F1C40F',
+    defaultColor: 'yellow',
   },
   {
     id: 'lydia',
@@ -118,7 +118,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 9,
     description: 'A compassionate healer who tends to the wounded with divine grace.',
     avatar: cleric2Avatar,
-    defaultColor: '#8B4A9C',
+    defaultColor: 'purple',
   },
   {
     id: 'elderoak',
@@ -127,7 +127,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 14,
     description: 'An ancient druid who maintains the balance between civilization and nature.',
     avatar: druidAvatar,
-    defaultColor: '#27AE60',
+    defaultColor: 'green',
   },
   {
     id: 'valdris',
@@ -136,7 +136,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 16,
     description: 'A sinister necromancer who commands the undead and delves into forbidden arts.',
     avatar: necromancerMaleAvatar,
-    defaultColor: '#2F4F4F',
+    defaultColor: 'darkSlateGray',
   },
   {
     id: 'ignatius',
@@ -145,7 +145,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 11,
     description: 'A master of fire magic who forges spells as skillfully as weapons.',
     avatar: pyromancerAvatar,
-    defaultColor: '#E67E22',
+    defaultColor: 'orange',
   },
   {
     id: 'ember',
@@ -154,7 +154,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 10,
     description: 'A fierce sorceress whose burning passion fuels her destructive fire magic.',
     avatar: pyromancerFemaleAvatar,
-    defaultColor: '#C0392B',
+    defaultColor: 'red',
   },
 ];
 
