@@ -13,9 +13,11 @@ const ManaVial: React.FC<ManaVialProps> = ({ color, percentage }) => {
   };
 
   return (
-    <div className={styles.ball}>
+    <div className={styles.ball} data-testid={color + '-mana-vial'}>
       <div className={styles.fill} style={fillStyle}></div>
-      <span className={styles.value}>{percentage}%</span>
+      <span className={styles.value} data-testid={color + '-mana-vial-percentage'}>
+        {percentage}%
+      </span>
     </div>
   );
 };
