@@ -1,6 +1,6 @@
 export type ManaColor = 'white' | 'black' | 'green' | 'blue' | 'red';
 
-export interface ManaProp {
+export interface Mana {
   color: ManaColor;
-  mana: String;
+  mana: number;
 }

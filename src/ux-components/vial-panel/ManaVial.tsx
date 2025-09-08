@@ -1,12 +1,11 @@
 import React from 'react';
+import { Mana } from '../../types/Mana';
 import styles from './css/ManaVial.module.css';
 
-interface ManaVialProps {
-  color: string; // Base color of the ball (e.g., 'rgb(0, 0, 255)')
-  percentage: number; // Fill percentage (0 to 100)
-}
+const ManaVial: React.FC<Mana> = ({ color, mana }) => {
+  const MANA_100_PERCENTAGE = 200;
+  const percentage = mana >= MANA_100_PERCENTAGE ? 100 : mana / 2;
 
-const ManaVial: React.FC<ManaVialProps> = ({ color, percentage }) => {
   const fillStyle: React.CSSProperties = {
     height: `${percentage}%`,
     backgroundColor: color,
