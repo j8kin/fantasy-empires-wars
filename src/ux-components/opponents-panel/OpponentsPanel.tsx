@@ -12,27 +12,28 @@ interface OpponentsPanelProps {
   numberOfOpponents: number;
 }
 
+const getRandomDiplomacyStatus = (): DiplomacyStatus => {
+  const statuses: DiplomacyStatus[] = ['No Treaty', 'Peace', 'War'];
+  return statuses[Math.floor(Math.random() * statuses.length)];
+};
+
+const getRandomOpponents = (
+  excludePlayer?: GamePlayer,
+  count: number = 2
+): OpponentWithDiplomacy[] => {
+  const availablePlayers = PREDEFINED_PLAYERS.filter(
+    (player) => !excludePlayer || player.id !== excludePlayer.id
+  );
+
+  const shuffled = [...availablePlayers].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count).map((player) => ({
+    ...player,
+    diplomacyStatus: getRandomDiplomacyStatus(),
+  }));
+};
+
 const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ selectedPlayer, numberOfOpponents }) => {
   const [selectedOpponent, setSelectedOpponent] = useState<OpponentWithDiplomacy | null>(null);
-  const getRandomDiplomacyStatus = (): DiplomacyStatus => {
-    const statuses: DiplomacyStatus[] = ['No Treaty', 'Peace', 'War'];
-    return statuses[Math.floor(Math.random() * statuses.length)];
-  };
-
-  const getRandomOpponents = (
-    excludePlayer?: GamePlayer,
-    count: number = 2
-  ): OpponentWithDiplomacy[] => {
-    const availablePlayers = PREDEFINED_PLAYERS.filter(
-      (player) => !excludePlayer || player.id !== excludePlayer.id
-    );
-
-    const shuffled = [...availablePlayers].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count).map((player) => ({
-      ...player,
-      diplomacyStatus: getRandomDiplomacyStatus(),
-    }));
-  };
 
   const opponents = useMemo(
     () => getRandomOpponents(selectedPlayer, numberOfOpponents),

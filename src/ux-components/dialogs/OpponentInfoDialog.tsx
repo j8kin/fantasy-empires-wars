@@ -1,5 +1,6 @@
 import React from 'react';
 import { GamePlayer } from '../../types/GamePlayer';
+import PlayerAvatar from '../avatars/PlayerAvatar';
 import styles from './css/OpponentInfoDialog.module.css';
 
 export type DiplomacyStatus = 'No Treaty' | 'Peace' | 'War';
@@ -30,7 +31,16 @@ const OpponentInfoDialog: React.FC<OpponentInfoDialogProps> = ({ opponent, onClo
         </button>
 
         <div className={styles.opponentInfo}>
-          <h3 className={styles.opponentName}>{opponent.name}</h3>
+          <div className={styles.opponentHeader}>
+            <PlayerAvatar
+              player={opponent}
+              size={55}
+              shape="rectangle"
+              borderColor={opponent.color}
+              className={styles.opponentAvatar}
+            />
+            <h3 className={styles.opponentName}>{opponent.name}</h3>
+          </div>
           <div className={styles.opponentDetails}>
             <div className={styles.detailRow}>
               <span className={styles.label}>Race:</span>

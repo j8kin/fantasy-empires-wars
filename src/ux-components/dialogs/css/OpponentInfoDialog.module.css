@@ -57,15 +57,26 @@
   width: 100%;
 }
 
+.opponentHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #8b4513;
+}
+
+.opponentAvatar {
+  flex-shrink: 0;
+}
+
 .opponentName {
   color: #ffd700;
-  margin: 0 0 16px 0;
+  margin: 0;
   font-size: 1.4em;
   font-weight: bold;
-  text-align: center;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  border-bottom: 2px solid #8b4513;
-  padding-bottom: 8px;
+  flex-grow: 1;
 }
 
 .opponentDetails {
