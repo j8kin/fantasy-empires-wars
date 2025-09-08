@@ -147,9 +147,9 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
                       <div className={styles.playerSummary}>
                         <span
                           className={styles.playerClass}
-                          style={{ color: getClassColor(player.class) }}
+                          style={{ color: getClassColor(player.alignment) }}
                         >
-                          {player.class.toUpperCase()}
+                          {player.alignment.toUpperCase()}
                         </span>
                         <span className={styles.playerLevel}>Level {player.level}</span>
                       </div>
@@ -165,9 +165,10 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel
                     <h3 className={styles.selectedPlayerName}>{selectedPlayer.name}</h3>
                     <div
                       className={styles.selectedPlayerClass}
-                      style={{ color: getClassColor(selectedPlayer.class) }}
+                      style={{ color: getClassColor(selectedPlayer.alignment) }}
                     >
-                      {selectedPlayer.class.toUpperCase()} - Level {selectedPlayer.level}
+                      {selectedPlayer.alignment.toUpperCase()} - {selectedPlayer.race} - Level{' '}
+                      {selectedPlayer.level}
                     </div>
                   </div>
 

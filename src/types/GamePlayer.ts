@@ -14,12 +14,14 @@ import pyromancerAvatar from '../assets/avatars/pyromancer.png';
 import pyromancerFemaleAvatar from '../assets/avatars/pyromancerW.png';
 import { PlayerColorName } from './PlayerColors';
 
-export type PlayerClass = 'lawful' | 'neutral' | 'chaotic';
+export type PlayerAlignment = 'lawful' | 'neutral' | 'chaotic';
+export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
 
 export interface GamePlayer {
   id: string;
   name: string;
-  class: PlayerClass;
+  alignment: PlayerAlignment;
+  race: PlayerRace;
   level: number; // 1-32
   description: string;
   avatar?: string; // path to avatar image
@@ -30,7 +32,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'alaric',
     name: 'Alaric the Bold',
-    class: 'lawful',
+    alignment: 'lawful',
+    race: 'Human',
     level: 8,
     description:
       'A noble paladin who has sworn to protect the innocent and uphold justice across the realm.',
@@ -40,7 +43,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'morgana',
     name: 'Morgana Shadowweaver',
-    class: 'chaotic',
+    alignment: 'chaotic',
+    race: 'Undead',
     level: 12,
     description: 'A powerful sorceress who seeks forbidden knowledge and commands dark magic.',
     avatar: necromancerAvatar,
@@ -49,7 +53,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'thorin',
     name: 'Thorin Ironforge',
-    class: 'neutral',
+    alignment: 'neutral',
+    race: 'Dwarf',
     level: 10,
     description: 'A dwarven smith-warrior who values craftsmanship and honor above all else.',
     avatar: dwarfAvatar,
@@ -58,7 +63,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'vex',
     name: 'Vex the Cunning',
-    class: 'lawful',
+    alignment: 'lawful',
+    race: 'Elf',
     level: 7,
     description: 'An elven ranger dedicated to protecting the ancient forests and their secrets.',
     avatar: elfAvatar,
@@ -67,7 +73,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'grimjaw',
     name: 'Grimjaw the Destroyer',
-    class: 'chaotic',
+    alignment: 'chaotic',
+    race: 'Orc',
     level: 15,
     description: 'A brutal orc warlord who leads through fear and seeks to conquer all lands.',
     avatar: orcAvatar,
@@ -76,7 +83,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'serena',
     name: 'Serena Lightbringer',
-    class: 'lawful',
+    alignment: 'lawful',
+    race: 'Human',
     level: 11,
     description: 'A devout cleric who channels divine power to heal allies and smite evil.',
     avatar: clericAvatar,
@@ -85,7 +93,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'kael',
     name: 'Kael Stormwind',
-    class: 'neutral',
+    alignment: 'neutral',
+    race: 'Human',
     level: 9,
     description:
       'A wandering mage who seeks to master all schools of magic through experimentation.',
@@ -95,7 +104,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'elara',
     name: 'Elara Starshot',
-    class: 'chaotic',
+    alignment: 'chaotic',
+    race: 'Dark-elf',
     level: 6,
     description:
       'A sly rogue who uses wit and stealth to achieve goals through any means necessary.',
@@ -105,7 +115,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'marcus',
     name: 'Marcus the Divine',
-    class: 'lawful',
+    alignment: 'lawful',
+    race: 'Human',
     level: 13,
     description: 'A devoted priest who spreads hope and healing throughout the lands.',
     avatar: clericMaleAvatar,
@@ -114,7 +125,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'lydia',
     name: 'Lydia Moonwhisper',
-    class: 'lawful',
+    alignment: 'neutral',
+    race: 'Human',
     level: 9,
     description: 'A compassionate healer who tends to the wounded with divine grace.',
     avatar: cleric2Avatar,
@@ -123,7 +135,8 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'elderoak',
     name: 'Elderoak the Wise',
-    class: 'neutral',
+    alignment: 'neutral',
+    race: 'Elf',
     level: 14,
     description: 'An ancient druid who maintains the balance between civilization and nature.',
     avatar: druidAvatar,
@@ -132,16 +145,18 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'valdris',
     name: 'Valdris Bonecaller',
-    class: 'chaotic',
+    alignment: 'chaotic',
+    race: 'Undead',
     level: 16,
     description: 'A sinister necromancer who commands the undead and delves into forbidden arts.',
     avatar: necromancerMaleAvatar,
-    defaultColor: 'darkSlateGray',
+    defaultColor: 'purple',
   },
   {
     id: 'ignatius',
     name: 'Ignatius Flameforge',
-    class: 'neutral',
+    alignment: 'neutral',
+    race: 'Orc',
     level: 11,
     description: 'A master of fire magic who forges spells as skillfully as weapons.',
     avatar: pyromancerAvatar,
@@ -150,13 +165,11 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'ember',
     name: 'Ember Fireheart',
-    class: 'chaotic',
+    alignment: 'chaotic',
+    race: 'Orc',
     level: 10,
     description: 'A fierce sorceress whose burning passion fuels her destructive fire magic.',
     avatar: pyromancerFemaleAvatar,
     defaultColor: 'red',
   },
 ];
-
-// Re-export for backward compatibility
-export { PLAYER_COLOR_VALUES as PLAYER_COLORS } from './PlayerColors';
