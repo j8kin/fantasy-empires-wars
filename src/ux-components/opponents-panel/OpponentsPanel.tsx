@@ -40,7 +40,7 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ selectedPlayer, numberO
             player={opponent}
             size={numberOfOpponents <= 4 ? 120 : 90}
             shape="circle"
-            borderColor={opponent.defaultColor}
+            borderColor={opponent.color}
           />
         </div>
       ))}

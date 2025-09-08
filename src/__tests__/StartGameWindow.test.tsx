@@ -43,7 +43,7 @@ describe('StartGameWindow', () => {
     expect(mockOnStartGame).toHaveBeenCalledWith({
       mapSize: 'medium',
       selectedPlayer: PREDEFINED_PLAYERS[0],
-      playerColor: PREDEFINED_PLAYERS[0].defaultColor,
+      playerColor: PREDEFINED_PLAYERS[0].color,
       numberOfOpponents: 2,
     });
   });

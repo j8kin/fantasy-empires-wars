@@ -54,7 +54,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
     const config: GameConfig = {
       mapSize,
       selectedPlayer,
-      playerColor: selectedPlayer.defaultColor,
+      playerColor: selectedPlayer.color,
       numberOfOpponents,
     };
     onStartGame(config);
@@ -169,7 +169,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
                     player={selectedPlayer}
                     size={120}
                     shape="circle"
-                    borderColor={selectedPlayer.defaultColor}
+                    borderColor={selectedPlayer.color}
                     className={styles.selectedAvatarContainer}
                   />
 
