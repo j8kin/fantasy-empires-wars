@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerAvatar from '../avatars/PlayerAvatar';
+import OpponentInfoDialog, {
+  OpponentWithDiplomacy,
+  DiplomacyStatus,
+} from '../dialogs/OpponentInfoDialog';
 import styles from './css/OpponentsPanel.module.css';
 
 interface OpponentsPanelProps {
@@ -9,16 +13,31 @@ interface OpponentsPanelProps {
 }
 
 const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ selectedPlayer, numberOfOpponents }) => {
-  const getRandomOpponents = (excludePlayer?: GamePlayer, count: number = 2): GamePlayer[] => {
+  const [selectedOpponent, setSelectedOpponent] = useState<OpponentWithDiplomacy | null>(null);
+  const getRandomDiplomacyStatus = (): DiplomacyStatus => {
+    const statuses: DiplomacyStatus[] = ['No Treaty', 'Peace', 'War'];
+    return statuses[Math.floor(Math.random() * statuses.length)];
+  };
+
+  const getRandomOpponents = (
+    excludePlayer?: GamePlayer,
+    count: number = 2
+  ): OpponentWithDiplomacy[] => {
     const availablePlayers = PREDEFINED_PLAYERS.filter(
       (player) => !excludePlayer || player.id !== excludePlayer.id
     );
 
     const shuffled = [...availablePlayers].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+    return shuffled.slice(0, count).map((player) => ({
+      ...player,
+      diplomacyStatus: getRandomDiplomacyStatus(),
+    }));
   };
 
-  const opponents = getRandomOpponents(selectedPlayer, numberOfOpponents);
+  const opponents = useMemo(
+    () => getRandomOpponents(selectedPlayer, numberOfOpponents),
+    [selectedPlayer, numberOfOpponents]
+  );
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {
@@ -32,10 +51,14 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ selectedPlayer, numberO
 
   const layout = getAvatarLayout(opponents.length);
 
-  const renderAvatarRow = (avatars: GamePlayer[], rowIndex: number) => (
+  const renderAvatarRow = (avatars: OpponentWithDiplomacy[], rowIndex: number) => (
     <div key={rowIndex} className={styles.avatarRow}>
       {avatars.map((opponent) => (
-        <div key={opponent.id} className={styles.avatarContainer}>
+        <div
+          key={opponent.id}
+          className={`${styles.avatarContainer} ${selectedOpponent?.id === opponent.id ? styles.selected : ''}`}
+          onClick={() => setSelectedOpponent(opponent)}
+        >
           <PlayerAvatar
             player={opponent}
             size={numberOfOpponents <= 4 ? 120 : 90}
@@ -57,6 +80,7 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ selectedPlayer, numberO
   return (
     <div className={styles.opponentsPanelContainer}>
       <div className={styles.opponentsGrid}>{avatarRows}</div>
+      <OpponentInfoDialog opponent={selectedOpponent} onClose={() => setSelectedOpponent(null)} />
     </div>
   );
 };
