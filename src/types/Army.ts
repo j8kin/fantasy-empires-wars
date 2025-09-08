@@ -137,9 +137,9 @@ export const UNIT_TYPES: { [key: string]: Unit } = {
   },
   // Dwarf hero
   Hammerlord: {
-    id: 'hummerlord',
+    id: 'hammerlord',
     type: 'warrior',
-    name: 'Hummerlord',
+    name: 'Hammerlord',
     attack: 40,
     defense: 3,
     range: 2,
@@ -152,7 +152,7 @@ export const UNIT_TYPES: { [key: string]: Unit } = {
   },
   // Elf hero
   Ranger: {
-    id: 'archer',
+    id: 'ranger',
     type: 'archer',
     name: 'Ranger',
     attack: 30,

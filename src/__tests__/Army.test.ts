@@ -65,14 +65,7 @@ describe('Army Data Integrity', () => {
 
     it('should have matching ID with object key', () => {
       Object.entries(UNIT_TYPES).forEach(([key, unit]) => {
-        // Handle known inconsistencies in the data
-        if (key === 'Hammerlord') {
-          expect(unit.id).toEqual('hummerlord');
-        } else if (key === 'Ranger') {
-          expect(unit.id).toEqual('archer');
-        } else {
-          expect(unit.id.toLowerCase()).toEqual(key.toLowerCase());
-        }
+        expect(unit.id.toLowerCase()).toEqual(key.toLowerCase());
       });
     });
 
@@ -84,18 +77,20 @@ describe('Army Data Integrity', () => {
         expect(unit.goldCost).toBeGreaterThan(0);
         expect(unit.movement).toBeGreaterThanOrEqual(0);
         expect(unit.level).toBeGreaterThan(0);
-
-        // Optional properties
-        if (unit.range !== undefined) {
-          expect(unit.range).toBeGreaterThan(0);
-        }
-        if (unit.rangeDamage !== undefined) {
-          expect(unit.rangeDamage).toBeGreaterThan(0);
-        }
-        if (unit.mana !== undefined) {
-          expect(unit.mana).toBeGreaterThan(0);
-        }
       });
+      // Optional properties
+      Object.values(UNIT_TYPES)
+        .filter((it) => it.range !== undefined)
+        .forEach((unit) => {
+          expect(unit.range).toBeGreaterThan(0);
+          expect(unit.rangeDamage).toBeDefined();
+          expect(unit.rangeDamage).toBeGreaterThan(0);
+        });
+      Object.values(UNIT_TYPES)
+        .filter((it) => it.mana !== undefined)
+        .forEach((unit) => {
+          expect(unit.mana).toBeGreaterThan(0);
+        });
     });
 
     it('should have non-empty names', () => {
@@ -111,7 +106,7 @@ describe('Army Data Integrity', () => {
       const heroes = Object.values(UNIT_TYPES).filter((unit) => unit.hero);
       const expectedHeroes = [
         'Fighter',
-        'Hummerlord', // Note: This is the actual name in the data
+        'Hammerlord',
         'Ranger',
         'Pyromancer',
         'Cleric',
@@ -356,16 +351,7 @@ describe('Army Data Integrity', () => {
   describe('Data Consistency Checks', () => {
     it('should have consistent key-id-name relationships', () => {
       Object.entries(UNIT_TYPES).forEach(([key, unit]) => {
-        // Handle known inconsistencies in the data
-        if (key === 'Hammerlord') {
-          expect(unit.id).toBe('hummerlord');
-          expect(unit.name).toBe('Hummerlord');
-        } else if (key === 'Ranger') {
-          expect(unit.id).toBe('archer');
-          expect(unit.name).toBe('Ranger');
-        } else {
-          expect(unit.id.toLowerCase()).toBe(key.toLowerCase());
-        }
+        expect(unit.id.toLowerCase()).toBe(key.toLowerCase());
 
         // Name should not be empty
         expect(unit.name).toBeTruthy();
