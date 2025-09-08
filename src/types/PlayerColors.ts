@@ -26,17 +26,5 @@ export const PLAYER_COLORS: PlayerColor[] = [
 ];
 
 // Convenience array of just the color values for backward compatibility
-export const PLAYER_COLOR_VALUES: string[] = PLAYER_COLORS.map((color) => color.value);
-
+PLAYER_COLORS.map((color) => color.value);
 // Helper functions
-export const getPlayerColorByName = (name: PlayerColorName): PlayerColor | undefined => {
-  return PLAYER_COLORS.find((color) => color.name === name);
-};
-
-export const getPlayerColorByValue = (value: string): PlayerColor | undefined => {
-  return PLAYER_COLORS.find((color) => color.value === value);
-};
-
-export const getPlayerColorName = (value: string): PlayerColorName | undefined => {
-  return getPlayerColorByValue(value)?.name;
-};

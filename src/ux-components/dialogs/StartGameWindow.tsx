@@ -35,7 +35,7 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   }
 };
 
-const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame, onCancel }) => {
+const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
   const [mapSize, setMapSize] = useState<BattlefieldSize>('medium');
   const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(PREDEFINED_PLAYERS[0]);
   const [numberOfOpponents, setNumberOfOpponents] = useState<number>(2);
