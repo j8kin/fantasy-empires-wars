@@ -1,7 +1,7 @@
 import React from 'react';
 import BorderTile from './BorderTile';
 import { BorderCanvasProps } from './BorderCanvasProps';
-import CelticPatternCorner from '../../assets/images/CelticPatternCorner.png';
+import CelticPatternCorner from '../../assets/border/CelticPatternCorner.png';
 import './css/BorderStyles.css';
 const BorderCornerCanvas: React.FC<BorderCanvasProps> = ({ isLeft, isTop, xOffset, yOffset }) => {
   xOffset = xOffset == null ? 0 : xOffset;

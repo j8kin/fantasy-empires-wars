@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import styles from './css/Hexagonal.module.css';
 import { LandType } from '../../types/LandType';
 import { HexTileState } from '../../types/HexTileState';
-import darkforestImg from '../../maps/darkforest.png';
-import greenforestImg from '../../maps/greenforest.png';
-import hillsImg from '../../maps/hills.png';
-import lavaImg from '../../maps/lava.png';
-import mountainsImg from '../../maps/mountains.png';
-import plainsImg from '../../maps/plains.png';
-import swampImg from '../../maps/swamp.png';
-import desertImg from '../../maps/desert.png';
-import volcanoImg from '../../maps/volcano.png';
+import darkforestImg from '../../assets/map-tiles/darkforest.png';
+import greenforestImg from '../../assets/map-tiles/greenforest.png';
+import hillsImg from '../../assets/map-tiles/hills.png';
+import lavaImg from '../../assets/map-tiles/lava.png';
+import mountainsImg from '../../assets/map-tiles/mountains.png';
+import plainsImg from '../../assets/map-tiles/plains.png';
+import swampImg from '../../assets/map-tiles/swamp.png';
+import desertImg from '../../assets/map-tiles/desert.png';
+import volcanoImg from '../../assets/map-tiles/volcano.png';
 import LandCharacteristicsPopup from './LandCharacteristicsPopup';
 
 interface HexTileProps {

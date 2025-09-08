@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
-import StartGame from '../../assets/images/StartGame.png';
+import StartGame from '../../assets/buttons/StartGame.png';
 import { GameButtonProps } from './GameButtonProps';
 
 const StartGameButton: React.FC<GameButtonProps> = ({ onClick }) => {

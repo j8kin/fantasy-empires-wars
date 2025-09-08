@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
-import EndOfTurn from '../../assets/images/EndOfTurn.png';
+import EndOfTurn from '../../assets/buttons/EndOfTurn.png';
 import { GameButtonProps } from './GameButtonProps';
 
 const EndOfTurnButton: React.FC<GameButtonProps> = ({ onClick, style }) => {

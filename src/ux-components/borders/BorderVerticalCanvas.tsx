@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import BorderTile from './BorderTile';
-import CelticPatternVertical from '../../assets/images/CelticPatternVertical.png';
+import CelticPatternVertical from '../../assets/border/CelticPatternVertical.png';
 import { BorderCanvasProps } from './BorderCanvasProps';
 import './css/BorderStyles.css';
 
