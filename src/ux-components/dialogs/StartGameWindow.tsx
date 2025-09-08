@@ -7,17 +7,10 @@ import BorderCornerCanvas from '../borders/BorderCornerCanvas';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
 import styles from './css/StartGameWindow.module.css';
-
-interface StartGameConfig {
-  mapSize: BattlefieldSize;
-  selectedPlayer: GamePlayer;
-  playerColor: string;
-  numberOfOpponents: number;
-}
+import { GameConfig } from '../../types/GameConfig';
 
 interface StartGameWindowProps {
-  onStartGame: (config: StartGameConfig) => void;
-  onCancel?: () => void;
+  onStartGame: (config: GameConfig) => void;
 }
 
 const getMaxOpponents = (mapSize: BattlefieldSize): number => {
@@ -58,7 +51,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
   }, []);
 
   const handleStartGame = useCallback(() => {
-    const config: StartGameConfig = {
+    const config: GameConfig = {
       mapSize,
       selectedPlayer,
       playerColor: selectedPlayer.defaultColor,

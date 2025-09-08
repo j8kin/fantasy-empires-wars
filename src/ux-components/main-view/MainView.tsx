@@ -6,22 +6,15 @@ import Battlefield from '../battlefield/Battlefield';
 import EndOfTurnButton from '../buttons/EndOfTurnButton';
 import StartGameWindow from '../dialogs/StartGameWindow';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
-import { GamePlayer } from '../../types/GamePlayer';
-
-interface StartGameConfig {
-  mapSize: BattlefieldSize;
-  selectedPlayer: GamePlayer;
-  playerColor: string;
-  numberOfOpponents: number;
-}
+import { GameConfig } from '../../types/GameConfig';
 
 const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [battlefieldSize, setBattlefieldSize] = useState<BattlefieldSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [gameConfig, setGameConfig] = useState<StartGameConfig | null>(null);
+  const [gameConfig, setGameConfig] = useState<GameConfig | undefined>(undefined);
 
-  const handleStartGame = useCallback((config: StartGameConfig) => {
+  const handleStartGame = useCallback((config: GameConfig) => {
     setGameConfig(config);
     setBattlefieldSize(config.mapSize);
     setShowStartWindow(false);
@@ -40,8 +33,7 @@ const MainView: React.FC = () => {
 
       {/* Content components */}
       <TopPanel
-        selectedPlayer={gameConfig?.selectedPlayer}
-        playerColor={gameConfig?.playerColor}
+        config={gameConfig}
         onNewGame={handleShowStartWindow}
         onLoadGame={() => console.log('Load Game functionality to be implemented')}
         onSaveGame={() => console.log('Save Game functionality to be implemented')}
