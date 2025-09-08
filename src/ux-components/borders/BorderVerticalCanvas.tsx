@@ -1,17 +1,48 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import BorderTile from './BorderTile';
 import CelticPatternVertical from '../../assets/images/CelticPatternVertical.png';
 import { BorderCanvasProps } from './BorderCanvasProps';
 import './css/BorderStyles.css';
 
 const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [availableHeight, setAvailableHeight] = useState<number>(0);
   const tileHeight = 180;
-  const availableHeight = window.innerHeight;
   const numTiles = Math.ceil(availableHeight / tileHeight);
   const yOffset = 0; // Start from top corner
 
+  useEffect(() => {
+    const updateAvailableHeight = () => {
+      if (containerRef.current) {
+        const parentElement = containerRef.current.parentElement;
+        if (parentElement) {
+          setAvailableHeight(parentElement.clientHeight);
+        }
+      }
+    };
+
+    updateAvailableHeight();
+
+    const handleResize = () => {
+      updateAvailableHeight();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <>
+    <div
+      ref={containerRef}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+      }}
+    >
       {Array.from({ length: numTiles }).map((_, index) => {
         const position = yOffset + index * tileHeight;
 
@@ -38,7 +69,7 @@ const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
           />
         );
       })}
-    </>
+    </div>
   );
 };
 
