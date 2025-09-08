@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import BorderVerticalCanvas from '../borders/BorderVerticalCanvas';
-import BorderHorizontalCanvas from '../borders/BorderHorizontalCanvas';
-import BorderCornerCanvas from '../borders/BorderCornerCanvas';
+import VerticalOrnament from '../borders/VerticalOrnament';
+import HorizontalOrnament from '../borders/HorizontalOrnament';
+import CornerOrnament from '../borders/CornerOrnament';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
 import styles from './css/StartGameWindow.module.css';
@@ -77,14 +77,14 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
     <div className={styles.overlay}>
       <div className={styles.window}>
         {/* Border System */}
-        <BorderVerticalCanvas isLeft={true} />
-        <BorderVerticalCanvas isLeft={false} />
-        <BorderHorizontalCanvas isTop={true} yOffset={0} />
-        <BorderHorizontalCanvas isTop={false} yOffset={0} />
-        <BorderCornerCanvas isTop={true} isLeft={true} />
-        <BorderCornerCanvas isTop={true} isLeft={false} />
-        <BorderCornerCanvas isTop={false} isLeft={true} />
-        <BorderCornerCanvas isTop={false} isLeft={false} />
+        <VerticalOrnament isLeft={true} />
+        <VerticalOrnament isLeft={false} />
+        <HorizontalOrnament isTop={true} yOffset={0} />
+        <HorizontalOrnament isTop={false} yOffset={0} />
+        <CornerOrnament isTop={true} isLeft={true} />
+        <CornerOrnament isTop={true} isLeft={false} />
+        <CornerOrnament isTop={false} isLeft={true} />
+        <CornerOrnament isTop={false} isLeft={false} />
 
         <div className={styles.content}>
           <h1 className={styles.title}>Start New Game</h1>

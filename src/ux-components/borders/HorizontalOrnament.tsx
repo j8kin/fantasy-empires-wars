@@ -1,38 +1,19 @@
-import React, { useRef, useEffect, useState } from 'react';
-import BorderTile from './BorderTile';
+import React from 'react';
+import Ornament from './Ornament';
 import CelticPatternVertical from '../../assets/border/CelticPatternVertical.png';
-import { BorderCanvasProps } from './BorderCanvasProps';
+import { OrnamentPositionProps } from './OrnamentPositionProps';
+import { useContainerDimensions } from './hooks/useContainerDimensions';
 import './css/BorderStyles.css';
 
-const BorderHorizontalCanvas: React.FC<BorderCanvasProps> = ({ isTop, yOffset }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [availableWidth, setAvailableWidth] = useState<number>(0);
+const HorizontalOrnament: React.FC<OrnamentPositionProps> = ({ isTop, yOffset }) => {
+  const { containerRef, dimensions } = useContainerDimensions();
+  const availableWidth = dimensions.width;
   const tileWidth = 50;
   const tileHeight = 180;
   // After rotating by 90deg, each tile occupies tileHeight horizontally
   const numTiles = Math.ceil(availableWidth / tileHeight);
   const initialLeftOffset = 0;
   const initialTopOffset = (tileWidth - tileHeight) / 2 + (yOffset == null ? 0 : yOffset);
-
-  useEffect(() => {
-    const updateAvailableWidth = () => {
-      if (containerRef.current) {
-        const parentElement = containerRef.current.parentElement;
-        if (parentElement) {
-          setAvailableWidth(parentElement.clientWidth);
-        }
-      }
-    };
-
-    updateAvailableWidth();
-
-    const handleResize = () => {
-      updateAvailableWidth();
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   return (
     <div
@@ -50,7 +31,7 @@ const BorderHorizontalCanvas: React.FC<BorderCanvasProps> = ({ isTop, yOffset })
         const position = initialLeftOffset + index * tileHeight;
 
         return (
-          <BorderTile
+          <Ornament
             key={index}
             src={CelticPatternVertical}
             alt={isTop ? 'Horizontal Side Top' : 'Horizontal Side Bottom'}
@@ -68,4 +49,4 @@ const BorderHorizontalCanvas: React.FC<BorderCanvasProps> = ({ isTop, yOffset })
   );
 };
 
-export default BorderHorizontalCanvas;
+export default HorizontalOrnament;

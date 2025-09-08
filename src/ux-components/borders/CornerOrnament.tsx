@@ -1,9 +1,9 @@
 import React from 'react';
-import BorderTile from './BorderTile';
-import { BorderCanvasProps } from './BorderCanvasProps';
+import Ornament from './Ornament';
+import { OrnamentPositionProps } from './OrnamentPositionProps';
 import CelticPatternCorner from '../../assets/border/CelticPatternCorner.png';
 import './css/BorderStyles.css';
-const BorderCornerCanvas: React.FC<BorderCanvasProps> = ({ isLeft, isTop, xOffset, yOffset }) => {
+const CornerOrnament: React.FC<OrnamentPositionProps> = ({ isLeft, isTop, xOffset, yOffset }) => {
   xOffset = xOffset == null ? 0 : xOffset;
   yOffset = yOffset == null ? 0 : yOffset;
 
@@ -33,7 +33,7 @@ const BorderCornerCanvas: React.FC<BorderCanvasProps> = ({ isLeft, isTop, xOffse
   };
 
   return (
-    <BorderTile
+    <Ornament
       src={CelticPatternCorner}
       alt={(isLeft ? 'Left ' : 'Right ') + (isTop ? 'Top ' : 'Bottom ') + 'Corner'}
       className={getCornerClassName()}
@@ -42,4 +42,4 @@ const BorderCornerCanvas: React.FC<BorderCanvasProps> = ({ isLeft, isTop, xOffse
   );
 };
 
-export default BorderCornerCanvas;
+export default CornerOrnament;

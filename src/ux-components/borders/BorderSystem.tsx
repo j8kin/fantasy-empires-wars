@@ -1,7 +1,7 @@
 import React from 'react';
-import BorderVerticalCanvas from './BorderVerticalCanvas';
-import BorderHorizontalCanvas from './BorderHorizontalCanvas';
-import BorderCornerCanvas from './BorderCornerCanvas';
+import VerticalOrnament from './VerticalOrnament';
+import HorizontalOrnament from './HorizontalOrnament';
+import CornerOrnament from './CornerOrnament';
 
 // Layout constants for consistent sizing
 export const LAYOUT_CONSTANTS = {
@@ -19,27 +19,27 @@ const BorderSystem: React.FC = () => {
   return (
     <>
       {/* Vertical borders - full height from top to bottom without scrolling */}
-      <BorderVerticalCanvas isLeft={true} />
-      <BorderVerticalCanvas isLeft={false} />
+      <VerticalOrnament isLeft={true} />
+      <VerticalOrnament isLeft={false} />
 
       {/* Top horizontal border */}
-      <BorderHorizontalCanvas isTop={true} yOffset={0} />
+      <HorizontalOrnament isTop={true} yOffset={0} />
 
       {/* Middle horizontal border between ManaPanel and MainMap */}
-      <BorderHorizontalCanvas isTop={true} yOffset={manaPanelBottomY} />
+      <HorizontalOrnament isTop={true} yOffset={manaPanelBottomY} />
 
       {/* Bottom horizontal border */}
-      <BorderHorizontalCanvas isTop={false} yOffset={0} />
+      <HorizontalOrnament isTop={false} yOffset={0} />
 
       {/* Corner borders - window corners */}
-      <BorderCornerCanvas isTop={true} isLeft={true} />
-      <BorderCornerCanvas isTop={true} isLeft={false} />
-      <BorderCornerCanvas isTop={false} isLeft={true} />
-      <BorderCornerCanvas isTop={false} isLeft={false} />
+      <CornerOrnament isTop={true} isLeft={true} />
+      <CornerOrnament isTop={true} isLeft={false} />
+      <CornerOrnament isTop={false} isLeft={true} />
+      <CornerOrnament isTop={false} isLeft={false} />
 
       {/* Corner borders at ends of middle horizontal border */}
-      <BorderCornerCanvas isTop={true} isLeft={true} yOffset={manaPanelBottomY} />
-      <BorderCornerCanvas isTop={true} isLeft={false} yOffset={manaPanelBottomY} />
+      <CornerOrnament isTop={true} isLeft={true} yOffset={manaPanelBottomY} />
+      <CornerOrnament isTop={true} isLeft={false} yOffset={manaPanelBottomY} />
     </>
   );
 };

@@ -1,35 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import BorderTile from './BorderTile';
+import React from 'react';
+import Ornament from './Ornament';
 import CelticPatternVertical from '../../assets/border/CelticPatternVertical.png';
-import { BorderCanvasProps } from './BorderCanvasProps';
+import { OrnamentPositionProps } from './OrnamentPositionProps';
+import { useContainerDimensions } from './hooks/useContainerDimensions';
 import './css/BorderStyles.css';
 
-const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [availableHeight, setAvailableHeight] = useState<number>(0);
+const VerticalOrnament: React.FC<OrnamentPositionProps> = ({ isLeft }) => {
+  const { containerRef, dimensions } = useContainerDimensions();
+  const availableHeight = dimensions.height;
   const tileHeight = 180;
   const numTiles = Math.ceil(availableHeight / tileHeight);
   const yOffset = 0; // Start from top corner
-
-  useEffect(() => {
-    const updateAvailableHeight = () => {
-      if (containerRef.current) {
-        const parentElement = containerRef.current.parentElement;
-        if (parentElement) {
-          setAvailableHeight(parentElement.clientHeight);
-        }
-      }
-    };
-
-    updateAvailableHeight();
-
-    const handleResize = () => {
-      updateAvailableHeight();
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   return (
     <div
@@ -57,7 +38,7 @@ const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
         if (adjustedHeight <= 0) return null;
 
         return (
-          <BorderTile
+          <Ornament
             key={index}
             src={CelticPatternVertical}
             alt={isLeft ? 'Vertical Side Left' : 'Vertical Side Right'}
@@ -73,4 +54,4 @@ const BorderVerticalCanvas: React.FC<BorderCanvasProps> = ({ isLeft }) => {
   );
 };
 
-export default BorderVerticalCanvas;
+export default VerticalOrnament;
