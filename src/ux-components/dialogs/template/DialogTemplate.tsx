@@ -36,7 +36,7 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
   secondaryButton,
   tileSize = defaultTileSize,
 }) => {
-  const { vertical, horizontal, corner } = tileSize;
+  const { vertical, corner } = tileSize;
 
   // Calculate number of tiles needed
   const numVerticalTiles = Math.ceil((height - corner.height * 2) / vertical.height);
