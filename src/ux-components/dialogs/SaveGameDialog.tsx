@@ -47,7 +47,10 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
       <div style={{ textAlign: 'center', color: 'white' }}>
         <h2 style={{ marginBottom: '30px', fontSize: '24px' }}>Save Game</h2>
         <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="saveName" style={{ display: 'block', marginBottom: '10px', fontSize: '18px' }}>
+          <label
+            htmlFor="saveName"
+            style={{ display: 'block', marginBottom: '10px', fontSize: '18px' }}
+          >
             Enter save name:
           </label>
           <input
@@ -63,7 +66,7 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
               borderRadius: '5px',
               border: '2px solid #8B4513',
               backgroundColor: '#2F2F2F',
-              color: 'white'
+              color: 'white',
             }}
             placeholder="My Game Save"
             autoFocus

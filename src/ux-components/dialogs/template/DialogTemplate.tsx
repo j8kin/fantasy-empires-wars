@@ -23,7 +23,7 @@ export interface DialogTemplateProps {
 const defaultTileSize: DialogTileSize = {
   vertical: { width: 50, height: 180 },
   horizontal: { width: 180, height: 50 },
-  corner: { width: 50, height: 50 }
+  corner: { width: 50, height: 50 },
 };
 
 const DialogTemplate: React.FC<DialogTemplateProps> = ({
@@ -34,7 +34,7 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
   children,
   primaryButton,
   secondaryButton,
-  tileSize = defaultTileSize
+  tileSize = defaultTileSize,
 }) => {
   const { vertical, horizontal, corner } = tileSize;
 
@@ -60,7 +60,7 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
           height: '100vh',
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
           zIndex: 999,
-          pointerEvents: 'auto'
+          pointerEvents: 'auto',
         }}
       />
       {/* Dialog */}
@@ -72,173 +72,165 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
           width,
           height,
           pointerEvents: 'auto',
-          zIndex: 1000
+          zIndex: 1000,
         }}
       >
-      {/* Corner ornaments */}
-      <img
-        src={CelticPatternCorner}
-        alt="Top Left Corner"
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          width: corner.width,
-          height: corner.height
-        }}
-      />
-      <img
-        src={CelticPatternCorner}
-        alt="Top Right Corner"
-        style={{
-          position: 'absolute',
-          right: 0,
-          top: 0,
-          width: corner.width,
-          height: corner.height,
-          transform: 'rotate(90deg)'
-        }}
-      />
-      <img
-        src={CelticPatternCorner}
-        alt="Bottom Left Corner"
-        style={{
-          position: 'absolute',
-          left: 0,
-          bottom: 0,
-          width: corner.width,
-          height: corner.height,
-          transform: 'rotate(270deg)'
-        }}
-      />
-      <img
-        src={CelticPatternCorner}
-        alt="Bottom Right Corner"
-        style={{
-          position: 'absolute',
-          right: 0,
-          bottom: 0,
-          width: corner.width,
-          height: corner.height,
-          transform: 'rotate(180deg)'
-        }}
-      />
-
-      {/* Top horizontal border */}
-      {Array.from({ length: numHorizontalTiles }).map((_, index) => (
+        {/* Corner ornaments */}
         <img
-          key={`top-${index}`}
-          src={CelticPatternVertical}
-          alt="Top Border"
-          style={{
-            position: 'absolute',
-            left: corner.width + index * vertical.height,
-            top: 0,
-            width: vertical.height,
-            height: vertical.width,
-            transform: 'rotate(90deg)',
-            transformOrigin: 'center'
-          }}
-        />
-      ))}
-
-      {/* Bottom horizontal border */}
-      {Array.from({ length: numHorizontalTiles }).map((_, index) => (
-        <img
-          key={`bottom-${index}`}
-          src={CelticPatternVertical}
-          alt="Bottom Border"
-          style={{
-            position: 'absolute',
-            left: corner.width + index * vertical.height,
-            bottom: 0,
-            width: vertical.height,
-            height: vertical.width,
-            transform: 'rotate(270deg)',
-            transformOrigin: 'center'
-          }}
-        />
-      ))}
-
-      {/* Left vertical border */}
-      {Array.from({ length: numVerticalTiles }).map((_, index) => (
-        <img
-          key={`left-${index}`}
-          src={CelticPatternVertical}
-          alt="Left Border"
+          src={CelticPatternCorner}
+          alt="Top Left Corner"
           style={{
             position: 'absolute',
             left: 0,
-            top: corner.height + index * vertical.height,
-            width: vertical.width,
-            height: vertical.height
+            top: 0,
+            width: corner.width,
+            height: corner.height,
           }}
         />
-      ))}
-
-      {/* Right vertical border */}
-      {Array.from({ length: numVerticalTiles }).map((_, index) => (
         <img
-          key={`right-${index}`}
-          src={CelticPatternVertical}
-          alt="Right Border"
+          src={CelticPatternCorner}
+          alt="Top Right Corner"
           style={{
             position: 'absolute',
             right: 0,
-            top: corner.height + index * vertical.height,
-            width: vertical.width,
-            height: vertical.height,
-            transform: 'rotate(180deg)',
-            transformOrigin: 'center'
+            top: 0,
+            width: corner.width,
+            height: corner.height,
+            transform: 'rotate(90deg)',
           }}
         />
-      ))}
+        <img
+          src={CelticPatternCorner}
+          alt="Bottom Left Corner"
+          style={{
+            position: 'absolute',
+            left: 0,
+            bottom: 0,
+            width: corner.width,
+            height: corner.height,
+            transform: 'rotate(270deg)',
+          }}
+        />
+        <img
+          src={CelticPatternCorner}
+          alt="Bottom Right Corner"
+          style={{
+            position: 'absolute',
+            right: 0,
+            bottom: 0,
+            width: corner.width,
+            height: corner.height,
+            transform: 'rotate(180deg)',
+          }}
+        />
 
-      {/* Dialog content area */}
-      <div
-        style={{
-          position: 'absolute',
-          left: contentX,
-          top: contentY,
-          width: contentWidth,
-          height: contentHeight,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: '20px',
-          boxSizing: 'border-box',
-          overflowY: 'auto'
-        }}
-      >
-        {children}
-      </div>
+        {/* Top horizontal border */}
+        {Array.from({ length: numHorizontalTiles }).map((_, index) => (
+          <img
+            key={`top-${index}`}
+            src={CelticPatternVertical}
+            alt="Top Border"
+            style={{
+              position: 'absolute',
+              left: corner.width + index * vertical.height,
+              top: 0,
+              width: vertical.height,
+              height: vertical.width,
+              transform: 'rotate(90deg)',
+              transformOrigin: 'center',
+            }}
+          />
+        ))}
 
-      {/* Button area on bottom border */}
-      {(primaryButton || secondaryButton) && (
+        {/* Bottom horizontal border */}
+        {Array.from({ length: numHorizontalTiles }).map((_, index) => (
+          <img
+            key={`bottom-${index}`}
+            src={CelticPatternVertical}
+            alt="Bottom Border"
+            style={{
+              position: 'absolute',
+              left: corner.width + index * vertical.height,
+              bottom: 0,
+              width: vertical.height,
+              height: vertical.width,
+              transform: 'rotate(270deg)',
+              transformOrigin: 'center',
+            }}
+          />
+        ))}
+
+        {/* Left vertical border */}
+        {Array.from({ length: numVerticalTiles }).map((_, index) => (
+          <img
+            key={`left-${index}`}
+            src={CelticPatternVertical}
+            alt="Left Border"
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: corner.height + index * vertical.height,
+              width: vertical.width,
+              height: vertical.height,
+            }}
+          />
+        ))}
+
+        {/* Right vertical border */}
+        {Array.from({ length: numVerticalTiles }).map((_, index) => (
+          <img
+            key={`right-${index}`}
+            src={CelticPatternVertical}
+            alt="Right Border"
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: corner.height + index * vertical.height,
+              width: vertical.width,
+              height: vertical.height,
+              transform: 'rotate(180deg)',
+              transformOrigin: 'center',
+            }}
+          />
+        ))}
+
+        {/* Dialog content area */}
         <div
           style={{
             position: 'absolute',
             left: contentX,
-            bottom: 0,
+            top: contentY,
             width: contentWidth,
-            height: Math.max(vertical.width, 60),
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '20px',
-            zIndex: 1001
+            height: contentHeight,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: '20px',
+            boxSizing: 'border-box',
+            overflowY: 'auto',
           }}
         >
-          {primaryButton && (
-            <div className={styles.buttonContainer}>
-              {primaryButton}
-            </div>
-          )}
-          {secondaryButton && (
-            <div className={styles.buttonContainer}>
-              {secondaryButton}
-            </div>
-          )}
+          {children}
         </div>
-      )}
+
+        {/* Button area on bottom border */}
+        {(primaryButton || secondaryButton) && (
+          <div
+            style={{
+              position: 'absolute',
+              left: contentX,
+              bottom: 0,
+              width: contentWidth,
+              height: Math.max(vertical.width, 60),
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '20px',
+              zIndex: 1001,
+            }}
+          >
+            {primaryButton && <div className={styles.buttonContainer}>{primaryButton}</div>}
+            {secondaryButton && <div className={styles.buttonContainer}>{secondaryButton}</div>}
+          </div>
+        )}
       </div>
     </>
   );
