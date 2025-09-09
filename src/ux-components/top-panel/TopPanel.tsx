@@ -11,7 +11,7 @@ interface TopPanelProps {
   config?: GameConfig;
   onNewGame?: () => void;
   onLoadGame?: () => void;
-  onSaveGame?: () => void;
+  onSaveGame?: (saveName: string) => void;
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ config, onNewGame, onLoadGame, onSaveGame }) => {

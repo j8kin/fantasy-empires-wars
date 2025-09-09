@@ -11,9 +11,7 @@ const CancelButton: React.FC<GameButtonProps> = ({ onClick, style }) => {
   };
 
   return (
-    <div className={styles.buttonContainer} style={style}>
-      <img src={Cancel} alt="Cancel" className={styles.buttonImage} onClick={handleCancel} />
-    </div>
+    <img src={Cancel} alt="Cancel" className={styles.buttonImage} onClick={handleCancel} />
   );
 };
 
