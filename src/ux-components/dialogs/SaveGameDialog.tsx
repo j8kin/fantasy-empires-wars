@@ -30,8 +30,8 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
   };
 
   // Center the dialog on screen (assuming 1920x1080 viewport)
-  const dialogWidth = 600;
-  const dialogHeight = 400;
+  const dialogWidth = 730;
+  const dialogHeight = 500;
   const x = (window.innerWidth - dialogWidth) / 2;
   const y = (window.innerHeight - dialogHeight) / 2;
 

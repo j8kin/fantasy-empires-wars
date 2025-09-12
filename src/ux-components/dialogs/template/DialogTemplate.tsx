@@ -1,12 +1,12 @@
 import React from 'react';
-import CelticPatternVertical from '../../../assets/border/CelticPatternVertical.png';
-import CelticPatternCorner from '../../../assets/border/CelticPatternCorner.png';
+import BorderCorner from './BorderCorner';
+import BorderHorizontal from './BorderHorizontal';
+import BorderVertical from './BorderVertical';
 import styles from './css/DialogTemplate.module.css';
 
-export interface DialogTileSize {
-  vertical: { width: number; height: number };
-  horizontal: { width: number; height: number };
-  corner: { width: number; height: number };
+export interface BorderTileSize {
+  width: number;
+  height: number;
 }
 
 export interface DialogTemplateProps {
@@ -17,14 +17,15 @@ export interface DialogTemplateProps {
   children: React.ReactNode;
   primaryButton?: React.ReactElement;
   secondaryButton?: React.ReactElement;
-  tileSize?: DialogTileSize;
+  tileSize?: BorderTileSize;
 }
 
-const defaultTileSize: DialogTileSize = {
-  vertical: { width: 50, height: 180 },
-  horizontal: { width: 180, height: 50 },
-  corner: { width: 50, height: 50 },
+// 50*180 since base tile is vertical
+const defaultTileSize: BorderTileSize = {
+  width: 50,
+  height: 180,
 };
+const cornerSize = (tileSize: BorderTileSize): number => Math.min(tileSize.width, tileSize.height);
 
 const DialogTemplate: React.FC<DialogTemplateProps> = ({
   x,
@@ -36,18 +37,6 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
   secondaryButton,
   tileSize = defaultTileSize,
 }) => {
-  const { vertical, corner } = tileSize;
-
-  // Calculate number of tiles needed
-  const numVerticalTiles = Math.ceil((height - corner.height * 2) / vertical.height);
-  const numHorizontalTiles = Math.ceil((width - corner.width * 2) / vertical.height);
-
-  // Calculate inner content area
-  const contentX = corner.width;
-  const contentY = corner.height;
-  const contentWidth = width - corner.width * 2;
-  const contentHeight = height - corner.height * 2 - Math.max(vertical.width, 60); // Reserve space for bottom buttons (min 60px for button visibility)
-
   return (
     <>
       {/* Backdrop */}
@@ -76,132 +65,27 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
         }}
       >
         {/* Corner ornaments */}
-        <img
-          src={CelticPatternCorner}
-          alt="Top Left Corner"
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            width: corner.width,
-            height: corner.height,
-          }}
-        />
-        <img
-          src={CelticPatternCorner}
-          alt="Top Right Corner"
-          style={{
-            position: 'absolute',
-            right: 0,
-            top: 0,
-            width: corner.width,
-            height: corner.height,
-            transform: 'rotate(90deg)',
-          }}
-        />
-        <img
-          src={CelticPatternCorner}
-          alt="Bottom Left Corner"
-          style={{
-            position: 'absolute',
-            left: 0,
-            bottom: 0,
-            width: corner.width,
-            height: corner.height,
-            transform: 'rotate(270deg)',
-          }}
-        />
-        <img
-          src={CelticPatternCorner}
-          alt="Bottom Right Corner"
-          style={{
-            position: 'absolute',
-            right: 0,
-            bottom: 0,
-            width: corner.width,
-            height: corner.height,
-            transform: 'rotate(180deg)',
-          }}
-        />
+        <BorderCorner position="top-left" size={cornerSize(tileSize)} />
+        <BorderCorner position="top-right" size={cornerSize(tileSize)} />
+        <BorderCorner position="bottom-left" size={cornerSize(tileSize)} />
+        <BorderCorner position="bottom-right" size={cornerSize(tileSize)} />
 
-        {/* Top horizontal border */}
-        {Array.from({ length: numHorizontalTiles }).map((_, index) => (
-          <img
-            key={`top-${index}`}
-            src={CelticPatternVertical}
-            alt="Top Border"
-            style={{
-              position: 'absolute',
-              left: corner.width + index * vertical.height,
-              top: 0,
-              width: vertical.height,
-              height: vertical.width,
-              transform: 'rotate(90deg)',
-              transformOrigin: 'center',
-            }}
-          />
-        ))}
+        {/* Horizontal border */}
+        <BorderHorizontal side="top" tileSize={tileSize} length={width} />
+        <BorderHorizontal side="bottom" tileSize={tileSize} length={width} />
 
-        {/* Bottom horizontal border */}
-        {Array.from({ length: numHorizontalTiles }).map((_, index) => (
-          <img
-            key={`bottom-${index}`}
-            src={CelticPatternVertical}
-            alt="Bottom Border"
-            style={{
-              position: 'absolute',
-              left: corner.width + index * vertical.height,
-              bottom: 0,
-              width: vertical.height,
-              height: vertical.width,
-              transform: 'rotate(270deg)',
-              transformOrigin: 'center',
-            }}
-          />
-        ))}
-
-        {/* Left vertical border */}
-        {Array.from({ length: numVerticalTiles }).map((_, index) => (
-          <img
-            key={`left-${index}`}
-            src={CelticPatternVertical}
-            alt="Left Border"
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: corner.height + index * vertical.height,
-              width: vertical.width,
-              height: vertical.height,
-            }}
-          />
-        ))}
-
-        {/* Right vertical border */}
-        {Array.from({ length: numVerticalTiles }).map((_, index) => (
-          <img
-            key={`right-${index}`}
-            src={CelticPatternVertical}
-            alt="Right Border"
-            style={{
-              position: 'absolute',
-              right: 0,
-              top: corner.height + index * vertical.height,
-              width: vertical.width,
-              height: vertical.height,
-              transform: 'rotate(180deg)',
-              transformOrigin: 'center',
-            }}
-          />
-        ))}
+        {/* Vertical border */}
+        <BorderVertical side="left" tileSize={tileSize} length={height} />
+        <BorderVertical side="right" tileSize={tileSize} length={height} />
 
         {/* Dialog content area */}
         <div
           style={{
             position: 'absolute',
-            left: contentX,
-            top: contentY,
-            width: contentWidth,
-            height: contentHeight,
+            left: cornerSize(tileSize),
+            top: cornerSize(tileSize),
+            width: width - cornerSize(tileSize) * 2,
+            height: height - cornerSize(tileSize) * 2,
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             padding: '20px',
             boxSizing: 'border-box',
@@ -216,15 +100,15 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
           <div
             style={{
               position: 'absolute',
-              left: contentX,
+              left: cornerSize(tileSize),
               bottom: 0,
-              width: contentWidth,
-              height: Math.max(vertical.width, 60),
+              width: width - cornerSize(tileSize) * 2,
+              height: Math.min(Math.min(tileSize.height, tileSize.width), 60),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '20px',
-              zIndex: 1001,
+              zIndex: 1002,
             }}
           >
             {primaryButton && <div className={styles.buttonContainer}>{primaryButton}</div>}
