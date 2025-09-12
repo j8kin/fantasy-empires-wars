@@ -1,13 +1,8 @@
 import React from 'react';
 import CelticPatternVertical from '../../../assets/border/CelticPatternVertical.png';
+import { BorderProps } from './BorderProps';
 
-interface BorderVerticalProps {
-  side: 'left' | 'right';
-  tileSize: { width: number; height: number };
-  length: number;
-}
-
-const BorderVertical: React.FC<BorderVerticalProps> = ({ side, tileSize, length }) => {
+const BorderVertical: React.FC<BorderProps> = ({ side, tileSize, length }) => {
   const amount = Math.ceil(length / tileSize.height);
   const images = Array.from({ length: amount }).map((_, index) => (
     <img
@@ -36,6 +31,7 @@ const BorderVertical: React.FC<BorderVerticalProps> = ({ side, tileSize, length 
     display: 'flex',
     flexDirection: 'column',
     pointerEvents: 'none',
+    overflow: 'hidden',
   };
 
   return <div style={placeHolderStyle}>{images}</div>;
