@@ -3,7 +3,7 @@ import styles from './css/GameButton.module.css';
 import SaveGame from '../../assets/buttons/SaveGame.png';
 import { GameButtonProps } from './GameButtonProps';
 
-const SaveGameButton: React.FC<GameButtonProps> = ({ onClick, style }) => {
+const SaveGameButton: React.FC<GameButtonProps> = ({ onClick }) => {
   const handleSaveGame = () => {
     if (onClick) {
       onClick();

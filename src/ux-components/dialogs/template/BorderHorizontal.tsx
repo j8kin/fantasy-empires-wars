@@ -3,7 +3,7 @@ import CelticPatternVertical from '../../../assets/border/CelticPatternVertical.
 import { BorderProps } from './BorderProps';
 
 const BorderHorizontal: React.FC<BorderProps> = ({ side, tileSize, length }) => {
-  const amount = length / tileSize.height;
+  const amount = Math.ceil(length / tileSize.height);
   const images = Array.from({ length: amount }).map((_, index) => (
     <img
       key={`${side}-${index}`}

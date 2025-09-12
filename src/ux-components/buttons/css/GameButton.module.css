@@ -3,13 +3,6 @@
   z-index: 10;
 }
 
-.buttonContainerCentered {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-top: -1.3rem;
-}
-
 .buttonImage {
   width: 110px;
   height: 55px;
