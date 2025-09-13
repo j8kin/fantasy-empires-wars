@@ -1,15 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerAvatar from '../avatars/PlayerAvatar';
-import OpponentInfoDialog, {
-  OpponentWithDiplomacy,
-  DiplomacyStatus,
-} from '../dialogs/OpponentInfoDialog';
+import { OpponentWithDiplomacy, DiplomacyStatus } from '../dialogs/OpponentInfoDialog';
 import styles from './css/OpponentsPanel.module.css';
 
 interface OpponentsPanelProps {
   selectedPlayer?: GamePlayer;
   numberOfOpponents: number;
+  onOpponentSelect?: (opponent: OpponentWithDiplomacy) => void;
 }
 
 const getRandomDiplomacyStatus = (): DiplomacyStatus => {
@@ -32,9 +30,11 @@ const getRandomOpponents = (
   }));
 };
 
-const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ selectedPlayer, numberOfOpponents }) => {
-  const [selectedOpponent, setSelectedOpponent] = useState<OpponentWithDiplomacy | null>(null);
-
+const OpponentsPanel: React.FC<OpponentsPanelProps> = ({
+  selectedPlayer,
+  numberOfOpponents,
+  onOpponentSelect,
+}) => {
   const opponents = useMemo(
     () => getRandomOpponents(selectedPlayer, numberOfOpponents),
     [selectedPlayer, numberOfOpponents]
@@ -57,8 +57,8 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ selectedPlayer, numberO
       {avatars.map((opponent) => (
         <div
           key={opponent.id}
-          className={`${styles.avatarContainer} ${selectedOpponent?.id === opponent.id ? styles.selected : ''}`}
-          onClick={() => setSelectedOpponent(opponent)}
+          className={styles.avatarContainer}
+          onClick={() => onOpponentSelect?.(opponent)}
         >
           <PlayerAvatar
             player={opponent}
@@ -81,7 +81,6 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ selectedPlayer, numberO
   return (
     <div className={styles.opponentsPanelContainer}>
       <div className={styles.opponentsGrid}>{avatarRows}</div>
-      <OpponentInfoDialog opponent={selectedOpponent} onClose={() => setSelectedOpponent(null)} />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
 import StartGameWindow from '../dialogs/StartGameWindow';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
+import OpponentInfoDialog, { OpponentWithDiplomacy } from '../dialogs/OpponentInfoDialog';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GameConfig } from '../../types/GameConfig';
 import { defaultTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
@@ -11,6 +12,7 @@ import { defaultTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
+  const [selectedOpponent, setSelectedOpponent] = useState<OpponentWithDiplomacy | null>(null);
   const [battlefieldSize, setBattlefieldSize] = useState<BattlefieldSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameConfig, setGameConfig] = useState<GameConfig | undefined>(undefined);
@@ -43,6 +45,14 @@ const MainView: React.FC = () => {
     // TODO: Implement actual save game functionality
   }, []);
 
+  const handleShowOpponentInfo = useCallback((opponent: OpponentWithDiplomacy) => {
+    setSelectedOpponent(opponent);
+  }, []);
+
+  const handleCloseOpponentInfo = useCallback(() => {
+    setSelectedOpponent(null);
+  }, []);
+
   return (
     <div className={styles.backgroundStyle} id="MainCanvas">
       {/* Content components */}
@@ -54,6 +64,7 @@ const MainView: React.FC = () => {
         onLoadGame={() => console.log('Load Game functionality to be implemented')}
         onOpenSaveDialog={handleShowSaveDialog}
         onEndTurn={() => console.log('End turn clicked')}
+        onOpponentSelect={handleShowOpponentInfo}
       />
       <Battlefield
         top={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
@@ -71,6 +82,9 @@ const MainView: React.FC = () => {
         onClose={handleCloseSaveDialog}
         onSave={handleSaveGame}
       />
+
+      {/* Opponent Info Dialog - shown as overlay */}
+      <OpponentInfoDialog opponent={selectedOpponent} onClose={handleCloseOpponentInfo} />
     </div>
   );
 };

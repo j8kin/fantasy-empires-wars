@@ -4,6 +4,7 @@ import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
+import { OpponentWithDiplomacy } from '../dialogs/OpponentInfoDialog';
 import FantasyBorderFrame, { BorderTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 import EndOfTurnButton from '../buttons/EndOfTurnButton';
 import styles from './css/TopPanel.module.css';
@@ -16,6 +17,7 @@ interface TopPanelProps {
   onLoadGame?: () => void;
   onOpenSaveDialog?: () => void;
   onEndTurn?: () => void;
+  onOpponentSelect?: (opponent: OpponentWithDiplomacy) => void;
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({
@@ -26,6 +28,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
   onLoadGame,
   onOpenSaveDialog,
   onEndTurn,
+  onOpponentSelect,
 }) => {
   const MIN_OPPONENTS = 2;
 
@@ -83,6 +86,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
           <OpponentsPanel
             selectedPlayer={config?.selectedPlayer}
             numberOfOpponents={config?.numberOfOpponents || MIN_OPPONENTS}
+            onOpponentSelect={onOpponentSelect}
           />
           {/* Right Side - Game Controls */}
           <GameControl

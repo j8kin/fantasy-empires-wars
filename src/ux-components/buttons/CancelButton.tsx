@@ -3,7 +3,7 @@ import { GameButtonProps } from './GameButtonProps';
 import Cancel from '../../assets/buttons/Cancel.png';
 import styles from './css/GameButton.module.css';
 
-const CancelButton: React.FC<GameButtonProps> = ({ onClick, style }) => {
+const CancelButton: React.FC<GameButtonProps> = ({ onClick }) => {
   const handleCancel = () => {
     if (onClick) {
       onClick();
