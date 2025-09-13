@@ -2,7 +2,6 @@ import React from 'react';
 import BorderCorner from './BorderCorner';
 import BorderHorizontal from './BorderHorizontal';
 import BorderVertical from './BorderVertical';
-import styles from './css/DialogTemplate.module.css';
 
 export interface BorderTileSize {
   width: number;
@@ -118,8 +117,8 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
               zIndex: zIndex + 2,
             }}
           >
-            {primaryButton && <div className={styles.buttonContainer}>{primaryButton}</div>}
-            {secondaryButton && <div className={styles.buttonContainer}>{secondaryButton}</div>}
+            {primaryButton && <div>{primaryButton}</div>}
+            {secondaryButton && <div>{secondaryButton}</div>}
           </div>
         )}
       </div>
