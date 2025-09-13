@@ -6,7 +6,7 @@ import StartGameWindow from '../dialogs/StartGameWindow';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GameConfig } from '../../types/GameConfig';
-import { defaultTileSize } from '../dialogs/template/DialogTemplate';
+import { defaultTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 
 const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);

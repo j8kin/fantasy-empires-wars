@@ -1,14 +1,14 @@
 import React from 'react';
-import BorderCorner from './BorderCorner';
-import BorderHorizontal from './BorderHorizontal';
-import BorderVertical from './BorderVertical';
+import CornerBorder from './CornerBorder';
+import HorizontalBorder from './HorizontalBorder';
+import VerticalBorder from './VerticalBorder';
 
 export interface BorderTileSize {
   width: number;
   height: number;
 }
 
-export interface DialogTemplateProps {
+export interface FantasyBorderFrameProps {
   x: number;
   y: number;
   width: number;
@@ -28,7 +28,7 @@ export const defaultTileSize: BorderTileSize = {
 };
 const cornerSize = (tileSize: BorderTileSize): number => Math.min(tileSize.width, tileSize.height);
 
-const DialogTemplate: React.FC<DialogTemplateProps> = ({
+const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
   x,
   y,
   width,
@@ -70,18 +70,18 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
         }}
       >
         {/* Corner ornaments */}
-        <BorderCorner position="top-left" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
-        <BorderCorner position="top-right" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
-        <BorderCorner position="bottom-left" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
-        <BorderCorner position="bottom-right" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
+        <CornerBorder position="top-left" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
+        <CornerBorder position="top-right" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
+        <CornerBorder position="bottom-left" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
+        <CornerBorder position="bottom-right" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
 
         {/* Horizontal border */}
-        <BorderHorizontal side="top" tileSize={tileSize} length={width} zIndex={zIndex} />
-        <BorderHorizontal side="bottom" tileSize={tileSize} length={width} zIndex={zIndex} />
+        <HorizontalBorder side="top" tileSize={tileSize} length={width} zIndex={zIndex} />
+        <HorizontalBorder side="bottom" tileSize={tileSize} length={width} zIndex={zIndex} />
 
         {/* Vertical border */}
-        <BorderVertical side="left" tileSize={tileSize} length={height} zIndex={zIndex} />
-        <BorderVertical side="right" tileSize={tileSize} length={height} zIndex={zIndex} />
+        <VerticalBorder side="left" tileSize={tileSize} length={height} zIndex={zIndex} />
+        <VerticalBorder side="right" tileSize={tileSize} length={height} zIndex={zIndex} />
 
         {/* Dialog content area */}
         <div
@@ -126,4 +126,4 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
   );
 };
 
-export default DialogTemplate;
+export default FantasyBorderFrame;

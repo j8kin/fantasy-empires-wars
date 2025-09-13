@@ -1,5 +1,5 @@
 import React from 'react';
-import CelticPatternCorner from '../../../assets/border/CelticPatternCorner.png';
+import CelticPatternCorner from '../../assets/border/CelticPatternCorner.png';
 
 interface BorderCornerProps {
   position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -7,7 +7,7 @@ interface BorderCornerProps {
   zIndex: number;
 }
 
-const BorderCorner: React.FC<BorderCornerProps> = ({ position, size, zIndex }) => {
+const CornerBorder: React.FC<BorderCornerProps> = ({ position, size, zIndex }) => {
   return (
     <img
       src={CelticPatternCorner}
@@ -27,4 +27,4 @@ const BorderCorner: React.FC<BorderCornerProps> = ({ position, size, zIndex }) =
   );
 };
 
-export default BorderCorner;
+export default CornerBorder;

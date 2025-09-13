@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import DialogTemplate from './template/DialogTemplate';
+import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerAvatar from '../avatars/PlayerAvatar';
@@ -84,7 +84,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
   const dialogY = typeof window !== 'undefined' ? (window.innerHeight - dialogHeight) / 2 : 0;
 
   return (
-    <DialogTemplate
+    <FantasyBorderFrame
       x={dialogX}
       y={dialogY}
       width={dialogWidth}
@@ -184,7 +184,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
           </div>
         </div>
       </div>
-    </DialogTemplate>
+    </FantasyBorderFrame>
   );
 };
 

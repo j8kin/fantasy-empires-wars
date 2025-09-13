@@ -5,7 +5,7 @@ import hexStyles from './css/Hexagonal.module.css';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { useMapState } from '../../hooks/useMapState';
 import { createTileId } from '../../types/HexTileState';
-import DialogTemplate, { BorderTileSize } from '../dialogs/template/DialogTemplate';
+import FantasyBorderFrame, { BorderTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 
 interface BattlefieldProps {
   top: number;
@@ -75,7 +75,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, battlefieldSiz
   }
 
   return (
-    <DialogTemplate
+    <FantasyBorderFrame
       x={0}
       y={top}
       width={window.innerWidth}
@@ -106,7 +106,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, battlefieldSiz
         {/*<p>Main Map will be implemented here.</p>*/}
         <div>{hexGrid}</div>
       </div>
-    </DialogTemplate>
+    </FantasyBorderFrame>
   );
 };
 export default Battlefield;

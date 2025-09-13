@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DialogTemplate from './template/DialogTemplate';
+import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import SaveGameActionButton from '../buttons/SaveGameActionButton';
 import CancelButton from '../buttons/CancelButton';
 
@@ -36,7 +36,7 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
   const y = (window.innerHeight - dialogHeight) / 2;
 
   return (
-    <DialogTemplate
+    <FantasyBorderFrame
       x={x}
       y={y}
       width={dialogWidth}
@@ -76,7 +76,7 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
           Your game progress will be saved and can be loaded later.
         </div>
       </div>
-    </DialogTemplate>
+    </FantasyBorderFrame>
   );
 };
 

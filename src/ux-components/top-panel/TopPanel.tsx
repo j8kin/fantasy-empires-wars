@@ -4,7 +4,7 @@ import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
-import DialogTemplate, { BorderTileSize } from '../dialogs/template/DialogTemplate';
+import FantasyBorderFrame, { BorderTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 import EndOfTurnButton from '../buttons/EndOfTurnButton';
 import styles from './css/TopPanel.module.css';
 
@@ -41,7 +41,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
   );
 
   return (
-    <DialogTemplate
+    <FantasyBorderFrame
       x={0}
       y={0}
       width={window.innerWidth}
@@ -92,7 +92,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
           />
         </div>
       </div>
-    </DialogTemplate>
+    </FantasyBorderFrame>
   );
 };
 
