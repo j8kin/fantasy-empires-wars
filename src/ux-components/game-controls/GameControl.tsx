@@ -2,20 +2,20 @@ import React from 'react';
 import styles from './css/GameControl.module.css';
 import NewGameButton from '../buttons/NewGameButton';
 import LoadGameButton from '../buttons/LoadGameButton';
-import SaveGameButton from '../buttons/SaveGameButton';
+import OpenSaveDialogButton from '../buttons/OpenSaveDialogButton';
 
 interface GameControlProps {
   onNewGame?: () => void;
   onLoadGame?: () => void;
-  onSaveGame?: (saveName: string) => void;
+  onOpenSaveDialog?: () => void;
 }
 
-const GameControl: React.FC<GameControlProps> = ({ onNewGame, onLoadGame, onSaveGame }) => {
+const GameControl: React.FC<GameControlProps> = ({ onNewGame, onLoadGame, onOpenSaveDialog }) => {
   return (
     <div className={styles.gameControlContainer}>
       <NewGameButton onClick={onNewGame} />
       <LoadGameButton onClick={onLoadGame} />
-      <SaveGameButton onClick={onSaveGame} />
+      <OpenSaveDialogButton onClick={onOpenSaveDialog} />
     </div>
   );
 };

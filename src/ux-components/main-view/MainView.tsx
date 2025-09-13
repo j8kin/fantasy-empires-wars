@@ -50,7 +50,7 @@ const MainView: React.FC = () => {
         config={gameConfig}
         onNewGame={handleShowStartWindow}
         onLoadGame={() => console.log('Load Game functionality to be implemented')}
-        onSaveGame={handleShowSaveDialog}
+        onOpenSaveDialog={handleShowSaveDialog}
         onEndTurn={() => console.log('End turn clicked')}
       />
       <Battlefield

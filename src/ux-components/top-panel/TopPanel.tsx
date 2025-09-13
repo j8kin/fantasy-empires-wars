@@ -12,7 +12,7 @@ interface TopPanelProps {
   config?: GameConfig;
   onNewGame?: () => void;
   onLoadGame?: () => void;
-  onSaveGame?: (saveName: string) => void;
+  onOpenSaveDialog?: () => void;
   onEndTurn?: () => void;
 }
 
@@ -20,7 +20,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
   config,
   onNewGame,
   onLoadGame,
-  onSaveGame,
+  onOpenSaveDialog,
   onEndTurn,
 }) => {
   const MIN_OPPONENTS = 2;
@@ -80,7 +80,11 @@ const TopPanel: React.FC<TopPanelProps> = ({
             numberOfOpponents={config?.numberOfOpponents || MIN_OPPONENTS}
           />
           {/* Right Side - Game Controls */}
-          <GameControl onNewGame={onNewGame} onLoadGame={onLoadGame} onSaveGame={onSaveGame} />
+          <GameControl
+            onNewGame={onNewGame}
+            onLoadGame={onLoadGame}
+            onOpenSaveDialog={onOpenSaveDialog}
+          />
         </div>
       </div>
     </DialogTemplate>

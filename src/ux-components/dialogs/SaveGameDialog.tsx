@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import DialogTemplate from './template/DialogTemplate';
-import SaveGameButton from '../buttons/SaveGameButton';
+import SaveGameActionButton from '../buttons/SaveGameActionButton';
 import CancelButton from '../buttons/CancelButton';
 
 interface SaveGameDialogProps {
@@ -41,7 +41,7 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
       y={y}
       width={dialogWidth}
       height={dialogHeight}
-      primaryButton={<SaveGameButton onClick={handleSave} />}
+      primaryButton={<SaveGameActionButton onClick={handleSave} />}
       secondaryButton={<CancelButton onClick={handleCancel} />}
     >
       <div style={{ textAlign: 'center', color: 'white' }}>
