@@ -1,15 +1,16 @@
 import React, { useState, useCallback } from 'react';
 import styles from './css/Background.module.css';
-import BorderSystem, { LAYOUT_CONSTANTS } from '../borders/BorderSystem';
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
-import EndOfTurnButton from '../buttons/EndOfTurnButton';
 import StartGameWindow from '../dialogs/StartGameWindow';
+import SaveGameDialog from '../dialogs/SaveGameDialog';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GameConfig } from '../../types/GameConfig';
+import BorderSystem from '../borders/BorderSystem';
 
 const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
+  const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
   const [battlefieldSize, setBattlefieldSize] = useState<BattlefieldSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameConfig, setGameConfig] = useState<GameConfig | undefined>(undefined);
@@ -26,6 +27,19 @@ const MainView: React.FC = () => {
     setShowStartWindow(true);
   }, []);
 
+  const handleShowSaveDialog = useCallback(() => {
+    setShowSaveDialog(true);
+  }, []);
+
+  const handleCloseSaveDialog = useCallback(() => {
+    setShowSaveDialog(false);
+  }, []);
+
+  const handleSaveGame = useCallback((saveName: string) => {
+    console.log('Saving game with name:', saveName);
+    // TODO: Implement actual save game functionality
+  }, []);
+
   return (
     <div className={styles.backgroundStyle} id="MainCanvas">
       {/* Separate border system from content */}
@@ -36,27 +50,23 @@ const MainView: React.FC = () => {
         config={gameConfig}
         onNewGame={handleShowStartWindow}
         onLoadGame={() => console.log('Load Game functionality to be implemented')}
-        onSaveGame={() => console.log('Save Game functionality to be implemented')}
+        onSaveGame={handleShowSaveDialog}
+        onEndTurn={() => console.log('End turn clicked')}
       />
       <Battlefield
         battlefieldSize={battlefieldSize}
         key={`map-${battlefieldSize}-${gameStarted}`}
       />
 
-      {/* End of Turn Button positioned in middle of second horizontal canvas */}
-      <EndOfTurnButton
-        style={{
-          left: '50%',
-          top: `${LAYOUT_CONSTANTS.MANA_PANEL_BOTTOM_Y + LAYOUT_CONSTANTS.BORDER_WIDTH / 2}px`,
-          transform: 'translate(-50%, -50%)',
-        }}
-        onClick={() => {
-          console.log('End turn clicked');
-        }}
-      />
-
       {/* Start Game Window - shown as overlay */}
       {showStartWindow && <StartGameWindow onStartGame={handleStartGame} />}
+
+      {/* Save Game Dialog - shown as overlay */}
+      <SaveGameDialog
+        isOpen={showSaveDialog}
+        onClose={handleCloseSaveDialog}
+        onSave={handleSaveGame}
+      />
     </div>
   );
 };

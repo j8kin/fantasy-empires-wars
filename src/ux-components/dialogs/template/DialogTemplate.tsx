@@ -19,6 +19,7 @@ export interface DialogTemplateProps {
   secondaryButton?: React.ReactElement;
   tileSize?: BorderTileSize;
   zIndex?: number;
+  accessible?: boolean;
 }
 
 // 50*180 since base tile is vertical
@@ -38,22 +39,25 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
   secondaryButton,
   tileSize = defaultTileSize,
   zIndex = 1000,
+  accessible = false,
 }) => {
   return (
     <>
       {/* Backdrop */}
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: zIndex - 1,
-          pointerEvents: 'auto',
-        }}
-      />
+      {!accessible && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: zIndex - 1,
+            pointerEvents: 'auto',
+          }}
+        />
+      )}
       {/* Dialog */}
       <div
         style={{
@@ -88,8 +92,8 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
             top: cornerSize(tileSize),
             width: width - cornerSize(tileSize) * 2,
             height: height - cornerSize(tileSize) * 2,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            padding: '20px',
+            backgroundColor: !accessible ? 'rgba(0, 0, 0, 0.8)' : undefined,
+            padding: !accessible ? '20px' : undefined,
             boxSizing: 'border-box',
             overflowY: 'auto',
             zIndex: zIndex,

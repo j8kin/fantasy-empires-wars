@@ -12,14 +12,12 @@ const EndOfTurnButton: React.FC<GameButtonProps> = ({ onClick, style }) => {
   };
 
   return (
-    <div className={styles.buttonContainer} style={style}>
-      <img
-        src={EndOfTurn}
-        alt="End Turn"
-        className={styles.buttonImage}
-        onClick={handleEndTurnClick}
-      />
-    </div>
+    <img
+      src={EndOfTurn}
+      alt="End Turn"
+      className={styles.buttonImage}
+      onClick={handleEndTurnClick}
+    />
   );
 };
 
