@@ -18,6 +18,7 @@ export interface DialogTemplateProps {
   primaryButton?: React.ReactElement;
   secondaryButton?: React.ReactElement;
   tileSize?: BorderTileSize;
+  zIndex?: number;
 }
 
 // 50*180 since base tile is vertical
@@ -36,6 +37,7 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
   primaryButton,
   secondaryButton,
   tileSize = defaultTileSize,
+  zIndex = 1000,
 }) => {
   return (
     <>
@@ -48,7 +50,7 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
           width: '100vw',
           height: '100vh',
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 999,
+          zIndex: zIndex - 1,
           pointerEvents: 'auto',
         }}
       />
@@ -61,22 +63,22 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
           width,
           height,
           pointerEvents: 'auto',
-          zIndex: 1000,
+          zIndex: zIndex,
         }}
       >
         {/* Corner ornaments */}
-        <BorderCorner position="top-left" size={cornerSize(tileSize)} />
-        <BorderCorner position="top-right" size={cornerSize(tileSize)} />
-        <BorderCorner position="bottom-left" size={cornerSize(tileSize)} />
-        <BorderCorner position="bottom-right" size={cornerSize(tileSize)} />
+        <BorderCorner position="top-left" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
+        <BorderCorner position="top-right" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
+        <BorderCorner position="bottom-left" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
+        <BorderCorner position="bottom-right" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
 
         {/* Horizontal border */}
-        <BorderHorizontal side="top" tileSize={tileSize} length={width} />
-        <BorderHorizontal side="bottom" tileSize={tileSize} length={width} />
+        <BorderHorizontal side="top" tileSize={tileSize} length={width} zIndex={zIndex} />
+        <BorderHorizontal side="bottom" tileSize={tileSize} length={width} zIndex={zIndex} />
 
         {/* Vertical border */}
-        <BorderVertical side="left" tileSize={tileSize} length={height} />
-        <BorderVertical side="right" tileSize={tileSize} length={height} />
+        <BorderVertical side="left" tileSize={tileSize} length={height} zIndex={zIndex} />
+        <BorderVertical side="right" tileSize={tileSize} length={height} zIndex={zIndex} />
 
         {/* Dialog content area */}
         <div
@@ -90,6 +92,7 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
             padding: '20px',
             boxSizing: 'border-box',
             overflowY: 'auto',
+            zIndex: zIndex,
           }}
         >
           {children}
@@ -108,7 +111,7 @@ const DialogTemplate: React.FC<DialogTemplateProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               gap: '20px',
-              zIndex: 1002,
+              zIndex: zIndex + 2,
             }}
           >
             {primaryButton && <div className={styles.buttonContainer}>{primaryButton}</div>}

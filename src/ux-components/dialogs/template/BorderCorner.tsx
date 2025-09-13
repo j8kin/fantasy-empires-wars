@@ -4,9 +4,10 @@ import CelticPatternCorner from '../../../assets/border/CelticPatternCorner.png'
 interface BorderCornerProps {
   position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   size: number;
+  zIndex: number;
 }
 
-const BorderCorner: React.FC<BorderCornerProps> = ({ position, size }) => {
+const BorderCorner: React.FC<BorderCornerProps> = ({ position, size, zIndex }) => {
   return (
     <img
       src={CelticPatternCorner}
@@ -20,7 +21,7 @@ const BorderCorner: React.FC<BorderCornerProps> = ({ position, size }) => {
         bottom: position.includes('bottom') ? 0 : undefined,
         left: position.includes('left') ? 0 : undefined,
         right: position.includes('right') ? 0 : undefined,
-        zIndex: 1001,
+        zIndex: zIndex,
       }}
     />
   );
