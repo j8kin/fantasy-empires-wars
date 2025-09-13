@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
-import { LAYOUT_CONSTANTS } from '../borders/BorderSystem';
 import styles from './css/Battlefield.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { useMapState } from '../../hooks/useMapState';
 import { createTileId } from '../../types/HexTileState';
+import DialogTemplate, { BorderTileSize } from '../dialogs/template/DialogTemplate';
 
 interface BattlefieldProps {
+  top: number;
+  tileSize: BorderTileSize;
   battlefieldSize: BattlefieldSize;
 }
 
@@ -39,7 +41,7 @@ const getHexTileSize = (battlefieldSize: BattlefieldSize): { width: number; heig
   return { width, height };
 };
 
-const Battlefield: React.FC<BattlefieldProps> = ({ battlefieldSize }) => {
+const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, battlefieldSize }) => {
   const { mapState, changeBattlefieldSize } = useMapState(battlefieldSize);
 
   useEffect(() => {
@@ -47,12 +49,6 @@ const Battlefield: React.FC<BattlefieldProps> = ({ battlefieldSize }) => {
       changeBattlefieldSize(battlefieldSize);
     }
   }, [battlefieldSize, mapState.mapSize, changeBattlefieldSize]);
-
-  // Calculate dimensions to fit within borders and below TopPanel
-  const topPosition = LAYOUT_CONSTANTS.MANA_PANEL_BOTTOM_Y + LAYOUT_CONSTANTS.BORDER_WIDTH;
-  const leftPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
-  const rightPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
-  const bottomPosition = LAYOUT_CONSTANTS.BORDER_WIDTH;
 
   const { rows, cols } = getBattlefieldDimensions(battlefieldSize);
   const { width: tileWidth, height: tileHeight } = getHexTileSize(battlefieldSize);
@@ -79,31 +75,38 @@ const Battlefield: React.FC<BattlefieldProps> = ({ battlefieldSize }) => {
   }
 
   return (
-    <div
-      id="Battlefield"
-      data-testid="Battlefield"
-      className={styles.mapContainer}
-      style={
-        {
-          position: 'absolute',
-          top: topPosition,
-          left: leftPosition,
-          right: rightPosition,
-          bottom: bottomPosition,
-          overflow: 'hidden', // Prevent content from spilling out
-          boxSizing: 'border-box',
-          // CSS custom properties for dynamic tile sizing
-          '--hex-tile-width': `${tileWidth}px`,
-          '--hex-tile-height': `${tileHeight}px`,
-          '--hex-row-margin': `${-tileHeight * 0.25}px`, // Overlap rows
-          '--hex-row-offset': `${tileWidth * 0.5}px`, // Offset even rows
-        } as React.CSSProperties
-      }
+    <DialogTemplate
+      x={0}
+      y={top}
+      width={window.innerWidth}
+      height={window.innerHeight - top}
+      tileSize={tileSize}
+      accessible={true}
+      zIndex={90}
     >
-      {/* Add content or placeholders for map elements */}
-      {/*<p>Main Map will be implemented here.</p>*/}
-      <div>{hexGrid}</div>
-    </div>
+      <div
+        id="Battlefield"
+        data-testid="Battlefield"
+        className={styles.mapContainer}
+        style={
+          {
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden', // Prevent content from spilling out
+            boxSizing: 'border-box',
+            // CSS custom properties for dynamic tile sizing
+            '--hex-tile-width': `${tileWidth}px`,
+            '--hex-tile-height': `${tileHeight}px`,
+            '--hex-row-margin': `${-tileHeight * 0.25}px`, // Overlap rows
+            '--hex-row-offset': `${tileWidth * 0.5}px`, // Offset even rows
+          } as React.CSSProperties
+        }
+      >
+        {/* Add content or placeholders for map elements */}
+        {/*<p>Main Map will be implemented here.</p>*/}
+        <div>{hexGrid}</div>
+      </div>
+    </DialogTemplate>
   );
 };
 export default Battlefield;

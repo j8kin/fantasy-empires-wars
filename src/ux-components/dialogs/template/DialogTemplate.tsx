@@ -23,7 +23,7 @@ export interface DialogTemplateProps {
 }
 
 // 50*180 since base tile is vertical
-const defaultTileSize: BorderTileSize = {
+export const defaultTileSize: BorderTileSize = {
   width: 50,
   height: 180,
 };

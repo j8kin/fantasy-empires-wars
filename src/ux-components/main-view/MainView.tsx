@@ -6,7 +6,7 @@ import StartGameWindow from '../dialogs/StartGameWindow';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GameConfig } from '../../types/GameConfig';
-import BorderSystem from '../borders/BorderSystem';
+import { defaultTileSize } from '../dialogs/template/DialogTemplate';
 
 const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
@@ -14,6 +14,9 @@ const MainView: React.FC = () => {
   const [battlefieldSize, setBattlefieldSize] = useState<BattlefieldSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameConfig, setGameConfig] = useState<GameConfig | undefined>(undefined);
+
+  const TOP_PANEL_HEIGHT = 300;
+  const TILE_SIZE = defaultTileSize;
 
   const handleStartGame = useCallback((config: GameConfig) => {
     setGameConfig(config);
@@ -42,11 +45,10 @@ const MainView: React.FC = () => {
 
   return (
     <div className={styles.backgroundStyle} id="MainCanvas">
-      {/* Separate border system from content */}
-      <BorderSystem />
-
       {/* Content components */}
       <TopPanel
+        height={TOP_PANEL_HEIGHT}
+        tileSize={TILE_SIZE}
         config={gameConfig}
         onNewGame={handleShowStartWindow}
         onLoadGame={() => console.log('Load Game functionality to be implemented')}
@@ -54,6 +56,8 @@ const MainView: React.FC = () => {
         onEndTurn={() => console.log('End turn clicked')}
       />
       <Battlefield
+        top={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
+        tileSize={TILE_SIZE}
         battlefieldSize={battlefieldSize}
         key={`map-${battlefieldSize}-${gameStarted}`}
       />

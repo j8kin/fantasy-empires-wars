@@ -4,11 +4,13 @@ import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
-import DialogTemplate from '../dialogs/template/DialogTemplate';
+import DialogTemplate, { BorderTileSize } from '../dialogs/template/DialogTemplate';
 import EndOfTurnButton from '../buttons/EndOfTurnButton';
 import styles from './css/TopPanel.module.css';
 
 interface TopPanelProps {
+  height: number;
+  tileSize: BorderTileSize;
   config?: GameConfig;
   onNewGame?: () => void;
   onLoadGame?: () => void;
@@ -17,6 +19,8 @@ interface TopPanelProps {
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({
+  height,
+  tileSize,
   config,
   onNewGame,
   onLoadGame,
@@ -41,8 +45,9 @@ const TopPanel: React.FC<TopPanelProps> = ({
       x={0}
       y={0}
       width={window.innerWidth}
-      height={300}
+      height={height}
       primaryButton={endTurnButton}
+      tileSize={tileSize}
       accessible={true}
       zIndex={100}
     >
@@ -58,7 +63,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
             <div className={styles.playerInfoContainer}>
               <PlayerAvatar
                 player={config?.selectedPlayer}
-                size={190}
+                size={height - Math.min(tileSize.height, tileSize.width) * 2 - 10}
                 shape="rectangle"
                 borderColor={config?.selectedPlayer.color}
               />
