@@ -91,7 +91,6 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
 
   const handleMapSizeChange = useCallback((newMapSize: BattlefieldSize) => {
     setMapSize(newMapSize);
-    const newMaxOpponents = getMaxOpponents(newMapSize);
     // Reinitialize opponents for new map size
     setSelectedOpponents([]);
   }, []);

@@ -18,14 +18,14 @@ describe('StartGameWindow', () => {
 
   it('renders map size dropdown with default medium selection', () => {
     render(<StartGameWindow onStartGame={mockOnStartGame} />);
-    const mapSizeDropdown = screen.getByDisplayValue('Medium (9x18)');
+    const mapSizeDropdown = screen.getByDisplayValue('Medium');
     expect(mapSizeDropdown).toBeInTheDocument();
   });
 
-  it('renders opponents dropdown with default value', () => {
+  it('renders opponent selection mode dropdown with default value', () => {
     render(<StartGameWindow onStartGame={mockOnStartGame} />);
-    const opponentsDropdown = screen.getByDisplayValue('2');
-    expect(opponentsDropdown).toBeInTheDocument();
+    const opponentModeDropdown = screen.getByDisplayValue('Choose Each Opponent');
+    expect(opponentModeDropdown).toBeInTheDocument();
   });
 
   it('renders all predefined players in the player list', () => {
@@ -45,23 +45,24 @@ describe('StartGameWindow', () => {
       selectedPlayer: PREDEFINED_PLAYERS[0],
       playerColor: PREDEFINED_PLAYERS[0].color,
       numberOfOpponents: 2,
+      opponents: expect.any(Array),
     });
   });
 
   it('updates map size when dropdown value changes', () => {
     render(<StartGameWindow onStartGame={mockOnStartGame} />);
-    const mapSizeDropdown = screen.getByDisplayValue('Medium (9x18)');
+    const mapSizeDropdown = screen.getByDisplayValue('Medium');
 
     fireEvent.change(mapSizeDropdown, { target: { value: 'large' } });
-    expect(screen.getByDisplayValue('Large (11x23)')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Large')).toBeInTheDocument();
   });
 
-  it('updates number of opponents when dropdown value changes', () => {
+  it('changes opponent selection mode when dropdown value changes', () => {
     render(<StartGameWindow onStartGame={mockOnStartGame} />);
-    const opponentsDropdown = screen.getByDisplayValue('2');
+    const opponentModeDropdown = screen.getByDisplayValue('Choose Each Opponent');
 
-    fireEvent.change(opponentsDropdown, { target: { value: '3' } });
-    expect(screen.getByDisplayValue('3')).toBeInTheDocument();
+    fireEvent.change(opponentModeDropdown, { target: { value: 'random' } });
+    expect(screen.getByDisplayValue(/Random Opponents/)).toBeInTheDocument();
   });
 
   it('updates selected player when a different player is clicked', () => {
@@ -76,18 +77,23 @@ describe('StartGameWindow', () => {
     expect(playerDetailHeaders.length).toBeGreaterThan(0);
   });
 
-  it('limits opponents based on map size', () => {
+  it('shows correct max opponents label for different map sizes', () => {
     render(<StartGameWindow onStartGame={mockOnStartGame} />);
 
+    // Default medium map should show "of 4"
+    expect(screen.getByText(/of 4/)).toBeInTheDocument();
+
     // Change to small map
-    const mapSizeDropdown = screen.getByDisplayValue('Medium (9x18)');
+    const mapSizeDropdown = screen.getByDisplayValue('Medium');
     fireEvent.change(mapSizeDropdown, { target: { value: 'small' } });
 
-    // Check that opponents dropdown shows max 2 for small map
-    const opponentsDropdown = screen.getByDisplayValue('2');
-    const options = opponentsDropdown.querySelectorAll('option');
-    // Small map should allow only 2 opponents (so only option "2" should be available)
-    expect(options).toHaveLength(1);
-    expect(options[0]).toHaveValue('2');
+    // Should now show "of 2"
+    expect(screen.getByText(/of 2/)).toBeInTheDocument();
+
+    // Change to large map
+    fireEvent.change(mapSizeDropdown, { target: { value: 'large' } });
+
+    // Should now show "of 6"
+    expect(screen.getByText(/of 6/)).toBeInTheDocument();
   });
 });
