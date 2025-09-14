@@ -7,6 +7,7 @@ import styles from './css/OpponentsPanel.module.css';
 interface OpponentsPanelProps {
   selectedPlayer?: GamePlayer;
   numberOfOpponents: number;
+  opponents?: GamePlayer[];
   onOpponentSelect?: (opponent: OpponentWithDiplomacy) => void;
 }
 
@@ -33,12 +34,18 @@ const getRandomOpponents = (
 const OpponentsPanel: React.FC<OpponentsPanelProps> = ({
   selectedPlayer,
   numberOfOpponents,
+  opponents: providedOpponents,
   onOpponentSelect,
 }) => {
-  const opponents = useMemo(
-    () => getRandomOpponents(selectedPlayer, numberOfOpponents),
-    [selectedPlayer, numberOfOpponents]
-  );
+  const opponents = useMemo(() => {
+    if (providedOpponents && providedOpponents.length > 0) {
+      return providedOpponents.map((opponent) => ({
+        ...opponent,
+        diplomacyStatus: getRandomDiplomacyStatus(),
+      })) as OpponentWithDiplomacy[];
+    }
+    return getRandomOpponents(selectedPlayer, numberOfOpponents);
+  }, [selectedPlayer, numberOfOpponents, providedOpponents]);
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {

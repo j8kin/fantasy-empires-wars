@@ -86,6 +86,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
           <OpponentsPanel
             selectedPlayer={config?.selectedPlayer}
             numberOfOpponents={config?.numberOfOpponents || MIN_OPPONENTS}
+            opponents={config?.opponents}
             onOpponentSelect={onOpponentSelect}
           />
           {/* Right Side - Game Controls */}
