@@ -168,10 +168,7 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
   };
 
   // Calculate dialog dimensions
-  const dialogWidth = Math.min(
-    900,
-    typeof window !== 'undefined' ? window.innerWidth * 0.9 : 900
-  );
+  const dialogWidth = Math.min(900, typeof window !== 'undefined' ? window.innerWidth * 0.9 : 900);
   const dialogHeight = Math.min(
     650,
     typeof window !== 'undefined' ? window.innerHeight * 0.75 : 650
