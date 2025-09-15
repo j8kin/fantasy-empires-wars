@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import PlayerAvatar from '../avatars/PlayerAvatar';
+import PlayerAvatar, { EmptyPlayer } from '../avatars/PlayerAvatar';
 import { OpponentWithDiplomacy, DiplomacyStatus } from '../dialogs/OpponentInfoDialog';
 import styles from './css/OpponentsPanel.module.css';
 
@@ -41,10 +41,12 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({
     // If we have provided opponents from the game config, use only those
     // This takes precedence over numberOfOpponents parameter
     if (providedOpponents && providedOpponents.length > 0) {
-      return providedOpponents.map((opponent) => ({
-        ...opponent,
-        diplomacyStatus: getRandomDiplomacyStatus(),
-      })) as OpponentWithDiplomacy[];
+      return providedOpponents
+        .filter((opponent) => opponent.id !== EmptyPlayer.id) // Filter out EmptyPlayer
+        .map((opponent) => ({
+          ...opponent,
+          diplomacyStatus: getRandomDiplomacyStatus(),
+        })) as OpponentWithDiplomacy[];
     }
     // Only generate random opponents if no specific opponents were provided
     return getRandomOpponents(selectedPlayer, numberOfOpponents);

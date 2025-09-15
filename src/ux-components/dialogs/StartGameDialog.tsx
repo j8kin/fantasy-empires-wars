@@ -153,7 +153,9 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
     const opponents =
       opponentSelectionMode === 'random'
         ? (selectedOpponents as GamePlayer[])
-        : (selectedOpponents.filter((opponent) => opponent !== null) as GamePlayer[]);
+        : (selectedOpponents.filter(
+            (opponent) => opponent !== null && opponent.id !== EmptyPlayer.id
+          ) as GamePlayer[]);
 
     const config: GameConfig = {
       mapSize,

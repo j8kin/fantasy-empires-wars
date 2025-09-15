@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import StartGameDialog from '../ux-components/dialogs/StartGameDialog';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { EmptyPlayer } from '../ux-components/avatars/PlayerAvatar';
 
 describe('StartGameWindow', () => {
   const mockOnStartGame = jest.fn();
@@ -141,5 +142,53 @@ describe('StartGameWindow', () => {
 
     // Should now show "of 6"
     expect(screen.getByText(/of 6/)).toBeInTheDocument();
+  });
+
+  it('filters out EmptyPlayer from opponents when starting game in manual mode', () => {
+    // Mock the component to simulate having EmptyPlayer in selectedOpponents
+    const TestStartGameDialogWithEmptyPlayer = () => {
+      const [showDialog, setShowDialog] = React.useState(true);
+
+      if (!showDialog) return null;
+
+      return (
+        <StartGameDialog
+          onStartGame={(config) => {
+            // Verify that EmptyPlayer is filtered out from opponents
+            const hasEmptyPlayer = config.opponents.some(
+              (opponent) => opponent.id === EmptyPlayer.id
+            );
+            expect(hasEmptyPlayer).toBe(false);
+            mockOnStartGame(config);
+            setShowDialog(false);
+          }}
+          onShowSelectOpponentDialog={(excludedIds, onSelect, allowEmptyPlayer) => {
+            // Simulate selecting EmptyPlayer to "delete" an opponent
+            onSelect(EmptyPlayer);
+          }}
+        />
+      );
+    };
+
+    render(<TestStartGameDialogWithEmptyPlayer />);
+
+    // Set to manual mode
+    const opponentModeDropdown = screen.getByDisplayValue('Choose Each Opponent');
+    fireEvent.change(opponentModeDropdown, { target: { value: 'manual' } });
+
+    // Click on an opponent slot to open selection dialog (this will trigger EmptyPlayer selection)
+    const opponentSlots = screen
+      .getAllByRole('generic')
+      .filter((el) => el.style.cursor === 'pointer' || el.onclick);
+    if (opponentSlots.length > 0) {
+      fireEvent.click(opponentSlots[0]);
+    }
+
+    // Click start game
+    const startButton = screen.getByAltText('Start Game');
+    fireEvent.click(startButton);
+
+    // The test expectation is in the onStartGame callback above
+    expect(mockOnStartGame).toHaveBeenCalled();
   });
 });
