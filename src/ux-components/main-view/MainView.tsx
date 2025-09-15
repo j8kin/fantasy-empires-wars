@@ -33,7 +33,6 @@ const MainView: React.FC = () => {
     setBattlefieldSize(config.mapSize);
     setShowStartWindow(false);
     setGameStarted(true);
-    console.log('Starting game with config:', config);
   }, []);
 
   const handleShowStartWindow = useCallback(() => {

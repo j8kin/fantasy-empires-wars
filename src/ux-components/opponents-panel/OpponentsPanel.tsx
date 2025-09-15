@@ -38,14 +38,17 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({
   onOpponentSelect,
 }) => {
   const opponents = useMemo(() => {
+    // If we have provided opponents from the game config, use only those
+    // This takes precedence over numberOfOpponents parameter
     if (providedOpponents && providedOpponents.length > 0) {
       return providedOpponents.map((opponent) => ({
         ...opponent,
         diplomacyStatus: getRandomDiplomacyStatus(),
       })) as OpponentWithDiplomacy[];
     }
+    // Only generate random opponents if no specific opponents were provided
     return getRandomOpponents(selectedPlayer, numberOfOpponents);
-  }, [selectedPlayer, numberOfOpponents, providedOpponents]);
+  }, [providedOpponents, selectedPlayer, numberOfOpponents]);
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {
