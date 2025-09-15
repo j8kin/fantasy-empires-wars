@@ -13,14 +13,14 @@ import necromancerMaleAvatar from '../assets/avatars/necromancer.png';
 import pyromancerAvatar from '../assets/avatars/pyromancer.png';
 import pyromancerFemaleAvatar from '../assets/avatars/pyromancerW.png';
 import { PlayerColorName } from './PlayerColors';
+import { Alignment } from './Alignment';
 
-export type PlayerAlignment = 'lawful' | 'neutral' | 'chaotic';
 export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
 
 export interface GamePlayer {
   id: string;
   name: string;
-  alignment: PlayerAlignment;
+  alignment: Alignment;
   race: PlayerRace;
   level: number; // 1-32
   description: string;

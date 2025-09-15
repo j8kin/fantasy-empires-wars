@@ -1,9 +1,9 @@
-export type AlignmentType = 'lawful' | 'neutral' | 'chaotic';
+import { Alignment } from './Alignment';
 
 export interface LandType {
   id: string;
   name: string;
-  alignment: AlignmentType;
+  alignment: Alignment;
   imageName: string;
   goldPerTurn: { min: number; max: number };
 }

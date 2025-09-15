@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { getAlignmentColor } from '../../types/Alignment';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import styles from './css/PlayerSelection.module.css';
 
@@ -9,19 +10,6 @@ interface PlayerSelectionProps {
   onPlayerChange: (player: GamePlayer) => void;
   availablePlayers?: GamePlayer[];
 }
-
-const getClassColor = (playerClass: string): string => {
-  switch (playerClass) {
-    case 'lawful':
-      return '#4A90E2';
-    case 'neutral':
-      return '#95A5A6';
-    case 'chaotic':
-      return '#E74C3C';
-    default:
-      return '#95A5A6';
-  }
-};
 
 const PlayerSelection: React.FC<PlayerSelectionProps> = ({
   label = 'Choose Your Character:',
@@ -54,7 +42,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
                 <div className={styles.playerSummary}>
                   <span
                     className={styles.playerClass}
-                    style={{ color: getClassColor(player.alignment) }}
+                    style={{ color: getAlignmentColor(player.alignment) }}
                   >
                     {player.alignment.toUpperCase()}
                   </span>
@@ -72,7 +60,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
               <h3 className={styles.selectedPlayerName}>{displayPlayer.name}</h3>
               <div
                 className={styles.selectedPlayerClass}
-                style={{ color: getClassColor(displayPlayer.alignment) }}
+                style={{ color: getAlignmentColor(displayPlayer.alignment) }}
               >
                 {displayPlayer.alignment.toUpperCase()} - {displayPlayer.race} - Level{' '}
                 {displayPlayer.level}

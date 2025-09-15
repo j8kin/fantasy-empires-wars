@@ -1,5 +1,6 @@
 import React from 'react';
 import { GamePlayer } from '../../types/GamePlayer';
+import { getAlignmentColor } from '../../types/Alignment';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import OkButton from '../buttons/OkButton';
@@ -50,7 +51,9 @@ const OpponentInfoDialog: React.FC<OpponentInfoDialogProps> = ({ opponent, onClo
           </div>
           <div className={styles.detailRow}>
             <span className={styles.label}>Alignment:</span>
-            <span className={styles.value}>{opponent.alignment}</span>
+            <span className={styles.value} style={{ color: getAlignmentColor(opponent.alignment) }}>
+              {opponent.alignment}
+            </span>
           </div>
           <div className={styles.detailRow}>
             <span className={styles.label}>Level:</span>

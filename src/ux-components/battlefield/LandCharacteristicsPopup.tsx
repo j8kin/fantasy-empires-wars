@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { LandType } from '../../types/LandType';
+import { getAlignmentColor } from '../../types/Alignment';
 import { HexTileState } from '../../types/HexTileState';
 import styles from './css/LandCharacteristicsPopup.module.css';
 
@@ -63,7 +64,12 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
         <div className={styles.characteristics}>
           <div className={styles.row}>
             <span className={styles.label}>Alignment:</span>
-            <span className={styles.value}>{displayLandType.alignment}</span>
+            <span
+              className={styles.value}
+              style={{ color: getAlignmentColor(displayLandType.alignment) }}
+            >
+              {displayLandType.alignment}
+            </span>
           </div>
 
           {tileState && (
