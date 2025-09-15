@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import styles from './css/Background.module.css';
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
-import StartGameWindow from '../dialogs/StartGameWindow';
+import StartGameDialog from '../dialogs/StartGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import OpponentInfoDialog, { OpponentWithDiplomacy } from '../dialogs/OpponentInfoDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
@@ -105,9 +105,11 @@ const MainView: React.FC = () => {
         key={`map-${battlefieldSize}-${gameStarted}`}
       />
 
-      {/* Start Game Window - shown as overlay */}
+      {/*Game Dialogs */}
+
+      {/* Start Game Dialog - shown as overlay */}
       {showStartWindow && (
-        <StartGameWindow
+        <StartGameDialog
           onStartGame={handleStartGame}
           onShowSelectOpponentDialog={handleShowSelectOpponentDialog}
         />

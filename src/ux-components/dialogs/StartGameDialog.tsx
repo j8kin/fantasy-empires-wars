@@ -7,9 +7,9 @@ import PlayerAvatar from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
 import { GameConfig } from '../../types/GameConfig';
 import PlayerSelection from '../player-selection/PlayerSelection';
-import styles from './css/StartGameWindow.module.css';
+import styles from './css/StartGameDialog.module.css';
 
-interface StartGameWindowProps {
+interface StartGameDialogProps {
   onStartGame: (config: GameConfig) => void;
   onShowSelectOpponentDialog: (
     excludedPlayerIds: string[],
@@ -34,7 +34,7 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
 
 type OpponentSelectionMode = 'random' | 'manual';
 
-const StartGameWindow: React.FC<StartGameWindowProps> = ({
+const StartGameDialog: React.FC<StartGameDialogProps> = ({
   onStartGame,
   onShowSelectOpponentDialog,
 }) => {
@@ -306,4 +306,4 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({
   );
 };
 
-export default StartGameWindow;
+export default StartGameDialog;

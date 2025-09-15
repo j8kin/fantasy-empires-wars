@@ -1,42 +1,68 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import StartGameWindow from '../ux-components/dialogs/StartGameWindow';
+import StartGameDialog from '../ux-components/dialogs/StartGameDialog';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 
 describe('StartGameWindow', () => {
   const mockOnStartGame = jest.fn();
+  const onShowSelectOpponentDialog = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the title', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
+    render(
+      <StartGameDialog
+        onStartGame={mockOnStartGame}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
     expect(screen.getByText('Start New Game')).toBeInTheDocument();
   });
 
   it('renders map size dropdown with default medium selection', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
+    render(
+      <StartGameDialog
+        onStartGame={mockOnStartGame}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
     const mapSizeDropdown = screen.getByDisplayValue('Medium');
     expect(mapSizeDropdown).toBeInTheDocument();
   });
 
   it('renders opponent selection mode dropdown with default value', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
+    render(
+      <StartGameDialog
+        onStartGame={mockOnStartGame}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
     const opponentModeDropdown = screen.getByDisplayValue('Choose Each Opponent');
     expect(opponentModeDropdown).toBeInTheDocument();
   });
 
   it('renders all predefined players in the player list', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
+    render(
+      <StartGameDialog
+        onStartGame={mockOnStartGame}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
     PREDEFINED_PLAYERS.forEach((player) => {
       expect(screen.getAllByText(player.name).length).toBeGreaterThanOrEqual(1);
     });
   });
 
   it('calls onStartGame when Start Game button is clicked', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
+    render(
+      <StartGameDialog
+        onStartGame={mockOnStartGame}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
     const startButton = screen.getByAltText('Start Game');
     fireEvent.click(startButton);
 
@@ -50,7 +76,12 @@ describe('StartGameWindow', () => {
   });
 
   it('updates map size when dropdown value changes', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
+    render(
+      <StartGameDialog
+        onStartGame={mockOnStartGame}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
     const mapSizeDropdown = screen.getByDisplayValue('Medium');
 
     fireEvent.change(mapSizeDropdown, { target: { value: 'large' } });
@@ -58,7 +89,12 @@ describe('StartGameWindow', () => {
   });
 
   it('changes opponent selection mode when dropdown value changes', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
+    render(
+      <StartGameDialog
+        onStartGame={mockOnStartGame}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
     const opponentModeDropdown = screen.getByDisplayValue('Choose Each Opponent');
 
     fireEvent.change(opponentModeDropdown, { target: { value: 'random' } });
@@ -66,7 +102,12 @@ describe('StartGameWindow', () => {
   });
 
   it('updates selected player when a different player is clicked', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
+    render(
+      <StartGameDialog
+        onStartGame={mockOnStartGame}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
 
     // Click on the second player
     const secondPlayerName = PREDEFINED_PLAYERS[1].name;
@@ -78,7 +119,12 @@ describe('StartGameWindow', () => {
   });
 
   it('shows correct max opponents label for different map sizes', () => {
-    render(<StartGameWindow onStartGame={mockOnStartGame} />);
+    render(
+      <StartGameDialog
+        onStartGame={mockOnStartGame}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
 
     // Default medium map should show "of 4"
     expect(screen.getByText(/of 4/)).toBeInTheDocument();
