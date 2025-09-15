@@ -5,14 +5,21 @@ import Battlefield from '../battlefield/Battlefield';
 import StartGameWindow from '../dialogs/StartGameWindow';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import OpponentInfoDialog, { OpponentWithDiplomacy } from '../dialogs/OpponentInfoDialog';
+import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GameConfig } from '../../types/GameConfig';
+import { GamePlayer } from '../../types/GamePlayer';
 import { defaultTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 
 const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
   const [selectedOpponent, setSelectedOpponent] = useState<OpponentWithDiplomacy | null>(null);
+  const [showSelectOpponentDialog, setShowSelectOpponentDialog] = useState<boolean>(false);
+  const [selectOpponentExcludedIds, setSelectOpponentExcludedIds] = useState<string[]>([]);
+  const [selectOpponentCallback, setSelectOpponentCallback] = useState<
+    ((player: GamePlayer) => void) | null
+  >(null);
   const [battlefieldSize, setBattlefieldSize] = useState<BattlefieldSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameConfig, setGameConfig] = useState<GameConfig | undefined>(undefined);
@@ -53,6 +60,31 @@ const MainView: React.FC = () => {
     setSelectedOpponent(null);
   }, []);
 
+  const handleShowSelectOpponentDialog = useCallback(
+    (excludedPlayerIds: string[], onSelect: (player: GamePlayer) => void) => {
+      setSelectOpponentExcludedIds(excludedPlayerIds);
+      setSelectOpponentCallback(() => onSelect);
+      setShowSelectOpponentDialog(true);
+    },
+    []
+  );
+
+  const handleOpponentSelect = useCallback(
+    (player: GamePlayer) => {
+      if (selectOpponentCallback) {
+        selectOpponentCallback(player);
+      }
+      setShowSelectOpponentDialog(false);
+      setSelectOpponentCallback(null);
+    },
+    [selectOpponentCallback]
+  );
+
+  const handleOpponentDialogCancel = useCallback(() => {
+    setShowSelectOpponentDialog(false);
+    setSelectOpponentCallback(null);
+  }, []);
+
   return (
     <div className={styles.backgroundStyle} id="MainCanvas">
       {/* Content components */}
@@ -74,7 +106,12 @@ const MainView: React.FC = () => {
       />
 
       {/* Start Game Window - shown as overlay */}
-      {showStartWindow && <StartGameWindow onStartGame={handleStartGame} />}
+      {showStartWindow && (
+        <StartGameWindow
+          onStartGame={handleStartGame}
+          onShowSelectOpponentDialog={handleShowSelectOpponentDialog}
+        />
+      )}
 
       {/* Save Game Dialog - shown as overlay */}
       <SaveGameDialog
@@ -85,6 +122,15 @@ const MainView: React.FC = () => {
 
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoDialog opponent={selectedOpponent} onClose={handleCloseOpponentInfo} />
+
+      {/* Select Opponent Dialog - shown as overlay */}
+      {showSelectOpponentDialog && (
+        <SelectOpponentDialog
+          excludedPlayerIds={selectOpponentExcludedIds}
+          onSelect={handleOpponentSelect}
+          onCancel={handleOpponentDialogCancel}
+        />
+      )}
     </div>
   );
 };

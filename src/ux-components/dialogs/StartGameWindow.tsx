@@ -6,12 +6,15 @@ import { PlayerColorName, PLAYER_COLORS } from '../../types/PlayerColors';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
 import { GameConfig } from '../../types/GameConfig';
-import SelectOpponentDialog from './SelectOpponentDialog';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import styles from './css/StartGameWindow.module.css';
 
 interface StartGameWindowProps {
   onStartGame: (config: GameConfig) => void;
+  onShowSelectOpponentDialog: (
+    excludedPlayerIds: string[],
+    onSelect: (player: GamePlayer) => void
+  ) => void;
 }
 
 const getMaxOpponents = (mapSize: BattlefieldSize): number => {
@@ -31,14 +34,15 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
 
 type OpponentSelectionMode = 'random' | 'manual';
 
-const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
+const StartGameWindow: React.FC<StartGameWindowProps> = ({
+  onStartGame,
+  onShowSelectOpponentDialog,
+}) => {
   const [mapSize, setMapSize] = useState<BattlefieldSize>('medium');
   const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(PREDEFINED_PLAYERS[0]);
   const [opponentSelectionMode, setOpponentSelectionMode] =
     useState<OpponentSelectionMode>('manual');
   const [selectedOpponents, setSelectedOpponents] = useState<(GamePlayer | null)[]>([]);
-  const [showSelectOpponentDialog, setShowSelectOpponentDialog] = useState<boolean>(false);
-  const [editingOpponentIndex, setEditingOpponentIndex] = useState<number>(-1);
 
   const maxOpponents = getMaxOpponents(mapSize);
 
@@ -113,30 +117,26 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
     setSelectedPlayer(player);
   }, []);
 
-  const handleOpponentClick = useCallback((index: number) => {
-    setEditingOpponentIndex(index);
-    setShowSelectOpponentDialog(true);
-  }, []);
-
-  const handleOpponentSelect = useCallback(
-    (opponent: GamePlayer) => {
-      const newOpponents = [...selectedOpponents];
-      const uniqueColors = getUniqueOpponentColors();
-      newOpponents[editingOpponentIndex] = {
-        ...opponent,
-        color: uniqueColors[editingOpponentIndex] || opponent.color,
-      };
-      setSelectedOpponents(newOpponents);
-      setShowSelectOpponentDialog(false);
-      setEditingOpponentIndex(-1);
+  const handleOpponentClick = useCallback(
+    (index: number) => {
+      const excludedPlayerIds = [
+        selectedPlayer.id,
+        ...selectedOpponents
+          .filter((opponent) => opponent !== null)
+          .map((opponent) => opponent!.id),
+      ];
+      onShowSelectOpponentDialog(excludedPlayerIds, (opponent: GamePlayer) => {
+        const newOpponents = [...selectedOpponents];
+        const uniqueColors = getUniqueOpponentColors();
+        newOpponents[index] = {
+          ...opponent,
+          color: uniqueColors[index] || opponent.color,
+        };
+        setSelectedOpponents(newOpponents);
+      });
     },
-    [selectedOpponents, editingOpponentIndex, getUniqueOpponentColors]
+    [selectedPlayer.id, selectedOpponents, onShowSelectOpponentDialog, getUniqueOpponentColors]
   );
-
-  const handleOpponentDialogCancel = useCallback(() => {
-    setShowSelectOpponentDialog(false);
-    setEditingOpponentIndex(-1);
-  }, []);
 
   const handleStartGame = useCallback(() => {
     const opponents =
@@ -302,20 +302,6 @@ const StartGameWindow: React.FC<StartGameWindowProps> = ({ onStartGame }) => {
           onPlayerChange={handlePlayerChange}
         />
       </div>
-
-      {/* Select Opponent Dialog */}
-      {showSelectOpponentDialog && (
-        <SelectOpponentDialog
-          excludedPlayerIds={[
-            selectedPlayer.id,
-            ...selectedOpponents
-              .filter((opponent) => opponent !== null)
-              .map((opponent) => opponent!.id),
-          ]}
-          onSelect={handleOpponentSelect}
-          onCancel={handleOpponentDialogCancel}
-        />
-      )}
     </FantasyBorderFrame>
   );
 };
