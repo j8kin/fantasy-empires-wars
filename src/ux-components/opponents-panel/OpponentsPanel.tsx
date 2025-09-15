@@ -41,12 +41,17 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({
     // If we have provided opponents from the game config, use only those
     // This takes precedence over numberOfOpponents parameter
     if (providedOpponents && providedOpponents.length > 0) {
-      return providedOpponents
-        .filter((opponent) => opponent.id !== EmptyPlayer.id) // Filter out EmptyPlayer
-        .map((opponent) => ({
-          ...opponent,
-          diplomacyStatus: getRandomDiplomacyStatus(),
-        })) as OpponentWithDiplomacy[];
+      const filteredOpponents = providedOpponents.filter(
+        (opponent) => opponent.id !== EmptyPlayer.id
+      );
+      // If after filtering EmptyPlayer we have no valid opponents, generate random ones
+      if (filteredOpponents.length === 0) {
+        return getRandomOpponents(selectedPlayer, numberOfOpponents);
+      }
+      return filteredOpponents.map((opponent) => ({
+        ...opponent,
+        diplomacyStatus: getRandomDiplomacyStatus(),
+      })) as OpponentWithDiplomacy[];
     }
     // Only generate random opponents if no specific opponents were provided
     return getRandomOpponents(selectedPlayer, numberOfOpponents);

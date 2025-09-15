@@ -56,16 +56,21 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
     return availableColors.slice(0, maxOpponents);
   }, [selectedPlayer.color, maxOpponents]);
 
-  // Initialize opponents based on selection mode
-  const initializeOpponents = useCallback(
-    (mode: OpponentSelectionMode) => {
-      if (mode === 'random') {
+  // Initialize opponents for a specific number of opponents (used when map size changes)
+  const initializeOpponentsForMapSize = useCallback(
+    (newMaxOpponents: number) => {
+      const availablePlayers = PREDEFINED_PLAYERS.filter((p) => p.id !== selectedPlayer.id);
+      const usedColors = [selectedPlayer.color];
+      const availableColors = PLAYER_COLORS.filter((color) => !usedColors.includes(color.name)).map(
+        (c) => c.name
+      );
+      const uniqueColors = availableColors.slice(0, newMaxOpponents);
+
+      if (opponentSelectionMode === 'random') {
         // Generate random opponents for max number
-        const availablePlayers = PREDEFINED_PLAYERS.filter((p) => p.id !== selectedPlayer.id);
-        const uniqueColors = getUniqueOpponentColors();
         const randomOpponents: GamePlayer[] = [];
 
-        for (let i = 0; i < maxOpponents; i++) {
+        for (let i = 0; i < newMaxOpponents; i++) {
           const randomPlayer =
             availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
           randomOpponents.push({
@@ -76,12 +81,10 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
         setSelectedOpponents(randomOpponents);
       } else {
         // Manual mode: start with 2 random opponents, rest empty
-        const availablePlayers = PREDEFINED_PLAYERS.filter((p) => p.id !== selectedPlayer.id);
-        const uniqueColors = getUniqueOpponentColors();
-        const opponents: (GamePlayer | null)[] = new Array(maxOpponents).fill(null);
+        const opponents: (GamePlayer | null)[] = new Array(newMaxOpponents).fill(null);
 
         // Add 2 random opponents
-        for (let i = 0; i < Math.min(2, maxOpponents); i++) {
+        for (let i = 0; i < Math.min(2, newMaxOpponents); i++) {
           const randomPlayer =
             availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
           opponents[i] = {
@@ -92,14 +95,26 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
         setSelectedOpponents(opponents);
       }
     },
-    [selectedPlayer.id, maxOpponents, getUniqueOpponentColors]
+    [selectedPlayer.id, selectedPlayer.color, opponentSelectionMode]
   );
 
-  const handleMapSizeChange = useCallback((newMapSize: BattlefieldSize) => {
-    setMapSize(newMapSize);
-    // Reinitialize opponents for new map size
-    setSelectedOpponents([]);
-  }, []);
+  // Initialize opponents based on selection mode
+  const initializeOpponents = useCallback(
+    (mode: OpponentSelectionMode) => {
+      initializeOpponentsForMapSize(maxOpponents);
+    },
+    [initializeOpponentsForMapSize, maxOpponents]
+  );
+
+  const handleMapSizeChange = useCallback(
+    (newMapSize: BattlefieldSize) => {
+      setMapSize(newMapSize);
+      // Reinitialize opponents for new map size immediately
+      const newMaxOpponents = getMaxOpponents(newMapSize);
+      initializeOpponentsForMapSize(newMaxOpponents);
+    },
+    [initializeOpponentsForMapSize]
+  );
 
   const handleOpponentSelectionModeChange = useCallback(
     (mode: OpponentSelectionMode) => {

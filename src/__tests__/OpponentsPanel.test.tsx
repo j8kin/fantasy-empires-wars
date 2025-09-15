@@ -57,7 +57,7 @@ describe('OpponentsPanel', () => {
     expect(screen.getByAltText(PREDEFINED_PLAYERS[2].name)).toBeInTheDocument();
   });
 
-  it('handles when all provided opponents are EmptyPlayer', () => {
+  it('falls back to random opponents when all provided opponents are EmptyPlayer', () => {
     const providedOpponents = [EmptyPlayer, EmptyPlayer];
 
     render(
@@ -69,9 +69,17 @@ describe('OpponentsPanel', () => {
       />
     );
 
-    // Should render no opponents since all were filtered out
+    // Should filter out EmptyPlayer and fallback to generating 2 random opponents
     expect(screen.queryByText('Empty')).not.toBeInTheDocument();
     expect(screen.queryByText('EMPTY')).not.toBeInTheDocument();
+
+    // Should have generated random opponents based on numberOfOpponents
+    const opponentsContainer = document.querySelector('[class*="opponentsPanelContainer"]');
+    expect(opponentsContainer).toBeInTheDocument();
+
+    // Check that we have avatar elements (indicating random opponents were generated)
+    const avatarElements = document.querySelectorAll('img[alt]');
+    expect(avatarElements.length).toBeGreaterThan(0); // Should have generated some opponents
   });
 
   it('works correctly with mixed valid opponents and EmptyPlayer', () => {
@@ -115,5 +123,272 @@ describe('OpponentsPanel', () => {
     // Should fall back to random generation with numberOfOpponents=0
     const opponentsContainer = document.querySelector('[class*="opponentsPanelContainer"]');
     expect(opponentsContainer).toBeInTheDocument();
+  });
+
+  // Tests for the memorization bug fix
+  describe('Memorization and state clearing', () => {
+    it('generates correct number of random opponents for huge map scenario', () => {
+      // Simulate huge map with many opponents
+      const hugeMapOpponents = 8;
+
+      render(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={hugeMapOpponents}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should generate exactly the requested number of opponents
+      const avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(hugeMapOpponents);
+    });
+
+    it('correctly handles switching from provided opponents to random generation', () => {
+      const { rerender } = render(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={3}
+          opponents={[PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]]}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Initially should show 2 provided opponents
+      expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
+      expect(screen.getByAltText(PREDEFINED_PLAYERS[2].name)).toBeInTheDocument();
+
+      // Now switch to a new game with different number of opponents and no provided opponents
+      rerender(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={4}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should now generate 4 random opponents, not keep the previous 2
+      const avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(4);
+    });
+
+    it('handles switching from all EmptyPlayer to random opponents', () => {
+      const { rerender } = render(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={2}
+          opponents={[EmptyPlayer, EmptyPlayer, EmptyPlayer]}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should fallback to generating 2 random opponents
+      let avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBeGreaterThan(0);
+
+      // Now switch to a different configuration
+      rerender(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={5}
+          opponents={[EmptyPlayer]}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should now generate 5 random opponents
+      avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBeGreaterThan(0);
+    });
+
+    it('correctly handles mixed scenarios with varying numbers of EmptyPlayer', () => {
+      const testCases = [
+        {
+          description: 'mostly EmptyPlayer with few valid',
+          opponents: [PREDEFINED_PLAYERS[1], EmptyPlayer, EmptyPlayer, EmptyPlayer],
+          expectedValidOpponents: 1,
+        },
+        {
+          description: 'equal mix of valid and EmptyPlayer',
+          opponents: [PREDEFINED_PLAYERS[1], EmptyPlayer, PREDEFINED_PLAYERS[2], EmptyPlayer],
+          expectedValidOpponents: 2,
+        },
+        {
+          description: 'mostly valid with few EmptyPlayer',
+          opponents: [
+            PREDEFINED_PLAYERS[1],
+            PREDEFINED_PLAYERS[2],
+            PREDEFINED_PLAYERS[3],
+            EmptyPlayer,
+          ],
+          expectedValidOpponents: 3,
+        },
+      ];
+
+      testCases.forEach(({ description, opponents, expectedValidOpponents }) => {
+        const { rerender } = render(
+          <OpponentsPanel
+            selectedPlayer={testPlayer}
+            numberOfOpponents={opponents.length}
+            opponents={opponents}
+            onOpponentSelect={mockOnOpponentSelect}
+          />
+        );
+
+        // Should filter out EmptyPlayer and show only valid opponents
+        expect(screen.queryByText('Empty')).not.toBeInTheDocument();
+        expect(screen.queryByText('EMPTY')).not.toBeInTheDocument();
+
+        const avatarElements = document.querySelectorAll('img[alt]');
+        expect(avatarElements.length).toBe(expectedValidOpponents);
+
+        // Clean up for next iteration
+        rerender(<div />);
+      });
+    });
+
+    it('maintains proper useMemo dependencies for re-rendering', () => {
+      const { rerender } = render(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={2}
+          opponents={[PREDEFINED_PLAYERS[1]]}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should show 1 provided opponent
+      expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
+
+      // Change selectedPlayer - should trigger re-computation
+      rerender(
+        <OpponentsPanel
+          selectedPlayer={PREDEFINED_PLAYERS[4]}
+          numberOfOpponents={2}
+          opponents={[PREDEFINED_PLAYERS[1]]}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should still show the provided opponent
+      expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
+
+      // Change numberOfOpponents while keeping provided opponents - should still use provided
+      rerender(
+        <OpponentsPanel
+          selectedPlayer={PREDEFINED_PLAYERS[4]}
+          numberOfOpponents={5}
+          opponents={[PREDEFINED_PLAYERS[1]]}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should still show only the 1 provided opponent, not 5 random ones
+      const avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(1);
+      expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
+    });
+
+    it('correctly handles map size changes from large to small opponent counts', () => {
+      // First render with 7 opponents (simulating Huge map)
+      const { rerender } = render(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={7}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should generate 7 opponents
+      let avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(7);
+
+      // Now switch to 4 opponents (simulating Medium map)
+      rerender(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={4}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should now generate exactly 4 opponents, not 7
+      avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(4);
+    });
+
+    it('correctly handles map size changes with opponent array clearing', () => {
+      // Create a large opponent array (simulating Huge map with 7 opponents)
+      const hugeMapOpponents = Array.from(
+        { length: 7 },
+        (_, i) => PREDEFINED_PLAYERS[i % PREDEFINED_PLAYERS.length]
+      );
+
+      const { rerender } = render(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={7}
+          opponents={hugeMapOpponents}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should show 7 opponents
+      let avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(7);
+
+      // Now switch to Medium map without provided opponents (should generate random)
+      rerender(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={4}
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should now show exactly 4 opponents, not more
+      avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(4);
+    });
+
+    it('generates correct number of opponents after map size changes', () => {
+      const { rerender } = render(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={7} // Large map
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should generate 7 opponents
+      let avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(7);
+
+      // Switch to smaller number of opponents
+      rerender(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={4} // Medium map
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should now generate exactly 4 opponents, not 7
+      avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(4);
+
+      // Switch to very small number
+      rerender(
+        <OpponentsPanel
+          selectedPlayer={testPlayer}
+          numberOfOpponents={2} // Small map
+          onOpponentSelect={mockOnOpponentSelect}
+        />
+      );
+
+      // Should now generate exactly 2 opponents
+      avatarElements = document.querySelectorAll('img[alt]');
+      expect(avatarElements.length).toBe(2);
+    });
   });
 });
