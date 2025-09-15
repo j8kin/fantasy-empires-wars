@@ -7,6 +7,7 @@ interface PlayerSelectionProps {
   label?: string;
   selectedPlayer: GamePlayer;
   onPlayerChange: (player: GamePlayer) => void;
+  availablePlayers?: GamePlayer[];
 }
 
 const getClassColor = (playerClass: string): string => {
@@ -26,6 +27,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
   label = 'Choose Your Character:',
   selectedPlayer,
   onPlayerChange,
+  availablePlayers = PREDEFINED_PLAYERS,
 }) => {
   return (
     <div className={styles.section}>
@@ -34,7 +36,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
         {/* Left Side - Player List */}
         <div className={styles.playerListContainer}>
           <div className={styles.playerList}>
-            {PREDEFINED_PLAYERS.map((player) => (
+            {availablePlayers.map((player) => (
               <div
                 key={player.id}
                 className={`${styles.playerListItem} ${
