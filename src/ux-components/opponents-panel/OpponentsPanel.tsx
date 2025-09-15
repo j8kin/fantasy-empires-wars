@@ -25,7 +25,16 @@ const getRandomOpponents = (
   );
 
   const shuffled = [...availablePlayers].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count).map((player) => ({
+  const selectedPlayers = shuffled.slice(0, Math.min(count, shuffled.length));
+
+  // If we need more opponents than available unique players, add random duplicates
+  // This shouldn't happen in practice since we have enough predefined players
+  while (selectedPlayers.length < count && availablePlayers.length > 0) {
+    const randomPlayer = availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
+    selectedPlayers.push(randomPlayer);
+  }
+
+  return selectedPlayers.map((player) => ({
     ...player,
     diplomacyStatus: getRandomDiplomacyStatus(),
   }));

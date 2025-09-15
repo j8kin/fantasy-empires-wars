@@ -67,29 +67,39 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
       const uniqueColors = availableColors.slice(0, newMaxOpponents);
 
       if (opponentSelectionMode === 'random') {
-        // Generate random opponents for max number
+        // Generate unique random opponents for max number
+        const shuffledPlayers = [...availablePlayers].sort(() => 0.5 - Math.random());
         const randomOpponents: GamePlayer[] = [];
 
-        for (let i = 0; i < newMaxOpponents; i++) {
+        for (let i = 0; i < newMaxOpponents && i < shuffledPlayers.length; i++) {
+          randomOpponents.push({
+            ...shuffledPlayers[i],
+            color: uniqueColors[i] || shuffledPlayers[i].color,
+          });
+        }
+
+        // If we need more opponents than available unique players, fill with random duplicates
+        // This shouldn't happen in practice since we have enough predefined players
+        while (randomOpponents.length < newMaxOpponents) {
           const randomPlayer =
             availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
           randomOpponents.push({
             ...randomPlayer,
-            color: uniqueColors[i] || randomPlayer.color,
+            color: uniqueColors[randomOpponents.length] || randomPlayer.color,
           });
         }
+
         setSelectedOpponents(randomOpponents);
       } else {
-        // Manual mode: start with 2 random opponents, rest empty
+        // Manual mode: start with 2 unique random opponents, rest empty
         const opponents: (GamePlayer | null)[] = new Array(newMaxOpponents).fill(null);
+        const shuffledPlayers = [...availablePlayers].sort(() => 0.5 - Math.random());
 
-        // Add 2 random opponents
-        for (let i = 0; i < Math.min(2, newMaxOpponents); i++) {
-          const randomPlayer =
-            availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
+        // Add 2 unique random opponents
+        for (let i = 0; i < Math.min(2, newMaxOpponents, shuffledPlayers.length); i++) {
           opponents[i] = {
-            ...randomPlayer,
-            color: uniqueColors[i] || randomPlayer.color,
+            ...shuffledPlayers[i],
+            color: uniqueColors[i] || shuffledPlayers[i].color,
           };
         }
         setSelectedOpponents(opponents);
