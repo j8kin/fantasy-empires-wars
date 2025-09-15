@@ -2,6 +2,17 @@ import React from 'react';
 import { GamePlayer } from '../../types/GamePlayer';
 import styles from './css/PlayerAvatar.module.css';
 
+export const EmptyPlayer: GamePlayer = {
+  id: 'empty',
+  name: 'Empty',
+  avatar: '',
+  color: 'gray',
+  alignment: 'neutral',
+  level: 0,
+  race: 'Human',
+  description: 'Remove opponent',
+};
+
 type AvatarShape = 'circle' | 'rectangle';
 
 interface PlayerAvatarProps {
@@ -21,10 +32,6 @@ const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
   className,
   style,
 }) => {
-  if (!player.avatar) {
-    return null;
-  }
-
   const dynamicStyles: React.CSSProperties = {
     width: `${size}px`,
     height: `${size}px`,
@@ -33,6 +40,32 @@ const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
   };
 
   const containerClassName = `${styles.container} ${styles[`container--${shape}`]} ${className || ''}`;
+
+  // Check if this is an empty player
+  if (player.id === EmptyPlayer.id) {
+    return (
+      <div style={dynamicStyles} className={containerClassName}>
+        <div
+          style={{
+            color: '#8b7355',
+            fontSize: '12px',
+            textAlign: 'center',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+          }}
+        >
+          EMPTY
+        </div>
+      </div>
+    );
+  }
+
+  if (!player.avatar) {
+    return null;
+  }
 
   return (
     <div style={dynamicStyles} className={containerClassName}>

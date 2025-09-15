@@ -3,7 +3,7 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { PlayerColorName, PLAYER_COLORS } from '../../types/PlayerColors';
-import PlayerAvatar from '../avatars/PlayerAvatar';
+import PlayerAvatar, { EmptyPlayer } from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
 import { GameConfig } from '../../types/GameConfig';
 import PlayerSelection from '../player-selection/PlayerSelection';
@@ -13,7 +13,8 @@ interface StartGameDialogProps {
   onStartGame: (config: GameConfig) => void;
   onShowSelectOpponentDialog: (
     excludedPlayerIds: string[],
-    onSelect: (player: GamePlayer) => void
+    onSelect: (player: GamePlayer) => void,
+    allowEmptyPlayer?: boolean
   ) => void;
 }
 
@@ -125,15 +126,25 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
           .filter((opponent) => opponent !== null)
           .map((opponent) => opponent!.id),
       ];
-      onShowSelectOpponentDialog(excludedPlayerIds, (opponent: GamePlayer) => {
-        const newOpponents = [...selectedOpponents];
-        const uniqueColors = getUniqueOpponentColors();
-        newOpponents[index] = {
-          ...opponent,
-          color: uniqueColors[index] || opponent.color,
-        };
-        setSelectedOpponents(newOpponents);
-      });
+
+      // Calculate current number of selected opponents
+      const currentOpponentCount = selectedOpponents.filter((opponent) => opponent !== null).length;
+      // Don't allow EmptyPlayer when there are exactly 2 opponents (would leave only 1)
+      const allowEmptyPlayer = currentOpponentCount > 2;
+
+      onShowSelectOpponentDialog(
+        excludedPlayerIds,
+        (opponent: GamePlayer) => {
+          const newOpponents = [...selectedOpponents];
+          const uniqueColors = getUniqueOpponentColors();
+          newOpponents[index] = {
+            ...opponent,
+            color: uniqueColors[index] || opponent.color,
+          };
+          setSelectedOpponents(newOpponents);
+        },
+        allowEmptyPlayer
+      );
     },
     [selectedPlayer.id, selectedOpponents, onShowSelectOpponentDialog, getUniqueOpponentColors]
   );
@@ -279,16 +290,12 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
                     />
                   )
                 ) : (
-                  <div
-                    style={{
-                      color: '#8b7355',
-                      fontSize: '12px',
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    EMPTY
-                  </div>
+                  <PlayerAvatar
+                    player={EmptyPlayer}
+                    size={74}
+                    shape="circle"
+                    borderColor="#8b7355"
+                  />
                 )}
               </div>
             ))}

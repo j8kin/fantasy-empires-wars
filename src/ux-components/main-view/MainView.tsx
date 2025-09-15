@@ -20,6 +20,7 @@ const MainView: React.FC = () => {
   const [selectOpponentCallback, setSelectOpponentCallback] = useState<
     ((player: GamePlayer) => void) | null
   >(null);
+  const [allowEmptyPlayer, setAllowEmptyPlayer] = useState<boolean>(true);
   const [battlefieldSize, setBattlefieldSize] = useState<BattlefieldSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameConfig, setGameConfig] = useState<GameConfig | undefined>(undefined);
@@ -61,9 +62,14 @@ const MainView: React.FC = () => {
   }, []);
 
   const handleShowSelectOpponentDialog = useCallback(
-    (excludedPlayerIds: string[], onSelect: (player: GamePlayer) => void) => {
+    (
+      excludedPlayerIds: string[],
+      onSelect: (player: GamePlayer) => void,
+      allowEmptyPlayer: boolean = true
+    ) => {
       setSelectOpponentExcludedIds(excludedPlayerIds);
       setSelectOpponentCallback(() => onSelect);
+      setAllowEmptyPlayer(allowEmptyPlayer);
       setShowSelectOpponentDialog(true);
     },
     []
@@ -131,6 +137,7 @@ const MainView: React.FC = () => {
           excludedPlayerIds={selectOpponentExcludedIds}
           onSelect={handleOpponentSelect}
           onCancel={handleOpponentDialogCancel}
+          allowEmptyPlayer={allowEmptyPlayer}
         />
       )}
     </div>

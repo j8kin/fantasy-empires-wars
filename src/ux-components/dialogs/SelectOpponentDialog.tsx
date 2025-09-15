@@ -3,21 +3,25 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import CancelButton from '../buttons/CancelButton';
+import { EmptyPlayer } from '../avatars/PlayerAvatar';
 
 interface SelectOpponentDialogProps {
   excludedPlayerIds: string[];
   onSelect: (player: GamePlayer) => void;
   onCancel: () => void;
+  allowEmptyPlayer?: boolean;
 }
 
 const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   excludedPlayerIds,
   onSelect,
   onCancel,
+  allowEmptyPlayer = true,
 }) => {
-  const availablePlayers = PREDEFINED_PLAYERS.filter(
-    (player) => !excludedPlayerIds.includes(player.id)
-  );
+  const availablePlayers = [
+    ...(allowEmptyPlayer ? [EmptyPlayer] : []),
+    ...PREDEFINED_PLAYERS.filter((player) => !excludedPlayerIds.includes(player.id)),
+  ];
 
   const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(availablePlayers[0]);
 
