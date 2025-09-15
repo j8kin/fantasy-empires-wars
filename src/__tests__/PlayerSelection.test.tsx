@@ -195,4 +195,60 @@ describe('PlayerSelection', () => {
     expect(screen.getByText(mockSelectedPlayer.name)).toBeInTheDocument();
     expect(screen.getByText(mockSelectedPlayer.description)).toBeInTheDocument();
   });
+
+  it('updates details panel when hovering over a different player', () => {
+    render(
+      <PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />
+    );
+
+    // Initially shows selected player details
+    expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
+    expect(screen.queryByText(PREDEFINED_PLAYERS[1].description)).not.toBeInTheDocument();
+
+    // Hover over second player
+    fireEvent.mouseEnter(screen.getByText(PREDEFINED_PLAYERS[1].name));
+
+    // Should now show hovered player details
+    expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
+    expect(screen.queryByText(PREDEFINED_PLAYERS[0].description)).not.toBeInTheDocument();
+  });
+
+  it('reverts to selected player details when mouse leaves', () => {
+    render(
+      <PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />
+    );
+
+    // Initially shows selected player details
+    expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
+
+    // Find the player list item for the second player and hover over it
+    const playerListItems = screen.getAllByText(PREDEFINED_PLAYERS[1].name);
+    const playerListItem = playerListItems[0].closest('.playerListItem');
+
+    fireEvent.mouseEnter(playerListItem!);
+    expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
+
+    // Mouse leave should revert to selected player
+    fireEvent.mouseLeave(playerListItem!);
+    expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
+    expect(screen.queryByText(PREDEFINED_PLAYERS[1].description)).not.toBeInTheDocument();
+  });
+
+  it('hover works independently of selection', () => {
+    render(
+      <PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />
+    );
+
+    // Hover over third player
+    fireEvent.mouseEnter(screen.getByText(PREDEFINED_PLAYERS[2].name));
+    expect(screen.getByText(PREDEFINED_PLAYERS[2].description)).toBeInTheDocument();
+
+    // Click on second player to select it (should call onPlayerChange but not change hover)
+    fireEvent.click(screen.getByText(PREDEFINED_PLAYERS[1].name));
+    expect(mockOnPlayerChange).toHaveBeenCalledWith(PREDEFINED_PLAYERS[1]);
+
+    // Should still show third player details (hovered) not second player (clicked)
+    expect(screen.getByText(PREDEFINED_PLAYERS[2].description)).toBeInTheDocument();
+    expect(screen.queryByText(PREDEFINED_PLAYERS[1].description)).not.toBeInTheDocument();
+  });
 });

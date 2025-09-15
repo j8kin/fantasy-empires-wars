@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import styles from './css/PlayerSelection.module.css';
@@ -29,6 +29,10 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
   onPlayerChange,
   availablePlayers = PREDEFINED_PLAYERS,
 }) => {
+  const [hoveredPlayer, setHoveredPlayer] = useState<GamePlayer | null>(null);
+
+  const displayPlayer = hoveredPlayer || selectedPlayer;
+
   return (
     <div className={styles.section}>
       <label className={styles.label}>{label}</label>
@@ -43,6 +47,8 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
                   selectedPlayer.id === player.id ? styles.selected : ''
                 }`}
                 onClick={() => onPlayerChange(player)}
+                onMouseEnter={() => setHoveredPlayer(player)}
+                onMouseLeave={() => setHoveredPlayer(null)}
               >
                 <div className={styles.playerName}>{player.name}</div>
                 <div className={styles.playerSummary}>
@@ -63,25 +69,25 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
         <div className={styles.playerDetailsContainer}>
           <div className={styles.playerDetails}>
             <div className={styles.playerDetailHeader}>
-              <h3 className={styles.selectedPlayerName}>{selectedPlayer.name}</h3>
+              <h3 className={styles.selectedPlayerName}>{displayPlayer.name}</h3>
               <div
                 className={styles.selectedPlayerClass}
-                style={{ color: getClassColor(selectedPlayer.alignment) }}
+                style={{ color: getClassColor(displayPlayer.alignment) }}
               >
-                {selectedPlayer.alignment.toUpperCase()} - {selectedPlayer.race} - Level{' '}
-                {selectedPlayer.level}
+                {displayPlayer.alignment.toUpperCase()} - {displayPlayer.race} - Level{' '}
+                {displayPlayer.level}
               </div>
             </div>
             <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
               <PlayerAvatar
-                player={selectedPlayer}
+                player={displayPlayer}
                 size={120}
                 shape="circle"
-                borderColor={selectedPlayer.color}
+                borderColor={displayPlayer.color}
                 className={styles.selectedAvatarContainer}
               />
 
-              <div className={styles.selectedPlayerDescription}>{selectedPlayer.description}</div>
+              <div className={styles.selectedPlayerDescription}>{displayPlayer.description}</div>
             </div>
           </div>
         </div>
