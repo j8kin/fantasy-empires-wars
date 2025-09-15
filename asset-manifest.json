@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.8d68a20e.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.b6cbd2d0.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.658f04cb.js",
     "static/js/787.d18d3df0.chunk.js": "/fantasy-empires-wars/static/js/787.d18d3df0.chunk.js",
     "static/media/CelticPatternVertical.png": "/fantasy-empires-wars/static/media/CelticPatternVertical.8f1fe8a5abcd3ac8d2e6.png",
     "static/media/StartGame.png": "/fantasy-empires-wars/static/media/StartGame.7a77e2fd608bec2fa398.png",
@@ -38,11 +38,11 @@
     "static/media/darkforest.png": "/fantasy-empires-wars/static/media/darkforest.769c5f60d2d7fe472995.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.8d68a20e.css.map": "/fantasy-empires-wars/static/css/main.8d68a20e.css.map",
-    "main.b6cbd2d0.js.map": "/fantasy-empires-wars/static/js/main.b6cbd2d0.js.map",
+    "main.658f04cb.js.map": "/fantasy-empires-wars/static/js/main.658f04cb.js.map",
     "787.d18d3df0.chunk.js.map": "/fantasy-empires-wars/static/js/787.d18d3df0.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8d68a20e.css",
-    "static/js/main.b6cbd2d0.js"
+    "static/js/main.658f04cb.js"
   ]
 }
