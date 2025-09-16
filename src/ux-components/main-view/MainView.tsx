@@ -91,7 +91,7 @@ const MainView: React.FC = () => {
   }, []);
 
   return (
-    <div className={styles.backgroundStyle} id="MainCanvas">
+    <main className={styles.backgroundStyle} id="MainCanvas">
       {/* Content components */}
       <TopPanel
         height={TOP_PANEL_HEIGHT}
@@ -139,7 +139,7 @@ const MainView: React.FC = () => {
           allowEmptyPlayer={allowEmptyPlayer}
         />
       )}
-    </div>
+    </main>
   );
 };
 
