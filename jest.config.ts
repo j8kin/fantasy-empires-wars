@@ -10,6 +10,7 @@ const config: Config = {
   },
   collectCoverage: true,
   coverageDirectory: 'coverage',
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/__tests__/**/*.(test|spec).tsx?'],
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
 };
 
