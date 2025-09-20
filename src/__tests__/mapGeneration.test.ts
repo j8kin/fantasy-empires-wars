@@ -1,106 +1,13 @@
-import { calculateHexDistance, initializeMap } from '../utils/mapGeneration';
+import { initializeMap } from '../map/generation/mapGeneration';
 import { LAND_TYPES } from '../types/LandType';
 import { BUILDING_TYPES } from '../types/Building';
 import { NEUTRAL_PLAYER } from '../types/Player';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { createTileId } from '../types/HexTileState';
+import { calculateHexDistance } from '../map/utils/mapAlgorithms';
 
 describe('Map Generation with Players', () => {
-  describe('Calculate Hex Distance', () => {
-    it('should calculate distance between two hexagonal coordinates. Left Upper Corner', () => {
-      expect(calculateHexDistance('small', { row: 0, col: 0 }, { row: 0, col: 0 })).toBe(0);
-
-      expect(calculateHexDistance('small', { row: 0, col: 0 }, { row: 0, col: 1 })).toBe(1);
-      expect(calculateHexDistance('medium', { row: 0, col: 0 }, { row: 1, col: 0 })).toBe(1);
-
-      expect(calculateHexDistance('large', { row: 0, col: 0 }, { row: 1, col: 1 })).toBe(2);
-      expect(calculateHexDistance('huge', { row: 0, col: 0 }, { row: 0, col: 2 })).toBe(2);
-      expect(calculateHexDistance('small', { row: 0, col: 0 }, { row: 2, col: 0 })).toBe(2);
-    });
-
-    it('should calculate distance between two hexagonal coordinates. Left Bottom Corner', () => {
-      const size = 'small';
-      const rows = getBattlefieldDimensions(size).rows - 1;
-      expect(rows % 2).toBe(1);
-
-      expect(calculateHexDistance(size, { row: rows, col: 0 }, { row: rows, col: 0 })).toBe(0);
-
-      expect(calculateHexDistance(size, { row: rows, col: 0 }, { row: rows, col: 1 })).toBe(1);
-      expect(calculateHexDistance(size, { row: rows, col: 0 }, { row: rows - 1, col: 0 })).toBe(1);
-      expect(calculateHexDistance(size, { row: rows, col: 0 }, { row: rows - 1, col: 1 })).toBe(1);
-
-      expect(calculateHexDistance(size, { row: rows, col: 0 }, { row: rows - 2, col: 0 })).toBe(2);
-      expect(calculateHexDistance(size, { row: rows, col: 0 }, { row: rows - 2, col: 1 })).toBe(2);
-      expect(calculateHexDistance(size, { row: rows, col: 0 }, { row: rows - 1, col: 2 })).toBe(2);
-      expect(calculateHexDistance(size, { row: rows, col: 0 }, { row: rows, col: 2 })).toBe(2);
-    });
-
-    it('should calculate distance between two hexagonal coordinates. Right Upper Corner', () => {
-      const size = 'medium';
-      const cols = getBattlefieldDimensions(size).cols - 1;
-      expect(calculateHexDistance(size, { row: 0, col: cols }, { row: 0, col: cols })).toBe(0);
-
-      expect(calculateHexDistance(size, { row: 0, col: cols }, { row: 0, col: cols - 1 })).toBe(1);
-      expect(calculateHexDistance(size, { row: 0, col: cols }, { row: 1, col: cols - 1 })).toBe(1); // even rows has 1 less column
-
-      expect(calculateHexDistance(size, { row: 0, col: cols }, { row: 1, col: cols - 2 })).toBe(2); // even rows has 1 less column
-      expect(calculateHexDistance(size, { row: 0, col: cols }, { row: 0, col: cols - 2 })).toBe(2);
-      expect(calculateHexDistance(size, { row: 0, col: cols }, { row: 2, col: cols })).toBe(2);
-
-      expect(calculateHexDistance(size, { row: 0, col: cols }, { row: 1, col: cols })).toBe(-1); // the second position is not exists since on even rows there is 1 less column
-    });
-
-    it('should calculate distance between two hexagonal coordinates. Right Bottom Corner', () => {
-      const size = 'huge';
-      let { rows, cols } = getBattlefieldDimensions(size);
-      rows -= 1;
-      cols -= 1;
-      expect(calculateHexDistance(size, { row: rows, col: cols }, { row: rows, col: cols })).toBe(
-        0
-      );
-
-      expect(
-        calculateHexDistance(size, { row: rows, col: cols }, { row: rows, col: cols - 1 })
-      ).toBe(1);
-      expect(
-        calculateHexDistance(size, { row: rows, col: cols }, { row: rows - 1, col: cols - 1 })
-      ).toBe(1); // even rows has 1 less column
-
-      expect(
-        calculateHexDistance(size, { row: rows, col: cols }, { row: rows - 1, col: cols - 2 })
-      ).toBe(2); // even rows has 1 less column
-      expect(
-        calculateHexDistance(size, { row: rows, col: cols }, { row: rows, col: cols - 2 })
-      ).toBe(2);
-      expect(
-        calculateHexDistance(size, { row: rows, col: cols }, { row: rows - 2, col: cols })
-      ).toBe(2);
-
-      expect(
-        calculateHexDistance(size, { row: rows, col: cols }, { row: rows - 1, col: cols })
-      ).toBe(-1); // the second position is not exists since on even rows there is 1 less column
-    });
-
-    it('should calculate distance between two hexagonal coordinates. Middle', () => {
-      const size = 'huge';
-      let { rows, cols } = getBattlefieldDimensions(size);
-      expect(calculateHexDistance(size, { row: 0, col: 0 }, { row: rows - 1, col: cols - 1 })).toBe(
-        37
-      );
-
-      expect(calculateHexDistance(size, { row: 3, col: 6 }, { row: 5, col: 11 })).toBe(6);
-    });
-
-    it('should calculate distance between two hexagonal coordinates. Not-Exists', () => {
-      const size = 'huge';
-      let { rows, cols } = getBattlefieldDimensions(size);
-      expect(
-        calculateHexDistance(size, { row: rows - 1, col: cols - 1 }, { row: rows, col: cols })
-      ).toBe(-1);
-    });
-  });
-
   describe('Basic Map Generation Without Players', () => {
     it('should generate map without players when no players provided', () => {
       const mapSize: BattlefieldSize = 'medium';
@@ -109,7 +16,7 @@ describe('Map Generation with Players', () => {
       // Should generate tiles
       expect(Object.keys(tiles).length).toBeGreaterThan(0);
 
-      // All tiles should be controlled by neutral player
+      // All tiles should be controlled by a neutral player
       Object.values(tiles).forEach((tile) => {
         expect(tile.controlledBy.id).toBe(NEUTRAL_PLAYER.id);
       });
@@ -175,7 +82,7 @@ describe('Map Generation with Players', () => {
 
       expect(playersTiles.length).toBeGreaterThan(0);
 
-      // Check if homeland (stronghold tile) has appropriate alignment or is volcano for necromancer
+      // Check if the homeland (stronghold tile) has appropriate alignment or is a volcano for necromancer
       const strongholdTile = playersTiles.filter((tile) =>
         tile.buildings.some((building) => building.id === 'stronghold')
       );
@@ -232,7 +139,7 @@ describe('Map Generation with Players', () => {
         (tile) => tile.controlledBy.id === singlePlayer[0].id
       );
 
-      // All player tiles should be within radius 2 of stronghold
+      // All player tiles should be within radius 2 of the stronghold
       playerTiles.forEach((tile) => {
         expect(calculateHexDistance(mapSize, strongholdTile!, tile)).toBeLessThanOrEqual(2);
       });
@@ -350,7 +257,7 @@ describe('Map Generation with Players', () => {
       for (let row = 0; row < rows; row++) {
         const colsInRow = row % 2 === 0 ? cols : cols - 1;
         for (let col = 0; col < colsInRow; col++) {
-          const tileId = createTileId(row, col);
+          const tileId = createTileId({ row: row, col: col });
           expect(tiles[tileId]).toBeDefined();
           expect(tiles[tileId].row).toBe(row);
           expect(tiles[tileId].col).toBe(col);
@@ -359,7 +266,7 @@ describe('Map Generation with Players', () => {
 
       // Check no invalid land types
       Object.values(tiles).forEach((tile) => {
-        expect(tile.landType.id).not.toBe('none');
+        expect(tile.landType.id).not.toBe(LAND_TYPES.none.id);
         expect(Object.keys(LAND_TYPES)).toContain(tile.landType.id);
       });
     });

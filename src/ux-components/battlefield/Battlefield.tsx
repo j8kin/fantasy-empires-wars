@@ -61,7 +61,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, battlefieldSiz
     const colsInThisRow = row % 2 === 0 ? cols : cols - 1;
 
     for (let col = 0; col < colsInThisRow; col++) {
-      const tileId = createTileId(row, col);
+      const tileId = createTileId({ row: row, col: col });
       const tileState = mapState.tiles[tileId];
 
       hexRow.push(<HexTile key={tileId} landType={tileState?.landType} tileState={tileState} />);

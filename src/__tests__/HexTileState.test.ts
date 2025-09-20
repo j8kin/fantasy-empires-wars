@@ -4,10 +4,10 @@ import { getBattlefieldDimensions } from '../types/BattlefieldSize';
 describe('HexTileState Utility Functions', () => {
   describe('createTileId', () => {
     it('should create unique tile IDs for different coordinates', () => {
-      const id1 = createTileId(0, 0);
-      const id2 = createTileId(1, 0);
-      const id3 = createTileId(0, 1);
-      const id4 = createTileId(5, 10);
+      const id1 = createTileId({ row: 0, col: 0 });
+      const id2 = createTileId({ row: 1, col: 0 });
+      const id3 = createTileId({ row: 0, col: 1 });
+      const id4 = createTileId({ row: 5, col: 10 });
 
       expect(id1).toBe('0-0');
       expect(id2).toBe('1-0');
@@ -21,15 +21,15 @@ describe('HexTileState Utility Functions', () => {
     });
 
     it('should handle negative coordinates', () => {
-      const id1 = createTileId(-1, -1);
-      const id2 = createTileId(-5, 3);
+      const id1 = createTileId({ row: -1, col: -1 });
+      const id2 = createTileId({ row: -5, col: 3 });
 
       expect(id1).toBe('-1--1');
       expect(id2).toBe('-5-3');
     });
 
     it('should handle large coordinates', () => {
-      const id = createTileId(999, 1000);
+      const id = createTileId({ row: 999, col: 1000 });
       expect(id).toBe('999-1000');
     });
   });

@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { MapState, HexTileState, createTileId } from '../types/HexTileState';
 import { NEUTRAL_PLAYER, Player } from '../types/Player';
-import { initializeMap } from '../utils/mapGeneration';
+import { initializeMap } from '../map/generation/mapGeneration';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 
 export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
@@ -92,7 +92,7 @@ export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
 
   const getTile = useCallback(
     (row: number, col: number) => {
-      const tileId = createTileId(row, col);
+      const tileId = createTileId({ row: row, col: col });
       return mapState.tiles[tileId];
     },
     [mapState.tiles]

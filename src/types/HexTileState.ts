@@ -3,6 +3,7 @@ import { Building } from './Building';
 import { Army } from './Army';
 import { Player } from './Player';
 import { BattlefieldSize } from './BattlefieldSize';
+import { Position } from '../map/utils/mapTypes';
 
 export interface HexTileState {
   id: string;
@@ -23,4 +24,4 @@ export interface MapState {
   mapSize: BattlefieldSize;
 }
 
-export const createTileId = (row: number, col: number): string => `${row}-${col}`;
+export const createTileId = (position: Position): string => `${position.row}-${position.col}`;
