@@ -12,9 +12,6 @@ const positionsToTiles = (
 ): HexTileState[] => {
   return pos.map((p) => tiles[createTileId(p)]);
 };
-const tileToPosition = (tiles: HexTileState): Position => {
-  return { row: tiles.row, col: tiles.col };
-};
 
 const calculateBaseLandGold = (landType: LandType): number => {
   const { min, max } = landType.goldPerTurn;
@@ -39,7 +36,7 @@ const getEmptyNeighbors = (
 ): Position[] =>
   positionsToTiles(getTilesInRadius(mapSize, position, 1), tiles)
     .filter((tile) => tile.landType.id === LAND_TYPES.none.id)
-    .map((tile) => ({ row: tile.row, col: tile.col }));
+    .map((tile) => tile.mapPos);
 
 const getRandomNoneNeighbor = (
   mapSize: BattlefieldSize,
@@ -96,7 +93,7 @@ const findSuitableHomeland = (
   // Filter by distance constraints
   const validCandidates = candidates.filter((candidate) => {
     return existingPlayerPositions.every((pos) => {
-      const distance = calculateHexDistance(mapSize, tileToPosition(candidate), pos);
+      const distance = calculateHexDistance(mapSize, candidate.mapPos, pos);
       return distance >= 4; // Try radius 4 first
     });
   });
@@ -105,7 +102,7 @@ const findSuitableHomeland = (
   if (validCandidates.length === 0) {
     const radius3Candidates = candidates.filter((candidate) => {
       return existingPlayerPositions.every((pos) => {
-        const distance = calculateHexDistance(mapSize, tileToPosition(candidate), pos);
+        const distance = calculateHexDistance(mapSize, candidate.mapPos, pos);
         return distance >= 3;
       });
     });
@@ -140,8 +137,8 @@ const addPlayer = (
   if (!homeland) return; // should never reach here
 
   homeland.controlledBy = player.id;
-  construct(player, 'stronghold', tileToPosition(homeland), tiles, mapSize);
-  existingPlayersPositions.push(homeland);
+  construct(player, 'stronghold', homeland.mapPos, tiles, mapSize);
+  existingPlayersPositions.push(homeland.mapPos);
 };
 
 const assignPlayerLands = (
@@ -185,8 +182,7 @@ export const initializeMap = (
       const tileId = createTileId({ row: row, col: col });
       tiles[tileId] = {
         id: tileId,
-        row,
-        col,
+        mapPos: { row: row, col: col },
         landType: LAND_TYPES.none, // Temporary, will be overwritten
         controlledBy: NO_PLAYER.id,
         goldPerTurn: 0, // Will be calculated later
@@ -247,7 +243,7 @@ export const initializeMap = (
 
       // place 6 land of the same time nearby
       for (let i = 0; i < 5 && getNumberOfLands(tiles, landType) < maxTilesPerType; i++) {
-        const emptyNeighbor = getRandomNoneNeighbor(mapSize, startLand, tiles);
+        const emptyNeighbor = getRandomNoneNeighbor(mapSize, startLand.mapPos, tiles);
         if (emptyNeighbor == null) break;
         tiles[createTileId(emptyNeighbor)].landType = landType;
         startLand = tiles[createTileId(emptyNeighbor)];

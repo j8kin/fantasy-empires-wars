@@ -7,8 +7,7 @@ import { Position } from '../map/utils/mapTypes';
 
 export interface HexTileState {
   id: string;
-  row: number;
-  col: number;
+  mapPos: Position;
   landType: LandType;
   controlledBy: string;
   goldPerTurn: number;

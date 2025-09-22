@@ -1,23 +1,21 @@
 import React, { useEffect, useRef } from 'react';
-import { LandType } from '../../types/LandType';
 import { getAlignmentColor } from '../../types/Alignment';
-import { HexTileState, GameState, getPlayerById } from '../../types/HexTileState';
+import { createTileId, GameState, getPlayerById } from '../../types/HexTileState';
 import styles from './css/LandCharacteristicsPopup.module.css';
 import { NO_PLAYER } from '../../types/GamePlayer';
+import { Position } from '../../map/utils/mapTypes';
 
 interface LandCharacteristicsPopupProps {
-  landType?: LandType;
-  tileState?: HexTileState;
-  gameState?: GameState;
-  position: { x: number; y: number };
+  battlefieldPosition: Position;
+  gameState: GameState;
+  screenPosition: { x: number; y: number };
   onClose: () => void;
 }
 
 const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
-  landType,
-  tileState,
+  battlefieldPosition,
   gameState,
-  position,
+  screenPosition,
   onClose,
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
@@ -44,7 +42,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
     };
   }, [onClose]);
 
-  const displayLandType = tileState?.landType || landType;
+  const battlefieldTile = gameState.tiles[createTileId(battlefieldPosition)];
+  const displayLandType = battlefieldTile.landType;
   if (!displayLandType) return null;
 
   return (
@@ -52,8 +51,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
       ref={popupRef}
       className={styles.popup}
       style={{
-        left: position.x + 10,
-        top: position.y + 10,
+        left: screenPosition.x + 10,
+        top: screenPosition.y + 10,
       }}
     >
       <div className={styles.popupContent}>
@@ -75,41 +74,38 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
             </span>
           </div>
 
-          {tileState && (
+          {battlefieldTile && (
             <>
               <div className={styles.row}>
                 <span className={styles.label}>Position:</span>
                 <span className={styles.value}>
-                  {tileState.row}, {tileState.col}
+                  {battlefieldPosition.row}, {battlefieldPosition.col}
                 </span>
               </div>
 
               <div className={styles.row}>
                 <span className={styles.label}>Gold per Turn:</span>
-                <span className={styles.value}>{tileState.goldPerTurn}</span>
+                <span className={styles.value}>{battlefieldTile.goldPerTurn}</span>
               </div>
 
               <div className={styles.row}>
                 <span className={styles.label}>Controlled By:</span>
                 <span className={styles.value}>
                   {(() => {
-                    if (!tileState.controlledBy || tileState.controlledBy === NO_PLAYER.id) {
+                    if (battlefieldTile.controlledBy === NO_PLAYER.id) {
                       return 'None';
                     }
-                    if (gameState) {
-                      const player = getPlayerById(gameState, tileState.controlledBy);
-                      return player ? player.name : tileState.controlledBy;
-                    }
-                    return tileState.controlledBy;
+                    const player = getPlayerById(gameState, battlefieldTile.controlledBy);
+                    return player ? player.name : battlefieldTile.controlledBy;
                   })()}
                 </span>
               </div>
 
-              {tileState.buildings && tileState.buildings.length > 0 && (
+              {battlefieldTile.buildings && battlefieldTile.buildings.length > 0 && (
                 <div className={styles.row}>
                   <span className={styles.label}>Buildings:</span>
                   <div className={styles.buildingsList}>
-                    {tileState.buildings.map((building, index) => (
+                    {battlefieldTile.buildings.map((building, index) => (
                       <span key={index} className={styles.building}>
                         {building.name}
                       </span>
@@ -118,10 +114,10 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 </div>
               )}
 
-              {tileState.army && tileState.army.totalCount > 0 && (
+              {battlefieldTile.army && battlefieldTile.army.totalCount > 0 && (
                 <div className={styles.row}>
                   <span className={styles.label}>Army:</span>
-                  <span className={styles.value}>{tileState.army.totalCount} units</span>
+                  <span className={styles.value}>{battlefieldTile.army.totalCount} units</span>
                 </div>
               )}
             </>

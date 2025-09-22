@@ -108,13 +108,13 @@ describe('Map Generation with Players', () => {
 
       expect(strongholdTiles.length).toBe(testPlayers.length);
       expect(
-        calculateHexDistance(mapSize, strongholdTiles[0], strongholdTiles[1])
+        calculateHexDistance(mapSize, strongholdTiles[0].mapPos, strongholdTiles[1].mapPos)
       ).toBeGreaterThanOrEqual(3);
       expect(
-        calculateHexDistance(mapSize, strongholdTiles[0], strongholdTiles[2])
+        calculateHexDistance(mapSize, strongholdTiles[0].mapPos, strongholdTiles[2].mapPos)
       ).toBeGreaterThanOrEqual(3);
       expect(
-        calculateHexDistance(mapSize, strongholdTiles[1], strongholdTiles[2])
+        calculateHexDistance(mapSize, strongholdTiles[1].mapPos, strongholdTiles[2].mapPos)
       ).toBeGreaterThanOrEqual(3);
     });
 
@@ -135,7 +135,9 @@ describe('Map Generation with Players', () => {
 
       // All player tiles should be within radius 2 of the stronghold
       playerTiles.forEach((tile) => {
-        expect(calculateHexDistance(mapSize, strongholdTile!, tile)).toBeLessThanOrEqual(2);
+        expect(
+          calculateHexDistance(mapSize, strongholdTile!.mapPos, tile.mapPos)
+        ).toBeLessThanOrEqual(2);
       });
 
       // Should have multiple tiles (stronghold + surrounding)
@@ -253,8 +255,8 @@ describe('Map Generation with Players', () => {
         for (let col = 0; col < colsInRow; col++) {
           const tileId = createTileId({ row: row, col: col });
           expect(tiles[tileId]).toBeDefined();
-          expect(tiles[tileId].row).toBe(row);
-          expect(tiles[tileId].col).toBe(col);
+          expect(tiles[tileId].mapPos.row).toBe(row);
+          expect(tiles[tileId].mapPos.col).toBe(col);
         }
       }
 

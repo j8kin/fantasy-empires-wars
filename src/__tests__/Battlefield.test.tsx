@@ -1,11 +1,12 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Battlefield from '../ux-components/battlefield/Battlefield';
-import { GameState } from '../types/HexTileState';
+import { createTileId, GameState, HexTileState } from '../types/HexTileState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { LandType } from '../types/LandType';
 import { BattlefieldSize } from '../types/BattlefieldSize';
 import { initializeMap } from '../map/generation/mapGeneration';
+import { Position } from '../map/utils/mapTypes';
 
 // Mock CSS modules
 jest.mock('../ux-components/battlefield/css/Battlefield.module.css', () => ({
@@ -18,13 +19,19 @@ jest.mock('../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 
 // Mock HexTile component
 jest.mock('../ux-components/battlefield/HexTile', () => {
+  const { createTileId } = require('../types/HexTileState');
+
   return function MockHexTile(props: any) {
+    const { battlefieldPosition, gameState } = props;
+    const tileId = createTileId(battlefieldPosition);
+    const tileState = gameState?.tiles[tileId];
+
     return (
       <div
         data-testid="hex-tile"
-        data-land-type={props.landType?.name}
-        data-tile-id={props.tileState?.id}
-        data-controlled-by={props.tileState?.controlledBy}
+        data-land-type={tileState?.landType?.name}
+        data-tile-id={tileState?.id}
+        data-controlled-by={tileState?.controlledBy}
       />
     );
   };
@@ -55,29 +62,31 @@ jest.mock('../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
 const createMockGameState = (mapSize: BattlefieldSize): GameState => {
   const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[0];
 
-  const mockLandType: LandType = {
-    id: '1-1',
-    name: 'Plains',
-    alignment: 'lawful',
-    imageName: 'plains.png',
-    goldPerTurn: { max: 3, min: 1 },
+  const mockLandType = (position: Position): LandType => {
+    return {
+      id: createTileId(position),
+      name: 'Plains',
+      alignment: 'lawful',
+      imageName: 'plains.png',
+      goldPerTurn: { min: 1, max: 3 },
+    };
   };
 
-  const tiles: { [key: string]: any } = {};
+  const tiles: { [key: string]: HexTileState } = {};
 
   // Create some sample tiles for testing
   for (let row = 0; row < 3; row++) {
     for (let col = 0; col < 3; col++) {
       const tileId = `${row}-${col}`;
+      const mapPos = { row: row, col: col };
       tiles[tileId] = {
         id: tileId,
-        row,
-        col,
-        landType: mockLandType,
+        mapPos: mapPos,
+        landType: mockLandType(mapPos),
         controlledBy: mockPlayer.id,
         goldPerTurn: 1,
         buildings: [],
-        army: { units: [] },
+        army: { units: [], totalCount: 1 },
       };
     }
   }
