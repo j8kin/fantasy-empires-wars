@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import StartGameDialog from '../ux-components/dialogs/StartGameDialog';
-import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { GameState } from '../types/HexTileState';
 
 describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
   const mockOnStartGame = jest.fn();
@@ -88,19 +88,20 @@ describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
 
   it('generates unique opponent players (no duplicates)', () => {
     const TestWrapper = () => {
-      const [config, setConfig] = React.useState(null);
+      const [config, setConfig] = React.useState<GameState | null>(null);
 
       return (
         <div>
           <StartGameDialog
             onStartGame={(gameConfig) => {
+              setConfig(gameConfig);
               mockOnStartGame(gameConfig);
             }}
             onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
           />
           {config && (
             <div data-testid="config-display">
-              {config.opponents.map((opponent, index) => (
+              {config.opponents?.map((opponent, index) => (
                 <div key={index} data-testid={`opponent-${index}`} data-opponent-id={opponent.id}>
                   {opponent.name}
                 </div>
@@ -142,7 +143,7 @@ describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
 
   it('correctly handles avatar size calculation after map size changes', () => {
     const TestWrapper = () => {
-      const [config, setConfig] = React.useState(null);
+      const [config, setConfig] = React.useState<GameState | null>(null);
 
       return (
         <div>
@@ -155,7 +156,7 @@ describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
           />
           {config && (
             <div data-testid="config-display">
-              <div data-testid="opponent-count">{config.opponents.length}</div>
+              <div data-testid="opponent-count">{config.opponents?.length}</div>
               <div data-testid="map-size">{config.mapSize}</div>
             </div>
           )}
