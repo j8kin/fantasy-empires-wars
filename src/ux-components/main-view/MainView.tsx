@@ -29,11 +29,14 @@ const MainView: React.FC = () => {
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileSize;
 
-  const handleStartGame = useCallback((config: GameState) => {
-    updateGameConfig(config);
-    setShowStartWindow(false);
-    setGameStarted(true);
-  }, [updateGameConfig]);
+  const handleStartGame = useCallback(
+    (config: GameState) => {
+      updateGameConfig(config);
+      setShowStartWindow(false);
+      setGameStarted(true);
+    },
+    [updateGameConfig]
+  );
 
   const handleShowStartWindow = useCallback(() => {
     setShowStartWindow(true);
