@@ -78,13 +78,18 @@ export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
   }, []);
 
   const updateGameConfig = useCallback((config: GameState) => {
-    setGameState((prev) => ({
-      ...prev,
-      selectedPlayer: config.selectedPlayer,
-      opponents: config.opponents,
-      mapSize: config.mapSize,
-      tiles: config.mapSize !== prev.mapSize ? initializeMap(config.mapSize) : prev.tiles,
-    }));
+    setGameState((prev) => {
+      // Create the list of all players (selectedPlayer + opponents)
+      const allPlayers = [config.selectedPlayer!, ...config.opponents!];
+
+      return {
+        ...prev,
+        selectedPlayer: config.selectedPlayer,
+        opponents: config.opponents,
+        mapSize: config.mapSize,
+        tiles: initializeMap(config.mapSize, allPlayers),
+      };
+    });
   }, []);
 
   const getTile = useCallback(
