@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { LandType } from '../../types/LandType';
 import { getAlignmentColor } from '../../types/Alignment';
-import { HexTileState } from '../../types/HexTileState';
+import { HexTileState, GameState, getPlayerById } from '../../types/HexTileState';
 import styles from './css/LandCharacteristicsPopup.module.css';
 import { NO_PLAYER } from '../../types/GamePlayer';
 
 interface LandCharacteristicsPopupProps {
   landType?: LandType;
   tileState?: HexTileState;
+  gameState?: GameState;
   position: { x: number; y: number };
   onClose: () => void;
 }
@@ -15,6 +16,7 @@ interface LandCharacteristicsPopupProps {
 const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   landType,
   tileState,
+  gameState,
   position,
   onClose,
 }) => {
@@ -89,7 +91,18 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 
               <div className={styles.row}>
                 <span className={styles.label}>Controlled By:</span>
-                <span className={styles.value}>{tileState.controlledBy || NO_PLAYER.id}</span>
+                <span className={styles.value}>
+                  {(() => {
+                    if (!tileState.controlledBy || tileState.controlledBy === NO_PLAYER.id) {
+                      return 'None';
+                    }
+                    if (gameState) {
+                      const player = getPlayerById(gameState, tileState.controlledBy);
+                      return player ? player.name : tileState.controlledBy;
+                    }
+                    return tileState.controlledBy;
+                  })()}
+                </span>
               </div>
 
               {tileState.buildings && tileState.buildings.length > 0 && (

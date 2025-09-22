@@ -68,7 +68,6 @@ jest.mock('../ux-components/dialogs/StartGameDialog', () => {
       turn: 0,
       mapSize: 'medium',
       selectedPlayer: mockPlayer,
-      playerColor: 'blue',
       opponents: [],
     };
 

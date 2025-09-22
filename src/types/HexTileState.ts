@@ -17,13 +17,20 @@ export interface HexTileState {
 }
 
 export interface GameState {
+  mapSize: BattlefieldSize;
   tiles: { [key: string]: HexTileState };
   turn: number;
-  mapSize: BattlefieldSize;
   // Game configuration data
   selectedPlayer?: GamePlayer;
   opponents?: GamePlayer[];
-  playerColor?: string;
 }
+
+// Helper function to get player by ID from GameState
+export const getPlayerById = (gameState: GameState, playerId: string): GamePlayer | undefined => {
+  if (gameState.selectedPlayer?.id === playerId) {
+    return gameState.selectedPlayer;
+  }
+  return gameState.opponents?.find((player) => player.id === playerId);
+};
 
 export const createTileId = (position: Position): string => `${position.row}-${position.col}`;

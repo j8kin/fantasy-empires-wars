@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './css/Hexagonal.module.css';
 import { LandType } from '../../types/LandType';
-import { HexTileState } from '../../types/HexTileState';
+import { HexTileState, GameState } from '../../types/HexTileState';
 import darkforestImg from '../../assets/map-tiles/darkforest.png';
 import greenforestImg from '../../assets/map-tiles/greenforest.png';
 import hillsImg from '../../assets/map-tiles/hills.png';
@@ -17,9 +17,10 @@ interface HexTileProps {
   landType?: LandType;
   image?: string;
   tileState?: HexTileState;
+  gameState?: GameState;
 }
 
-const HexTile: React.FC<HexTileProps> = ({ landType, image, tileState }) => {
+const HexTile: React.FC<HexTileProps> = ({ landType, image, tileState, gameState }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
 
@@ -65,6 +66,7 @@ const HexTile: React.FC<HexTileProps> = ({ landType, image, tileState }) => {
         <LandCharacteristicsPopup
           landType={landType}
           tileState={tileState}
+          gameState={gameState}
           position={popupPosition}
           onClose={handleClosePopup}
         />

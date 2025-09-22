@@ -187,7 +187,6 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
       turn: 0,
       mapSize,
       selectedPlayer,
-      playerColor: selectedPlayer.color,
       opponents,
     };
     onStartGame(config);

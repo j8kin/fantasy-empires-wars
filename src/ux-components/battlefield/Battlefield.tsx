@@ -55,7 +55,14 @@ const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, gameState }) =
       const tileId = createTileId({ row: row, col: col });
       const tileState = gameState.tiles[tileId];
 
-      hexRow.push(<HexTile key={tileId} landType={tileState?.landType} tileState={tileState} />);
+      hexRow.push(
+        <HexTile
+          key={tileId}
+          landType={tileState?.landType}
+          tileState={tileState}
+          gameState={gameState}
+        />
+      );
     }
 
     hexGrid.push(
