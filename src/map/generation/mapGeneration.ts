@@ -1,8 +1,7 @@
 import { HexTileState, createTileId } from '../../types/HexTileState';
 import { LAND_TYPES, LandType } from '../../types/LandType';
-import { NEUTRAL_PLAYER, Player } from '../../types/Player';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
-import { GamePlayer } from '../../types/GamePlayer';
+import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../utils/mapTypes';
 import { calculateHexDistance, getTilesInRadius } from '../utils/mapAlgorithms';
 import { construct } from '../building/mapBuilding';
@@ -66,8 +65,7 @@ const findSuitableHomeland = (
   // For Necromancer (Undead race), look for the volcano first
   if (player.race === 'Undead') {
     candidates = Object.values(tiles).filter(
-      (tile) =>
-        tile.landType.id === LAND_TYPES.volcano.id && tile.controlledBy.id === NEUTRAL_PLAYER.id
+      (tile) => tile.landType.id === LAND_TYPES.volcano.id && tile.controlledBy.id === NO_PLAYER.id
     );
   }
 
@@ -75,7 +73,7 @@ const findSuitableHomeland = (
   if (candidates.length === 0) {
     candidates = Object.values(tiles).filter(
       (tile) =>
-        tile.controlledBy.id === NEUTRAL_PLAYER.id &&
+        tile.controlledBy.id === NO_PLAYER.id &&
         tile.landType.alignment === player.alignment &&
         tile.landType.id !== LAND_TYPES.none.id &&
         tile.landType.id !== LAND_TYPES.volcano.id &&
@@ -87,7 +85,7 @@ const findSuitableHomeland = (
   if (candidates.length === 0) {
     candidates = Object.values(tiles).filter(
       (tile) =>
-        tile.controlledBy.id === NEUTRAL_PLAYER.id &&
+        tile.controlledBy.id === NO_PLAYER.id &&
         tile.landType.alignment === 'neutral' &&
         tile.landType.id !== LAND_TYPES.none.id &&
         tile.landType.id !== LAND_TYPES.volcano.id &&
@@ -141,16 +139,8 @@ const addPlayer = (
   const homeland = findSuitableHomeland(tiles, player, existingPlayersPositions, mapSize);
   if (!homeland) return; // should never reach here
 
-  const owner: Player = {
-    id: player.id,
-    name: player.name,
-    color: player.color,
-    gold: 0,
-    isActive: true,
-  };
-
-  homeland.controlledBy = owner;
-  construct(owner, 'stronghold', tileToPosition(homeland), tiles, mapSize);
+  homeland.controlledBy = player;
+  construct(player, 'stronghold', tileToPosition(homeland), tiles, mapSize);
   existingPlayersPositions.push(homeland);
 };
 
@@ -198,7 +188,7 @@ export const initializeMap = (
         row,
         col,
         landType: LAND_TYPES.none, // Temporary, will be overwritten
-        controlledBy: NEUTRAL_PLAYER,
+        controlledBy: NO_PLAYER,
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
         army: { units: [], totalCount: 0 },

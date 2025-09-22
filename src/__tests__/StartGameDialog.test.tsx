@@ -72,6 +72,8 @@ describe('StartGameWindow', () => {
       selectedPlayer: PREDEFINED_PLAYERS[0],
       playerColor: PREDEFINED_PLAYERS[0].color,
       opponents: expect.any(Array),
+      tiles: expect.any(Object),
+      turn: 0,
     });
   });
 

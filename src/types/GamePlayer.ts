@@ -28,6 +28,17 @@ export interface GamePlayer {
   color: PlayerColorName;
 }
 
+export const NO_PLAYER: GamePlayer = {
+  id: 'none',
+  name: 'None',
+  alignment: 'neutral',
+  race: 'Human',
+  level: 1,
+  description: 'None',
+  avatar: undefined,
+  color: 'gray',
+};
+
 export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'alaric',

@@ -5,12 +5,12 @@ import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { PlayerColorName, PLAYER_COLORS } from '../../types/PlayerColors';
 import PlayerAvatar, { EmptyPlayer } from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
-import { GameConfig } from '../../types/GameConfig';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import styles from './css/StartGameDialog.module.css';
+import { GameState } from '../../types/HexTileState';
 
 interface StartGameDialogProps {
-  onStartGame: (config: GameConfig) => void;
+  onStartGame: (config: GameState) => void;
   onShowSelectOpponentDialog: (
     excludedPlayerIds: string[],
     onSelect: (player: GamePlayer) => void,
@@ -182,7 +182,9 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
             (opponent) => opponent !== null && opponent.id !== EmptyPlayer.id
           ) as GamePlayer[]);
 
-    const config: GameConfig = {
+    const config: GameState = {
+      tiles: {},
+      turn: 0,
       mapSize,
       selectedPlayer,
       playerColor: selectedPlayer.color,

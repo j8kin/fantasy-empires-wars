@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameConfig } from '../../types/GameConfig';
+import { GameState } from '../../types/HexTileState';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
 import VialPanel from '../vial-panel/VialPanel';
@@ -12,7 +12,7 @@ import styles from './css/TopPanel.module.css';
 interface TopPanelProps {
   height: number;
   tileSize: BorderTileSize;
-  config?: GameConfig;
+  gameState?: GameState;
   onNewGame?: () => void;
   onLoadGame?: () => void;
   onOpenSaveDialog?: () => void;
@@ -23,7 +23,7 @@ interface TopPanelProps {
 const TopPanel: React.FC<TopPanelProps> = ({
   height,
   tileSize,
-  config,
+  gameState,
   onNewGame,
   onLoadGame,
   onOpenSaveDialog,
@@ -31,6 +31,10 @@ const TopPanel: React.FC<TopPanelProps> = ({
   onOpponentSelect,
 }) => {
   const MIN_OPPONENTS = 2;
+
+  // Use config first, fallback to gameState
+  const selectedPlayer = gameState?.selectedPlayer;
+  const opponents = gameState?.opponents;
 
   const endTurnButton = (
     <EndOfTurnButton
@@ -62,16 +66,16 @@ const TopPanel: React.FC<TopPanelProps> = ({
       >
         <div className={styles.panelContainer}>
           {/* Left Side - Player Info */}
-          {config?.selectedPlayer && (
+          {selectedPlayer && (
             <div className={styles.playerInfoContainer}>
               <PlayerAvatar
-                player={config?.selectedPlayer}
+                player={selectedPlayer}
                 size={height - Math.min(tileSize.height, tileSize.width) * 2 - 10}
                 shape="rectangle"
-                borderColor={config?.selectedPlayer.color}
+                borderColor={selectedPlayer.color}
               />
               <div className={styles.playerDetails}>
-                <div className={styles.playerName}>{config?.selectedPlayer.name}</div>
+                <div className={styles.playerName}>{selectedPlayer.name}</div>
                 <div className={styles.moneyInfo}>
                   <div className={styles.moneyItem}>Gold: 1,500</div>
                   <div className={styles.moneyItem}>+250/turn</div>
@@ -84,9 +88,9 @@ const TopPanel: React.FC<TopPanelProps> = ({
           <VialPanel />
 
           <OpponentsPanel
-            selectedPlayer={config?.selectedPlayer}
-            numberOfOpponents={config?.opponents?.length || MIN_OPPONENTS}
-            opponents={config?.opponents}
+            selectedPlayer={selectedPlayer}
+            numberOfOpponents={opponents?.length || MIN_OPPONENTS}
+            opponents={opponents}
             onOpponentSelect={onOpponentSelect}
           />
           {/* Right Side - Game Controls */}

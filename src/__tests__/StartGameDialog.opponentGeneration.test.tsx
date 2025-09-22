@@ -94,7 +94,6 @@ describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
         <div>
           <StartGameDialog
             onStartGame={(gameConfig) => {
-              setConfig(gameConfig);
               mockOnStartGame(gameConfig);
             }}
             onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}

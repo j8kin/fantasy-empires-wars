@@ -1,21 +1,21 @@
 import { useState, useCallback, useMemo } from 'react';
-import { MapState, HexTileState, createTileId } from '../types/HexTileState';
-import { NEUTRAL_PLAYER, Player } from '../types/Player';
+import { GameState, HexTileState, createTileId } from '../types/HexTileState';
 import { initializeMap } from '../map/generation/mapGeneration';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { Position } from '../map/utils/mapTypes';
+import { GamePlayer } from '../types/GamePlayer';
 
 export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
-  const [mapState, setMapState] = useState<MapState>(() => ({
+  const [gameState, setGameState] = useState<GameState>(() => ({
     tiles: initializeMap(initialMapSize),
-    currentPlayer: NEUTRAL_PLAYER,
-    players: [NEUTRAL_PLAYER],
     turn: 1,
     mapSize: initialMapSize,
+    selectedPlayer: undefined,
+    opponents: undefined,
   }));
 
   const updateTile = useCallback((tileId: string, updates: Partial<HexTileState>) => {
-    setMapState((prev) => ({
+    setGameState((prev) => ({
       ...prev,
       tiles: {
         ...prev.tiles,
@@ -28,14 +28,14 @@ export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
   }, []);
 
   const setTileController = useCallback(
-    (tileId: string, player: Player) => {
+    (tileId: string, player: GamePlayer) => {
       updateTile(tileId, { controlledBy: player });
     },
     [updateTile]
   );
 
   const addBuildingToTile = useCallback((tileId: string, building: any) => {
-    setMapState((prev) => {
+    setGameState((prev) => {
       const tile = prev.tiles[tileId];
       if (!tile) return prev;
 
@@ -63,71 +63,66 @@ export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
   );
 
   const changeBattlefieldSize = useCallback((newSize: BattlefieldSize) => {
-    setMapState((prev) => ({
+    setGameState((prev) => ({
       ...prev,
       tiles: initializeMap(newSize),
       mapSize: newSize,
     }));
   }, []);
 
-  const addPlayer = useCallback((player: Player) => {
-    setMapState((prev) => ({
-      ...prev,
-      players: [...prev.players, player],
-    }));
-  }, []);
-
-  const setCurrentPlayer = useCallback((player: Player) => {
-    setMapState((prev) => ({
-      ...prev,
-      currentPlayer: player,
-    }));
-  }, []);
-
   const nextTurn = useCallback(() => {
-    setMapState((prev) => ({
+    setGameState((prev) => ({
       ...prev,
       turn: prev.turn + 1,
+    }));
+  }, []);
+
+  const updateGameConfig = useCallback((config: GameState) => {
+    setGameState((prev) => ({
+      ...prev,
+      selectedPlayer: config.selectedPlayer,
+      opponents: config.opponents,
+      mapSize: config.mapSize,
+      tiles: config.mapSize !== prev.mapSize ? initializeMap(config.mapSize) : prev.tiles,
     }));
   }, []);
 
   const getTile = useCallback(
     (position: Position) => {
       const tileId = createTileId(position);
-      return mapState.tiles[tileId];
+      return gameState.tiles[tileId];
     },
-    [mapState.tiles]
+    [gameState.tiles]
   );
 
   const getPlayerTiles = useCallback(
-    (player: Player) => {
-      return Object.values(mapState.tiles).filter((tile) => tile.controlledBy.id === player.id);
+    (player: GamePlayer) => {
+      return Object.values(gameState.tiles).filter((tile) => tile.controlledBy.id === player.id);
     },
-    [mapState.tiles]
+    [gameState.tiles]
   );
 
   const getTotalPlayerGold = useCallback(
-    (player: Player) => {
+    (player: GamePlayer) => {
       return getPlayerTiles(player).reduce((total, tile) => total + tile.goldPerTurn, 0);
     },
     [getPlayerTiles]
   );
 
   const mapDimensions = useMemo(
-    () => getBattlefieldDimensions(mapState.mapSize),
-    [mapState.mapSize]
+    () => getBattlefieldDimensions(gameState.mapSize),
+    [gameState.mapSize]
   );
 
   return {
-    mapState,
+    gameState,
     updateTile,
     setTileController,
     addBuildingToTile,
     updateTileArmy,
     changeBattlefieldSize: changeBattlefieldSize,
-    addPlayer,
-    setCurrentPlayer,
     nextTurn,
+    updateGameConfig,
     getTile,
     getPlayerTiles,
     getTotalPlayerGold,

@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MainView from '../ux-components/main-view/MainView';
-import { GameConfig } from '../types/GameConfig';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { GamePlayer } from '../types/GamePlayer';
+import { GameState } from '../types/HexTileState';
 
 // Mock CSS modules
 jest.mock('../ux-components/main-view/css/Background.module.css', () => ({
@@ -44,7 +44,7 @@ jest.mock('../ux-components/battlefield/Battlefield', () => {
     return (
       <div
         data-testid="Battlefield"
-        data-battlefield-size={props.battlefieldSize}
+        data-battlefield-size={props.gameState?.mapSize}
         data-top={props.top}
       />
     );
@@ -63,20 +63,18 @@ jest.mock('../ux-components/dialogs/StartGameDialog', () => {
       color: 'blue',
     };
 
+    const mockGameState: GameState = {
+      tiles: {},
+      turn: 0,
+      mapSize: 'medium',
+      selectedPlayer: mockPlayer,
+      playerColor: 'blue',
+      opponents: [],
+    };
+
     return (
       <div data-testid="StartGameDialog">
-        <button
-          onClick={() =>
-            props.onStartGame?.({
-              mapSize: 'medium',
-              selectedPlayer: mockPlayer,
-              playerColor: 'blue',
-              opponents: [],
-            } as GameConfig)
-          }
-        >
-          Start Game
-        </button>
+        <button onClick={() => props.onStartGame?.(mockGameState)}>Start Game</button>
         <button onClick={() => props.onShowSelectOpponentDialog?.([], () => {}, true)}>
           Show Select Opponent
         </button>

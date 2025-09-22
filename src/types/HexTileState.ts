@@ -1,7 +1,7 @@
 import { LandType } from './LandType';
 import { Building } from './Building';
 import { Army } from './Army';
-import { Player } from './Player';
+import { GamePlayer } from './GamePlayer';
 import { BattlefieldSize } from './BattlefieldSize';
 import { Position } from '../map/utils/mapTypes';
 
@@ -10,18 +10,20 @@ export interface HexTileState {
   row: number;
   col: number;
   landType: LandType;
-  controlledBy: Player;
+  controlledBy: GamePlayer;
   goldPerTurn: number;
   buildings: Building[];
   army: Army;
 }
 
-export interface MapState {
+export interface GameState {
   tiles: { [key: string]: HexTileState };
-  currentPlayer: Player;
-  players: Player[];
   turn: number;
   mapSize: BattlefieldSize;
+  // Game configuration data
+  selectedPlayer?: GamePlayer;
+  opponents?: GamePlayer[];
+  playerColor?: string;
 }
 
 export const createTileId = (position: Position): string => `${position.row}-${position.col}`;

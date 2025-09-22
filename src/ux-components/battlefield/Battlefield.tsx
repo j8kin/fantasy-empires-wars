@@ -1,16 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from './css/Battlefield.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
-import { useMapState } from '../../hooks/useMapState';
-import { createTileId } from '../../types/HexTileState';
+import { GameState, createTileId } from '../../types/HexTileState';
 import FantasyBorderFrame, { BorderTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 
 interface BattlefieldProps {
   top: number;
   tileSize: BorderTileSize;
-  battlefieldSize: BattlefieldSize;
+  gameState: GameState;
 }
 
 const getHexTileSize = (battlefieldSize: BattlefieldSize): { width: number; height: number } => {
@@ -41,17 +40,9 @@ const getHexTileSize = (battlefieldSize: BattlefieldSize): { width: number; heig
   return { width, height };
 };
 
-const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, battlefieldSize }) => {
-  const { mapState, changeBattlefieldSize } = useMapState(battlefieldSize);
-
-  useEffect(() => {
-    if (mapState.mapSize !== battlefieldSize) {
-      changeBattlefieldSize(battlefieldSize);
-    }
-  }, [battlefieldSize, mapState.mapSize, changeBattlefieldSize]);
-
-  const { rows, cols } = getBattlefieldDimensions(battlefieldSize);
-  const { width: tileWidth, height: tileHeight } = getHexTileSize(battlefieldSize);
+const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, gameState }) => {
+  const { rows, cols } = getBattlefieldDimensions(gameState.mapSize);
+  const { width: tileWidth, height: tileHeight } = getHexTileSize(gameState.mapSize);
   const hexGrid = [];
 
   // Loop to generate rows and columns of hex tiles using map state
@@ -62,7 +53,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, battlefieldSiz
 
     for (let col = 0; col < colsInThisRow; col++) {
       const tileId = createTileId({ row: row, col: col });
-      const tileState = mapState.tiles[tileId];
+      const tileState = gameState.tiles[tileId];
 
       hexRow.push(<HexTile key={tileId} landType={tileState?.landType} tileState={tileState} />);
     }
@@ -87,6 +78,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, battlefieldSiz
       <div
         id="Battlefield"
         data-testid="Battlefield"
+        data-battlefield-size={gameState.mapSize}
         className={styles.mapContainer}
         style={
           {

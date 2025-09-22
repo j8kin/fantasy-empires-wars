@@ -6,9 +6,8 @@ import StartGameDialog from '../dialogs/StartGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import OpponentInfoDialog, { OpponentWithDiplomacy } from '../dialogs/OpponentInfoDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
-import { BattlefieldSize } from '../../types/BattlefieldSize';
-import { GameConfig } from '../../types/GameConfig';
 import { GamePlayer } from '../../types/GamePlayer';
+import { useMapState } from '../../hooks/useMapState';
 import { defaultTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 
 const MainView: React.FC = () => {
@@ -21,16 +20,15 @@ const MainView: React.FC = () => {
     ((player: GamePlayer) => void) | null
   >(null);
   const [allowEmptyPlayer, setAllowEmptyPlayer] = useState<boolean>(true);
-  const [battlefieldSize, setBattlefieldSize] = useState<BattlefieldSize>('medium');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [gameConfig, setGameConfig] = useState<GameConfig | undefined>(undefined);
+
+  // Initialize the game state at the MainView level
+  const { gameState } = useMapState('medium');
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileSize;
 
-  const handleStartGame = useCallback((config: GameConfig) => {
-    setGameConfig(config);
-    setBattlefieldSize(config.mapSize);
+  const handleStartGame = useCallback(() => {
     setShowStartWindow(false);
     setGameStarted(true);
   }, []);
@@ -96,7 +94,7 @@ const MainView: React.FC = () => {
       <TopPanel
         height={TOP_PANEL_HEIGHT}
         tileSize={TILE_SIZE}
-        config={gameConfig}
+        gameState={gameState}
         onNewGame={handleShowStartWindow}
         onLoadGame={() => console.log('Load Game functionality to be implemented')}
         onOpenSaveDialog={handleShowSaveDialog}
@@ -106,8 +104,8 @@ const MainView: React.FC = () => {
       <Battlefield
         top={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}
-        battlefieldSize={battlefieldSize}
-        key={`map-${battlefieldSize}-${gameStarted}`}
+        gameState={gameState}
+        key={`map-${gameState.mapSize}-${gameStarted}`}
       />
 
       {/*Game Dialogs */}

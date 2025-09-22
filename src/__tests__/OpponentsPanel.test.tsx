@@ -225,7 +225,7 @@ describe('OpponentsPanel', () => {
         },
       ];
 
-      testCases.forEach(({ description, opponents, expectedValidOpponents }) => {
+      testCases.forEach(({ opponents, expectedValidOpponents }) => {
         const { rerender } = render(
           <OpponentsPanel
             selectedPlayer={testPlayer}

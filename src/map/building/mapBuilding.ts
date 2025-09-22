@@ -3,10 +3,10 @@ import { Position } from '../utils/mapTypes';
 import { createTileId, HexTileState } from '../../types/HexTileState';
 import { calculateHexDistance, getTilesInRadius } from '../utils/mapAlgorithms';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
-import { NEUTRAL_PLAYER, Player } from '../../types/Player';
+import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 
 export const construct = (
-  owner: Player,
+  owner: GamePlayer,
   building: BuildingType,
   position: Position,
   tiles: { [key: string]: HexTileState },
@@ -22,7 +22,7 @@ export const construct = (
     for (const candidate of newLandsCandidates) {
       const currentOwner = tiles[createTileId(candidate)].controlledBy;
       if (currentOwner.id === owner.id) continue;
-      if (currentOwner.id === NEUTRAL_PLAYER.id) {
+      if (currentOwner.id === NO_PLAYER.id) {
         tiles[createTileId(candidate)].controlledBy = owner;
       } else {
         // compare which stronghold is nearest

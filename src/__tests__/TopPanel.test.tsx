@@ -1,24 +1,19 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import TopPanel from '../ux-components/top-panel/TopPanel';
-import { GameConfig } from '../types/GameConfig';
+import { GameState } from '../types/HexTileState';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { OpponentWithDiplomacy } from '../ux-components/dialogs/OpponentInfoDialog';
-
-const mockGameConfig: GameConfig = {
-  mapSize: 'huge',
-  selectedPlayer: PREDEFINED_PLAYERS[0], // Alaric the Bold
-  playerColor: 'blue',
-  opponents: [
-    { ...PREDEFINED_PLAYERS[1], diplomacyStatus: 'No Treaty' as const },
-    { ...PREDEFINED_PLAYERS[2], diplomacyStatus: 'Peace' as const },
-    { ...PREDEFINED_PLAYERS[3], diplomacyStatus: 'War' as const },
-  ] as OpponentWithDiplomacy[],
-};
 
 const defaultProps = {
   height: 120,
   tileSize: { width: 50, height: 180 },
+};
+const gameState: GameState = {
+  tiles: {},
+  turn: 1,
+  mapSize: 'medium',
+  selectedPlayer: PREDEFINED_PLAYERS[0],
+  opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2], PREDEFINED_PLAYERS[3]],
 };
 
 const mockCallbacks = {
@@ -46,7 +41,7 @@ describe('TopPanel Component', () => {
   });
 
   it('renders with correct CSS classes', () => {
-    render(<TopPanel {...defaultProps} />);
+    render(<TopPanel {...defaultProps} gameState={gameState} />);
     const topPanel = screen.getByTestId('TopPanel');
     expect(topPanel).toHaveClass('frameContainer', 'top-bar-panel');
   });
@@ -57,14 +52,14 @@ describe('TopPanel Component', () => {
   });
 
   it('renders selected player information when config is provided', () => {
-    render(<TopPanel {...defaultProps} config={mockGameConfig} />);
+    render(<TopPanel {...defaultProps} gameState={gameState} />);
     expect(screen.getByText('Alaric the Bold')).toBeInTheDocument();
     expect(screen.getByText('Gold: 1,500')).toBeInTheDocument();
     expect(screen.getByText('+250/turn')).toBeInTheDocument();
   });
 
   it('renders player avatar with correct props when player is selected', () => {
-    render(<TopPanel {...defaultProps} config={mockGameConfig} />);
+    render(<TopPanel {...defaultProps} gameState={gameState} />);
     // The PlayerAvatar component should be rendered
     const playerInfo = screen.getByText('Alaric the Bold').closest('.playerInfoContainer');
     expect(playerInfo).toBeInTheDocument();
@@ -84,17 +79,13 @@ describe('TopPanel Component', () => {
   });
 
   it('renders OpponentsPanel with correct props', () => {
-    render(<TopPanel {...defaultProps} config={mockGameConfig} />);
+    render(<TopPanel {...defaultProps} gameState={gameState} />);
     // OpponentsPanel should be rendered with the config data
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 
   it('uses numberOfOpponents when opponents array is not provided', () => {
-    const configWithoutOpponents = {
-      ...mockGameConfig,
-      opponents: undefined,
-    };
-    render(<TopPanel {...defaultProps} config={configWithoutOpponents} />);
+    render(<TopPanel {...defaultProps} />);
     // Should still render the TopPanel
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
@@ -161,7 +152,7 @@ describe('TopPanel Component', () => {
   });
 
   it('calls onOpponentSelect when provided', () => {
-    render(<TopPanel {...defaultProps} config={mockGameConfig} {...mockCallbacks} />);
+    render(<TopPanel {...defaultProps} gameState={gameState} />);
     // OpponentsPanel should receive the callback
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
@@ -182,37 +173,37 @@ describe('TopPanel Component', () => {
   });
 
   it('renders player border color when player is selected', () => {
-    render(<TopPanel {...defaultProps} config={mockGameConfig} />);
+    render(<TopPanel {...defaultProps} gameState={gameState} />);
     // Player avatar should use the player's color as border color
     expect(screen.getByText('Alaric the Bold')).toBeInTheDocument();
   });
 
   it('handles different tile sizes correctly', () => {
     const smallTileSize = { width: 25, height: 90 };
-    render(<TopPanel {...defaultProps} tileSize={smallTileSize} config={mockGameConfig} />);
+    render(<TopPanel {...defaultProps} tileSize={smallTileSize} />);
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 
   it('handles different heights correctly', () => {
-    render(<TopPanel {...defaultProps} height={200} config={mockGameConfig} />);
+    render(<TopPanel {...defaultProps} height={200} />);
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 
   it('renders money information with static values', () => {
-    render(<TopPanel {...defaultProps} config={mockGameConfig} />);
+    render(<TopPanel {...defaultProps} gameState={gameState} />);
     expect(screen.getByText('Gold: 1,500')).toBeInTheDocument();
     expect(screen.getByText('+250/turn')).toBeInTheDocument();
   });
 
   it('renders with proper panel structure', () => {
-    render(<TopPanel {...defaultProps} config={mockGameConfig} />);
+    render(<TopPanel {...defaultProps} />);
     const panelContainer = screen.getByTestId('TopPanel').querySelector('.panelContainer');
     expect(panelContainer).toBeInTheDocument();
   });
 
   describe('Component Integration', () => {
     it('integrates all child components correctly', () => {
-      render(<TopPanel {...defaultProps} config={mockGameConfig} {...mockCallbacks} />);
+      render(<TopPanel {...defaultProps} gameState={gameState} {...mockCallbacks} />);
 
       // Verify main structure exists
       expect(screen.getByTestId('TopPanel')).toBeInTheDocument();

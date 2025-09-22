@@ -9,7 +9,7 @@ describe('useMapState Gold Generation', () => {
     it('should initialize tiles with gold values within land type ranges', () => {
       const { result } = renderHook(() => useMapState('small'));
 
-      const tiles = Object.values(result.current.mapState.tiles);
+      const tiles = Object.values(result.current.gameState.tiles);
 
       tiles.forEach((tile) => {
         const landType = tile.landType;
@@ -27,7 +27,7 @@ describe('useMapState Gold Generation', () => {
 
       for (let i = 0; i < 50; i++) {
         const { result } = renderHook(() => useMapState('medium'));
-        const tiles = Object.values(result.current.mapState.tiles);
+        const tiles = Object.values(result.current.gameState.tiles);
 
         // Find tiles with plains land type (should have range 2-4)
         const plainsTiles = tiles.filter((tile) => tile.landType.id === 'plains');
@@ -49,7 +49,7 @@ describe('useMapState Gold Generation', () => {
 
     it('should respect land type gold ranges for all land types', () => {
       const { result } = renderHook(() => useMapState('large'));
-      const tiles = Object.values(result.current.mapState.tiles);
+      const tiles = Object.values(result.current.gameState.tiles);
 
       // Group tiles by land type
       const tilesByLandType: { [key: string]: HexTileState[] } = {};
@@ -82,7 +82,7 @@ describe('useMapState Gold Generation', () => {
 
     it('should generate valid gold values for zero-minimum land types', () => {
       const { result } = renderHook(() => useMapState('medium'));
-      const tiles = Object.values(result.current.mapState.tiles);
+      const tiles = Object.values(result.current.gameState.tiles);
 
       // Find tiles with land types that have min: 0 (desert, volcano, etc.)
       const zeroMinTiles = tiles.filter((tile) => tile.landType.goldPerTurn.min === 0);
@@ -102,7 +102,7 @@ describe('useMapState Gold Generation', () => {
 
       mapSizes.forEach((size) => {
         const { result } = renderHook(() => useMapState(size));
-        const tiles = Object.values(result.current.mapState.tiles);
+        const tiles = Object.values(result.current.gameState.tiles);
 
         expect(tiles.length).toBeGreaterThan(0);
 
@@ -120,7 +120,7 @@ describe('useMapState Gold Generation', () => {
       const { result } = renderHook(() => useMapState('small'));
 
       // Get initial tiles
-      const initialTiles = Object.values(result.current.mapState.tiles);
+      const initialTiles = Object.values(result.current.gameState.tiles);
 
       // Change map size
       act(() => {
@@ -128,7 +128,7 @@ describe('useMapState Gold Generation', () => {
       });
 
       // Get new tiles
-      const newTiles = Object.values(result.current.mapState.tiles);
+      const newTiles = Object.values(result.current.gameState.tiles);
 
       // Should have different gold values (high probability)
       // Since we're changing map size, we'll have different tiles entirely
@@ -151,7 +151,7 @@ describe('useMapState Gold Generation', () => {
       // Generate multiple maps to get good sample size
       for (let i = 0; i < 20; i++) {
         const { result } = renderHook(() => useMapState('large'));
-        const tiles = Object.values(result.current.mapState.tiles);
+        const tiles = Object.values(result.current.gameState.tiles);
 
         // Collect gold values from mountain tiles
         const mountainTiles = tiles.filter((tile) => tile.landType.id === 'mountains');

@@ -1,8 +1,7 @@
 import { initializeMap } from '../map/generation/mapGeneration';
 import { LAND_TYPES } from '../types/LandType';
 import { BUILDING_TYPES } from '../types/Building';
-import { NEUTRAL_PLAYER } from '../types/Player';
-import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { createTileId } from '../types/HexTileState';
 import { calculateHexDistance } from '../map/utils/mapAlgorithms';
@@ -18,7 +17,7 @@ describe('Map Generation with Players', () => {
 
       // All tiles should be controlled by a neutral player
       Object.values(tiles).forEach((tile) => {
-        expect(tile.controlledBy.id).toBe(NEUTRAL_PLAYER.id);
+        expect(tile.controlledBy.id).toBe(NO_PLAYER.id);
       });
 
       // Should have volcano and lava tiles
@@ -52,7 +51,7 @@ describe('Map Generation with Players', () => {
 
       // Find player-owned tiles
       const playerTiles = Object.values(tiles).filter(
-        (tile) => tile.controlledBy.id !== NEUTRAL_PLAYER.id
+        (tile) => tile.controlledBy.id !== NO_PLAYER.id
       );
 
       expect(playerTiles.length).toBeGreaterThan(0);
@@ -66,7 +65,7 @@ describe('Map Generation with Players', () => {
 
       // Each stronghold should be on a player's homeland
       strongholdTiles.forEach((strongholdTile) => {
-        expect(strongholdTile.controlledBy.id).not.toBe(NEUTRAL_PLAYER.id);
+        expect(strongholdTile.controlledBy.id).not.toBe(NO_PLAYER.id);
         expect(strongholdTile.buildings).toEqual([BUILDING_TYPES.stronghold]);
       });
     });
@@ -77,7 +76,7 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, testPlayers);
 
       const playersTiles = Object.values(tiles).filter(
-        (tile) => tile.controlledBy.id !== NEUTRAL_PLAYER.id
+        (tile) => tile.controlledBy.id !== NO_PLAYER.id
       );
 
       expect(playersTiles.length).toBeGreaterThan(0);
@@ -178,7 +177,7 @@ describe('Map Generation with Players', () => {
       // Should assign all players
       const assignedPlayerIds = new Set();
       Object.values(tiles).forEach((tile) => {
-        if (tile.controlledBy.id !== NEUTRAL_PLAYER.id) {
+        if (tile.controlledBy.id !== NO_PLAYER.id) {
           assignedPlayerIds.add(tile.controlledBy.id);
         }
       });
@@ -210,7 +209,7 @@ describe('Map Generation with Players', () => {
       // The other necromancer should still be assigned somewhere
       const assignedPlayerIds = new Set();
       Object.values(tiles).forEach((tile) => {
-        if (tile.controlledBy.id !== NEUTRAL_PLAYER.id) {
+        if (tile.controlledBy.id !== NO_PLAYER.id) {
           assignedPlayerIds.add(tile.controlledBy.id);
         }
       });
@@ -225,7 +224,7 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, []);
 
       Object.values(tiles).forEach((tile) => {
-        expect(tile.controlledBy.id).toBe(NEUTRAL_PLAYER.id);
+        expect(tile.controlledBy.id).toBe(NO_PLAYER.id);
         expect(tile.buildings.length).toBe(0);
       });
     });
