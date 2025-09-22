@@ -17,7 +17,7 @@ describe('Map Generation with Players', () => {
 
       // All tiles should be controlled by a neutral player
       Object.values(tiles).forEach((tile) => {
-        expect(tile.controlledBy.id).toBe(NO_PLAYER.id);
+        expect(tile.controlledBy).toBe(NO_PLAYER.id);
       });
 
       // Should have volcano and lava tiles
@@ -40,8 +40,7 @@ describe('Map Generation with Players', () => {
       expect(volcanoTiles.length).toBe(1);
 
       const volcanoTile = volcanoTiles[0];
-      expect(volcanoTile.controlledBy.id).toBe(necromancerPlayer.id);
-      expect(volcanoTile.controlledBy.name).toBe(necromancerPlayer.name);
+      expect(volcanoTile.controlledBy).toBe(necromancerPlayer.id);
     });
 
     it('should assign stronghold building to player homelands', () => {
@@ -50,9 +49,7 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, testPlayers);
 
       // Find player-owned tiles
-      const playerTiles = Object.values(tiles).filter(
-        (tile) => tile.controlledBy.id !== NO_PLAYER.id
-      );
+      const playerTiles = Object.values(tiles).filter((tile) => tile.controlledBy !== NO_PLAYER.id);
 
       expect(playerTiles.length).toBeGreaterThan(0);
 
@@ -65,7 +62,7 @@ describe('Map Generation with Players', () => {
 
       // Each stronghold should be on a player's homeland
       strongholdTiles.forEach((strongholdTile) => {
-        expect(strongholdTile.controlledBy.id).not.toBe(NO_PLAYER.id);
+        expect(strongholdTile.controlledBy).not.toBe(NO_PLAYER.id);
         expect(strongholdTile.buildings).toEqual([BUILDING_TYPES.stronghold]);
       });
     });
@@ -76,7 +73,7 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, testPlayers);
 
       const playersTiles = Object.values(tiles).filter(
-        (tile) => tile.controlledBy.id !== NO_PLAYER.id
+        (tile) => tile.controlledBy !== NO_PLAYER.id
       );
 
       expect(playersTiles.length).toBeGreaterThan(0);
@@ -91,9 +88,7 @@ describe('Map Generation with Players', () => {
 
       // For any player it should be either players.alignment or neutral
       strongholdTile!.forEach((tile) => {
-        const owner = tile.controlledBy;
-        expect(owner).toBeDefined();
-        const testPlayer = testPlayers.find((p) => p.id === owner.id);
+        const testPlayer = testPlayers.find((p) => p.id === tile.controlledBy);
         expect(testPlayer).toBeDefined();
         expect(
           tile.landType.alignment === testPlayer?.alignment || tile.landType.alignment === 'neutral'
@@ -135,7 +130,7 @@ describe('Map Generation with Players', () => {
       expect(strongholdTile).toBeDefined();
 
       const playerTiles = Object.values(tiles).filter(
-        (tile) => tile.controlledBy.id === singlePlayer[0].id
+        (tile) => tile.controlledBy === singlePlayer[0].id
       );
 
       // All player tiles should be within radius 2 of the stronghold
@@ -152,10 +147,10 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, PREDEFINED_PLAYERS.slice(0, 2)); // Use only 2 players
 
       const player1Tiles = Object.values(tiles).filter(
-        (tile) => tile.controlledBy.id === PREDEFINED_PLAYERS[0].id
+        (tile) => tile.controlledBy === PREDEFINED_PLAYERS[0].id
       );
       const player2Tiles = Object.values(tiles).filter(
-        (tile) => tile.controlledBy.id === PREDEFINED_PLAYERS[1].id
+        (tile) => tile.controlledBy === PREDEFINED_PLAYERS[1].id
       );
 
       expect(player1Tiles.length).toBeGreaterThan(0);
@@ -177,8 +172,8 @@ describe('Map Generation with Players', () => {
       // Should assign all players
       const assignedPlayerIds = new Set();
       Object.values(tiles).forEach((tile) => {
-        if (tile.controlledBy.id !== NO_PLAYER.id) {
-          assignedPlayerIds.add(tile.controlledBy.id);
+        if (tile.controlledBy !== NO_PLAYER.id) {
+          assignedPlayerIds.add(tile.controlledBy);
         }
       });
 
@@ -189,7 +184,7 @@ describe('Map Generation with Players', () => {
       expect(volcanoTiles.length).toBe(1);
 
       const volcanoOwner = volcanoTiles[0].controlledBy;
-      const volcanoOwnerPlayer = somePredefinedPlayers.find((p) => p.id === volcanoOwner.id);
+      const volcanoOwnerPlayer = somePredefinedPlayers.find((p) => p.id === volcanoOwner);
       expect(volcanoOwnerPlayer?.race).toBe('Undead');
     });
 
@@ -204,13 +199,13 @@ describe('Map Generation with Players', () => {
       expect(volcanoTiles.length).toBe(1);
 
       const volcanoOwner = volcanoTiles[0].controlledBy;
-      expect(necromancers.some((n) => n.id === volcanoOwner.id)).toBe(true);
+      expect(necromancers.some((n) => n.id === volcanoOwner)).toBe(true);
 
       // The other necromancer should still be assigned somewhere
       const assignedPlayerIds = new Set();
       Object.values(tiles).forEach((tile) => {
-        if (tile.controlledBy.id !== NO_PLAYER.id) {
-          assignedPlayerIds.add(tile.controlledBy.id);
+        if (tile.controlledBy !== NO_PLAYER.id) {
+          assignedPlayerIds.add(tile.controlledBy);
         }
       });
 
@@ -224,7 +219,7 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, []);
 
       Object.values(tiles).forEach((tile) => {
-        expect(tile.controlledBy.id).toBe(NO_PLAYER.id);
+        expect(tile.controlledBy).toBe(NO_PLAYER.id);
         expect(tile.buildings.length).toBe(0);
       });
     });
@@ -235,7 +230,7 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, singlePlayer);
 
       const playerTiles = Object.values(tiles).filter(
-        (tile) => tile.controlledBy.id === singlePlayer[0].id
+        (tile) => tile.controlledBy === singlePlayer[0].id
       );
 
       expect(playerTiles.length).toBeGreaterThan(0);

@@ -17,13 +17,13 @@ export const construct = (
     tiles[mapPosition].buildings.push(BUILDING_TYPES[building]);
   } else {
     tiles[mapPosition].buildings.push(BUILDING_TYPES[building]);
-    tiles[mapPosition].controlledBy = owner;
+    tiles[mapPosition].controlledBy = owner.id;
     const newLandsCandidates = getTilesInRadius(mapSize, position, 2, true);
     for (const candidate of newLandsCandidates) {
       const currentOwner = tiles[createTileId(candidate)].controlledBy;
-      if (currentOwner.id === owner.id) continue;
-      if (currentOwner.id === NO_PLAYER.id) {
-        tiles[createTileId(candidate)].controlledBy = owner;
+      if (currentOwner === owner.id) continue;
+      if (currentOwner === NO_PLAYER.id) {
+        tiles[createTileId(candidate)].controlledBy = owner.id;
       } else {
         // compare which stronghold is nearest
         const newStrongholdDistance = calculateHexDistance(mapSize, position, candidate);
@@ -31,14 +31,13 @@ export const construct = (
           .map((t) => tiles[createTileId(t)])
           .filter(
             (t) =>
-              t.controlledBy.id === currentOwner.id &&
-              t.buildings.some((b) => b.type === 'stronghold')
+              t.controlledBy === currentOwner && t.buildings.some((b) => b.type === 'stronghold')
           );
         const oldOwnerDistance = oldOwnerStrongholds
           .map((t) => calculateHexDistance(mapSize, position, t))
           .reduce((a, b) => Math.min(a, b), Infinity);
         if (newStrongholdDistance < oldOwnerDistance) {
-          tiles[createTileId(candidate)].controlledBy = owner;
+          tiles[createTileId(candidate)].controlledBy = owner.id;
         }
       }
     }

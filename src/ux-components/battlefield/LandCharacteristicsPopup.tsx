@@ -3,6 +3,7 @@ import { LandType } from '../../types/LandType';
 import { getAlignmentColor } from '../../types/Alignment';
 import { HexTileState } from '../../types/HexTileState';
 import styles from './css/LandCharacteristicsPopup.module.css';
+import { NO_PLAYER } from '../../types/GamePlayer';
 
 interface LandCharacteristicsPopupProps {
   landType?: LandType;
@@ -88,7 +89,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 
               <div className={styles.row}>
                 <span className={styles.label}>Controlled By:</span>
-                <span className={styles.value}>{tileState.controlledBy?.name || 'None'}</span>
+                <span className={styles.value}>{tileState.controlledBy || NO_PLAYER.id}</span>
               </div>
 
               {tileState.buildings && tileState.buildings.length > 0 && (

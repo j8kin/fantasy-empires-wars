@@ -10,7 +10,7 @@ export interface HexTileState {
   row: number;
   col: number;
   landType: LandType;
-  controlledBy: GamePlayer;
+  controlledBy: string;
   goldPerTurn: number;
   buildings: Building[];
   army: Army;

@@ -29,7 +29,7 @@ export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
 
   const setTileController = useCallback(
     (tileId: string, player: GamePlayer) => {
-      updateTile(tileId, { controlledBy: player });
+      updateTile(tileId, { controlledBy: player.id });
     },
     [updateTile]
   );
@@ -97,7 +97,7 @@ export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
 
   const getPlayerTiles = useCallback(
     (player: GamePlayer) => {
-      return Object.values(gameState.tiles).filter((tile) => tile.controlledBy.id === player.id);
+      return Object.values(gameState.tiles).filter((tile) => tile.controlledBy === player.id);
     },
     [gameState.tiles]
   );
