@@ -6,7 +6,6 @@ import { BattlefieldSize } from './BattlefieldSize';
 import { Position } from '../map/utils/mapTypes';
 
 export interface HexTileState {
-  id: string;
   mapPos: Position;
   landType: LandType;
   controlledBy: string;

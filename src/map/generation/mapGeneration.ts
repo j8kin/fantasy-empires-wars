@@ -181,7 +181,6 @@ export const initializeMap = (
     for (let col = 0; col < colsInRow; col++) {
       const tileId = createTileId({ row: row, col: col });
       tiles[tileId] = {
-        id: tileId,
         mapPos: { row: row, col: col },
         landType: LAND_TYPES.none, // Temporary, will be overwritten
         controlledBy: NO_PLAYER.id,
@@ -239,7 +238,7 @@ export const initializeMap = (
     while (getNumberOfLands(tiles, landType) < maxTilesPerType) {
       let startLand = getRandomEmptyLandType(tiles);
       if (startLand == null) break;
-      tiles[startLand.id].landType = landType;
+      tiles[createTileId(startLand.mapPos)].landType = landType;
 
       // place 6 land of the same time nearby
       for (let i = 0; i < 5 && getNumberOfLands(tiles, landType) < maxTilesPerType; i++) {

@@ -21,17 +21,18 @@ jest.mock('../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 jest.mock('../ux-components/battlefield/HexTile', () => {
   const { createTileId } = require('../types/HexTileState');
 
-  return function MockHexTile(props: any) {
+  return function MockHexTile(props: { battlefieldPosition: Position; gameState: GameState }) {
     const { battlefieldPosition, gameState } = props;
-    const tileId = createTileId(battlefieldPosition);
+    const tileId: string = createTileId(battlefieldPosition);
     const tileState = gameState?.tiles[tileId];
 
     return (
       <div
         data-testid="hex-tile"
         data-land-type={tileState?.landType?.name}
-        data-tile-id={tileState?.id}
         data-controlled-by={tileState?.controlledBy}
+        data-row={tileState?.mapPos.row}
+        data-col={tileState?.mapPos.col}
       />
     );
   };
@@ -80,7 +81,6 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
       const tileId = `${row}-${col}`;
       const mapPos = { row: row, col: col };
       tiles[tileId] = {
-        id: tileId,
         mapPos: mapPos,
         landType: mockLandType(mapPos),
         controlledBy: mockPlayer.id,
@@ -305,11 +305,11 @@ describe('Battlefield Component', () => {
       const hexTiles = screen.getAllByTestId('hex-tile');
 
       // Verify that at least some tiles have the expected properties
-      const tilesWithStates = hexTiles.filter(
-        (tile) => tile.getAttribute('data-tile-id') && tile.getAttribute('data-controlled-by')
-      );
-
-      expect(tilesWithStates.length).toBeGreaterThan(0);
+      expect(
+        hexTiles.filter((tile) => tile.getAttribute('data-controlled-by')).length
+      ).toBeGreaterThan(0);
+      expect(hexTiles.filter((tile) => tile.getAttribute('data-row')).length).toBe(9); // see createMockGameState for map size
+      expect(hexTiles.filter((tile) => tile.getAttribute('data-col')).length).toBe(9); // see createMockGameState for map size
     });
 
     it('handles missing tile states gracefully', () => {

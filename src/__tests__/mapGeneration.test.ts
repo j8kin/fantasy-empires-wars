@@ -159,8 +159,8 @@ describe('Map Generation with Players', () => {
       expect(player2Tiles.length).toBeGreaterThan(0);
 
       // No tile should be owned by multiple players
-      const player1TilesIds = player1Tiles.map((tile) => tile.id);
-      const player2TilesIds = player2Tiles.map((tile) => tile.id);
+      const player1TilesIds = player1Tiles.map((tile) => createTileId(tile.mapPos));
+      const player2TilesIds = player2Tiles.map((tile) => createTileId(tile.mapPos));
       expect(player1TilesIds.every((id) => !player2TilesIds.includes(id))).toBeTruthy();
     });
   });
