@@ -3,9 +3,9 @@ import { LAND_TYPES, LandType } from '../../types/LandType';
 import { NEUTRAL_PLAYER, Player } from '../../types/Player';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { GamePlayer } from '../../types/GamePlayer';
-import { BUILDING_TYPES } from '../../types/Building';
 import { Position } from '../utils/mapTypes';
 import { calculateHexDistance, getTilesInRadius } from '../utils/mapAlgorithms';
+import { construct } from '../building/mapBuilding';
 
 const positionsToTiles = (
   pos: Position[],
@@ -13,6 +13,10 @@ const positionsToTiles = (
 ): HexTileState[] => {
   return pos.map((p) => tiles[createTileId(p)]);
 };
+const tileToPosition = (tiles: HexTileState): Position => {
+  return { row: tiles.row, col: tiles.col };
+};
+
 const calculateBaseLandGold = (landType: LandType): number => {
   const { min, max } = landType.goldPerTurn;
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -56,18 +60,22 @@ const findSuitableHomeland = (
   player: GamePlayer,
   existingPlayerPositions: Position[],
   mapSize: BattlefieldSize
-): HexTileState | null => {
+): HexTileState | undefined => {
   let candidates: HexTileState[] = [];
 
   // For Necromancer (Undead race), look for the volcano first
   if (player.race === 'Undead') {
-    candidates = Object.values(tiles).filter((tile) => tile.landType.id === 'volcano');
+    candidates = Object.values(tiles).filter(
+      (tile) =>
+        tile.landType.id === LAND_TYPES.volcano.id && tile.controlledBy.id === NEUTRAL_PLAYER.id
+    );
   }
 
   // If no volcano found for Necromancer or other players, look for alignment-matching lands
   if (candidates.length === 0) {
     candidates = Object.values(tiles).filter(
       (tile) =>
+        tile.controlledBy.id === NEUTRAL_PLAYER.id &&
         tile.landType.alignment === player.alignment &&
         tile.landType.id !== LAND_TYPES.none.id &&
         tile.landType.id !== LAND_TYPES.volcano.id &&
@@ -79,6 +87,7 @@ const findSuitableHomeland = (
   if (candidates.length === 0) {
     candidates = Object.values(tiles).filter(
       (tile) =>
+        tile.controlledBy.id === NEUTRAL_PLAYER.id &&
         tile.landType.alignment === 'neutral' &&
         tile.landType.id !== LAND_TYPES.none.id &&
         tile.landType.id !== LAND_TYPES.volcano.id &&
@@ -89,11 +98,7 @@ const findSuitableHomeland = (
   // Filter by distance constraints
   const validCandidates = candidates.filter((candidate) => {
     return existingPlayerPositions.every((pos) => {
-      const distance = calculateHexDistance(
-        mapSize,
-        { row: candidate.row, col: candidate.col },
-        pos
-      );
+      const distance = calculateHexDistance(mapSize, tileToPosition(candidate), pos);
       return distance >= 4; // Try radius 4 first
     });
   });
@@ -102,7 +107,7 @@ const findSuitableHomeland = (
   if (validCandidates.length === 0) {
     const radius3Candidates = candidates.filter((candidate) => {
       return existingPlayerPositions.every((pos) => {
-        const distance = calculateHexDistance(mapSize, candidate, pos);
+        const distance = calculateHexDistance(mapSize, tileToPosition(candidate), pos);
         return distance >= 3;
       });
     });
@@ -124,7 +129,29 @@ const findSuitableHomeland = (
     return candidates[randomIndex];
   }
 
-  return null; // No suitable homeland found. Should never reach here
+  return undefined; // No suitable homeland found. Should never reach here
+};
+
+const addPlayer = (
+  player: GamePlayer,
+  existingPlayersPositions: Position[],
+  tiles: { [key: string]: HexTileState },
+  mapSize: BattlefieldSize
+) => {
+  const homeland = findSuitableHomeland(tiles, player, existingPlayersPositions, mapSize);
+  if (!homeland) return; // should never reach here
+
+  const owner: Player = {
+    id: player.id,
+    name: player.name,
+    color: player.color,
+    gold: 0,
+    isActive: true,
+  };
+
+  homeland.controlledBy = owner;
+  construct(owner, 'stronghold', tileToPosition(homeland), tiles, mapSize);
+  existingPlayersPositions.push(homeland);
 };
 
 const assignPlayerLands = (
@@ -134,69 +161,17 @@ const assignPlayerLands = (
 ): void => {
   const playerPositions: Position[] = [];
 
-  players.forEach((player) => {
-    const homeland = findSuitableHomeland(tiles, player, playerPositions, mapSize);
+  // Place Necromancer on volcano first if necromancer is present
+  const necromancer = players.find((player) => player.race === 'Undead');
+  if (necromancer != null) {
+    addPlayer(necromancer, playerPositions, tiles, mapSize);
+  }
 
-    if (homeland) {
-      // Convert GamePlayer to Player for tile assignment
-      const tilePlayer: Player = {
-        id: player.id,
-        name: player.name,
-        color: player.color,
-        gold: 0,
-        isActive: true,
-      };
-
-      // Assign homeland
-      homeland.controlledBy = tilePlayer;
-
-      // Add Stronghold building
-      homeland.buildings = [BUILDING_TYPES.stronghold];
-      homeland.goldPerTurn += BUILDING_TYPES.stronghold.goldPerTurn;
-
-      // Track player position
-      playerPositions.push({ row: homeland.row, col: homeland.col });
-
-      // Assign lands in radius 2 to this player
-      const tilesInRadius2 = getTilesInRadius(mapSize, homeland, 2).map(
-        (pos) => tiles[createTileId(pos)]
-      );
-
-      tilesInRadius2.forEach((tile) => {
-        // Skip if the tile is already owned by another player (closer player wins)
-        if (tile.controlledBy.id !== NEUTRAL_PLAYER.id) {
-          // Find the current owner's homeland position
-          let currentOwnerHomeland: Position | null = null;
-
-          for (let i = 0; i < playerPositions.length - 1; i++) {
-            // -1 because the current player was just added
-            const pos = playerPositions[i];
-            const potentialHomeland = Object.values(tiles).find(
-              (t) =>
-                t.row === pos.row && t.col === pos.col && t.controlledBy.id === tile.controlledBy.id
-            );
-            if (potentialHomeland) {
-              currentOwnerHomeland = { row: pos.row, col: pos.col };
-              break;
-            }
-          }
-
-          if (currentOwnerHomeland) {
-            const currentDistance = calculateHexDistance(mapSize, tile, currentOwnerHomeland);
-
-            const newDistance = calculateHexDistance(mapSize, tile, homeland);
-
-            // Only reassign if this player is closer
-            if (newDistance < currentDistance) {
-              tile.controlledBy = tilePlayer;
-            }
-          }
-        } else {
-          tile.controlledBy = tilePlayer;
-        }
-      });
-    }
-  });
+  players
+    .filter((player) => player.id !== necromancer?.id)
+    .forEach((player) => {
+      addPlayer(player, playerPositions, tiles, mapSize);
+    });
 };
 
 export const initializeMap = (
