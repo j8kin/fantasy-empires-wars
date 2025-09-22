@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MainView from '../ux-components/main-view/MainView';
 import { GameConfig } from '../types/GameConfig';
-import { OpponentWithDiplomacy } from '../ux-components/dialogs/OpponentInfoDialog';
+import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 
 // Mock CSS modules
 jest.mock('../ux-components/main-view/css/Background.module.css', () => ({
@@ -53,12 +53,16 @@ jest.mock('../ux-components/battlefield/Battlefield', () => {
 
 jest.mock('../ux-components/dialogs/StartGameDialog', () => {
   return function MockStartGameDialog(props: any) {
-    const mockPlayer = {
-      id: 'alaric-the-bold',
+    const mockPlayer: GamePlayer = {
+      id: 'alaric',
       name: 'Alaric the Bold',
+      alignment: 'lawful',
+      race: 'Human',
+      level: 8,
+      description: 'Description.',
       color: 'blue',
-      avatar: 'alaric-avatar.png',
     };
+
     return (
       <div data-testid="StartGameDialog">
         <button
@@ -67,7 +71,6 @@ jest.mock('../ux-components/dialogs/StartGameDialog', () => {
               mapSize: 'medium',
               selectedPlayer: mockPlayer,
               playerColor: 'blue',
-              numberOfOpponents: 3,
               opponents: [],
             } as GameConfig)
           }
@@ -121,41 +124,6 @@ jest.mock('../ux-components/dialogs/SelectOpponentDialog', () => {
   };
 });
 
-const mockGameConfig: GameConfig = {
-  mapSize: 'medium',
-  selectedPlayer: {
-    id: 'alaric-the-bold',
-    name: 'Alaric the Bold',
-    color: 'blue',
-    avatar: 'alaric-avatar.png',
-  },
-  playerColor: 'blue',
-  numberOfOpponents: 3,
-  opponents: [
-    {
-      id: 'elara-moonwhisper',
-      name: 'Elara Moonwhisper',
-      color: 'green',
-      avatar: 'elara-avatar.png',
-      diplomacyStatus: 'No Treaty' as const,
-    },
-    {
-      id: 'thane-ironforge',
-      name: 'Thane Ironforge',
-      color: 'red',
-      avatar: 'thane-avatar.png',
-      diplomacyStatus: 'Peace' as const,
-    },
-    {
-      id: 'seraphina-flameheart',
-      name: 'Seraphina Flameheart',
-      color: 'purple',
-      avatar: 'seraphina-avatar.png',
-      diplomacyStatus: 'War' as const,
-    },
-  ] as OpponentWithDiplomacy[],
-};
-
 describe('MainView Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -205,7 +173,7 @@ describe('MainView Component', () => {
       // StartGameDialog should be hidden after starting
       expect(screen.queryByTestId('StartGameDialog')).not.toBeInTheDocument();
 
-      // Battlefield should update with new config
+      // Battlefield should update with a new config
       const battlefield = screen.getByTestId('Battlefield');
       expect(battlefield).toHaveAttribute('data-battlefield-size', 'medium');
     });
@@ -351,15 +319,13 @@ describe('MainView Component', () => {
 
       // Start game
       fireEvent.click(screen.getByText('Start Game'));
-      let battlefield = screen.getByTestId('Battlefield');
 
       // Restart game
       fireEvent.click(screen.getByText('New Game'));
       fireEvent.click(screen.getByText('Start Game'));
 
       // Battlefield should be re-rendered (React key change triggers re-mount)
-      battlefield = screen.getByTestId('Battlefield');
-      expect(battlefield).toBeInTheDocument();
+      expect(screen.getByTestId('Battlefield')).toBeInTheDocument();
     });
   });
 

@@ -6,10 +6,9 @@ import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { OpponentWithDiplomacy } from '../ux-components/dialogs/OpponentInfoDialog';
 
 const mockGameConfig: GameConfig = {
-  mapSize: { width: 50, height: 50 },
+  mapSize: 'huge',
   selectedPlayer: PREDEFINED_PLAYERS[0], // Alaric the Bold
   playerColor: 'blue',
-  numberOfOpponents: 3,
   opponents: [
     { ...PREDEFINED_PLAYERS[1], diplomacyStatus: 'No Treaty' as const },
     { ...PREDEFINED_PLAYERS[2], diplomacyStatus: 'Peace' as const },

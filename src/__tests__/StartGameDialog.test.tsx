@@ -71,7 +71,6 @@ describe('StartGameWindow', () => {
       mapSize: 'medium',
       selectedPlayer: PREDEFINED_PLAYERS[0],
       playerColor: PREDEFINED_PLAYERS[0].color,
-      numberOfOpponents: 2,
       opponents: expect.any(Array),
     });
   });
@@ -155,14 +154,14 @@ describe('StartGameWindow', () => {
         <StartGameDialog
           onStartGame={(config) => {
             // Verify that EmptyPlayer is filtered out from opponents
-            const hasEmptyPlayer = config.opponents.some(
+            const hasEmptyPlayer = config.opponents?.some(
               (opponent) => opponent.id === EmptyPlayer.id
             );
             expect(hasEmptyPlayer).toBe(false);
             mockOnStartGame(config);
             setShowDialog(false);
           }}
-          onShowSelectOpponentDialog={(excludedIds, onSelect, allowEmptyPlayer) => {
+          onShowSelectOpponentDialog={(excludedIds, onSelect) => {
             // Simulate selecting EmptyPlayer to "delete" an opponent
             onSelect(EmptyPlayer);
           }}
