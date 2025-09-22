@@ -7,6 +7,7 @@ import SaveGameDialog from '../dialogs/SaveGameDialog';
 import OpponentInfoDialog, { OpponentWithDiplomacy } from '../dialogs/OpponentInfoDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import { GamePlayer } from '../../types/GamePlayer';
+import { GameState } from '../../types/HexTileState';
 import { useMapState } from '../../hooks/useMapState';
 import { defaultTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 
@@ -23,15 +24,16 @@ const MainView: React.FC = () => {
   const [gameStarted, setGameStarted] = useState<boolean>(false);
 
   // Initialize the game state at the MainView level
-  const { gameState } = useMapState('medium');
+  const { gameState, updateGameConfig } = useMapState('medium');
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileSize;
 
-  const handleStartGame = useCallback(() => {
+  const handleStartGame = useCallback((config: GameState) => {
+    updateGameConfig(config);
     setShowStartWindow(false);
     setGameStarted(true);
-  }, []);
+  }, [updateGameConfig]);
 
   const handleShowStartWindow = useCallback(() => {
     setShowStartWindow(true);
