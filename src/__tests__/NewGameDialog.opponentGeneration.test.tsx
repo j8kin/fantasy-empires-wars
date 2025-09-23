@@ -21,30 +21,27 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     );
 
     // Step 1: Switch to random opponent mode
-    const opponentModeSelect = screen.getByDisplayValue('Choose Each Opponent');
-    fireEvent.change(opponentModeSelect, { target: { value: 'random' } });
+    const randomOpponentsCheckbox = screen.getByRole('checkbox');
+    fireEvent.click(randomOpponentsCheckbox);
 
     // Step 2: Set to Large map (should generate 6 random opponents)
     const mapSizeSelect = screen.getByDisplayValue('Medium');
     fireEvent.change(mapSizeSelect, { target: { value: 'large' } });
 
-    // Verify we have 6 opponent slots
-    let opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(6);
+    // Verify we have 6 opponents in random mode (text shows "6 of 6")
+    expect(screen.getByText('Opponents (6 of 6):')).toBeInTheDocument();
 
     // Step 3: Switch to Medium map (should generate 4 new random opponents)
     fireEvent.change(mapSizeSelect, { target: { value: 'medium' } });
 
-    // Verify we now have exactly 4 opponent slots, not 6
-    opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(4);
+    // Verify we now have exactly 4 opponents
+    expect(screen.getByText('Opponents (4 of 4):')).toBeInTheDocument();
 
     // Step 4: Switch back to manual mode
-    fireEvent.change(opponentModeSelect, { target: { value: 'manual' } });
+    fireEvent.click(randomOpponentsCheckbox);
 
-    // Should still show 4 slots (medium map max opponents)
-    opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(4);
+    // Should still show manual mode with 2 selected out of 4 max
+    expect(screen.getByText('Opponents (2 of 4):')).toBeInTheDocument();
 
     // The issue: after these changes, when we switch back to manual mode,
     // we might still see remnants from the previous random selection
@@ -60,30 +57,27 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     );
 
     // Switch to random mode
-    const opponentModeSelect = screen.getByDisplayValue('Choose Each Opponent');
-    fireEvent.change(opponentModeSelect, { target: { value: 'random' } });
+    const randomOpponentsCheckbox = screen.getByRole('checkbox');
+    fireEvent.click(randomOpponentsCheckbox);
 
     // Switch to large map
     const mapSizeSelect = screen.getByDisplayValue('Medium');
     fireEvent.change(mapSizeSelect, { target: { value: 'large' } });
 
-    // Get initial random opponents
-    let opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(6);
+    // Verify initial random opponents for large map
+    expect(screen.getByText('Opponents (6 of 6):')).toBeInTheDocument();
 
     // Switch to medium
     fireEvent.change(mapSizeSelect, { target: { value: 'medium' } });
 
     // Should have 4 opponents
-    opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(4);
+    expect(screen.getByText('Opponents (4 of 4):')).toBeInTheDocument();
 
     // Switch back to large
     fireEvent.change(mapSizeSelect, { target: { value: 'large' } });
 
     // Should generate new 6 opponents
-    opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(6);
+    expect(screen.getByText('Opponents (6 of 6):')).toBeInTheDocument();
   });
 
   it('generates unique opponent players (no duplicates)', () => {
@@ -115,8 +109,8 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     render(<TestWrapper />);
 
     // Switch to random mode
-    const opponentModeSelect = screen.getByDisplayValue('Choose Each Opponent');
-    fireEvent.change(opponentModeSelect, { target: { value: 'random' } });
+    const randomOpponentsCheckbox = screen.getByRole('checkbox');
+    fireEvent.click(randomOpponentsCheckbox);
 
     // Set to large map to get 6 opponents
     const mapSizeSelect = screen.getByDisplayValue('Medium');
@@ -166,23 +160,21 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
 
     render(<TestWrapper />);
 
-    // Start with random mode and large map (6 opponents, small avatars)
-    const opponentModeSelect = screen.getByDisplayValue('Choose Each Opponent');
-    fireEvent.change(opponentModeSelect, { target: { value: 'random' } });
+    // Start with random mode and large map (6 opponents)
+    const randomOpponentsCheckbox = screen.getByRole('checkbox');
+    fireEvent.click(randomOpponentsCheckbox);
 
     const mapSizeSelect = screen.getByDisplayValue('Medium');
     fireEvent.change(mapSizeSelect, { target: { value: 'large' } });
 
-    // Verify we have 6 opponent slots
-    let opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(6);
+    // Verify we have 6 opponents
+    expect(screen.getByText('Opponents (6 of 6):')).toBeInTheDocument();
 
-    // Switch to medium map (4 opponents, larger avatars)
+    // Switch to medium map (4 opponents)
     fireEvent.change(mapSizeSelect, { target: { value: 'medium' } });
 
-    // Should now have exactly 4 opponent slots
-    opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(4);
+    // Should now have exactly 4 opponents
+    expect(screen.getByText('Opponents (4 of 4):')).toBeInTheDocument();
 
     // Start the game and verify the configuration
     const startButton = screen.getByAltText('Start Game');
@@ -202,28 +194,25 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     );
 
     // Start with huge map in random mode (7 opponents)
-    const opponentModeSelect = screen.getByDisplayValue('Choose Each Opponent');
+    const randomOpponentsCheckbox = screen.getByRole('checkbox');
     const mapSizeSelect = screen.getByDisplayValue('Medium');
 
-    fireEvent.change(opponentModeSelect, { target: { value: 'random' } });
+    fireEvent.click(randomOpponentsCheckbox);
     fireEvent.change(mapSizeSelect, { target: { value: 'huge' } });
 
     // Should have 7 opponents
-    let opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(7);
+    expect(screen.getByText('Opponents (7 of 7):')).toBeInTheDocument();
 
     // Switch to small map (2 opponents)
     fireEvent.change(mapSizeSelect, { target: { value: 'small' } });
 
     // Should have exactly 2 opponents, not 7
-    opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(2);
+    expect(screen.getByText('Opponents (2 of 2):')).toBeInTheDocument();
 
     // Switch to manual mode - should still respect the small map constraint
-    fireEvent.change(opponentModeSelect, { target: { value: 'manual' } });
+    fireEvent.click(randomOpponentsCheckbox);
 
-    // Should still have exactly 2 opponent slots
-    opponentSlots = document.querySelectorAll('[style*="width: 80px"][style*="height: 80px"]');
-    expect(opponentSlots.length).toBe(2);
+    // Should still have exactly 2 opponent slots in manual mode
+    expect(screen.getByText('Opponents (2 of 2):')).toBeInTheDocument();
   });
 });

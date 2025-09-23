@@ -5,7 +5,7 @@ import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { EmptyPlayer } from '../ux-components/avatars/PlayerAvatar';
 
-describe('StartGameWindow', () => {
+describe('NewGameWindow', () => {
   const mockOnStartGame = jest.fn();
   const onShowSelectOpponentDialog = jest.fn();
 
@@ -34,15 +34,17 @@ describe('StartGameWindow', () => {
     expect(mapSizeDropdown).toBeInTheDocument();
   });
 
-  it('renders opponent selection mode dropdown with default value', () => {
+  it('renders opponent selection mode checkbox with default unchecked state', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
-    const opponentModeDropdown = screen.getByDisplayValue('Choose Each Opponent');
-    expect(opponentModeDropdown).toBeInTheDocument();
+    const randomOpponentsCheckbox = screen.getByRole('checkbox');
+    expect(randomOpponentsCheckbox).toBeInTheDocument();
+    expect(randomOpponentsCheckbox).not.toBeChecked();
+    expect(screen.getByText('Random Opponents')).toBeInTheDocument();
   });
 
   it('renders all predefined players in the player list', () => {
@@ -89,17 +91,20 @@ describe('StartGameWindow', () => {
     expect(screen.getByDisplayValue('Large')).toBeInTheDocument();
   });
 
-  it('changes opponent selection mode when dropdown value changes', () => {
+  it('changes opponent selection mode when checkbox is toggled', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
-    const opponentModeDropdown = screen.getByDisplayValue('Choose Each Opponent');
+    const randomOpponentsCheckbox = screen.getByRole('checkbox');
 
-    fireEvent.change(opponentModeDropdown, { target: { value: 'random' } });
-    expect(screen.getByDisplayValue(/Random Opponents/)).toBeInTheDocument();
+    fireEvent.click(randomOpponentsCheckbox);
+    expect(randomOpponentsCheckbox).toBeChecked();
+
+    fireEvent.click(randomOpponentsCheckbox);
+    expect(randomOpponentsCheckbox).not.toBeChecked();
   });
 
   it('updates selected player when a different player is clicked', () => {
@@ -172,9 +177,9 @@ describe('StartGameWindow', () => {
 
     render(<TestStartGameDialogWithEmptyPlayer />);
 
-    // Set to manual mode
-    const opponentModeDropdown = screen.getByDisplayValue('Choose Each Opponent');
-    fireEvent.change(opponentModeDropdown, { target: { value: 'manual' } });
+    // Component starts in manual mode by default (checkbox unchecked)
+    const randomOpponentsCheckbox = screen.getByRole('checkbox');
+    expect(randomOpponentsCheckbox).not.toBeChecked();
 
     // Click on an opponent slot to open selection dialog (this will trigger EmptyPlayer selection)
     const opponentSlots = screen

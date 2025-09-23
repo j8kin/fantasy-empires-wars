@@ -46,6 +46,7 @@ const NewGameDialog: React.FC<StartGameDialogProps> = ({
   const [selectedOpponents, setSelectedOpponents] = useState<(GamePlayer | null)[]>([]);
 
   const maxOpponents = getMaxOpponents(mapSize);
+  const avatarSize = 54;
 
   // Generate unique colors for opponents
   const getUniqueOpponentColors = useCallback((): PlayerColorName[] => {
@@ -213,37 +214,12 @@ const NewGameDialog: React.FC<StartGameDialogProps> = ({
       <div className={styles.content}>
         <h1 className={styles.title}>Start New Game</h1>
 
-        {/* Map Size and Opponent Selection Mode */}
-        <div className={styles.horizontalControls}>
-          <div className={styles.section}>
-            <label className={styles.label}>Map Size:</label>
-            <select
-              className={styles.dropdown}
-              value={mapSize}
-              onChange={(e) => handleMapSizeChange(e.target.value as BattlefieldSize)}
-              style={{ width: 'fit-content', minWidth: '120px' }}
-            >
-              <option value="small">Small</option>
-              <option value="medium">Medium</option>
-              <option value="large">Large</option>
-              <option value="huge">Huge</option>
-            </select>
-          </div>
-
-          <div className={styles.section}>
-            <label className={styles.label}>Opponent Selection:</label>
-            <select
-              className={styles.dropdown}
-              value={opponentSelectionMode}
-              onChange={(e) =>
-                handleOpponentSelectionModeChange(e.target.value as OpponentSelectionMode)
-              }
-            >
-              <option value="manual">Choose Each Opponent</option>
-              <option value="random">Random Opponents (Max {maxOpponents})</option>
-            </select>
-          </div>
-        </div>
+        {/* Player Selection */}
+        <PlayerSelection
+          label="Choose Your Character:"
+          selectedPlayer={selectedPlayer}
+          onPlayerChange={handlePlayerChange}
+        />
 
         {/* Opponent Selection */}
         <div className={styles.section}>
@@ -257,84 +233,135 @@ const NewGameDialog: React.FC<StartGameDialogProps> = ({
           <div
             style={{
               display: 'flex',
-              flexWrap: 'wrap',
-              gap: '15px',
               padding: '20px',
               backgroundColor: 'rgba(0, 0, 0, 0.2)',
               borderRadius: '8px',
               border: '1px solid #8b7355',
-              minHeight: '120px',
+              minHeight: '100px',
+              gap: '20px',
             }}
           >
-            {selectedOpponents.map((opponent, index) => (
-              <div
-                key={index}
-                onClick={() => opponentSelectionMode === 'manual' && handleOpponentClick(index)}
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  border: '3px solid #8b7355',
-                  backgroundColor: opponent ? 'transparent' : 'rgba(139, 115, 85, 0.2)',
-                  cursor: opponentSelectionMode === 'manual' ? 'pointer' : 'default',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.3s ease',
-                  position: 'relative',
-                }}
-                onMouseEnter={(e) => {
-                  if (opponentSelectionMode === 'manual') {
-                    e.currentTarget.style.borderColor = '#d4af37';
-                    e.currentTarget.style.transform = 'scale(1.05)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (opponentSelectionMode === 'manual') {
-                    e.currentTarget.style.borderColor = '#8b7355';
-                    e.currentTarget.style.transform = 'scale(1)';
-                  }
-                }}
-              >
-                {opponent ? (
-                  opponentSelectionMode === 'random' ? (
-                    // Don't show avatar for random mode, just colored circle
-                    <div
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: '50%',
-                        background:
-                          PLAYER_COLORS.find((c) => c.name === opponent.color)?.value || '#8b7355',
-                      }}
-                    />
+            {/* Controls Section */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+                paddingRight: '20px',
+                borderRight: '1px solid #8b7355',
+                minWidth: '200px',
+              }}
+            >
+              {/* Map Size */}
+              <div>
+                <label
+                  className={styles.label}
+                  style={{ fontSize: '14px', marginBottom: '8px', display: 'block' }}
+                >
+                  Map Size:
+                </label>
+                <select
+                  className={styles.dropdown}
+                  value={mapSize}
+                  onChange={(e) => handleMapSizeChange(e.target.value as BattlefieldSize)}
+                >
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                  <option value="huge">Huge</option>
+                </select>
+              </div>
+
+              {/* Opponent Selection Mode */}
+              <div>
+                <label
+                  className={`${styles.label} ${styles.checkboxContainer}`}
+                  style={{ fontSize: '14px' }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={opponentSelectionMode === 'random'}
+                    onChange={(e) =>
+                      handleOpponentSelectionModeChange(e.target.checked ? 'random' : 'manual')
+                    }
+                    className={styles.hiddenCheckbox}
+                  />
+                  <div
+                    className={`${styles.customCheckbox} ${opponentSelectionMode === 'random' ? styles.checked : ''}`}
+                  />
+                  Random Opponents
+                </label>
+              </div>
+            </div>
+
+            {/* Opponents Avatars Section */}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'nowrap',
+                gap: '10px',
+                flex: 1,
+                alignItems: 'flex-start',
+                overflowX: 'auto',
+              }}
+            >
+              {selectedOpponents.map((opponent, index) => (
+                <div
+                  key={index}
+                  onClick={() => opponentSelectionMode === 'manual' && handleOpponentClick(index)}
+                  style={{
+                    cursor: opponentSelectionMode === 'manual' ? 'pointer' : 'default',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.3s ease',
+                    position: 'relative',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (opponentSelectionMode === 'manual') {
+                      e.currentTarget.style.transform = 'scale(1.05)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (opponentSelectionMode === 'manual') {
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }
+                  }}
+                >
+                  {opponent ? (
+                    opponentSelectionMode === 'random' ? (
+                      // Don't show avatar for random mode, just colored circle
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: '50%',
+                          background:
+                            PLAYER_COLORS.find((c) => c.name === opponent.color)?.value ||
+                            '#8b7355',
+                        }}
+                      />
+                    ) : (
+                      <PlayerAvatar
+                        player={opponent}
+                        size={avatarSize}
+                        shape="circle"
+                        borderColor={opponent.color}
+                      />
+                    )
                   ) : (
                     <PlayerAvatar
-                      player={opponent}
-                      size={74}
+                      player={EmptyPlayer}
+                      size={avatarSize}
                       shape="circle"
-                      borderColor={opponent.color}
+                      borderColor="#8b7355"
                     />
-                  )
-                ) : (
-                  <PlayerAvatar
-                    player={EmptyPlayer}
-                    size={74}
-                    shape="circle"
-                    borderColor="#8b7355"
-                  />
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
-        {/* Player Selection */}
-        <PlayerSelection
-          label="Choose Your Character:"
-          selectedPlayer={selectedPlayer}
-          onPlayerChange={handlePlayerChange}
-        />
       </div>
     </FantasyBorderFrame>
   );

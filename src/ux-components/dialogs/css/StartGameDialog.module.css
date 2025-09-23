@@ -284,3 +284,52 @@
 .playerList::-webkit-scrollbar-thumb:hover {
   background: #d4af37;
 }
+
+/* Custom checkbox styling */
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.customCheckbox {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  background: linear-gradient(135deg, #3a2818 0%, #2a1810 100%);
+  border: 2px solid #8b7355;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.customCheckbox:hover {
+  border-color: #d4af37;
+  background: linear-gradient(135deg, #4a3020 0%, #3a2018 100%);
+}
+
+.customCheckbox.checked {
+  background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+  border-color: #d4af37;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+}
+
+.customCheckbox.checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #2c1810;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.hiddenCheckbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
