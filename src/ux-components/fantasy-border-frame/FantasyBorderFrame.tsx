@@ -19,6 +19,7 @@ export interface FantasyBorderFrameProps {
   tileSize?: BorderTileSize;
   zIndex?: number;
   accessible?: boolean;
+  flexibleSizing?: boolean;
 }
 
 // 50*180 since base tile is vertical
@@ -39,6 +40,7 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
   tileSize = defaultTileSize,
   zIndex = 1000,
   accessible = false,
+  flexibleSizing = false,
 }) => {
   return (
     <>
@@ -53,7 +55,7 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
             height: '100vh',
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
             zIndex: zIndex - 1,
-            pointerEvents: 'auto',
+            pointerEvents: 'none',
           }}
         />
       )}
@@ -90,11 +92,12 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
             left: cornerSize(tileSize),
             top: cornerSize(tileSize),
             width: width - cornerSize(tileSize) * 2,
-            height: height - cornerSize(tileSize) * 2,
+            height: flexibleSizing ? 'auto' : height - cornerSize(tileSize) * 2,
+            maxHeight: flexibleSizing ? height - cornerSize(tileSize) * 2 : undefined,
             backgroundColor: !accessible ? 'rgba(0, 0, 0, 0.8)' : undefined,
             padding: !accessible ? '20px' : undefined,
             boxSizing: 'border-box',
-            overflowY: 'auto',
+            overflowY: flexibleSizing ? 'visible' : 'auto',
             zIndex: zIndex,
           }}
         >
