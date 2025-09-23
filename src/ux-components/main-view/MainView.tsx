@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import styles from './css/Background.module.css';
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
-import StartGameDialog from '../dialogs/StartGameDialog';
+import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import OpponentInfoDialog, { OpponentWithDiplomacy } from '../dialogs/OpponentInfoDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
@@ -117,7 +117,7 @@ const MainView: React.FC = () => {
 
       {/* Start Game Dialog - shown as overlay */}
       {showStartWindow && (
-        <StartGameDialog
+        <NewGameDialog
           onStartGame={handleStartGame}
           onShowSelectOpponentDialog={handleShowSelectOpponentDialog}
         />

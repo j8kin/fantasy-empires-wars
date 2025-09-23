@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import StartGameDialog from '../ux-components/dialogs/StartGameDialog';
+import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { GameState } from '../types/HexTileState';
 
-describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
+describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   const mockOnStartGame = jest.fn();
   const mockOnShowSelectOpponentDialog = jest.fn();
 
@@ -14,7 +14,7 @@ describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
 
   it('reproduces the bug: opponents persist from previous random selection when switching map sizes', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />
@@ -53,7 +53,7 @@ describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
 
   it('ensures unique opponents are generated when switching between random modes', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />
@@ -92,7 +92,7 @@ describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
 
       return (
         <div>
-          <StartGameDialog
+          <NewGameDialog
             onStartGame={(gameConfig) => {
               setConfig(gameConfig);
               mockOnStartGame(gameConfig);
@@ -147,7 +147,7 @@ describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
 
       return (
         <div>
-          <StartGameDialog
+          <NewGameDialog
             onStartGame={(gameConfig) => {
               setConfig(gameConfig);
               mockOnStartGame(gameConfig);
@@ -195,7 +195,7 @@ describe('StartGameDialog - Opponent Generation Bug Reproduction', () => {
 
   it('prevents leftover opponents from previous map configurations', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />

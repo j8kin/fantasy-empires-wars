@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import StartGameDialog from '../ux-components/dialogs/StartGameDialog';
+import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { EmptyPlayer } from '../ux-components/avatars/PlayerAvatar';
 
@@ -15,7 +15,7 @@ describe('StartGameWindow', () => {
 
   it('renders the title', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
@@ -25,7 +25,7 @@ describe('StartGameWindow', () => {
 
   it('renders map size dropdown with default medium selection', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
@@ -36,7 +36,7 @@ describe('StartGameWindow', () => {
 
   it('renders opponent selection mode dropdown with default value', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
@@ -47,7 +47,7 @@ describe('StartGameWindow', () => {
 
   it('renders all predefined players in the player list', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
@@ -59,7 +59,7 @@ describe('StartGameWindow', () => {
 
   it('calls onStartGame when Start Game button is clicked', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
@@ -78,7 +78,7 @@ describe('StartGameWindow', () => {
 
   it('updates map size when dropdown value changes', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
@@ -91,7 +91,7 @@ describe('StartGameWindow', () => {
 
   it('changes opponent selection mode when dropdown value changes', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
@@ -104,7 +104,7 @@ describe('StartGameWindow', () => {
 
   it('updates selected player when a different player is clicked', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
@@ -121,7 +121,7 @@ describe('StartGameWindow', () => {
 
   it('shows correct max opponents label for different map sizes', () => {
     render(
-      <StartGameDialog
+      <NewGameDialog
         onStartGame={mockOnStartGame}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
@@ -152,7 +152,7 @@ describe('StartGameWindow', () => {
       if (!showDialog) return null;
 
       return (
-        <StartGameDialog
+        <NewGameDialog
           onStartGame={(config) => {
             // Verify that EmptyPlayer is filtered out from opponents
             const hasEmptyPlayer = config.opponents?.some(

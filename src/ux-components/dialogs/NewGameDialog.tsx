@@ -35,7 +35,7 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
 
 type OpponentSelectionMode = 'random' | 'manual';
 
-const StartGameDialog: React.FC<StartGameDialogProps> = ({
+const NewGameDialog: React.FC<StartGameDialogProps> = ({
   onStartGame,
   onShowSelectOpponentDialog,
 }) => {
@@ -340,4 +340,4 @@ const StartGameDialog: React.FC<StartGameDialogProps> = ({
   );
 };
 
-export default StartGameDialog;
+export default NewGameDialog;

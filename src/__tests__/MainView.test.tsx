@@ -51,7 +51,7 @@ jest.mock('../ux-components/battlefield/Battlefield', () => {
   };
 });
 
-jest.mock('../ux-components/dialogs/StartGameDialog', () => {
+jest.mock('../ux-components/dialogs/NewGameDialog', () => {
   return function MockStartGameDialog(props: any) {
     const mockPlayer: GamePlayer = {
       id: 'alaric',
@@ -72,7 +72,7 @@ jest.mock('../ux-components/dialogs/StartGameDialog', () => {
     };
 
     return (
-      <div data-testid="StartGameDialog">
+      <div data-testid="NewGameDialog">
         <button onClick={() => props.onStartGame?.(mockGameState)}>Start Game</button>
         <button onClick={() => props.onShowSelectOpponentDialog?.([], () => {}, true)}>
           Show Select Opponent
@@ -155,9 +155,9 @@ describe('MainView Component', () => {
     expect(battlefield).toHaveAttribute('data-battlefield-size', 'medium');
   });
 
-  it('shows StartGameDialog initially', () => {
+  it('shows NewGameDialog initially', () => {
     render(<MainView />);
-    expect(screen.getByTestId('StartGameDialog')).toBeInTheDocument();
+    expect(screen.getByTestId('NewGameDialog')).toBeInTheDocument();
   });
 
   describe('Game State Management', () => {
@@ -167,8 +167,8 @@ describe('MainView Component', () => {
       const startButton = screen.getByText('Start Game');
       fireEvent.click(startButton);
 
-      // StartGameDialog should be hidden after starting
-      expect(screen.queryByTestId('StartGameDialog')).not.toBeInTheDocument();
+      // NewGameDialog should be hidden after starting
+      expect(screen.queryByTestId('NewGameDialog')).not.toBeInTheDocument();
 
       // Battlefield should update with a new config
       const battlefield = screen.getByTestId('Battlefield');
@@ -191,11 +191,11 @@ describe('MainView Component', () => {
 
       // Start a game first to hide the initial dialog
       fireEvent.click(screen.getByText('Start Game'));
-      expect(screen.queryByTestId('StartGameDialog')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('NewGameDialog')).not.toBeInTheDocument();
 
       // Click new game in TopPanel
       fireEvent.click(screen.getByText('New Game'));
-      expect(screen.getByTestId('StartGameDialog')).toBeInTheDocument();
+      expect(screen.getByTestId('NewGameDialog')).toBeInTheDocument();
     });
   });
 
@@ -331,7 +331,7 @@ describe('MainView Component', () => {
       render(<MainView />);
 
       // Initial state should show start dialog
-      expect(screen.getByTestId('StartGameDialog')).toBeInTheDocument();
+      expect(screen.getByTestId('NewGameDialog')).toBeInTheDocument();
       expect(screen.queryByTestId('SaveGameDialog')).not.toBeInTheDocument();
       expect(screen.queryByTestId('OpponentInfoDialog')).not.toBeInTheDocument();
       expect(screen.queryByTestId('SelectOpponentDialog')).not.toBeInTheDocument();
