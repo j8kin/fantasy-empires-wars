@@ -6,10 +6,10 @@ import { PlayerColorName, PLAYER_COLORS } from '../../types/PlayerColors';
 import PlayerAvatar, { EmptyPlayer } from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
-import styles from './css/StartGameDialog.module.css';
+import styles from './css/NewGameDialog.module.css';
 import { GameState } from '../../types/HexTileState';
 
-interface StartGameDialogProps {
+interface NewGameDialogProps {
   onStartGame: (config: GameState) => void;
   onShowSelectOpponentDialog: (
     excludedPlayerIds: string[],
@@ -35,7 +35,7 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
 
 type OpponentSelectionMode = 'random' | 'manual';
 
-const NewGameDialog: React.FC<StartGameDialogProps> = ({
+const NewGameDialog: React.FC<NewGameDialogProps> = ({
   onStartGame,
   onShowSelectOpponentDialog,
 }) => {

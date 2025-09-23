@@ -52,7 +52,7 @@ jest.mock('../ux-components/battlefield/Battlefield', () => {
 });
 
 jest.mock('../ux-components/dialogs/NewGameDialog', () => {
-  return function MockStartGameDialog(props: any) {
+  return function MockNewGameDialog(props: any) {
     const mockPlayer: GamePlayer = {
       id: 'alaric',
       name: 'Alaric the Bold',

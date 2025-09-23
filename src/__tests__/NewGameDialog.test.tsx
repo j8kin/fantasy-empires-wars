@@ -151,7 +151,7 @@ describe('NewGameWindow', () => {
 
   it('filters out EmptyPlayer from opponents when starting game in manual mode', () => {
     // Mock the component to simulate having EmptyPlayer in selectedOpponents
-    const TestStartGameDialogWithEmptyPlayer = () => {
+    const TestNewGameDialogWithEmptyPlayer = () => {
       const [showDialog, setShowDialog] = React.useState(true);
 
       if (!showDialog) return null;
@@ -175,7 +175,7 @@ describe('NewGameWindow', () => {
       );
     };
 
-    render(<TestStartGameDialogWithEmptyPlayer />);
+    render(<TestNewGameDialogWithEmptyPlayer />);
 
     // Component starts in manual mode by default (checkbox unchecked)
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
