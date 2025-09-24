@@ -8,7 +8,10 @@ interface OpponentsPanelProps {
   selectedPlayer?: GamePlayer;
   numberOfOpponents: number;
   opponents?: GamePlayer[];
-  onOpponentSelect?: (opponent: OpponentWithDiplomacy) => void;
+  onOpponentSelect?: (
+    opponent: OpponentWithDiplomacy,
+    screenPosition: { x: number; y: number }
+  ) => void;
 }
 
 const getRandomDiplomacyStatus = (): DiplomacyStatus => {
@@ -84,7 +87,11 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({
         <div
           key={opponent.id}
           className={styles.avatarContainer}
-          onClick={() => onOpponentSelect?.(opponent)}
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const screenPosition = { x: rect.left, y: rect.top };
+            onOpponentSelect?.(opponent, screenPosition);
+          }}
         >
           <PlayerAvatar
             player={opponent}

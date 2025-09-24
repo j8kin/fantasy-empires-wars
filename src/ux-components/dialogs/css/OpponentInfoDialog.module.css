@@ -1,63 +1,87 @@
-.opponentInfo {
-  width: 100%;
+.popupContent {
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 4px;
 }
 
-.opponentHeader {
+.header {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #4a3c2a, #654321);
+  border-bottom: 1px solid #8b6f47;
+  border-radius: 4px 4px 0 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.avatarSection {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
   padding-bottom: 8px;
-  border-bottom: 2px solid #8b4513;
+  border-bottom: 1px solid rgba(139, 111, 71, 0.5);
 }
 
 .opponentAvatar {
   flex-shrink: 0;
 }
 
-.opponentName {
-  color: #ffd700;
-  margin: 0;
-  font-size: 1.4em;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  flex-grow: 1;
-}
-
-.opponentDetails {
+.characteristics {
+  padding: 8px 12px 8px 12px;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  justify-content: flex-start;
 }
 
-.detailRow {
+.row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.row:last-child {
+  margin-bottom: 0;
 }
 
 .label {
-  color: #d4af37;
   font-weight: bold;
-  font-size: 1em;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  color: #cccccc;
+  min-width: 120px;
+  flex-shrink: 0;
 }
 
 .value {
-  color: #f5f5dc;
-  font-size: 1em;
+  color: #ffffff;
+  text-align: right;
+  flex-grow: 1;
+  margin-left: 8px;
   text-transform: capitalize;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .diplomacyStatus {
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 0.85em;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
   font-weight: bold;
   text-transform: uppercase;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+  display: inline-block;
+  min-width: 80px;
 }
 
 .notreaty {

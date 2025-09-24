@@ -17,7 +17,10 @@ interface TopPanelProps {
   onLoadGame?: () => void;
   onOpenSaveDialog?: () => void;
   onEndTurn?: () => void;
-  onOpponentSelect?: (opponent: OpponentWithDiplomacy) => void;
+  onOpponentSelect?: (
+    opponent: OpponentWithDiplomacy,
+    screenPosition: { x: number; y: number }
+  ) => void;
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({

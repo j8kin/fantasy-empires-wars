@@ -15,6 +15,10 @@ const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
   const [selectedOpponent, setSelectedOpponent] = useState<OpponentWithDiplomacy | null>(null);
+  const [opponentScreenPosition, setOpponentScreenPosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
   const [showSelectOpponentDialog, setShowSelectOpponentDialog] = useState<boolean>(false);
   const [selectOpponentExcludedIds, setSelectOpponentExcludedIds] = useState<string[]>([]);
   const [selectOpponentCallback, setSelectOpponentCallback] = useState<
@@ -55,9 +59,13 @@ const MainView: React.FC = () => {
     // TODO: Implement actual save game functionality
   }, []);
 
-  const handleShowOpponentInfo = useCallback((opponent: OpponentWithDiplomacy) => {
-    setSelectedOpponent(opponent);
-  }, []);
+  const handleShowOpponentInfo = useCallback(
+    (opponent: OpponentWithDiplomacy, screenPosition: { x: number; y: number }) => {
+      setSelectedOpponent(opponent);
+      setOpponentScreenPosition(screenPosition);
+    },
+    []
+  );
 
   const handleCloseOpponentInfo = useCallback(() => {
     setSelectedOpponent(null);
@@ -131,7 +139,11 @@ const MainView: React.FC = () => {
       />
 
       {/* Opponent Info Dialog - shown as overlay */}
-      <OpponentInfoDialog opponent={selectedOpponent} onClose={handleCloseOpponentInfo} />
+      <OpponentInfoDialog
+        opponent={selectedOpponent}
+        screenPosition={opponentScreenPosition}
+        onClose={handleCloseOpponentInfo}
+      />
 
       {/* Select Opponent Dialog - shown as overlay */}
       {showSelectOpponentDialog && (
