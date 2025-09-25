@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { getAlignmentColor } from '../../types/Alignment';
 import { createTileId, GameState, getPlayerById } from '../../types/HexTileState';
-import styles from './css/LandCharacteristicsPopup.module.css';
+import styles from '../battlefield/css/LandCharacteristicsPopup.module.css';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../../map/utils/mapTypes';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';

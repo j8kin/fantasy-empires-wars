@@ -4,7 +4,7 @@ import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
 import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
-import OpponentInfoDialog, { OpponentWithDiplomacy } from '../dialogs/OpponentInfoDialog';
+import OpponentInfoPopup, { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import { GamePlayer } from '../../types/GamePlayer';
 import { GameState } from '../../types/HexTileState';
@@ -143,7 +143,7 @@ const MainView: React.FC = () => {
       />
 
       {/* Opponent Info Dialog - shown as overlay */}
-      <OpponentInfoDialog
+      <OpponentInfoPopup
         opponent={selectedOpponent}
         screenPosition={opponentScreenPosition}
         onClose={handleCloseOpponentInfo}

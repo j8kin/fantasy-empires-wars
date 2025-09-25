@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './css/Hexagonal.module.css';
 import { createTileId, GameState, getPlayerById } from '../../types/HexTileState';
-import LandCharacteristicsPopup from './LandCharacteristicsPopup';
+import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 import { Position } from '../../map/utils/mapTypes';
 import { PLAYER_COLORS } from '../../types/PlayerColors';
 

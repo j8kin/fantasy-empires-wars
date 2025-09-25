@@ -3,7 +3,7 @@ import { GamePlayer } from '../../types/GamePlayer';
 import { getAlignmentColor } from '../../types/Alignment';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
-import styles from './css/OpponentInfoDialog.module.css';
+import styles from '../dialogs/css/OpponentInfoDialog.module.css';
 
 export type DiplomacyStatus = 'No Treaty' | 'Peace' | 'War';
 
@@ -11,17 +11,13 @@ export interface OpponentWithDiplomacy extends GamePlayer {
   diplomacyStatus: DiplomacyStatus;
 }
 
-interface OpponentInfoDialogProps {
+interface OpponentInfoProps {
   opponent: OpponentWithDiplomacy | null;
   screenPosition: { x: number; y: number };
   onClose: () => void;
 }
 
-const OpponentInfoDialog: React.FC<OpponentInfoDialogProps> = ({
-  opponent,
-  screenPosition,
-  onClose,
-}) => {
+const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition, onClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -119,4 +115,4 @@ const OpponentInfoDialog: React.FC<OpponentInfoDialogProps> = ({
   );
 };
 
-export default OpponentInfoDialog;
+export default OpponentInfoPopup;

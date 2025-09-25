@@ -4,7 +4,7 @@ import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
-import { OpponentWithDiplomacy } from '../dialogs/OpponentInfoDialog';
+import { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
 import FantasyBorderFrame, { BorderTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
 import EndOfTurnButton from '../buttons/EndOfTurnButton';
 import styles from './css/TopPanel.module.css';

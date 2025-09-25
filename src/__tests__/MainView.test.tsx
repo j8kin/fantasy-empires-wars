@@ -93,10 +93,10 @@ jest.mock('../ux-components/dialogs/SaveGameDialog', () => {
   };
 });
 
-jest.mock('../ux-components/dialogs/OpponentInfoDialog', () => {
+jest.mock('../ux-components/popups/OpponentInfoPopup', () => {
   return function MockOpponentInfoDialog(props: any) {
     return props.opponent ? (
-      <div data-testid="OpponentInfoDialog">
+      <div data-testid="OpponentInfoPopup">
         <span>{props.opponent.name}</span>
         <button onClick={() => props.onClose?.()}>Close</button>
       </div>
@@ -236,7 +236,7 @@ describe('MainView Component', () => {
       render(<MainView />);
 
       fireEvent.click(screen.getByText('Select Opponent'));
-      expect(screen.getByTestId('OpponentInfoDialog')).toBeInTheDocument();
+      expect(screen.getByTestId('OpponentInfoPopup')).toBeInTheDocument();
       expect(screen.getByText('Alaric the Bold')).toBeInTheDocument();
     });
 
@@ -245,11 +245,11 @@ describe('MainView Component', () => {
 
       // Open opponent info
       fireEvent.click(screen.getByText('Select Opponent'));
-      expect(screen.getByTestId('OpponentInfoDialog')).toBeInTheDocument();
+      expect(screen.getByTestId('OpponentInfoPopup')).toBeInTheDocument();
 
       // Close opponent info
       fireEvent.click(screen.getByText('Close'));
-      expect(screen.queryByTestId('OpponentInfoDialog')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('OpponentInfoPopup')).not.toBeInTheDocument();
     });
   });
 
@@ -333,7 +333,7 @@ describe('MainView Component', () => {
       // Initial state should show start dialog
       expect(screen.getByTestId('NewGameDialog')).toBeInTheDocument();
       expect(screen.queryByTestId('SaveGameDialog')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('OpponentInfoDialog')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('OpponentInfoPopup')).not.toBeInTheDocument();
       expect(screen.queryByTestId('SelectOpponentDialog')).not.toBeInTheDocument();
     });
 
@@ -349,11 +349,11 @@ describe('MainView Component', () => {
 
       // Open opponent selection (should be possible alongside save dialog)
       fireEvent.click(screen.getByText('Select Opponent'));
-      expect(screen.getByTestId('OpponentInfoDialog')).toBeInTheDocument();
+      expect(screen.getByTestId('OpponentInfoPopup')).toBeInTheDocument();
 
       // Both dialogs can be open simultaneously
       expect(screen.getByTestId('SaveGameDialog')).toBeInTheDocument();
-      expect(screen.getByTestId('OpponentInfoDialog')).toBeInTheDocument();
+      expect(screen.getByTestId('OpponentInfoPopup')).toBeInTheDocument();
     });
   });
 

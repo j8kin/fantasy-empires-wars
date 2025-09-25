@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerAvatar, { EmptyPlayer } from '../avatars/PlayerAvatar';
-import { OpponentWithDiplomacy, DiplomacyStatus } from '../dialogs/OpponentInfoDialog';
+import { OpponentWithDiplomacy, DiplomacyStatus } from '../popups/OpponentInfoPopup';
 import styles from './css/OpponentsPanel.module.css';
 
 interface OpponentsPanelProps {
