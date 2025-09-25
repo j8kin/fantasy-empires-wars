@@ -22,10 +22,10 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 
   // Calculate dynamic size based on content type
   // MANUAL ADJUSTMENT POINT 1: Base heights and row spacing
-  const headerHeight = 32; // Header with title (6px padding * 2 + 20px content)
-  const baseContentPadding = 16; // Top and bottom padding for characteristics (8px * 2)
-  const standardRowHeight = 29; // Height per standard data row (12px font + 6px margin)
-  const buildingRowHeight = 24; // Height for building rows (includes building chip padding + gaps)
+  const headerHeight = 33; // Header with title (6px padding * 2 + 20px content)
+  const baseContentPadding = 15; // Top and bottom padding for characteristics (8px * 2)
+  const standardRowHeight = 24; // Height per standard data row (12px font + 6px margin)
+  const buildingRowHeight = 26; // Height for building rows (includes building chip padding + gaps)
   const armyRowHeight = 18; // Height for army row (standard)
 
   // Calculate height for each content type separately
@@ -48,7 +48,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 
   // MANUAL ADJUSTMENT POINT 2: Final height calculation
   const calculatedHeight = headerHeight + baseContentPadding + totalContentHeight;
-  const dynamicHeight = Math.min(calculatedHeight, 320); // MANUAL ADJUSTMENT POINT 3: Max height limit
+  const dynamicHeight = Math.min(calculatedHeight, 250); // MANUAL ADJUSTMENT POINT 3: Max height limit
   const dynamicWidth = 300;
 
   return (
