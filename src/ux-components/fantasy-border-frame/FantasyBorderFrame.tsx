@@ -8,9 +8,17 @@ export interface BorderTileSize {
   height: number;
 }
 
+/**
+ * Top Left position of the window/dialog/popup
+ */
+export interface ScreenPosition {
+  x: number;
+  y: number;
+}
+
 export interface FantasyBorderFrameProps {
-  screenPosition: { x: number; y: number };
-  dimensions: { width: number; height: number };
+  screenPosition: ScreenPosition;
+  dimensions: BorderTileSize;
   children: React.ReactNode;
   primaryButton?: React.ReactElement;
   secondaryButton?: React.ReactElement;

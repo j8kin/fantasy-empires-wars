@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { GamePlayer } from '../../types/GamePlayer';
 import { getAlignmentColor } from '../../types/Alignment';
 import PlayerAvatar from '../avatars/PlayerAvatar';
-import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
+import { ScreenPosition } from '../fantasy-border-frame/FantasyBorderFrame';
 import styles from '../dialogs/css/OpponentInfoDialog.module.css';
+import PopupWrapper from './PopupWrapper';
 
 export type DiplomacyStatus = 'No Treaty' | 'Peace' | 'War';
 
@@ -13,35 +14,11 @@ export interface OpponentWithDiplomacy extends GamePlayer {
 
 interface OpponentInfoProps {
   opponent: OpponentWithDiplomacy | null;
-  screenPosition: { x: number; y: number };
+  screenPosition: ScreenPosition;
   onClose: () => void;
 }
 
 const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition, onClose }) => {
-  const popupRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [onClose]);
-
   if (!opponent) return null;
 
   // Calculate dynamic size based on content (larger than LandCharacteristicsPopup)
@@ -57,59 +34,52 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
   const dynamicWidth = 310; // Increased width from 300 to 350
 
   return (
-    <div ref={popupRef}>
-      <FantasyBorderFrame
-        screenPosition={{ x: screenPosition.x - 50, y: screenPosition.y + 10 }}
-        dimensions={{ width: dynamicWidth, height: dynamicHeight }}
-        tileSize={{ width: 20, height: 70 }}
-        accessible={true}
-        flexibleSizing={true}
-      >
-        <div className={styles.popupContent}>
-          <div className={styles.header}>
-            <h3 className={styles.title}>{opponent.name}</h3>
+    <PopupWrapper
+      screenPosition={{ x: screenPosition.x - 50, y: screenPosition.y + 10 }}
+      dimensions={{ width: dynamicWidth, height: dynamicHeight }}
+      onClose={onClose}
+    >
+      <div className={styles.popupContent}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>{opponent.name}</h3>
+        </div>
+
+        <div className={styles.characteristics}>
+          <div className={styles.avatarSection}>
+            <PlayerAvatar
+              player={opponent}
+              size={55}
+              shape="rectangle"
+              borderColor={opponent.color}
+              className={styles.opponentAvatar}
+            />
           </div>
 
-          <div className={styles.characteristics}>
-            <div className={styles.avatarSection}>
-              <PlayerAvatar
-                player={opponent}
-                size={55}
-                shape="rectangle"
-                borderColor={opponent.color}
-                className={styles.opponentAvatar}
-              />
-            </div>
-
-            <div className={styles.row}>
-              <span className={styles.label}>Race:</span>
-              <span className={styles.value}>{opponent.race}</span>
-            </div>
-            <div className={styles.row}>
-              <span className={styles.label}>Alignment:</span>
-              <span
-                className={styles.value}
-                style={{ color: getAlignmentColor(opponent.alignment) }}
-              >
-                {opponent.alignment}
-              </span>
-            </div>
-            <div className={styles.row}>
-              <span className={styles.label}>Level:</span>
-              <span className={styles.value}>{opponent.level}</span>
-            </div>
-            <div className={styles.row}>
-              <span className={styles.label}>Diplomatic Relations:</span>
-              <span
-                className={`${styles.value} ${styles.diplomacyStatus} ${styles[opponent.diplomacyStatus.toLowerCase().replace(' ', '')]}`}
-              >
-                {opponent.diplomacyStatus}
-              </span>
-            </div>
+          <div className={styles.row}>
+            <span className={styles.label}>Race:</span>
+            <span className={styles.value}>{opponent.race}</span>
+          </div>
+          <div className={styles.row}>
+            <span className={styles.label}>Alignment:</span>
+            <span className={styles.value} style={{ color: getAlignmentColor(opponent.alignment) }}>
+              {opponent.alignment}
+            </span>
+          </div>
+          <div className={styles.row}>
+            <span className={styles.label}>Level:</span>
+            <span className={styles.value}>{opponent.level}</span>
+          </div>
+          <div className={styles.row}>
+            <span className={styles.label}>Diplomatic Relations:</span>
+            <span
+              className={`${styles.value} ${styles.diplomacyStatus} ${styles[opponent.diplomacyStatus.toLowerCase().replace(' ', '')]}`}
+            >
+              {opponent.diplomacyStatus}
+            </span>
           </div>
         </div>
-      </FantasyBorderFrame>
-    </div>
+      </div>
+    </PopupWrapper>
   );
 };
 

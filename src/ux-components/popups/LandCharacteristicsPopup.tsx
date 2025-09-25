@@ -1,15 +1,16 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { getAlignmentColor } from '../../types/Alignment';
 import { createTileId, GameState, getPlayerById } from '../../types/HexTileState';
 import styles from '../battlefield/css/LandCharacteristicsPopup.module.css';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../../map/utils/mapTypes';
-import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
+import { ScreenPosition } from '../fantasy-border-frame/FantasyBorderFrame';
+import PopupWrapper from './PopupWrapper';
 
 interface LandCharacteristicsPopupProps {
   battlefieldPosition: Position;
   gameState: GameState;
-  screenPosition: { x: number; y: number };
+  screenPosition: ScreenPosition;
   onClose: () => void;
 }
 
@@ -19,30 +20,6 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   screenPosition,
   onClose,
 }) => {
-  const popupRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [onClose]);
-
   const battlefieldTile = gameState.tiles[createTileId(battlefieldPosition)];
   const displayLandType = battlefieldTile.landType;
   if (!displayLandType) return null;
@@ -79,82 +56,78 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   const dynamicWidth = 300;
 
   return (
-    <div ref={popupRef}>
-      <FantasyBorderFrame
-        screenPosition={{ x: screenPosition.x + 10, y: screenPosition.y + 10 }}
-        dimensions={{ width: dynamicWidth, height: dynamicHeight }}
-        tileSize={{ width: 20, height: 70 }}
-        accessible={true}
-        flexibleSizing={true}
-      >
-        <div className={styles.popupContent}>
-          <div className={styles.header}>
-            <h3 className={styles.title}>{displayLandType.name}</h3>
-          </div>
-
-          <div className={styles.characteriFantasyBorderFramestics}>
-            <div className={styles.row}>
-              <span className={styles.label}>Alignment:</span>
-              <span
-                className={styles.value}
-                style={{ color: getAlignmentColor(displayLandType.alignment) }}
-              >
-                {displayLandType.alignment}
-              </span>
-            </div>
-
-            {battlefieldTile && (
-              <>
-                <div className={styles.row}>
-                  <span className={styles.label}>Position:</span>
-                  <span className={styles.value}>
-                    {battlefieldPosition.row}, {battlefieldPosition.col}
-                  </span>
-                </div>
-
-                <div className={styles.row}>
-                  <span className={styles.label}>Gold per Turn:</span>
-                  <span className={styles.value}>{battlefieldTile.goldPerTurn}</span>
-                </div>
-
-                <div className={styles.row}>
-                  <span className={styles.label}>Controlled By:</span>
-                  <span className={styles.value}>
-                    {(() => {
-                      if (battlefieldTile.controlledBy === NO_PLAYER.id) {
-                        return 'None';
-                      }
-                      const player = getPlayerById(gameState, battlefieldTile.controlledBy);
-                      return player ? player.name : battlefieldTile.controlledBy;
-                    })()}
-                  </span>
-                </div>
-
-                {battlefieldTile.buildings && battlefieldTile.buildings.length > 0 && (
-                  <div className={styles.row}>
-                    <span className={styles.label}>Buildings:</span>
-                    <div className={styles.buildingsList}>
-                      {battlefieldTile.buildings.map((building, index) => (
-                        <span key={index} className={styles.building}>
-                          {building.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {battlefieldTile.army && battlefieldTile.army.totalCount > 0 && (
-                  <div className={styles.row}>
-                    <span className={styles.label}>Army:</span>
-                    <span className={styles.value}>{battlefieldTile.army.totalCount} units</span>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+    <PopupWrapper
+      screenPosition={{ x: screenPosition.x + 10, y: screenPosition.y + 10 }}
+      dimensions={{ width: dynamicWidth, height: dynamicHeight }}
+      onClose={onClose}
+    >
+      <div className={styles.popupContent}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>{displayLandType.name}</h3>
         </div>
-      </FantasyBorderFrame>
-    </div>
+
+        <div className={styles.characteriFantasyBorderFramestics}>
+          <div className={styles.row}>
+            <span className={styles.label}>Alignment:</span>
+            <span
+              className={styles.value}
+              style={{ color: getAlignmentColor(displayLandType.alignment) }}
+            >
+              {displayLandType.alignment}
+            </span>
+          </div>
+
+          {battlefieldTile && (
+            <>
+              <div className={styles.row}>
+                <span className={styles.label}>Position:</span>
+                <span className={styles.value}>
+                  {battlefieldPosition.row}, {battlefieldPosition.col}
+                </span>
+              </div>
+
+              <div className={styles.row}>
+                <span className={styles.label}>Gold per Turn:</span>
+                <span className={styles.value}>{battlefieldTile.goldPerTurn}</span>
+              </div>
+
+              <div className={styles.row}>
+                <span className={styles.label}>Controlled By:</span>
+                <span className={styles.value}>
+                  {(() => {
+                    if (battlefieldTile.controlledBy === NO_PLAYER.id) {
+                      return 'None';
+                    }
+                    const player = getPlayerById(gameState, battlefieldTile.controlledBy);
+                    return player ? player.name : battlefieldTile.controlledBy;
+                  })()}
+                </span>
+              </div>
+
+              {battlefieldTile.buildings && battlefieldTile.buildings.length > 0 && (
+                <div className={styles.row}>
+                  <span className={styles.label}>Buildings:</span>
+                  <div className={styles.buildingsList}>
+                    {battlefieldTile.buildings.map((building, index) => (
+                      <span key={index} className={styles.building}>
+                        {building.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {battlefieldTile.army && battlefieldTile.army.totalCount > 0 && (
+                <div className={styles.row}>
+                  <span className={styles.label}>Army:</span>
+                  <span className={styles.value}>{battlefieldTile.army.totalCount} units</span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </PopupWrapper>
   );
 };
 
