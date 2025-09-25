@@ -2,8 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
-import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { EMPTY_PLAYER } from '../ux-components/avatars/PlayerAvatar';
+import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
 
 describe('NewGameWindow', () => {
   const mockOnStartGame = jest.fn();
@@ -149,9 +148,9 @@ describe('NewGameWindow', () => {
     expect(screen.getByText(/of 6/)).toBeInTheDocument();
   });
 
-  it('filters out EmptyPlayer from opponents when starting game in manual mode', () => {
-    // Mock the component to simulate having EmptyPlayer in selectedOpponents
-    const TestNewGameDialogWithEmptyPlayer = () => {
+  it('filters out NO_PLAYER from opponents when starting game in manual mode', () => {
+    // Mock the component to simulate having NO_PLAYER in selectedOpponents
+    const TestNewGameDialogWithNoPlayer = () => {
       const [showDialog, setShowDialog] = React.useState(true);
 
       if (!showDialog) return null;
@@ -159,29 +158,27 @@ describe('NewGameWindow', () => {
       return (
         <NewGameDialog
           onStartGame={(config) => {
-            // Verify that EmptyPlayer is filtered out from opponents
-            const hasEmptyPlayer = config.opponents?.some(
-              (opponent) => opponent.id === EMPTY_PLAYER.id
-            );
-            expect(hasEmptyPlayer).toBe(false);
+            // Verify that NO_PLAYER is filtered out from opponents
+            const hasNoPlayer = config.opponents?.some((opponent) => opponent.id === NO_PLAYER.id);
+            expect(hasNoPlayer).toBe(false);
             mockOnStartGame(config);
             setShowDialog(false);
           }}
           onShowSelectOpponentDialog={(excludedIds, onSelect) => {
-            // Simulate selecting EmptyPlayer to "delete" an opponent
-            onSelect(EMPTY_PLAYER);
+            // Simulate selecting NO_PLAYER to "delete" an opponent
+            onSelect(NO_PLAYER);
           }}
         />
       );
     };
 
-    render(<TestNewGameDialogWithEmptyPlayer />);
+    render(<TestNewGameDialogWithNoPlayer />);
 
     // Component starts in manual mode by default (checkbox unchecked)
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
     expect(randomOpponentsCheckbox).not.toBeChecked();
 
-    // Click on an opponent slot to open selection dialog (this will trigger EmptyPlayer selection)
+    // Click on an opponent slot to open selection dialog (this will trigger NO_PLAYER selection)
     const opponentSlots = screen
       .getAllByRole('generic')
       .filter((el) => el.style.cursor === 'pointer' || el.onclick);

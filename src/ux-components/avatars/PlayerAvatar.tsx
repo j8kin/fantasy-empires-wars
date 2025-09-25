@@ -1,17 +1,6 @@
 import React from 'react';
-import { GamePlayer } from '../../types/GamePlayer';
+import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import styles from './css/PlayerAvatar.module.css';
-
-export const EMPTY_PLAYER: GamePlayer = {
-  id: 'empty',
-  name: 'Empty',
-  avatar: '',
-  color: 'gray',
-  alignment: 'neutral',
-  level: 0,
-  race: 'Human',
-  description: 'Remove opponent',
-};
 
 type AvatarShape = 'circle' | 'rectangle';
 
@@ -42,7 +31,7 @@ const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
   const containerClassName = `${styles.container} ${styles[`container--${shape}`]} ${className || ''}`;
 
   // Check if this is an empty player
-  if (player.id === EMPTY_PLAYER.id) {
+  if (player.id === NO_PLAYER.id) {
     return (
       <div style={dynamicStyles} className={containerClassName}>
         <div

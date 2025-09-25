@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import PlayerAvatar, { EMPTY_PLAYER } from '../avatars/PlayerAvatar';
+import { GamePlayer, PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
+import PlayerAvatar from '../avatars/PlayerAvatar';
 import { OpponentWithDiplomacy, DiplomacyStatus } from '../popups/OpponentInfoPopup';
 import styles from './css/OpponentsPanel.module.css';
 
@@ -54,7 +54,7 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({
     // This takes precedence over numberOfOpponents parameter
     if (providedOpponents && providedOpponents.length > 0) {
       const filteredOpponents = providedOpponents.filter(
-        (opponent) => opponent.id !== EMPTY_PLAYER.id
+        (opponent) => opponent.id !== NO_PLAYER.id
       );
       // If after filtering EmptyPlayer we have no valid opponents, generate random ones
       if (filteredOpponents.length === 0) {

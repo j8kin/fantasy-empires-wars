@@ -2,8 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import OpponentsPanel from '../ux-components/opponents-panel/OpponentsPanel';
-import { EMPTY_PLAYER } from '../ux-components/avatars/PlayerAvatar';
-import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
 
 describe('OpponentsPanel', () => {
   const mockOnOpponentSelect = jest.fn();
@@ -33,7 +32,7 @@ describe('OpponentsPanel', () => {
   it('filters out EmptyPlayer from provided opponents', () => {
     const providedOpponents = [
       PREDEFINED_PLAYERS[1],
-      EMPTY_PLAYER, // This should be filtered out
+      NO_PLAYER, // This should be filtered out
       PREDEFINED_PLAYERS[2],
     ];
 
@@ -46,10 +45,10 @@ describe('OpponentsPanel', () => {
       />
     );
 
-    // Should render only 2 opponents (EmptyPlayer filtered out)
-    // Check that EmptyPlayer's name is not displayed
-    expect(screen.queryByText('Empty')).not.toBeInTheDocument();
-    expect(screen.queryByText('EMPTY')).not.toBeInTheDocument();
+    // Should render only 2 opponents (NO_PLAYER filtered out)
+    // Check that NO_PLAYER's name is not displayed
+    expect(screen.queryByText('None')).not.toBeInTheDocument();
+    expect(screen.queryByText('NONE')).not.toBeInTheDocument();
 
     // Check that the valid opponents are displayed (by alt text)
     expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
@@ -57,7 +56,7 @@ describe('OpponentsPanel', () => {
   });
 
   it('falls back to random opponents when all provided opponents are EmptyPlayer', () => {
-    const providedOpponents = [EMPTY_PLAYER, EMPTY_PLAYER];
+    const providedOpponents = [NO_PLAYER, NO_PLAYER];
 
     render(
       <OpponentsPanel
@@ -68,9 +67,9 @@ describe('OpponentsPanel', () => {
       />
     );
 
-    // Should filter out EmptyPlayer and fallback to generating 2 random opponents
-    expect(screen.queryByText('Empty')).not.toBeInTheDocument();
-    expect(screen.queryByText('EMPTY')).not.toBeInTheDocument();
+    // Should filter out NO_PLAYER and fallback to generating 2 random opponents
+    expect(screen.queryByText('None')).not.toBeInTheDocument();
+    expect(screen.queryByText('NONE')).not.toBeInTheDocument();
 
     // Should have generated random opponents based on numberOfOpponents
     const opponentsContainer = document.querySelector('[class*="opponentsPanelContainer"]');
@@ -84,9 +83,9 @@ describe('OpponentsPanel', () => {
   it('works correctly with mixed valid opponents and EmptyPlayer', () => {
     const providedOpponents = [
       PREDEFINED_PLAYERS[1],
-      EMPTY_PLAYER,
+      NO_PLAYER,
       PREDEFINED_PLAYERS[2],
-      EMPTY_PLAYER,
+      NO_PLAYER,
       PREDEFINED_PLAYERS[3],
     ];
 
@@ -99,9 +98,9 @@ describe('OpponentsPanel', () => {
       />
     );
 
-    // Should render only 3 valid opponents (2 EmptyPlayers filtered out)
-    expect(screen.queryByText('Empty')).not.toBeInTheDocument();
-    expect(screen.queryByText('EMPTY')).not.toBeInTheDocument();
+    // Should render only 3 valid opponents (2 NO_PLAYERs filtered out)
+    expect(screen.queryByText('None')).not.toBeInTheDocument();
+    expect(screen.queryByText('NONE')).not.toBeInTheDocument();
 
     // Check that all valid opponents are displayed (by alt text)
     expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
@@ -176,7 +175,7 @@ describe('OpponentsPanel', () => {
         <OpponentsPanel
           selectedPlayer={testPlayer}
           numberOfOpponents={2}
-          opponents={[EMPTY_PLAYER, EMPTY_PLAYER, EMPTY_PLAYER]}
+          opponents={[NO_PLAYER, NO_PLAYER, NO_PLAYER]}
           onOpponentSelect={mockOnOpponentSelect}
         />
       );
@@ -190,7 +189,7 @@ describe('OpponentsPanel', () => {
         <OpponentsPanel
           selectedPlayer={testPlayer}
           numberOfOpponents={5}
-          opponents={[EMPTY_PLAYER]}
+          opponents={[NO_PLAYER]}
           onOpponentSelect={mockOnOpponentSelect}
         />
       );
@@ -204,12 +203,12 @@ describe('OpponentsPanel', () => {
       const testCases = [
         {
           description: 'mostly EmptyPlayer with few valid',
-          opponents: [PREDEFINED_PLAYERS[1], EMPTY_PLAYER, EMPTY_PLAYER, EMPTY_PLAYER],
+          opponents: [PREDEFINED_PLAYERS[1], NO_PLAYER, NO_PLAYER, NO_PLAYER],
           expectedValidOpponents: 1,
         },
         {
           description: 'equal mix of valid and EmptyPlayer',
-          opponents: [PREDEFINED_PLAYERS[1], EMPTY_PLAYER, PREDEFINED_PLAYERS[2], EMPTY_PLAYER],
+          opponents: [PREDEFINED_PLAYERS[1], NO_PLAYER, PREDEFINED_PLAYERS[2], NO_PLAYER],
           expectedValidOpponents: 2,
         },
         {
@@ -218,7 +217,7 @@ describe('OpponentsPanel', () => {
             PREDEFINED_PLAYERS[1],
             PREDEFINED_PLAYERS[2],
             PREDEFINED_PLAYERS[3],
-            EMPTY_PLAYER,
+            NO_PLAYER,
           ],
           expectedValidOpponents: 3,
         },
@@ -234,9 +233,9 @@ describe('OpponentsPanel', () => {
           />
         );
 
-        // Should filter out EmptyPlayer and show only valid opponents
-        expect(screen.queryByText('Empty')).not.toBeInTheDocument();
-        expect(screen.queryByText('EMPTY')).not.toBeInTheDocument();
+        // Should filter out NO_PLAYER and show only valid opponents
+        expect(screen.queryByText('None')).not.toBeInTheDocument();
+        expect(screen.queryByText('NONE')).not.toBeInTheDocument();
 
         const avatarElements = document.querySelectorAll('img[alt]');
         expect(avatarElements.length).toBe(expectedValidOpponents);

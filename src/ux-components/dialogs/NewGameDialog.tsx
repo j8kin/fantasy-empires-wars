@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { GamePlayer, PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
 import { PlayerColorName, PLAYER_COLORS } from '../../types/PlayerColors';
-import PlayerAvatar, { EMPTY_PLAYER } from '../avatars/PlayerAvatar';
+import PlayerAvatar from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import styles from './css/NewGameDialog.module.css';
@@ -180,7 +180,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
       opponentSelectionMode === 'random'
         ? (selectedOpponents as GamePlayer[])
         : (selectedOpponents.filter(
-            (opponent) => opponent !== null && opponent.id !== EMPTY_PLAYER.id
+            (opponent) => opponent !== null && opponent.id !== NO_PLAYER.id
           ) as GamePlayer[]);
 
     const config: GameState = {
@@ -349,7 +349,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
                     )
                   ) : (
                     <PlayerAvatar
-                      player={EMPTY_PLAYER}
+                      player={NO_PLAYER}
                       size={avatarSize}
                       shape="circle"
                       borderColor="#8b7355"
