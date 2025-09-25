@@ -1,7 +1,6 @@
 import React from 'react';
 import CelticPatternVertical from '../../assets/border/CelticPatternVertical.png';
 import { BorderProps } from './BorderProps';
-import { Dimensions } from './FantasyBorderFrame';
 
 const VerticalBorder: React.FC<BorderProps> = ({ side, tileDimensions, length, zIndex }) => {
   const amount = Math.ceil(length / tileDimensions.height);
