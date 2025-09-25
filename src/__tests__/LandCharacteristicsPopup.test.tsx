@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import LandCharacteristicsPopup from '../ux-components/popups/LandCharacteristicsPopup';
 import { GameState, HexTileState } from '../types/HexTileState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { LAND_TYPES } from '../types/LandType';
+import { LAND_TYPES } from '../types/Land';
 import { initializeMap } from '../map/generation/mapGeneration';
 
 // Mock CSS modules

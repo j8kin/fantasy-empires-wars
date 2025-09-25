@@ -1,6 +1,6 @@
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { useMapState } from '../hooks/useMapState';
-import { LAND_TYPES } from '../types/LandType';
+import { LAND_TYPES, LandType } from '../types/Land';
 import { HexTileState } from '../types/HexTileState';
 import { BattlefieldSize } from '../types/BattlefieldSize';
 
@@ -30,7 +30,7 @@ describe('useMapState Gold Generation', () => {
         const tiles = Object.values(result.current.gameState.tiles);
 
         // Find tiles with plains land type (should have range 2-4)
-        const plainsTiles = tiles.filter((tile) => tile.landType.id === 'plains');
+        const plainsTiles = tiles.filter((tile) => tile.landType.id === LandType.PLAINS);
         if (plainsTiles.length > 0) {
           goldValues.push(plainsTiles[0].goldPerTurn);
         }

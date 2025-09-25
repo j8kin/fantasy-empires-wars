@@ -36,7 +36,10 @@ export const construct = (
         const oldOwnerDistance = oldOwnerStrongholds
           .map((t) => calculateHexDistance(mapSize, position, t.mapPos))
           .reduce((a, b) => Math.min(a, b), Infinity);
-        if (newStrongholdDistance < oldOwnerDistance) {
+        if (
+          newStrongholdDistance < oldOwnerDistance &&
+          tiles[createTileId(candidate)].buildings.length === 0
+        ) {
           tiles[createTileId(candidate)].controlledBy = owner.id;
         }
       }

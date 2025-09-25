@@ -1,5 +1,5 @@
 import { initializeMap } from '../map/generation/mapGeneration';
-import { LAND_TYPES } from '../types/LandType';
+import { LAND_TYPES } from '../types/Land';
 import { BUILDING_TYPES } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';

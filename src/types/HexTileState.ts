@@ -1,4 +1,4 @@
-import { LandType } from './LandType';
+import { Land } from './Land';
 import { Building } from './Building';
 import { Army } from './Army';
 import { GamePlayer } from './GamePlayer';
@@ -7,7 +7,7 @@ import { Position } from '../map/utils/mapTypes';
 
 export interface HexTileState {
   mapPos: Position;
-  landType: LandType;
+  landType: Land;
   controlledBy: string;
   goldPerTurn: number;
   buildings: Building[];
