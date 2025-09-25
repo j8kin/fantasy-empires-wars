@@ -9,10 +9,8 @@ export interface BorderTileSize {
 }
 
 export interface FantasyBorderFrameProps {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  screenPosition: { x: number; y: number };
+  dimensions: { width: number; height: number };
   children: React.ReactNode;
   primaryButton?: React.ReactElement;
   secondaryButton?: React.ReactElement;
@@ -30,10 +28,8 @@ export const defaultTileSize: BorderTileSize = {
 const cornerSize = (tileSize: BorderTileSize): number => Math.min(tileSize.width, tileSize.height);
 
 const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
-  x,
-  y,
-  width,
-  height,
+  screenPosition,
+  dimensions,
   children,
   primaryButton,
   secondaryButton,
@@ -42,6 +38,8 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
   accessible = false,
   flexibleSizing = false,
 }) => {
+  const { x, y } = screenPosition;
+  const { width, height } = dimensions;
   return (
     <>
       {/* Backdrop */}

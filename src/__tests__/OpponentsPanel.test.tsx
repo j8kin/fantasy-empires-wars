@@ -23,9 +23,8 @@ describe('OpponentsPanel', () => {
     );
 
     // Should render 2 opponents (random generation)
-    const opponentsContainer = screen.getByTestId
-      ? screen.queryByTestId('opponents-panel')
-      : document.querySelector('.opponentsPanelContainer');
+    const opponentsContainer =
+      screen.queryByTestId('opponents-panel') || document.querySelector('.opponentsPanelContainer');
     expect(
       opponentsContainer || document.querySelector('[class*="opponentsPanelContainer"]')
     ).toBeInTheDocument();

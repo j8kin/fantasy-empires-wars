@@ -44,10 +44,10 @@ jest.mock('../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
     return (
       <div
         data-testid="fantasy-border-frame"
-        data-x={props.x}
-        data-y={props.y}
-        data-width={props.width}
-        data-height={props.height}
+        data-x={props.screenPosition?.x}
+        data-y={props.screenPosition?.y}
+        data-width={props.dimensions?.width}
+        data-height={props.dimensions?.height}
         data-accessible={props.accessible}
         data-z-index={props.zIndex}
         data-tile-size-width={props.tileSize?.width}

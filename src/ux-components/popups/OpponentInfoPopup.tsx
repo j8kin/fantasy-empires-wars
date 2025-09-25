@@ -59,10 +59,8 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
   return (
     <div ref={popupRef}>
       <FantasyBorderFrame
-        x={screenPosition.x - 50}
-        y={screenPosition.y + 10}
-        width={dynamicWidth}
-        height={dynamicHeight}
+        screenPosition={{ x: screenPosition.x - 50, y: screenPosition.y + 10 }}
+        dimensions={{ width: dynamicWidth, height: dynamicHeight }}
         tileSize={{ width: 20, height: 70 }}
         accessible={true}
         flexibleSizing={true}

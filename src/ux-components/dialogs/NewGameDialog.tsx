@@ -204,10 +204,8 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
 
   return (
     <FantasyBorderFrame
-      x={dialogX}
-      y={dialogY}
-      width={dialogWidth}
-      height={dialogHeight}
+      screenPosition={{ x: dialogX, y: dialogY }}
+      dimensions={{ width: dialogWidth, height: dialogHeight }}
       primaryButton={<StartGameButton onClick={handleStartGame} />}
       zIndex={1005}
     >

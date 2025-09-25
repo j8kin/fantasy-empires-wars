@@ -52,10 +52,8 @@ const TopPanel: React.FC<TopPanelProps> = ({
 
   return (
     <FantasyBorderFrame
-      x={0}
-      y={0}
-      width={window.innerWidth}
-      height={height}
+      screenPosition={{ x: 0, y: 0 }}
+      dimensions={{ width: window.innerWidth, height }}
       primaryButton={endTurnButton}
       tileSize={tileSize}
       accessible={true}

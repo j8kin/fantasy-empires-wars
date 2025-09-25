@@ -37,10 +37,8 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
 
   return (
     <FantasyBorderFrame
-      x={x}
-      y={y}
-      width={dialogWidth}
-      height={dialogHeight}
+      screenPosition={{ x, y }}
+      dimensions={{ width: dialogWidth, height: dialogHeight }}
       primaryButton={<SaveGameActionButton onClick={handleSave} />}
       secondaryButton={<CancelButton onClick={handleCancel} />}
     >

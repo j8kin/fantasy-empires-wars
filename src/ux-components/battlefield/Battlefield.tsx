@@ -80,10 +80,8 @@ const Battlefield: React.FC<BattlefieldProps> = ({
 
   return (
     <FantasyBorderFrame
-      x={0}
-      y={top}
-      width={window.innerWidth}
-      height={window.innerHeight - top}
+      screenPosition={{ x: 0, y: top }}
+      dimensions={{ width: window.innerWidth, height: window.innerHeight - top }}
       tileSize={tileSize}
       accessible={true}
       zIndex={90}

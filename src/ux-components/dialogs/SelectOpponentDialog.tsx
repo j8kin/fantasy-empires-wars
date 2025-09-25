@@ -43,10 +43,8 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
 
   return (
     <FantasyBorderFrame
-      x={dialogX}
-      y={dialogY}
-      width={dialogWidth}
-      height={dialogHeight}
+      screenPosition={{ x: dialogX, y: dialogY }}
+      dimensions={{ width: dialogWidth, height: dialogHeight }}
       secondaryButton={<CancelButton onClick={onCancel} />}
       zIndex={1010}
     >

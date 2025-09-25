@@ -81,10 +81,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   return (
     <div ref={popupRef}>
       <FantasyBorderFrame
-        x={screenPosition.x + 10}
-        y={screenPosition.y + 10}
-        width={dynamicWidth}
-        height={dynamicHeight}
+        screenPosition={{ x: screenPosition.x + 10, y: screenPosition.y + 10 }}
+        dimensions={{ width: dynamicWidth, height: dynamicHeight }}
         tileSize={{ width: 20, height: 70 }}
         accessible={true}
         flexibleSizing={true}
@@ -94,7 +92,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
             <h3 className={styles.title}>{displayLandType.name}</h3>
           </div>
 
-          <div className={styles.characteristics}>
+          <div className={styles.characteriFantasyBorderFramestics}>
             <div className={styles.row}>
               <span className={styles.label}>Alignment:</span>
               <span
