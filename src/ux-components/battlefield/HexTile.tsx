@@ -18,9 +18,14 @@ import volcanoImg from '../../assets/map-tiles/volcano.png';
 interface HexTileProps {
   battlefieldPosition: Position;
   gameState: GameState;
+  landHideModePlayerId?: string | null;
 }
 
-const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, gameState }) => {
+const HexTile: React.FC<HexTileProps> = ({
+  battlefieldPosition,
+  gameState,
+  landHideModePlayerId,
+}) => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
 
@@ -67,19 +72,30 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, gameState }) => 
     setShowPopup(false);
   };
 
+  // Determine if land image should be hidden
+  // Hide land images only for tiles controlled by the selected player (to show their territories clearly)
+  // Uncontrolled tiles and other players' tiles should show normally
+  const shouldHideLandImage =
+    landHideModePlayerId && battlefieldTile.controlledBy === landHideModePlayerId;
+
+  // Create style object for the hex tile
+  const tileStyle: React.CSSProperties = {
+    backgroundColor: getBackgroundColor(),
+  };
+
   return (
     <>
       <div
         className={styles.hexTile}
         title={`${battlefieldTile.landType.name} (${battlefieldTile.landType.alignment})`}
         onContextMenu={handleRightClick}
-        style={{ backgroundColor: getBackgroundColor() }}
+        style={tileStyle}
       >
-        {imageSrc ? (
+        {!shouldHideLandImage && imageSrc ? (
           <img src={imageSrc} alt={altText} className={styles.hexTileImg} />
-        ) : (
+        ) : !shouldHideLandImage && !imageSrc ? (
           <p>no image</p>
-        )}
+        ) : null}
       </div>
       {showPopup && (
         <LandCharacteristicsPopup

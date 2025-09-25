@@ -10,6 +10,7 @@ interface BattlefieldProps {
   top: number;
   tileSize: BorderTileSize;
   gameState: GameState;
+  landHideModePlayerId?: string | null;
 }
 
 const getHexTileSize = (battlefieldSize: BattlefieldSize): { width: number; height: number } => {
@@ -40,7 +41,12 @@ const getHexTileSize = (battlefieldSize: BattlefieldSize): { width: number; heig
   return { width, height };
 };
 
-const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, gameState }) => {
+const Battlefield: React.FC<BattlefieldProps> = ({
+  top,
+  tileSize,
+  gameState,
+  landHideModePlayerId,
+}) => {
   const { rows, cols } = getBattlefieldDimensions(gameState.mapSize);
   const { width: tileWidth, height: tileHeight } = getHexTileSize(gameState.mapSize);
   const hexGrid = [];
@@ -55,7 +61,14 @@ const Battlefield: React.FC<BattlefieldProps> = ({ top, tileSize, gameState }) =
       const mapPosition = { row: row, col: col };
       const tileId = createTileId(mapPosition);
 
-      hexRow.push(<HexTile key={tileId} battlefieldPosition={mapPosition} gameState={gameState} />);
+      hexRow.push(
+        <HexTile
+          key={tileId}
+          battlefieldPosition={mapPosition}
+          gameState={gameState}
+          landHideModePlayerId={landHideModePlayerId}
+        />
+      );
     }
 
     hexGrid.push(

@@ -26,6 +26,7 @@ const MainView: React.FC = () => {
   >(null);
   const [allowEmptyPlayer, setAllowEmptyPlayer] = useState<boolean>(true);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [landHideModePlayerId, setLandHideModePlayerId] = useState<string | null>(null);
 
   // Initialize the game state at the MainView level
   const { gameState, updateGameConfig } = useMapState('medium');
@@ -63,12 +64,14 @@ const MainView: React.FC = () => {
     (opponent: OpponentWithDiplomacy, screenPosition: { x: number; y: number }) => {
       setSelectedOpponent(opponent);
       setOpponentScreenPosition(screenPosition);
+      setLandHideModePlayerId(opponent.id);
     },
     []
   );
 
   const handleCloseOpponentInfo = useCallback(() => {
     setSelectedOpponent(null);
+    setLandHideModePlayerId(null);
   }, []);
 
   const handleShowSelectOpponentDialog = useCallback(
@@ -118,6 +121,7 @@ const MainView: React.FC = () => {
         top={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}
         gameState={gameState}
+        landHideModePlayerId={landHideModePlayerId}
         key={`map-${gameState.mapSize}-${gameStarted}`}
       />
 
