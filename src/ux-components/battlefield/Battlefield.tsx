@@ -4,16 +4,16 @@ import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { GameState, createTileId } from '../../types/HexTileState';
-import FantasyBorderFrame, { BorderTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
+import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 
-interface BattlefieldProps {
-  top: number;
-  tileSize: BorderTileSize;
+export interface BattlefieldProps {
+  topPanelHeight: number;
+  tileSize: Dimensions;
   gameState: GameState;
-  landHideModePlayerId?: string | null;
+  landHideModePlayerId?: string;
 }
 
-const getHexTileSize = (battlefieldSize: BattlefieldSize): { width: number; height: number } => {
+const getHexTileSize = (battlefieldSize: BattlefieldSize): Dimensions => {
   // Base size for small map, decrease as map size increases
   const baseWidth = 100;
   let scaleFactor: number;
@@ -42,7 +42,7 @@ const getHexTileSize = (battlefieldSize: BattlefieldSize): { width: number; heig
 };
 
 const Battlefield: React.FC<BattlefieldProps> = ({
-  top,
+  topPanelHeight,
   tileSize,
   gameState,
   landHideModePlayerId,
@@ -80,9 +80,9 @@ const Battlefield: React.FC<BattlefieldProps> = ({
 
   return (
     <FantasyBorderFrame
-      screenPosition={{ x: 0, y: top }}
-      dimensions={{ width: window.innerWidth, height: window.innerHeight - top }}
-      tileSize={tileSize}
+      screenPosition={{ x: 0, y: topPanelHeight }}
+      windowDimensions={{ width: window.innerWidth, height: window.innerHeight - topPanelHeight }}
+      tileDimensions={tileSize}
       accessible={true}
       zIndex={90}
     >

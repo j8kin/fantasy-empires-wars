@@ -3,11 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SelectOpponentDialog from '../ux-components/dialogs/SelectOpponentDialog';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { EmptyPlayer } from '../ux-components/avatars/PlayerAvatar';
+import { EMPTY_PLAYER } from '../ux-components/avatars/PlayerAvatar';
+import { FantasyBorderFrameProps } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 
 // Mock FantasyBorderFrame to avoid complex rendering issues
 jest.mock('../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
-  return function MockFantasyBorderFrame({ children, secondaryButton }: any) {
+  return function MockFantasyBorderFrame({ children, secondaryButton }: FantasyBorderFrameProps) {
     return (
       <div data-testid="fantasy-border-frame">
         {children}
@@ -59,7 +60,7 @@ describe('SelectOpponentDialog', () => {
       />
     );
 
-    const emptyPlayerElements = screen.getAllByText(EmptyPlayer.name);
+    const emptyPlayerElements = screen.getAllByText(EMPTY_PLAYER.name);
     expect(emptyPlayerElements.length).toBeGreaterThan(0);
   });
 
@@ -73,7 +74,7 @@ describe('SelectOpponentDialog', () => {
       />
     );
 
-    expect(screen.queryByText(EmptyPlayer.name)).not.toBeInTheDocument();
+    expect(screen.queryByText(EMPTY_PLAYER.name)).not.toBeInTheDocument();
   });
 
   it('filters out excluded players from available options', () => {
@@ -126,12 +127,12 @@ describe('SelectOpponentDialog', () => {
       />
     );
 
-    const emptyPlayerElements = screen.getAllByText(EmptyPlayer.name);
+    const emptyPlayerElements = screen.getAllByText(EMPTY_PLAYER.name);
     const clickableElement = emptyPlayerElements.find((el) => el.closest('.playerListItem'));
     if (clickableElement) {
       fireEvent.click(clickableElement);
     }
-    expect(mockOnSelect).toHaveBeenCalledWith(EmptyPlayer);
+    expect(mockOnSelect).toHaveBeenCalledWith(EMPTY_PLAYER);
   });
 
   it('renders cancel button and calls onCancel when clicked', () => {
@@ -159,7 +160,7 @@ describe('SelectOpponentDialog', () => {
     );
 
     // EmptyPlayer should be selected by default as it's first in the list
-    const selectedPlayerElements = screen.getAllByText(EmptyPlayer.name);
+    const selectedPlayerElements = screen.getAllByText(EMPTY_PLAYER.name);
     const selectedPlayerElement = selectedPlayerElements[0].closest('.playerListItem');
     expect(selectedPlayerElement).toHaveClass('selected');
   });
@@ -187,7 +188,7 @@ describe('SelectOpponentDialog', () => {
     );
 
     // Should show all predefined players plus EmptyPlayer
-    const emptyPlayerElements = screen.getAllByText(EmptyPlayer.name);
+    const emptyPlayerElements = screen.getAllByText(EMPTY_PLAYER.name);
     expect(emptyPlayerElements.length).toBeGreaterThan(0);
     PREDEFINED_PLAYERS.forEach((player) => {
       expect(screen.getByText(player.name)).toBeInTheDocument();
@@ -217,7 +218,6 @@ describe('SelectOpponentDialog', () => {
 
   it('handles window undefined scenario for SSR compatibility', () => {
     // Mock window properties as undefined
-    const originalWindow = global.window;
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,

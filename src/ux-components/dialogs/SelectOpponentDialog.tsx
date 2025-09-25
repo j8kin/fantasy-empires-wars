@@ -3,9 +3,9 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import CancelButton from '../buttons/CancelButton';
-import { EmptyPlayer } from '../avatars/PlayerAvatar';
+import { EMPTY_PLAYER } from '../avatars/PlayerAvatar';
 
-interface SelectOpponentDialogProps {
+export interface SelectOpponentDialogProps {
   excludedPlayerIds: string[];
   onSelect: (player: GamePlayer) => void;
   onCancel: () => void;
@@ -19,7 +19,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   allowEmptyPlayer = true,
 }) => {
   const availablePlayers = [
-    ...(allowEmptyPlayer ? [EmptyPlayer] : []),
+    ...(allowEmptyPlayer ? [EMPTY_PLAYER] : []),
     ...PREDEFINED_PLAYERS.filter((player) => !excludedPlayerIds.includes(player.id)),
   ];
 
@@ -44,7 +44,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   return (
     <FantasyBorderFrame
       screenPosition={{ x: dialogX, y: dialogY }}
-      dimensions={{ width: dialogWidth, height: dialogHeight }}
+      windowDimensions={{ width: dialogWidth, height: dialogHeight }}
       secondaryButton={<CancelButton onClick={onCancel} />}
       zIndex={1010}
     >

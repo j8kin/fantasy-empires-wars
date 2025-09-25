@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { EmptyPlayer } from '../ux-components/avatars/PlayerAvatar';
+import { EMPTY_PLAYER } from '../ux-components/avatars/PlayerAvatar';
 
 describe('NewGameWindow', () => {
   const mockOnStartGame = jest.fn();
@@ -161,7 +161,7 @@ describe('NewGameWindow', () => {
           onStartGame={(config) => {
             // Verify that EmptyPlayer is filtered out from opponents
             const hasEmptyPlayer = config.opponents?.some(
-              (opponent) => opponent.id === EmptyPlayer.id
+              (opponent) => opponent.id === EMPTY_PLAYER.id
             );
             expect(hasEmptyPlayer).toBe(false);
             mockOnStartGame(config);
@@ -169,7 +169,7 @@ describe('NewGameWindow', () => {
           }}
           onShowSelectOpponentDialog={(excludedIds, onSelect) => {
             // Simulate selecting EmptyPlayer to "delete" an opponent
-            onSelect(EmptyPlayer);
+            onSelect(EMPTY_PLAYER);
           }}
         />
       );

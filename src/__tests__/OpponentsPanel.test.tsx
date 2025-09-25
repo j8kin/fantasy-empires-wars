@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import OpponentsPanel from '../ux-components/opponents-panel/OpponentsPanel';
-import { EmptyPlayer } from '../ux-components/avatars/PlayerAvatar';
+import { EMPTY_PLAYER } from '../ux-components/avatars/PlayerAvatar';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 
 describe('OpponentsPanel', () => {
@@ -33,7 +33,7 @@ describe('OpponentsPanel', () => {
   it('filters out EmptyPlayer from provided opponents', () => {
     const providedOpponents = [
       PREDEFINED_PLAYERS[1],
-      EmptyPlayer, // This should be filtered out
+      EMPTY_PLAYER, // This should be filtered out
       PREDEFINED_PLAYERS[2],
     ];
 
@@ -57,7 +57,7 @@ describe('OpponentsPanel', () => {
   });
 
   it('falls back to random opponents when all provided opponents are EmptyPlayer', () => {
-    const providedOpponents = [EmptyPlayer, EmptyPlayer];
+    const providedOpponents = [EMPTY_PLAYER, EMPTY_PLAYER];
 
     render(
       <OpponentsPanel
@@ -84,9 +84,9 @@ describe('OpponentsPanel', () => {
   it('works correctly with mixed valid opponents and EmptyPlayer', () => {
     const providedOpponents = [
       PREDEFINED_PLAYERS[1],
-      EmptyPlayer,
+      EMPTY_PLAYER,
       PREDEFINED_PLAYERS[2],
-      EmptyPlayer,
+      EMPTY_PLAYER,
       PREDEFINED_PLAYERS[3],
     ];
 
@@ -176,7 +176,7 @@ describe('OpponentsPanel', () => {
         <OpponentsPanel
           selectedPlayer={testPlayer}
           numberOfOpponents={2}
-          opponents={[EmptyPlayer, EmptyPlayer, EmptyPlayer]}
+          opponents={[EMPTY_PLAYER, EMPTY_PLAYER, EMPTY_PLAYER]}
           onOpponentSelect={mockOnOpponentSelect}
         />
       );
@@ -190,7 +190,7 @@ describe('OpponentsPanel', () => {
         <OpponentsPanel
           selectedPlayer={testPlayer}
           numberOfOpponents={5}
-          opponents={[EmptyPlayer]}
+          opponents={[EMPTY_PLAYER]}
           onOpponentSelect={mockOnOpponentSelect}
         />
       );
@@ -204,12 +204,12 @@ describe('OpponentsPanel', () => {
       const testCases = [
         {
           description: 'mostly EmptyPlayer with few valid',
-          opponents: [PREDEFINED_PLAYERS[1], EmptyPlayer, EmptyPlayer, EmptyPlayer],
+          opponents: [PREDEFINED_PLAYERS[1], EMPTY_PLAYER, EMPTY_PLAYER, EMPTY_PLAYER],
           expectedValidOpponents: 1,
         },
         {
           description: 'equal mix of valid and EmptyPlayer',
-          opponents: [PREDEFINED_PLAYERS[1], EmptyPlayer, PREDEFINED_PLAYERS[2], EmptyPlayer],
+          opponents: [PREDEFINED_PLAYERS[1], EMPTY_PLAYER, PREDEFINED_PLAYERS[2], EMPTY_PLAYER],
           expectedValidOpponents: 2,
         },
         {
@@ -218,7 +218,7 @@ describe('OpponentsPanel', () => {
             PREDEFINED_PLAYERS[1],
             PREDEFINED_PLAYERS[2],
             PREDEFINED_PLAYERS[3],
-            EmptyPlayer,
+            EMPTY_PLAYER,
           ],
           expectedValidOpponents: 3,
         },

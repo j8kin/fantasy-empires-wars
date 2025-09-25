@@ -3,11 +3,6 @@ import CornerBorder from './CornerBorder';
 import HorizontalBorder from './HorizontalBorder';
 import VerticalBorder from './VerticalBorder';
 
-export interface BorderTileSize {
-  width: number;
-  height: number;
-}
-
 /**
  * Top Left position of the window/dialog/popup
  */
@@ -16,38 +11,47 @@ export interface ScreenPosition {
   y: number;
 }
 
+/**
+ * Width and height of the window/dialog/popup
+ */
+export interface Dimensions {
+  width: number;
+  height: number;
+}
+
 export interface FantasyBorderFrameProps {
   screenPosition: ScreenPosition;
-  dimensions: BorderTileSize;
+  windowDimensions: Dimensions;
   children: React.ReactNode;
   primaryButton?: React.ReactElement;
   secondaryButton?: React.ReactElement;
-  tileSize?: BorderTileSize;
+  tileDimensions?: Dimensions;
   zIndex?: number;
   accessible?: boolean;
   flexibleSizing?: boolean;
 }
 
 // 50*180 since base tile is vertical
-export const defaultTileSize: BorderTileSize = {
+export const defaultTileDimensions: Dimensions = {
   width: 50,
   height: 180,
 };
-const cornerSize = (tileSize: BorderTileSize): number => Math.min(tileSize.width, tileSize.height);
+const cornerSize = (tileDimensions: Dimensions): number =>
+  Math.min(tileDimensions.width, tileDimensions.height);
 
 const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
   screenPosition,
-  dimensions,
+  windowDimensions,
   children,
   primaryButton,
   secondaryButton,
-  tileSize = defaultTileSize,
+  tileDimensions = defaultTileDimensions,
   zIndex = 1000,
   accessible = false,
   flexibleSizing = false,
 }) => {
   const { x, y } = screenPosition;
-  const { width, height } = dimensions;
+  const { width, height } = windowDimensions;
   return (
     <>
       {/* Backdrop */}
@@ -78,28 +82,56 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
         }}
       >
         {/* Corner ornaments */}
-        <CornerBorder position="top-left" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
-        <CornerBorder position="top-right" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
-        <CornerBorder position="bottom-left" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
-        <CornerBorder position="bottom-right" size={cornerSize(tileSize)} zIndex={zIndex + 1} />
+        <CornerBorder position="top-left" size={cornerSize(tileDimensions)} zIndex={zIndex + 1} />
+        <CornerBorder position="top-right" size={cornerSize(tileDimensions)} zIndex={zIndex + 1} />
+        <CornerBorder
+          position="bottom-left"
+          size={cornerSize(tileDimensions)}
+          zIndex={zIndex + 1}
+        />
+        <CornerBorder
+          position="bottom-right"
+          size={cornerSize(tileDimensions)}
+          zIndex={zIndex + 1}
+        />
 
         {/* Horizontal border */}
-        <HorizontalBorder side="top" tileSize={tileSize} length={width} zIndex={zIndex} />
-        <HorizontalBorder side="bottom" tileSize={tileSize} length={width} zIndex={zIndex} />
+        <HorizontalBorder
+          side="top"
+          tileDimensions={tileDimensions}
+          length={width}
+          zIndex={zIndex}
+        />
+        <HorizontalBorder
+          side="bottom"
+          tileDimensions={tileDimensions}
+          length={width}
+          zIndex={zIndex}
+        />
 
         {/* Vertical border */}
-        <VerticalBorder side="left" tileSize={tileSize} length={height} zIndex={zIndex} />
-        <VerticalBorder side="right" tileSize={tileSize} length={height} zIndex={zIndex} />
+        <VerticalBorder
+          side="left"
+          tileDimensions={tileDimensions}
+          length={height}
+          zIndex={zIndex}
+        />
+        <VerticalBorder
+          side="right"
+          tileDimensions={tileDimensions}
+          length={height}
+          zIndex={zIndex}
+        />
 
         {/* Dialog content area */}
         <div
           style={{
             position: 'absolute',
-            left: cornerSize(tileSize),
-            top: cornerSize(tileSize),
-            width: width - cornerSize(tileSize) * 2,
-            height: flexibleSizing ? 'auto' : height - cornerSize(tileSize) * 2,
-            maxHeight: flexibleSizing ? height - cornerSize(tileSize) * 2 : undefined,
+            left: cornerSize(tileDimensions),
+            top: cornerSize(tileDimensions),
+            width: width - cornerSize(tileDimensions) * 2,
+            height: flexibleSizing ? 'auto' : height - cornerSize(tileDimensions) * 2,
+            maxHeight: flexibleSizing ? height - cornerSize(tileDimensions) * 2 : undefined,
             backgroundColor: !accessible ? 'rgba(0, 0, 0, 0.8)' : undefined,
             padding: !accessible ? '20px' : undefined,
             boxSizing: 'border-box',
@@ -115,10 +147,10 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
           <div
             style={{
               position: 'absolute',
-              left: cornerSize(tileSize),
+              left: cornerSize(tileDimensions),
               bottom: 0,
-              width: width - cornerSize(tileSize) * 2,
-              height: Math.min(Math.min(tileSize.height, tileSize.width), 60),
+              width: width - cornerSize(tileDimensions) * 2,
+              height: Math.min(Math.min(tileDimensions.height, tileDimensions.width), 60),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

@@ -4,6 +4,8 @@ import { initializeMap } from '../map/generation/mapGeneration';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { Position } from '../map/utils/mapTypes';
 import { GamePlayer } from '../types/GamePlayer';
+import { Building } from '../types/Building';
+import { Army } from '../types/Army';
 
 export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
   const [gameState, setGameState] = useState<GameState>(() => ({
@@ -34,7 +36,7 @@ export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
     [updateTile]
   );
 
-  const addBuildingToTile = useCallback((tileId: string, building: any) => {
+  const addBuildingToTile = useCallback((tileId: string, building: Building) => {
     setGameState((prev) => {
       const tile = prev.tiles[tileId];
       if (!tile) return prev;
@@ -56,7 +58,7 @@ export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
   }, []);
 
   const updateTileArmy = useCallback(
-    (tileId: string, army: any) => {
+    (tileId: string, army: Army) => {
       updateTile(tileId, { army });
     },
     [updateTile]

@@ -3,10 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import TopPanel from '../ux-components/top-panel/TopPanel';
 import { GameState } from '../types/HexTileState';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { defaultTileDimensions } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 
 const defaultProps = {
   height: 120,
   tileSize: { width: 50, height: 180 },
+  tileDimensions: defaultTileDimensions,
 };
 const gameState: GameState = {
   tiles: {},
@@ -180,7 +182,7 @@ describe('TopPanel Component', () => {
 
   it('handles different tile sizes correctly', () => {
     const smallTileSize = { width: 25, height: 90 };
-    render(<TopPanel {...defaultProps} tileSize={smallTileSize} />);
+    render(<TopPanel {...defaultProps} tileDimensions={smallTileSize} />);
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 

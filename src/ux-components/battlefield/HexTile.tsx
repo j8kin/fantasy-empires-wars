@@ -18,7 +18,7 @@ import volcanoImg from '../../assets/map-tiles/volcano.png';
 interface HexTileProps {
   battlefieldPosition: Position;
   gameState: GameState;
-  landHideModePlayerId?: string | null;
+  landHideModePlayerId?: string;
 }
 
 const HexTile: React.FC<HexTileProps> = ({

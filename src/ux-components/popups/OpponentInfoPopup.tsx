@@ -2,9 +2,8 @@ import React from 'react';
 import { GamePlayer } from '../../types/GamePlayer';
 import { getAlignmentColor } from '../../types/Alignment';
 import PlayerAvatar from '../avatars/PlayerAvatar';
-import { ScreenPosition } from '../fantasy-border-frame/FantasyBorderFrame';
 import styles from '../dialogs/css/OpponentInfoDialog.module.css';
-import PopupWrapper from './PopupWrapper';
+import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 export type DiplomacyStatus = 'No Treaty' | 'Peace' | 'War';
 
@@ -12,14 +11,12 @@ export interface OpponentWithDiplomacy extends GamePlayer {
   diplomacyStatus: DiplomacyStatus;
 }
 
-interface OpponentInfoProps {
-  opponent: OpponentWithDiplomacy | null;
-  screenPosition: ScreenPosition;
-  onClose: () => void;
+export interface OpponentInfoProps extends PopupProps {
+  opponent?: OpponentWithDiplomacy;
 }
 
 const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition, onClose }) => {
-  if (!opponent) return null;
+  if (opponent == null) return null;
 
   // Calculate dynamic size based on content (larger than LandCharacteristicsPopup)
   const headerHeight = 60; // Header with avatar and name

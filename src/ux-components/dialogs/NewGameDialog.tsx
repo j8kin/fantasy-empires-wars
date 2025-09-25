@@ -3,13 +3,13 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { PlayerColorName, PLAYER_COLORS } from '../../types/PlayerColors';
-import PlayerAvatar, { EmptyPlayer } from '../avatars/PlayerAvatar';
+import PlayerAvatar, { EMPTY_PLAYER } from '../avatars/PlayerAvatar';
 import StartGameButton from '../buttons/StartGameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import styles from './css/NewGameDialog.module.css';
 import { GameState } from '../../types/HexTileState';
 
-interface NewGameDialogProps {
+export interface NewGameDialogProps {
   onStartGame: (config: GameState) => void;
   onShowSelectOpponentDialog: (
     excludedPlayerIds: string[],
@@ -180,7 +180,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
       opponentSelectionMode === 'random'
         ? (selectedOpponents as GamePlayer[])
         : (selectedOpponents.filter(
-            (opponent) => opponent !== null && opponent.id !== EmptyPlayer.id
+            (opponent) => opponent !== null && opponent.id !== EMPTY_PLAYER.id
           ) as GamePlayer[]);
 
     const config: GameState = {
@@ -205,7 +205,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
   return (
     <FantasyBorderFrame
       screenPosition={{ x: dialogX, y: dialogY }}
-      dimensions={{ width: dialogWidth, height: dialogHeight }}
+      windowDimensions={{ width: dialogWidth, height: dialogHeight }}
       primaryButton={<StartGameButton onClick={handleStartGame} />}
       zIndex={1005}
     >
@@ -349,7 +349,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
                     )
                   ) : (
                     <PlayerAvatar
-                      player={EmptyPlayer}
+                      player={EMPTY_PLAYER}
                       size={avatarSize}
                       shape="circle"
                       borderColor="#8b7355"

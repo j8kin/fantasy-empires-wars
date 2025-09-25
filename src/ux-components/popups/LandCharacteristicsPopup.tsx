@@ -1,17 +1,13 @@
 import React from 'react';
 import { getAlignmentColor } from '../../types/Alignment';
-import { createTileId, GameState, getPlayerById } from '../../types/HexTileState';
+import { createTileId, getPlayerById } from '../../types/HexTileState';
 import styles from '../battlefield/css/LandCharacteristicsPopup.module.css';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../../map/utils/mapTypes';
-import { ScreenPosition } from '../fantasy-border-frame/FantasyBorderFrame';
-import PopupWrapper from './PopupWrapper';
+import PopupWrapper, { PopupProps } from './PopupWrapper';
 
-interface LandCharacteristicsPopupProps {
+interface LandCharacteristicsPopupProps extends PopupProps {
   battlefieldPosition: Position;
-  gameState: GameState;
-  screenPosition: ScreenPosition;
-  onClose: () => void;
 }
 
 const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
@@ -20,7 +16,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   screenPosition,
   onClose,
 }) => {
-  const battlefieldTile = gameState.tiles[createTileId(battlefieldPosition)];
+  const battlefieldTile = gameState!.tiles[createTileId(battlefieldPosition)];
   const displayLandType = battlefieldTile.landType;
   if (!displayLandType) return null;
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { GamePlayer } from '../../types/GamePlayer';
 import styles from './css/PlayerAvatar.module.css';
 
-export const EmptyPlayer: GamePlayer = {
+export const EMPTY_PLAYER: GamePlayer = {
   id: 'empty',
   name: 'Empty',
   avatar: '',
@@ -42,7 +42,7 @@ const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
   const containerClassName = `${styles.container} ${styles[`container--${shape}`]} ${className || ''}`;
 
   // Check if this is an empty player
-  if (player.id === EmptyPlayer.id) {
+  if (player.id === EMPTY_PLAYER.id) {
     return (
       <div style={dynamicStyles} className={containerClassName}>
         <div

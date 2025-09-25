@@ -1,6 +1,8 @@
+import { Dimensions } from './FantasyBorderFrame';
+
 export interface BorderProps {
   side: 'left' | 'right' | 'top' | 'bottom';
-  tileSize: { width: number; height: number };
+  tileDimensions: Dimensions;
   length: number;
   zIndex: number;
 }

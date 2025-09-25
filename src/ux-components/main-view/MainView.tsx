@@ -9,13 +9,15 @@ import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import { GamePlayer } from '../../types/GamePlayer';
 import { GameState } from '../../types/HexTileState';
 import { useMapState } from '../../hooks/useMapState';
-import { defaultTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
+import { defaultTileDimensions, ScreenPosition } from '../fantasy-border-frame/FantasyBorderFrame';
 
 const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
-  const [selectedOpponent, setSelectedOpponent] = useState<OpponentWithDiplomacy | null>(null);
-  const [opponentScreenPosition, setOpponentScreenPosition] = useState<{ x: number; y: number }>({
+  const [selectedOpponent, setSelectedOpponent] = useState<OpponentWithDiplomacy | undefined>(
+    undefined
+  );
+  const [opponentScreenPosition, setOpponentScreenPosition] = useState<ScreenPosition>({
     x: 0,
     y: 0,
   });
@@ -26,13 +28,13 @@ const MainView: React.FC = () => {
   >(null);
   const [allowEmptyPlayer, setAllowEmptyPlayer] = useState<boolean>(true);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [landHideModePlayerId, setLandHideModePlayerId] = useState<string | null>(null);
+  const [landHideModePlayerId, setLandHideModePlayerId] = useState<string | undefined>(undefined);
 
   // Initialize the game state at the MainView level
   const { gameState, updateGameConfig } = useMapState('medium');
 
   const TOP_PANEL_HEIGHT = 300;
-  const TILE_SIZE = defaultTileSize;
+  const TILE_SIZE = defaultTileDimensions;
 
   const handleStartGame = useCallback(
     (config: GameState) => {
@@ -70,8 +72,8 @@ const MainView: React.FC = () => {
   );
 
   const handleCloseOpponentInfo = useCallback(() => {
-    setSelectedOpponent(null);
-    setLandHideModePlayerId(null);
+    setSelectedOpponent(undefined);
+    setLandHideModePlayerId(undefined);
   }, []);
 
   const handleShowSelectOpponentDialog = useCallback(
@@ -109,7 +111,7 @@ const MainView: React.FC = () => {
       {/* Content components */}
       <TopPanel
         height={TOP_PANEL_HEIGHT}
-        tileSize={TILE_SIZE}
+        tileDimensions={TILE_SIZE}
         gameState={gameState}
         onNewGame={handleShowStartWindow}
         onLoadGame={() => console.log('Load Game functionality to be implemented')}
@@ -118,7 +120,7 @@ const MainView: React.FC = () => {
         onOpponentSelect={handleShowOpponentInfo}
       />
       <Battlefield
-        top={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
+        topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}
         gameState={gameState}
         landHideModePlayerId={landHideModePlayerId}

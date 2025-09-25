@@ -24,11 +24,11 @@ export interface GameState {
 }
 
 // Helper function to get player by ID from GameState
-export const getPlayerById = (gameState: GameState, playerId: string): GamePlayer | undefined => {
-  if (gameState.selectedPlayer?.id === playerId) {
+export const getPlayerById = (gameState?: GameState, playerId?: string): GamePlayer | undefined => {
+  if (playerId != null && gameState?.selectedPlayer?.id === playerId) {
     return gameState.selectedPlayer;
   }
-  return gameState.opponents?.find((player) => player.id === playerId);
+  return gameState?.opponents?.find((player) => player.id === playerId);
 };
 
 export const createTileId = (position: Position): string => `${position.row}-${position.col}`;

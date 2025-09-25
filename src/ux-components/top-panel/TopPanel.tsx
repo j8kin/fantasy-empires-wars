@@ -5,27 +5,27 @@ import GameControl from '../game-controls/GameControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
-import FantasyBorderFrame, { BorderTileSize } from '../fantasy-border-frame/FantasyBorderFrame';
+import FantasyBorderFrame, {
+  Dimensions,
+  ScreenPosition,
+} from '../fantasy-border-frame/FantasyBorderFrame';
 import EndOfTurnButton from '../buttons/EndOfTurnButton';
 import styles from './css/TopPanel.module.css';
 
-interface TopPanelProps {
+export interface TopPanelProps {
   height: number;
-  tileSize: BorderTileSize;
+  tileDimensions: Dimensions;
   gameState?: GameState;
   onNewGame?: () => void;
   onLoadGame?: () => void;
   onOpenSaveDialog?: () => void;
   onEndTurn?: () => void;
-  onOpponentSelect?: (
-    opponent: OpponentWithDiplomacy,
-    screenPosition: { x: number; y: number }
-  ) => void;
+  onOpponentSelect?: (opponent: OpponentWithDiplomacy, screenPosition: ScreenPosition) => void;
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({
   height,
-  tileSize,
+  tileDimensions,
   gameState,
   onNewGame,
   onLoadGame,
@@ -53,9 +53,9 @@ const TopPanel: React.FC<TopPanelProps> = ({
   return (
     <FantasyBorderFrame
       screenPosition={{ x: 0, y: 0 }}
-      dimensions={{ width: window.innerWidth, height }}
+      windowDimensions={{ width: window.innerWidth, height }}
       primaryButton={endTurnButton}
-      tileSize={tileSize}
+      tileDimensions={tileDimensions}
       accessible={true}
       zIndex={100}
     >
@@ -71,7 +71,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
             <div className={styles.playerInfoContainer}>
               <PlayerAvatar
                 player={selectedPlayer}
-                size={height - Math.min(tileSize.height, tileSize.width) * 2 - 10}
+                size={height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10}
                 shape="rectangle"
                 borderColor={selectedPlayer.color}
               />

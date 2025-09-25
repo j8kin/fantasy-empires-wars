@@ -1,11 +1,18 @@
 import React, { useEffect, useRef } from 'react';
-import FantasyBorderFrame, { ScreenPosition } from '../fantasy-border-frame/FantasyBorderFrame';
+import FantasyBorderFrame, {
+  Dimensions,
+  ScreenPosition,
+} from '../fantasy-border-frame/FantasyBorderFrame';
+import { GameState } from '../../types/HexTileState';
 
-interface PopupWrapperProps {
+export interface PopupProps {
   screenPosition: ScreenPosition;
-  dimensions: { width: number; height: number };
-  accessible?: boolean;
+  gameState?: GameState;
   onClose: () => void;
+}
+interface PopupWrapperProps extends PopupProps {
+  dimensions: Dimensions;
+  accessible?: boolean;
   children: React.ReactNode;
 }
 
@@ -44,8 +51,8 @@ const PopupWrapper: React.FC<PopupWrapperProps> = ({
     <div ref={popupRef}>
       <FantasyBorderFrame
         screenPosition={screenPosition}
-        dimensions={dimensions}
-        tileSize={{ width: 20, height: 70 }}
+        windowDimensions={dimensions}
+        tileDimensions={{ width: 20, height: 70 }}
         accessible={accessible}
         flexibleSizing={true}
       >

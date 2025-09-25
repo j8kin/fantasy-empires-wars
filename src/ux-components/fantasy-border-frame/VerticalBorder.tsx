@@ -1,9 +1,10 @@
 import React from 'react';
 import CelticPatternVertical from '../../assets/border/CelticPatternVertical.png';
 import { BorderProps } from './BorderProps';
+import { Dimensions } from './FantasyBorderFrame';
 
-const VerticalBorder: React.FC<BorderProps> = ({ side, tileSize, length, zIndex }) => {
-  const amount = Math.ceil(length / tileSize.height);
+const VerticalBorder: React.FC<BorderProps> = ({ side, tileDimensions, length, zIndex }) => {
+  const amount = Math.ceil(length / tileDimensions.height);
   const images = Array.from({ length: amount }).map((_, index) => (
     <img
       key={`${side}-${index}`}
@@ -13,11 +14,11 @@ const VerticalBorder: React.FC<BorderProps> = ({ side, tileSize, length, zIndex 
         position: 'absolute',
 
         // Place tiles along X-axis
-        top: index * tileSize.height,
+        top: index * tileDimensions.height,
 
         // Swap dimensions after rotation
-        width: tileSize.width,
-        height: tileSize.height,
+        width: tileDimensions.width,
+        height: tileDimensions.height,
       }}
     />
   ));
@@ -27,7 +28,7 @@ const VerticalBorder: React.FC<BorderProps> = ({ side, tileSize, length, zIndex 
     [side]: 0,
     top: 0,
     height: length,
-    width: Math.min(tileSize.width, tileSize.height),
+    width: Math.min(tileDimensions.width, tileDimensions.height),
     display: 'flex',
     flexDirection: 'column',
     pointerEvents: 'none',

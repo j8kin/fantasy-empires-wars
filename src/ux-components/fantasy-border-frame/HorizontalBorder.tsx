@@ -2,8 +2,8 @@ import React from 'react';
 import CelticPatternVertical from '../../assets/border/CelticPatternVertical.png';
 import { BorderProps } from './BorderProps';
 
-const HorizontalBorder: React.FC<BorderProps> = ({ side, tileSize, length, zIndex }) => {
-  const amount = Math.ceil(length / tileSize.height);
+const HorizontalBorder: React.FC<BorderProps> = ({ side, tileDimensions, length, zIndex }) => {
+  const amount = Math.ceil(length / tileDimensions.height);
   const images = Array.from({ length: amount }).map((_, index) => (
     <img
       key={`${side}-${index}`}
@@ -11,14 +11,14 @@ const HorizontalBorder: React.FC<BorderProps> = ({ side, tileSize, length, zInde
       alt={`${side.charAt(0).toUpperCase() + side.slice(1)} Border`}
       style={{
         position: 'absolute',
-        [side]: side === 'top' ? 0 : tileSize.width - tileSize.height,
+        [side]: side === 'top' ? 0 : tileDimensions.width - tileDimensions.height,
 
         // Place tiles along X-axis
-        left: index * tileSize.height,
+        left: index * tileDimensions.height,
 
         // Swap dimensions after rotation
-        width: tileSize.width,
-        height: tileSize.height,
+        width: tileDimensions.width,
+        height: tileDimensions.height,
 
         transform: 'rotate(270deg)',
         transformOrigin: 'top right',
@@ -31,7 +31,7 @@ const HorizontalBorder: React.FC<BorderProps> = ({ side, tileSize, length, zInde
     [side]: 0,
     left: 0,
     width: length,
-    height: Math.min(tileSize.width, tileSize.height),
+    height: Math.min(tileDimensions.width, tileDimensions.height),
     display: 'flex',
     flexDirection: 'column',
     pointerEvents: 'none',
