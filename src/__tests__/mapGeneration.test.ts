@@ -1,10 +1,11 @@
 import { initializeMap } from '../map/generation/mapGeneration';
-import { LAND_TYPE, LandType } from '../types/Land';
+import { LAND_TYPE } from '../types/Land';
 import { BUILDING_TYPES } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { createTileId } from '../types/HexTileState';
 import { calculateHexDistance } from '../map/utils/mapAlgorithms';
+import { Alignment } from '../types/Alignment';
 
 describe('Map Generation with Players', () => {
   describe('Basic Map Generation Without Players', () => {
@@ -95,7 +96,8 @@ describe('Map Generation with Players', () => {
         const testPlayer = testPlayers.find((p) => p.id === tile.controlledBy);
         expect(testPlayer).toBeDefined();
         expect(
-          tile.landType.alignment === testPlayer?.alignment || tile.landType.alignment === 'neutral'
+          tile.landType.alignment === testPlayer?.alignment ||
+            tile.landType.alignment === Alignment.NEUTRAL
         ).toBeTruthy();
       });
     });

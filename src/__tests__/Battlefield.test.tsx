@@ -3,11 +3,12 @@ import { render, screen } from '@testing-library/react';
 import Battlefield from '../ux-components/battlefield/Battlefield';
 import { GameState, HexTileState } from '../types/HexTileState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { Land, LAND_TYPE, LandType } from '../types/Land';
+import { Land, LAND_TYPE } from '../types/Land';
 import { BattlefieldSize } from '../types/BattlefieldSize';
 import { initializeMap } from '../map/generation/mapGeneration';
 import { Position } from '../map/utils/mapTypes';
 import { FantasyBorderFrameProps } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
+import { Alignment } from '../types/Alignment';
 
 // Mock CSS modules
 jest.mock('../ux-components/battlefield/css/Battlefield.module.css', () => ({
@@ -69,7 +70,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
   const mockLandType = (): Land => {
     return {
       id: LAND_TYPE.PLAINS,
-      alignment: 'lawful',
+      alignment: Alignment.LAWFUL,
       imageName: 'plains.png',
       goldPerTurn: { min: 1, max: 3 },
     };

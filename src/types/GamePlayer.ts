@@ -31,7 +31,7 @@ export interface GamePlayer {
 export const NO_PLAYER: GamePlayer = {
   id: 'none',
   name: 'None',
-  alignment: 'neutral',
+  alignment: Alignment.NEUTRAL,
   race: 'Human',
   level: 1,
   description: 'None',
@@ -43,7 +43,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'alaric',
     name: 'Alaric the Bold',
-    alignment: 'lawful',
+    alignment: Alignment.LAWFUL,
     race: 'Human',
     level: 8,
     description:
@@ -54,7 +54,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'morgana',
     name: 'Morgana Shadowweaver',
-    alignment: 'chaotic',
+    alignment: Alignment.CHAOTIC,
     race: 'Undead',
     level: 12,
     description: 'A powerful sorceress who seeks forbidden knowledge and commands dark magic.',
@@ -64,7 +64,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'thorin',
     name: 'Thorin Ironforge',
-    alignment: 'neutral',
+    alignment: Alignment.NEUTRAL,
     race: 'Dwarf',
     level: 10,
     description: 'A dwarven smith-warrior who values craftsmanship and honor above all else.',
@@ -74,7 +74,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'vex',
     name: 'Vex the Cunning',
-    alignment: 'lawful',
+    alignment: Alignment.LAWFUL,
     race: 'Elf',
     level: 7,
     description: 'An elven ranger dedicated to protecting the ancient forests and their secrets.',
@@ -84,7 +84,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'grimjaw',
     name: 'Grimjaw the Destroyer',
-    alignment: 'chaotic',
+    alignment: Alignment.CHAOTIC,
     race: 'Orc',
     level: 15,
     description: 'A brutal orc warlord who leads through fear and seeks to conquer all lands.',
@@ -94,7 +94,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'serena',
     name: 'Serena Lightbringer',
-    alignment: 'lawful',
+    alignment: Alignment.LAWFUL,
     race: 'Human',
     level: 11,
     description: 'A devout cleric who channels divine power to heal allies and smite evil.',
@@ -104,7 +104,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'kael',
     name: 'Kael Stormwind',
-    alignment: 'neutral',
+    alignment: Alignment.NEUTRAL,
     race: 'Human',
     level: 9,
     description:
@@ -115,7 +115,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'elara',
     name: 'Elara Starshot',
-    alignment: 'chaotic',
+    alignment: Alignment.CHAOTIC,
     race: 'Dark-elf',
     level: 6,
     description:
@@ -126,7 +126,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'marcus',
     name: 'Marcus the Divine',
-    alignment: 'lawful',
+    alignment: Alignment.LAWFUL,
     race: 'Human',
     level: 13,
     description: 'A devoted priest who spreads hope and healing throughout the lands.',
@@ -136,7 +136,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'lydia',
     name: 'Lydia Moonwhisper',
-    alignment: 'neutral',
+    alignment: Alignment.NEUTRAL,
     race: 'Human',
     level: 9,
     description: 'A compassionate healer who tends to the wounded with divine grace.',
@@ -146,7 +146,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'elderoak',
     name: 'Elderoak the Wise',
-    alignment: 'neutral',
+    alignment: Alignment.NEUTRAL,
     race: 'Elf',
     level: 14,
     description: 'An ancient druid who maintains the balance between civilization and nature.',
@@ -156,7 +156,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'valdris',
     name: 'Valdris Bonecaller',
-    alignment: 'chaotic',
+    alignment: Alignment.CHAOTIC,
     race: 'Undead',
     level: 16,
     description: 'A sinister necromancer who commands the undead and delves into forbidden arts.',
@@ -166,7 +166,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'ignatius',
     name: 'Ignatius Flameforge',
-    alignment: 'neutral',
+    alignment: Alignment.NEUTRAL,
     race: 'Orc',
     level: 11,
     description: 'A master of fire magic who forges spells as skillfully as weapons.',
@@ -176,7 +176,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
   {
     id: 'ember',
     name: 'Ember Fireheart',
-    alignment: 'chaotic',
+    alignment: Alignment.CHAOTIC,
     race: 'Orc',
     level: 10,
     description: 'A fierce sorceress whose burning passion fuels her destructive fire magic.',

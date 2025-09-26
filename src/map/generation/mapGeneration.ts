@@ -6,6 +6,7 @@ import { Position } from '../utils/mapTypes';
 import { calculateHexDistance, getTilesInRadius } from '../utils/mapAlgorithms';
 import { construct } from '../building/mapBuilding';
 import { getLands } from '../utils/mapLands';
+import { Alignment } from '../../types/Alignment';
 
 const positionsToTiles = (
   pos: Position[],
@@ -92,7 +93,7 @@ const findSuitableHomeland = (
     candidates = Object.values(tiles).filter(
       (tile) =>
         tile.controlledBy === NO_PLAYER.id &&
-        tile.landType.alignment === 'neutral' &&
+        tile.landType.alignment === Alignment.NEUTRAL &&
         tile.landType.id !== LAND_TYPE.NONE &&
         tile.landType.id !== LAND_TYPE.VOLCANO &&
         tile.landType.id !== LAND_TYPE.LAVA

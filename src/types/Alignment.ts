@@ -1,4 +1,8 @@
-export type Alignment = 'lawful' | 'neutral' | 'chaotic';
+export enum Alignment {
+  LAWFUL = 'lawful',
+  NEUTRAL = 'neutral',
+  CHAOTIC = 'chaotic',
+}
 
 /**
  * Returns the color associated with a player's alignment
@@ -7,11 +11,11 @@ export type Alignment = 'lawful' | 'neutral' | 'chaotic';
  */
 export const getAlignmentColor = (alignment: Alignment): string => {
   switch (alignment) {
-    case 'lawful':
+    case Alignment.LAWFUL:
       return '#4A90E2'; // Blue
-    case 'neutral':
+    case Alignment.NEUTRAL:
       return '#95A5A6'; // Gray
-    case 'chaotic':
+    case Alignment.CHAOTIC:
       return '#E74C3C'; // Red
     default:
       return '#95A5A6'; // Default to gray

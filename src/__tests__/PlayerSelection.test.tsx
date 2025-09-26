@@ -1,8 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PlayerSelection from '../ux-components/player-selection/PlayerSelection';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { Alignment } from '../types/Alignment';
 
 describe('PlayerSelection', () => {
   const mockOnPlayerChange = jest.fn();
@@ -84,9 +85,9 @@ describe('PlayerSelection', () => {
   });
 
   it('displays player alignment with correct color', () => {
-    const lawfulPlayer = PREDEFINED_PLAYERS.find((p) => p.alignment === 'lawful')!;
-    const neutralPlayer = PREDEFINED_PLAYERS.find((p) => p.alignment === 'neutral')!;
-    const chaoticPlayer = PREDEFINED_PLAYERS.find((p) => p.alignment === 'chaotic')!;
+    const lawfulPlayer = PREDEFINED_PLAYERS.find((p) => p.alignment === Alignment.LAWFUL)!;
+    const neutralPlayer = PREDEFINED_PLAYERS.find((p) => p.alignment === Alignment.NEUTRAL)!;
+    const chaoticPlayer = PREDEFINED_PLAYERS.find((p) => p.alignment === Alignment.CHAOTIC)!;
 
     const { rerender } = render(
       <PlayerSelection selectedPlayer={lawfulPlayer} onPlayerChange={mockOnPlayerChange} />
