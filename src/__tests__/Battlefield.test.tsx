@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Battlefield from '../ux-components/battlefield/Battlefield';
-import { createTileId, GameState, HexTileState } from '../types/HexTileState';
+import { GameState, HexTileState } from '../types/HexTileState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { Land, LandType } from '../types/Land';
+import { Land, LAND_TYPE, LandType } from '../types/Land';
 import { BattlefieldSize } from '../types/BattlefieldSize';
 import { initializeMap } from '../map/generation/mapGeneration';
 import { Position } from '../map/utils/mapTypes';
@@ -30,7 +30,7 @@ jest.mock('../ux-components/battlefield/HexTile', () => {
     return (
       <div
         data-testid="hex-tile"
-        data-land-type={tileState?.landType?.name}
+        data-land-type={tileState?.landType.id}
         data-controlled-by={tileState?.controlledBy}
         data-row={tileState?.mapPos.row}
         data-col={tileState?.mapPos.col}
@@ -68,8 +68,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
 
   const mockLandType = (): Land => {
     return {
-      id: LandType.PLAINS,
-      name: 'Plains',
+      id: LAND_TYPE.PLAINS,
       alignment: 'lawful',
       imageName: 'plains.png',
       goldPerTurn: { min: 1, max: 3 },

@@ -1,5 +1,5 @@
 import { initializeMap } from '../map/generation/mapGeneration';
-import { LandType } from '../types/Land';
+import { LAND_TYPE, LandType } from '../types/Land';
 import { BUILDING_TYPES } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
@@ -22,9 +22,9 @@ describe('Map Generation with Players', () => {
 
       // Should have volcano and lava tiles
       const volcanoTiles = Object.values(tiles).filter(
-        (tile) => tile.landType.id === LandType.VOLCANO
+        (tile) => tile.landType.id === LAND_TYPE.VOLCANO
       );
-      const lavaTiles = Object.values(tiles).filter((tile) => tile.landType.id === LandType.LAVA);
+      const lavaTiles = Object.values(tiles).filter((tile) => tile.landType.id === LAND_TYPE.LAVA);
 
       expect(volcanoTiles.length).toBe(1);
       expect(lavaTiles.length).toBeGreaterThan(0);
@@ -39,7 +39,7 @@ describe('Map Generation with Players', () => {
 
       // Find volcano tile
       const volcanoTiles = Object.values(tiles).filter(
-        (tile) => tile.landType.id === LandType.VOLCANO
+        (tile) => tile.landType.id === LAND_TYPE.VOLCANO
       );
       expect(volcanoTiles.length).toBe(1);
 
@@ -187,7 +187,7 @@ describe('Map Generation with Players', () => {
 
       // Check that necromancer players got volcano
       const volcanoTiles = Object.values(tiles).filter(
-        (tile) => tile.landType.id === LandType.VOLCANO
+        (tile) => tile.landType.id === LAND_TYPE.VOLCANO
       );
       expect(volcanoTiles.length).toBe(1);
 
@@ -204,7 +204,7 @@ describe('Map Generation with Players', () => {
 
       // Only one can own the volcano
       const volcanoTiles = Object.values(tiles).filter(
-        (tile) => tile.landType.id === LandType.VOLCANO
+        (tile) => tile.landType.id === LAND_TYPE.VOLCANO
       );
       expect(volcanoTiles.length).toBe(1);
 
@@ -270,7 +270,7 @@ describe('Map Generation with Players', () => {
 
       // Check no invalid land types
       Object.values(tiles).forEach((tile) => {
-        expect(tile.landType.id).not.toBe(LandType.NONE);
+        expect(tile.landType.id).not.toBe(LAND_TYPE.NONE);
       });
     });
   });

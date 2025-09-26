@@ -1,5 +1,5 @@
 import { createTileId, HexTileState } from '../../types/HexTileState';
-import { getLandById, Land, LandType } from '../../types/Land';
+import { getLandById, Land, LAND_TYPE, LandType } from '../../types/Land';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../utils/mapTypes';
@@ -11,7 +11,7 @@ const positionsToTiles = (
   pos: Position[],
   tiles: { [key: string]: HexTileState }
 ): HexTileState[] => {
-  return pos.map((p) => tiles[createTileId(p)]);
+  return pos.map((p) => tiles[createTileId(p)]).filter((tile) => tile !== undefined);
 };
 
 const calculateBaseLandGold = (landType: Land): number => {
@@ -24,7 +24,7 @@ const getNumberOfLands = (tiles: { [key: string]: HexTileState }, landType: Land
 };
 
 const getRandomEmptyLandType = (tiles: { [key: string]: HexTileState }): HexTileState | null => {
-  const emptyLands = Object.values(tiles).filter((tile) => tile.landType.id === LandType.NONE);
+  const emptyLands = Object.values(tiles).filter((tile) => tile.landType.id === LAND_TYPE.NONE);
   if (emptyLands.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * emptyLands.length);
   return emptyLands[randomIndex];
@@ -36,7 +36,7 @@ const getEmptyNeighbors = (
   tiles: { [key: string]: HexTileState }
 ): Position[] =>
   positionsToTiles(getTilesInRadius(mapSize, position, 1), tiles)
-    .filter((tile) => tile.landType.id === LandType.NONE)
+    .filter((tile) => tile.landType.id === LAND_TYPE.NONE)
     .map((tile) => tile.mapPos);
 
 const getRandomNoneNeighbor = (
@@ -64,7 +64,7 @@ const findSuitableHomeland = (
   // For Necromancer (Undead race), look for the volcano first
   if (player.race === 'Undead') {
     candidates = Object.values(tiles).filter(
-      (tile) => tile.landType.id === LandType.VOLCANO && tile.controlledBy === NO_PLAYER.id
+      (tile) => tile.landType.id === LAND_TYPE.VOLCANO && tile.controlledBy === NO_PLAYER.id
     );
   }
 
@@ -74,11 +74,11 @@ const findSuitableHomeland = (
       (tile) =>
         tile.controlledBy === NO_PLAYER.id &&
         tile.landType.alignment === player.alignment &&
-        tile.landType.id !== LandType.NONE &&
-        tile.landType.id !== LandType.VOLCANO &&
-        tile.landType.id !== LandType.LAVA &&
+        tile.landType.id !== LAND_TYPE.NONE &&
+        tile.landType.id !== LAND_TYPE.VOLCANO &&
+        tile.landType.id !== LAND_TYPE.LAVA &&
         // deserts are having a very lack of resources avoid to place home land there
-        tile.landType.id !== LandType.DESERT &&
+        tile.landType.id !== LAND_TYPE.DESERT &&
         // do not place homeland on the edge of the battlefield
         tile.mapPos.row >= 2 &&
         tile.mapPos.row <= battlefieldDimensions.rows - 2 &&
@@ -93,9 +93,9 @@ const findSuitableHomeland = (
       (tile) =>
         tile.controlledBy === NO_PLAYER.id &&
         tile.landType.alignment === 'neutral' &&
-        tile.landType.id !== LandType.NONE &&
-        tile.landType.id !== LandType.VOLCANO &&
-        tile.landType.id !== LandType.LAVA
+        tile.landType.id !== LAND_TYPE.NONE &&
+        tile.landType.id !== LAND_TYPE.VOLCANO &&
+        tile.landType.id !== LAND_TYPE.LAVA
     );
   }
 
@@ -152,7 +152,7 @@ const addPlayer = (
   const playerLands = getLands(
     tiles,
     player,
-    homeland.landType.id === LandType.VOLCANO ? LandType.LAVA : undefined,
+    homeland.landType.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
     player.alignment,
     true
   );
@@ -200,10 +200,11 @@ export const initializeMap = (
   for (let row = 0; row < rows; row++) {
     const colsInRow = row % 2 === 0 ? cols : cols - 1;
     for (let col = 0; col < colsInRow; col++) {
-      const tileId = createTileId({ row: row, col: col });
+      const mapPos: Position = { row: row, col: col };
+      const tileId = createTileId(mapPos);
       tiles[tileId] = {
-        mapPos: { row: row, col: col },
-        landType: getLandById(LandType.NONE), // Temporary, will be overwritten
+        mapPos: mapPos,
+        landType: getLandById(LAND_TYPE.NONE), // Temporary, will be overwritten
         controlledBy: NO_PLAYER.id,
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
@@ -219,7 +220,7 @@ export const initializeMap = (
   const volcanoPos = { row: volcanoRow, col: volcanoCol };
   const volcanoId = createTileId(volcanoPos);
   if (tiles[volcanoId]) {
-    tiles[volcanoId].landType = getLandById(LandType.VOLCANO);
+    tiles[volcanoId].landType = getLandById(LAND_TYPE.VOLCANO);
   }
 
   // 2. Place up to 6 lava tiles connected to the volcano
@@ -234,7 +235,7 @@ export const initializeMap = (
     const lavaPos = shuffledCandidates[i];
     const lavaId = createTileId(lavaPos);
     if (tiles[lavaId]) {
-      tiles[lavaId].landType = getLandById(LandType.VOLCANO);
+      tiles[lavaId].landType = getLandById(LAND_TYPE.LAVA);
       lavaPositions.push(lavaPos);
     }
   }
@@ -243,27 +244,25 @@ export const initializeMap = (
   getEmptyNeighbors(mapSize, volcanoPos, tiles)?.forEach((neighbor) => {
     const tileId = createTileId(neighbor);
     if (tiles[tileId]) {
-      tiles[tileId].landType = getLandById(LandType.MOUNTAINS);
+      tiles[tileId].landType = getLandById(LAND_TYPE.MOUNTAINS);
     }
   });
 
   for (const lavaPos of lavaPositions) {
     getEmptyNeighbors(mapSize, lavaPos, tiles)?.forEach((neighbor) => {
-      const nMountains = getNumberOfLands(tiles, LandType.MOUNTAINS);
+      const nMountains = getNumberOfLands(tiles, LAND_TYPE.MOUNTAINS);
       const tileId = createTileId(neighbor);
       if (tiles[tileId]) {
         tiles[tileId].landType = getLandById(
-          nMountains < 6 ? LandType.MOUNTAINS : LandType.DARKFOREST
+          nMountains < 6 ? LAND_TYPE.MOUNTAINS : LAND_TYPE.DARKFOREST
         );
       }
     });
   }
 
   // 4. Get remaining land types (excluding volcano and lava)
-  // todo
-  // @ts-ignore
-  const remainingLandTypes = Object.values(LandType).filter(
-    (lt) => lt !== LandType.VOLCANO && lt !== LandType.LAVA && lt !== LandType.NONE
+  const remainingLandTypes = Object.values(LAND_TYPE).filter(
+    (lt) => lt !== LAND_TYPE.VOLCANO && lt !== LAND_TYPE.LAVA && lt !== LAND_TYPE.NONE
   );
 
   const maxTilesPerType = Math.floor(totalTiles / remainingLandTypes.length);
@@ -292,8 +291,8 @@ export const initializeMap = (
 
   // if we have empty lands fill with deserts
   Object.values(tiles)
-    .filter((tile) => tile.landType.id === LandType.NONE)
-    .forEach((tile) => (tile.landType.id = LandType.DESERT));
+    .filter((tile) => tile.landType.id === LAND_TYPE.NONE)
+    .forEach((tile) => (tile.landType = getLandById(LAND_TYPE.DESERT)));
 
   // Calculate gold for all tiles
   Object.values(tiles).forEach((tile) => {

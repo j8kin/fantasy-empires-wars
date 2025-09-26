@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { useMapState } from '../hooks/useMapState';
-import { LAND_TYPES, LandType } from '../types/Land';
+import { getLandById, LAND_TYPE, LandType } from '../types/Land';
 import { HexTileState } from '../types/HexTileState';
 import { BattlefieldSize } from '../types/BattlefieldSize';
 
@@ -30,7 +30,7 @@ describe('useMapState Gold Generation', () => {
         const tiles = Object.values(result.current.gameState.tiles);
 
         // Find tiles with plains land type (should have range 2-4)
-        const plainsTiles = tiles.filter((tile) => tile.landType.id === LandType.PLAINS);
+        const plainsTiles = tiles.filter((tile) => tile.landType.id === LAND_TYPE.PLAINS);
         if (plainsTiles.length > 0) {
           goldValues.push(plainsTiles[0].goldPerTurn);
         }
@@ -61,7 +61,7 @@ describe('useMapState Gold Generation', () => {
       });
 
       // Check each land type that has tiles on the map
-      const landTypesWithTiles = Object.keys(LAND_TYPES).filter((landTypeId) => {
+      const landTypesWithTiles = Object.keys(LAND_TYPE).filter((landTypeId) => {
         const tilesOfType = tilesByLandType[landTypeId];
         return tilesOfType && tilesOfType.length > 0;
       });
@@ -70,7 +70,7 @@ describe('useMapState Gold Generation', () => {
       expect(landTypesWithTiles.length).toBeGreaterThan(0);
 
       landTypesWithTiles.forEach((landTypeId) => {
-        const landType = LAND_TYPES[landTypeId];
+        const landType = getLandById(landTypeId as LandType);
         const tilesOfType = tilesByLandType[landTypeId];
 
         tilesOfType.forEach((tile) => {
@@ -154,7 +154,7 @@ describe('useMapState Gold Generation', () => {
         const tiles = Object.values(result.current.gameState.tiles);
 
         // Collect gold values from mountain tiles
-        const mountainTiles = tiles.filter((tile) => tile.landType.id === LandType.MOUNTAINS);
+        const mountainTiles = tiles.filter((tile) => tile.landType.id === LAND_TYPE.MOUNTAINS);
         mountainTiles.forEach((tile) => goldValues.push(tile.goldPerTurn));
       }
 
