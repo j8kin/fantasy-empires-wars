@@ -61,7 +61,7 @@ describe('useMapState Gold Generation', () => {
       });
 
       // Check each land type that has tiles on the map
-      const landTypesWithTiles = Object.keys(LAND_TYPE).filter((landTypeId) => {
+      const landTypesWithTiles = Object.values(LAND_TYPE).filter((landTypeId) => {
         const tilesOfType = tilesByLandType[landTypeId];
         return tilesOfType && tilesOfType.length > 0;
       });
