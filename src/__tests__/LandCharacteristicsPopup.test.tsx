@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import LandCharacteristicsPopup from '../ux-components/popups/LandCharacteristicsPopup';
 import { GameState, HexTileState } from '../types/HexTileState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { LAND_TYPES } from '../types/Land';
+import { LandType } from '../types/Land';
 import { initializeMap } from '../map/generation/mapGeneration';
 
 // Mock CSS modules
@@ -33,7 +33,7 @@ describe('LandCharacteristicsPopup', () => {
   };
 
   const mockTileState: HexTileState = Object.values(mockGameState.tiles).find(
-    (tile) => tile.landType.id === LAND_TYPES.volcano.id
+    (tile) => tile.landType.id === LandType.VOLCANO
   )!;
 
   const mockPosition = { x: 100, y: 100 };
@@ -70,7 +70,7 @@ describe('LandCharacteristicsPopup', () => {
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(mockTileState.landType.id).toBe(LAND_TYPES.volcano.id);
+    expect(mockTileState.landType.id).toBe(LandType.VOLCANO);
     expect(mockTileState.controlledBy).toBe(mockPlayer.id);
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });

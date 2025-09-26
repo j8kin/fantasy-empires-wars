@@ -47,7 +47,7 @@ const HexTile: React.FC<HexTileProps> = ({
   }
 
   const imageSrc = imageMap[battlefieldTile.landType.imageName];
-  const altText = battlefieldTile.landType.name;
+  const altText = battlefieldTile.landType.id;
 
   // Get the controlling player's color or default to white if not controlled
   const getBackgroundColor = (): string => {
@@ -87,7 +87,7 @@ const HexTile: React.FC<HexTileProps> = ({
     <>
       <div
         className={styles.hexTile}
-        title={`${battlefieldTile.landType.name} (${battlefieldTile.landType.alignment})`}
+        title={`${battlefieldTile.landType.id} (${battlefieldTile.landType.alignment})`}
         onContextMenu={handleRightClick}
         style={tileStyle}
       >

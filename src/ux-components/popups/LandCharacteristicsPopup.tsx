@@ -59,7 +59,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
     >
       <div className={styles.popupContent}>
         <div className={styles.header}>
-          <h3 className={styles.title}>{displayLandType.name}</h3>
+          <h3 className={styles.title}>{displayLandType.id}</h3>
         </div>
 
         <div className={styles.characteriFantasyBorderFramestics}>

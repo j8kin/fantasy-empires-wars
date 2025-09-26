@@ -154,7 +154,7 @@ describe('useMapState Gold Generation', () => {
         const tiles = Object.values(result.current.gameState.tiles);
 
         // Collect gold values from mountain tiles
-        const mountainTiles = tiles.filter((tile) => tile.landType.id === 'mountains');
+        const mountainTiles = tiles.filter((tile) => tile.landType.id === LandType.MOUNTAINS);
         mountainTiles.forEach((tile) => goldValues.push(tile.goldPerTurn));
       }
 

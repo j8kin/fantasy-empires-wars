@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import Battlefield from '../ux-components/battlefield/Battlefield';
 import { createTileId, GameState, HexTileState } from '../types/HexTileState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { Land } from '../types/Land';
+import { Land, LandType } from '../types/Land';
 import { BattlefieldSize } from '../types/BattlefieldSize';
 import { initializeMap } from '../map/generation/mapGeneration';
 import { Position } from '../map/utils/mapTypes';
@@ -66,9 +66,9 @@ const testTileDimensions = { width: 50, height: 180 };
 const createMockGameState = (mapSize: BattlefieldSize): GameState => {
   const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[0];
 
-  const mockLandType = (position: Position): Land => {
+  const mockLandType = (): Land => {
     return {
-      id: createTileId(position),
+      id: LandType.PLAINS,
       name: 'Plains',
       alignment: 'lawful',
       imageName: 'plains.png',
@@ -85,7 +85,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
       const mapPos = { row: row, col: col };
       tiles[tileId] = {
         mapPos: mapPos,
-        landType: mockLandType(mapPos),
+        landType: mockLandType(),
         controlledBy: mockPlayer.id,
         goldPerTurn: 1,
         buildings: [],

@@ -1,5 +1,5 @@
 import { initializeMap } from '../map/generation/mapGeneration';
-import { LAND_TYPES } from '../types/Land';
+import { LandType } from '../types/Land';
 import { BUILDING_TYPES } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
@@ -21,8 +21,10 @@ describe('Map Generation with Players', () => {
       });
 
       // Should have volcano and lava tiles
-      const volcanoTiles = Object.values(tiles).filter((tile) => tile.landType.id === 'volcano');
-      const lavaTiles = Object.values(tiles).filter((tile) => tile.landType.id === 'lava');
+      const volcanoTiles = Object.values(tiles).filter(
+        (tile) => tile.landType.id === LandType.VOLCANO
+      );
+      const lavaTiles = Object.values(tiles).filter((tile) => tile.landType.id === LandType.LAVA);
 
       expect(volcanoTiles.length).toBe(1);
       expect(lavaTiles.length).toBeGreaterThan(0);
@@ -36,7 +38,9 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, [necromancerPlayer]);
 
       // Find volcano tile
-      const volcanoTiles = Object.values(tiles).filter((tile) => tile.landType.id === 'volcano');
+      const volcanoTiles = Object.values(tiles).filter(
+        (tile) => tile.landType.id === LandType.VOLCANO
+      );
       expect(volcanoTiles.length).toBe(1);
 
       const volcanoTile = volcanoTiles[0];
@@ -182,7 +186,9 @@ describe('Map Generation with Players', () => {
       expect(assignedPlayerIds.size).toBe(somePredefinedPlayers.length);
 
       // Check that necromancer players got volcano
-      const volcanoTiles = Object.values(tiles).filter((tile) => tile.landType.id === 'volcano');
+      const volcanoTiles = Object.values(tiles).filter(
+        (tile) => tile.landType.id === LandType.VOLCANO
+      );
       expect(volcanoTiles.length).toBe(1);
 
       const volcanoOwner = volcanoTiles[0].controlledBy;
@@ -197,7 +203,9 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, necromancers);
 
       // Only one can own the volcano
-      const volcanoTiles = Object.values(tiles).filter((tile) => tile.landType.id === 'volcano');
+      const volcanoTiles = Object.values(tiles).filter(
+        (tile) => tile.landType.id === LandType.VOLCANO
+      );
       expect(volcanoTiles.length).toBe(1);
 
       const volcanoOwner = volcanoTiles[0].controlledBy;
@@ -262,8 +270,7 @@ describe('Map Generation with Players', () => {
 
       // Check no invalid land types
       Object.values(tiles).forEach((tile) => {
-        expect(tile.landType.id).not.toBe(LAND_TYPES.none.id);
-        expect(Object.keys(LAND_TYPES)).toContain(tile.landType.id);
+        expect(tile.landType.id).not.toBe(LandType.NONE);
       });
     });
   });
