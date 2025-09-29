@@ -21,7 +21,6 @@ export const construct = (
     const newLandsCandidates = getTilesInRadius(mapSize, position, 2, true);
     for (const candidate of newLandsCandidates) {
       const currentOwner = tiles[createTileId(candidate)].controlledBy;
-      if (currentOwner === owner.id) continue;
       if (currentOwner === NO_PLAYER.id) {
         tiles[createTileId(candidate)].controlledBy = owner.id;
       } else {

@@ -1,6 +1,6 @@
 import { generateMockMap } from './utils/generateMockMap';
 import { getLands } from '../map/utils/mapLands';
-import { construct } from '../map/building/mapBuilding';
+import { construct } from '../map/building/construct';
 import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { Position } from '../map/utils/mapTypes';
 import { getBuilding } from '../types/Building';

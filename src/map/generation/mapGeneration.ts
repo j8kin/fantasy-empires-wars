@@ -4,7 +4,7 @@ import { BattlefieldSize, getBattlefieldDimensions } from '../../types/Battlefie
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../utils/mapTypes';
 import { calculateHexDistance, getTilesInRadius } from '../utils/mapAlgorithms';
-import { construct } from '../building/mapBuilding';
+import { construct } from '../building/construct';
 import { getLands } from '../utils/mapLands';
 import { Alignment } from '../../types/Alignment';
 import { getUnit } from '../../types/Army';
