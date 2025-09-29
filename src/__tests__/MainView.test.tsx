@@ -17,7 +17,7 @@ jest.mock('../ux-components/main-view/css/Background.module.css', () => ({
 
 // Mock child components
 jest.mock('../ux-components/top-panel/TopPanel', () => {
-  return function MockTopPanel(props: TopPanelProps) {
+  return (props: TopPanelProps) => {
     const { PREDEFINED_PLAYERS } = jest.requireActual('../types/GamePlayer');
     const mockPlayer = PREDEFINED_PLAYERS[0];
     return (
@@ -45,7 +45,7 @@ jest.mock('../ux-components/top-panel/TopPanel', () => {
 });
 
 jest.mock('../ux-components/battlefield/Battlefield', () => {
-  return function MockBattlefield(props: BattlefieldProps) {
+  return (props: BattlefieldProps) => {
     return (
       <div
         data-testid="Battlefield"
@@ -57,7 +57,7 @@ jest.mock('../ux-components/battlefield/Battlefield', () => {
 });
 
 jest.mock('../ux-components/dialogs/NewGameDialog', () => {
-  return function MockNewGameDialog(props: NewGameDialogProps) {
+  return (props: NewGameDialogProps) => {
     const { PREDEFINED_PLAYERS } = jest.requireActual('../types/GamePlayer');
     const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[0];
 
@@ -81,7 +81,7 @@ jest.mock('../ux-components/dialogs/NewGameDialog', () => {
 });
 
 jest.mock('../ux-components/dialogs/SaveGameDialog', () => {
-  return function MockSaveGameDialog(props: SaveGameDialogProps) {
+  return (props: SaveGameDialogProps) => {
     return props.isOpen ? (
       <div data-testid="SaveGameDialog">
         <button onClick={() => props.onClose?.()}>Close</button>
@@ -92,7 +92,7 @@ jest.mock('../ux-components/dialogs/SaveGameDialog', () => {
 });
 
 jest.mock('../ux-components/popups/OpponentInfoPopup', () => {
-  return function MockOpponentInfoPopup(props: OpponentInfoProps) {
+  return (props: OpponentInfoProps) => {
     return props.opponent ? (
       <div data-testid="OpponentInfoPopup">
         <span>{props.opponent.name}</span>
@@ -103,7 +103,7 @@ jest.mock('../ux-components/popups/OpponentInfoPopup', () => {
 });
 
 jest.mock('../ux-components/dialogs/SelectOpponentDialog', () => {
-  return function MockSelectOpponentDialog(props: SelectOpponentDialogProps) {
+  return (props: SelectOpponentDialogProps) => {
     const { PREDEFINED_PLAYERS } = jest.requireActual('../types/GamePlayer');
     const mockPlayer = PREDEFINED_PLAYERS[6];
     return (

@@ -23,7 +23,7 @@ jest.mock('../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 jest.mock('../ux-components/battlefield/HexTile', () => {
   const { createTileId } = require('../types/HexTileState');
 
-  return function MockHexTile(props: { battlefieldPosition: Position; gameState: GameState }) {
+  return (props: { battlefieldPosition: Position; gameState: GameState }) => {
     const { battlefieldPosition, gameState } = props;
     const tileId: string = createTileId(battlefieldPosition);
     const tileState = gameState?.tiles[tileId];
@@ -42,7 +42,7 @@ jest.mock('../ux-components/battlefield/HexTile', () => {
 
 // Mock FantasyBorderFrame
 jest.mock('../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
-  return function MockFantasyBorderFrame(props: FantasyBorderFrameProps) {
+  return (props: FantasyBorderFrameProps) => {
     return (
       <div
         data-testid="fantasy-border-frame"

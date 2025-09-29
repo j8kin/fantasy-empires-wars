@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import OpponentInfoPopup, {
-  OpponentWithDiplomacy,
   DiplomacyStatus,
+  OpponentWithDiplomacy,
 } from '../ux-components/popups/OpponentInfoPopup';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { Alignment } from '../types/Alignment';
@@ -25,7 +25,7 @@ jest.mock('../ux-components/dialogs/css/OpponentInfoDialog.module.css', () => ({
 }));
 
 jest.mock('../ux-components/avatars/PlayerAvatar', () => {
-  return function MockPlayerAvatar({ player, size, shape, borderColor, className }: any) {
+  return ({ player, size, shape, borderColor, className }: any) => {
     return (
       <div
         data-testid="player-avatar"
@@ -45,7 +45,7 @@ describe('OpponentInfoPopup', () => {
 
   const createMockOpponent = (
     diplomacyStatus: DiplomacyStatus = 'No Treaty',
-    alignment: Alignment = 'neutral'
+    alignment: Alignment = Alignment.NEUTRAL
   ): OpponentWithDiplomacy => ({
     ...PREDEFINED_PLAYERS[0],
     alignment,
@@ -112,7 +112,7 @@ describe('OpponentInfoPopup', () => {
   });
 
   it('displays alignment information with correct color', () => {
-    const mockOpponent = createMockOpponent('No Treaty', 'evil');
+    const mockOpponent = createMockOpponent('No Treaty', Alignment.CHAOTIC);
 
     render(
       <OpponentInfoPopup

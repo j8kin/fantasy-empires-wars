@@ -7,7 +7,7 @@ import { FantasyBorderFrameProps } from '../ux-components/fantasy-border-frame/F
 
 // Mock FantasyBorderFrame to avoid complex rendering issues
 jest.mock('../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
-  return function MockFantasyBorderFrame({ children, secondaryButton }: FantasyBorderFrameProps) {
+  return ({ children, secondaryButton }: FantasyBorderFrameProps) => {
     return (
       <div data-testid="fantasy-border-frame">
         {children}
