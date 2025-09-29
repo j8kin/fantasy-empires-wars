@@ -48,7 +48,7 @@ describe('Map Generation with Players', () => {
       expect(volcanoTile.controlledBy).toBe(necromancerPlayer.id);
     });
 
-    it('should assign stronghold building to player homelands', () => {
+    it('should assign stronghold building to player homelands and add Players Hero', () => {
       const mapSize: BattlefieldSize = 'medium';
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
       const tiles = initializeMap(mapSize, testPlayers);
@@ -69,6 +69,16 @@ describe('Map Generation with Players', () => {
       strongholdTiles.forEach((strongholdTile) => {
         expect(strongholdTile.controlledBy).not.toBe(NO_PLAYER.id);
         expect(strongholdTile.buildings).toEqual([getBuilding('stronghold')]);
+
+        // verify that a Players hero added and placed in Homeland
+        expect(strongholdTile.army.length).toEqual(1);
+        expect(strongholdTile.army[0].unit.name).toEqual(
+          testPlayers.find((p) => p.id === strongholdTile.controlledBy)?.name
+        );
+        expect(strongholdTile.army[0].unit.hero).toBeTruthy();
+        expect(strongholdTile.army[0].unit.level).toEqual(
+          testPlayers.find((p) => p.id === strongholdTile.controlledBy)?.level
+        );
       });
     });
 

@@ -138,7 +138,10 @@ const findSuitableHomeland = (
 
 const assignPlayerHero = (homeland: HexTileState, player: GamePlayer) => {
   const hero = getUnit(player.type);
-  recruitHero(hero, homeland); // todo increment characteristics based on Player Level
+  hero.name = player.name;
+  hero.level = player.level;
+  // todo increment characteristics (attack, defence etc based on Player Level)
+  recruitHero(hero, homeland);
 };
 
 const addPlayer = (
