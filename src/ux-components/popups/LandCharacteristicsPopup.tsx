@@ -24,8 +24,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   // MANUAL ADJUSTMENT POINT 1: Base heights and row spacing
   const headerHeight = 33; // Header with title (6px padding * 2 + 20px content)
   const baseContentPadding = 15; // Top and bottom padding for characteristics (8px * 2)
-  const standardRowHeight = 24; // Height per standard data row (12px font + 6px margin)
-  const buildingRowHeight = 26; // Height for building rows (includes building chip padding + gaps)
+  const standardRowHeight = 21; // Height per standard data row (12px font + 6px margin)
+  const buildingRowHeight = 24; // Height for building rows (includes building chip padding + gaps)
   const armyRowHeight = 18; // Height for army row (standard)
 
   // Calculate height for each content type separately
@@ -41,20 +41,31 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
     totalContentHeight += buildingRowHeight + (buildingRows - 1) * buildingChipHeight;
   }
 
-  // Army row
-  if (battlefieldTile?.army) {
-    totalContentHeight += armyRowHeight;
+  // Army rows - separate heroes and units
+  if (battlefieldTile?.army && battlefieldTile.army.length > 0) {
+    const heroes = battlefieldTile.army.filter(({ unit }) => unit.hero);
+    const units = battlefieldTile.army.filter(({ unit }) => !unit.hero);
+
+    if (heroes.length > 0) {
+      const heroRows = Math.ceil(heroes.length / 3); // Estimate wrapping
+      totalContentHeight += buildingRowHeight + (heroRows - 1) * armyRowHeight;
+    }
+
+    if (units.length > 0) {
+      const unitRows = Math.ceil(units.length / 2); // Units might wrap less efficiently
+      totalContentHeight += buildingRowHeight + (unitRows - 1) * armyRowHeight;
+    }
   }
 
   // MANUAL ADJUSTMENT POINT 2: Final height calculation
   const calculatedHeight = headerHeight + baseContentPadding + totalContentHeight;
-  const dynamicHeight = Math.min(calculatedHeight, 250); // MANUAL ADJUSTMENT POINT 3: Max height limit
-  const dynamicWidth = 300;
+  const dynamicHeight = Math.min(calculatedHeight, 270); // MANUAL ADJUSTMENT POINT 3: Max height limit
+  const dynamicWidth = 320;
 
   return (
     <PopupWrapper
       screenPosition={{ x: screenPosition.x + 10, y: screenPosition.y + 10 }}
-      dimensions={{ width: dynamicWidth, height: dynamicHeight }}
+      dimensions={{ width: dynamicWidth, height: dynamicHeight + 30 }}
       onClose={onClose}
     >
       <div className={styles.popupContent}>
@@ -62,7 +73,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
           <h3 className={styles.title}>{displayLandType.id}</h3>
         </div>
 
-        <div className={styles.characteriFantasyBorderFramestics}>
+        <div className={styles.characteristics}>
           <div className={styles.row}>
             <span className={styles.label}>Alignment:</span>
             <span
@@ -114,12 +125,36 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
               )}
 
               {battlefieldTile.army && battlefieldTile.army.length > 0 && (
-                <div className={styles.row}>
-                  <span className={styles.label}>Army:</span>
-                  <span className={styles.value}>
-                    {battlefieldTile.army.reduce((sum, { count }) => sum + count, 0)} units
-                  </span>
-                </div>
+                <>
+                  {battlefieldTile.army.some(({ unit }) => unit.hero) && (
+                    <div className={styles.row}>
+                      <span className={styles.label}>Heroes:</span>
+                      <div className={styles.buildingsList}>
+                        {battlefieldTile.army
+                          .filter(({ unit }) => unit.hero)
+                          .map(({ unit }, index) => (
+                            <span key={index} className={styles.building}>
+                              {unit.name} lvl: {unit.level}
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                  {battlefieldTile.army.some(({ unit }) => !unit.hero) && (
+                    <div className={styles.row}>
+                      <span className={styles.label}>Units:</span>
+                      <div className={styles.buildingsList}>
+                        {battlefieldTile.army
+                          .filter(({ unit }) => !unit.hero)
+                          .map(({ unit, count }, index) => (
+                            <span key={index} className={styles.value}>
+                              {unit.name} ({count})
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
