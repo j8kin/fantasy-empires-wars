@@ -213,7 +213,7 @@ export const initializeMap = (
         controlledBy: NO_PLAYER.id,
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
-        army: { units: [] },
+        army: [],
       };
     }
   }

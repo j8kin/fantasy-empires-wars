@@ -25,6 +25,6 @@ export const getLands = (
         (buildings.length > 0 &&
           tile.buildings.length > 0 &&
           tile.buildings.some((b) => buildings.includes(b)))) &&
-      (noArmy == null || (noArmy ? tile.army.units.length === 0 : tile.army.units.length > 0))
+      (noArmy == null || (noArmy ? tile.army.length === 0 : tile.army.length > 0))
   );
 };

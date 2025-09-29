@@ -113,10 +113,10 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 </div>
               )}
 
-              {battlefieldTile.army && (
+              {battlefieldTile.army && battlefieldTile.army.length > 0 && (
                 <div className={styles.row}>
                   <span className={styles.label}>Army:</span>
-                  <span className={styles.value}>{battlefieldTile.army.units[0].count} units</span>
+                  <span className={styles.value}>{battlefieldTile.army.reduce((sum, { count }) => sum + count, 0)} units</span>
                 </div>
               )}
             </>

@@ -31,14 +31,7 @@ export interface Unit {
   hero: boolean;
 }
 
-export interface ArmyUnit {
-  unit: Unit;
-  count: number;
-}
-
-export interface Army {
-  units: ArmyUnit[];
-}
+export type Army = { unit: Unit; count: number }[];
 
 export const getUnit = (unitType: UnitType): Unit => {
   switch (unitType) {

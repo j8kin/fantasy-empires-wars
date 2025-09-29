@@ -16,7 +16,7 @@ export const generateMockMap = (rows: number, cols: number): MapTilesType => {
         controlledBy: NO_PLAYER.id,
         buildings: [],
         goldPerTurn: 0,
-        army: { units: [] },
+        army: [],
       };
     }
   }

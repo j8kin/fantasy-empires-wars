@@ -89,7 +89,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
         controlledBy: mockPlayer.id,
         goldPerTurn: 1,
         buildings: [],
-        army: { units: [] },
+        army: [],
       };
     }
   }
