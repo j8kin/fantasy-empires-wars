@@ -6,6 +6,7 @@ import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import OpponentInfoPopup, { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
+import ProgressPopup from '../popups/ProgressPopup';
 import { GamePlayer } from '../../types/GamePlayer';
 import { GameState } from '../../types/HexTileState';
 import { useMapState } from '../../hooks/useMapState';
@@ -29,6 +30,8 @@ const MainView: React.FC = () => {
   const [allowEmptyPlayer, setAllowEmptyPlayer] = useState<boolean>(true);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [landHideModePlayerId, setLandHideModePlayerId] = useState<string | undefined>(undefined);
+  const [showProgressPopup, setShowProgressPopup] = useState<boolean>(false);
+  const [progressMessage, setProgressMessage] = useState<string>('');
 
   // Initialize the game state at the MainView level
   const { gameState, updateGameConfig } = useMapState('medium');
@@ -38,9 +41,16 @@ const MainView: React.FC = () => {
 
   const handleStartGame = useCallback(
     (config: GameState) => {
-      updateGameConfig(config);
       setShowStartWindow(false);
-      setGameStarted(true);
+      setProgressMessage('Creating new game...');
+      setShowProgressPopup(true);
+
+      // Simulate game creation process
+      setTimeout(() => {
+        updateGameConfig(config);
+        setGameStarted(true);
+        setShowProgressPopup(false);
+      }, 100);
     },
     [updateGameConfig]
   );
@@ -158,6 +168,19 @@ const MainView: React.FC = () => {
           onSelect={handleOpponentSelect}
           onCancel={handleOpponentDialogCancel}
           allowEmptyPlayer={allowEmptyPlayer}
+        />
+      )}
+
+      {/* Progress Popup - shown as overlay */}
+      {showProgressPopup && (
+        <ProgressPopup
+          screenPosition={{
+            x: typeof window !== 'undefined' ? (window.innerWidth - 400) / 2 : 0,
+            y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
+          }}
+          gameState={gameState}
+          onClose={() => {}}
+          message={progressMessage}
         />
       )}
     </main>
