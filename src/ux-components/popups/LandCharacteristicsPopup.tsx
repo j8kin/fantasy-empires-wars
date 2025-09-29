@@ -42,7 +42,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   }
 
   // Army row
-  if (battlefieldTile?.army && battlefieldTile.army.totalCount > 0) {
+  if (battlefieldTile?.army) {
     totalContentHeight += armyRowHeight;
   }
 
@@ -113,10 +113,10 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 </div>
               )}
 
-              {battlefieldTile.army && battlefieldTile.army.totalCount > 0 && (
+              {battlefieldTile.army && (
                 <div className={styles.row}>
                   <span className={styles.label}>Army:</span>
-                  <span className={styles.value}>{battlefieldTile.army.totalCount} units</span>
+                  <span className={styles.value}>{battlefieldTile.army.units[0].count} units</span>
                 </div>
               )}
             </>

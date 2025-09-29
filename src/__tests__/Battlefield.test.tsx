@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Battlefield from '../ux-components/battlefield/Battlefield';
-import { GameState, HexTileState } from '../types/HexTileState';
+import { GameState, MapTilesType } from '../types/HexTileState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { Land, LAND_TYPE } from '../types/Land';
 import { BattlefieldSize } from '../types/BattlefieldSize';
@@ -76,7 +76,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
     };
   };
 
-  const tiles: { [key: string]: HexTileState } = {};
+  const tiles: MapTilesType = {};
 
   // Create some sample tiles for testing
   for (let row = 0; row < 3; row++) {
@@ -89,7 +89,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
         controlledBy: mockPlayer.id,
         goldPerTurn: 1,
         buildings: [],
-        army: { units: [], totalCount: 1 },
+        army: { units: [] },
       };
     }
   }

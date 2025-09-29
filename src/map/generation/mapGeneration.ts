@@ -1,4 +1,4 @@
-import { createTileId, HexTileState } from '../../types/HexTileState';
+import { createTileId, HexTileState, MapTilesType } from '../../types/HexTileState';
 import { getLandById, Land, LAND_TYPE, LandType } from '../../types/Land';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
@@ -7,11 +7,10 @@ import { calculateHexDistance, getTilesInRadius } from '../utils/mapAlgorithms';
 import { construct } from '../building/mapBuilding';
 import { getLands } from '../utils/mapLands';
 import { Alignment } from '../../types/Alignment';
+import { getUnit } from '../../types/Army';
+import { recruitHero } from '../army/recruit';
 
-const positionsToTiles = (
-  pos: Position[],
-  tiles: { [key: string]: HexTileState }
-): HexTileState[] => {
+const positionsToTiles = (pos: Position[], tiles: MapTilesType): HexTileState[] => {
   return pos.map((p) => tiles[createTileId(p)]).filter((tile) => tile !== undefined);
 };
 
@@ -20,11 +19,11 @@ const calculateBaseLandGold = (landType: Land): number => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const getNumberOfLands = (tiles: { [key: string]: HexTileState }, landType: LandType): number => {
+const getNumberOfLands = (tiles: MapTilesType, landType: LandType): number => {
   return Object.values(tiles).filter((tile) => tile.landType.id === landType).length;
 };
 
-const getRandomEmptyLandType = (tiles: { [key: string]: HexTileState }): HexTileState | null => {
+const getRandomEmptyLandType = (tiles: MapTilesType): HexTileState | null => {
   const emptyLands = Object.values(tiles).filter((tile) => tile.landType.id === LAND_TYPE.NONE);
   if (emptyLands.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * emptyLands.length);
@@ -34,7 +33,7 @@ const getRandomEmptyLandType = (tiles: { [key: string]: HexTileState }): HexTile
 const getEmptyNeighbors = (
   mapSize: BattlefieldSize,
   position: Position,
-  tiles: { [key: string]: HexTileState }
+  tiles: MapTilesType
 ): Position[] =>
   positionsToTiles(getTilesInRadius(mapSize, position, 1), tiles)
     .filter((tile) => tile.landType.id === LAND_TYPE.NONE)
@@ -43,7 +42,7 @@ const getEmptyNeighbors = (
 const getRandomNoneNeighbor = (
   mapSize: BattlefieldSize,
   pos: Position,
-  tiles: { [key: string]: HexTileState }
+  tiles: MapTilesType
 ): Position | null => {
   const noneNeighbors = getEmptyNeighbors(mapSize, pos, tiles);
 
@@ -54,7 +53,7 @@ const getRandomNoneNeighbor = (
 };
 
 const findSuitableHomeland = (
-  tiles: { [key: string]: HexTileState },
+  tiles: MapTilesType,
   player: GamePlayer,
   existingPlayerPositions: Position[],
   mapSize: BattlefieldSize
@@ -137,10 +136,15 @@ const findSuitableHomeland = (
   return undefined; // No suitable homeland found. Should never reach here
 };
 
+const assignPlayerHero = (homeland: HexTileState, player: GamePlayer) => {
+  const hero = getUnit(player.type);
+  recruitHero(hero, homeland); // todo increment characteristics based on Player Level
+};
+
 const addPlayer = (
   player: GamePlayer,
   existingPlayersPositions: Position[],
-  tiles: { [key: string]: HexTileState },
+  tiles: MapTilesType,
   mapSize: BattlefieldSize
 ) => {
   const homeland = findSuitableHomeland(tiles, player, existingPlayersPositions, mapSize);
@@ -155,16 +159,19 @@ const addPlayer = (
     player,
     homeland.landType.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
     player.alignment,
-    true
+    []
   );
   const barrackLand = playerLands[Math.floor(Math.random() * playerLands.length)];
   construct(player, 'barracks', barrackLand.mapPos, tiles, mapSize);
 
   existingPlayersPositions.push(homeland.mapPos);
+
+  // add player's Hero
+  assignPlayerHero(homeland, player);
 };
 
 const assignPlayerLands = (
-  tiles: { [key: string]: HexTileState },
+  tiles: MapTilesType,
   players: GamePlayer[],
   mapSize: BattlefieldSize
 ): void => {
@@ -186,20 +193,17 @@ const assignPlayerLands = (
 export const initializeMap = (
   mapSize: BattlefieldSize,
   players: GamePlayer[] = []
-): { [key: string]: HexTileState } => {
+): MapTilesType => {
   const { rows, cols } = getBattlefieldDimensions(mapSize);
-  const tiles: { [key: string]: HexTileState } = {};
+  const tiles: MapTilesType = {};
 
   // Calculate the total number of tiles
   let totalTiles = 0;
-  for (let row = 0; row < rows; row++) {
-    const colsInRow = row % 2 === 0 ? cols : cols - 1;
-    totalTiles += colsInRow;
-  }
-
   // Initialize empty tiles
   for (let row = 0; row < rows; row++) {
     const colsInRow = row % 2 === 0 ? cols : cols - 1;
+    totalTiles += colsInRow;
+
     for (let col = 0; col < colsInRow; col++) {
       const mapPos: Position = { row: row, col: col };
       const tileId = createTileId(mapPos);
@@ -209,7 +213,7 @@ export const initializeMap = (
         controlledBy: NO_PLAYER.id,
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
-        army: { units: [], totalCount: 0 },
+        army: { units: [] },
       };
     }
   }

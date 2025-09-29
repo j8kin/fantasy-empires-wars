@@ -1,5 +1,7 @@
 export type BuildingType = 'mage-tower' | 'barracks' | 'castle-wall' | 'watch-tower' | 'stronghold';
 
+export type BuildingTypes = Record<BuildingType, Building>;
+
 export interface Building {
   id: string;
   type: BuildingType;
@@ -9,7 +11,9 @@ export interface Building {
   description: string;
 }
 
-export const BUILDING_TYPES: { [key: string]: Building } = {
+export const getBuilding = (building: BuildingType): Building => PREDEFINED_BUILDING[building];
+
+const PREDEFINED_BUILDING: BuildingTypes = {
   'mage-tower': {
     id: 'mage-tower',
     type: 'mage-tower',

@@ -1,6 +1,6 @@
 import { initializeMap } from '../map/generation/mapGeneration';
 import { LAND_TYPE } from '../types/Land';
-import { BUILDING_TYPES } from '../types/Building';
+import { getBuilding } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { createTileId } from '../types/HexTileState';
@@ -68,7 +68,7 @@ describe('Map Generation with Players', () => {
       // Each stronghold should be on a player's homeland
       strongholdTiles.forEach((strongholdTile) => {
         expect(strongholdTile.controlledBy).not.toBe(NO_PLAYER.id);
-        expect(strongholdTile.buildings).toEqual([BUILDING_TYPES.stronghold]);
+        expect(strongholdTile.buildings).toEqual([getBuilding('stronghold')]);
       });
     });
 

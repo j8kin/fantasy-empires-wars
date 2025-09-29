@@ -1,6 +1,6 @@
-import { BUILDING_TYPES, BuildingType } from '../../types/Building';
+import { BuildingType, getBuilding } from '../../types/Building';
 import { Position } from '../utils/mapTypes';
-import { createTileId, HexTileState } from '../../types/HexTileState';
+import { createTileId, MapTilesType } from '../../types/HexTileState';
 import { calculateHexDistance, getTilesInRadius } from '../utils/mapAlgorithms';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
@@ -9,14 +9,14 @@ export const construct = (
   owner: GamePlayer,
   building: BuildingType,
   position: Position,
-  tiles: { [key: string]: HexTileState },
+  tiles: MapTilesType,
   mapSize: BattlefieldSize
 ) => {
   const mapPosition = createTileId(position);
   if (building !== 'stronghold') {
-    tiles[mapPosition].buildings.push(BUILDING_TYPES[building]);
+    tiles[mapPosition].buildings.push(getBuilding(building));
   } else {
-    tiles[mapPosition].buildings.push(BUILDING_TYPES[building]);
+    tiles[mapPosition].buildings.push(getBuilding(building));
     tiles[mapPosition].controlledBy = owner.id;
     const newLandsCandidates = getTilesInRadius(mapSize, position, 2, true);
     for (const candidate of newLandsCandidates) {

@@ -5,6 +5,8 @@ import { GamePlayer } from './GamePlayer';
 import { BattlefieldSize } from './BattlefieldSize';
 import { Position } from '../map/utils/mapTypes';
 
+export type MapTilesType = Record<string, HexTileState>;
+
 export interface HexTileState {
   mapPos: Position;
   landType: Land;
@@ -16,7 +18,7 @@ export interface HexTileState {
 
 export interface GameState {
   mapSize: BattlefieldSize;
-  tiles: { [key: string]: HexTileState };
+  tiles: MapTilesType;
   turn: number;
   // Game configuration data
   selectedPlayer?: GamePlayer;
