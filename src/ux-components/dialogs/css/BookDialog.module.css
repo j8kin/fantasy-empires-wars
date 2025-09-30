@@ -1,0 +1,229 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.bookContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90vw;
+  max-height: 90vh;
+  padding: 20px;
+}
+
+.title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #d4af37;
+  text-align: center;
+  margin: 0 0 20px 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  z-index: 1001;
+}
+
+.bookWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bookBackground {
+  width: 800px;
+  height: auto;
+  max-width: 90vw;
+  max-height: 60vh;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.flipBook {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.page {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 30px 60px 30px;
+  box-sizing: border-box;
+  position: relative;
+  height: 100%;
+}
+
+.pageContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  color: #2c1810;
+  font-family: 'Cinzel', serif;
+  text-align: center;
+  gap: 20px;
+}
+
+.pageNumber {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: #8b7355;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(44, 24, 16, 0.9);
+  color: #d4af37;
+  border: 2px solid #8b7355;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  z-index: 1002;
+}
+
+.closeButton:hover {
+  background: rgba(212, 175, 55, 0.9);
+  color: #2c1810;
+  border-color: #d4af37;
+  transform: scale(1.1);
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+}
+
+/* Building/Spell specific content styles */
+.buildingImage {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border: 3px solid #8b7355;
+  border-radius: 8px;
+  background: rgba(244, 228, 188, 0.1);
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.buildingName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c1810;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.costSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.costItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1rem;
+  color: #5d4037;
+  background: rgba(244, 228, 188, 0.2);
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #8b7355;
+}
+
+.costLabel {
+  font-weight: bold;
+}
+
+.costValue {
+  color: #2c1810;
+  font-weight: bold;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: #5d4037;
+  line-height: 1.4;
+  text-align: left;
+  background: rgba(244, 228, 188, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  margin-top: auto;
+}
+
+/* Action buttons */
+.actionButtons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.actionButton {
+  padding: 10px 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid #8b7355;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.confirmButton {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+}
+
+.confirmButton:hover {
+  background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+  border-color: #4caf50;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.cancelButton {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  color: white;
+}
+
+.cancelButton:hover {
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  border-color: #f44336;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+}
