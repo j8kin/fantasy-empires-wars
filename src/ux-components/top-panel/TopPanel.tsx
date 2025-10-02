@@ -2,6 +2,7 @@ import React from 'react';
 import { GameState } from '../../types/HexTileState';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
+import PlayActionsControl from '../game-controls/PlayActionsControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
@@ -21,6 +22,9 @@ export interface TopPanelProps {
   onOpenSaveDialog?: () => void;
   onEndTurn?: () => void;
   onOpponentSelect?: (opponent: OpponentWithDiplomacy, screenPosition: ScreenPosition) => void;
+  onBuild?: () => void;
+  onCast?: () => void;
+  onMove?: () => void;
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({
@@ -32,6 +36,9 @@ const TopPanel: React.FC<TopPanelProps> = ({
   onOpenSaveDialog,
   onEndTurn,
   onOpponentSelect,
+  onBuild,
+  onCast,
+  onMove,
 }) => {
   const MIN_OPPONENTS = 2;
 
@@ -66,7 +73,10 @@ const TopPanel: React.FC<TopPanelProps> = ({
         style={{ height: '100%', width: '100%' }}
       >
         <div className={styles.panelContainer}>
-          {/* Left Side - Player Info */}
+          {/* Left Side - Action Controls */}
+          <PlayActionsControl onBuild={onBuild} onCast={onCast} onMove={onMove} />
+
+          {/* Player Info */}
           {selectedPlayer && (
             <div className={styles.playerInfoContainer}>
               <PlayerAvatar
@@ -94,6 +104,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
             opponents={opponents}
             onOpponentSelect={onOpponentSelect}
           />
+
           {/* Right Side - Game Controls */}
           <GameControl
             onNewGame={onNewGame}

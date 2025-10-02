@@ -41,7 +41,7 @@ export const useMapState = (initialMapSize: BattlefieldSize = 'medium') => {
       const tile = prev.tiles[tileId];
       if (!tile) return prev;
 
-      const newGoldPerTurn = tile.goldPerTurn + building.goldPerTurn;
+      const newGoldPerTurn = tile.goldPerTurn + building.maintainCost;
 
       return {
         ...prev,

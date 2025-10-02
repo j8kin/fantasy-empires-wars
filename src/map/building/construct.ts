@@ -13,7 +13,7 @@ export const construct = (
   mapSize: BattlefieldSize
 ) => {
   const mapPosition = createTileId(position);
-  if (building !== 'stronghold') {
+  if (building !== BuildingType.STRONGHOLD) {
     tiles[mapPosition].buildings.push(getBuilding(building));
   } else {
     tiles[mapPosition].buildings.push(getBuilding(building));
@@ -30,7 +30,8 @@ export const construct = (
           .map((t) => tiles[createTileId(t)])
           .filter(
             (t) =>
-              t.controlledBy === currentOwner && t.buildings.some((b) => b.type === 'stronghold')
+              t.controlledBy === currentOwner &&
+              t.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
           );
         const oldOwnerDistance = oldOwnerStrongholds
           .map((t) => calculateHexDistance(mapSize, position, t.mapPos))

@@ -2,14 +2,14 @@ import { HexTileState, MapTilesType } from '../../types/HexTileState';
 import { GamePlayer } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 import { LandType } from '../../types/Land';
-import { Building } from '../../types/Building';
+import { BuildingType } from '../../types/Building';
 
 export const getLands = (
   tiles: MapTilesType,
   player?: GamePlayer,
   landType?: LandType,
   landAlignment?: Alignment,
-  buildings?: Building[],
+  buildings?: BuildingType[],
   noArmy?: boolean
 ): HexTileState[] => {
   return Object.values(tiles).filter(
@@ -24,7 +24,7 @@ export const getLands = (
         // require building from the list
         (buildings.length > 0 &&
           tile.buildings.length > 0 &&
-          tile.buildings.some((b) => buildings.includes(b)))) &&
+          tile.buildings.some((b) => buildings.includes(b.id)))) &&
       (noArmy == null || (noArmy ? tile.army.length === 0 : tile.army.length > 0))
   );
 };

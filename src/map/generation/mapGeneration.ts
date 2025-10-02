@@ -9,6 +9,7 @@ import { getLands } from '../utils/mapLands';
 import { Alignment } from '../../types/Alignment';
 import { getUnit } from '../../types/Army';
 import { recruitHero } from '../army/recruit';
+import { BuildingType } from '../../types/Building';
 
 const positionsToTiles = (pos: Position[], tiles: MapTilesType): HexTileState[] => {
   return pos.map((p) => tiles[createTileId(p)]).filter((tile) => tile !== undefined);
@@ -154,7 +155,7 @@ const addPlayer = (
   if (!homeland) return; // should never reach here
 
   homeland.controlledBy = player.id;
-  construct(player, 'stronghold', homeland.mapPos, tiles, mapSize);
+  construct(player, BuildingType.STRONGHOLD, homeland.mapPos, tiles, mapSize);
 
   // construct one barrack on the same alignment land except homeland
   const playerLands = getLands(
@@ -165,7 +166,7 @@ const addPlayer = (
     []
   );
   const barrackLand = playerLands[Math.floor(Math.random() * playerLands.length)];
-  construct(player, 'barracks', barrackLand.mapPos, tiles, mapSize);
+  construct(player, BuildingType.BARRACKS, barrackLand.mapPos, tiles, mapSize);
 
   existingPlayersPositions.push(homeland.mapPos);
 
