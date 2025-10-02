@@ -12,10 +12,9 @@ export interface BookDialogProps {
   isOpen: boolean;
   onClose: () => void;
   pages: BookPageContent[];
-  title?: string;
 }
 
-const BookDialog: React.FC<BookDialogProps> = ({ isOpen, onClose, pages, title }) => {
+const BookDialog: React.FC<BookDialogProps> = ({ isOpen, onClose, pages }) => {
   if (!isOpen) return null;
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -27,8 +26,6 @@ const BookDialog: React.FC<BookDialogProps> = ({ isOpen, onClose, pages, title }
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
       <div className={styles.bookContainer}>
-        {title && <h2 className={styles.title}>{title}</h2>}
-
         <div className={styles.bookWrapper}>
           <img src={openedBook} alt="Open Book" className={styles.bookBackground} />
 
@@ -65,10 +62,6 @@ const BookDialog: React.FC<BookDialogProps> = ({ isOpen, onClose, pages, title }
             ))}
           </HTMLFlipBook>
         </div>
-
-        <button className={styles.closeButton} onClick={onClose}>
-          ✕
-        </button>
       </div>
     </div>
   );
