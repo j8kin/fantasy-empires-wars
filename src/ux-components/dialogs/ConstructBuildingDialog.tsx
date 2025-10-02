@@ -1,4 +1,5 @@
 import React from 'react';
+import { toRoman } from 'roman-numerals';
 import BookDialog, { BookPageContent } from './BookDialog';
 import styles from './css/BookDialog.module.css';
 import { Building, BuildingType, getBuilding } from '../../types/Building';
@@ -40,23 +41,25 @@ const ConstructBuildingDialog: React.FC<ConstructBuildingDialogProps> = ({
       <div className={styles.description}>
         <h4 style={{ margin: '0 0 8px 0', color: '#2c1810', fontSize: '1rem' }}>Description:</h4>
         <p style={{ margin: 0, fontSize: '0.9rem' }}>{building.description}</p>
-      </div>
+        <br />
+        <div className={styles.costSection}>
+          <h4 style={{ margin: '0 0 5px 0', color: '#5d4037', fontSize: '1rem' }}>
+            Build Cost: <span className={styles.costValue}>{building.buildCost}</span>
+          </h4>
+        </div>
 
-      <div className={styles.costSection}>
-        <h4 style={{ margin: '0 0 5px 0', color: '#5d4037', fontSize: '1rem' }}>Build Cost:</h4>
-        <span className={styles.costValue}>{building.buildCost}</span>
-      </div>
-
-      <div className={styles.costSection}>
-        <h4 style={{ margin: '0 0 5px 0', color: '#5d4037', fontSize: '1rem' }}>Maintain Cost:</h4>
-        <span className={styles.costValue}>{building.maintainCost}</span>
+        <div className={styles.costSection}>
+          <h4 style={{ margin: '0 0 5px 0', color: '#5d4037', fontSize: '1rem' }}>
+            Maintain Cost: <span className={styles.costValue}>{building.maintainCost}</span>
+          </h4>
+        </div>
       </div>
     </>
   );
 
-  const pages: BookPageContent[] = Object.values(BuildingType).map((b) => ({
+  const pages: BookPageContent[] = Object.values(BuildingType).map((b, i) => ({
     content: pageContent(getBuilding(b)),
-    pageNumber: 'I',
+    pageNumber: toRoman(1027 + i),
   }));
 
   return <BookDialog isOpen={isOpen} onClose={onClose} pages={pages} />;

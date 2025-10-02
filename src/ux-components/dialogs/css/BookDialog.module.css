@@ -41,7 +41,7 @@
 }
 
 .bookBackground {
-  width: 1024px;
+  width: 1200px;
   height: auto;
   /*max-width: 90vw;*/
   /*max-height: 60vh;*/
@@ -52,9 +52,9 @@
 
 .flipBook {
   position: absolute;
-  top: 50%;
+  top: 37%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -52%);
   z-index: 2;
 }
 

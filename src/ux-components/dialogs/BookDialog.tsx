@@ -30,13 +30,13 @@ const BookDialog: React.FC<BookDialogProps> = ({ isOpen, onClose, pages }) => {
           <img src={openedBook} alt="Open Book" className={styles.bookBackground} />
 
           <HTMLFlipBook
-            width={400}
-            height={300}
-            size="stretch"
-            minWidth={315}
-            maxWidth={1000}
-            minHeight={400}
-            maxHeight={1533}
+            width={350}
+            height={450}
+            size="fixed"
+            minWidth={250}
+            maxWidth={350}
+            minHeight={350}
+            maxHeight={350}
             maxShadowOpacity={0.2}
             showCover={false}
             mobileScrollSupport={false}
