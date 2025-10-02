@@ -1,17 +1,17 @@
-import fighterAvatar from '../assets/avatars/fighter.png';
-import necromancerAvatar from '../assets/avatars/necromancerW.png';
-import dwarfAvatar from '../assets/avatars/dwarf.png';
-import elfAvatar from '../assets/avatars/elf.png';
-import rogueAvatar from '../assets/avatars/rodueW.png';
-import orcAvatar from '../assets/avatars/orc.png';
-import clericAvatar from '../assets/avatars/clericW.png';
-import enchanterAvatar from '../assets/avatars/enchanter.png';
-import clericMaleAvatar from '../assets/avatars/cleric.png';
-import cleric2Avatar from '../assets/avatars/clericW2.png';
-import druidAvatar from '../assets/avatars/druid.png';
-import necromancerMaleAvatar from '../assets/avatars/necromancer.png';
-import pyromancerAvatar from '../assets/avatars/pyromancer.png';
-import pyromancerFemaleAvatar from '../assets/avatars/pyromancerW.png';
+import alaric from '../assets/avatars/alaric.png';
+import morgana from '../assets/avatars/morgana.png';
+import thorin from '../assets/avatars/thorin.png';
+import vex from '../assets/avatars/vex.png';
+import grimjaw from '../assets/avatars/grimjaw.png';
+import serena from '../assets/avatars/serena.png';
+import kael from '../assets/avatars/kael.png';
+import elara from '../assets/avatars/elara.png';
+import marcus from '../assets/avatars/marcus.png';
+import lydia from '../assets/avatars/lydia.png';
+import elderoak from '../assets/avatars/elderoak.png';
+import valdris from '../assets/avatars/valdris.png';
+import ignatius from '../assets/avatars/ignatius.png';
+import ember from '../assets/avatars/ember.png';
 import { PlayerColorName } from './PlayerColors';
 import { Alignment } from './Alignment';
 import { UnitType } from './Army';
@@ -52,7 +52,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 8,
     description:
       'A noble paladin who has sworn to protect the innocent and uphold justice across the realm.',
-    avatar: fighterAvatar,
+    avatar: alaric,
     color: 'blue',
   },
   {
@@ -63,7 +63,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.NECROMANCER,
     level: 12,
     description: 'A powerful sorceress who seeks forbidden knowledge and commands dark magic.',
-    avatar: necromancerAvatar,
+    avatar: morgana,
     color: 'purple',
   },
   {
@@ -74,7 +74,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.HAMMERLORD,
     level: 10,
     description: 'A dwarven smith-warrior who values craftsmanship and honor above all else.',
-    avatar: dwarfAvatar,
+    avatar: thorin,
     color: 'orange',
   },
   {
@@ -85,7 +85,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.RANGER,
     level: 7,
     description: 'An elven ranger dedicated to protecting the ancient forests and their secrets.',
-    avatar: elfAvatar,
+    avatar: vex,
     color: 'green',
   },
   {
@@ -96,7 +96,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.FIGHTER, // todo add Unit for ORC HERO
     level: 15,
     description: 'A brutal orc warlord who leads through fear and seeks to conquer all lands.',
-    avatar: orcAvatar,
+    avatar: grimjaw,
     color: 'red',
   },
   {
@@ -107,7 +107,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.CLERIC,
     level: 11,
     description: 'A devout cleric who channels divine power to heal allies and smite evil.',
-    avatar: clericAvatar,
+    avatar: serena,
     color: 'yellow',
   },
   {
@@ -119,7 +119,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 9,
     description:
       'A wandering mage who seeks to master all schools of magic through experimentation.',
-    avatar: enchanterAvatar,
+    avatar: kael,
     color: 'blue',
   },
   {
@@ -131,7 +131,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     level: 6,
     description:
       'A sly rogue who uses wit and stealth to achieve goals through any means necessary.',
-    avatar: rogueAvatar,
+    avatar: elara,
     color: 'gray',
   },
   {
@@ -142,7 +142,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.CLERIC,
     level: 13,
     description: 'A devoted priest who spreads hope and healing throughout the lands.',
-    avatar: clericMaleAvatar,
+    avatar: marcus,
     color: 'yellow',
   },
   {
@@ -153,7 +153,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.CLERIC,
     level: 9,
     description: 'A compassionate healer who tends to the wounded with divine grace.',
-    avatar: cleric2Avatar,
+    avatar: lydia,
     color: 'purple',
   },
   {
@@ -164,7 +164,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.DRUID,
     level: 14,
     description: 'An ancient druid who maintains the balance between civilization and nature.',
-    avatar: druidAvatar,
+    avatar: elderoak,
     color: 'green',
   },
   {
@@ -175,7 +175,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.NECROMANCER,
     level: 16,
     description: 'A sinister necromancer who commands the undead and delves into forbidden arts.',
-    avatar: necromancerMaleAvatar,
+    avatar: valdris,
     color: 'purple',
   },
   {
@@ -186,7 +186,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.PYROMANCER,
     level: 11,
     description: 'A master of fire magic who forges spells as skillfully as weapons.',
-    avatar: pyromancerAvatar,
+    avatar: ignatius,
     color: 'orange',
   },
   {
@@ -197,7 +197,7 @@ export const PREDEFINED_PLAYERS: GamePlayer[] = [
     type: UnitType.PYROMANCER,
     level: 10,
     description: 'A fierce sorceress whose burning passion fuels her destructive fire magic.',
-    avatar: pyromancerFemaleAvatar,
+    avatar: ember,
     color: 'red',
   },
 ];

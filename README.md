@@ -34,4 +34,3 @@ A fantasy-themed strategic warfare game built with React TypeScript. Immerse you
 ## Demo
 
 🎮 **[View Live Demo](https://j8kin.github.io/fantasy-empires-wars)**
-
