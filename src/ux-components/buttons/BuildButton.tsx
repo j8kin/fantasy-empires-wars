@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
 import { GameButtonProps } from './GameButtonProps';
+import Build from '../../assets/buttons/Build.png';
 
 const BuildButton: React.FC<GameButtonProps> = ({ onClick }) => {
   const handleBuild = () => {
@@ -10,9 +11,12 @@ const BuildButton: React.FC<GameButtonProps> = ({ onClick }) => {
   };
 
   return (
-    <button className={styles.textButton} onClick={handleBuild}>
-      Build
-    </button>
+    <img
+      src={Build}
+      alt="Construct a building"
+      className={styles.buttonImage}
+      onClick={handleBuild}
+    />
   );
 };
 

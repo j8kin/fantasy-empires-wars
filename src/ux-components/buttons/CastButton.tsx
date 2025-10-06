@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
 import { GameButtonProps } from './GameButtonProps';
+import Cast from '../../assets/buttons/Cast.png';
 
 const CastButton: React.FC<GameButtonProps> = ({ onClick }) => {
   const handleCast = () => {
@@ -10,11 +11,7 @@ const CastButton: React.FC<GameButtonProps> = ({ onClick }) => {
     }
   };
 
-  return (
-    <button className={styles.textButton} onClick={handleCast}>
-      Cast
-    </button>
-  );
+  return <img src={Cast} alt="Cast Spell" className={styles.buttonImage} onClick={handleCast} />;
 };
 
 export default CastButton;

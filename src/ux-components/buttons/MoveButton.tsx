@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
 import { GameButtonProps } from './GameButtonProps';
+import Move from '../../assets/buttons/Move.png';
 
 const MoveButton: React.FC<GameButtonProps> = ({ onClick }) => {
   const handleMove = () => {
@@ -10,11 +11,7 @@ const MoveButton: React.FC<GameButtonProps> = ({ onClick }) => {
     }
   };
 
-  return (
-    <button className={styles.textButton} onClick={handleMove}>
-      Move
-    </button>
-  );
+  return <img src={Move} alt="Move army" className={styles.buttonImage} onClick={handleMove} />;
 };
 
 export default MoveButton;
