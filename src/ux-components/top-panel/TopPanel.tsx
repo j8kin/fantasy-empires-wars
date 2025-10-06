@@ -34,6 +34,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
   onNewGame,
   onLoadGame,
   onOpenSaveDialog,
+  onEndTurn,
   onOpponentSelect,
   onBuild,
   onCast,
@@ -45,7 +46,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
   const selectedPlayer = gameState?.selectedPlayer;
   const opponents = gameState?.opponents;
 
-  const endTurnButton = <GameButton buttonName="endofturn" />;
+  const endTurnButton = <GameButton buttonName="endofturn" onClick={onEndTurn} />;
 
   return (
     <FantasyBorderFrame

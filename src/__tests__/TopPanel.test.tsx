@@ -129,7 +129,7 @@ describe('TopPanel Component', () => {
     const endTurnButton = screen.getByAltText('End Turn');
     fireEvent.click(endTurnButton);
 
-    expect(consoleSpy).toHaveBeenCalledWith("endofturn clicked! onClick handler: 'not provided'");
+    expect(consoleSpy).not.toHaveBeenCalled();
     expect(mockCallbacks.onEndTurn).toHaveBeenCalled();
 
     alertSpy.mockRestore();

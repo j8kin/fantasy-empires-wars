@@ -20,6 +20,7 @@ const GameButton: React.FC<GameButtonProps> = ({ buttonName, onClick }) => {
     if (onClick) {
       onClick();
     } else {
+      console.log(`${buttonName} clicked! onClick handler: 'not provided'`);
       alert(`${buttonName} clicked! onClick handler: 'not provided'`);
     }
   };

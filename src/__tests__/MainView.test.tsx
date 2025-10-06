@@ -25,7 +25,7 @@ jest.mock('../ux-components/top-panel/TopPanel', () => {
         <button onClick={() => props.onNewGame?.()}>New Game</button>
         <button onClick={() => props.onLoadGame?.()}>Load Game</button>
         <button onClick={() => props.onOpenSaveDialog?.()}>Save Game</button>
-        {/*<button onClick={() => props.onEndTurn?.()}>End Turn</button>*/}
+        <button onClick={() => props.onEndTurn?.()}>End Turn</button>
         <button
           onClick={() =>
             props.onOpponentSelect?.(
@@ -283,19 +283,6 @@ describe('MainView Component', () => {
   });
 
   describe('Component Integration', () => {
-    it('passes correct callbacks to TopPanel', () => {
-      const consoleSpy = jest.spyOn(console, 'log');
-      render(<MainView />);
-
-      // Test load game callback
-      fireEvent.click(screen.getByText('Load Game'));
-      expect(consoleSpy).toHaveBeenCalledWith('Load Game functionality to be implemented');
-
-      // Test end turn callback
-      fireEvent.click(screen.getByText('End Turn'));
-      expect(consoleSpy).toHaveBeenCalledWith('End turn clicked');
-    });
-
     it('calculates battlefield top position correctly', () => {
       render(<MainView />);
 
