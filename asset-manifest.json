@@ -1,8 +1,9 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.204f7314.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.c7f2dfdd.js",
-    "static/js/453.efa4b083.chunk.js": "/fantasy-empires-wars/static/js/453.efa4b083.chunk.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.dd3aef1d.js",
+    "static/js/453.9f11d8f4.chunk.js": "/fantasy-empires-wars/static/js/453.9f11d8f4.chunk.js",
+    "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
     "static/media/Move.png": "/fantasy-empires-wars/static/media/Move.546f8e4b5a8e62025aa4.png",
     "static/media/Build.png": "/fantasy-empires-wars/static/media/Build.10ab5154028db7ab7acb.png",
@@ -13,6 +14,7 @@
     "static/media/kael.png": "/fantasy-empires-wars/static/media/kael.020c79f3591fb99ef9d7.png",
     "static/media/grimjaw.png": "/fantasy-empires-wars/static/media/grimjaw.7ed076af27d0a660ca8d.png",
     "static/media/marcus.png": "/fantasy-empires-wars/static/media/marcus.6e0d80784b325526c2a4.png",
+    "static/media/Quest.png": "/fantasy-empires-wars/static/media/Quest.8afcfeb1050521155ae7.png",
     "static/media/serena.png": "/fantasy-empires-wars/static/media/serena.c56dd7a3ab323617689d.png",
     "static/media/vex.png": "/fantasy-empires-wars/static/media/vex.3352b4553d07aa1e7029.png",
     "static/media/EndOfTurn.png": "/fantasy-empires-wars/static/media/EndOfTurn.0508056e44ffffd0b2a4.png",
@@ -24,6 +26,7 @@
     "static/media/morgana.png": "/fantasy-empires-wars/static/media/morgana.4de6575e279e16030476.png",
     "static/media/ignatius.png": "/fantasy-empires-wars/static/media/ignatius.9af98ba2f3c44fcc189a.png",
     "static/media/ember.png": "/fantasy-empires-wars/static/media/ember.6e4123565bd294ae4beb.png",
+    "static/media/Ok.png": "/fantasy-empires-wars/static/media/Ok.425997d708d1a3b1966f.png",
     "static/media/valdris.png": "/fantasy-empires-wars/static/media/valdris.c9c11d9da8fafab700ef.png",
     "static/media/Cancel.png": "/fantasy-empires-wars/static/media/Cancel.639dcdbffc5081d17ae3.png",
     "static/media/CelticPatternCorner.png": "/fantasy-empires-wars/static/media/CelticPatternCorner.7f5e78759ba8a80d09b9.png",
@@ -41,11 +44,11 @@
     "static/media/plains.png": "/fantasy-empires-wars/static/media/plains.3822373e507b0835d67e.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.204f7314.css.map": "/fantasy-empires-wars/static/css/main.204f7314.css.map",
-    "main.c7f2dfdd.js.map": "/fantasy-empires-wars/static/js/main.c7f2dfdd.js.map",
-    "453.efa4b083.chunk.js.map": "/fantasy-empires-wars/static/js/453.efa4b083.chunk.js.map"
+    "main.dd3aef1d.js.map": "/fantasy-empires-wars/static/js/main.dd3aef1d.js.map",
+    "453.9f11d8f4.chunk.js.map": "/fantasy-empires-wars/static/js/453.9f11d8f4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.204f7314.css",
-    "static/js/main.c7f2dfdd.js"
+    "static/js/main.dd3aef1d.js"
   ]
 }
