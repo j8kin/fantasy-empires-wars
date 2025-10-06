@@ -129,8 +129,7 @@ describe('TopPanel Component', () => {
     const endTurnButton = screen.getByAltText('End Turn');
     fireEvent.click(endTurnButton);
 
-    expect(alertSpy).toHaveBeenCalledWith('End of Turn button is pressed!');
-    expect(consoleSpy).toHaveBeenCalledWith('End turn clicked');
+    expect(consoleSpy).toHaveBeenCalledWith("endofturn clicked! onClick handler: 'not provided'");
     expect(mockCallbacks.onEndTurn).toHaveBeenCalled();
 
     alertSpy.mockRestore();
@@ -145,9 +144,8 @@ describe('TopPanel Component', () => {
     const endTurnButton = screen.getByAltText('End Turn');
     fireEvent.click(endTurnButton);
 
-    expect(alertSpy).toHaveBeenCalledWith('End of Turn button is pressed!');
-    expect(consoleSpy).toHaveBeenCalledWith('End turn clicked');
-    // Should not throw error when onEndTurn is undefined
+    expect(consoleSpy).toHaveBeenCalledWith("endofturn clicked! onClick handler: 'not provided'");
+    // Should not throw an error when onEndTurn is undefined
 
     alertSpy.mockRestore();
     consoleSpy.mockRestore();

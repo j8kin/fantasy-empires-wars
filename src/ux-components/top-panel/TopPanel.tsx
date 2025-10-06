@@ -10,7 +10,7 @@ import FantasyBorderFrame, {
   Dimensions,
   ScreenPosition,
 } from '../fantasy-border-frame/FantasyBorderFrame';
-import EndOfTurnButton from '../buttons/EndOfTurnButton';
+import GameButton from '../buttons/GameButton';
 import styles from './css/TopPanel.module.css';
 
 export interface TopPanelProps {
@@ -34,7 +34,6 @@ const TopPanel: React.FC<TopPanelProps> = ({
   onNewGame,
   onLoadGame,
   onOpenSaveDialog,
-  onEndTurn,
   onOpponentSelect,
   onBuild,
   onCast,
@@ -46,16 +45,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
   const selectedPlayer = gameState?.selectedPlayer;
   const opponents = gameState?.opponents;
 
-  const endTurnButton = (
-    <EndOfTurnButton
-      onClick={() => {
-        console.log('End turn clicked');
-        if (onEndTurn) {
-          onEndTurn();
-        }
-      }}
-    />
-  );
+  const endTurnButton = <GameButton buttonName="endofturn" />;
 
   return (
     <FantasyBorderFrame

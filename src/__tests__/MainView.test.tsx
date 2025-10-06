@@ -25,7 +25,7 @@ jest.mock('../ux-components/top-panel/TopPanel', () => {
         <button onClick={() => props.onNewGame?.()}>New Game</button>
         <button onClick={() => props.onLoadGame?.()}>Load Game</button>
         <button onClick={() => props.onOpenSaveDialog?.()}>Save Game</button>
-        <button onClick={() => props.onEndTurn?.()}>End Turn</button>
+        {/*<button onClick={() => props.onEndTurn?.()}>End Turn</button>*/}
         <button
           onClick={() =>
             props.onOpponentSelect?.(

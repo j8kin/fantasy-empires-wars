@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
-import SaveGameActionButton from '../buttons/SaveGameActionButton';
-import CancelButton from '../buttons/CancelButton';
+import GameButton from '../buttons/GameButton';
 
 export interface SaveGameDialogProps {
   isOpen: boolean;
@@ -39,8 +38,8 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
     <FantasyBorderFrame
       screenPosition={{ x, y }}
       windowDimensions={{ width: dialogWidth, height: dialogHeight }}
-      primaryButton={<SaveGameActionButton onClick={handleSave} />}
-      secondaryButton={<CancelButton onClick={handleCancel} />}
+      primaryButton={<GameButton buttonName="savegame" onClick={handleSave} />}
+      secondaryButton={<GameButton buttonName="cancel" onClick={handleCancel} />}
     >
       <div style={{ textAlign: 'center', color: 'white' }}>
         <h2 style={{ marginBottom: '30px', fontSize: '24px' }}>Save Game</h2>

@@ -1,8 +1,6 @@
 import React from 'react';
 import styles from './css/GameControl.module.css';
-import BuildButton from '../buttons/BuildButton';
-import CastButton from '../buttons/CastButton';
-import MoveButton from '../buttons/MoveButton';
+import GameButton from '../buttons/GameButton';
 
 interface PlayActionsControlProps {
   onBuild?: () => void;
@@ -13,9 +11,9 @@ interface PlayActionsControlProps {
 const PlayActionsControl: React.FC<PlayActionsControlProps> = ({ onBuild, onCast, onMove }) => {
   return (
     <div className={styles.gameControlContainer}>
-      <BuildButton onClick={onBuild} />
-      <CastButton onClick={onCast} />
-      <MoveButton onClick={onMove} />
+      <GameButton buttonName="build" onClick={onBuild} />
+      <GameButton buttonName="cast" onClick={onCast} />
+      <GameButton buttonName="move" onClick={onMove} />
     </div>
   );
 };

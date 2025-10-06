@@ -139,9 +139,7 @@ const MainView: React.FC = () => {
         tileDimensions={TILE_SIZE}
         gameState={gameState}
         onNewGame={handleShowStartWindow}
-        onLoadGame={() => console.log('Load Game functionality to be implemented')}
         onOpenSaveDialog={handleShowSaveDialog}
-        onEndTurn={() => console.log('End turn clicked')}
         onOpponentSelect={handleShowOpponentInfo}
         onBuild={handleBuild}
       />

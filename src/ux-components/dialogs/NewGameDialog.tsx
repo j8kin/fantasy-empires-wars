@@ -4,7 +4,7 @@ import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
 import { PlayerColorName, PLAYER_COLORS } from '../../types/PlayerColors';
 import PlayerAvatar from '../avatars/PlayerAvatar';
-import StartGameButton from '../buttons/StartGameButton';
+import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import styles from './css/NewGameDialog.module.css';
 import { GameState } from '../../types/HexTileState';
@@ -206,7 +206,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
     <FantasyBorderFrame
       screenPosition={{ x: dialogX, y: dialogY }}
       windowDimensions={{ width: dialogWidth, height: dialogHeight }}
-      primaryButton={<StartGameButton onClick={handleStartGame} />}
+      primaryButton={<GameButton buttonName="startgame" onClick={handleStartGame} />}
       zIndex={1005}
     >
       <div className={styles.content}>
