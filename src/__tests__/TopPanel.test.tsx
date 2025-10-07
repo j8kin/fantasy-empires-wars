@@ -126,7 +126,7 @@ describe('TopPanel Component', () => {
     render(<TopPanel {...defaultProps} {...mockCallbacks} />);
 
     // Find and click the End Turn button by alt text
-    const endTurnButton = screen.getByAltText('End Turn');
+    const endTurnButton = screen.getByAltText('End of turn');
     fireEvent.click(endTurnButton);
 
     expect(consoleSpy).not.toHaveBeenCalled();
@@ -141,10 +141,10 @@ describe('TopPanel Component', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
     render(<TopPanel {...defaultProps} />);
 
-    const endTurnButton = screen.getByAltText('End Turn');
+    const endTurnButton = screen.getByAltText('End of turn');
     fireEvent.click(endTurnButton);
 
-    expect(consoleSpy).toHaveBeenCalledWith("endofturn clicked! onClick handler: 'not provided'");
+    expect(consoleSpy).toHaveBeenCalledWith("End of turn clicked! onClick handler: 'not provided'");
     // Should not throw an error when onEndTurn is undefined
 
     alertSpy.mockRestore();
@@ -213,7 +213,7 @@ describe('TopPanel Component', () => {
       expect(screen.getByText('Gold: 1,500')).toBeInTheDocument();
 
       // Verify End Turn button exists
-      expect(screen.getByAltText('End Turn')).toBeInTheDocument();
+      expect(screen.getByAltText('End of turn')).toBeInTheDocument();
     });
 
     it('handles missing optional props gracefully', () => {

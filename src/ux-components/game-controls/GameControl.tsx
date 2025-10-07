@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './css/GameControl.module.css';
 import GameButton from '../buttons/GameButton';
+import { ButtonName } from '../buttons/GameButtonProps';
 
 interface GameControlProps {
   onNewGame?: () => void;
@@ -11,9 +12,9 @@ interface GameControlProps {
 const GameControl: React.FC<GameControlProps> = ({ onNewGame, onLoadGame, onOpenSaveDialog }) => {
   return (
     <div className={styles.gameControlContainer}>
-      <GameButton buttonName="newgame" onClick={onNewGame} />
-      <GameButton buttonName="loadgame" onClick={onLoadGame} />
-      <GameButton buttonName="savegame" onClick={onOpenSaveDialog} />
+      <GameButton buttonName={ButtonName.NEW} onClick={onNewGame} />
+      <GameButton buttonName={ButtonName.LOAD} onClick={onLoadGame} />
+      <GameButton buttonName={ButtonName.SAVE} onClick={onOpenSaveDialog} />
     </div>
   );
 };

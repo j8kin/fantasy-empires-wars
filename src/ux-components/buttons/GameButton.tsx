@@ -1,19 +1,19 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
-import { GameButtonProps } from './GameButtonProps';
+import { ButtonName, GameButtonProps } from './GameButtonProps';
 
-import Build from '../../assets/buttons/Build.png';
-import Cancel from '../../assets/buttons/Cancel.png';
-import Cast from '../../assets/buttons/Cast.png';
-import EndOfTurn from '../../assets/buttons/EndOfTurn.png';
-import LoadGame from '../../assets/buttons/LoadGame.png';
-import Move from '../../assets/buttons/Move.png';
-import NewGame from '../../assets/buttons/NewGame.png';
-import Ok from '../../assets/buttons/Ok.png';
-import Quest from '../../assets/buttons/Quest.png';
-import Recruit from '../../assets/buttons/Recruit.png';
-import SaveGame from '../../assets/buttons/SaveGame.png';
-import StartGame from '../../assets/buttons/StartGame.png';
+import BuildImg from '../../assets/buttons/Build.png';
+import CancelImg from '../../assets/buttons/Cancel.png';
+import CastImg from '../../assets/buttons/Cast.png';
+import EndOfTurnImg from '../../assets/buttons/EndOfTurn.png';
+import LoadGameImg from '../../assets/buttons/LoadGame.png';
+import MoveImg from '../../assets/buttons/Move.png';
+import NewGameImg from '../../assets/buttons/NewGame.png';
+import OkImg from '../../assets/buttons/Ok.png';
+import QuestImg from '../../assets/buttons/Quest.png';
+import RecruitImg from '../../assets/buttons/Recruit.png';
+import SaveGameImg from '../../assets/buttons/SaveGame.png';
+import StartGameImg from '../../assets/buttons/StartGame.png';
 
 const GameButton: React.FC<GameButtonProps> = ({ buttonName, onClick }) => {
   const handleButton = () => {
@@ -25,40 +25,45 @@ const GameButton: React.FC<GameButtonProps> = ({ buttonName, onClick }) => {
     }
   };
 
-  const getButtonImage = (name: string) => {
-    switch (name.toLowerCase()) {
-      case 'build':
-        return { src: Build, alt: 'Construct a building' };
-      case 'cancel':
-        return { src: Cancel, alt: 'Cancel' };
-      case 'cast':
-        return { src: Cast, alt: 'Cast Spell' };
-      case 'endofturn':
-        return { src: EndOfTurn, alt: 'End Turn' };
-      case 'loadgame':
-        return { src: LoadGame, alt: 'Load Game' };
-      case 'move':
-        return { src: Move, alt: 'Move army' };
-      case 'newgame':
-        return { src: NewGame, alt: 'New Game' };
-      case 'ok':
-        return { src: Ok, alt: 'OK' };
-      case 'quest':
-        return { src: Quest, alt: 'Quest' };
-      case 'recruit':
-        return { src: Recruit, alt: 'Recruit' };
-      case 'savegame':
-        return { src: SaveGame, alt: 'Save Game' };
-      case 'startgame':
-        return { src: StartGame, alt: 'Start Game' };
+  const getButtonImage = (name: ButtonName) => {
+    switch (name) {
+      case ButtonName.BUILD:
+        return BuildImg;
+      case ButtonName.CANCEL:
+        return CancelImg;
+      case ButtonName.CAST:
+        return CastImg;
+      case ButtonName.TURN:
+        return EndOfTurnImg;
+      case ButtonName.LOAD:
+        return LoadGameImg;
+      case ButtonName.MOVE:
+        return MoveImg;
+      case ButtonName.NEW:
+        return NewGameImg;
+      case ButtonName.OK:
+        return OkImg;
+      case ButtonName.QUEST:
+        return QuestImg;
+      case ButtonName.RECRUIT:
+        return RecruitImg;
+      case ButtonName.SAVE:
+        return SaveGameImg;
+      case ButtonName.START:
+        return StartGameImg;
       default:
-        return { src: Ok, alt: buttonName };
+        return OkImg;
     }
   };
 
-  const { src, alt } = getButtonImage(buttonName);
-
-  return <img src={src} alt={alt} className={styles.buttonImage} onClick={handleButton} />;
+  return (
+    <img
+      src={getButtonImage(buttonName)}
+      alt={buttonName}
+      className={styles.buttonImage}
+      onClick={handleButton}
+    />
+  );
 };
 
 export default GameButton;

@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
-import { GamePlayer, PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
+import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import GameButton from '../buttons/GameButton';
+import { ButtonName } from '../buttons/GameButtonProps';
 
 export interface SelectOpponentDialogProps {
   excludedPlayerIds: string[];
@@ -44,7 +45,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     <FantasyBorderFrame
       screenPosition={{ x: dialogX, y: dialogY }}
       windowDimensions={{ width: dialogWidth, height: dialogHeight }}
-      secondaryButton={<GameButton buttonName="cancel" onClick={onCancel} />}
+      secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={onCancel} />}
       zIndex={1010}
     >
       <PlayerSelection

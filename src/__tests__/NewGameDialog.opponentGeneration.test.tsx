@@ -117,7 +117,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     fireEvent.change(mapSizeSelect, { target: { value: 'large' } });
 
     // Start the game to trigger opponent generation
-    const startButton = screen.getByAltText('Start Game');
+    const startButton = screen.getByAltText('Start game');
     fireEvent.click(startButton);
 
     // Check that all opponents are unique
@@ -177,10 +177,10 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     expect(screen.getByText('Opponents (4 of 4):')).toBeInTheDocument();
 
     // Start the game and verify the configuration
-    const startButton = screen.getByAltText('Start Game');
+    const startButton = screen.getByAltText('Start game');
     fireEvent.click(startButton);
 
-    // Check that the final configuration has correct number of opponents
+    // Check that the final configuration has the correct number of opponents
     expect(screen.getByTestId('opponent-count')).toHaveTextContent('4');
     expect(screen.getByTestId('map-size')).toHaveTextContent('medium');
   });

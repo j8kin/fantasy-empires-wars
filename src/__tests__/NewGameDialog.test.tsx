@@ -65,7 +65,7 @@ describe('NewGameWindow', () => {
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
-    const startButton = screen.getByAltText('Start Game');
+    const startButton = screen.getByAltText('Start game');
     fireEvent.click(startButton);
 
     expect(mockOnStartGame).toHaveBeenCalledWith({
@@ -187,7 +187,7 @@ describe('NewGameWindow', () => {
     }
 
     // Click start game
-    const startButton = screen.getByAltText('Start Game');
+    const startButton = screen.getByAltText('Start game');
     fireEvent.click(startButton);
 
     // The test expectation is in the onStartGame callback above

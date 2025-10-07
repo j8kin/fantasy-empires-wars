@@ -12,6 +12,7 @@ import FantasyBorderFrame, {
 } from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 import styles from './css/TopPanel.module.css';
+import { ButtonName } from '../buttons/GameButtonProps';
 
 export interface TopPanelProps {
   height: number;
@@ -46,7 +47,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
   const selectedPlayer = gameState?.selectedPlayer;
   const opponents = gameState?.opponents;
 
-  const endTurnButton = <GameButton buttonName="endofturn" onClick={onEndTurn} />;
+  const endTurnButton = <GameButton buttonName={ButtonName.TURN} onClick={onEndTurn} />;
 
   return (
     <FantasyBorderFrame

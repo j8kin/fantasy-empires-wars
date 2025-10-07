@@ -1,13 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
-import { GamePlayer, PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
-import { PlayerColorName, PLAYER_COLORS } from '../../types/PlayerColors';
+import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import styles from './css/NewGameDialog.module.css';
 import { GameState } from '../../types/HexTileState';
+import { ButtonName } from '../buttons/GameButtonProps';
 
 export interface NewGameDialogProps {
   onStartGame: (config: GameState) => void;
@@ -206,7 +207,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
     <FantasyBorderFrame
       screenPosition={{ x: dialogX, y: dialogY }}
       windowDimensions={{ width: dialogWidth, height: dialogHeight }}
-      primaryButton={<GameButton buttonName="startgame" onClick={handleStartGame} />}
+      primaryButton={<GameButton buttonName={ButtonName.START} onClick={handleStartGame} />}
       zIndex={1005}
     >
       <div className={styles.content}>
