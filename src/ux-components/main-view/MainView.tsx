@@ -6,7 +6,6 @@ import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import OpponentInfoPopup, { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
-import ConstructBuildingDialog from '../dialogs/ConstructBuildingDialog';
 import ProgressPopup from '../popups/ProgressPopup';
 import { GamePlayer } from '../../types/GamePlayer';
 import { GameState } from '../../types/HexTileState';
@@ -33,7 +32,6 @@ const MainView: React.FC = () => {
   const [landHideModePlayerId, setLandHideModePlayerId] = useState<string | undefined>(undefined);
   const [showProgressPopup, setShowProgressPopup] = useState<boolean>(false);
   const [progressMessage, setProgressMessage] = useState<string>('');
-  const [showConstructBuildingDialog, setShowConstructBuildingDialog] = useState<boolean>(false);
 
   // Initialize the game state at the MainView level
   const { gameState, updateGameConfig } = useMapState('medium');
@@ -122,19 +120,6 @@ const MainView: React.FC = () => {
     setSelectOpponentCallback(null);
   }, []);
 
-  const handleBuild = useCallback(() => {
-    setShowConstructBuildingDialog(true);
-  }, []);
-
-  const handleCloseConstructBuildingDialog = useCallback(() => {
-    setShowConstructBuildingDialog(false);
-  }, []);
-
-  const handleConstructBuilding = useCallback((buildingId: string) => {
-    console.log('Constructing building:', buildingId);
-    // TODO: Implement actual building construction functionality
-  }, []);
-
   return (
     <main className={styles.backgroundStyle} id="MainCanvas">
       {/* Content components */}
@@ -145,7 +130,6 @@ const MainView: React.FC = () => {
         onNewGame={handleShowStartWindow}
         onOpenSaveDialog={handleShowSaveDialog}
         onOpponentSelect={handleShowOpponentInfo}
-        onBuild={handleBuild}
       />
       <Battlefield
         topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
@@ -189,14 +173,6 @@ const MainView: React.FC = () => {
           allowEmptyPlayer={allowEmptyPlayer}
         />
       )}
-
-      {/* Construct Building Dialog - shown as overlay */}
-      <ConstructBuildingDialog
-        isOpen={showConstructBuildingDialog}
-        onClose={handleCloseConstructBuildingDialog}
-        onConstruct={handleConstructBuilding}
-        onCancel={handleCloseConstructBuildingDialog}
-      />
 
       {/* Progress Popup - shown as overlay */}
       {showProgressPopup && (
