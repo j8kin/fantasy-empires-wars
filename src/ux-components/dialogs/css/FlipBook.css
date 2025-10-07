@@ -1,0 +1,48 @@
+.flipbook-container {
+  width: 780px;
+  height: 600px;
+  background-image: url('../../../assets/book/opened-book.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1000;
+}
+
+.flipbook {
+  margin-bottom: 135px;
+}
+
+.pageStyle {
+  color: yellow;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  min-height: 370px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.pageStyle.evenPage {
+  background-image: url('../../../assets/book/PageEven.png');
+  padding-left: 10px;
+  padding-right: 35px;
+}
+
+.pageStyle.oddPage {
+  background-image: url('../../../assets/book/PageOdd.png');
+  padding-left: 35px;
+  padding-right: 10px;
+}
