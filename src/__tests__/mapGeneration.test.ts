@@ -1,6 +1,6 @@
 import { initializeMap } from '../map/generation/mapGeneration';
 import { LAND_TYPE } from '../types/Land';
-import { getBuilding } from '../types/Building';
+import { BuildingType, getBuilding } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { createTileId } from '../types/HexTileState';
@@ -60,7 +60,7 @@ describe('Map Generation with Players', () => {
 
       // Find strongholds
       const strongholdTiles = Object.values(tiles).filter((tile) =>
-        tile.buildings.some((building) => building.id === 'stronghold')
+        tile.buildings.some((building) => building.id === BuildingType.STRONGHOLD)
       );
 
       expect(strongholdTiles.length).toBe(testPlayers.length);
@@ -68,7 +68,7 @@ describe('Map Generation with Players', () => {
       // Each stronghold should be on a player's homeland
       strongholdTiles.forEach((strongholdTile) => {
         expect(strongholdTile.controlledBy).not.toBe(NO_PLAYER.id);
-        expect(strongholdTile.buildings).toEqual([getBuilding('stronghold')]);
+        expect(strongholdTile.buildings).toEqual([getBuilding(BuildingType.STRONGHOLD)]);
 
         // verify that a Players hero added and placed in Homeland
         expect(strongholdTile.army.length).toEqual(1);
@@ -95,7 +95,7 @@ describe('Map Generation with Players', () => {
 
       // Check if the homeland (stronghold tile) has appropriate alignment or is a volcano for necromancer
       const strongholdTile = playersTiles.filter((tile) =>
-        tile.buildings.some((building) => building.id === 'stronghold')
+        tile.buildings.some((building) => building.id === BuildingType.STRONGHOLD)
       );
 
       expect(strongholdTile).toBeDefined();
@@ -119,7 +119,7 @@ describe('Map Generation with Players', () => {
 
       // Find stronghold positions (homelands)
       const strongholdTiles = Object.values(tiles).filter((tile) =>
-        tile.buildings.some((building) => building.id === 'stronghold')
+        tile.buildings.some((building) => building.id === BuildingType.STRONGHOLD)
       );
 
       expect(strongholdTiles.length).toBe(testPlayers.length);
@@ -140,7 +140,7 @@ describe('Map Generation with Players', () => {
       const tiles = initializeMap(mapSize, singlePlayer);
 
       const strongholdTile = Object.values(tiles).find((tile) =>
-        tile.buildings.some((building) => building.id === 'stronghold')
+        tile.buildings.some((building) => building.id === BuildingType.STRONGHOLD)
       );
 
       expect(strongholdTile).toBeDefined();
@@ -258,7 +258,7 @@ describe('Map Generation with Players', () => {
       expect(playerTiles.length).toBeGreaterThan(0);
 
       const strongholdTiles = Object.values(tiles).filter((tile) =>
-        tile.buildings.some((building) => building.id === 'stronghold')
+        tile.buildings.some((building) => building.id === BuildingType.STRONGHOLD)
       );
 
       expect(strongholdTiles.length).toBe(1);
