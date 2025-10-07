@@ -6,6 +6,7 @@ import { GameState } from '../types/HexTileState';
 
 describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   const mockOnStartGame = jest.fn();
+  const mockOnCancel = jest.fn();
   const mockOnShowSelectOpponentDialog = jest.fn();
 
   beforeEach(() => {
@@ -16,6 +17,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />
     );
@@ -52,6 +54,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />
     );
@@ -91,6 +94,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
               setConfig(gameConfig);
               mockOnStartGame(gameConfig);
             }}
+            onCancel={mockOnCancel}
             onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
           />
           {config && (
@@ -146,6 +150,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
               setConfig(gameConfig);
               mockOnStartGame(gameConfig);
             }}
+            onCancel={mockOnCancel}
             onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
           />
           {config && (
@@ -189,6 +194,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />
     );

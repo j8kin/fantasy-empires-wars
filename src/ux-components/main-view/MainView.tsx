@@ -47,7 +47,7 @@ const MainView: React.FC = () => {
       setProgressMessage('Creating new game...');
       setShowProgressPopup(true);
 
-      // Simulate game creation process
+      // Show game progress
       setTimeout(() => {
         updateGameConfig(config);
         setGameStarted(true);
@@ -56,6 +56,10 @@ const MainView: React.FC = () => {
     },
     [updateGameConfig]
   );
+
+  const handleStartGameCancel = useCallback(() => {
+    setShowStartWindow(false);
+  }, []);
 
   const handleShowStartWindow = useCallback(() => {
     setShowStartWindow(true);
@@ -157,6 +161,7 @@ const MainView: React.FC = () => {
       {showStartWindow && (
         <NewGameDialog
           onStartGame={handleStartGame}
+          onCancel={handleStartGameCancel}
           onShowSelectOpponentDialog={handleShowSelectOpponentDialog}
         />
       )}

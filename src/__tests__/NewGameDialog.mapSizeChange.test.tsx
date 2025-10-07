@@ -6,6 +6,7 @@ import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 
 describe('NewGameDialog - Map Size Changes', () => {
   const mockOnStartGame = jest.fn();
+  const mockOnCancel = jest.fn();
   const mockOnShowSelectOpponentDialog = jest.fn();
 
   beforeEach(() => {
@@ -16,6 +17,7 @@ describe('NewGameDialog - Map Size Changes', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />
     );
@@ -47,6 +49,7 @@ describe('NewGameDialog - Map Size Changes', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />
     );
@@ -77,6 +80,7 @@ describe('NewGameDialog - Map Size Changes', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />
     );
@@ -99,6 +103,7 @@ describe('NewGameDialog - Map Size Changes', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
       />
     );

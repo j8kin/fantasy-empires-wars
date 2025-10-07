@@ -6,6 +6,7 @@ import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
 
 describe('NewGameWindow', () => {
   const mockOnStartGame = jest.fn();
+  const mockOnCancel = jest.fn();
   const onShowSelectOpponentDialog = jest.fn();
 
   beforeEach(() => {
@@ -16,6 +17,7 @@ describe('NewGameWindow', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
@@ -26,6 +28,7 @@ describe('NewGameWindow', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
@@ -37,6 +40,7 @@ describe('NewGameWindow', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
@@ -50,6 +54,7 @@ describe('NewGameWindow', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
@@ -62,6 +67,7 @@ describe('NewGameWindow', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
@@ -81,6 +87,7 @@ describe('NewGameWindow', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
@@ -94,6 +101,7 @@ describe('NewGameWindow', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
@@ -110,6 +118,7 @@ describe('NewGameWindow', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
@@ -127,6 +136,7 @@ describe('NewGameWindow', () => {
     render(
       <NewGameDialog
         onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
         onShowSelectOpponentDialog={onShowSelectOpponentDialog}
       />
     );
@@ -164,6 +174,7 @@ describe('NewGameWindow', () => {
             mockOnStartGame(config);
             setShowDialog(false);
           }}
+          onCancel={mockOnCancel}
           onShowSelectOpponentDialog={(excludedIds, onSelect) => {
             // Simulate selecting NO_PLAYER to "delete" an opponent
             onSelect(NO_PLAYER);
@@ -192,5 +203,20 @@ describe('NewGameWindow', () => {
 
     // The test expectation is in the onStartGame callback above
     expect(mockOnStartGame).toHaveBeenCalled();
+  });
+
+  it('calls onCancel when Cancel button is clicked', () => {
+    render(
+      <NewGameDialog
+        onStartGame={mockOnStartGame}
+        onCancel={mockOnCancel}
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+      />
+    );
+    const cancelButton = screen.getByAltText('Cancel');
+    fireEvent.click(cancelButton);
+
+    expect(mockOnCancel).toHaveBeenCalledTimes(1);
+    expect(mockOnStartGame).not.toHaveBeenCalled();
   });
 });

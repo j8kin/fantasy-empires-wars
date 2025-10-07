@@ -12,6 +12,7 @@ import { ButtonName } from '../buttons/GameButtonProps';
 
 export interface NewGameDialogProps {
   onStartGame: (config: GameState) => void;
+  onCancel: () => void;
   onShowSelectOpponentDialog: (
     excludedPlayerIds: string[],
     onSelect: (player: GamePlayer) => void,
@@ -38,6 +39,7 @@ type OpponentSelectionMode = 'random' | 'manual';
 
 const NewGameDialog: React.FC<NewGameDialogProps> = ({
   onStartGame,
+  onCancel,
   onShowSelectOpponentDialog,
 }) => {
   const [mapSize, setMapSize] = useState<BattlefieldSize>('medium');
@@ -208,6 +210,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
       screenPosition={{ x: dialogX, y: dialogY }}
       windowDimensions={{ width: dialogWidth, height: dialogHeight }}
       primaryButton={<GameButton buttonName={ButtonName.START} onClick={handleStartGame} />}
+      secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={onCancel} />}
       zIndex={1005}
     >
       <div className={styles.content}>
