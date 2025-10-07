@@ -1,6 +1,7 @@
 import React from 'react';
 import FlipBook from './FlipBook';
 import FlipBookPage from './FlipBookPage';
+import { WhiteMagicSpells } from '../../types/Spell';
 
 export interface CastSpellDialogProps {
   isOpen: boolean;
@@ -12,10 +13,17 @@ const CastSpellDialog: React.FC<CastSpellDialogProps> = ({ isOpen }) => {
 
   return (
     <FlipBook width={333} height={429} maxWidth={860}>
-      <FlipBookPage pageNum={0} />
-      <FlipBookPage pageNum={1} />
-      <FlipBookPage pageNum={2} />
-      <FlipBookPage pageNum={3} />
+      {WhiteMagicSpells.map((spell, index) => (
+        <FlipBookPage
+          key={spell.id}
+          pageNum={index}
+          header={spell.name}
+          iconPath={spell.iconPath}
+          description={spell.description}
+          cost={spell.manaCost}
+          costLabel="Mana Cost"
+        />
+      ))}
     </FlipBook>
   );
 };

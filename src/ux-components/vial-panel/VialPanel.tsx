@@ -1,15 +1,16 @@
 import React from 'react';
 import ManaVial from './ManaVial';
+import { ManaType } from '../../types/Mana';
 import styles from './css/VialPanel.module.css';
 
 const VialPanel: React.FC = () => {
   return (
     <div className={styles.vialPanel}>
-      <ManaVial color="black" mana={130} />
-      <ManaVial color="white" mana={400} />
-      <ManaVial color="blue" mana={100} />
-      <ManaVial color="green" mana={50} />
-      <ManaVial color="red" mana={10} />
+      <ManaVial color={ManaType.BLACK} mana={130} />
+      <ManaVial color={ManaType.WHITE} mana={400} />
+      <ManaVial color={ManaType.BLUE} mana={100} />
+      <ManaVial color={ManaType.GREEN} mana={50} />
+      <ManaVial color={ManaType.RED} mana={10} />
     </div>
   );
 };
