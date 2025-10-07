@@ -4,6 +4,7 @@ import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
 import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
+import CastSpellDialog from '../dialogs/CastSpellDialog';
 import OpponentInfoPopup, { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import ProgressPopup from '../popups/ProgressPopup';
@@ -15,6 +16,7 @@ import { defaultTileDimensions, ScreenPosition } from '../fantasy-border-frame/F
 const MainView: React.FC = () => {
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
+  const [showCastSpellDialog, setShowCastSpellDialog] = useState<boolean>(false);
   const [selectedOpponent, setSelectedOpponent] = useState<OpponentWithDiplomacy | undefined>(
     undefined
   );
@@ -120,6 +122,14 @@ const MainView: React.FC = () => {
     setSelectOpponentCallback(null);
   }, []);
 
+  const handleShowCastSpellDialog = useCallback(() => {
+    setShowCastSpellDialog(true);
+  }, []);
+
+  const handleCloseCastSpellDialog = useCallback(() => {
+    setShowCastSpellDialog(false);
+  }, []);
+
   return (
     <main className={styles.backgroundStyle} id="MainCanvas">
       {/* Content components */}
@@ -130,6 +140,7 @@ const MainView: React.FC = () => {
         onNewGame={handleShowStartWindow}
         onOpenSaveDialog={handleShowSaveDialog}
         onOpponentSelect={handleShowOpponentInfo}
+        onCast={handleShowCastSpellDialog}
       />
       <Battlefield
         topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
@@ -156,6 +167,9 @@ const MainView: React.FC = () => {
         onClose={handleCloseSaveDialog}
         onSave={handleSaveGame}
       />
+
+      {/* Cast Spell Dialog - shown as overlay */}
+      <CastSpellDialog isOpen={showCastSpellDialog} onClose={handleCloseCastSpellDialog} />
 
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup
