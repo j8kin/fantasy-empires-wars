@@ -2627,11 +2627,6 @@
   resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.0.tgz"
   integrity sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==
 
-"@types/roman-numerals@^0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@types/roman-numerals/-/roman-numerals-0.3.2.tgz#d49406165daee2cb6da70b95d57e8fc9e44e554a"
-  integrity sha512-5hnxBbrSFgquSF6cBU+m/H1fUdheoBz1k3c0Fe1yzP1L29vSLPOLzlyWzU8FWfY/TSMuZfm6FoK/D4n6jc05gA==
-
 "@types/semver@^7.3.12":
   version "7.3.13"
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.3.13.tgz"
@@ -10136,11 +10131,6 @@ rollup@^2.43.1:
   integrity sha512-fS6iqSPZDs3dr/y7Od6y5nha8dW1YnbgtsyotCVvoFGKbERG++CVRFv1meyGDE1SNItQA8BrnCw7ScdAhRJ3XQ==
   optionalDependencies:
     fsevents "~2.3.2"
-
-roman-numerals@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/roman-numerals/-/roman-numerals-0.3.2.tgz"
-  integrity sha512-aTmaKtxczT3K4ZhtJDauOZ6LY3e1xNDf2SBn7aRY/ErAtCCuVYuwNQbPuh+SWTjGmbg9p5Nlt8sJbQNkto8uyg==
 
 run-parallel@^1.1.9:
   version "1.2.0"
