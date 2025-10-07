@@ -40,10 +40,10 @@ describe('useMapState Gold Generation', () => {
       const uniqueValues = new Set(goldValues);
       expect(uniqueValues.size).toBeGreaterThan(1);
 
-      // All values should be within the expected range for plains (2-4)
+      // All values should be within the expected range for plains
       goldValues.forEach((value) => {
-        expect(value).toBeGreaterThanOrEqual(2);
-        expect(value).toBeLessThanOrEqual(4);
+        expect(value).toBeGreaterThanOrEqual(2000);
+        expect(value).toBeLessThanOrEqual(3000);
       });
     });
 
@@ -84,15 +84,10 @@ describe('useMapState Gold Generation', () => {
       const { result } = renderHook(() => useMapState('medium'));
       const tiles = Object.values(result.current.gameState.tiles);
 
-      // Find tiles with land types that have min: 0 (desert, volcano, etc.)
+      // Find that there are no zero income lands
       const zeroMinTiles = tiles.filter((tile) => tile.landType.goldPerTurn.min === 0);
 
-      expect(zeroMinTiles.length).toBeGreaterThan(0);
-
-      zeroMinTiles.forEach((tile) => {
-        expect(tile.goldPerTurn).toBeGreaterThanOrEqual(0);
-        expect(tile.goldPerTurn).toBeLessThanOrEqual(tile.landType.goldPerTurn.max);
-      });
+      expect(zeroMinTiles.length).toBe(0);
     });
   });
 
@@ -145,7 +140,7 @@ describe('useMapState Gold Generation', () => {
 
   describe('Statistical Distribution', () => {
     it('should generate reasonable distribution across range for large sample', () => {
-      // Test with mountains (range 4-6) to check distribution
+      // Test with mountains to check distribution
       const goldValues: number[] = [];
 
       // Generate multiple maps to get good sample size
@@ -162,13 +157,13 @@ describe('useMapState Gold Generation', () => {
       expect(goldValues.length).toBeGreaterThan(10);
 
       // Should have values across the range
-      expect(goldValues.some((val) => val === 4)).toBe(true); // min value
-      expect(goldValues.some((val) => val === 6)).toBe(true); // max value
+      expect(goldValues.some((val) => val <= 2800)).toBe(true); // min value 2700
+      expect(goldValues.some((val) => val >= 3300)).toBe(true); // max value 3400
 
-      // Average should be reasonably close to middle of range (5)
+      // Average should be reasonably close to middle of range (3050)
       const average = goldValues.reduce((sum, val) => sum + val, 0) / goldValues.length;
-      expect(average).toBeGreaterThan(4.5);
-      expect(average).toBeLessThan(5.5);
+      expect(average).toBeGreaterThan(3000);
+      expect(average).toBeLessThan(3100);
     });
   });
 });

@@ -1,5 +1,7 @@
 import { Alignment } from './Alignment';
 
+// https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
+
 export const LAND_TYPE = {
   NONE: 'None',
   PLAINS: 'Plains',
@@ -36,54 +38,54 @@ const PREDEFINED_LANDS: Land[] = [
     id: LAND_TYPE.PLAINS,
     alignment: Alignment.NEUTRAL,
     imageName: 'plains.png',
-    goldPerTurn: { min: 2, max: 4 },
+    goldPerTurn: { min: 2000, max: 3000 },
   },
   {
     id: LAND_TYPE.MOUNTAINS,
     alignment: Alignment.LAWFUL,
     imageName: 'mountains.png',
-    goldPerTurn: { min: 4, max: 6 },
+    goldPerTurn: { min: 2700, max: 3400 },
   },
   {
     id: LAND_TYPE.GREENFOREST,
     alignment: Alignment.LAWFUL,
     imageName: 'greenforest.png',
-    goldPerTurn: { min: 1, max: 3 },
+    goldPerTurn: { min: 2500, max: 2800 },
   },
   {
     id: LAND_TYPE.DARKFOREST,
     alignment: Alignment.CHAOTIC,
     imageName: 'darkforest.png',
-    goldPerTurn: { min: 0, max: 2 },
+    goldPerTurn: { min: 2500, max: 2800 },
   },
   {
     id: LAND_TYPE.HILLS,
     alignment: Alignment.NEUTRAL,
     imageName: 'hills.png',
-    goldPerTurn: { min: 3, max: 5 },
+    goldPerTurn: { min: 1500, max: 2200 },
   },
   {
     id: LAND_TYPE.SWAMP,
     alignment: Alignment.CHAOTIC,
     imageName: 'swamp.png',
-    goldPerTurn: { min: 0, max: 2 },
+    goldPerTurn: { min: 1100, max: 1700 },
   },
   {
     id: LAND_TYPE.DESERT,
     alignment: Alignment.NEUTRAL,
     imageName: 'desert.png',
-    goldPerTurn: { min: 0, max: 1 },
+    goldPerTurn: { min: 500, max: 700 },
   },
   {
     id: LAND_TYPE.LAVA,
     alignment: Alignment.CHAOTIC,
     imageName: 'lava.png',
-    goldPerTurn: { min: 1, max: 3 },
+    goldPerTurn: { min: 1500, max: 1900 },
   },
   {
     id: LAND_TYPE.VOLCANO,
     alignment: Alignment.CHAOTIC,
     imageName: 'volcano.png',
-    goldPerTurn: { min: 0, max: 1 },
+    goldPerTurn: { min: 3000, max: 3000 },
   },
 ];
