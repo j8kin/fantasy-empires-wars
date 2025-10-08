@@ -10,14 +10,13 @@ import styles from './css/NewGameDialog.module.css';
 import { GameState } from '../../types/HexTileState';
 import { ButtonName } from '../buttons/GameButtonProps';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useMapState } from '../../hooks/useMapState';
-
 export interface NewGameDialogProps {
   onShowSelectOpponentDialog: (
     excludedPlayerIds: string[],
     onSelect: (player: GamePlayer) => void,
     allowEmptyPlayer?: boolean
   ) => void;
+  updateGameConfig: (config: GameState) => void;
 }
 
 const getMaxOpponents = (mapSize: BattlefieldSize): number => {
@@ -35,7 +34,10 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   }
 };
 
-const NewGameDialog: React.FC<NewGameDialogProps> = ({ onShowSelectOpponentDialog }) => {
+const NewGameDialog: React.FC<NewGameDialogProps> = ({
+  onShowSelectOpponentDialog,
+  updateGameConfig,
+}) => {
   const {
     newGameMapSize,
     newGameSelectedPlayer,
@@ -50,8 +52,6 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({ onShowSelectOpponentDialo
     setShowProgressPopup,
     setGameStarted,
   } = useApplicationContext();
-
-  const { updateGameConfig } = useMapState('medium');
 
   // Use context state as local variables for easier refactoring
   const mapSize = newGameMapSize;

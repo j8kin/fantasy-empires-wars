@@ -40,7 +40,7 @@ const MainViewContent: React.FC = () => {
   } = useApplicationContext();
 
   // Initialize the game state at the MainView level
-  const { gameState } = useMapState('medium');
+  const { gameState, updateGameConfig } = useMapState('medium');
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
@@ -119,7 +119,10 @@ const MainViewContent: React.FC = () => {
 
       {/* Start Game Dialog - shown as overlay */}
       {showStartWindow && (
-        <NewGameDialog onShowSelectOpponentDialog={handleShowSelectOpponentDialog} />
+        <NewGameDialog
+          onShowSelectOpponentDialog={handleShowSelectOpponentDialog}
+          updateGameConfig={updateGameConfig}
+        />
       )}
 
       {/* Save Game Dialog - shown as overlay */}
