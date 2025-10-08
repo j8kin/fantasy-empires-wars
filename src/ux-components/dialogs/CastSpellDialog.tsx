@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
-import { useSelection } from '../../contexts/ApplicationContext';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { AllSpells, Spell, SpellName } from '../../types/Spell';
 
 import blessingImg from '../../assets/spells/white/blessing.png';
@@ -29,20 +29,31 @@ const getSpellIcon = (spell: Spell) => {
       return undefined;
   }
 };
-export interface CastSpellDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
 
-const CastSpellDialog: React.FC<CastSpellDialogProps> = ({ isOpen, onClose }) => {
-  const { setSelectedItem } = useSelection();
+const CastSpellDialog: React.FC = () => {
+  const { showCastSpellDialog, setShowCastSpellDialog, selectedItem, setSelectedItem } =
+    useApplicationContext();
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setSelectedItem(null);
-    onClose();
-  };
+    setShowCastSpellDialog(false);
+  }, [setSelectedItem, setShowCastSpellDialog]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (selectedItem && showCastSpellDialog) {
+      const spell = AllSpells.find((s) => s.id === selectedItem);
+      if (spell) {
+        setTimeout(() => {
+          alert(
+            `Casting ${spell.id}!\n\nMana Cost: ${spell.manaCost}\n\nEffect: ${spell.description}`
+          );
+          handleClose();
+        }, 100);
+      }
+    }
+  }, [selectedItem, showCastSpellDialog, handleClose]);
+
+  if (!showCastSpellDialog) return null;
 
   return (
     <FlipBook onClickOutside={handleClose}>
@@ -55,7 +66,7 @@ const CastSpellDialog: React.FC<CastSpellDialogProps> = ({ isOpen, onClose }) =>
           description={spell.description}
           cost={spell.manaCost}
           costLabel="Mana Cost"
-          onClose={onClose}
+          onClose={handleClose}
         />
       ))}
     </FlipBook>

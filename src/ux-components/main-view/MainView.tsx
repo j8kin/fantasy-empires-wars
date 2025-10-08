@@ -19,7 +19,6 @@ import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFram
 const MainViewContent: React.FC = () => {
   const {
     showStartWindow,
-    showCastSpellDialog,
     selectedOpponent,
     opponentScreenPosition,
     showSelectOpponentDialog,
@@ -96,10 +95,6 @@ const MainViewContent: React.FC = () => {
     setShowCastSpellDialog(true);
   }, [setShowCastSpellDialog]);
 
-  const handleCloseCastSpellDialog = useCallback(() => {
-    setShowCastSpellDialog(false);
-  }, [setShowCastSpellDialog]);
-
   return (
     <main className={styles.backgroundStyle} id="MainCanvas">
       {/* Content components */}
@@ -131,7 +126,7 @@ const MainViewContent: React.FC = () => {
       <SaveGameDialog />
 
       {/* Cast Spell Dialog - shown as overlay */}
-      <CastSpellDialog isOpen={showCastSpellDialog} onClose={handleCloseCastSpellDialog} />
+      <CastSpellDialog />
 
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup
