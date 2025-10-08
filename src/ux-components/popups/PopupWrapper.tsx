@@ -4,37 +4,50 @@ import FantasyBorderFrame, {
   ScreenPosition,
 } from '../fantasy-border-frame/FantasyBorderFrame';
 import { GameState } from '../../types/HexTileState';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 export interface PopupProps {
   screenPosition: ScreenPosition;
   gameState?: GameState;
-  onClose: () => void;
 }
 interface PopupWrapperProps extends PopupProps {
   dimensions: Dimensions;
   accessible?: boolean;
   children: React.ReactNode;
+  onClose?: () => void;
 }
 
 const PopupWrapper: React.FC<PopupWrapperProps> = ({
   screenPosition,
   dimensions,
   accessible = true,
-  onClose,
   children,
+  onClose,
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
+  const { hideOpponentInfo, setLandHideModePlayerId, hideLandPopup } = useApplicationContext();
 
   useEffect(() => {
+    const handleClosePopup = () => {
+      if (onClose) {
+        onClose();
+      } else {
+        // Fallback to original behavior for backwards compatibility
+        hideOpponentInfo();
+        setLandHideModePlayerId(undefined);
+        hideLandPopup();
+      }
+    };
+
     const handleClickOutside = (event: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        onClose();
+        handleClosePopup();
       }
     };
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose();
+        handleClosePopup();
       }
     };
 
@@ -45,7 +58,7 @@ const PopupWrapper: React.FC<PopupWrapperProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [onClose]);
+  }, [hideOpponentInfo, setLandHideModePlayerId, hideLandPopup, onClose]);
 
   return (
     <div ref={popupRef}>

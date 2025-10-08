@@ -34,7 +34,6 @@ const MainViewContent: React.FC = () => {
     setShowCastSpellDialog,
     setLandHideModePlayerId,
     showOpponentInfo,
-    hideOpponentInfo,
     showSelectOpponentDialogWithConfig,
     hideSelectOpponentDialog,
   } = useApplicationContext();
@@ -60,11 +59,6 @@ const MainViewContent: React.FC = () => {
     },
     [setLandHideModePlayerId, showOpponentInfo]
   );
-
-  const handleCloseOpponentInfo = useCallback(() => {
-    hideOpponentInfo();
-    setLandHideModePlayerId(undefined);
-  }, [hideOpponentInfo, setLandHideModePlayerId]);
 
   const handleShowSelectOpponentDialog = useCallback(
     (
@@ -132,11 +126,7 @@ const MainViewContent: React.FC = () => {
       <CastSpellDialog />
 
       {/* Opponent Info Dialog - shown as overlay */}
-      <OpponentInfoPopup
-        opponent={selectedOpponent}
-        screenPosition={opponentScreenPosition}
-        onClose={handleCloseOpponentInfo}
-      />
+      <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />
 
       {/* Select Opponent Dialog - shown as overlay */}
       {showSelectOpponentDialog && (
@@ -156,7 +146,6 @@ const MainViewContent: React.FC = () => {
             y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
           }}
           gameState={gameState}
-          onClose={() => {}}
           message={progressMessage}
         />
       )}

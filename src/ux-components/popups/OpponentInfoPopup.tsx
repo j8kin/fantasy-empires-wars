@@ -4,6 +4,7 @@ import { getAlignmentColor } from '../../types/Alignment';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import styles from '../dialogs/css/OpponentInfoDialog.module.css';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 export type DiplomacyStatus = 'No Treaty' | 'Peace' | 'War';
 
@@ -15,8 +16,15 @@ export interface OpponentInfoProps extends PopupProps {
   opponent?: OpponentWithDiplomacy;
 }
 
-const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition, onClose }) => {
+const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition }) => {
+  const { hideOpponentInfo, setLandHideModePlayerId } = useApplicationContext();
+
   if (opponent == null) return null;
+
+  const handleClose = () => {
+    hideOpponentInfo();
+    setLandHideModePlayerId(undefined);
+  };
 
   // Calculate dynamic size based on content (larger than LandCharacteristicsPopup)
   const headerHeight = 60; // Header with avatar and name
@@ -34,7 +42,7 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
     <PopupWrapper
       screenPosition={{ x: screenPosition.x - 50, y: screenPosition.y + 10 }}
       dimensions={{ width: dynamicWidth, height: dynamicHeight }}
-      onClose={onClose}
+      onClose={handleClose}
     >
       <div className={styles.popupContent}>
         <div className={styles.header}>

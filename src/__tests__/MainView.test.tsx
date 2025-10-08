@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MainView from '../ux-components/main-view/MainView';
-import { GamePlayer } from '../types/GamePlayer';
-import { GameState } from '../types/HexTileState';
 import { BattlefieldProps } from '../ux-components/battlefield/Battlefield';
 import { NewGameDialogProps } from '../ux-components/dialogs/NewGameDialog';
 import { TopPanelProps } from '../ux-components/top-panel/TopPanel';
@@ -72,10 +70,19 @@ jest.mock('../ux-components/dialogs/NewGameDialog', () => {
 
 jest.mock('../ux-components/popups/OpponentInfoPopup', () => {
   return (props: OpponentInfoProps) => {
+    // Import ApplicationContext hook to access hideOpponentInfo
+    const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
+    const { hideOpponentInfo, setLandHideModePlayerId } = useApplicationContext();
+
+    const handleClose = () => {
+      hideOpponentInfo();
+      setLandHideModePlayerId(undefined);
+    };
+
     return props.opponent ? (
       <div data-testid="OpponentInfoPopup">
         <span>{props.opponent.name}</span>
-        <button onClick={() => props.onClose?.()}>Close</button>
+        <button onClick={handleClose}>Close</button>
       </div>
     ) : null;
   };

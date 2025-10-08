@@ -5,6 +5,7 @@ import styles from '../battlefield/css/LandCharacteristicsPopup.module.css';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../../map/utils/mapTypes';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 interface LandCharacteristicsPopupProps extends PopupProps {
   battlefieldPosition: Position;
@@ -14,8 +15,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   battlefieldPosition,
   gameState,
   screenPosition,
-  onClose,
 }) => {
+  const { hideLandPopup } = useApplicationContext();
   const battlefieldTile = gameState!.tiles[createTileId(battlefieldPosition)];
   const displayLandType = battlefieldTile.landType;
   if (!displayLandType) return null;
@@ -66,7 +67,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
     <PopupWrapper
       screenPosition={{ x: screenPosition.x + 10, y: screenPosition.y + 10 }}
       dimensions={{ width: dynamicWidth, height: dynamicHeight + 30 }}
-      onClose={onClose}
+      onClose={hideLandPopup}
     >
       <div className={styles.popupContent}>
         <div className={styles.header}>

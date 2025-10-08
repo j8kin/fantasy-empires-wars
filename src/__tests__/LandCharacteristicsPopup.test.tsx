@@ -1,11 +1,15 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { ApplicationContextProvider } from '../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../ux-components/popups/LandCharacteristicsPopup';
 import { GameState, HexTileState } from '../types/HexTileState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { LAND_TYPE } from '../types/Land';
 import { initializeMap } from '../map/generation/mapGeneration';
 import { Army, UnitType, getUnit } from '../types/Army';
+
+const renderWithProvider = (ui: React.ReactElement) =>
+  render(ui, { wrapper: ApplicationContextProvider });
 
 // Mock CSS modules
 jest.mock('../ux-components/battlefield/css/LandCharacteristicsPopup.module.css', () => ({
@@ -38,19 +42,17 @@ describe('LandCharacteristicsPopup', () => {
   )!;
 
   const mockPosition = { x: 100, y: 100 };
-  const mockOnClose = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('displays building information when tile has buildings', () => {
-    render(
+    renderWithProvider(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
         gameState={mockGameState}
         screenPosition={mockPosition}
-        onClose={mockOnClose}
       />
     );
 
@@ -60,12 +62,11 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays controlled by information with player name', () => {
-    render(
+    renderWithProvider(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
         gameState={mockGameState}
         screenPosition={mockPosition}
-        onClose={mockOnClose}
       />
     );
 
@@ -77,12 +78,11 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays both building and control information simultaneously', () => {
-    render(
+    renderWithProvider(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
         gameState={mockGameState}
         screenPosition={mockPosition}
-        onClose={mockOnClose}
       />
     );
 
@@ -94,12 +94,11 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays land type information', () => {
-    render(
+    renderWithProvider(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
         gameState={mockGameState}
         screenPosition={mockPosition}
-        onClose={mockOnClose}
       />
     );
 
@@ -109,12 +108,11 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays position and gold information', () => {
-    render(
+    renderWithProvider(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
         gameState={mockGameState}
         screenPosition={mockPosition}
-        onClose={mockOnClose}
       />
     );
 
@@ -148,12 +146,11 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      render(
+      renderWithProvider(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
           gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-          onClose={mockOnClose}
         />
       );
 
@@ -182,12 +179,11 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      render(
+      renderWithProvider(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
           gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-          onClose={mockOnClose}
         />
       );
 
@@ -218,12 +214,11 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      render(
+      renderWithProvider(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
           gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-          onClose={mockOnClose}
         />
       );
 
@@ -253,12 +248,11 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      render(
+      renderWithProvider(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
           gameState={gameStateWithoutArmy}
           screenPosition={mockPosition}
-          onClose={mockOnClose}
         />
       );
 
@@ -286,12 +280,11 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      render(
+      renderWithProvider(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
           gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-          onClose={mockOnClose}
         />
       );
 
@@ -321,12 +314,11 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      render(
+      renderWithProvider(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
           gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-          onClose={mockOnClose}
         />
       );
 

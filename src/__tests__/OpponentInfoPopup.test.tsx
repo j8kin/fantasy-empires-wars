@@ -6,6 +6,10 @@ import OpponentInfoPopup, {
 } from '../ux-components/popups/OpponentInfoPopup';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { Alignment } from '../types/Alignment';
+import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+
+const renderWithProvider = (ui: React.ReactElement) =>
+  render(ui, { wrapper: ApplicationContextProvider });
 
 jest.mock('../ux-components/dialogs/css/OpponentInfoDialog.module.css', () => ({
   popupContent: 'mocked-popup-content',
@@ -57,8 +61,8 @@ describe('OpponentInfoPopup', () => {
   });
 
   it('returns null when opponent is null or undefined', () => {
-    const { container } = render(
-      <OpponentInfoPopup opponent={undefined} screenPosition={mockPosition} onClose={mockOnClose} />
+    const { container } = renderWithProvider(
+      <OpponentInfoPopup opponent={undefined} screenPosition={mockPosition} />
     );
 
     expect(container.firstChild).toBeNull();
@@ -67,13 +71,7 @@ describe('OpponentInfoPopup', () => {
   it('displays opponent name in header', () => {
     const mockOpponent = createMockOpponent();
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={mockPosition}
-        onClose={mockOnClose}
-      />
-    );
+    renderWithProvider(<OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />);
 
     expect(screen.getByText(mockOpponent.name)).toBeInTheDocument();
   });
@@ -81,13 +79,7 @@ describe('OpponentInfoPopup', () => {
   it('renders player avatar with correct properties', () => {
     const mockOpponent = createMockOpponent();
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={mockPosition}
-        onClose={mockOnClose}
-      />
-    );
+    renderWithProvider(<OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />);
 
     const avatar = screen.getByTestId('player-avatar');
     expect(avatar).toHaveAttribute('data-player-name', mockOpponent.name);
@@ -99,13 +91,7 @@ describe('OpponentInfoPopup', () => {
   it('displays race information', () => {
     const mockOpponent = createMockOpponent();
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={mockPosition}
-        onClose={mockOnClose}
-      />
-    );
+    renderWithProvider(<OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />);
 
     expect(screen.getByText('Race:')).toBeInTheDocument();
     expect(screen.getByText(mockOpponent.race)).toBeInTheDocument();
@@ -114,13 +100,7 @@ describe('OpponentInfoPopup', () => {
   it('displays alignment information with correct color', () => {
     const mockOpponent = createMockOpponent('No Treaty', Alignment.CHAOTIC);
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={mockPosition}
-        onClose={mockOnClose}
-      />
-    );
+    renderWithProvider(<OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />);
 
     expect(screen.getByText('Alignment:')).toBeInTheDocument();
     expect(screen.getByText(mockOpponent.alignment)).toBeInTheDocument();
@@ -129,13 +109,7 @@ describe('OpponentInfoPopup', () => {
   it('displays level information', () => {
     const mockOpponent = createMockOpponent();
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={mockPosition}
-        onClose={mockOnClose}
-      />
-    );
+    renderWithProvider(<OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />);
 
     expect(screen.getByText('Level:')).toBeInTheDocument();
     expect(screen.getByText(mockOpponent.level.toString())).toBeInTheDocument();
@@ -145,12 +119,8 @@ describe('OpponentInfoPopup', () => {
     it('displays "No Treaty" status correctly', () => {
       const mockOpponent = createMockOpponent('No Treaty');
 
-      render(
-        <OpponentInfoPopup
-          opponent={mockOpponent}
-          screenPosition={mockPosition}
-          onClose={mockOnClose}
-        />
+      renderWithProvider(
+        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
       );
 
       expect(screen.getByText('Diplomatic Relations:')).toBeInTheDocument();
@@ -160,12 +130,8 @@ describe('OpponentInfoPopup', () => {
     it('displays "Peace" status correctly', () => {
       const mockOpponent = createMockOpponent('Peace');
 
-      render(
-        <OpponentInfoPopup
-          opponent={mockOpponent}
-          screenPosition={mockPosition}
-          onClose={mockOnClose}
-        />
+      renderWithProvider(
+        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
       );
 
       expect(screen.getByText('Diplomatic Relations:')).toBeInTheDocument();
@@ -175,12 +141,8 @@ describe('OpponentInfoPopup', () => {
     it('displays "War" status correctly', () => {
       const mockOpponent = createMockOpponent('War');
 
-      render(
-        <OpponentInfoPopup
-          opponent={mockOpponent}
-          screenPosition={mockPosition}
-          onClose={mockOnClose}
-        />
+      renderWithProvider(
+        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
       );
 
       expect(screen.getByText('Diplomatic Relations:')).toBeInTheDocument();
@@ -192,12 +154,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent();
     const customPosition = { x: 200, y: 150 };
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={customPosition}
-        onClose={mockOnClose}
-      />
+    renderWithProvider(
+      <OpponentInfoPopup opponent={mockOpponent} screenPosition={customPosition} />
     );
 
     // The popup should be offset by -50 in x and +10 in y
@@ -208,13 +166,7 @@ describe('OpponentInfoPopup', () => {
   it('has appropriate dimensions', () => {
     const mockOpponent = createMockOpponent();
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={mockPosition}
-        onClose={mockOnClose}
-      />
-    );
+    renderWithProvider(<OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />);
 
     // Component should render with fixed width of 310px
     // Height is calculated dynamically but capped at 400px
@@ -224,13 +176,7 @@ describe('OpponentInfoPopup', () => {
   it('calls onClose when close action is triggered', () => {
     const mockOpponent = createMockOpponent();
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={mockPosition}
-        onClose={mockOnClose}
-      />
-    );
+    renderWithProvider(<OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />);
 
     // The close functionality is handled by PopupWrapper
     // We verify the onClose prop is passed correctly
@@ -240,13 +186,7 @@ describe('OpponentInfoPopup', () => {
   it('displays all required information sections', () => {
     const mockOpponent = createMockOpponent();
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={mockPosition}
-        onClose={mockOnClose}
-      />
-    );
+    renderWithProvider(<OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />);
 
     // Verify all standard rows are present
     expect(screen.getByText('Race:')).toBeInTheDocument();
@@ -262,13 +202,7 @@ describe('OpponentInfoPopup', () => {
       diplomacyStatus: 'War',
     };
 
-    render(
-      <OpponentInfoPopup
-        opponent={mockOpponent}
-        screenPosition={mockPosition}
-        onClose={mockOnClose}
-      />
-    );
+    renderWithProvider(<OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />);
 
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
     expect(screen.getByText('Undead')).toBeInTheDocument();

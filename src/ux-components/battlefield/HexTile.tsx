@@ -27,8 +27,7 @@ const HexTile: React.FC<HexTileProps> = ({
   gameState,
   landHideModePlayerId,
 }) => {
-  const { landPopupPosition, landPopupScreenPosition, showLandPopup, hideLandPopup } =
-    useApplicationContext();
+  const { landPopupPosition, landPopupScreenPosition, showLandPopup } = useApplicationContext();
 
   const showPopup =
     landPopupPosition?.row === battlefieldPosition.row &&
@@ -72,17 +71,12 @@ const HexTile: React.FC<HexTileProps> = ({
     showLandPopup(battlefieldPosition, { x: event.clientX, y: event.clientY });
   };
 
-  const handleClosePopup = () => {
-    hideLandPopup();
-  };
-
   // Determine if land image should be hidden
   // Hide land images only for tiles controlled by the selected player (to show their territories clearly)
   // Uncontrolled tiles and other players' tiles should show normally
   const shouldHideLandImage =
     landHideModePlayerId && battlefieldTile.controlledBy === landHideModePlayerId;
 
-  // Create style object for the hex tile
   const tileStyle: React.CSSProperties = {
     backgroundColor: getBackgroundColor(),
   };
@@ -106,7 +100,6 @@ const HexTile: React.FC<HexTileProps> = ({
           battlefieldPosition={battlefieldPosition}
           gameState={gameState}
           screenPosition={landPopupScreenPosition}
-          onClose={handleClosePopup}
         />
       )}
     </>

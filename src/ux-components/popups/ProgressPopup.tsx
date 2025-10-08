@@ -6,12 +6,7 @@ interface ProgressPopupProps extends PopupProps {
   message: string;
 }
 
-const ProgressPopup: React.FC<ProgressPopupProps> = ({
-  screenPosition,
-  gameState,
-  onClose,
-  message,
-}) => {
+const ProgressPopup: React.FC<ProgressPopupProps> = ({ screenPosition, gameState, message }) => {
   return (
     <>
       <div className={styles.blockingOverlay} />
@@ -19,7 +14,6 @@ const ProgressPopup: React.FC<ProgressPopupProps> = ({
         screenPosition={screenPosition}
         dimensions={{ width: 400, height: 200 }}
         gameState={gameState}
-        onClose={onClose}
         accessible={false}
       >
         <div className={styles.content}>
