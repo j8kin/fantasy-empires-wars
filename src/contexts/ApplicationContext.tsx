@@ -45,6 +45,10 @@ interface ApplicationContextType {
   // Player Selection states
   hoveredPlayer: GamePlayer | null;
 
+  // Game states
+  gameStarted: boolean;
+  landHideModePlayerId: string | undefined;
+
   // Dialog actions
   setShowStartWindow: (show: boolean) => void;
   setShowSaveDialog: (show: boolean) => void;
@@ -81,6 +85,10 @@ interface ApplicationContextType {
 
   // Player Selection actions
   setHoveredPlayer: (player: GamePlayer | null) => void;
+
+  // Game actions
+  setGameStarted: (started: boolean) => void;
+  setLandHideModePlayerId: (playerId: string | undefined) => void;
 
   // Combined actions
   showOpponentInfo: (opponent: OpponentWithDiplomacy, screenPosition: ScreenPosition) => void;
@@ -148,6 +156,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   // Player Selection states
   const [hoveredPlayer, setHoveredPlayer] = useState<GamePlayer | null>(null);
+
+  // Game states
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [landHideModePlayerId, setLandHideModePlayerId] = useState<string | undefined>(undefined);
 
   // HexTile popup actions
   const showLandPopup = useCallback(
@@ -252,6 +264,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         // Player Selection states
         hoveredPlayer,
 
+        // Game states
+        gameStarted,
+        landHideModePlayerId,
+
         // Dialog actions
         setShowStartWindow,
         setShowSaveDialog,
@@ -288,6 +304,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
         // Player Selection actions
         setHoveredPlayer,
+
+        // Game actions
+        setGameStarted,
+        setLandHideModePlayerId,
 
         // Combined actions
         showOpponentInfo,

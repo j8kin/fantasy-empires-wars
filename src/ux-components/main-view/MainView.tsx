@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import styles from './css/Background.module.css';
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
@@ -30,19 +30,20 @@ const MainViewContent: React.FC = () => {
     allowEmptyPlayer,
     showProgressPopup,
     progressMessage,
+    gameStarted,
+    landHideModePlayerId,
     setShowStartWindow,
     setShowSaveDialog,
     setShowCastSpellDialog,
     setShowProgressPopup,
     setProgressMessage,
+    setGameStarted,
+    setLandHideModePlayerId,
     showOpponentInfo,
     hideOpponentInfo,
     showSelectOpponentDialogWithConfig,
     hideSelectOpponentDialog,
   } = useApplicationContext();
-
-  const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [landHideModePlayerId, setLandHideModePlayerId] = useState<string | undefined>(undefined);
 
   // Initialize the game state at the MainView level
   const { gameState, updateGameConfig } = useMapState('medium');
@@ -63,7 +64,7 @@ const MainViewContent: React.FC = () => {
         setShowProgressPopup(false);
       }, 100);
     },
-    [updateGameConfig, setShowStartWindow, setProgressMessage, setShowProgressPopup]
+    [setShowStartWindow, setProgressMessage, setShowProgressPopup, updateGameConfig, setGameStarted]
   );
 
   const handleStartGameCancel = useCallback(() => {
@@ -92,13 +93,13 @@ const MainViewContent: React.FC = () => {
       showOpponentInfo(opponent, screenPosition);
       setLandHideModePlayerId(opponent.id);
     },
-    [showOpponentInfo]
+    [setLandHideModePlayerId, showOpponentInfo]
   );
 
   const handleCloseOpponentInfo = useCallback(() => {
     hideOpponentInfo();
     setLandHideModePlayerId(undefined);
-  }, [hideOpponentInfo]);
+  }, [hideOpponentInfo, setLandHideModePlayerId]);
 
   const handleShowSelectOpponentDialog = useCallback(
     (
