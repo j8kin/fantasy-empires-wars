@@ -1,6 +1,6 @@
 import React from 'react';
 import { toRoman } from '../../map/utils/romanNumerals';
-import { useSelection } from '../../contexts/ApplicationContext';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 import './css/FlipBook.css';
 
 interface FlipBookPageProps {
@@ -34,7 +34,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     },
     ref
   ) => {
-    const { setSelectedItem } = useSelection();
+    const { setSelectedItem } = useApplicationContext();
     const isEvenPage = pageNum % 2 === 1;
     const defaultClassName = isEvenPage ? 'evenPage' : 'oddPage';
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;

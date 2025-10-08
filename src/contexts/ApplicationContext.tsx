@@ -314,18 +314,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   );
 };
 
-export const useSelection = () => {
-  const context = useContext(ApplicationContext);
-  if (context === undefined) {
-    throw new Error('useSelection must be used within a SelectionProvider');
-  }
-  return context;
-};
-
 export const useApplicationContext = () => {
   const context = useContext(ApplicationContext);
   if (context === undefined) {
-    throw new Error('useApplicationContext must be used within a SelectionProvider');
+    throw new Error('useApplicationContext must be used within a ApplicationContextProvider');
   }
   return context;
 };
