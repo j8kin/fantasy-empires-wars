@@ -32,14 +32,14 @@ interface FlipBookProps {
 }
 
 const FlipBook: React.FC<FlipBookProps> = ({
-  width = 420,
-  height = 380,
+  width = 333,
+  height = 429,
   children,
   className = 'flipbook',
   style = {},
   minWidth,
   minHeight,
-  maxWidth,
+  maxWidth = 860,
   maxHeight,
   maxShadowOpacity = 0,
   showCover = false,

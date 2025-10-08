@@ -1,6 +1,6 @@
 import React from 'react';
-import FlipBook from './FlipBook';
-import FlipBookPage from './FlipBookPage';
+import FlipBook from '../fantasy-book-dialog-template/FlipBook';
+import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 import { AllSpells, Spell, SpellName } from '../../types/Spell';
 
 import blessingImg from '../../assets/spells/white/blessing.png';
@@ -37,7 +37,7 @@ const CastSpellDialog: React.FC<CastSpellDialogProps> = ({ isOpen, onClose }) =>
   if (!isOpen) return null;
 
   return (
-    <FlipBook width={333} height={429} maxWidth={860} onClickOutside={onClose}>
+    <FlipBook onClickOutside={onClose}>
       {AllSpells.map((spell, index) => (
         <FlipBookPage
           key={spell.id}
