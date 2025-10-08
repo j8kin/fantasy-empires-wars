@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import SelectOpponentDialog from '../ux-components/dialogs/SelectOpponentDialog';
@@ -105,7 +105,7 @@ describe('SelectOpponentDialog', () => {
     });
   });
 
-  it('calls onSelect when a player is selected', () => {
+  it('calls onSelect when a player is selected', async () => {
     renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
@@ -117,12 +117,14 @@ describe('SelectOpponentDialog', () => {
     const availablePlayer = PREDEFINED_PLAYERS.find((p) => !excludedPlayerIds.includes(p.id));
     if (availablePlayer) {
       const btn = screen.getByRole('button', { name: availablePlayer.name });
-      userEvent.click(btn);
+      await act(async () => {
+        await userEvent.click(btn);
+      });
       expect(mockOnSelect).toHaveBeenCalledWith(availablePlayer);
     }
   });
 
-  it('calls onSelect when EmptyPlayer is selected', () => {
+  it('calls onSelect when EmptyPlayer is selected', async () => {
     renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
@@ -133,11 +135,13 @@ describe('SelectOpponentDialog', () => {
     );
 
     const emptyButton = screen.getByRole('button', { name: NO_PLAYER.name });
-    userEvent.click(emptyButton);
+    await act(async () => {
+      await userEvent.click(emptyButton);
+    });
     expect(mockOnSelect).toHaveBeenCalledWith(NO_PLAYER);
   });
 
-  it('renders cancel button and calls onCancel when clicked', () => {
+  it('renders cancel button and calls onCancel when clicked', async () => {
     renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
@@ -147,7 +151,9 @@ describe('SelectOpponentDialog', () => {
     );
 
     const cancelButton = screen.getByAltText('Cancel');
-    userEvent.click(cancelButton);
+    await act(async () => {
+      await userEvent.click(cancelButton);
+    });
     expect(mockOnCancel).toHaveBeenCalled();
   });
 
@@ -197,7 +203,7 @@ describe('SelectOpponentDialog', () => {
     });
   });
 
-  it('updates selected player when a different player is clicked', () => {
+  it('updates selected player when a different player is clicked', async () => {
     renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
@@ -210,12 +216,16 @@ describe('SelectOpponentDialog', () => {
     if (availablePlayers.length >= 2) {
       // Click first available player
       const firstBtn = screen.getByRole('button', { name: availablePlayers[0].name });
-      userEvent.click(firstBtn);
+      await act(async () => {
+        await userEvent.click(firstBtn);
+      });
       expect(mockOnSelect).toHaveBeenCalledWith(availablePlayers[0]);
 
       // Click second available player
       const secondBtn = screen.getByRole('button', { name: availablePlayers[1].name });
-      userEvent.click(secondBtn);
+      await act(async () => {
+        await userEvent.click(secondBtn);
+      });
       expect(mockOnSelect).toHaveBeenCalledWith(availablePlayers[1]);
     }
   });

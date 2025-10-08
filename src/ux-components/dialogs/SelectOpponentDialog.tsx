@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import GameButton from '../buttons/GameButton';
 import { ButtonName } from '../buttons/GameButtonProps';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 export interface SelectOpponentDialogProps {
   excludedPlayerIds: string[];
@@ -18,6 +19,12 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   onCancel,
   allowEmptyPlayer = true,
 }) => {
+  const {
+    selectOpponentSelectedPlayer,
+    setSelectOpponentSelectedPlayer,
+    resetSelectOpponentDialog,
+  } = useApplicationContext();
+
   const availablePlayers = useMemo(
     () => [
       ...(allowEmptyPlayer ? [NO_PLAYER] : []),
@@ -26,12 +33,12 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     [excludedPlayerIds, allowEmptyPlayer]
   );
 
-  const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(
-    () => availablePlayers[0] || PREDEFINED_PLAYERS[0]
-  );
+  useEffect(() => {
+    resetSelectOpponentDialog(availablePlayers);
+  }, [availablePlayers, resetSelectOpponentDialog]);
 
   const handlePlayerSelect = (player: GamePlayer) => {
-    setSelectedPlayer(player);
+    setSelectOpponentSelectedPlayer(player);
     onSelect(player);
   };
 
@@ -50,7 +57,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     >
       <PlayerSelection
         label="Select Opponent"
-        selectedPlayer={selectedPlayer}
+        selectedPlayer={selectOpponentSelectedPlayer}
         onPlayerChange={handlePlayerSelect}
         availablePlayers={availablePlayers}
       />

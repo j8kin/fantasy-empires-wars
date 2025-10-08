@@ -214,7 +214,10 @@ describe('PlayerSelection', () => {
     const secondPlayerItem = screen.getByRole('button', {
       name: PREDEFINED_PLAYERS[1].name,
     });
-    userEvent.hover(secondPlayerItem);
+
+    await act(async () => {
+      await userEvent.hover(secondPlayerItem);
+    });
 
     // Should now show hovered player details
     expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
@@ -233,11 +236,16 @@ describe('PlayerSelection', () => {
     const secondPlayerItem = screen.getByRole('button', {
       name: PREDEFINED_PLAYERS[1].name,
     });
-    userEvent.hover(secondPlayerItem);
+
+    await act(async () => {
+      await userEvent.hover(secondPlayerItem);
+    });
     expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
 
     // Unhover should revert to selected player
-    userEvent.unhover(secondPlayerItem);
+    await act(async () => {
+      await userEvent.unhover(secondPlayerItem);
+    });
     expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
     expect(screen.queryByText(PREDEFINED_PLAYERS[1].description)).not.toBeInTheDocument();
   });
