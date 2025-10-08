@@ -10,9 +10,13 @@ import turnImg from '../../assets/spells/white/turn-undead.png';
 import viewImg from '../../assets/spells/white/view.png';
 import illusionImg from '../../assets/spells/blue/illusion.png';
 import teleportImg from '../../assets/spells/blue/teleport.png';
+import tornadoImg from '../../assets/spells/blue/tornado.png';
+import fertileLandsImg from '../../assets/spells/green/fertile-lands.png';
+import rootsImg from '../../assets/spells/green/roots.png';
 
 const getSpellIcon = (spell: Spell) => {
   switch (spell.id) {
+    // white spells
     case SpellName.BLESSING:
       return blessingImg;
     case SpellName.HEAL:
@@ -21,10 +25,18 @@ const getSpellIcon = (spell: Spell) => {
       return turnImg;
     case SpellName.VIEW_TERRITORY:
       return viewImg;
+    // blue spells
     case SpellName.ILLUSION:
       return illusionImg;
     case SpellName.TELEPORT:
       return teleportImg;
+    case SpellName.TORNADO:
+      return tornadoImg;
+    // green spells
+    case SpellName.FERTILE_LAND:
+      return fertileLandsImg;
+    case SpellName.ENTANGLING_ROOTS:
+      return rootsImg;
     default:
       return undefined;
   }
