@@ -10,10 +10,9 @@ import styles from './css/NewGameDialog.module.css';
 import { GameState } from '../../types/HexTileState';
 import { ButtonName } from '../buttons/GameButtonProps';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useMapState } from '../../hooks/useMapState';
 
 export interface NewGameDialogProps {
-  onStartGame: (config: GameState) => void;
-  onCancel: () => void;
   onShowSelectOpponentDialog: (
     excludedPlayerIds: string[],
     onSelect: (player: GamePlayer) => void,
@@ -36,11 +35,7 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   }
 };
 
-const NewGameDialog: React.FC<NewGameDialogProps> = ({
-  onStartGame,
-  onCancel,
-  onShowSelectOpponentDialog,
-}) => {
+const NewGameDialog: React.FC<NewGameDialogProps> = ({ onShowSelectOpponentDialog }) => {
   const {
     newGameMapSize,
     newGameSelectedPlayer,
@@ -50,7 +45,13 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
     setNewGameSelectedPlayer,
     setNewGameOpponentSelectionMode,
     setNewGameSelectedOpponents,
+    setShowStartWindow,
+    setProgressMessage,
+    setShowProgressPopup,
+    setGameStarted,
   } = useApplicationContext();
+
+  const { updateGameConfig } = useMapState('medium');
 
   // Use context state as local variables for easier refactoring
   const mapSize = newGameMapSize;
@@ -246,8 +247,31 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
       selectedPlayer,
       opponents,
     };
-    onStartGame(config);
-  }, [mapSize, selectedPlayer, opponentSelectionMode, selectedOpponents, onStartGame]);
+
+    setShowStartWindow(false);
+    setProgressMessage('Creating new game...');
+    setShowProgressPopup(true);
+
+    setTimeout(() => {
+      updateGameConfig(config);
+      setGameStarted(true);
+      setShowProgressPopup(false);
+    }, 100);
+  }, [
+    mapSize,
+    selectedPlayer,
+    opponentSelectionMode,
+    selectedOpponents,
+    setShowStartWindow,
+    setProgressMessage,
+    setShowProgressPopup,
+    updateGameConfig,
+    setGameStarted,
+  ]);
+
+  const handleCancel = useCallback(() => {
+    setShowStartWindow(false);
+  }, [setShowStartWindow]);
 
   // Calculate dialog dimensions
   const dialogWidth = Math.min(900, typeof window !== 'undefined' ? window.innerWidth * 0.9 : 900);
@@ -263,7 +287,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
       screenPosition={{ x: dialogX, y: dialogY }}
       windowDimensions={{ width: dialogWidth, height: dialogHeight }}
       primaryButton={<GameButton buttonName={ButtonName.START} onClick={handleStartGame} />}
-      secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={onCancel} />}
+      secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />}
       zIndex={1005}
     >
       <div className={styles.content}>

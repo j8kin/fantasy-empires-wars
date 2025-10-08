@@ -13,7 +13,6 @@ import {
   useApplicationContext,
 } from '../../contexts/ApplicationContext';
 import { GamePlayer } from '../../types/GamePlayer';
-import { GameState } from '../../types/HexTileState';
 import { useMapState } from '../../hooks/useMapState';
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 
@@ -34,9 +33,6 @@ const MainViewContent: React.FC = () => {
     setShowStartWindow,
     setShowSaveDialog,
     setShowCastSpellDialog,
-    setShowProgressPopup,
-    setProgressMessage,
-    setGameStarted,
     setLandHideModePlayerId,
     showOpponentInfo,
     hideOpponentInfo,
@@ -45,30 +41,10 @@ const MainViewContent: React.FC = () => {
   } = useApplicationContext();
 
   // Initialize the game state at the MainView level
-  const { gameState, updateGameConfig } = useMapState('medium');
+  const { gameState } = useMapState('medium');
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
-
-  const handleStartGame = useCallback(
-    (config: GameState) => {
-      setShowStartWindow(false);
-      setProgressMessage('Creating new game...');
-      setShowProgressPopup(true);
-
-      // Show game progress
-      setTimeout(() => {
-        updateGameConfig(config);
-        setGameStarted(true);
-        setShowProgressPopup(false);
-      }, 100);
-    },
-    [setShowStartWindow, setProgressMessage, setShowProgressPopup, updateGameConfig, setGameStarted]
-  );
-
-  const handleStartGameCancel = useCallback(() => {
-    setShowStartWindow(false);
-  }, [setShowStartWindow]);
 
   const handleShowStartWindow = useCallback(() => {
     setShowStartWindow(true);
@@ -148,11 +124,7 @@ const MainViewContent: React.FC = () => {
 
       {/* Start Game Dialog - shown as overlay */}
       {showStartWindow && (
-        <NewGameDialog
-          onStartGame={handleStartGame}
-          onCancel={handleStartGameCancel}
-          onShowSelectOpponentDialog={handleShowSelectOpponentDialog}
-        />
+        <NewGameDialog onShowSelectOpponentDialog={handleShowSelectOpponentDialog} />
       )}
 
       {/* Save Game Dialog - shown as overlay */}
