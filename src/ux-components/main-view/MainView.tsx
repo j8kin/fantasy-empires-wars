@@ -8,7 +8,7 @@ import CastSpellDialog from '../dialogs/CastSpellDialog';
 import OpponentInfoPopup, { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import ProgressPopup from '../popups/ProgressPopup';
-import { SelectionProvider } from '../../contexts/SelectionContext';
+import { SelectionProvider } from '../../contexts/ApplicationContext';
 import { GamePlayer } from '../../types/GamePlayer';
 import { GameState } from '../../types/HexTileState';
 import { useMapState } from '../../hooks/useMapState';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { toRoman } from '../../map/utils/romanNumerals';
-import { useSelection } from '../../contexts/SelectionContext';
+import { useSelection } from '../../contexts/ApplicationContext';
 import './css/FlipBook.css';
 
 interface FlipBookPageProps {

@@ -1,7 +1,7 @@
 import React from 'react';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
-import { useSelection } from '../../contexts/SelectionContext';
+import { useSelection } from '../../contexts/ApplicationContext';
 import { AllSpells, Spell, SpellName } from '../../types/Spell';
 
 import blessingImg from '../../assets/spells/white/blessing.png';
