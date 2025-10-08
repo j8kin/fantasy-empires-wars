@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 import { ButtonName } from '../buttons/GameButtonProps';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 export interface SaveGameDialogProps {
   isOpen: boolean;
@@ -10,15 +11,15 @@ export interface SaveGameDialogProps {
 }
 
 const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave }) => {
-  const [saveName, setSaveName] = useState('');
+  const { saveGameName, setSaveGameName, resetSaveGameDialog } = useApplicationContext();
 
   if (!isOpen) return null;
 
   const handleSave = () => {
-    if (saveName.trim()) {
-      onSave(saveName.trim());
+    if (saveGameName.trim()) {
+      onSave(saveGameName.trim());
       onClose();
-      setSaveName('');
+      resetSaveGameDialog();
     } else {
       alert('Please enter a save name');
     }
@@ -26,7 +27,7 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
 
   const handleCancel = () => {
     onClose();
-    setSaveName('');
+    resetSaveGameDialog();
   };
 
   // Center the dialog on screen (assuming 1920x1080 viewport)
@@ -54,8 +55,8 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
           <input
             id="saveName"
             type="text"
-            value={saveName}
-            onChange={(e) => setSaveName(e.target.value)}
+            value={saveGameName}
+            onChange={(e) => setSaveGameName(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSave()}
             style={{
               width: '300px',

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { getAlignmentColor } from '../../types/Alignment';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import styles from './css/PlayerSelection.module.css';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 interface PlayerSelectionProps {
   label?: string;
@@ -17,7 +18,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
   onPlayerChange,
   availablePlayers = PREDEFINED_PLAYERS,
 }) => {
-  const [hoveredPlayer, setHoveredPlayer] = useState<GamePlayer | null>(null);
+  const { hoveredPlayer, setHoveredPlayer } = useApplicationContext();
 
   const displayPlayer = hoveredPlayer || selectedPlayer;
 

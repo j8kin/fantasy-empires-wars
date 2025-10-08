@@ -3,6 +3,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { GameState } from '../types/HexTileState';
+import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+
+const renderWithProvider = (ui: React.ReactElement) =>
+  render(ui, { wrapper: ApplicationContextProvider });
 
 describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   const mockOnStartGame = jest.fn();
@@ -14,7 +18,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   });
 
   it('reproduces the bug: opponents persist from previous random selection when switching map sizes', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -51,7 +55,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   });
 
   it('ensures unique opponents are generated when switching between random modes', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -110,7 +114,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProvider(<TestWrapper />);
 
     // Switch to random mode
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -126,17 +130,16 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
 
     // Check that all opponents are unique
     const configDisplay = screen.queryByTestId('config-display');
-    if (configDisplay) {
-      const opponentElements = screen.getAllByTestId(/opponent-\d+/);
-      const opponentIds = opponentElements.map((el) => el.getAttribute('data-opponent-id'));
+    expect(configDisplay).toBeInTheDocument();
+    const opponentElements = screen.getAllByTestId(/opponent-\d+/);
+    const opponentIds = opponentElements.map((el) => el.getAttribute('data-opponent-id'));
 
-      // Check for uniqueness
-      const uniqueIds = new Set(opponentIds);
-      expect(uniqueIds.size).toBe(opponentIds.length);
+    // Check for uniqueness
+    const uniqueIds = new Set(opponentIds);
+    expect(uniqueIds.size).toBe(opponentIds.length);
 
-      // Ensure we have the expected number of opponents
-      expect(opponentIds.length).toBe(6);
-    }
+    // Ensure we have the expected number of opponents
+    expect(opponentIds.length).toBe(6);
   });
 
   it('correctly handles avatar size calculation after map size changes', () => {
@@ -163,7 +166,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProvider(<TestWrapper />);
 
     // Start with random mode and large map (6 opponents)
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -191,7 +194,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   });
 
   it('prevents leftover opponents from previous map configurations', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}

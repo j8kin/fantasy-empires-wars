@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import GameButton from '../buttons/GameButton';
 import { ButtonName } from '../buttons/GameButtonProps';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 export interface SelectOpponentDialogProps {
   excludedPlayerIds: string[];
@@ -18,19 +19,31 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   onCancel,
   allowEmptyPlayer = true,
 }) => {
-  const availablePlayers = [
-    ...(allowEmptyPlayer ? [NO_PLAYER] : []),
-    ...PREDEFINED_PLAYERS.filter((player) => !excludedPlayerIds.includes(player.id)),
-  ];
+  const {
+    selectOpponentSelectedPlayer,
+    setSelectOpponentSelectedPlayer,
+    resetSelectOpponentDialog,
+  } = useApplicationContext();
 
-  const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(availablePlayers[0]);
+  const availablePlayers = useMemo(
+    () => [
+      ...(allowEmptyPlayer ? [NO_PLAYER] : []),
+      ...PREDEFINED_PLAYERS.filter((player) => !excludedPlayerIds.includes(player.id)),
+    ],
+    [excludedPlayerIds, allowEmptyPlayer]
+  );
+
+  // Reset the dialog when it opens with new available players
+  useEffect(() => {
+    resetSelectOpponentDialog(availablePlayers);
+  }, [excludedPlayerIds, allowEmptyPlayer, resetSelectOpponentDialog, availablePlayers]);
 
   const handlePlayerSelect = useCallback(
     (player: GamePlayer) => {
-      setSelectedPlayer(player);
+      setSelectOpponentSelectedPlayer(player);
       onSelect(player);
     },
-    [onSelect]
+    [onSelect, setSelectOpponentSelectedPlayer]
   );
 
   const dialogWidth = Math.min(700, typeof window !== 'undefined' ? window.innerWidth * 0.7 : 700);
@@ -50,7 +63,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     >
       <PlayerSelection
         label="Select Opponent"
-        selectedPlayer={selectedPlayer}
+        selectedPlayer={selectOpponentSelectedPlayer}
         onPlayerChange={handlePlayerSelect}
         availablePlayers={availablePlayers}
       />

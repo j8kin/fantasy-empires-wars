@@ -3,6 +3,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
+import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+
+const renderWithProvider = (ui: React.ReactElement) =>
+  render(ui, { wrapper: ApplicationContextProvider });
 
 describe('NewGameWindow', () => {
   const mockOnStartGame = jest.fn();
@@ -14,7 +18,7 @@ describe('NewGameWindow', () => {
   });
 
   it('renders the title', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -25,7 +29,7 @@ describe('NewGameWindow', () => {
   });
 
   it('renders map size dropdown with default medium selection', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -37,7 +41,7 @@ describe('NewGameWindow', () => {
   });
 
   it('renders opponent selection mode checkbox with default unchecked state', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -51,7 +55,7 @@ describe('NewGameWindow', () => {
   });
 
   it('renders all predefined players in the player list', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -64,7 +68,7 @@ describe('NewGameWindow', () => {
   });
 
   it('calls onStartGame when Start Game button is clicked', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -84,7 +88,7 @@ describe('NewGameWindow', () => {
   });
 
   it('updates map size when dropdown value changes', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -98,7 +102,7 @@ describe('NewGameWindow', () => {
   });
 
   it('changes opponent selection mode when checkbox is toggled', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -115,7 +119,7 @@ describe('NewGameWindow', () => {
   });
 
   it('updates selected player when a different player is clicked', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -133,7 +137,7 @@ describe('NewGameWindow', () => {
   });
 
   it('shows correct max opponents label for different map sizes', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -183,7 +187,7 @@ describe('NewGameWindow', () => {
       );
     };
 
-    render(<TestNewGameDialogWithNoPlayer />);
+    renderWithProvider(<TestNewGameDialogWithNoPlayer />);
 
     // Component starts in manual mode by default (checkbox unchecked)
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -206,7 +210,7 @@ describe('NewGameWindow', () => {
   });
 
   it('calls onCancel when Cancel button is clicked', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}

@@ -3,6 +3,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+
+const renderWithProvider = (ui: React.ReactElement) =>
+  render(ui, { wrapper: ApplicationContextProvider });
 
 describe('NewGameDialog - Map Size Changes', () => {
   const mockOnStartGame = jest.fn();
@@ -14,7 +18,7 @@ describe('NewGameDialog - Map Size Changes', () => {
   });
 
   it('correctly generates new opponents when switching from huge to medium map with random mode', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -46,7 +50,7 @@ describe('NewGameDialog - Map Size Changes', () => {
   });
 
   it('correctly updates opponent count display when changing map sizes', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -77,7 +81,7 @@ describe('NewGameDialog - Map Size Changes', () => {
   });
 
   it('correctly handles manual mode when switching map sizes', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}
@@ -100,7 +104,7 @@ describe('NewGameDialog - Map Size Changes', () => {
   });
 
   it('preserves selected player when changing map sizes', () => {
-    render(
+    renderWithProvider(
       <NewGameDialog
         onStartGame={mockOnStartGame}
         onCancel={mockOnCancel}

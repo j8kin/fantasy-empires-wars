@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './css/Hexagonal.module.css';
 import { createTileId, GameState, getPlayerById } from '../../types/HexTileState';
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 import { Position } from '../../map/utils/mapTypes';
 import { PLAYER_COLORS } from '../../types/PlayerColors';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 import darkforestImg from '../../assets/map-tiles/darkforest.png';
 import greenforestImg from '../../assets/map-tiles/greenforest.png';
@@ -26,8 +27,12 @@ const HexTile: React.FC<HexTileProps> = ({
   gameState,
   landHideModePlayerId,
 }) => {
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
+  const { landPopupPosition, landPopupScreenPosition, showLandPopup, hideLandPopup } =
+    useApplicationContext();
+
+  const showPopup =
+    landPopupPosition?.row === battlefieldPosition.row &&
+    landPopupPosition?.col === battlefieldPosition.col;
 
   const imageMap: { [key: string]: string } = {
     'darkforest.png': darkforestImg,
@@ -64,12 +69,11 @@ const HexTile: React.FC<HexTileProps> = ({
 
   const handleRightClick = (event: React.MouseEvent) => {
     event.preventDefault();
-    setPopupPosition({ x: event.clientX, y: event.clientY });
-    setShowPopup(true);
+    showLandPopup(battlefieldPosition, { x: event.clientX, y: event.clientY });
   };
 
   const handleClosePopup = () => {
-    setShowPopup(false);
+    hideLandPopup();
   };
 
   // Determine if land image should be hidden
@@ -101,7 +105,7 @@ const HexTile: React.FC<HexTileProps> = ({
         <LandCharacteristicsPopup
           battlefieldPosition={battlefieldPosition}
           gameState={gameState}
-          screenPosition={popupPosition}
+          screenPosition={landPopupScreenPosition}
           onClose={handleClosePopup}
         />
       )}

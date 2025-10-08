@@ -4,6 +4,10 @@ import '@testing-library/jest-dom';
 import SelectOpponentDialog from '../ux-components/dialogs/SelectOpponentDialog';
 import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
 import { FantasyBorderFrameProps } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
+import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+
+const renderWithProvider = (ui: React.ReactElement) =>
+  render(ui, { wrapper: ApplicationContextProvider });
 
 // Mock FantasyBorderFrame to avoid complex rendering issues
 jest.mock('../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
@@ -38,7 +42,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('renders with correct title', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
@@ -50,7 +54,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('includes EmptyPlayer by default when allowEmptyPlayer is true', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
@@ -64,7 +68,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('excludes EmptyPlayer when allowEmptyPlayer is false', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
@@ -80,7 +84,7 @@ describe('SelectOpponentDialog', () => {
     const excludedPlayer = PREDEFINED_PLAYERS.find((p) => p.id === 'player-1');
     const excludedIds = excludedPlayer ? [excludedPlayer.id] : ['player-1'];
 
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedIds}
         onSelect={mockOnSelect}
@@ -101,7 +105,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('calls onSelect when a player is selected', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
@@ -117,7 +121,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('calls onSelect when EmptyPlayer is selected', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
@@ -135,7 +139,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('renders cancel button and calls onCancel when clicked', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
@@ -149,7 +153,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('sets first available player as default selected', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
@@ -165,7 +169,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('calculates dialog dimensions based on window size', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
@@ -178,7 +182,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('handles empty excluded players list', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={[]}
         onSelect={mockOnSelect}
@@ -195,7 +199,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('updates selected player when a different player is clicked', () => {
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
@@ -228,7 +232,7 @@ describe('SelectOpponentDialog', () => {
       value: undefined,
     });
 
-    render(
+    renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
         onSelect={mockOnSelect}
