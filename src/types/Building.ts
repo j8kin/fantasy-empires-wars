@@ -1,15 +1,14 @@
 export enum BuildingType {
-  STRONGHOLD = 'stronghold',
-  BARRACKS = 'barracks',
-  MAGE_TOWER = 'mage-tower',
-  WATCH_TOWER = 'watch-tower',
-  OUTPOST = 'outpost',
-  WALL = 'wall',
+  STRONGHOLD = 'Stronghold',
+  BARRACKS = 'Barracks',
+  MAGE_TOWER = 'Mage Tower',
+  WATCH_TOWER = 'Watch Tower',
+  OUTPOST = 'Outpost',
+  WALL = 'Castle Wall',
 }
 
 export interface Building {
   id: BuildingType;
-  name: string;
   buildCost: number;
   maintainCost: number;
   description: string;
@@ -21,7 +20,6 @@ export const getBuilding = (building: BuildingType): Building => {
     case BuildingType.STRONGHOLD:
       return {
         id: BuildingType.STRONGHOLD,
-        name: 'Stronghold',
         buildCost: 15000,
         maintainCost: 0,
         description: 'Protect army and produce gold',
@@ -29,7 +27,6 @@ export const getBuilding = (building: BuildingType): Building => {
     case BuildingType.BARRACKS:
       return {
         id: BuildingType.BARRACKS,
-        name: 'Barracks',
         buildCost: 10000,
         maintainCost: 1000,
         description: 'Allows recruitment of military units',
@@ -37,7 +34,6 @@ export const getBuilding = (building: BuildingType): Building => {
     case BuildingType.MAGE_TOWER:
       return {
         id: BuildingType.MAGE_TOWER,
-        name: 'Mage Tower',
         buildCost: 15000,
         maintainCost: 2000,
         description: 'Allows recruitment of Mage units',
@@ -45,7 +41,6 @@ export const getBuilding = (building: BuildingType): Building => {
     case BuildingType.WATCH_TOWER:
       return {
         id: BuildingType.WATCH_TOWER,
-        name: 'Watch Tower',
         buildCost: 5000,
         maintainCost: 300,
         description: 'Increases vision range and provides early warning',
@@ -53,7 +48,6 @@ export const getBuilding = (building: BuildingType): Building => {
     case BuildingType.OUTPOST:
       return {
         id: BuildingType.OUTPOST,
-        name: 'Outpost',
         buildCost: 10000,
         maintainCost: 1000,
         description:
@@ -62,7 +56,6 @@ export const getBuilding = (building: BuildingType): Building => {
     case BuildingType.WALL:
       return {
         id: BuildingType.WALL,
-        name: 'Castle Wall',
         buildCost: 5000,
         maintainCost: 100,
         description: 'Provides strong defensive bonuses',
