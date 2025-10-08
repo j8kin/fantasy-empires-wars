@@ -119,7 +119,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
           {/* Right Side - Game Controls */}
           <GameControl
             onNewGame={handleShowStartWindow}
-            onLoadGame={() => {}} // TODO: Implement load game functionality
+            // TODO: Implement load game functionality (onLoadGame)
             onOpenSaveDialog={handleShowSaveDialog}
           />
         </div>
