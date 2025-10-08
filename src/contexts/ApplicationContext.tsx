@@ -42,9 +42,6 @@ interface ApplicationContextType {
   // Save Game Dialog states
   saveGameName: string;
 
-  // Player Selection states
-  hoveredPlayer: GamePlayer | null;
-
   // Game states
   gameStarted: boolean;
   landHideModePlayerId: string | undefined;
@@ -84,7 +81,6 @@ interface ApplicationContextType {
   resetSaveGameDialog: () => void;
 
   // Player Selection actions
-  setHoveredPlayer: (player: GamePlayer | null) => void;
 
   // Game actions
   setGameStarted: (started: boolean) => void;
@@ -155,7 +151,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [saveGameName, setSaveGameName] = useState<string>('');
 
   // Player Selection states
-  const [hoveredPlayer, setHoveredPlayer] = useState<GamePlayer | null>(null);
 
   // Game states
   const [gameStarted, setGameStarted] = useState<boolean>(false);
@@ -262,7 +257,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         saveGameName,
 
         // Player Selection states
-        hoveredPlayer,
 
         // Game states
         gameStarted,
@@ -303,7 +297,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         resetSaveGameDialog,
 
         // Player Selection actions
-        setHoveredPlayer,
 
         // Game actions
         setGameStarted,
