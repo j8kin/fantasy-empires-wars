@@ -33,11 +33,11 @@ export interface CastSpellDialogProps {
   onClose: () => void;
 }
 
-const CastSpellDialog: React.FC<CastSpellDialogProps> = ({ isOpen }) => {
+const CastSpellDialog: React.FC<CastSpellDialogProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <FlipBook width={333} height={429} maxWidth={860}>
+    <FlipBook width={333} height={429} maxWidth={860} onClickOutside={onClose}>
       {AllSpells.map((spell, index) => (
         <FlipBookPage
           key={spell.id}
