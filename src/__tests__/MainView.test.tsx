@@ -6,7 +6,6 @@ import { GameState } from '../types/HexTileState';
 import { BattlefieldProps } from '../ux-components/battlefield/Battlefield';
 import { NewGameDialogProps } from '../ux-components/dialogs/NewGameDialog';
 import { TopPanelProps } from '../ux-components/top-panel/TopPanel';
-import { SaveGameDialogProps } from '../ux-components/dialogs/SaveGameDialog';
 import { OpponentInfoProps } from '../ux-components/popups/OpponentInfoPopup';
 import { SelectOpponentDialogProps } from '../ux-components/dialogs/SelectOpponentDialog';
 
@@ -80,16 +79,7 @@ jest.mock('../ux-components/dialogs/NewGameDialog', () => {
   };
 });
 
-jest.mock('../ux-components/dialogs/SaveGameDialog', () => {
-  return (props: SaveGameDialogProps) => {
-    return props.isOpen ? (
-      <div data-testid="SaveGameDialog">
-        <button onClick={() => props.onClose?.()}>Close</button>
-        <button onClick={() => props.onSave?.('test-save')}>Save</button>
-      </div>
-    ) : null;
-  };
-});
+// Don't mock SaveGameDialog, let it use the real component with ApplicationContext
 
 jest.mock('../ux-components/popups/OpponentInfoPopup', () => {
   return (props: OpponentInfoProps) => {
@@ -120,6 +110,8 @@ describe('MainView Component', () => {
     jest.clearAllMocks();
     // Mock console methods to avoid noise in tests
     jest.spyOn(console, 'log').mockImplementation();
+    // Mock window.alert to avoid jsdom errors
+    jest.spyOn(window, 'alert').mockImplementation();
   });
 
   afterEach(() => {
@@ -209,7 +201,7 @@ describe('MainView Component', () => {
       expect(screen.getByTestId('SaveGameDialog')).toBeInTheDocument();
 
       // Close save dialog
-      fireEvent.click(screen.getByText('Close'));
+      fireEvent.click(screen.getByAltText('Cancel'));
       expect(screen.queryByTestId('SaveGameDialog')).not.toBeInTheDocument();
     });
 
@@ -217,9 +209,15 @@ describe('MainView Component', () => {
       const consoleSpy = jest.spyOn(console, 'log');
       render(<MainView />);
 
-      // Open save dialog and save
+      // Open save dialog
       fireEvent.click(screen.getByText('Save Game'));
-      fireEvent.click(screen.getByText('Save'));
+
+      // Enter a save name
+      const saveInput = screen.getByDisplayValue('');
+      fireEvent.change(saveInput, { target: { value: 'test-save' } });
+
+      // Save the game
+      fireEvent.click(screen.getByAltText('Save game'));
 
       expect(consoleSpy).toHaveBeenCalledWith('Saving game with name:', 'test-save');
     });

@@ -20,7 +20,6 @@ import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFram
 const MainViewContent: React.FC = () => {
   const {
     showStartWindow,
-    showSaveDialog,
     showCastSpellDialog,
     selectedOpponent,
     opponentScreenPosition,
@@ -78,15 +77,6 @@ const MainViewContent: React.FC = () => {
   const handleShowSaveDialog = useCallback(() => {
     setShowSaveDialog(true);
   }, [setShowSaveDialog]);
-
-  const handleCloseSaveDialog = useCallback(() => {
-    setShowSaveDialog(false);
-  }, [setShowSaveDialog]);
-
-  const handleSaveGame = useCallback((saveName: string) => {
-    console.log('Saving game with name:', saveName);
-    // TODO: Implement actual save game functionality
-  }, []);
 
   const handleShowOpponentInfo = useCallback(
     (opponent: OpponentWithDiplomacy, screenPosition: { x: number; y: number }) => {
@@ -166,11 +156,7 @@ const MainViewContent: React.FC = () => {
       )}
 
       {/* Save Game Dialog - shown as overlay */}
-      <SaveGameDialog
-        isOpen={showSaveDialog}
-        onClose={handleCloseSaveDialog}
-        onSave={handleSaveGame}
-      />
+      <SaveGameDialog />
 
       {/* Cast Spell Dialog - shown as overlay */}
       <CastSpellDialog isOpen={showCastSpellDialog} onClose={handleCloseCastSpellDialog} />

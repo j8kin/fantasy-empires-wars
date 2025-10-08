@@ -4,21 +4,17 @@ import GameButton from '../buttons/GameButton';
 import { ButtonName } from '../buttons/GameButtonProps';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
-export interface SaveGameDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (saveName: string) => void;
-}
+const SaveGameDialog: React.FC = () => {
+  const { showSaveDialog, setShowSaveDialog, saveGameName, setSaveGameName, resetSaveGameDialog } =
+    useApplicationContext();
 
-const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave }) => {
-  const { saveGameName, setSaveGameName, resetSaveGameDialog } = useApplicationContext();
-
-  if (!isOpen) return null;
+  if (!showSaveDialog) return null;
 
   const handleSave = () => {
     if (saveGameName.trim()) {
-      onSave(saveGameName.trim());
-      onClose();
+      console.log('Saving game with name:', saveGameName.trim());
+      // TODO: Implement actual save game functionality
+      setShowSaveDialog(false);
       resetSaveGameDialog();
     } else {
       alert('Please enter a save name');
@@ -26,7 +22,7 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
   };
 
   const handleCancel = () => {
-    onClose();
+    setShowSaveDialog(false);
     resetSaveGameDialog();
   };
 
@@ -37,45 +33,47 @@ const SaveGameDialog: React.FC<SaveGameDialogProps> = ({ isOpen, onClose, onSave
   const y = (window.innerHeight - dialogHeight) / 2;
 
   return (
-    <FantasyBorderFrame
-      screenPosition={{ x, y }}
-      windowDimensions={{ width: dialogWidth, height: dialogHeight }}
-      primaryButton={<GameButton buttonName={ButtonName.SAVE} onClick={handleSave} />}
-      secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />}
-    >
-      <div style={{ textAlign: 'center', color: 'white' }}>
-        <h2 style={{ marginBottom: '30px', fontSize: '24px' }}>Save Game</h2>
-        <div style={{ marginBottom: '20px' }}>
-          <label
-            htmlFor="saveName"
-            style={{ display: 'block', marginBottom: '10px', fontSize: '18px' }}
-          >
-            Enter save name:
-          </label>
-          <input
-            id="saveName"
-            type="text"
-            value={saveGameName}
-            onChange={(e) => setSaveGameName(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSave()}
-            style={{
-              width: '300px',
-              padding: '10px',
-              fontSize: '16px',
-              borderRadius: '5px',
-              border: '2px solid #8B4513',
-              backgroundColor: '#2F2F2F',
-              color: 'white',
-            }}
-            placeholder="My Game Save"
-            autoFocus
-          />
+    <div data-testid="SaveGameDialog">
+      <FantasyBorderFrame
+        screenPosition={{ x, y }}
+        windowDimensions={{ width: dialogWidth, height: dialogHeight }}
+        primaryButton={<GameButton buttonName={ButtonName.SAVE} onClick={handleSave} />}
+        secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />}
+      >
+        <div style={{ textAlign: 'center', color: 'white' }}>
+          <h2 style={{ marginBottom: '30px', fontSize: '24px' }}>Save Game</h2>
+          <div style={{ marginBottom: '20px' }}>
+            <label
+              htmlFor="saveName"
+              style={{ display: 'block', marginBottom: '10px', fontSize: '18px' }}
+            >
+              Enter save name:
+            </label>
+            <input
+              id="saveName"
+              type="text"
+              value={saveGameName}
+              onChange={(e) => setSaveGameName(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSave()}
+              style={{
+                width: '300px',
+                padding: '10px',
+                fontSize: '16px',
+                borderRadius: '5px',
+                border: '2px solid #8B4513',
+                backgroundColor: '#2F2F2F',
+                color: 'white',
+              }}
+              placeholder="My Game Save"
+              autoFocus
+            />
+          </div>
+          <div style={{ fontSize: '14px', color: '#CCCCCC', marginTop: '20px' }}>
+            Your game progress will be saved and can be loaded later.
+          </div>
         </div>
-        <div style={{ fontSize: '14px', color: '#CCCCCC', marginTop: '20px' }}>
-          Your game progress will be saved and can be loaded later.
-        </div>
-      </div>
-    </FantasyBorderFrame>
+      </FantasyBorderFrame>
+    </div>
   );
 };
 
