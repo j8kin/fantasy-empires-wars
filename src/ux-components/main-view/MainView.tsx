@@ -1,18 +1,17 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import styles from './css/Background.module.css';
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
 import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import CastSpellDialog from '../dialogs/CastSpellDialog';
-import OpponentInfoPopup, { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
+import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import ProgressPopup from '../popups/ProgressPopup';
 import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../contexts/ApplicationContext';
-import { GamePlayer } from '../../types/GamePlayer';
 import { useMapState } from '../../hooks/useMapState';
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 
@@ -23,19 +22,11 @@ const MainViewContent: React.FC = () => {
     opponentScreenPosition,
     showSelectOpponentDialog,
     selectOpponentExcludedIds,
-    selectOpponentCallback,
     allowEmptyPlayer,
     showProgressPopup,
     progressMessage,
     gameStarted,
     landHideModePlayerId,
-    setShowStartWindow,
-    setShowSaveDialog,
-    setShowCastSpellDialog,
-    setLandHideModePlayerId,
-    showOpponentInfo,
-    showSelectOpponentDialogWithConfig,
-    hideSelectOpponentDialog,
   } = useApplicationContext();
 
   // Initialize the game state at the MainView level
@@ -44,63 +35,10 @@ const MainViewContent: React.FC = () => {
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
 
-  const handleShowStartWindow = useCallback(() => {
-    setShowStartWindow(true);
-  }, [setShowStartWindow]);
-
-  const handleShowSaveDialog = useCallback(() => {
-    setShowSaveDialog(true);
-  }, [setShowSaveDialog]);
-
-  const handleShowOpponentInfo = useCallback(
-    (opponent: OpponentWithDiplomacy, screenPosition: { x: number; y: number }) => {
-      showOpponentInfo(opponent, screenPosition);
-      setLandHideModePlayerId(opponent.id);
-    },
-    [setLandHideModePlayerId, showOpponentInfo]
-  );
-
-  const handleShowSelectOpponentDialog = useCallback(
-    (
-      excludedPlayerIds: string[],
-      onSelect: (player: GamePlayer) => void,
-      allowEmptyPlayer: boolean = true
-    ) => {
-      showSelectOpponentDialogWithConfig(excludedPlayerIds, onSelect, allowEmptyPlayer);
-    },
-    [showSelectOpponentDialogWithConfig]
-  );
-
-  const handleOpponentSelect = useCallback(
-    (player: GamePlayer) => {
-      if (selectOpponentCallback) {
-        selectOpponentCallback(player);
-      }
-      hideSelectOpponentDialog();
-    },
-    [selectOpponentCallback, hideSelectOpponentDialog]
-  );
-
-  const handleOpponentDialogCancel = useCallback(() => {
-    hideSelectOpponentDialog();
-  }, [hideSelectOpponentDialog]);
-
-  const handleShowCastSpellDialog = useCallback(() => {
-    setShowCastSpellDialog(true);
-  }, [setShowCastSpellDialog]);
-
   return (
     <main className={styles.backgroundStyle} id="MainCanvas">
       {/* Content components */}
-      <TopPanel
-        height={TOP_PANEL_HEIGHT}
-        tileDimensions={TILE_SIZE}
-        gameState={gameState}
-        onNewGame={handleShowStartWindow}
-        onOpenSaveDialog={handleShowSaveDialog}
-        onOpponentSelect={handleShowOpponentInfo}
-        onCast={handleShowCastSpellDialog}
-      />
+      <TopPanel height={TOP_PANEL_HEIGHT} tileDimensions={TILE_SIZE} gameState={gameState} />
       <Battlefield
         topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}
@@ -112,12 +50,7 @@ const MainViewContent: React.FC = () => {
       {/*Game Dialogs */}
 
       {/* Start Game Dialog - shown as overlay */}
-      {showStartWindow && (
-        <NewGameDialog
-          onShowSelectOpponentDialog={handleShowSelectOpponentDialog}
-          updateGameConfig={updateGameConfig}
-        />
-      )}
+      {showStartWindow && <NewGameDialog updateGameConfig={updateGameConfig} />}
 
       {/* Save Game Dialog - shown as overlay */}
       <SaveGameDialog />
@@ -132,8 +65,6 @@ const MainViewContent: React.FC = () => {
       {showSelectOpponentDialog && (
         <SelectOpponentDialog
           excludedPlayerIds={selectOpponentExcludedIds}
-          onSelect={handleOpponentSelect}
-          onCancel={handleOpponentDialogCancel}
           allowEmptyPlayer={allowEmptyPlayer}
         />
       )}

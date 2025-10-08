@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useCallback } from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerSelection from '../player-selection/PlayerSelection';
@@ -8,21 +8,23 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 export interface SelectOpponentDialogProps {
   excludedPlayerIds: string[];
-  onSelect: (player: GamePlayer) => void;
-  onCancel: () => void;
   allowEmptyPlayer?: boolean;
+  onSelect?: (player: GamePlayer) => void;
+  onCancel?: () => void;
 }
 
 const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   excludedPlayerIds,
+  allowEmptyPlayer = true,
   onSelect,
   onCancel,
-  allowEmptyPlayer = true,
 }) => {
   const {
     selectOpponentSelectedPlayer,
+    selectOpponentCallback,
     setSelectOpponentSelectedPlayer,
     resetSelectOpponentDialog,
+    hideSelectOpponentDialog,
   } = useApplicationContext();
 
   const availablePlayers = useMemo(
@@ -37,9 +39,29 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     resetSelectOpponentDialog(availablePlayers);
   }, [availablePlayers, resetSelectOpponentDialog]);
 
+  const handleOpponentSelect = useCallback(
+    (player: GamePlayer) => {
+      if (onSelect) {
+        onSelect(player);
+      } else if (selectOpponentCallback) {
+        selectOpponentCallback(player);
+        hideSelectOpponentDialog();
+      }
+    },
+    [onSelect, selectOpponentCallback, hideSelectOpponentDialog]
+  );
+
+  const handleOpponentDialogCancel = useCallback(() => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      hideSelectOpponentDialog();
+    }
+  }, [onCancel, hideSelectOpponentDialog]);
+
   const handlePlayerSelect = (player: GamePlayer) => {
     setSelectOpponentSelectedPlayer(player);
-    onSelect(player);
+    handleOpponentSelect(player);
   };
 
   const isClient = typeof window !== 'undefined';
@@ -52,7 +74,9 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     <FantasyBorderFrame
       screenPosition={{ x: dialogX, y: dialogY }}
       windowDimensions={{ width: dialogWidth, height: dialogHeight }}
-      secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={onCancel} />}
+      secondaryButton={
+        <GameButton buttonName={ButtonName.CANCEL} onClick={handleOpponentDialogCancel} />
+      }
       zIndex={1010}
     >
       <PlayerSelection

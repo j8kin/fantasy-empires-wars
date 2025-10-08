@@ -11,11 +11,6 @@ import { GameState } from '../../types/HexTileState';
 import { ButtonName } from '../buttons/GameButtonProps';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 export interface NewGameDialogProps {
-  onShowSelectOpponentDialog: (
-    excludedPlayerIds: string[],
-    onSelect: (player: GamePlayer) => void,
-    allowEmptyPlayer?: boolean
-  ) => void;
   updateGameConfig: (config: GameState) => void;
 }
 
@@ -34,10 +29,7 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   }
 };
 
-const NewGameDialog: React.FC<NewGameDialogProps> = ({
-  onShowSelectOpponentDialog,
-  updateGameConfig,
-}) => {
+const NewGameDialog: React.FC<NewGameDialogProps> = ({ updateGameConfig }) => {
   const {
     newGameMapSize,
     newGameSelectedPlayer,
@@ -51,6 +43,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
     setProgressMessage,
     setShowProgressPopup,
     setGameStarted,
+    showSelectOpponentDialogWithConfig,
   } = useApplicationContext();
 
   // Use context state as local variables for easier refactoring
@@ -209,7 +202,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
       // Don't allow EmptyPlayer when there are exactly 2 opponents (would leave only 1)
       const allowEmptyPlayer = currentOpponentCount > 2;
 
-      onShowSelectOpponentDialog(
+      showSelectOpponentDialogWithConfig(
         excludedPlayerIds,
         (opponent: GamePlayer) => {
           const newOpponents = [...selectedOpponents];
@@ -226,7 +219,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({
     [
       selectedPlayer.id,
       selectedOpponents,
-      onShowSelectOpponentDialog,
+      showSelectOpponentDialogWithConfig,
       getUniqueOpponentColors,
       setSelectedOpponents,
     ]

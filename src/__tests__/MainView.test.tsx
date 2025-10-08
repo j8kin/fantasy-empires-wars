@@ -2,10 +2,12 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MainView from '../ux-components/main-view/MainView';
 import { BattlefieldProps } from '../ux-components/battlefield/Battlefield';
-import { NewGameDialogProps } from '../ux-components/dialogs/NewGameDialog';
-import { TopPanelProps } from '../ux-components/top-panel/TopPanel';
 import { OpponentInfoProps } from '../ux-components/popups/OpponentInfoPopup';
 import { SelectOpponentDialogProps } from '../ux-components/dialogs/SelectOpponentDialog';
+import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+
+const renderWithProvider = (ui: React.ReactElement) =>
+  render(ui, { wrapper: ApplicationContextProvider });
 
 // Mock CSS modules
 jest.mock('../ux-components/main-view/css/Background.module.css', () => ({
@@ -14,25 +16,23 @@ jest.mock('../ux-components/main-view/css/Background.module.css', () => ({
 
 // Mock child components
 jest.mock('../ux-components/top-panel/TopPanel', () => {
-  return (props: TopPanelProps) => {
+  return () => {
     const { PREDEFINED_PLAYERS } = jest.requireActual('../types/GamePlayer');
+    const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
     const mockPlayer = PREDEFINED_PLAYERS[0];
+    const { setShowStartWindow, setShowSaveDialog, showOpponentInfo, setLandHideModePlayerId } =
+      useApplicationContext();
     return (
       <div data-testid="TopPanel">
-        <button onClick={() => props.onNewGame?.()}>New Game</button>
-        <button onClick={() => props.onLoadGame?.()}>Load Game</button>
-        <button onClick={() => props.onOpenSaveDialog?.()}>Save Game</button>
-        <button onClick={() => props.onEndTurn?.()}>End Turn</button>
+        <button onClick={() => setShowStartWindow(true)}>New Game</button>
+        <button onClick={() => setShowSaveDialog(true)}>Save Game</button>
+        <button onClick={() => {}}>End Turn</button>
         <button
-          onClick={() =>
-            props.onOpponentSelect?.(
-              {
-                ...mockPlayer,
-                diplomacyStatus: 'Peace' as const,
-              },
-              { x: 0, y: 0 }
-            )
-          }
+          onClick={() => {
+            const opponent = { ...mockPlayer, diplomacyStatus: 'Peace' as const };
+            showOpponentInfo(opponent, { x: 0, y: 0 });
+            setLandHideModePlayerId(opponent.id);
+          }}
         >
           Select Opponent
         </button>
@@ -54,11 +54,13 @@ jest.mock('../ux-components/battlefield/Battlefield', () => {
 });
 
 jest.mock('../ux-components/dialogs/NewGameDialog', () => {
-  return (props: NewGameDialogProps) => {
+  return () => {
+    const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
+    const { showSelectOpponentDialogWithConfig } = useApplicationContext();
     return (
       <div data-testid="NewGameDialog">
         <button>Start Game</button>
-        <button onClick={() => props.onShowSelectOpponentDialog?.([], () => {}, true)}>
+        <button onClick={() => showSelectOpponentDialogWithConfig([], () => {}, true)}>
           Show Select Opponent
         </button>
       </div>
@@ -89,13 +91,13 @@ jest.mock('../ux-components/popups/OpponentInfoPopup', () => {
 });
 
 jest.mock('../ux-components/dialogs/SelectOpponentDialog', () => {
-  return (props: SelectOpponentDialogProps) => {
-    const { PREDEFINED_PLAYERS } = jest.requireActual('../types/GamePlayer');
-    const mockPlayer = PREDEFINED_PLAYERS[6];
+  return (_props: SelectOpponentDialogProps) => {
+    const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
+    const { hideSelectOpponentDialog } = useApplicationContext();
     return (
       <div data-testid="SelectOpponentDialog">
-        <button onClick={() => props.onSelect?.(mockPlayer)}>Select Player</button>
-        <button onClick={() => props.onCancel?.()}>Cancel</button>
+        <button onClick={() => hideSelectOpponentDialog()}>Select Player</button>
+        <button onClick={() => hideSelectOpponentDialog()}>Cancel</button>
       </div>
     );
   };
@@ -115,36 +117,36 @@ describe('MainView Component', () => {
   });
 
   it('renders MainView with main canvas', () => {
-    render(<MainView />);
+    renderWithProvider(<MainView />);
     expect(screen.getByRole('main')).toHaveAttribute('id', 'MainCanvas');
   });
 
   it('applies correct CSS background style', () => {
-    render(<MainView />);
+    renderWithProvider(<MainView />);
     const mainElement = screen.getByRole('main');
     expect(mainElement).toHaveClass('mocked-background-style');
   });
 
   it('renders TopPanel with correct props', () => {
-    render(<MainView />);
+    renderWithProvider(<MainView />);
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 
   it('renders Battlefield with correct props', () => {
-    render(<MainView />);
+    renderWithProvider(<MainView />);
     const battlefield = screen.getByTestId('Battlefield');
     expect(battlefield).toBeInTheDocument();
     expect(battlefield).toHaveAttribute('data-battlefield-size', 'medium');
   });
 
   it('shows NewGameDialog initially', () => {
-    render(<MainView />);
+    renderWithProvider(<MainView />);
     expect(screen.getByTestId('NewGameDialog')).toBeInTheDocument();
   });
 
   describe('Game State Management', () => {
     it('starts a new game when start game is clicked', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       const startButton = screen.getByText('Start Game');
       fireEvent.click(startButton);
@@ -159,7 +161,7 @@ describe('MainView Component', () => {
     });
 
     it('updates battlefield size based on game config', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // Mock a different map size by modifying the mock
       const startButton = screen.getByText('Start Game');
@@ -170,7 +172,7 @@ describe('MainView Component', () => {
     });
 
     it('shows start window when new game is clicked in TopPanel', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // NewGameDialog should be initially visible
       expect(screen.getByTestId('NewGameDialog')).toBeInTheDocument();
@@ -183,14 +185,14 @@ describe('MainView Component', () => {
 
   describe('Save Game Functionality', () => {
     it('opens save dialog when save button is clicked', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       fireEvent.click(screen.getByText('Save Game'));
       expect(screen.getByTestId('SaveGameDialog')).toBeInTheDocument();
     });
 
     it('closes save dialog when close is clicked', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // Open save dialog
       fireEvent.click(screen.getByText('Save Game'));
@@ -203,7 +205,7 @@ describe('MainView Component', () => {
 
     it('handles save game action', () => {
       const consoleSpy = jest.spyOn(console, 'log');
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // Open save dialog
       fireEvent.click(screen.getByText('Save Game'));
@@ -221,7 +223,7 @@ describe('MainView Component', () => {
 
   describe('Opponent Information', () => {
     it('shows opponent info when opponent is selected', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       fireEvent.click(screen.getByText('Select Opponent'));
       expect(screen.getByTestId('OpponentInfoPopup')).toBeInTheDocument();
@@ -229,7 +231,7 @@ describe('MainView Component', () => {
     });
 
     it('closes opponent info dialog', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // Open opponent info
       fireEvent.click(screen.getByText('Select Opponent'));
@@ -243,14 +245,14 @@ describe('MainView Component', () => {
 
   describe('Select Opponent Dialog', () => {
     it('shows select opponent dialog', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       fireEvent.click(screen.getByText('Show Select Opponent'));
       expect(screen.getByTestId('SelectOpponentDialog')).toBeInTheDocument();
     });
 
     it('handles opponent selection', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // Show select opponent dialog
       fireEvent.click(screen.getByText('Show Select Opponent'));
@@ -263,7 +265,7 @@ describe('MainView Component', () => {
     });
 
     it('handles opponent selection cancellation', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // Show select opponent dialog
       fireEvent.click(screen.getByText('Show Select Opponent'));
@@ -278,7 +280,7 @@ describe('MainView Component', () => {
 
   describe('Component Integration', () => {
     it('calculates battlefield top position correctly', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       const battlefield = screen.getByTestId('Battlefield');
       // TOP_PANEL_HEIGHT (300) - Math.min(defaultTileSize.height, defaultTileSize.width)
@@ -287,7 +289,7 @@ describe('MainView Component', () => {
     });
 
     it('updates battlefield key when game restarts', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // Start game
       fireEvent.click(screen.getByText('Start Game'));
@@ -303,7 +305,7 @@ describe('MainView Component', () => {
 
   describe('State Management', () => {
     it('maintains proper initial state', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // Initial state should show start dialog
       expect(screen.getByTestId('NewGameDialog')).toBeInTheDocument();
@@ -313,7 +315,7 @@ describe('MainView Component', () => {
     });
 
     it('manages multiple dialog states correctly', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
 
       // Open save dialog
       fireEvent.click(screen.getByText('Save Game'));
@@ -331,14 +333,14 @@ describe('MainView Component', () => {
 
   describe('Constants and Configuration', () => {
     it('uses correct TOP_PANEL_HEIGHT constant', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
       const topPanel = screen.getByTestId('TopPanel');
       expect(topPanel).toBeInTheDocument();
       // The height should be passed as a prop to TopPanel (300)
     });
 
     it('handles defaultTileSize configuration', () => {
-      render(<MainView />);
+      renderWithProvider(<MainView />);
       const battlefield = screen.getByTestId('Battlefield');
       expect(battlefield).toBeInTheDocument();
       // The tileSize should be passed as defaultTileSize
