@@ -31,9 +31,11 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
             {availablePlayers.map((player) => (
               <div
                 key={player.id}
-                className={`${styles.playerListItem} ${
-                  selectedPlayer.id === player.id ? styles.selected : ''
+                className={`${styles.playerListItem} playerListItem ${
+                  selectedPlayer.id === player.id ? `${styles.selected} selected` : ''
                 }`}
+                role="button"
+                aria-label={player.name}
                 onClick={() => onPlayerChange(player)}
                 onMouseEnter={() => setHoveredPlayer(player)}
                 onMouseLeave={() => setHoveredPlayer(null)}

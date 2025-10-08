@@ -4,6 +4,7 @@ import '@testing-library/jest-dom';
 import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+import { GameState } from '../types/HexTileState';
 
 const renderWithProvider = (ui: React.ReactElement) =>
   render(ui, { wrapper: ApplicationContextProvider });
@@ -16,18 +17,39 @@ describe('NewGameWindow', () => {
   });
 
   it('renders the title', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
     expect(screen.getByText('Start New Game')).toBeInTheDocument();
   });
 
   it('renders map size dropdown with default medium selection', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
     const mapSizeDropdown = screen.getByDisplayValue('Medium');
     expect(mapSizeDropdown).toBeInTheDocument();
   });
 
   it('renders opponent selection mode checkbox with default unchecked state', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
     expect(randomOpponentsCheckbox).toBeInTheDocument();
     expect(randomOpponentsCheckbox).not.toBeChecked();
@@ -35,14 +57,28 @@ describe('NewGameWindow', () => {
   });
 
   it('renders all predefined players in the player list', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
     PREDEFINED_PLAYERS.forEach((player) => {
       expect(screen.getAllByText(player.name).length).toBeGreaterThanOrEqual(1);
     });
   });
 
   it('starts game when Start Game button is clicked', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
     const startButton = screen.getByAltText('Start game');
     fireEvent.click(startButton);
 
@@ -51,7 +87,14 @@ describe('NewGameWindow', () => {
   });
 
   it('updates map size when dropdown value changes', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
     const mapSizeDropdown = screen.getByDisplayValue('Medium');
 
     fireEvent.change(mapSizeDropdown, { target: { value: 'large' } });
@@ -59,7 +102,14 @@ describe('NewGameWindow', () => {
   });
 
   it('changes opponent selection mode when checkbox is toggled', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
 
     fireEvent.click(randomOpponentsCheckbox);
@@ -70,7 +120,14 @@ describe('NewGameWindow', () => {
   });
 
   it('updates selected player when a different player is clicked', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
 
     // Click on the second player
     const secondPlayerName = PREDEFINED_PLAYERS[1].name;
@@ -82,7 +139,14 @@ describe('NewGameWindow', () => {
   });
 
   it('shows correct max opponents label for different map sizes', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
 
     // Default medium map should show "of 4"
     expect(screen.getByText(/of 4/)).toBeInTheDocument();
@@ -108,6 +172,9 @@ describe('NewGameWindow', () => {
           // Simulate selecting NO_PLAYER to "delete" an opponent
           onSelect(NO_PLAYER);
         }}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
       />
     );
 
@@ -129,7 +196,14 @@ describe('NewGameWindow', () => {
   });
 
   it('closes dialog when Cancel button is clicked', () => {
-    renderWithProvider(<NewGameDialog onShowSelectOpponentDialog={onShowSelectOpponentDialog} />);
+    renderWithProvider(
+      <NewGameDialog
+        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    );
     const cancelButton = screen.getByAltText('Cancel');
     fireEvent.click(cancelButton);
 

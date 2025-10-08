@@ -22,11 +22,8 @@ describe('OpponentsPanel', () => {
     );
 
     // Should render 2 opponents (random generation)
-    const opponentsContainer =
-      screen.queryByTestId('opponents-panel') || document.querySelector('.opponentsPanelContainer');
-    expect(
-      opponentsContainer || document.querySelector('[class*="opponentsPanelContainer"]')
-    ).toBeInTheDocument();
+    const avatars = screen.getAllByRole('img', { name: /.+/ });
+    expect(avatars.length).toBe(2);
   });
 
   it('filters out EmptyPlayer from provided opponents', () => {
@@ -72,12 +69,8 @@ describe('OpponentsPanel', () => {
     expect(screen.queryByText('NONE')).not.toBeInTheDocument();
 
     // Should have generated random opponents based on numberOfOpponents
-    const opponentsContainer = document.querySelector('[class*="opponentsPanelContainer"]');
-    expect(opponentsContainer).toBeInTheDocument();
-
-    // Check that we have avatar elements (indicating random opponents were generated)
-    const avatarElements = document.querySelectorAll('img[alt]');
-    expect(avatarElements.length).toBeGreaterThan(0); // Should have generated some opponents
+    const avatars = screen.getAllByRole('img', { name: /.+/ });
+    expect(avatars.length).toBe(2);
   });
 
   it('works correctly with mixed valid opponents and EmptyPlayer', () => {
@@ -118,9 +111,8 @@ describe('OpponentsPanel', () => {
       />
     );
 
-    // Should fall back to random generation with numberOfOpponents=0
-    const opponentsContainer = document.querySelector('[class*="opponentsPanelContainer"]');
-    expect(opponentsContainer).toBeInTheDocument();
+    // Should render zero opponents when numberOfOpponents=0
+    expect(screen.queryAllByRole('img', { name: /.+/ }).length).toBe(0);
   });
 
   // Tests for the memorization bug fix
@@ -138,8 +130,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should generate exactly the requested number of opponents
-      const avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(hugeMapOpponents);
+      const avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(hugeMapOpponents);
     });
 
     it('correctly handles switching from provided opponents to random generation', () => {
@@ -166,8 +158,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should now generate 4 random opponents, not keep the previous 2
-      const avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(4);
+      const avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(4);
     });
 
     it('handles switching from all EmptyPlayer to random opponents', () => {
@@ -181,8 +173,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should fallback to generating 2 random opponents
-      let avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBeGreaterThan(0);
+      let avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBeGreaterThan(0);
 
       // Now switch to a different configuration
       rerender(
@@ -195,8 +187,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should now generate 5 random opponents
-      avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBeGreaterThan(0);
+      avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBeGreaterThan(0);
     });
 
     it('correctly handles mixed scenarios with varying numbers of EmptyPlayer', () => {
@@ -237,8 +229,8 @@ describe('OpponentsPanel', () => {
         expect(screen.queryByText('None')).not.toBeInTheDocument();
         expect(screen.queryByText('NONE')).not.toBeInTheDocument();
 
-        const avatarElements = document.querySelectorAll('img[alt]');
-        expect(avatarElements.length).toBe(expectedValidOpponents);
+        const avatars = screen.getAllByRole('img', { name: /.+/ });
+        expect(avatars.length).toBe(expectedValidOpponents);
 
         // Clean up for next iteration
         rerender(<div />);
@@ -282,8 +274,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should still show only the 1 provided opponent, not 5 random ones
-      const avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(1);
+      const avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(1);
       expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
     });
 
@@ -298,8 +290,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should generate 7 opponents
-      let avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(7);
+      let avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(7);
 
       // Now switch to 4 opponents (simulating Medium map)
       rerender(
@@ -311,8 +303,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should now generate exactly 4 opponents, not 7
-      avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(4);
+      avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(4);
     });
 
     it('correctly handles map size changes with opponent array clearing', () => {
@@ -332,8 +324,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should show 7 opponents
-      let avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(7);
+      let avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(7);
 
       // Now switch to Medium map without provided opponents (should generate random)
       rerender(
@@ -345,8 +337,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should now show exactly 4 opponents, not more
-      avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(4);
+      avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(4);
     });
 
     it('generates correct number of opponents after map size changes', () => {
@@ -359,8 +351,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should generate 7 opponents
-      let avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(7);
+      let avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(7);
 
       // Switch to smaller number of opponents
       rerender(
@@ -372,8 +364,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should now generate exactly 4 opponents, not 7
-      avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(4);
+      avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(4);
 
       // Switch to very small number
       rerender(
@@ -385,8 +377,8 @@ describe('OpponentsPanel', () => {
       );
 
       // Should now generate exactly 2 opponents
-      avatarElements = document.querySelectorAll('img[alt]');
-      expect(avatarElements.length).toBe(2);
+      avatars = screen.getAllByRole('img', { name: /.+/ });
+      expect(avatars.length).toBe(2);
     });
   });
 });

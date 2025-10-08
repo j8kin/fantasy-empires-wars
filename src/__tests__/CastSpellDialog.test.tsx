@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import CastSpellDialog from '../ux-components/dialogs/CastSpellDialog';
 import { ApplicationContextProvider, useApplicationContext } from '../contexts/ApplicationContext';
 import { AllSpells } from '../types/Spell';
@@ -20,7 +20,7 @@ jest.mock('../ux-components/fantasy-book-dialog-template/FlipBook', () => {
 const mockFlipBookPageClick = jest.fn();
 
 jest.mock('../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
-  return ({ header, description, cost, costLabel, onClose, pageNum }: any) => (
+  return ({ header, description, cost, costLabel, onClose }: any) => (
     <div data-testid={`FlipBookPage-${header}`}>
       <h3>{header}</h3>
       <p>{description}</p>

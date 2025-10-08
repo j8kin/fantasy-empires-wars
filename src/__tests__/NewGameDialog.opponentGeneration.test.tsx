@@ -17,7 +17,12 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
 
   it('reproduces the bug: opponents persist from previous random selection when switching map sizes', () => {
     renderWithProvider(
-      <NewGameDialog onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog} />
+      <NewGameDialog
+        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
     );
 
     // Step 1: Switch to random opponent mode
@@ -50,7 +55,12 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
 
   it('ensures unique opponents are generated when switching between random modes', () => {
     renderWithProvider(
-      <NewGameDialog onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog} />
+      <NewGameDialog
+        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
     );
 
     // Switch to random mode
@@ -81,7 +91,12 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
     // This test is now simplified since we can't easily test the internal game start logic
     // We'll just test that the dialog renders and behaves correctly
     renderWithProvider(
-      <NewGameDialog onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog} />
+      <NewGameDialog
+        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
     );
 
     // Switch to random mode
@@ -98,7 +113,12 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
 
   it('correctly handles avatar size calculation after map size changes', () => {
     renderWithProvider(
-      <NewGameDialog onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog} />
+      <NewGameDialog
+        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
     );
 
     // Start with random mode and large map (6 opponents)
@@ -120,7 +140,12 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
 
   it('prevents leftover opponents from previous map configurations', () => {
     renderWithProvider(
-      <NewGameDialog onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog} />
+      <NewGameDialog
+        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
     );
 
     // Start with huge map in random mode (7 opponents)

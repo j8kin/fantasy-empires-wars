@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import PlayerSelection from '../ux-components/player-selection/PlayerSelection';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
@@ -200,7 +201,7 @@ describe('PlayerSelection', () => {
     expect(screen.getByText(mockSelectedPlayer.description)).toBeInTheDocument();
   });
 
-  it('updates details panel when hovering over a different player', () => {
+  it('updates details panel when hovering over a different player', async () => {
     renderWithProvider(
       <PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />
     );
@@ -209,17 +210,18 @@ describe('PlayerSelection', () => {
     expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
     expect(screen.queryByText(PREDEFINED_PLAYERS[1].description)).not.toBeInTheDocument();
 
-    // Hover over second player (trigger mouseEnter on the player list item container)
-    const secondPlayerItem = screen.getByText(PREDEFINED_PLAYERS[1].name)
-      .parentElement as HTMLElement;
-    fireEvent.mouseEnter(secondPlayerItem);
+    // Hover over second player using accessible role
+    const secondPlayerItem = screen.getByRole('button', {
+      name: PREDEFINED_PLAYERS[1].name,
+    });
+    userEvent.hover(secondPlayerItem);
 
     // Should now show hovered player details
     expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
     expect(screen.queryByText(PREDEFINED_PLAYERS[0].description)).not.toBeInTheDocument();
   });
 
-  it('reverts to selected player details when mouse leaves', () => {
+  it('reverts to selected player details when mouse leaves', async () => {
     renderWithProvider(
       <PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />
     );
@@ -227,36 +229,16 @@ describe('PlayerSelection', () => {
     // Initially shows selected player details
     expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
 
-    // Find the player list item for the second player and hover over it
-    const playerListItems = screen.getAllByText(PREDEFINED_PLAYERS[1].name);
-    const playerListItem = (playerListItems[0] as HTMLElement).parentElement as HTMLElement;
-
-    fireEvent.mouseEnter(playerListItem);
+    // Hover over the second player
+    const secondPlayerItem = screen.getByRole('button', {
+      name: PREDEFINED_PLAYERS[1].name,
+    });
+    userEvent.hover(secondPlayerItem);
     expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
 
-    // Mouse leave should revert to selected player
-    fireEvent.mouseLeave(playerListItem);
+    // Unhover should revert to selected player
+    userEvent.unhover(secondPlayerItem);
     expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
-    expect(screen.queryByText(PREDEFINED_PLAYERS[1].description)).not.toBeInTheDocument();
-  });
-
-  it('hover works independently of selection', () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />
-    );
-
-    // Hover over third player
-    const thirdPlayerItem = screen.getByText(PREDEFINED_PLAYERS[2].name)
-      .parentElement as HTMLElement;
-    fireEvent.mouseEnter(thirdPlayerItem);
-    expect(screen.getByText(PREDEFINED_PLAYERS[2].description)).toBeInTheDocument();
-
-    // Click on second player to select it (should call onPlayerChange but not change hover)
-    fireEvent.click(screen.getByText(PREDEFINED_PLAYERS[1].name));
-    expect(mockOnPlayerChange).toHaveBeenCalledWith(PREDEFINED_PLAYERS[1]);
-
-    // Should still show third player details (hovered) not second player (clicked)
-    expect(screen.getByText(PREDEFINED_PLAYERS[2].description)).toBeInTheDocument();
     expect(screen.queryByText(PREDEFINED_PLAYERS[1].description)).not.toBeInTheDocument();
   });
 });

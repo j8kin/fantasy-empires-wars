@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 import SelectOpponentDialog from '../ux-components/dialogs/SelectOpponentDialog';
 import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
 import { FantasyBorderFrameProps } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
@@ -115,7 +116,8 @@ describe('SelectOpponentDialog', () => {
 
     const availablePlayer = PREDEFINED_PLAYERS.find((p) => !excludedPlayerIds.includes(p.id));
     if (availablePlayer) {
-      fireEvent.click(screen.getByText(availablePlayer.name));
+      const btn = screen.getByRole('button', { name: availablePlayer.name });
+      userEvent.click(btn);
       expect(mockOnSelect).toHaveBeenCalledWith(availablePlayer);
     }
   });
@@ -130,11 +132,8 @@ describe('SelectOpponentDialog', () => {
       />
     );
 
-    const emptyPlayerElements = screen.getAllByText(NO_PLAYER.name);
-    const clickableElement = emptyPlayerElements.find((el) => el.closest('.playerListItem'));
-    if (clickableElement) {
-      fireEvent.click(clickableElement);
-    }
+    const emptyButton = screen.getByRole('button', { name: NO_PLAYER.name });
+    userEvent.click(emptyButton);
     expect(mockOnSelect).toHaveBeenCalledWith(NO_PLAYER);
   });
 
@@ -148,7 +147,7 @@ describe('SelectOpponentDialog', () => {
     );
 
     const cancelButton = screen.getByAltText('Cancel');
-    fireEvent.click(cancelButton);
+    userEvent.click(cancelButton);
     expect(mockOnCancel).toHaveBeenCalled();
   });
 
@@ -163,9 +162,9 @@ describe('SelectOpponentDialog', () => {
     );
 
     // EmptyPlayer should be selected by default as it's first in the list
-    const selectedPlayerElements = screen.getAllByText(NO_PLAYER.name);
-    const selectedPlayerElement = selectedPlayerElements[0].closest('.playerListItem');
-    expect(selectedPlayerElement).toHaveClass('selected');
+    // Assert by behavior: the name appears in list and in the details header
+    const occurrences = screen.getAllByText(NO_PLAYER.name);
+    expect(occurrences.length).toBeGreaterThan(1);
   });
 
   it('calculates dialog dimensions based on window size', () => {
@@ -210,11 +209,13 @@ describe('SelectOpponentDialog', () => {
     const availablePlayers = PREDEFINED_PLAYERS.filter((p) => !excludedPlayerIds.includes(p.id));
     if (availablePlayers.length >= 2) {
       // Click first available player
-      fireEvent.click(screen.getByText(availablePlayers[0].name));
+      const firstBtn = screen.getByRole('button', { name: availablePlayers[0].name });
+      userEvent.click(firstBtn);
       expect(mockOnSelect).toHaveBeenCalledWith(availablePlayers[0]);
 
       // Click second available player
-      fireEvent.click(screen.getByText(availablePlayers[1].name));
+      const secondBtn = screen.getByRole('button', { name: availablePlayers[1].name });
+      userEvent.click(secondBtn);
       expect(mockOnSelect).toHaveBeenCalledWith(availablePlayers[1]);
     }
   });

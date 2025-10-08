@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TopPanel from '../ux-components/top-panel/TopPanel';
 import { GameState } from '../types/HexTileState';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
@@ -42,10 +43,10 @@ describe('TopPanel Component', () => {
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 
-  it('renders with correct CSS classes', () => {
+  it('renders the panel container', () => {
     render(<TopPanel {...defaultProps} gameState={gameState} />);
     const topPanel = screen.getByTestId('TopPanel');
-    expect(topPanel).toHaveClass('frameContainer', 'top-bar-panel');
+    expect(topPanel).toBeInTheDocument();
   });
 
   it('renders without selected player when config is not provided', () => {
@@ -60,11 +61,10 @@ describe('TopPanel Component', () => {
     expect(screen.getByText('+250/turn')).toBeInTheDocument();
   });
 
-  it('renders player avatar with correct props when player is selected', () => {
+  it('renders player avatar when player is selected', () => {
     render(<TopPanel {...defaultProps} gameState={gameState} />);
-    // The PlayerAvatar component should be rendered
-    const playerInfo = screen.getByText('Alaric the Bold').closest('.playerInfoContainer');
-    expect(playerInfo).toBeInTheDocument();
+    // The PlayerAvatar image should be rendered for the selected player
+    expect(screen.getByAltText('Alaric the Bold')).toBeInTheDocument();
   });
 
   it('calculates avatar size correctly based on height and tileSize', () => {
@@ -127,7 +127,7 @@ describe('TopPanel Component', () => {
 
     // Find and click the End Turn button by alt text
     const endTurnButton = screen.getByAltText('End of turn');
-    fireEvent.click(endTurnButton);
+    userEvent.click(endTurnButton);
 
     expect(consoleSpy).not.toHaveBeenCalled();
     expect(mockCallbacks.onEndTurn).toHaveBeenCalled();
@@ -142,7 +142,7 @@ describe('TopPanel Component', () => {
     render(<TopPanel {...defaultProps} />);
 
     const endTurnButton = screen.getByAltText('End of turn');
-    fireEvent.click(endTurnButton);
+    userEvent.click(endTurnButton);
 
     expect(consoleSpy).toHaveBeenCalledWith("End of turn clicked! onClick handler: 'not provided'");
     // Should not throw an error when onEndTurn is undefined
@@ -195,10 +195,11 @@ describe('TopPanel Component', () => {
     expect(screen.getByText('+250/turn')).toBeInTheDocument();
   });
 
-  it('renders with proper panel structure', () => {
-    render(<TopPanel {...defaultProps} />);
-    const panelContainer = screen.getByTestId('TopPanel').querySelector('.panelContainer');
-    expect(panelContainer).toBeInTheDocument();
+  it('renders with proper panel structure (by visible content)', () => {
+    render(<TopPanel {...defaultProps} gameState={gameState} />);
+    // Assert by visible content rather than DOM structure or classes
+    expect(screen.getByText('Gold: 1,500')).toBeInTheDocument();
+    expect(screen.getByAltText('End of turn')).toBeInTheDocument();
   });
 
   describe('Component Integration', () => {

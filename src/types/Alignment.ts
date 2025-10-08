@@ -12,12 +12,12 @@ export enum Alignment {
 export const getAlignmentColor = (alignment: Alignment): string => {
   switch (alignment) {
     case Alignment.LAWFUL:
-      return '#4A90E2'; // Blue
+      return 'rgb(74, 144, 226)'; // Blue
     case Alignment.NEUTRAL:
-      return '#95A5A6'; // Gray
+      return 'rgb(149, 165, 166)'; // Gray
     case Alignment.CHAOTIC:
-      return '#E74C3C'; // Red
+      return 'rgb(231, 76, 60)'; // Red
     default:
-      return '#95A5A6'; // Default to gray
+      return 'rgb(149, 165, 166)'; // Default to gray
   }
 };
