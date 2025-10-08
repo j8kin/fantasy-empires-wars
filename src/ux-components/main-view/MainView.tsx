@@ -8,6 +8,7 @@ import CastSpellDialog from '../dialogs/CastSpellDialog';
 import OpponentInfoPopup, { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import ProgressPopup from '../popups/ProgressPopup';
+import { SelectionProvider } from '../../contexts/SelectionContext';
 import { GamePlayer } from '../../types/GamePlayer';
 import { GameState } from '../../types/HexTileState';
 import { useMapState } from '../../hooks/useMapState';
@@ -131,76 +132,78 @@ const MainView: React.FC = () => {
   }, []);
 
   return (
-    <main className={styles.backgroundStyle} id="MainCanvas">
-      {/* Content components */}
-      <TopPanel
-        height={TOP_PANEL_HEIGHT}
-        tileDimensions={TILE_SIZE}
-        gameState={gameState}
-        onNewGame={handleShowStartWindow}
-        onOpenSaveDialog={handleShowSaveDialog}
-        onOpponentSelect={handleShowOpponentInfo}
-        onCast={handleShowCastSpellDialog}
-      />
-      <Battlefield
-        topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
-        tileSize={TILE_SIZE}
-        gameState={gameState}
-        landHideModePlayerId={landHideModePlayerId}
-        key={`map-${gameState.mapSize}-${gameStarted}`}
-      />
-
-      {/*Game Dialogs */}
-
-      {/* Start Game Dialog - shown as overlay */}
-      {showStartWindow && (
-        <NewGameDialog
-          onStartGame={handleStartGame}
-          onCancel={handleStartGameCancel}
-          onShowSelectOpponentDialog={handleShowSelectOpponentDialog}
-        />
-      )}
-
-      {/* Save Game Dialog - shown as overlay */}
-      <SaveGameDialog
-        isOpen={showSaveDialog}
-        onClose={handleCloseSaveDialog}
-        onSave={handleSaveGame}
-      />
-
-      {/* Cast Spell Dialog - shown as overlay */}
-      <CastSpellDialog isOpen={showCastSpellDialog} onClose={handleCloseCastSpellDialog} />
-
-      {/* Opponent Info Dialog - shown as overlay */}
-      <OpponentInfoPopup
-        opponent={selectedOpponent}
-        screenPosition={opponentScreenPosition}
-        onClose={handleCloseOpponentInfo}
-      />
-
-      {/* Select Opponent Dialog - shown as overlay */}
-      {showSelectOpponentDialog && (
-        <SelectOpponentDialog
-          excludedPlayerIds={selectOpponentExcludedIds}
-          onSelect={handleOpponentSelect}
-          onCancel={handleOpponentDialogCancel}
-          allowEmptyPlayer={allowEmptyPlayer}
-        />
-      )}
-
-      {/* Progress Popup - shown as overlay */}
-      {showProgressPopup && (
-        <ProgressPopup
-          screenPosition={{
-            x: typeof window !== 'undefined' ? (window.innerWidth - 400) / 2 : 0,
-            y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
-          }}
+    <SelectionProvider>
+      <main className={styles.backgroundStyle} id="MainCanvas">
+        {/* Content components */}
+        <TopPanel
+          height={TOP_PANEL_HEIGHT}
+          tileDimensions={TILE_SIZE}
           gameState={gameState}
-          onClose={() => {}}
-          message={progressMessage}
+          onNewGame={handleShowStartWindow}
+          onOpenSaveDialog={handleShowSaveDialog}
+          onOpponentSelect={handleShowOpponentInfo}
+          onCast={handleShowCastSpellDialog}
         />
-      )}
-    </main>
+        <Battlefield
+          topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
+          tileSize={TILE_SIZE}
+          gameState={gameState}
+          landHideModePlayerId={landHideModePlayerId}
+          key={`map-${gameState.mapSize}-${gameStarted}`}
+        />
+
+        {/*Game Dialogs */}
+
+        {/* Start Game Dialog - shown as overlay */}
+        {showStartWindow && (
+          <NewGameDialog
+            onStartGame={handleStartGame}
+            onCancel={handleStartGameCancel}
+            onShowSelectOpponentDialog={handleShowSelectOpponentDialog}
+          />
+        )}
+
+        {/* Save Game Dialog - shown as overlay */}
+        <SaveGameDialog
+          isOpen={showSaveDialog}
+          onClose={handleCloseSaveDialog}
+          onSave={handleSaveGame}
+        />
+
+        {/* Cast Spell Dialog - shown as overlay */}
+        <CastSpellDialog isOpen={showCastSpellDialog} onClose={handleCloseCastSpellDialog} />
+
+        {/* Opponent Info Dialog - shown as overlay */}
+        <OpponentInfoPopup
+          opponent={selectedOpponent}
+          screenPosition={opponentScreenPosition}
+          onClose={handleCloseOpponentInfo}
+        />
+
+        {/* Select Opponent Dialog - shown as overlay */}
+        {showSelectOpponentDialog && (
+          <SelectOpponentDialog
+            excludedPlayerIds={selectOpponentExcludedIds}
+            onSelect={handleOpponentSelect}
+            onCancel={handleOpponentDialogCancel}
+            allowEmptyPlayer={allowEmptyPlayer}
+          />
+        )}
+
+        {/* Progress Popup - shown as overlay */}
+        {showProgressPopup && (
+          <ProgressPopup
+            screenPosition={{
+              x: typeof window !== 'undefined' ? (window.innerWidth - 400) / 2 : 0,
+              y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
+            }}
+            gameState={gameState}
+            onClose={() => {}}
+            message={progressMessage}
+          />
+        )}
+      </main>
+    </SelectionProvider>
   );
 };
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { toRoman } from '../../map/utils/romanNumerals';
+import { useSelection } from '../../contexts/SelectionContext';
 import './css/FlipBook.css';
 
 interface FlipBookPageProps {
@@ -13,6 +14,7 @@ interface FlipBookPageProps {
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  onClose?: () => void;
 }
 
 const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
@@ -28,14 +30,26 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       children,
       className,
       style,
+      onClose,
     },
     ref
   ) => {
+    const { setSelectedItem } = useSelection();
     const isEvenPage = pageNum % 2 === 1;
     const defaultClassName = isEvenPage ? 'evenPage' : 'oddPage';
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
 
     const romanPageNum = toRoman(1027 + pageNum);
+
+    const handleIconClick = () => {
+      if (header) {
+        setSelectedItem(header);
+        alert(`${header} is selected`);
+        if (onClose) {
+          onClose();
+        }
+      }
+    };
 
     return (
       <div className={`pageStyle ${finalClassName}`} ref={ref} style={style}>
@@ -47,13 +61,27 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
             <img
               src={iconPath}
               alt={header}
-              className="icon"
-              style={{ alignSelf: isEvenPage ? 'flex-end' : 'flex-start' }}
+              className="icon clickable-icon"
+              style={{
+                alignSelf: isEvenPage ? 'flex-end' : 'flex-start',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                filter: 'brightness(1)',
+              }}
+              onClick={handleIconClick}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.filter =
+                  'brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.filter = 'brightness(1)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
               onError={(e) => {
                 // Fallback to a placeholder or hide an image on error
                 e.currentTarget.style.display = 'none';
               }}
-              // onClick={handleConstruct}
             />
             <div className="description">
               <h4 style={{ margin: '0 0 8px 0', color: '#2c1810', fontSize: '1rem' }}>
