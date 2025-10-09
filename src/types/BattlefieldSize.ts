@@ -1,8 +1,12 @@
 export type BattlefieldSize = 'small' | 'medium' | 'large' | 'huge';
+export interface BattlefieldDimensions {
+  rows: number;
+  cols: number;
+}
 
 export const getBattlefieldDimensions = (
   battlefieldSize: BattlefieldSize
-): { rows: number; cols: number } => {
+): BattlefieldDimensions => {
   switch (battlefieldSize) {
     case 'small':
       return { rows: 6, cols: 13 };

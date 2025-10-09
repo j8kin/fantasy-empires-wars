@@ -2,12 +2,21 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
-import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
+import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
 import { GameState } from '../types/HexTileState';
 
-const renderWithProvider = (ui: React.ReactElement) =>
-  render(ui, { wrapper: ApplicationContextProvider });
+const renderNewGameDialog = () => {
+  render(
+    <ApplicationContextProvider>
+      <NewGameDialog
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    </ApplicationContextProvider>
+  );
+};
 
 describe('NewGameWindow', () => {
   beforeEach(() => {
@@ -15,36 +24,18 @@ describe('NewGameWindow', () => {
   });
 
   it('renders the title', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
     expect(screen.getByText('Start New Game')).toBeInTheDocument();
   });
 
   it('renders map size dropdown with default medium selection', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
     const mapSizeDropdown = screen.getByDisplayValue('Medium');
     expect(mapSizeDropdown).toBeInTheDocument();
   });
 
   it('renders opponent selection mode checkbox with default unchecked state', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
     expect(randomOpponentsCheckbox).toBeInTheDocument();
     expect(randomOpponentsCheckbox).not.toBeChecked();
@@ -52,26 +43,14 @@ describe('NewGameWindow', () => {
   });
 
   it('renders all predefined players in the player list', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
     PREDEFINED_PLAYERS.forEach((player) => {
       expect(screen.getAllByText(player.name).length).toBeGreaterThanOrEqual(1);
     });
   });
 
   it('starts game when Start Game button is clicked', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
     const startButton = screen.getByAltText('Start game');
     fireEvent.click(startButton);
 
@@ -80,13 +59,7 @@ describe('NewGameWindow', () => {
   });
 
   it('updates map size when dropdown value changes', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
     const mapSizeDropdown = screen.getByDisplayValue('Medium');
 
     fireEvent.change(mapSizeDropdown, { target: { value: 'large' } });
@@ -94,13 +67,7 @@ describe('NewGameWindow', () => {
   });
 
   it('changes opponent selection mode when checkbox is toggled', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
 
     fireEvent.click(randomOpponentsCheckbox);
@@ -111,13 +78,7 @@ describe('NewGameWindow', () => {
   });
 
   it('updates selected player when a different player is clicked', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     // Click on the second player
     const secondPlayerName = PREDEFINED_PLAYERS[1].name;
@@ -129,13 +90,7 @@ describe('NewGameWindow', () => {
   });
 
   it('shows correct max opponents label for different map sizes', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     // Default medium map should show "of 4"
     expect(screen.getByText(/of 4/)).toBeInTheDocument();
@@ -155,13 +110,7 @@ describe('NewGameWindow', () => {
   });
 
   it('filters out NO_PLAYER from opponents when starting game in manual mode', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     // Component starts in manual mode by default (checkbox unchecked)
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -181,13 +130,8 @@ describe('NewGameWindow', () => {
   });
 
   it('closes dialog when Cancel button is clicked', () => {
-    renderWithProvider(
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
+
     const cancelButton = screen.getByAltText('Cancel');
     fireEvent.click(cancelButton);
 

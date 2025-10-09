@@ -12,7 +12,7 @@ import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../contexts/ApplicationContext';
-import { useMapState } from '../../hooks/useMapState';
+import { GameProvider, useGameState } from '../../contexts/GameContext';
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 
 const MainViewContent: React.FC = () => {
@@ -29,8 +29,8 @@ const MainViewContent: React.FC = () => {
     landHideModePlayerId,
   } = useApplicationContext();
 
-  // Initialize the game state at the MainView level
-  const { gameState, updateGameConfig } = useMapState('medium');
+  // Access game state from context
+  const { gameState, updateGameConfig } = useGameState();
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
@@ -87,7 +87,9 @@ const MainViewContent: React.FC = () => {
 const MainView: React.FC = () => {
   return (
     <ApplicationContextProvider>
-      <MainViewContent />
+      <GameProvider initialMapSize="medium">
+        <MainViewContent />
+      </GameProvider>
     </ApplicationContextProvider>
   );
 };
