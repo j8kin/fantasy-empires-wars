@@ -1,7 +1,7 @@
 import { generateMockMap } from './utils/generateMockMap';
 import { getLands } from '../map/utils/mapLands';
 import { construct } from '../map/building/construct';
-import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { Position } from '../map/utils/mapTypes';
 import { BuildingType } from '../types/Building';
 import { createTileId, MapTilesType } from '../types/HexTileState';
@@ -34,9 +34,9 @@ describe('MapLands', () => {
         mockMap['0-1'].landType = getLandById(LAND_TYPE.LAVA);
         mockMap['0-1'].controlledBy = player.id;
         expect(getLands(mockMap, undefined, LAND_TYPE.VOLCANO).length).toEqual(1);
-        expect(getLands(mockMap, player, LAND_TYPE.LAVA).length).toEqual(1);
+        expect(getLands(mockMap, [player], LAND_TYPE.LAVA).length).toEqual(1);
         expect(getLands(mockMap, undefined, LAND_TYPE.PLAINS).length).toEqual(nTiles5x5 - 2);
-        expect(getLands(mockMap, player, LAND_TYPE.PLAINS).length).toEqual(0);
+        expect(getLands(mockMap, [player], LAND_TYPE.PLAINS).length).toEqual(0);
       });
     });
 
@@ -48,7 +48,7 @@ describe('MapLands', () => {
         mockMap['0-1'].landType = getLandById(LAND_TYPE.LAVA);
 
         expect(getLands(mockMap, undefined, undefined, Alignment.CHAOTIC).length).toEqual(2);
-        expect(getLands(mockMap, undefined, undefined, Alignment.LAWFUL).length).toEqual(0); // Plants has NEUTRAL alignment
+        expect(getLands(mockMap, undefined, undefined, Alignment.LAWFUL).length).toEqual(0); // Plants have NEUTRAL alignment
         expect(getLands(mockMap, undefined, undefined, Alignment.NEUTRAL).length).toEqual(
           nTiles5x5 - 2
         );
@@ -79,7 +79,7 @@ describe('MapLands', () => {
         const mockMap: MapTilesType = generateMockMap(5, 5);
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
-        const playerLands = getLands(mockMap, player);
+        const playerLands = getLands(mockMap, [player]);
         expect(playerLands.length).toEqual(nTilesInRadius2);
       });
 
@@ -87,7 +87,7 @@ describe('MapLands', () => {
         const mockMap: MapTilesType = generateMockMap(5, 5);
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
-        const playerLands = getLands(mockMap, NO_PLAYER);
+        const playerLands = getLands(mockMap, []);
         expect(playerLands.length).toEqual(nTiles5x5 - nTilesInRadius2);
       });
 
@@ -95,7 +95,7 @@ describe('MapLands', () => {
         const mockMap: MapTilesType = generateMockMap(5, 5);
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
-        const playerLands = getLands(mockMap, player, undefined, undefined, []);
+        const playerLands = getLands(mockMap, [player], undefined, undefined, []);
         expect(playerLands.length).toEqual(nTilesInRadius2 - 1);
       });
 
@@ -104,11 +104,11 @@ describe('MapLands', () => {
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
         construct(player, BuildingType.BARRACKS, { row: 1, col: 2 }, mockMap, 'small');
-        let playerLands = getLands(mockMap, player, undefined, undefined, [
+        let playerLands = getLands(mockMap, [player], undefined, undefined, [
           BuildingType.STRONGHOLD,
         ]);
         expect(playerLands.length).toEqual(1);
-        playerLands = getLands(mockMap, player, undefined, undefined, [
+        playerLands = getLands(mockMap, [player], undefined, undefined, [
           BuildingType.STRONGHOLD,
           BuildingType.BARRACKS,
         ]);

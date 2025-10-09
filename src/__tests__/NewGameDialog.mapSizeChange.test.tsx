@@ -6,25 +6,25 @@ import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
 import { GameState } from '../types/HexTileState';
 
-const renderWithProvider = (ui: React.ReactElement) =>
-  render(ui, { wrapper: ApplicationContextProvider });
+const renderNewGameDialog = () => {
+  render(
+    <ApplicationContextProvider>
+      <NewGameDialog
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    </ApplicationContextProvider>
+  );
+};
 
 describe('NewGameDialog - Map Size Changes', () => {
-  const mockOnShowSelectOpponentDialog = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('correctly generates new opponents when switching from huge to medium map with random mode', () => {
-    renderWithProvider(
-      <NewGameDialog
-        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     // Switch to random opponent mode
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -45,14 +45,7 @@ describe('NewGameDialog - Map Size Changes', () => {
   });
 
   it('correctly updates opponent count display when changing map sizes', () => {
-    renderWithProvider(
-      <NewGameDialog
-        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     const mapSizeSelect = screen.getByDisplayValue('Medium');
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -77,14 +70,7 @@ describe('NewGameDialog - Map Size Changes', () => {
   });
 
   it('correctly handles manual mode when switching map sizes', () => {
-    renderWithProvider(
-      <NewGameDialog
-        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     const mapSizeSelect = screen.getByDisplayValue('Medium');
 
@@ -101,14 +87,7 @@ describe('NewGameDialog - Map Size Changes', () => {
   });
 
   it('preserves selected player when changing map sizes', () => {
-    renderWithProvider(
-      <NewGameDialog
-        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     // The selected player should still be visible after map changes
     const selectedPlayerAvatar = screen.getByAltText(PREDEFINED_PLAYERS[0].name);

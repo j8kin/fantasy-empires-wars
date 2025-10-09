@@ -160,7 +160,7 @@ const addPlayer = (
   // construct one barrack on the same alignment land except homeland
   const playerLands = getLands(
     tiles,
-    player,
+    [player],
     homeland.landType.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
     player.alignment,
     []

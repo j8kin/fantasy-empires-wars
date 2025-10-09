@@ -10,8 +10,6 @@ const renderWithProvider = (ui: React.ReactElement) =>
   render(ui, { wrapper: ApplicationContextProvider });
 
 describe('NewGameWindow', () => {
-  const onShowSelectOpponentDialog = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -19,7 +17,6 @@ describe('NewGameWindow', () => {
   it('renders the title', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -31,7 +28,6 @@ describe('NewGameWindow', () => {
   it('renders map size dropdown with default medium selection', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -44,7 +40,6 @@ describe('NewGameWindow', () => {
   it('renders opponent selection mode checkbox with default unchecked state', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -59,7 +54,6 @@ describe('NewGameWindow', () => {
   it('renders all predefined players in the player list', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -73,7 +67,6 @@ describe('NewGameWindow', () => {
   it('starts game when Start Game button is clicked', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -89,7 +82,6 @@ describe('NewGameWindow', () => {
   it('updates map size when dropdown value changes', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -104,7 +96,6 @@ describe('NewGameWindow', () => {
   it('changes opponent selection mode when checkbox is toggled', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -122,7 +113,6 @@ describe('NewGameWindow', () => {
   it('updates selected player when a different player is clicked', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -141,7 +131,6 @@ describe('NewGameWindow', () => {
   it('shows correct max opponents label for different map sizes', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -168,10 +157,6 @@ describe('NewGameWindow', () => {
   it('filters out NO_PLAYER from opponents when starting game in manual mode', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={(excludedIds, onSelect) => {
-          // Simulate selecting NO_PLAYER to "delete" an opponent
-          onSelect(NO_PLAYER);
-        }}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}
@@ -198,7 +183,6 @@ describe('NewGameWindow', () => {
   it('closes dialog when Cancel button is clicked', () => {
     renderWithProvider(
       <NewGameDialog
-        onShowSelectOpponentDialog={onShowSelectOpponentDialog}
         updateGameConfig={function (config: GameState): void {
           throw new Error('Function not implemented.');
         }}

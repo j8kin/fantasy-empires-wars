@@ -14,6 +14,7 @@ export interface HexTileState {
   goldPerTurn: number;
   buildings: Building[];
   army: Army;
+  glow?: boolean;
 }
 
 export interface GameState {

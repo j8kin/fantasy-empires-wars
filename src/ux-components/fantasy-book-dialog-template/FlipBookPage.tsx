@@ -39,11 +39,12 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     const defaultClassName = isEvenPage ? 'evenPage' : 'oddPage';
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
 
-    const romanPageNum = toRoman(1027 + pageNum);
+    // Maintain Cost == null means it's a spell book.
+    const romanPageNum = toRoman(maintainCost == null ? 1027 : 2351 + pageNum);
 
     const handleIconClick = () => {
       if (header) {
-        setSelectedItem(header);
+        setSelectedItem(maintainCost == null ? 'Spell: ' : 'Building: ' + header);
         alert(`${header} is selected`);
         if (onClose) {
           onClose();

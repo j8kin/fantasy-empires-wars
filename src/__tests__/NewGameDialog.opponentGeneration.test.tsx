@@ -5,25 +5,25 @@ import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { GameState } from '../types/HexTileState';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
 
-const renderWithProvider = (ui: React.ReactElement) =>
-  render(ui, { wrapper: ApplicationContextProvider });
+const renderNewGameDialog = () => {
+  render(
+    <ApplicationContextProvider>
+      <NewGameDialog
+        updateGameConfig={function (config: GameState): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
+    </ApplicationContextProvider>
+  );
+};
 
 describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
-  const mockOnShowSelectOpponentDialog = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('reproduces the bug: opponents persist from previous random selection when switching map sizes', () => {
-    renderWithProvider(
-      <NewGameDialog
-        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     // Step 1: Switch to random opponent mode
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -54,14 +54,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   });
 
   it('ensures unique opponents are generated when switching between random modes', () => {
-    renderWithProvider(
-      <NewGameDialog
-        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     // Switch to random mode
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -88,16 +81,8 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   });
 
   it('generates unique opponent players (no duplicates)', () => {
-    // This test is now simplified since we can't easily test the internal game start logic
-    // We'll just test that the dialog renders and behaves correctly
-    renderWithProvider(
-      <NewGameDialog
-        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    // Just test that the dialog renders and behaves correctly
+    renderNewGameDialog();
 
     // Switch to random mode
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -112,14 +97,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   });
 
   it('correctly handles avatar size calculation after map size changes', () => {
-    renderWithProvider(
-      <NewGameDialog
-        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     // Start with random mode and large map (6 opponents)
     const randomOpponentsCheckbox = screen.getByRole('checkbox');
@@ -139,14 +117,7 @@ describe('NewGameDialog - Opponent Generation Bug Reproduction', () => {
   });
 
   it('prevents leftover opponents from previous map configurations', () => {
-    renderWithProvider(
-      <NewGameDialog
-        onShowSelectOpponentDialog={mockOnShowSelectOpponentDialog}
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
-    );
+    renderNewGameDialog();
 
     // Start with huge map in random mode (7 opponents)
     const randomOpponentsCheckbox = screen.getByRole('checkbox');

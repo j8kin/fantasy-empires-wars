@@ -27,7 +27,8 @@ const HexTile: React.FC<HexTileProps> = ({
   gameState,
   landHideModePlayerId,
 }) => {
-  const { landPopupPosition, landPopupScreenPosition, showLandPopup } = useApplicationContext();
+  const { landPopupPosition, landPopupScreenPosition, showLandPopup, glowingTiles, clearAllGlow } =
+    useApplicationContext();
 
   const showPopup =
     landPopupPosition?.row === battlefieldPosition.row &&
@@ -77,8 +78,21 @@ const HexTile: React.FC<HexTileProps> = ({
   const shouldHideLandImage =
     landHideModePlayerId && battlefieldTile.controlledBy === landHideModePlayerId;
 
+  const tileId = createTileId(battlefieldPosition);
+  const isGlowing = glowingTiles.has(tileId) || battlefieldTile.glow;
+
+  const handleClick = (event: React.MouseEvent) => {
+    if (isGlowing) {
+      event.preventDefault();
+      alert(`Perform action for Land ${tileId}`);
+    } else {
+      clearAllGlow();
+    }
+  };
+
   const tileStyle: React.CSSProperties = {
     backgroundColor: getBackgroundColor(),
+    filter: isGlowing ? 'brightness(1.2)' : 'brightness(1)',
   };
 
   return (
@@ -87,6 +101,7 @@ const HexTile: React.FC<HexTileProps> = ({
         className={styles.hexTile}
         title={`${battlefieldTile.landType.id} (${battlefieldTile.landType.alignment})`}
         onContextMenu={handleRightClick}
+        onClick={handleClick}
         style={tileStyle}
       >
         {!shouldHideLandImage && imageSrc ? (
