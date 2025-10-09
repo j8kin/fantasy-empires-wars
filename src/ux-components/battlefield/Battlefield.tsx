@@ -3,13 +3,13 @@ import styles from './css/Battlefield.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
-import { GameState, createTileId } from '../../types/HexTileState';
+import { createTileId } from '../../types/HexTileState';
 import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
+import { useGameState } from '../../contexts/GameContext';
 
 export interface BattlefieldProps {
   topPanelHeight: number;
   tileSize: Dimensions;
-  gameState: GameState;
   landHideModePlayerId?: string;
 }
 
@@ -44,9 +44,9 @@ const getHexTileSize = (battlefieldSize: BattlefieldSize): Dimensions => {
 const Battlefield: React.FC<BattlefieldProps> = ({
   topPanelHeight,
   tileSize,
-  gameState,
   landHideModePlayerId,
 }) => {
+  const { gameState } = useGameState();
   const { rows, cols } = getBattlefieldDimensions(gameState.mapSize);
   const { width: tileWidth, height: tileHeight } = getHexTileSize(gameState.mapSize);
   const hexGrid = [];
@@ -65,7 +65,6 @@ const Battlefield: React.FC<BattlefieldProps> = ({
         <HexTile
           key={tileId}
           battlefieldPosition={mapPosition}
-          gameState={gameState}
           landHideModePlayerId={landHideModePlayerId}
         />
       );

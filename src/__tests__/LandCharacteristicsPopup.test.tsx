@@ -8,8 +8,50 @@ import { LAND_TYPE } from '../types/Land';
 import { initializeMap } from '../map/generation/mapGeneration';
 import { Army, UnitType, getUnit } from '../types/Army';
 
-const renderWithProvider = (ui: React.ReactElement) =>
-  render(ui, { wrapper: ApplicationContextProvider });
+const renderWithProviders = (ui: React.ReactElement, gameState?: GameState) => {
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <ApplicationContextProvider>
+      <TestGameProvider gameState={gameState}>{children}</TestGameProvider>
+    </ApplicationContextProvider>
+  );
+  return render(ui, { wrapper: Wrapper });
+};
+
+// Mock the useGameState hook
+let mockUseGameState: jest.Mock;
+jest.mock('../contexts/GameContext', () => ({
+  useGameState: jest.fn(),
+}));
+
+// Get the mocked function after module mocking
+const { useGameState } = require('../contexts/GameContext');
+mockUseGameState = useGameState as jest.Mock;
+
+// Custom GameProvider for testing that accepts a specific gameState
+const TestGameProvider: React.FC<{ children: React.ReactNode; gameState?: GameState }> = ({
+  children,
+  gameState,
+}) => {
+  // Update the mock if a specific gameState is provided
+  if (gameState) {
+    mockUseGameState.mockReturnValue({
+      gameState,
+      updateTile: jest.fn(),
+      setTileController: jest.fn(),
+      addBuildingToTile: jest.fn(),
+      updateTileArmy: jest.fn(),
+      changeBattlefieldSize: jest.fn(),
+      nextTurn: jest.fn(),
+      updateGameConfig: jest.fn(),
+      getTile: jest.fn(),
+      getPlayerTiles: jest.fn(),
+      getTotalPlayerGold: jest.fn(),
+      mapDimensions: { width: 7, height: 7 },
+    });
+  }
+
+  return <>{children}</>;
+};
 
 // Mock CSS modules
 jest.mock('../ux-components/battlefield/css/LandCharacteristicsPopup.module.css', () => ({
@@ -45,15 +87,30 @@ describe('LandCharacteristicsPopup', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Set up default mock return for useGameState
+    mockUseGameState.mockReturnValue({
+      gameState: mockGameState,
+      updateTile: jest.fn(),
+      setTileController: jest.fn(),
+      addBuildingToTile: jest.fn(),
+      updateTileArmy: jest.fn(),
+      changeBattlefieldSize: jest.fn(),
+      nextTurn: jest.fn(),
+      updateGameConfig: jest.fn(),
+      getTile: jest.fn(),
+      getPlayerTiles: jest.fn(),
+      getTotalPlayerGold: jest.fn(),
+      mapDimensions: { width: 7, height: 7 },
+    });
   });
 
   it('displays building information when tile has buildings', () => {
-    renderWithProvider(
+    renderWithProviders(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
-        gameState={mockGameState}
         screenPosition={mockPosition}
-      />
+      />,
+      mockGameState
     );
 
     // Check if building information is displayed
@@ -62,12 +119,12 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays controlled by information with player name', () => {
-    renderWithProvider(
+    renderWithProviders(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
-        gameState={mockGameState}
         screenPosition={mockPosition}
-      />
+      />,
+      mockGameState
     );
 
     // Check if control information is displayed with player name
@@ -78,12 +135,12 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays both building and control information simultaneously', () => {
-    renderWithProvider(
+    renderWithProviders(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
-        gameState={mockGameState}
         screenPosition={mockPosition}
-      />
+      />,
+      mockGameState
     );
 
     // Verify both sections are present at the same time
@@ -94,12 +151,12 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays land type information', () => {
-    renderWithProvider(
+    renderWithProviders(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
-        gameState={mockGameState}
         screenPosition={mockPosition}
-      />
+      />,
+      mockGameState
     );
 
     // Check land type information
@@ -108,12 +165,12 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays position and gold information', () => {
-    renderWithProvider(
+    renderWithProviders(
       <LandCharacteristicsPopup
         battlefieldPosition={mockTileState.mapPos}
-        gameState={mockGameState}
         screenPosition={mockPosition}
-      />
+      />,
+      mockGameState
     );
 
     // Check position and gold information
@@ -146,12 +203,12 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      renderWithProvider(
+      renderWithProviders(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
-          gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-        />
+        />,
+        gameStateWithArmy
       );
 
       expect(screen.getByText('Heroes:')).toBeInTheDocument();
@@ -179,12 +236,12 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      renderWithProvider(
+      renderWithProviders(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
-          gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-        />
+        />,
+        gameStateWithArmy
       );
 
       expect(screen.getByText('Units:')).toBeInTheDocument();
@@ -214,12 +271,12 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      renderWithProvider(
+      renderWithProviders(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
-          gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-        />
+        />,
+        gameStateWithArmy
       );
 
       // Check heroes section
@@ -248,12 +305,12 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      renderWithProvider(
+      renderWithProviders(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
-          gameState={gameStateWithoutArmy}
           screenPosition={mockPosition}
-        />
+        />,
+        gameStateWithoutArmy
       );
 
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
@@ -280,12 +337,12 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      renderWithProvider(
+      renderWithProviders(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
-          gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-        />
+        />,
+        gameStateWithArmy
       );
 
       expect(screen.getByText('Heroes:')).toBeInTheDocument();
@@ -314,12 +371,12 @@ describe('LandCharacteristicsPopup', () => {
         },
       };
 
-      renderWithProvider(
+      renderWithProviders(
         <LandCharacteristicsPopup
           battlefieldPosition={mockTileState.mapPos}
-          gameState={gameStateWithArmy}
           screenPosition={mockPosition}
-        />
+        />,
+        gameStateWithArmy
       );
 
       expect(screen.getByText('Units:')).toBeInTheDocument();

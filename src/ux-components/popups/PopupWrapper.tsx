@@ -3,12 +3,10 @@ import FantasyBorderFrame, {
   Dimensions,
   ScreenPosition,
 } from '../fantasy-border-frame/FantasyBorderFrame';
-import { GameState } from '../../types/HexTileState';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 export interface PopupProps {
   screenPosition: ScreenPosition;
-  gameState?: GameState;
 }
 interface PopupWrapperProps extends PopupProps {
   dimensions: Dimensions;

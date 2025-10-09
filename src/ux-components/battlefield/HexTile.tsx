@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from './css/Hexagonal.module.css';
-import { createTileId, GameState, getPlayerById } from '../../types/HexTileState';
+import { createTileId, getPlayerById } from '../../types/HexTileState';
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 import { Position } from '../../map/utils/mapTypes';
 import { PLAYER_COLORS } from '../../types/PlayerColors';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameState } from '../../contexts/GameContext';
 
 import darkforestImg from '../../assets/map-tiles/darkforest.png';
 import greenforestImg from '../../assets/map-tiles/greenforest.png';
@@ -18,17 +19,13 @@ import volcanoImg from '../../assets/map-tiles/volcano.png';
 
 interface HexTileProps {
   battlefieldPosition: Position;
-  gameState: GameState;
   landHideModePlayerId?: string;
 }
 
-const HexTile: React.FC<HexTileProps> = ({
-  battlefieldPosition,
-  gameState,
-  landHideModePlayerId,
-}) => {
+const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlayerId }) => {
   const { landPopupPosition, landPopupScreenPosition, showLandPopup, glowingTiles, clearAllGlow } =
     useApplicationContext();
+  const { gameState } = useGameState();
 
   const showPopup =
     landPopupPosition?.row === battlefieldPosition.row &&
@@ -113,7 +110,6 @@ const HexTile: React.FC<HexTileProps> = ({
       {showPopup && (
         <LandCharacteristicsPopup
           battlefieldPosition={battlefieldPosition}
-          gameState={gameState}
           screenPosition={landPopupScreenPosition}
         />
       )}

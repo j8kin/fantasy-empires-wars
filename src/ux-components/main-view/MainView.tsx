@@ -38,11 +38,10 @@ const MainViewContent: React.FC = () => {
   return (
     <main className={styles.backgroundStyle} id="MainCanvas">
       {/* Content components */}
-      <TopPanel height={TOP_PANEL_HEIGHT} tileDimensions={TILE_SIZE} gameState={gameState} />
+      <TopPanel height={TOP_PANEL_HEIGHT} tileDimensions={TILE_SIZE} />
       <Battlefield
         topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}
-        gameState={gameState}
         landHideModePlayerId={landHideModePlayerId}
         key={`map-${gameState.mapSize}-${gameStarted}`}
       />
@@ -76,7 +75,6 @@ const MainViewContent: React.FC = () => {
             x: typeof window !== 'undefined' ? (window.innerWidth - 400) / 2 : 0,
             y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
           }}
-          gameState={gameState}
           message={progressMessage}
         />
       )}

@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { GameState } from '../../types/HexTileState';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
 import PlayActionsControl from '../game-controls/PlayActionsControl';
@@ -11,11 +10,11 @@ import GameButton from '../buttons/GameButton';
 import styles from './css/TopPanel.module.css';
 import { ButtonName } from '../buttons/GameButtonProps';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameState } from '../../contexts/GameContext';
 
 export interface TopPanelProps {
   height: number;
   tileDimensions: Dimensions;
-  gameState?: GameState;
   onEndTurn?: () => void;
   onBuild?: () => void;
   onMove?: () => void;
@@ -24,7 +23,6 @@ export interface TopPanelProps {
 const TopPanel: React.FC<TopPanelProps> = ({
   height,
   tileDimensions,
-  gameState,
   onEndTurn,
   onBuild,
   onMove,
@@ -36,6 +34,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
     setLandHideModePlayerId,
     showOpponentInfo,
   } = useApplicationContext();
+  const { gameState } = useGameState();
 
   const handleShowStartWindow = useCallback(() => {
     setShowStartWindow(true);

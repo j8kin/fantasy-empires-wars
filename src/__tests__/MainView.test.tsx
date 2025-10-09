@@ -5,9 +5,16 @@ import { BattlefieldProps } from '../ux-components/battlefield/Battlefield';
 import { OpponentInfoProps } from '../ux-components/popups/OpponentInfoPopup';
 import { SelectOpponentDialogProps } from '../ux-components/dialogs/SelectOpponentDialog';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+import { GameProvider } from '../contexts/GameContext';
 
-const renderWithProvider = (ui: React.ReactElement) =>
-  render(ui, { wrapper: ApplicationContextProvider });
+const renderWithProvider = (ui: React.ReactElement) => {
+  const AllProvidersWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <ApplicationContextProvider>
+      <GameProvider>{children}</GameProvider>
+    </ApplicationContextProvider>
+  );
+  return render(ui, { wrapper: AllProvidersWrapper });
+};
 
 // Mock CSS modules
 jest.mock('../ux-components/main-view/css/Background.module.css', () => ({
@@ -43,10 +50,12 @@ jest.mock('../ux-components/top-panel/TopPanel', () => {
 
 jest.mock('../ux-components/battlefield/Battlefield', () => {
   return (props: BattlefieldProps) => {
+    const { useGameState } = jest.requireActual('../contexts/GameContext');
+    const { gameState } = useGameState();
     return (
       <div
         data-testid="Battlefield"
-        data-battlefield-size={props.gameState?.mapSize}
+        data-battlefield-size={gameState.mapSize}
         data-top={props.topPanelHeight}
       />
     );

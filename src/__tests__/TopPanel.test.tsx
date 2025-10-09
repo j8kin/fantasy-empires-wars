@@ -2,25 +2,38 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TopPanel from '../ux-components/top-panel/TopPanel';
-import { GameState } from '../types/HexTileState';
-import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { defaultTileDimensions } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+import { GameProvider, useGameState } from '../contexts/GameContext';
+import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 
-const renderWithProvider = (ui: React.ReactElement) =>
-  render(ui, { wrapper: ApplicationContextProvider });
+const renderWithProvider = (ui: React.ReactElement) => {
+  const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { updateGameConfig, gameState } = useGameState();
+    React.useEffect(() => {
+      updateGameConfig({
+        ...gameState,
+        selectedPlayer: PREDEFINED_PLAYERS[0],
+        opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+      });
+    }, []);
+    return <>{children}</>;
+  };
+
+  const AllProvidersWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <ApplicationContextProvider>
+      <GameProvider>
+        <Bootstrapper>{children}</Bootstrapper>
+      </GameProvider>
+    </ApplicationContextProvider>
+  );
+  return render(ui, { wrapper: AllProvidersWrapper });
+};
 
 const defaultProps = {
   height: 120,
   tileSize: { width: 50, height: 180 },
   tileDimensions: defaultTileDimensions,
-};
-const gameState: GameState = {
-  tiles: {},
-  turn: 1,
-  mapSize: 'medium',
-  selectedPlayer: PREDEFINED_PLAYERS[0],
-  opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2], PREDEFINED_PLAYERS[3]],
 };
 
 const mockCallbacks = {
@@ -48,27 +61,27 @@ describe('TopPanel Component', () => {
   });
 
   it('renders the panel container', () => {
-    renderWithProvider(<TopPanel {...defaultProps} gameState={gameState} />);
+    renderWithProvider(<TopPanel {...defaultProps} />);
     const topPanel = screen.getByTestId('TopPanel');
     expect(topPanel).toBeInTheDocument();
   });
 
-  it('renders without selected player when config is not provided', () => {
+  it('renders selected player by default when using GameProvider defaults', async () => {
     renderWithProvider(<TopPanel {...defaultProps} />);
-    expect(screen.queryByText('Alaric the Bold')).not.toBeInTheDocument();
+    expect(await screen.findByText('Alaric the Bold')).toBeInTheDocument();
   });
 
-  it('renders selected player information when config is provided', () => {
-    renderWithProvider(<TopPanel {...defaultProps} gameState={gameState} />);
-    expect(screen.getByText('Alaric the Bold')).toBeInTheDocument();
-    expect(screen.getByText('Gold: 1,500')).toBeInTheDocument();
-    expect(screen.getByText('+250/turn')).toBeInTheDocument();
+  it('renders selected player information when config is provided', async () => {
+    renderWithProvider(<TopPanel {...defaultProps} />);
+    expect(await screen.findByText('Alaric the Bold')).toBeInTheDocument();
+    expect(await screen.findByText('Gold: 1,500')).toBeInTheDocument();
+    expect(await screen.findByText('+250/turn')).toBeInTheDocument();
   });
 
-  it('renders player avatar when player is selected', () => {
-    renderWithProvider(<TopPanel {...defaultProps} gameState={gameState} />);
+  it('renders player avatar when player is selected', async () => {
+    renderWithProvider(<TopPanel {...defaultProps} />);
     // The PlayerAvatar image should be rendered for the selected player
-    expect(screen.getByAltText('Alaric the Bold')).toBeInTheDocument();
+    expect(await screen.findByAltText('Alaric the Bold')).toBeInTheDocument();
   });
 
   it('calculates avatar size correctly based on height and tileSize', () => {
@@ -85,7 +98,7 @@ describe('TopPanel Component', () => {
   });
 
   it('renders OpponentsPanel with correct props', () => {
-    renderWithProvider(<TopPanel {...defaultProps} gameState={gameState} />);
+    renderWithProvider(<TopPanel {...defaultProps} />);
     // OpponentsPanel should be rendered with the config data
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
@@ -156,7 +169,7 @@ describe('TopPanel Component', () => {
   });
 
   it('calls onOpponentSelect when provided', () => {
-    renderWithProvider(<TopPanel {...defaultProps} gameState={gameState} />);
+    renderWithProvider(<TopPanel {...defaultProps} />);
     // OpponentsPanel should receive the callback
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
@@ -176,10 +189,10 @@ describe('TopPanel Component', () => {
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 
-  it('renders player border color when player is selected', () => {
-    renderWithProvider(<TopPanel {...defaultProps} gameState={gameState} />);
+  it('renders player border color when player is selected', async () => {
+    renderWithProvider(<TopPanel {...defaultProps} />);
     // Player avatar should use the player's color as border color
-    expect(screen.getByText('Alaric the Bold')).toBeInTheDocument();
+    expect(await screen.findByText('Alaric the Bold')).toBeInTheDocument();
   });
 
   it('handles different tile sizes correctly', () => {
@@ -193,29 +206,29 @@ describe('TopPanel Component', () => {
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 
-  it('renders money information with static values', () => {
-    renderWithProvider(<TopPanel {...defaultProps} gameState={gameState} />);
-    expect(screen.getByText('Gold: 1,500')).toBeInTheDocument();
-    expect(screen.getByText('+250/turn')).toBeInTheDocument();
+  it('renders money information with static values', async () => {
+    renderWithProvider(<TopPanel {...defaultProps} />);
+    expect(await screen.findByText('Gold: 1,500')).toBeInTheDocument();
+    expect(await screen.findByText('+250/turn')).toBeInTheDocument();
   });
 
-  it('renders with proper panel structure (by visible content)', () => {
-    renderWithProvider(<TopPanel {...defaultProps} gameState={gameState} />);
+  it('renders with proper panel structure (by visible content)', async () => {
+    renderWithProvider(<TopPanel {...defaultProps} />);
     // Assert by visible content rather than DOM structure or classes
-    expect(screen.getByText('Gold: 1,500')).toBeInTheDocument();
+    expect(await screen.findByText('Gold: 1,500')).toBeInTheDocument();
     expect(screen.getByAltText('End of turn')).toBeInTheDocument();
   });
 
   describe('Component Integration', () => {
-    it('integrates all child components correctly', () => {
-      renderWithProvider(<TopPanel {...defaultProps} gameState={gameState} {...mockCallbacks} />);
+    it('integrates all child components correctly', async () => {
+      renderWithProvider(<TopPanel {...defaultProps} {...mockCallbacks} />);
 
       // Verify main structure exists
       expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
 
       // Verify player section
-      expect(screen.getByText('Alaric the Bold')).toBeInTheDocument();
-      expect(screen.getByText('Gold: 1,500')).toBeInTheDocument();
+      expect(await screen.findByText('Alaric the Bold')).toBeInTheDocument();
+      expect(await screen.findByText('Gold: 1,500')).toBeInTheDocument();
 
       // Verify End Turn button exists
       expect(screen.getByAltText('End of turn')).toBeInTheDocument();

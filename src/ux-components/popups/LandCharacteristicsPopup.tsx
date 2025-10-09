@@ -6,6 +6,7 @@ import { NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../../map/utils/mapTypes';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameState } from '../../contexts/GameContext';
 
 interface LandCharacteristicsPopupProps extends PopupProps {
   battlefieldPosition: Position;
@@ -13,10 +14,10 @@ interface LandCharacteristicsPopupProps extends PopupProps {
 
 const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   battlefieldPosition,
-  gameState,
   screenPosition,
 }) => {
   const { hideLandPopup } = useApplicationContext();
+  const { gameState } = useGameState();
   const battlefieldTile = gameState!.tiles[createTileId(battlefieldPosition)];
   const displayLandType = battlefieldTile.landType;
   if (!displayLandType) return null;

@@ -50,8 +50,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({
     tiles: initializeMap(initialMapSize),
     turn: 1,
     mapSize: initialMapSize,
-    selectedPlayer: undefined,
-    opponents: undefined,
   }));
 
   const updateTile = useCallback((tileId: string, updates: Partial<HexTileState>) => {
