@@ -55,16 +55,22 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   }));
 
   const updateTile = useCallback((tileId: string, updates: Partial<HexTileState>) => {
-    setGameState((prev) => ({
-      ...prev,
-      tiles: {
-        ...prev.tiles,
-        [tileId]: {
-          ...prev.tiles[tileId],
-          ...updates,
+    setGameState((prev) => {
+      const tile = prev.tiles?.[tileId];
+      if (!tile) {
+        return prev; // Return unchanged state if tile doesn't exist
+      }
+      return {
+        ...prev,
+        tiles: {
+          ...prev.tiles,
+          [tileId]: {
+            ...tile,
+            ...updates,
+          },
         },
-      },
-    }));
+      };
+    });
   }, []);
 
   const setTileController = useCallback(
@@ -134,14 +140,14 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   const getTile = useCallback(
     (position: Position) => {
       const tileId = createTileId(position);
-      return gameState.tiles[tileId];
+      return gameState.tiles?.[tileId];
     },
     [gameState.tiles]
   );
 
   const getPlayerTiles = useCallback(
     (player: GamePlayer) => {
-      return Object.values(gameState.tiles).filter((tile) => tile.controlledBy === player.id);
+      return Object.values(gameState.tiles || {}).filter((tile) => tile.controlledBy === player.id);
     },
     [gameState.tiles]
   );
