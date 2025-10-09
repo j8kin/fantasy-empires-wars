@@ -2,6 +2,10 @@ import React from 'react';
 import { toRoman } from '../../map/utils/romanNumerals';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import './css/FlipBook.css';
+import { useGameState } from '../../contexts/GameContext';
+import { getSpellById, SpellName } from '../../types/Spell';
+import { highlightLands } from '../../map/utils/highlightLands';
+import { BuildingType } from '../../types/Building';
 
 interface FlipBookPageProps {
   pageNum: number;
@@ -34,7 +38,9 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     },
     ref
   ) => {
-    const { setSelectedItem } = useApplicationContext();
+    const { setSelectedItem, addGlowingTile } = useApplicationContext();
+    const { gameState } = useGameState();
+
     const isEvenPage = pageNum % 2 === 1;
     const defaultClassName = isEvenPage ? 'evenPage' : 'oddPage';
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
@@ -45,10 +51,20 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     const handleIconClick = () => {
       if (header) {
         setSelectedItem(maintainCost == null ? 'Spell: ' : 'Building: ' + header);
-        alert(`${header} is selected`);
+        const actionType = maintainCost == null ? 'spell' : 'building';
+        const name =
+          maintainCost == null ? getSpellById(header as SpellName).id : (header as BuildingType);
+
         if (onClose) {
-          onClose();
+          onClose(); // close dialog to apply spell or construction
         }
+
+        // Get the tile IDs that should be highlighted
+        const landsToHighlight = highlightLands(gameState, actionType, name);
+        // Add tiles to the glowing tiles set for visual highlighting
+        landsToHighlight.forEach((tileId) => {
+          addGlowingTile(tileId);
+        });
       }
     };
 

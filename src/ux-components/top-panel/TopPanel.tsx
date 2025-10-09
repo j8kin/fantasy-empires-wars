@@ -55,6 +55,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
     },
     [setLandHideModePlayerId, showOpponentInfo]
   );
+
   const MIN_OPPONENTS = 2;
 
   // Use config first, fallback to gameState

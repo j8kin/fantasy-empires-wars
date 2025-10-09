@@ -27,6 +27,7 @@ const MainViewContent: React.FC = () => {
     progressMessage,
     gameStarted,
     landHideModePlayerId,
+    clearAllGlow,
   } = useApplicationContext();
 
   // Access game state from context
@@ -35,8 +36,13 @@ const MainViewContent: React.FC = () => {
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
 
+  const handleMainViewClick = () => {
+    // Clear glow when clicking on the main background
+    clearAllGlow();
+  };
+
   return (
-    <main className={styles.backgroundStyle} id="MainCanvas">
+    <main className={styles.backgroundStyle} id="MainCanvas" onClick={handleMainViewClick}>
       {/* Content components */}
       <TopPanel height={TOP_PANEL_HEIGHT} tileDimensions={TILE_SIZE} />
       <Battlefield

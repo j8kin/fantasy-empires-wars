@@ -81,15 +81,20 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
   const handleClick = (event: React.MouseEvent) => {
     if (isGlowing) {
       event.preventDefault();
+      event.stopPropagation(); // Prevent the battlefield click handler from firing
       alert(`Perform action for Land ${tileId}`);
-    } else {
       clearAllGlow();
     }
   };
 
   const tileStyle: React.CSSProperties = {
     backgroundColor: getBackgroundColor(),
-    filter: isGlowing ? 'brightness(1.2)' : 'brightness(1)',
+    filter: isGlowing
+      ? 'brightness(1.5) drop-shadow(0 0 8px rgba(255, 215, 0, 0.8))'
+      : 'brightness(1)',
+    transform: isGlowing ? 'scale(1.05)' : 'scale(1)',
+    transition: 'all 0.3s ease',
+    border: isGlowing ? '2px solid #FFD700' : 'none',
   };
 
   return (

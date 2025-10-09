@@ -1,30 +1,28 @@
-import { MapTilesType } from '../../types/HexTileState';
-import { GamePlayer } from '../../types/GamePlayer';
+import { GameState, createTileId } from '../../types/HexTileState';
 import { getLands } from './mapLands';
 import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType } from '../../types/Building';
 
 export const highlightLands = (
-  map: MapTilesType,
-  player: GamePlayer,
-  opponents: GamePlayer[],
+  gameState: GameState,
   actionType: 'spell' | 'building',
   name: SpellName | BuildingType
-) => {
+): string[] => {
+  const { tiles, selectedPlayer, opponents } = gameState;
+
   if (actionType === 'building') {
-    getLands(map, [player], undefined, undefined, []).forEach((land) => {
-      land.glow = true;
-    });
+    const lands = getLands(tiles, [selectedPlayer!], undefined, undefined, []);
+    return lands.map((land) => createTileId(land.mapPos));
   } else {
-    const spellApply = getSpellById(name as SpellName).apply;
+    const spell = getSpellById(name as SpellName);
+    const spellApply = spell.apply;
     const playerFilter =
       spellApply === 'player'
-        ? [player]
+        ? [selectedPlayer!]
         : spellApply === 'opponent'
           ? opponents
-          : [player, ...opponents];
-    getLands(map, playerFilter).forEach((land) => {
-      land.glow = true;
-    });
+          : [selectedPlayer!, ...opponents!];
+    const lands = getLands(tiles, playerFilter);
+    return lands.map((land) => createTileId(land.mapPos));
   }
 };
