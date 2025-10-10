@@ -4,7 +4,6 @@ import GameControl from '../game-controls/GameControl';
 import PlayActionsControl from '../game-controls/PlayActionsControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
-import { OpponentWithDiplomacy } from '../popups/OpponentInfoPopup';
 import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 import styles from './css/TopPanel.module.css';
@@ -23,8 +22,6 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
     setShowSaveDialog,
     setShowCastSpellDialog,
     setShowConstructBuildingDialog,
-    setLandHideModePlayerId,
-    showOpponentInfo,
   } = useApplicationContext();
   const { gameState } = useGameState();
 
@@ -43,14 +40,6 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
   const handleShowConstructBuildingDialog = useCallback(() => {
     setShowConstructBuildingDialog(true);
   }, [setShowConstructBuildingDialog]);
-
-  const handleShowOpponentInfo = useCallback(
-    (opponent: OpponentWithDiplomacy, screenPosition: { x: number; y: number }) => {
-      showOpponentInfo(opponent, screenPosition);
-      setLandHideModePlayerId(opponent.id);
-    },
-    [setLandHideModePlayerId, showOpponentInfo]
-  );
 
   // Use config first, fallback to gameState
   const selectedPlayer = gameState?.selectedPlayer;
@@ -101,14 +90,10 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
           {/* Center - Mana Vials */}
           <VialPanel />
 
-          <OpponentsPanel onOpponentSelect={handleShowOpponentInfo} />
+          <OpponentsPanel />
 
           {/* Right Side - Game Controls */}
-          <GameControl
-            onNewGame={handleShowStartWindow}
-            // TODO: Implement load game functionality (onLoadGame)
-            onOpenSaveDialog={handleShowSaveDialog}
-          />
+          <GameControl onNewGame={handleShowStartWindow} onOpenSaveDialog={handleShowSaveDialog} />
         </div>
       </div>
     </FantasyBorderFrame>

@@ -1,16 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import { OpponentWithDiplomacy, DiplomacyStatus } from '../popups/OpponentInfoPopup';
 import { useGameState } from '../../contexts/GameContext';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 import styles from './css/OpponentsPanel.module.css';
-
-interface OpponentsPanelProps {
-  onOpponentSelect?: (
-    opponent: OpponentWithDiplomacy,
-    screenPosition: { x: number; y: number }
-  ) => void;
-}
 
 const getRandomDiplomacyStatus = (): DiplomacyStatus => {
   const statuses: DiplomacyStatus[] = ['No Treaty', 'Peace', 'War'];
@@ -41,8 +35,17 @@ const getRandomOpponents = (
   }));
 };
 
-const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ onOpponentSelect }) => {
+const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameState();
+  const { setLandHideModePlayerId, showOpponentInfo } = useApplicationContext();
+
+  const handleShowOpponentInfo = useCallback(
+    (opponent: OpponentWithDiplomacy, screenPosition: { x: number; y: number }) => {
+      showOpponentInfo(opponent, screenPosition);
+      setLandHideModePlayerId(opponent.id);
+    },
+    [setLandHideModePlayerId, showOpponentInfo]
+  );
 
   const selectedPlayer = gameState?.selectedPlayer;
   const providedOpponents = gameState?.opponents;
@@ -88,7 +91,7 @@ const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ onOpponentSelect }) => 
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const screenPosition = { x: rect.left, y: rect.top };
-            onOpponentSelect?.(opponent, screenPosition);
+            handleShowOpponentInfo(opponent, screenPosition);
           }}
         >
           <PlayerAvatar

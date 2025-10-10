@@ -4,8 +4,9 @@ import { render, screen, cleanup } from '@testing-library/react';
 import OpponentsPanel from '../ux-components/opponents-panel/OpponentsPanel';
 import { PREDEFINED_PLAYERS, NO_PLAYER, GamePlayer } from '../types/GamePlayer';
 import { GameProvider, useGameState } from '../contexts/GameContext';
+import { ApplicationContextProvider } from '../contexts/ApplicationContext';
 
-// Test wrapper that provides GameContext and allows updating game state
+// Test wrapper that provides GameContext and ApplicationContext and allows updating game state
 const TestWrapper: React.FC<{
   children: React.ReactNode;
   opponents: GamePlayer[];
@@ -28,23 +29,23 @@ const TestWrapper: React.FC<{
   };
 
   return (
-    <GameProvider>
-      <TestComponent>{children}</TestComponent>
-    </GameProvider>
+    <ApplicationContextProvider>
+      <GameProvider>
+        <TestComponent>{children}</TestComponent>
+      </GameProvider>
+    </ApplicationContextProvider>
   );
 };
 
 const renderWithGameContext = (opponents: GamePlayer[], selectedPlayer?: GamePlayer) => {
   return render(
     <TestWrapper opponents={opponents} selectedPlayer={selectedPlayer}>
-      <OpponentsPanel onOpponentSelect={jest.fn()} />
+      <OpponentsPanel />
     </TestWrapper>
   );
 };
 
 describe('OpponentsPanel', () => {
-  const mockOnOpponentSelect = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -142,7 +143,7 @@ describe('OpponentsPanel', () => {
       // Now switch to a new game with a different number of opponents
       rerender(
         <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
-          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+          <OpponentsPanel />
         </TestWrapper>
       );
 
@@ -161,7 +162,7 @@ describe('OpponentsPanel', () => {
       // Now switch to a different configuration
       rerender(
         <TestWrapper opponents={[NO_PLAYER]}>
-          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+          <OpponentsPanel />
         </TestWrapper>
       );
 
@@ -216,7 +217,7 @@ describe('OpponentsPanel', () => {
       // Change selectedPlayer - should trigger re-computation
       rerender(
         <TestWrapper opponents={[PREDEFINED_PLAYERS[1]]} selectedPlayer={PREDEFINED_PLAYERS[2]}>
-          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+          <OpponentsPanel />
         </TestWrapper>
       );
 
@@ -226,7 +227,7 @@ describe('OpponentsPanel', () => {
       // Change numberOfOpponents while keeping provided opponents - should still use provided
       rerender(
         <TestWrapper opponents={[PREDEFINED_PLAYERS[1]]}>
-          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+          <OpponentsPanel />
         </TestWrapper>
       );
 
@@ -247,7 +248,7 @@ describe('OpponentsPanel', () => {
       // Now switch to 4 opponents (simulating Medium map)
       rerender(
         <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
-          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+          <OpponentsPanel />
         </TestWrapper>
       );
 
@@ -266,7 +267,7 @@ describe('OpponentsPanel', () => {
       // Now switch to Medium map with 4 provided opponents
       rerender(
         <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
-          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+          <OpponentsPanel />
         </TestWrapper>
       );
 
@@ -285,7 +286,7 @@ describe('OpponentsPanel', () => {
       // Switch to smaller number of opponents (4)
       rerender(
         <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
-          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+          <OpponentsPanel />
         </TestWrapper>
       );
 
@@ -296,7 +297,7 @@ describe('OpponentsPanel', () => {
       // Switch to very small number (2)
       rerender(
         <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 3)}>
-          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+          <OpponentsPanel />
         </TestWrapper>
       );
 
