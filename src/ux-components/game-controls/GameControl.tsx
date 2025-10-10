@@ -1,20 +1,26 @@
-import React from 'react';
-import styles from './css/GameControl.module.css';
-import GameButton from '../buttons/GameButton';
+import React, { useCallback } from 'react';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { ButtonName } from '../buttons/GameButtonProps';
+import GameButton from '../buttons/GameButton';
 
-interface GameControlProps {
-  onNewGame?: () => void;
-  onLoadGame?: () => void;
-  onOpenSaveDialog?: () => void;
-}
+import styles from './css/GameControl.module.css';
 
-const GameControl: React.FC<GameControlProps> = ({ onNewGame, onLoadGame, onOpenSaveDialog }) => {
+const GameControl: React.FC = () => {
+  const { setShowStartWindow, setShowSaveDialog } = useApplicationContext();
+
+  const handleShowStartWindow = useCallback(() => {
+    setShowStartWindow(true);
+  }, [setShowStartWindow]);
+
+  const handleShowSaveDialog = useCallback(() => {
+    setShowSaveDialog(true);
+  }, [setShowSaveDialog]);
+
   return (
     <div className={styles.gameControlContainer}>
-      <GameButton buttonName={ButtonName.NEW} onClick={onNewGame} />
-      <GameButton buttonName={ButtonName.LOAD} onClick={onLoadGame} />
-      <GameButton buttonName={ButtonName.SAVE} onClick={onOpenSaveDialog} />
+      <GameButton buttonName={ButtonName.NEW} onClick={handleShowStartWindow} />
+      <GameButton buttonName={ButtonName.LOAD} />
+      <GameButton buttonName={ButtonName.SAVE} onClick={handleShowSaveDialog} />
     </div>
   );
 };

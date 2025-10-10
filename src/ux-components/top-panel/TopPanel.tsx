@@ -17,21 +17,8 @@ export interface TopPanelProps {
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
-  const {
-    setShowStartWindow,
-    setShowSaveDialog,
-    setShowCastSpellDialog,
-    setShowConstructBuildingDialog,
-  } = useApplicationContext();
+  const { setShowCastSpellDialog, setShowConstructBuildingDialog } = useApplicationContext();
   const { gameState } = useGameState();
-
-  const handleShowStartWindow = useCallback(() => {
-    setShowStartWindow(true);
-  }, [setShowStartWindow]);
-
-  const handleShowSaveDialog = useCallback(() => {
-    setShowSaveDialog(true);
-  }, [setShowSaveDialog]);
 
   const handleShowCastSpellDialog = useCallback(() => {
     setShowCastSpellDialog(true);
@@ -68,7 +55,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
             onCast={handleShowCastSpellDialog}
           />
 
-          {/* Player Info */}
+          {/* Display Player Info only if Game Started */}
           {selectedPlayer && (
             <div className={styles.playerInfoContainer}>
               <PlayerAvatar
@@ -90,10 +77,11 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
           {/* Center - Mana Vials */}
           <VialPanel />
 
-          <OpponentsPanel />
+          {/* Display Opponents only if Game Started */}
+          {selectedPlayer && <OpponentsPanel />}
 
           {/* Right Side - Game Controls */}
-          <GameControl onNewGame={handleShowStartWindow} onOpenSaveDialog={handleShowSaveDialog} />
+          <GameControl />
         </div>
       </div>
     </FantasyBorderFrame>
