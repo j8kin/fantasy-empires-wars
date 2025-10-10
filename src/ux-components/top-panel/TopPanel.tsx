@@ -52,11 +52,8 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
     [setLandHideModePlayerId, showOpponentInfo]
   );
 
-  const MIN_OPPONENTS = 2;
-
   // Use config first, fallback to gameState
   const selectedPlayer = gameState?.selectedPlayer;
-  const opponents = gameState?.opponents;
 
   const endTurnButton = <GameButton buttonName={ButtonName.TURN} />;
 
@@ -104,12 +101,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
           {/* Center - Mana Vials */}
           <VialPanel />
 
-          <OpponentsPanel
-            selectedPlayer={selectedPlayer}
-            numberOfOpponents={opponents?.length || MIN_OPPONENTS}
-            opponents={opponents}
-            onOpponentSelect={handleShowOpponentInfo}
-          />
+          <OpponentsPanel onOpponentSelect={handleShowOpponentInfo} />
 
           {/* Right Side - Game Controls */}
           <GameControl

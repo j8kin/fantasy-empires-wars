@@ -1,27 +1,62 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import React from 'react';
+import { render, screen, cleanup } from '@testing-library/react';
 import OpponentsPanel from '../ux-components/opponents-panel/OpponentsPanel';
-import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
+import { PREDEFINED_PLAYERS, NO_PLAYER, GamePlayer } from '../types/GamePlayer';
+import { GameProvider, useGameState } from '../contexts/GameContext';
+
+// Test wrapper that provides GameContext and allows updating game state
+const TestWrapper: React.FC<{
+  children: React.ReactNode;
+  opponents: GamePlayer[];
+  selectedPlayer?: GamePlayer;
+}> = ({ children, opponents, selectedPlayer = PREDEFINED_PLAYERS[0] }) => {
+  const TestComponent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { updateGameConfig } = useGameState();
+
+    React.useEffect(() => {
+      updateGameConfig({
+        selectedPlayer,
+        opponents,
+        mapSize: 'medium',
+        tiles: {},
+        turn: 1,
+      });
+    }, [updateGameConfig]);
+
+    return <>{children}</>;
+  };
+
+  return (
+    <GameProvider>
+      <TestComponent>{children}</TestComponent>
+    </GameProvider>
+  );
+};
+
+const renderWithGameContext = (opponents: GamePlayer[], selectedPlayer?: GamePlayer) => {
+  return render(
+    <TestWrapper opponents={opponents} selectedPlayer={selectedPlayer}>
+      <OpponentsPanel onOpponentSelect={jest.fn()} />
+    </TestWrapper>
+  );
+};
 
 describe('OpponentsPanel', () => {
   const mockOnOpponentSelect = jest.fn();
-  const testPlayer = PREDEFINED_PLAYERS[0];
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders with random opponents when no providedOpponents', () => {
-    render(
-      <OpponentsPanel
-        selectedPlayer={testPlayer}
-        numberOfOpponents={2}
-        onOpponentSelect={mockOnOpponentSelect}
-      />
-    );
+  afterEach(() => {
+    cleanup();
+  });
 
-    // Should render 2 opponents (random generation)
+  it('renders with provided opponents', () => {
+    renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 3));
+
+    // Should render 2 provided opponents
     const avatars = screen.getAllByRole('img', { name: /.+/ });
     expect(avatars.length).toBe(2);
   });
@@ -33,14 +68,7 @@ describe('OpponentsPanel', () => {
       PREDEFINED_PLAYERS[2],
     ];
 
-    render(
-      <OpponentsPanel
-        selectedPlayer={testPlayer}
-        numberOfOpponents={3}
-        opponents={providedOpponents}
-        onOpponentSelect={mockOnOpponentSelect}
-      />
-    );
+    renderWithGameContext(providedOpponents);
 
     // Should render only 2 opponents (NO_PLAYER filtered out)
     // Check that NO_PLAYER's name is not displayed
@@ -55,14 +83,7 @@ describe('OpponentsPanel', () => {
   it('falls back to random opponents when all provided opponents are EmptyPlayer', () => {
     const providedOpponents = [NO_PLAYER, NO_PLAYER];
 
-    render(
-      <OpponentsPanel
-        selectedPlayer={testPlayer}
-        numberOfOpponents={2}
-        opponents={providedOpponents}
-        onOpponentSelect={mockOnOpponentSelect}
-      />
-    );
+    renderWithGameContext(providedOpponents);
 
     // Should filter out NO_PLAYER and fallback to generating 2 random opponents
     expect(screen.queryByText('None')).not.toBeInTheDocument();
@@ -82,14 +103,7 @@ describe('OpponentsPanel', () => {
       PREDEFINED_PLAYERS[3],
     ];
 
-    render(
-      <OpponentsPanel
-        selectedPlayer={testPlayer}
-        numberOfOpponents={5}
-        opponents={providedOpponents}
-        onOpponentSelect={mockOnOpponentSelect}
-      />
-    );
+    renderWithGameContext(providedOpponents);
 
     // Should render only 3 valid opponents (2 NO_PLAYERs filtered out)
     expect(screen.queryByText('None')).not.toBeInTheDocument();
@@ -102,75 +116,43 @@ describe('OpponentsPanel', () => {
   });
 
   it('renders empty list when providedOpponents is empty', () => {
-    render(
-      <OpponentsPanel
-        selectedPlayer={testPlayer}
-        numberOfOpponents={0}
-        opponents={[]}
-        onOpponentSelect={mockOnOpponentSelect}
-      />
-    );
+    renderWithGameContext([]);
 
-    // Should render zero opponents when numberOfOpponents=0
-    expect(screen.queryAllByRole('img', { name: /.+/ }).length).toBe(0);
+    // With empty providedOpponents, the component falls back to generating 2 random opponents
+    expect(screen.queryAllByRole('img', { name: /.+/ }).length).toBe(2);
   });
 
   // Tests for the memorization bug fix
   describe('Memorization and state clearing', () => {
     it('generates correct number of random opponents for huge map scenario', () => {
-      // Simulate huge map with many opponents
-      const hugeMapOpponents = 8;
-
-      render(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={hugeMapOpponents}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
-      );
+      renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8));
 
       // Should generate exactly the requested number of opponents
       const avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(hugeMapOpponents);
+      expect(avatars.length).toBe(7);
     });
 
     it('correctly handles switching from provided opponents to random generation', () => {
-      const { rerender } = render(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={3}
-          opponents={[PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]]}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
-      );
+      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 3));
 
       // Initially should show 2 provided opponents
       expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
       expect(screen.getByAltText(PREDEFINED_PLAYERS[2].name)).toBeInTheDocument();
 
-      // Now switch to a new game with different number of opponents and no provided opponents
+      // Now switch to a new game with a different number of opponents
       rerender(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={4}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
+          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+        </TestWrapper>
       );
 
-      // Should now generate 4 random opponents, not keep the previous 2
+      // Should now show 4 opponents
       const avatars = screen.getAllByRole('img', { name: /.+/ });
       expect(avatars.length).toBe(4);
     });
 
     it('handles switching from all EmptyPlayer to random opponents', () => {
-      const { rerender } = render(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={2}
-          opponents={[NO_PLAYER, NO_PLAYER, NO_PLAYER]}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
-      );
+      const { rerender } = renderWithGameContext([NO_PLAYER, NO_PLAYER, NO_PLAYER]);
 
       // Should fallback to generating 2 random opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
@@ -178,15 +160,12 @@ describe('OpponentsPanel', () => {
 
       // Now switch to a different configuration
       rerender(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={5}
-          opponents={[NO_PLAYER]}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
+        <TestWrapper opponents={[NO_PLAYER]}>
+          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+        </TestWrapper>
       );
 
-      // Should now generate 5 random opponents
+      // Should still generate random opponents
       avatars = screen.getAllByRole('img', { name: /.+/ });
       expect(avatars.length).toBeGreaterThan(0);
     });
@@ -216,14 +195,8 @@ describe('OpponentsPanel', () => {
       ];
 
       testCases.forEach(({ opponents, expectedValidOpponents }) => {
-        const { rerender } = render(
-          <OpponentsPanel
-            selectedPlayer={testPlayer}
-            numberOfOpponents={opponents.length}
-            opponents={opponents}
-            onOpponentSelect={mockOnOpponentSelect}
-          />
-        );
+        cleanup();
+        renderWithGameContext(opponents);
 
         // Should filter out NO_PLAYER and show only valid opponents
         expect(screen.queryByText('None')).not.toBeInTheDocument();
@@ -231,33 +204,20 @@ describe('OpponentsPanel', () => {
 
         const avatars = screen.getAllByRole('img', { name: /.+/ });
         expect(avatars.length).toBe(expectedValidOpponents);
-
-        // Clean up for next iteration
-        rerender(<div />);
       });
     });
 
     it('maintains proper useMemo dependencies for re-rendering', () => {
-      const { rerender } = render(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={2}
-          opponents={[PREDEFINED_PLAYERS[1]]}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
-      );
+      const { rerender } = renderWithGameContext([PREDEFINED_PLAYERS[1]]);
 
       // Should show 1 provided opponent
       expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
 
       // Change selectedPlayer - should trigger re-computation
       rerender(
-        <OpponentsPanel
-          selectedPlayer={PREDEFINED_PLAYERS[4]}
-          numberOfOpponents={2}
-          opponents={[PREDEFINED_PLAYERS[1]]}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
+        <TestWrapper opponents={[PREDEFINED_PLAYERS[1]]} selectedPlayer={PREDEFINED_PLAYERS[2]}>
+          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+        </TestWrapper>
       );
 
       // Should still show the provided opponent
@@ -265,15 +225,12 @@ describe('OpponentsPanel', () => {
 
       // Change numberOfOpponents while keeping provided opponents - should still use provided
       rerender(
-        <OpponentsPanel
-          selectedPlayer={PREDEFINED_PLAYERS[4]}
-          numberOfOpponents={5}
-          opponents={[PREDEFINED_PLAYERS[1]]}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
+        <TestWrapper opponents={[PREDEFINED_PLAYERS[1]]}>
+          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+        </TestWrapper>
       );
 
-      // Should still show only the 1 provided opponent, not 5 random ones
+      // Should still show only the 1 provided opponent, not random ones
       const avatars = screen.getAllByRole('img', { name: /.+/ });
       expect(avatars.length).toBe(1);
       expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
@@ -281,13 +238,7 @@ describe('OpponentsPanel', () => {
 
     it('correctly handles map size changes from large to small opponent counts', () => {
       // First render with 7 opponents (simulating Huge map)
-      const { rerender } = render(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={7}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
-      );
+      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8));
 
       // Should generate 7 opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
@@ -295,11 +246,9 @@ describe('OpponentsPanel', () => {
 
       // Now switch to 4 opponents (simulating Medium map)
       rerender(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={4}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
+          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+        </TestWrapper>
       );
 
       // Should now generate exactly 4 opponents, not 7
@@ -308,32 +257,17 @@ describe('OpponentsPanel', () => {
     });
 
     it('correctly handles map size changes with opponent array clearing', () => {
-      // Create a large opponent array (simulating Huge map with 7 opponents)
-      const hugeMapOpponents = Array.from(
-        { length: 7 },
-        (_, i) => PREDEFINED_PLAYERS[i % PREDEFINED_PLAYERS.length]
-      );
-
-      const { rerender } = render(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={7}
-          opponents={hugeMapOpponents}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
-      );
+      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8));
 
       // Should show 7 opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
       expect(avatars.length).toBe(7);
 
-      // Now switch to Medium map without provided opponents (should generate random)
+      // Now switch to Medium map with 4 provided opponents
       rerender(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={4}
-          onOpponentSelect={mockOnOpponentSelect}
-        />
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
+          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+        </TestWrapper>
       );
 
       // Should now show exactly 4 opponents, not more
@@ -342,38 +276,28 @@ describe('OpponentsPanel', () => {
     });
 
     it('generates correct number of opponents after map size changes', () => {
-      const { rerender } = render(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={7} // Large map
-          onOpponentSelect={mockOnOpponentSelect}
-        />
-      );
+      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8));
 
       // Should generate 7 opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
       expect(avatars.length).toBe(7);
 
-      // Switch to smaller number of opponents
+      // Switch to smaller number of opponents (4)
       rerender(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={4} // Medium map
-          onOpponentSelect={mockOnOpponentSelect}
-        />
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
+          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+        </TestWrapper>
       );
 
       // Should now generate exactly 4 opponents, not 7
       avatars = screen.getAllByRole('img', { name: /.+/ });
       expect(avatars.length).toBe(4);
 
-      // Switch to very small number
+      // Switch to very small number (2)
       rerender(
-        <OpponentsPanel
-          selectedPlayer={testPlayer}
-          numberOfOpponents={2} // Small map
-          onOpponentSelect={mockOnOpponentSelect}
-        />
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 3)}>
+          <OpponentsPanel onOpponentSelect={mockOnOpponentSelect} />
+        </TestWrapper>
       );
 
       // Should now generate exactly 2 opponents

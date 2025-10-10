@@ -2,12 +2,10 @@ import React, { useMemo } from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import { OpponentWithDiplomacy, DiplomacyStatus } from '../popups/OpponentInfoPopup';
+import { useGameState } from '../../contexts/GameContext';
 import styles from './css/OpponentsPanel.module.css';
 
 interface OpponentsPanelProps {
-  selectedPlayer?: GamePlayer;
-  numberOfOpponents: number;
-  opponents?: GamePlayer[];
   onOpponentSelect?: (
     opponent: OpponentWithDiplomacy,
     screenPosition: { x: number; y: number }
@@ -43,12 +41,12 @@ const getRandomOpponents = (
   }));
 };
 
-const OpponentsPanel: React.FC<OpponentsPanelProps> = ({
-  selectedPlayer,
-  numberOfOpponents,
-  opponents: providedOpponents,
-  onOpponentSelect,
-}) => {
+const OpponentsPanel: React.FC<OpponentsPanelProps> = ({ onOpponentSelect }) => {
+  const { gameState } = useGameState();
+
+  const selectedPlayer = gameState?.selectedPlayer;
+  const providedOpponents = gameState?.opponents;
+  const numberOfOpponents = providedOpponents?.length || 2;
   const opponents = useMemo(() => {
     // If we have provided opponents from the game config, use only those
     // This takes precedence over numberOfOpponents parameter
