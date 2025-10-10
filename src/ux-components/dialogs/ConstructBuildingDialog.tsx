@@ -4,10 +4,15 @@ import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 import { BuildingType, getAllBuildings } from '../../types/Building';
 
+import strongholdImg from '../../assets/buildings/stronghold.png';
+import barracksImg from '../../assets/buildings/barracks.png';
+
 const getBuildingIcon = (building: BuildingType) => {
   switch (building) {
-    case BuildingType.BARRACKS:
     case BuildingType.STRONGHOLD:
+      return strongholdImg;
+    case BuildingType.BARRACKS:
+      return barracksImg;
     case BuildingType.MAGE_TOWER:
     case BuildingType.OUTPOST:
     case BuildingType.WATCH_TOWER:
