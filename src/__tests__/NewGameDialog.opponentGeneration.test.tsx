@@ -2,17 +2,15 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
-import { GameState } from '../types/HexTileState';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+import { GameProvider } from '../contexts/GameContext';
 
 const renderNewGameDialog = () => {
   render(
     <ApplicationContextProvider>
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
+      <GameProvider>
+        <NewGameDialog />
+      </GameProvider>
     </ApplicationContextProvider>
   );
 };

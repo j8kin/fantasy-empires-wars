@@ -9,9 +9,9 @@ import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { updateGameConfig, gameState } = useGameState();
+    const { updateGameState, gameState } = useGameState();
     React.useEffect(() => {
-      updateGameConfig({
+      updateGameState({
         ...gameState,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -71,14 +71,14 @@ describe('TopPanel Component', () => {
       const TestComponentWithoutPlayer: React.FC<{ children: React.ReactNode }> = ({
         children,
       }) => {
-        const { updateGameConfig, gameState } = useGameState();
+        const { updateGameState, gameState } = useGameState();
         React.useEffect(() => {
-          updateGameConfig({
+          updateGameState({
             ...gameState,
             selectedPlayer: undefined,
             opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
           });
-        }, [updateGameConfig]);
+        }, [updateGameState]);
         return <>{children}</>;
       };
 
@@ -166,14 +166,14 @@ describe('TopPanel Component', () => {
       const TestComponentWithMinOpponents: React.FC<{ children: React.ReactNode }> = ({
         children,
       }) => {
-        const { updateGameConfig, gameState } = useGameState();
+        const { updateGameState, gameState } = useGameState();
         React.useEffect(() => {
-          updateGameConfig({
+          updateGameState({
             ...gameState,
             selectedPlayer: PREDEFINED_PLAYERS[0],
             opponents: undefined,
           });
-        }, [updateGameConfig]);
+        }, [updateGameState]);
         return <>{children}</>;
       };
 

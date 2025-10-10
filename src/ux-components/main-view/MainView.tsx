@@ -35,7 +35,7 @@ const MainViewContent: React.FC = () => {
   } = useApplicationContext();
 
   // Access game state from context
-  const { gameState, updateGameConfig } = useGameState();
+  const { gameState } = useGameState();
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
@@ -59,7 +59,7 @@ const MainViewContent: React.FC = () => {
       {/*Game Dialogs */}
 
       {/* Start Game Dialog - shown as overlay */}
-      {showStartWindow && <NewGameDialog updateGameConfig={updateGameConfig} />}
+      {showStartWindow && <NewGameDialog />}
 
       {/* Save Game Dialog - shown as overlay */}
       <SaveGameDialog />

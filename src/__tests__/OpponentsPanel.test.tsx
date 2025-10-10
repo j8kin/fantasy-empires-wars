@@ -13,17 +13,17 @@ const TestWrapper: React.FC<{
   selectedPlayer?: GamePlayer;
 }> = ({ children, opponents, selectedPlayer = PREDEFINED_PLAYERS[0] }) => {
   const TestComponent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { updateGameConfig } = useGameState();
+    const { updateGameState } = useGameState();
 
     React.useEffect(() => {
-      updateGameConfig({
+      updateGameState({
         selectedPlayer,
         opponents,
         mapSize: 'medium',
         tiles: {},
         turn: 1,
       });
-    }, [updateGameConfig]);
+    }, [updateGameState]);
 
     return <>{children}</>;
   };

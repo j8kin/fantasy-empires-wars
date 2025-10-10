@@ -4,16 +4,14 @@ import '@testing-library/jest-dom';
 import NewGameDialog from '../ux-components/dialogs/NewGameDialog';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
-import { GameState } from '../types/HexTileState';
+import { GameProvider } from '../contexts/GameContext';
 
 const renderNewGameDialog = () => {
   render(
     <ApplicationContextProvider>
-      <NewGameDialog
-        updateGameConfig={function (config: GameState): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
+      <GameProvider>
+        <NewGameDialog />
+      </GameProvider>
     </ApplicationContextProvider>
   );
 };

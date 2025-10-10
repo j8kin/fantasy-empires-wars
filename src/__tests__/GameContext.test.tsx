@@ -48,7 +48,7 @@ describe('GameContext', () => {
       expect(typeof result.current.getTotalPlayerGold).toBe('function');
       expect(typeof result.current.nextTurn).toBe('function');
       expect(typeof result.current.changeBattlefieldSize).toBe('function');
-      expect(typeof result.current.updateGameConfig).toBe('function');
+      expect(typeof result.current.updateGameState).toBe('function');
       expect(result.current.mapDimensions).toBeDefined();
     });
   });

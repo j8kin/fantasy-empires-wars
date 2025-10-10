@@ -10,9 +10,7 @@ import styles from './css/NewGameDialog.module.css';
 import { GameState } from '../../types/HexTileState';
 import { ButtonName } from '../buttons/GameButtonProps';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-export interface NewGameDialogProps {
-  updateGameConfig: (config: GameState) => void;
-}
+import { useGameState } from '../../contexts/GameContext';
 
 const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   switch (mapSize) {
@@ -29,7 +27,7 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   }
 };
 
-const NewGameDialog: React.FC<NewGameDialogProps> = ({ updateGameConfig }) => {
+const NewGameDialog: React.FC = () => {
   const {
     newGameMapSize,
     newGameSelectedPlayer,
@@ -45,6 +43,8 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({ updateGameConfig }) => {
     setGameStarted,
     showSelectOpponentDialogWithConfig,
   } = useApplicationContext();
+
+  const { updateGameState } = useGameState();
 
   // Use context state as local variables for easier refactoring
   const mapSize = newGameMapSize;
@@ -151,12 +151,9 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({ updateGameConfig }) => {
   );
 
   // Initialize opponents based on selection mode
-  const initializeOpponents = useCallback(
-    (mode: 'random' | 'manual') => {
-      initializeOpponentsForMapSize(maxOpponents);
-    },
-    [initializeOpponentsForMapSize, maxOpponents]
-  );
+  const initializeOpponents = useCallback(() => {
+    initializeOpponentsForMapSize(maxOpponents);
+  }, [initializeOpponentsForMapSize, maxOpponents]);
 
   const handleMapSizeChange = useCallback(
     (newMapSize: BattlefieldSize) => {
@@ -171,14 +168,14 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({ updateGameConfig }) => {
   const handleOpponentSelectionModeChange = useCallback(
     (mode: 'random' | 'manual') => {
       setOpponentSelectionMode(mode);
-      initializeOpponents(mode);
+      initializeOpponents();
     },
     [initializeOpponents, setOpponentSelectionMode]
   );
 
   // Initialize opponents when component mounts or relevant dependencies change
   React.useEffect(() => {
-    initializeOpponents(opponentSelectionMode);
+    initializeOpponents();
   }, [initializeOpponents, opponentSelectionMode]);
 
   const handlePlayerChange = useCallback(
@@ -233,7 +230,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({ updateGameConfig }) => {
             (opponent) => opponent !== null && opponent.id !== NO_PLAYER.id
           ) as GamePlayer[]);
 
-    const config: GameState = {
+    const gameState: GameState = {
       tiles: {},
       turn: 0,
       mapSize,
@@ -246,7 +243,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({ updateGameConfig }) => {
     setShowProgressPopup(true);
 
     setTimeout(() => {
-      updateGameConfig(config);
+      updateGameState(gameState);
       setGameStarted(true);
       setShowProgressPopup(false);
     }, 100);
@@ -258,7 +255,7 @@ const NewGameDialog: React.FC<NewGameDialogProps> = ({ updateGameConfig }) => {
     setShowStartWindow,
     setProgressMessage,
     setShowProgressPopup,
-    updateGameConfig,
+    updateGameState,
     setGameStarted,
   ]);
 

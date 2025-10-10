@@ -29,7 +29,7 @@ interface GameContextType {
   // Game Flow
   nextTurn: () => void;
   changeBattlefieldSize: (newSize: BattlefieldSize) => void;
-  updateGameConfig: (config: GameState) => void;
+  updateGameState: (gameState: GameState) => void;
 
   // Utilities
   mapDimensions: BattlefieldDimensions;
@@ -173,7 +173,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({
     updateTileArmy,
     changeBattlefieldSize,
     nextTurn,
-    updateGameConfig,
+    updateGameState: updateGameConfig,
     getTile,
     getPlayerTiles,
     getTotalPlayerGold,
