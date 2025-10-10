@@ -44,16 +44,15 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     const isEvenPage = pageNum % 2 === 1;
     const defaultClassName = isEvenPage ? 'evenPage' : 'oddPage';
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
+    const isSpellBook = costLabel === 'Mana Cost';
 
-    // Maintain Cost == null means it's a spell book.
-    const romanPageNum = toRoman(maintainCost == null ? 1027 : 2351 + pageNum);
+    const romanPageNum = toRoman(isSpellBook ? 1027 : 2351 + pageNum);
 
     const handleIconClick = () => {
       if (header) {
-        setSelectedItem(maintainCost == null ? 'Spell: ' : 'Building: ' + header);
-        const actionType = maintainCost == null ? 'spell' : 'building';
-        const name =
-          maintainCost == null ? getSpellById(header as SpellName).id : (header as BuildingType);
+        setSelectedItem(isSpellBook ? 'Spell: ' : 'Building: ' + header);
+        const actionType = isSpellBook ? 'spell' : 'building';
+        const name = isSpellBook ? getSpellById(header as SpellName).id : (header as BuildingType);
 
         if (onClose) {
           onClose(); // close dialog to apply spell or construction
@@ -72,7 +71,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       <div className={`pageStyle ${finalClassName}`} ref={ref} style={style}>
         {children || (
           <>
-            <div className="caption" style={{ textAlign: isEvenPage ? 'left' : 'right' }}>
+            <div className="caption" style={{ textAlign: 'center' }}>
               {header}
             </div>
             <img
@@ -122,7 +121,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                   {costLabel}: <span className="costValue">{cost}</span>
                 </h4>
               </div>
-              {maintainCost && (
+              {!isSpellBook && (
                 <div className="costSection">
                   <h4 style={{ margin: '0 0 5px 0', color: '#5d4037', fontSize: '1rem' }}>
                     Maintain Cost: <span className="costValue">{maintainCost}</span>

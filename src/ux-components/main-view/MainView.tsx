@@ -1,19 +1,23 @@
 import React from 'react';
 import styles from './css/Background.module.css';
-import TopPanel from '../top-panel/TopPanel';
-import Battlefield from '../battlefield/Battlefield';
-import NewGameDialog from '../dialogs/NewGameDialog';
-import SaveGameDialog from '../dialogs/SaveGameDialog';
-import CastSpellDialog from '../dialogs/CastSpellDialog';
-import OpponentInfoPopup from '../popups/OpponentInfoPopup';
-import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
-import ProgressPopup from '../popups/ProgressPopup';
 import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameState } from '../../contexts/GameContext';
+
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
+
+import TopPanel from '../top-panel/TopPanel';
+import Battlefield from '../battlefield/Battlefield';
+import NewGameDialog from '../dialogs/NewGameDialog';
+import SaveGameDialog from '../dialogs/SaveGameDialog';
+import CastSpellDialog from '../dialogs/CastSpellDialog';
+import ConstructBuildingDialog from '../dialogs/ConstructBuildingDialog';
+import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
+
+import OpponentInfoPopup from '../popups/OpponentInfoPopup';
+import ProgressPopup from '../popups/ProgressPopup';
 
 const MainViewContent: React.FC = () => {
   const {
@@ -62,6 +66,9 @@ const MainViewContent: React.FC = () => {
 
       {/* Cast Spell Dialog - shown as overlay */}
       <CastSpellDialog />
+
+      {/* Construct Building Dialog - shown as overlay */}
+      <ConstructBuildingDialog />
 
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />

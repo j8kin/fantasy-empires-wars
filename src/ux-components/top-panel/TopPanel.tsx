@@ -15,22 +15,14 @@ import { useGameState } from '../../contexts/GameContext';
 export interface TopPanelProps {
   height: number;
   tileDimensions: Dimensions;
-  onEndTurn?: () => void;
-  onBuild?: () => void;
-  onMove?: () => void;
 }
 
-const TopPanel: React.FC<TopPanelProps> = ({
-  height,
-  tileDimensions,
-  onEndTurn,
-  onBuild,
-  onMove,
-}) => {
+const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
   const {
     setShowStartWindow,
     setShowSaveDialog,
     setShowCastSpellDialog,
+    setShowConstructBuildingDialog,
     setLandHideModePlayerId,
     showOpponentInfo,
   } = useApplicationContext();
@@ -48,6 +40,10 @@ const TopPanel: React.FC<TopPanelProps> = ({
     setShowCastSpellDialog(true);
   }, [setShowCastSpellDialog]);
 
+  const handleShowConstructBuildingDialog = useCallback(() => {
+    setShowConstructBuildingDialog(true);
+  }, [setShowConstructBuildingDialog]);
+
   const handleShowOpponentInfo = useCallback(
     (opponent: OpponentWithDiplomacy, screenPosition: { x: number; y: number }) => {
       showOpponentInfo(opponent, screenPosition);
@@ -62,7 +58,7 @@ const TopPanel: React.FC<TopPanelProps> = ({
   const selectedPlayer = gameState?.selectedPlayer;
   const opponents = gameState?.opponents;
 
-  const endTurnButton = <GameButton buttonName={ButtonName.TURN} onClick={onEndTurn} />;
+  const endTurnButton = <GameButton buttonName={ButtonName.TURN} />;
 
   return (
     <FantasyBorderFrame
@@ -82,9 +78,8 @@ const TopPanel: React.FC<TopPanelProps> = ({
         <div className={styles.panelContainer}>
           {/* Left Side - Action Controls */}
           <PlayActionsControl
-            onBuild={onBuild}
+            onBuild={handleShowConstructBuildingDialog}
             onCast={handleShowCastSpellDialog}
-            onMove={onMove}
           />
 
           {/* Player Info */}

@@ -90,7 +90,7 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
   const tileStyle: React.CSSProperties = {
     backgroundColor: getBackgroundColor(),
     filter: isGlowing
-      ? 'brightness(1.1) drop-shadow(0 4px 12px rgba(255, 215, 0, 0.6))'
+      ? 'brightness(1.3) drop-shadow(0 4px 12px rgba(255, 215, 0, 0.6))'
       : 'brightness(1) ',
     transform: isGlowing ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
     transition: 'all 0.3s ease',

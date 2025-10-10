@@ -12,7 +12,6 @@ export interface Building {
   buildCost: number;
   maintainCost: number;
   description: string;
-  image?: string; // todo import the same way as GamePlayer.avatar
 }
 
 export const getBuilding = (building: BuildingType): Building => {
@@ -61,4 +60,8 @@ export const getBuilding = (building: BuildingType): Building => {
         description: 'Provides strong defensive bonuses',
       };
   }
+};
+
+export const getAllBuildings = (): Building[] => {
+  return Object.values(BuildingType).map(getBuilding);
 };

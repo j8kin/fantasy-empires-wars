@@ -15,6 +15,7 @@ interface ApplicationContextType {
   showStartWindow: boolean;
   showSaveDialog: boolean;
   showCastSpellDialog: boolean;
+  showConstructBuildingDialog: boolean;
   showSelectOpponentDialog: boolean;
   showProgressPopup: boolean;
 
@@ -51,6 +52,7 @@ interface ApplicationContextType {
   setShowStartWindow: (show: boolean) => void;
   setShowSaveDialog: (show: boolean) => void;
   setShowCastSpellDialog: (show: boolean) => void;
+  setShowConstructBuildingDialog: (show: boolean) => void;
   setShowSelectOpponentDialog: (show: boolean) => void;
   setShowProgressPopup: (show: boolean) => void;
   setSelectedOpponent: (opponent: OpponentWithDiplomacy | undefined) => void;
@@ -111,6 +113,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
   const [showCastSpellDialog, setShowCastSpellDialog] = useState<boolean>(false);
+  const [showConstructBuildingDialog, setShowConstructBuildingDialog] = useState<boolean>(false);
   const [showSelectOpponentDialog, setShowSelectOpponentDialog] = useState<boolean>(false);
   const [showProgressPopup, setShowProgressPopup] = useState<boolean>(false);
 
@@ -252,6 +255,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         showStartWindow,
         showSaveDialog,
         showCastSpellDialog,
+        showConstructBuildingDialog,
         showSelectOpponentDialog,
         showProgressPopup,
 
@@ -290,6 +294,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setShowStartWindow,
         setShowSaveDialog,
         setShowCastSpellDialog,
+        setShowConstructBuildingDialog,
         setShowSelectOpponentDialog,
         setShowProgressPopup,
         setSelectedOpponent,
