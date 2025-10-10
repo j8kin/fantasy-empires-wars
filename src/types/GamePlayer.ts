@@ -1,3 +1,7 @@
+import { PlayerColorName } from './PlayerColors';
+import { Alignment } from './Alignment';
+import { UnitType } from './Army';
+
 import alaric from '../assets/avatars/alaric.png';
 import morgana from '../assets/avatars/morgana.png';
 import thorin from '../assets/avatars/thorin.png';
@@ -12,11 +16,17 @@ import elderoak from '../assets/avatars/elderoak.png';
 import valdris from '../assets/avatars/valdris.png';
 import ignatius from '../assets/avatars/ignatius.png';
 import ember from '../assets/avatars/ember.png';
-import { PlayerColorName } from './PlayerColors';
-import { Alignment } from './Alignment';
-import { UnitType } from './Army';
 
 export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
+
+export enum DiplomacyStatus {
+  NO_TREATY = 'No Treaty',
+  PEACE = 'Peace',
+  WAR = 'War',
+  ALLIANCE = 'Alliance',
+}
+
+export type Diplomacy = Record<string, DiplomacyStatus>;
 
 export interface GamePlayer {
   id: string;
@@ -28,6 +38,7 @@ export interface GamePlayer {
   description: string;
   avatar?: string; // path to avatar image
   color: PlayerColorName;
+  diplomacy?: Diplomacy;
 }
 
 export const NO_PLAYER: GamePlayer = {

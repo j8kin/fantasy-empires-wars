@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
-import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameButton from '../buttons/GameButton';
@@ -230,12 +230,23 @@ const NewGameDialog: React.FC = () => {
             (opponent) => opponent !== null && opponent.id !== NO_PLAYER.id
           ) as GamePlayer[]);
 
+    // Initialize diplomacy relations: selected player vs opponents (and mirror on opponents)
+    const playerDiplomacy = { ...(selectedPlayer.diplomacy || {}) };
+    const updatedOpponents: GamePlayer[] = opponents.map((opponent) => {
+      const oppDiplomacy = { ...(opponent.diplomacy || {}) };
+      playerDiplomacy[opponent.id] = DiplomacyStatus.NO_TREATY;
+      oppDiplomacy[selectedPlayer.id] = DiplomacyStatus.NO_TREATY;
+      return { ...opponent, diplomacy: oppDiplomacy };
+    });
+
+    const updatedSelectedPlayer: GamePlayer = { ...selectedPlayer, diplomacy: playerDiplomacy };
+
     const gameState: GameState = {
       tiles: {},
       turn: 0,
       mapSize,
-      selectedPlayer,
-      opponents,
+      selectedPlayer: updatedSelectedPlayer,
+      opponents: updatedOpponents,
     };
 
     setShowStartWindow(false);

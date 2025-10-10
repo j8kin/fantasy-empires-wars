@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TopPanel from '../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
@@ -78,7 +78,7 @@ describe('TopPanel Component', () => {
             selectedPlayer: undefined,
             opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
           });
-        }, [updateGameState]);
+        }, []);
         return <>{children}</>;
       };
 
@@ -107,7 +107,9 @@ describe('TopPanel Component', () => {
     it('handles Build button click', async () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const buildButton = screen.getByAltText('Construct Buildings');
-      userEvent.click(buildButton);
+      await act(async () => {
+        userEvent.click(buildButton);
+      });
       // Component should handle the click without errors
       expect(buildButton).toBeInTheDocument();
     });
@@ -115,7 +117,9 @@ describe('TopPanel Component', () => {
     it('handles Cast button click', async () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const castButton = screen.getByAltText('Cast spell');
-      userEvent.click(castButton);
+      await act(async () => {
+        userEvent.click(castButton);
+      });
       // Component should handle the click without errors
       expect(castButton).toBeInTheDocument();
     });
@@ -127,7 +131,9 @@ describe('TopPanel Component', () => {
       const endTurnButton = screen.getByAltText('End of turn');
       expect(endTurnButton).toBeInTheDocument();
 
-      userEvent.click(endTurnButton);
+      await act(async () => {
+        userEvent.click(endTurnButton);
+      });
       expect(consoleSpy).toHaveBeenCalledWith(
         "End of turn clicked! onClick handler: 'not provided'"
       );
@@ -146,7 +152,9 @@ describe('TopPanel Component', () => {
     it('handles New Game button click', async () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const newGameButton = screen.getByAltText('New game');
-      userEvent.click(newGameButton);
+      await act(async () => {
+        userEvent.click(newGameButton);
+      });
       // Component should handle the click without errors
       expect(newGameButton).toBeInTheDocument();
     });
@@ -154,7 +162,9 @@ describe('TopPanel Component', () => {
     it('handles Save Game button click', async () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const saveButton = screen.getByAltText('Save game');
-      userEvent.click(saveButton);
+      await act(async () => {
+        userEvent.click(saveButton);
+      });
       // Component should handle the click without errors
       expect(saveButton).toBeInTheDocument();
     });
@@ -173,7 +183,7 @@ describe('TopPanel Component', () => {
             selectedPlayer: PREDEFINED_PLAYERS[0],
             opponents: undefined,
           });
-        }, [updateGameState]);
+        }, []);
         return <>{children}</>;
       };
 

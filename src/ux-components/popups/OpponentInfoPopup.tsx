@@ -1,25 +1,24 @@
 import React from 'react';
-import { GamePlayer } from '../../types/GamePlayer';
+import { DiplomacyStatus, GamePlayer } from '../../types/GamePlayer';
 import { getAlignmentColor } from '../../types/Alignment';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import styles from '../dialogs/css/OpponentInfoDialog.module.css';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-
-export type DiplomacyStatus = 'No Treaty' | 'Peace' | 'War';
-
-export interface OpponentWithDiplomacy extends GamePlayer {
-  diplomacyStatus: DiplomacyStatus;
-}
+import { useGameState } from '../../contexts/GameContext';
 
 export interface OpponentInfoProps extends PopupProps {
-  opponent?: OpponentWithDiplomacy;
+  opponent?: GamePlayer;
 }
 
 const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition }) => {
   const { hideOpponentInfo, setLandHideModePlayerId } = useApplicationContext();
+  const { gameState } = useGameState();
 
   if (opponent == null) return null;
+
+  const diplomacyStatus =
+    gameState.selectedPlayer?.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {
     hideOpponentInfo();
@@ -77,9 +76,9 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
           <div className={styles.row}>
             <span className={styles.label}>Diplomatic Relations:</span>
             <span
-              className={`${styles.value} ${styles.diplomacyStatus} ${styles[opponent.diplomacyStatus.toLowerCase().replace(' ', '')]}`}
+              className={`${styles.value} ${styles.diplomacyStatus} ${styles[diplomacyStatus.toLowerCase().replace(' ', '')]}`}
             >
-              {opponent.diplomacyStatus}
+              {diplomacyStatus}
             </span>
           </div>
         </div>

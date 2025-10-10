@@ -1,20 +1,17 @@
-import React, { useMemo, useCallback } from 'react';
-import { GamePlayer, PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
+import React, { useCallback, useMemo } from 'react';
+import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerAvatar from '../avatars/PlayerAvatar';
-import { OpponentWithDiplomacy, DiplomacyStatus } from '../popups/OpponentInfoPopup';
 import { useGameState } from '../../contexts/GameContext';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import styles from './css/OpponentsPanel.module.css';
 
+// TODO: Remove since Diplomacy status is created during new game and read game state
 const getRandomDiplomacyStatus = (): DiplomacyStatus => {
-  const statuses: DiplomacyStatus[] = ['No Treaty', 'Peace', 'War'];
+  const statuses: DiplomacyStatus[] = Object.values(DiplomacyStatus);
   return statuses[Math.floor(Math.random() * statuses.length)];
 };
 
-const getRandomOpponents = (
-  excludePlayer?: GamePlayer,
-  count: number = 2
-): OpponentWithDiplomacy[] => {
+const getRandomOpponents = (excludePlayer?: GamePlayer, count: number = 2): GamePlayer[] => {
   const availablePlayers = PREDEFINED_PLAYERS.filter(
     (player) => !excludePlayer || player.id !== excludePlayer.id
   );
@@ -40,7 +37,7 @@ const OpponentsPanel: React.FC = () => {
   const { setLandHideModePlayerId, showOpponentInfo } = useApplicationContext();
 
   const handleShowOpponentInfo = useCallback(
-    (opponent: OpponentWithDiplomacy, screenPosition: { x: number; y: number }) => {
+    (opponent: GamePlayer, screenPosition: { x: number; y: number }) => {
       showOpponentInfo(opponent, screenPosition);
       setLandHideModePlayerId(opponent.id);
     },
@@ -64,7 +61,7 @@ const OpponentsPanel: React.FC = () => {
       return filteredOpponents.map((opponent) => ({
         ...opponent,
         diplomacyStatus: getRandomDiplomacyStatus(),
-      })) as OpponentWithDiplomacy[];
+      })) as GamePlayer[];
     }
     // Only generate random opponents if no specific opponents were provided
     return getRandomOpponents(selectedPlayer, numberOfOpponents);
@@ -82,7 +79,7 @@ const OpponentsPanel: React.FC = () => {
 
   const layout = getAvatarLayout(opponents.length);
 
-  const renderAvatarRow = (avatars: OpponentWithDiplomacy[], rowIndex: number) => (
+  const renderAvatarRow = (avatars: GamePlayer[], rowIndex: number) => (
     <div key={rowIndex} className={styles.avatarRow}>
       {avatars.map((opponent) => (
         <div
