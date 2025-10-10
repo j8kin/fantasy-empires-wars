@@ -123,14 +123,17 @@ export const GameProvider: React.FC<GameProviderProps> = ({
 
   const updateGameConfig = useCallback((config: GameState) => {
     setGameState((prev) => {
-      const allPlayers = [config.selectedPlayer!, ...config.opponents!];
+      const allPlayers = [
+        ...(config.selectedPlayer ? [config.selectedPlayer] : []),
+        ...(config.opponents || []),
+      ];
 
       return {
         ...prev,
         selectedPlayer: config.selectedPlayer,
         opponents: config.opponents,
-        mapSize: config.mapSize,
-        tiles: initializeMap(config.mapSize, allPlayers),
+        mapSize: config.mapSize || prev.mapSize,
+        tiles: initializeMap(config.mapSize || prev.mapSize, allPlayers),
       };
     });
   }, []);
