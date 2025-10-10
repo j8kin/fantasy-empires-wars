@@ -1,20 +1,25 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styles from './css/GameControl.module.css';
 import GameButton from '../buttons/GameButton';
 import { ButtonName } from '../buttons/GameButtonProps';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
-interface PlayActionsControlProps {
-  onBuild?: () => void;
-  onCast?: () => void;
-  onMove?: () => void;
-}
+const PlayActionsControl: React.FC = () => {
+  const { setShowCastSpellDialog, setShowConstructBuildingDialog } = useApplicationContext();
 
-const PlayActionsControl: React.FC<PlayActionsControlProps> = ({ onBuild, onCast, onMove }) => {
+  const handleShowCastSpellDialog = useCallback(() => {
+    setShowCastSpellDialog(true);
+  }, [setShowCastSpellDialog]);
+
+  const handleShowConstructBuildingDialog = useCallback(() => {
+    setShowConstructBuildingDialog(true);
+  }, [setShowConstructBuildingDialog]);
+
   return (
     <div className={styles.gameControlContainer}>
-      <GameButton buttonName={ButtonName.BUILD} onClick={onBuild} />
-      <GameButton buttonName={ButtonName.CAST} onClick={onCast} />
-      <GameButton buttonName={ButtonName.MOVE} onClick={onMove} />
+      <GameButton buttonName={ButtonName.BUILD} onClick={handleShowConstructBuildingDialog} />
+      <GameButton buttonName={ButtonName.CAST} onClick={handleShowCastSpellDialog} />
+      <GameButton buttonName={ButtonName.MOVE} />
     </div>
   );
 };

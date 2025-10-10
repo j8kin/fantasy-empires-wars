@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
 import PlayActionsControl from '../game-controls/PlayActionsControl';
@@ -8,7 +8,6 @@ import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyB
 import GameButton from '../buttons/GameButton';
 import styles from './css/TopPanel.module.css';
 import { ButtonName } from '../buttons/GameButtonProps';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameState } from '../../contexts/GameContext';
 
 export interface TopPanelProps {
@@ -17,18 +16,7 @@ export interface TopPanelProps {
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
-  const { setShowCastSpellDialog, setShowConstructBuildingDialog } = useApplicationContext();
   const { gameState } = useGameState();
-
-  const handleShowCastSpellDialog = useCallback(() => {
-    setShowCastSpellDialog(true);
-  }, [setShowCastSpellDialog]);
-
-  const handleShowConstructBuildingDialog = useCallback(() => {
-    setShowConstructBuildingDialog(true);
-  }, [setShowConstructBuildingDialog]);
-
-  // Use config first, fallback to gameState
   const selectedPlayer = gameState?.selectedPlayer;
 
   const endTurnButton = <GameButton buttonName={ButtonName.TURN} />;
@@ -50,10 +38,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
       >
         <div className={styles.panelContainer}>
           {/* Left Side - Action Controls */}
-          <PlayActionsControl
-            onBuild={handleShowConstructBuildingDialog}
-            onCast={handleShowCastSpellDialog}
-          />
+          <PlayActionsControl />
 
           {/* Display Player Info only if Game Started */}
           {selectedPlayer && (
