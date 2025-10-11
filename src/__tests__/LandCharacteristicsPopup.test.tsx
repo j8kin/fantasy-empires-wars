@@ -197,7 +197,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        tiles: {
+        battlefieldLands: {
           ...mockGameState.battlefieldLands,
           [tileId]: tileWithHeroes,
         },
@@ -230,7 +230,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        tiles: {
+        battlefieldLands: {
           ...mockGameState.battlefieldLands,
           [tileId]: tileWithUnits,
         },
@@ -265,7 +265,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        tiles: {
+        battlefieldLands: {
           ...mockGameState.battlefieldLands,
           [tileId]: tileWithMixedArmy,
         },
@@ -299,7 +299,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithoutArmy = {
         ...mockGameState,
-        tiles: {
+        battlefieldLands: {
           ...mockGameState.battlefieldLands,
           [tileId]: tileWithoutArmy,
         },
@@ -331,7 +331,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        tiles: {
+        battlefieldLands: {
           ...mockGameState.battlefieldLands,
           [tileId]: tileWithHeroesOnly,
         },
@@ -365,7 +365,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        tiles: {
+        battlefieldLands: {
           ...mockGameState.battlefieldLands,
           [tileId]: tileWithUnitsOnly,
         },
