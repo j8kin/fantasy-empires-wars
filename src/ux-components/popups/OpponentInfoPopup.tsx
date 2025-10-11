@@ -18,10 +18,10 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
   const { hideOpponentInfo, setLandHideModePlayerId } = useApplicationContext();
   const { gameState } = useGameState();
 
-  if (opponent == null) return null;
+  if (opponent == null || gameState == null) return null;
 
   const diplomacyStatus =
-    gameState.selectedPlayer?.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
+    gameState.selectedPlayer.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {
     hideOpponentInfo();

@@ -54,7 +54,7 @@ const MainViewContent: React.FC = () => {
         topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}
         landHideModePlayerId={landHideModePlayerId}
-        key={`map-${gameState.mapSize}-${gameStarted}`}
+        key={`map-${gameState?.mapSize || 'medium'}-${gameStarted}`}
       />
 
       {/*Game Dialogs */}

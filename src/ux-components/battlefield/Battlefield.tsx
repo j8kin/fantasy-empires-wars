@@ -49,8 +49,8 @@ const Battlefield: React.FC<BattlefieldProps> = ({
   landHideModePlayerId,
 }) => {
   const { gameState } = useGameState();
-  const { rows, cols } = getBattlefieldDimensions(gameState.mapSize);
-  const { width: tileWidth, height: tileHeight } = getHexTileSize(gameState.mapSize);
+  const { rows, cols } = getBattlefieldDimensions(gameState!.mapSize);
+  const { width: tileWidth, height: tileHeight } = getHexTileSize(gameState!.mapSize);
   const hexGrid = [];
 
   // Loop to generate rows and columns of hex tiles using map state
@@ -90,7 +90,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({
       <div
         id="Battlefield"
         data-testid="Battlefield"
-        data-battlefield-size={gameState.mapSize}
+        data-battlefield-size={gameState!.mapSize}
         className={styles.mapContainer}
         style={
           {
@@ -107,7 +107,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({
         }
       >
         {/* Draw map if game started */}
-        {gameState.selectedPlayer && <div>{hexGrid}</div>}
+        {gameState!.selectedPlayer && <div>{hexGrid}</div>}
       </div>
     </FantasyBorderFrame>
   );

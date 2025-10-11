@@ -12,7 +12,7 @@ import { Army } from '../types/Army';
 
 interface GameContextType {
   // Game State
-  gameState: GameState;
+  gameState?: GameState;
 
   // Battlefield Management
   updateLand: (battlefieldLandId: string, updates: Partial<LandState>) => void;
@@ -45,15 +45,13 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   children,
   initialMapSize = 'medium',
 }) => {
-  const [gameState, setGameState] = useState<GameState>(() => ({
-    turn: 1,
-    mapSize: initialMapSize,
-  }));
+  const [gameState, setGameState] = useState<GameState | undefined>(undefined);
 
   const updateBattlefieldLands = useCallback(
     (battlefieldLandId: string, updates: Partial<LandState>) => {
       setGameState((prev) => {
-        const battlefieldLand = prev.battlefieldLands?.[battlefieldLandId];
+        if (!prev) return prev; // Return unchanged state if game not initialized
+        const battlefieldLand = prev.battlefieldLands[battlefieldLandId];
         if (!battlefieldLand) {
           return prev; // Return unchanged state if tile doesn't exist
         }
@@ -81,7 +79,8 @@ export const GameProvider: React.FC<GameProviderProps> = ({
 
   const addBuildingToTile = useCallback((battlefieldLandId: string, building: Building) => {
     setGameState((prev) => {
-      const battlefieldLand = prev.battlefieldLands?.[battlefieldLandId];
+      if (!prev) return prev; // Return unchanged state if game not initialized
+      const battlefieldLand = prev.battlefieldLands[battlefieldLandId];
       if (!battlefieldLand) return prev;
 
       const newGoldPerTurn = battlefieldLand.goldPerTurn + building.maintainCost;
@@ -108,40 +107,43 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   );
 
   const changeBattlefieldSize = useCallback((newSize: BattlefieldSize) => {
-    setGameState((prev) => ({
-      ...prev,
-      mapSize: newSize,
-    }));
+    setGameState((prev) => {
+      if (!prev) return prev; // Return unchanged state if game not initialized
+      return {
+        ...prev,
+        mapSize: newSize,
+      };
+    });
   }, []);
 
   const nextTurn = useCallback(() => {
-    setGameState((prev) => ({
-      ...prev,
-      turn: prev.turn + 1,
-    }));
+    setGameState((prev) => {
+      if (!prev) return prev; // Return unchanged state if game not initialized
+      return {
+        ...prev,
+        turn: prev.turn + 1,
+      };
+    });
   }, []);
 
   const updateGameConfig = useCallback((config: GameState) => {
-    setGameState((prev) => ({
-      ...prev,
-      ...config,
-    }));
+    setGameState(config);
   }, []);
 
   const getBattlefieldLand = useCallback(
     (landPosition: LandPosition) => {
-      return gameState.battlefieldLands?.[battlefieldLandId(landPosition)];
+      return gameState?.battlefieldLands[battlefieldLandId(landPosition)];
     },
-    [gameState.battlefieldLands]
+    [gameState?.battlefieldLands]
   );
 
   const getPlayerLands = useCallback(
     (player: GamePlayer) => {
-      return Object.values(gameState.battlefieldLands || {}).filter(
+      return Object.values(gameState?.battlefieldLands || {}).filter(
         (battlefieldLand) => battlefieldLand.controlledBy === player.id
       );
     },
-    [gameState.battlefieldLands]
+    [gameState?.battlefieldLands]
   );
 
   const getTotalPlayerGold = useCallback(
@@ -155,8 +157,8 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   );
 
   const mapDimensions = useMemo(
-    () => getBattlefieldDimensions(gameState.mapSize),
-    [gameState.mapSize]
+    () => getBattlefieldDimensions(gameState?.mapSize || initialMapSize),
+    [gameState?.mapSize, initialMapSize]
   );
 
   const contextValue: GameContextType = {

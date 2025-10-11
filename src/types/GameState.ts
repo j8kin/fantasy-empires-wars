@@ -19,18 +19,18 @@ export interface LandState {
 
 export interface GameState {
   mapSize: BattlefieldSize;
-  battlefieldLands?: BattlefieldLands;
+  battlefieldLands: BattlefieldLands;
   turn: number;
-  selectedPlayer?: GamePlayer;
-  opponents?: GamePlayer[];
+  selectedPlayer: GamePlayer;
+  opponents: GamePlayer[];
 }
 
 // Helper function to get player by ID from GameState
 export const getPlayerById = (gameState?: GameState, playerId?: string): GamePlayer | undefined => {
-  if (playerId != null && gameState?.selectedPlayer?.id === playerId) {
+  if (playerId != null && gameState?.selectedPlayer.id === playerId) {
     return gameState.selectedPlayer;
   }
-  return gameState?.opponents?.find((player) => player.id === playerId);
+  return gameState?.opponents.find((player) => player.id === playerId);
 };
 
 export const battlefieldLandId = (landPosition: LandPosition): string =>

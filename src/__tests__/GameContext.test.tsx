@@ -21,16 +21,12 @@ describe('GameContext', () => {
       expect(getByText('Test Content')).toBeInTheDocument();
     });
 
-    it('should initialize with default game state', () => {
+    it('should initialize with null game state', () => {
       const { result } = renderHook(() => useGameState(), {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      expect(result.current.gameState).toBeDefined();
-      expect(result.current.gameState.turn).toBe(1);
-      expect(result.current.gameState.mapSize).toBe('medium');
-      expect(result.current.gameState.selectedPlayer).toBeUndefined();
-      expect(result.current.gameState.opponents).toBeUndefined();
+      expect(result.current.gameState).toBeUndefined();
     });
 
     it('should provide all context methods', () => {
@@ -117,6 +113,7 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
+      // When game state is null, should use initialMapSize (default: medium)
       expect(result.current.mapDimensions).toEqual({ rows: 9, cols: 18 });
     });
 
@@ -125,6 +122,7 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider initialMapSize="small">{children}</GameProvider>,
       });
 
+      // When game state is null, should use initialMapSize (small)
       expect(result.current.mapDimensions).toEqual({ rows: 6, cols: 13 });
     });
 
@@ -133,6 +131,7 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider initialMapSize="large">{children}</GameProvider>,
       });
 
+      // When game state is null, should use initialMapSize (large)
       expect(result.current.mapDimensions).toEqual({ rows: 11, cols: 23 });
     });
   });

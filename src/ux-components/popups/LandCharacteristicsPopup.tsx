@@ -21,7 +21,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 }) => {
   const { hideLandPopup } = useApplicationContext();
   const { gameState } = useGameState();
-  const battlefieldTile = gameState!.battlefieldLands?.[battlefieldLandId(battlefieldPosition)];
+  const battlefieldTile = gameState!.battlefieldLands[battlefieldLandId(battlefieldPosition)];
   if (!battlefieldTile) return null;
   const displayLandType = battlefieldTile.land;
   if (!displayLandType) return null;

@@ -268,19 +268,19 @@ const NewGameDialog: React.FC = () => {
 
     const allPlayers = [updatedSelectedPlayer, ...updatedOpponents];
 
-    const gameState: GameState = {
-      battlefieldLands: initializeMap(mapSize, allPlayers),
-      turn: 0,
-      mapSize,
-      selectedPlayer: updatedSelectedPlayer,
-      opponents: updatedOpponents,
-    };
-
     setShowStartWindow(false);
     setProgressMessage('Creating new game...');
     setShowProgressPopup(true);
 
     setTimeout(() => {
+      const gameState: GameState = {
+        battlefieldLands: initializeMap(mapSize, allPlayers),
+        turn: 0,
+        mapSize,
+        selectedPlayer: updatedSelectedPlayer,
+        opponents: updatedOpponents,
+      };
+
       updateGameState(gameState);
       setGameStarted(true);
       setShowProgressPopup(false);

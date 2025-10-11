@@ -55,7 +55,7 @@ jest.mock('../ux-components/battlefield/Battlefield', () => {
     return (
       <div
         data-testid="Battlefield"
-        data-battlefield-size={gameState.mapSize}
+        data-battlefield-size={gameState?.mapSize || 'medium'}
         data-top={props.topPanelHeight}
       />
     );

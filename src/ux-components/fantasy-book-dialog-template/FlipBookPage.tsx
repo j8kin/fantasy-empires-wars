@@ -61,7 +61,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
         }
 
         // Get the tile IDs that should be highlighted
-        const landsToHighlight = highlightLands(gameState, actionType, name);
+        const landsToHighlight = highlightLands(gameState!, actionType, name);
         // Add tiles to the glowing tiles set for visual highlighting
         landsToHighlight.forEach((tileId) => {
           addGlowingTile(tileId);
