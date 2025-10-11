@@ -58,7 +58,7 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
     }
   };
 
-  const battlefieldTile = gameState.battlefieldLands[battlefieldLandId(battlefieldPosition)];
+  const battlefieldTile = gameState.battlefieldLands?.[battlefieldLandId(battlefieldPosition)];
 
   if (!battlefieldTile) {
     return <div className={styles.hexTile} title="Empty Tile" />;

@@ -11,9 +11,15 @@ const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState, gameState } = useGameState();
     React.useEffect(() => {
+      const selectedPlayer = {
+        ...PREDEFINED_PLAYERS[0],
+        money: 1500,
+        income: 250,
+      };
+
       updateGameState({
         ...gameState,
-        selectedPlayer: PREDEFINED_PLAYERS[0],
+        selectedPlayer,
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
       });
     }, []);

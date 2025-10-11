@@ -10,6 +10,8 @@ export const highlightLands = (
 ): string[] => {
   const { battlefieldLands, selectedPlayer, opponents } = gameState;
 
+  if (!battlefieldLands) return [];
+
   if (actionType === 'building') {
     const lands = getLands(battlefieldLands, [selectedPlayer!], undefined, undefined, []);
     return lands.map((land) => battlefieldLandId(land.mapPos));

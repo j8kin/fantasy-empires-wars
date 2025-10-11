@@ -19,7 +19,7 @@ export interface LandState {
 
 export interface GameState {
   mapSize: BattlefieldSize;
-  battlefieldLands: BattlefieldLands;
+  battlefieldLands?: BattlefieldLands;
   turn: number;
   selectedPlayer?: GamePlayer;
   opponents?: GamePlayer[];

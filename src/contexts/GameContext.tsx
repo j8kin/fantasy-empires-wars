@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 import { GameState, LandState, battlefieldLandId } from '../types/GameState';
-import { initializeMap } from '../map/generation/mapGeneration';
 import {
   BattlefieldDimensions,
   BattlefieldSize,
@@ -47,7 +46,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   initialMapSize = 'medium',
 }) => {
   const [gameState, setGameState] = useState<GameState>(() => ({
-    battlefieldLands: initializeMap(initialMapSize),
     turn: 1,
     mapSize: initialMapSize,
   }));
@@ -83,7 +81,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({
 
   const addBuildingToTile = useCallback((battlefieldLandId: string, building: Building) => {
     setGameState((prev) => {
-      const battlefieldLand = prev.battlefieldLands[battlefieldLandId];
+      const battlefieldLand = prev.battlefieldLands?.[battlefieldLandId];
       if (!battlefieldLand) return prev;
 
       const newGoldPerTurn = battlefieldLand.goldPerTurn + building.maintainCost;
@@ -112,7 +110,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   const changeBattlefieldSize = useCallback((newSize: BattlefieldSize) => {
     setGameState((prev) => ({
       ...prev,
-      battlefieldLands: initializeMap(newSize),
       mapSize: newSize,
     }));
   }, []);
@@ -125,20 +122,10 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   }, []);
 
   const updateGameConfig = useCallback((config: GameState) => {
-    setGameState((prev) => {
-      const allPlayers = [
-        ...(config.selectedPlayer ? [config.selectedPlayer] : []),
-        ...(config.opponents || []),
-      ];
-
-      return {
-        ...prev,
-        selectedPlayer: config.selectedPlayer,
-        opponents: config.opponents,
-        mapSize: config.mapSize || prev.mapSize,
-        battlefieldLands: initializeMap(config.mapSize || prev.mapSize, allPlayers),
-      };
-    });
+    setGameState((prev) => ({
+      ...prev,
+      ...config,
+    }));
   }, []);
 
   const getBattlefieldLand = useCallback(

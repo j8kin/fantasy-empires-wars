@@ -15,6 +15,7 @@ import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { GameState } from '../../types/GameState';
 import { ButtonName } from '../buttons/GameButtonProps';
 import { Mana, ManaType } from '../../types/Mana';
+import { initializeMap } from '../../map/generation/mapGeneration';
 
 const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   switch (mapSize) {
@@ -250,17 +251,25 @@ const NewGameDialog: React.FC = () => {
       const oppDiplomacy = { ...(opponent.diplomacy || {}) };
       playerDiplomacy[opponent.id] = DiplomacyStatus.NO_TREATY;
       oppDiplomacy[selectedPlayer.id] = DiplomacyStatus.NO_TREATY;
-      return { ...opponent, diplomacy: oppDiplomacy, mana: opponent.mana ?? { ...initialMana } };
+      return {
+        ...opponent,
+        diplomacy: oppDiplomacy,
+        mana: opponent.mana ?? { ...initialMana },
+        money: 10000,
+      };
     });
 
     const updatedSelectedPlayer: GamePlayer = {
       ...selectedPlayer,
       diplomacy: playerDiplomacy,
       mana: selectedPlayer.mana ?? { ...initialMana },
+      money: 10000,
     };
 
+    const allPlayers = [updatedSelectedPlayer, ...updatedOpponents];
+
     const gameState: GameState = {
-      battlefieldLands: {},
+      battlefieldLands: initializeMap(mapSize, allPlayers),
       turn: 0,
       mapSize,
       selectedPlayer: updatedSelectedPlayer,

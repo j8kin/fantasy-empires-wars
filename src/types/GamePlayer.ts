@@ -38,6 +38,8 @@ export interface GamePlayer {
   level: number; // 1-32
   description: string;
   mana?: Mana;
+  money?: number;
+  income?: number;
   diplomacy?: Diplomacy;
   color: PlayerColorName;
   avatar?: string; // path to avatar image

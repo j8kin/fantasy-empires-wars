@@ -3,13 +3,13 @@ import styles from './css/TopPanel.module.css';
 
 import { useGameState } from '../../contexts/GameContext';
 
-import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameControl from '../game-controls/GameControl';
 import PlayActionsControl from '../game-controls/PlayActionsControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import GameButton from '../buttons/GameButton';
 import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
+import PlayerInfo from './PlayerInfo';
 
 import { ButtonName } from '../buttons/GameButtonProps';
 
@@ -22,6 +22,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
   const { gameState } = useGameState();
   const selectedPlayer = gameState?.selectedPlayer;
 
+  const avatarSize = height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10;
   const endTurnButton = <GameButton buttonName={ButtonName.TURN} />;
 
   return (
@@ -44,23 +45,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
           <PlayActionsControl />
 
           {/* Display Player Info only if Game Started */}
-          {selectedPlayer && (
-            <div className={styles.playerInfoContainer}>
-              <PlayerAvatar
-                player={selectedPlayer}
-                size={height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10}
-                shape="rectangle"
-                borderColor={selectedPlayer.color}
-              />
-              <div className={styles.playerDetails}>
-                <div className={styles.playerName}>{selectedPlayer.name}</div>
-                <div className={styles.moneyInfo}>
-                  <div className={styles.moneyItem}>Gold: 1,500</div>
-                  <div className={styles.moneyItem}>+250/turn</div>
-                </div>
-              </div>
-            </div>
-          )}
+          {selectedPlayer && <PlayerInfo avatarSize={avatarSize} />}
 
           {/* Center - Mana Vials only if Game Started */}
           {selectedPlayer && <VialPanel />}
