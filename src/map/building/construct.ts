@@ -1,6 +1,6 @@
 import { BuildingType, getBuilding } from '../../types/Building';
-import { Position } from '../utils/mapTypes';
-import { createTileId, BattlefieldLands } from '../../types/GameState';
+import { LandPosition } from '../utils/mapLands';
+import { battlefieldLandId, BattlefieldLands } from '../../types/GameState';
 import { calculateHexDistance, getTilesInRadius } from '../utils/mapAlgorithms';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
@@ -8,11 +8,11 @@ import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 export const construct = (
   owner: GamePlayer,
   building: BuildingType,
-  position: Position,
+  position: LandPosition,
   tiles: BattlefieldLands,
   mapSize: BattlefieldSize
 ) => {
-  const mapPosition = createTileId(position);
+  const mapPosition = battlefieldLandId(position);
   if (building !== BuildingType.STRONGHOLD) {
     tiles[mapPosition].buildings.push(getBuilding(building));
   } else {
@@ -20,14 +20,14 @@ export const construct = (
     tiles[mapPosition].controlledBy = owner.id;
     const newLandsCandidates = getTilesInRadius(mapSize, position, 2, true);
     for (const candidate of newLandsCandidates) {
-      const currentOwner = tiles[createTileId(candidate)].controlledBy;
+      const currentOwner = tiles[battlefieldLandId(candidate)].controlledBy;
       if (currentOwner === NO_PLAYER.id) {
-        tiles[createTileId(candidate)].controlledBy = owner.id;
+        tiles[battlefieldLandId(candidate)].controlledBy = owner.id;
       } else {
         // compare which stronghold is nearest
         const newStrongholdDistance = calculateHexDistance(mapSize, position, candidate);
         const oldOwnerStrongholds = getTilesInRadius(mapSize, candidate, 2)
-          .map((t) => tiles[createTileId(t)])
+          .map((t) => tiles[battlefieldLandId(t)])
           .filter(
             (t) =>
               t.controlledBy === currentOwner &&
@@ -38,9 +38,9 @@ export const construct = (
           .reduce((a, b) => Math.min(a, b), Infinity);
         if (
           newStrongholdDistance < oldOwnerDistance &&
-          tiles[createTileId(candidate)].buildings.length === 0
+          tiles[battlefieldLandId(candidate)].buildings.length === 0
         ) {
-          tiles[createTileId(candidate)].controlledBy = owner.id;
+          tiles[battlefieldLandId(candidate)].controlledBy = owner.id;
         }
       }
     }

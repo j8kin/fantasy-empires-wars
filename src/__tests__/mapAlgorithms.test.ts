@@ -1,9 +1,9 @@
 import { getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { calculateHexDistance, getTilesInRadius } from '../map/utils/mapAlgorithms';
-import { Position } from '../map/utils/mapTypes';
+import { LandPosition } from '../map/utils/mapLands';
 
 describe('Map Algorithms', () => {
-  const comparePositions = (expected: Position, actual: Position) => {
+  const comparePositions = (expected: LandPosition, actual: LandPosition) => {
     expect(actual.row).toBe(expected.row);
     expect(actual.col).toBe(expected.col);
   };

@@ -3,12 +3,12 @@ import { Building } from './Building';
 import { Army } from './Army';
 import { GamePlayer } from './GamePlayer';
 import { BattlefieldSize } from './BattlefieldSize';
-import { Position } from '../map/utils/mapTypes';
+import { LandPosition } from '../map/utils/mapLands';
 
 export type BattlefieldLands = Record<string, LandState>;
 
 export interface LandState {
-  mapPos: Position;
+  mapPos: LandPosition;
   land: Land;
   controlledBy: string;
   goldPerTurn: number;
@@ -33,4 +33,5 @@ export const getPlayerById = (gameState?: GameState, playerId?: string): GamePla
   return gameState?.opponents?.find((player) => player.id === playerId);
 };
 
-export const createTileId = (position: Position): string => `${position.row}-${position.col}`;
+export const battlefieldLandId = (landPosition: LandPosition): string =>
+  `${landPosition.row}-${landPosition.col}`;

@@ -3,7 +3,7 @@ import { LAND_TYPE } from '../types/Land';
 import { BuildingType, getBuilding } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
-import { createTileId } from '../types/GameState';
+import { battlefieldLandId } from '../types/GameState';
 import { calculateHexDistance } from '../map/utils/mapAlgorithms';
 import { Alignment } from '../types/Alignment';
 
@@ -174,8 +174,8 @@ describe('Map Generation with Players', () => {
       expect(player2Tiles.length).toBeGreaterThan(0);
 
       // No tile should be owned by multiple players
-      const player1TilesIds = player1Tiles.map((tile) => createTileId(tile.mapPos));
-      const player2TilesIds = player2Tiles.map((tile) => createTileId(tile.mapPos));
+      const player1TilesIds = player1Tiles.map((tile) => battlefieldLandId(tile.mapPos));
+      const player2TilesIds = player2Tiles.map((tile) => battlefieldLandId(tile.mapPos));
       expect(player1TilesIds.every((id) => !player2TilesIds.includes(id))).toBeTruthy();
     });
   });
@@ -272,7 +272,7 @@ describe('Map Generation with Players', () => {
       for (let row = 0; row < rows; row++) {
         const colsInRow = row % 2 === 0 ? cols : cols - 1;
         for (let col = 0; col < colsInRow; col++) {
-          const tileId = createTileId({ row: row, col: col });
+          const tileId = battlefieldLandId({ row: row, col: col });
           expect(tiles[tileId]).toBeDefined();
           expect(tiles[tileId].mapPos.row).toBe(row);
           expect(tiles[tileId].mapPos.col).toBe(col);

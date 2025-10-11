@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
-import { GameState, LandState, createTileId } from '../types/GameState';
+import { GameState, LandState, battlefieldLandId } from '../types/GameState';
 import { initializeMap } from '../map/generation/mapGeneration';
 import {
   BattlefieldDimensions,
   BattlefieldSize,
   getBattlefieldDimensions,
 } from '../types/BattlefieldSize';
-import { Position } from '../map/utils/mapTypes';
+import { LandPosition } from '../map/utils/mapLands';
 import { GamePlayer } from '../types/GamePlayer';
 import { Building } from '../types/Building';
 import { Army } from '../types/Army';
@@ -20,7 +20,7 @@ interface GameContextType {
   setTileController: (tileId: string, player: GamePlayer) => void;
   addBuildingToTile: (tileId: string, building: Building) => void;
   updateTileArmy: (tileId: string, army: Army) => void;
-  getTile: (position: Position) => LandState | undefined;
+  getTile: (position: LandPosition) => LandState | undefined;
 
   // Player Management
   getPlayerTiles: (player: GamePlayer) => LandState[];
@@ -139,8 +139,8 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   }, []);
 
   const getTile = useCallback(
-    (position: Position) => {
-      const tileId = createTileId(position);
+    (position: LandPosition) => {
+      const tileId = battlefieldLandId(position);
       return gameState.battlefieldLands?.[tileId];
     },
     [gameState.battlefieldLands]

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { BattlefieldSize } from '../types/BattlefieldSize';
-import { Position } from '../map/utils/mapTypes';
+import { LandPosition } from '../map/utils/mapLands';
 
 type OpponentSelectionMode = 'random' | 'manual';
 
@@ -27,7 +27,7 @@ interface ApplicationContextType {
   progressMessage: string;
 
   // HexTile popup states
-  landPopupPosition: Position | null;
+  landPopupPosition: LandPosition | undefined;
   landPopupScreenPosition: ScreenPosition;
 
   // New Game Dialog states
@@ -62,9 +62,9 @@ interface ApplicationContextType {
   setProgressMessage: (message: string) => void;
 
   // HexTile popup actions
-  setLandPopupPosition: (position: Position | null) => void;
+  setLandPopupPosition: (position: LandPosition | undefined) => void;
   setLandPopupScreenPosition: (position: ScreenPosition) => void;
-  showLandPopup: (battlefieldPosition: Position, screenPosition: ScreenPosition) => void;
+  showLandPopup: (battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => void;
   hideLandPopup: () => void;
 
   // New Game Dialog actions
@@ -130,7 +130,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [progressMessage, setProgressMessage] = useState<string>('');
 
   // HexTile popup states
-  const [landPopupPosition, setLandPopupPosition] = useState<Position | null>(null);
+  const [landPopupPosition, setLandPopupPosition] = useState<LandPosition | undefined>(undefined);
   const [landPopupScreenPosition, setLandPopupScreenPosition] = useState<ScreenPosition>({
     x: 0,
     y: 0,
@@ -164,7 +164,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   // HexTile popup actions
   const showLandPopup = useCallback(
-    (battlefieldPosition: Position, screenPosition: ScreenPosition) => {
+    (battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => {
       setLandPopupPosition(battlefieldPosition);
       setLandPopupScreenPosition(screenPosition);
     },
@@ -172,7 +172,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   );
 
   const hideLandPopup = useCallback(() => {
-    setLandPopupPosition(null);
+    setLandPopupPosition(undefined);
   }, []);
 
   // New Game Dialog actions

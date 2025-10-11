@@ -3,7 +3,7 @@ import styles from './css/Battlefield.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
-import { createTileId } from '../../types/GameState';
+import { battlefieldLandId } from '../../types/GameState';
 import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import { useGameState } from '../../contexts/GameContext';
 
@@ -59,7 +59,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({
 
     for (let col = 0; col < colsInThisRow; col++) {
       const mapPosition = { row: row, col: col };
-      const tileId = createTileId(mapPosition);
+      const tileId = battlefieldLandId(mapPosition);
 
       hexRow.push(
         <HexTile

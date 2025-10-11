@@ -4,6 +4,8 @@ import { Alignment } from '../../types/Alignment';
 import { LAND_TYPE } from '../../types/Land';
 import { BuildingType } from '../../types/Building';
 
+export type LandPosition = { row: number; col: number };
+
 export const getLands = (
   tiles: BattlefieldLands,
   player?: GamePlayer[],

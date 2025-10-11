@@ -3,9 +3,9 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameState } from '../../contexts/GameContext';
 
-import { createTileId, getPlayerById } from '../../types/GameState';
+import { battlefieldLandId, getPlayerById } from '../../types/GameState';
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
-import { Position } from '../../map/utils/mapTypes';
+import { LandPosition } from '../../map/utils/mapLands';
 import { LAND_TYPE } from '../../types/Land';
 
 import darkforestImg from '../../assets/map-tiles/darkforest.png';
@@ -19,7 +19,7 @@ import desertImg from '../../assets/map-tiles/desert.png';
 import volcanoImg from '../../assets/map-tiles/volcano.png';
 
 interface HexTileProps {
-  battlefieldPosition: Position;
+  battlefieldPosition: LandPosition;
   landHideModePlayerId?: string;
 }
 
@@ -57,7 +57,7 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
     }
   };
 
-  const battlefieldTile = gameState.battlefieldLands[createTileId(battlefieldPosition)];
+  const battlefieldTile = gameState.battlefieldLands[battlefieldLandId(battlefieldPosition)];
 
   if (!battlefieldTile) {
     return <div className={styles.hexTile} title="Empty Tile" />;
@@ -83,7 +83,7 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
   const shouldHideLandImage =
     landHideModePlayerId && battlefieldTile.controlledBy === landHideModePlayerId;
 
-  const tileId = createTileId(battlefieldPosition);
+  const tileId = battlefieldLandId(battlefieldPosition);
   const isGlowing = glowingTiles.has(tileId) || battlefieldTile.glow;
 
   const handleClick = (event: React.MouseEvent) => {

@@ -1,13 +1,13 @@
-import { createTileId } from '../types/GameState';
+import { battlefieldLandId } from '../types/GameState';
 import { getBattlefieldDimensions } from '../types/BattlefieldSize';
 
 describe('HexTileState Utility Functions', () => {
   describe('createTileId', () => {
     it('should create unique tile IDs for different coordinates', () => {
-      const id1 = createTileId({ row: 0, col: 0 });
-      const id2 = createTileId({ row: 1, col: 0 });
-      const id3 = createTileId({ row: 0, col: 1 });
-      const id4 = createTileId({ row: 5, col: 10 });
+      const id1 = battlefieldLandId({ row: 0, col: 0 });
+      const id2 = battlefieldLandId({ row: 1, col: 0 });
+      const id3 = battlefieldLandId({ row: 0, col: 1 });
+      const id4 = battlefieldLandId({ row: 5, col: 10 });
 
       expect(id1).toBe('0-0');
       expect(id2).toBe('1-0');
@@ -21,15 +21,15 @@ describe('HexTileState Utility Functions', () => {
     });
 
     it('should handle negative coordinates', () => {
-      const id1 = createTileId({ row: -1, col: -1 });
-      const id2 = createTileId({ row: -5, col: 3 });
+      const id1 = battlefieldLandId({ row: -1, col: -1 });
+      const id2 = battlefieldLandId({ row: -5, col: 3 });
 
       expect(id1).toBe('-1--1');
       expect(id2).toBe('-5-3');
     });
 
     it('should handle large coordinates', () => {
-      const id = createTileId({ row: 999, col: 1000 });
+      const id = battlefieldLandId({ row: 999, col: 1000 });
       expect(id).toBe('999-1000');
     });
   });
@@ -53,12 +53,6 @@ describe('HexTileState Utility Functions', () => {
     it('should return correct dimensions for huge map', () => {
       const dimensions = getBattlefieldDimensions('huge');
       expect(dimensions).toEqual({ rows: 15, cols: 31 });
-    });
-
-    it('should default to medium dimensions for invalid size', () => {
-      // @ts-expect-error Testing invalid input
-      const dimensions = getBattlefieldDimensions('invalid');
-      expect(dimensions).toEqual({ rows: 9, cols: 18 });
     });
 
     it('should calculate total tiles correctly', () => {

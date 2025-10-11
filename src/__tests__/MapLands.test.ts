@@ -2,9 +2,9 @@ import { generateMockMap } from './utils/generateMockMap';
 import { getLands } from '../map/utils/mapLands';
 import { construct } from '../map/building/construct';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { Position } from '../map/utils/mapTypes';
+import { LandPosition } from '../map/utils/mapLands';
 import { BuildingType } from '../types/Building';
-import { createTileId, BattlefieldLands } from '../types/GameState';
+import { battlefieldLandId, BattlefieldLands } from '../types/GameState';
 import { getLandById, LAND_TYPE } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { recruitHero } from '../map/army/recruit';
@@ -15,7 +15,7 @@ describe('MapLands', () => {
   const nTilesInRadius2 = 3 * 2 + 4 * 2 + 5;
   const player: GamePlayer = PREDEFINED_PLAYERS[0];
 
-  const homeland: Position = { row: 2, col: 2 };
+  const homeland: LandPosition = { row: 2, col: 2 };
 
   describe('Get lands', () => {
     it('should return all lands', () => {
@@ -130,7 +130,7 @@ describe('MapLands', () => {
         movement: 10,
         name: 'Mock Hero',
       };
-      recruitHero(unit, mockMap[createTileId(homeland)]);
+      recruitHero(unit, mockMap[battlefieldLandId(homeland)]);
       expect(getLands(mockMap, undefined, undefined, undefined, undefined, false).length).toEqual(
         1
       );

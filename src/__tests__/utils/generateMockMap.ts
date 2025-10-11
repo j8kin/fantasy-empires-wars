@@ -1,5 +1,5 @@
-import { createTileId, BattlefieldLands } from '../../types/GameState';
-import { Position } from '../../map/utils/mapTypes';
+import { battlefieldLandId, BattlefieldLands } from '../../types/GameState';
+import { LandPosition } from '../../map/utils/mapLands';
 import { getLandById, LAND_TYPE } from '../../types/Land';
 import { NO_PLAYER } from '../../types/GamePlayer';
 
@@ -8,8 +8,8 @@ export const generateMockMap = (rows: number, cols: number): BattlefieldLands =>
   for (let row = 0; row < rows; row++) {
     const colsInRow = row % 2 === 0 ? cols : cols - 1;
     for (let col = 0; col < colsInRow; col++) {
-      const position: Position = { row: row, col: col };
-      const key = createTileId(position);
+      const position: LandPosition = { row: row, col: col };
+      const key = battlefieldLandId(position);
       result[key] = {
         mapPos: position,
         land: getLandById(LAND_TYPE.PLAINS),

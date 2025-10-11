@@ -1,15 +1,15 @@
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
-import { Position } from './mapTypes';
+import { LandPosition } from './mapLands';
 
 export const calculateHexDistance = (
   mapSize: BattlefieldSize,
-  startPoint: Position,
-  endPoint: Position
+  startPoint: LandPosition,
+  endPoint: LandPosition
 ): number => {
   if (!isValidPosition(mapSize, startPoint) || !isValidPosition(mapSize, endPoint)) return -1;
 
-  let visited = new Set<Position>();
-  let queue: { pos: Position; dist: number }[] = [];
+  let visited = new Set<LandPosition>();
+  let queue: { pos: LandPosition; dist: number }[] = [];
   visited.add(startPoint);
   queue.push({ pos: startPoint, dist: 0 });
 
@@ -31,20 +31,20 @@ export const calculateHexDistance = (
   return -1; // should never reach here
 };
 
-const excludePosition = (arr: Position[], exclude: Position): Position[] => {
+const excludePosition = (arr: LandPosition[], exclude: LandPosition): LandPosition[] => {
   return arr.filter((pos) => !(pos.row === exclude.row && pos.col === exclude.col));
 };
 
 export const getTilesInRadius = (
   mapSize: BattlefieldSize,
-  center: Position,
+  center: LandPosition,
   radius: number,
   excludeCenter: boolean = false
-): Position[] => {
+): LandPosition[] => {
   if (!isValidPosition(mapSize, center) || radius < 0) return [];
 
-  const queue: { pos: Position; dist: number }[] = [];
-  const tilesInRadius: Position[] = [center];
+  const queue: { pos: LandPosition; dist: number }[] = [];
+  const tilesInRadius: LandPosition[] = [center];
 
   if (radius === 0) return tilesInRadius;
   if (radius === 1) {
@@ -74,19 +74,19 @@ export const getTilesInRadius = (
   return excludeCenter ? excludePosition(tilesInRadius, center) : tilesInRadius;
 };
 
-const isValidPosition = (mapSize: BattlefieldSize, pos: Position): boolean => {
+const isValidPosition = (mapSize: BattlefieldSize, pos: LandPosition): boolean => {
   const { rows, cols } = getBattlefieldDimensions(mapSize);
   if (pos.row < 0 || pos.row >= rows) return false;
   const colsInRow = pos.row % 2 === 0 ? cols : cols - 1;
   return pos.col >= 0 && pos.col < colsInRow;
 };
 
-const getValidNeighbors = (mapSize: BattlefieldSize, pos: Position): Position[] => {
+const getValidNeighbors = (mapSize: BattlefieldSize, pos: LandPosition): LandPosition[] => {
   return getHexNeighbors(pos).filter((pos) => isValidPosition(mapSize, pos));
 };
 
 // Get neighbors for hexagonal grid (offset coordinates)
-const getHexNeighbors = (pos: Position): Position[] => {
+const getHexNeighbors = (pos: LandPosition): LandPosition[] => {
   const isEvenRow = pos.row % 2 === 0;
 
   if (isEvenRow) {

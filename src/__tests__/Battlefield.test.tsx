@@ -6,7 +6,7 @@ import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { Land, LAND_TYPE } from '../types/Land';
 import { BattlefieldSize } from '../types/BattlefieldSize';
 import { initializeMap } from '../map/generation/mapGeneration';
-import { Position } from '../map/utils/mapTypes';
+import { LandPosition } from '../map/utils/mapLands';
 import { FantasyBorderFrameProps } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { Alignment } from '../types/Alignment';
 
@@ -21,12 +21,12 @@ jest.mock('../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 
 // Mock HexTile component
 jest.mock('../ux-components/battlefield/HexTile', () => {
-  const { createTileId } = require('../types/GameState');
+  const { battlefieldLandId } = require('../types/GameState');
   const { useGameState } = require('../contexts/GameContext');
 
-  return (props: { battlefieldPosition: Position }) => {
+  return (props: { battlefieldPosition: LandPosition }) => {
     const { battlefieldPosition } = props;
-    const tileId: string = createTileId(battlefieldPosition);
+    const tileId: string = battlefieldLandId(battlefieldPosition);
     const { gameState } = useGameState();
     const tile = gameState.battlefieldLands[tileId];
 
@@ -74,7 +74,6 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
     return {
       id: LAND_TYPE.PLAINS,
       alignment: Alignment.LAWFUL,
-      imageName: 'plains.png',
       goldPerTurn: { min: 1, max: 3 },
     };
   };
