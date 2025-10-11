@@ -7,7 +7,7 @@ import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import styles from './css/NewGameDialog.module.css';
-import { GameState } from '../../types/HexTileState';
+import { GameState } from '../../types/GameState';
 import { ButtonName } from '../buttons/GameButtonProps';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameState } from '../../contexts/GameContext';
@@ -242,7 +242,7 @@ const NewGameDialog: React.FC = () => {
     const updatedSelectedPlayer: GamePlayer = { ...selectedPlayer, diplomacy: playerDiplomacy };
 
     const gameState: GameState = {
-      tiles: {},
+      battlefieldLands: {},
       turn: 0,
       mapSize,
       selectedPlayer: updatedSelectedPlayer,

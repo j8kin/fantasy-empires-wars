@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../ux-components/popups/LandCharacteristicsPopup';
-import { GameState, HexTileState } from '../types/HexTileState';
+import { GameState, LandState } from '../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { LAND_TYPE } from '../types/Land';
 import { initializeMap } from '../map/generation/mapGeneration';
@@ -73,14 +73,14 @@ describe('LandCharacteristicsPopup', () => {
   const mapSize = 'medium';
   const mockGameState: GameState = {
     mapSize: mapSize,
-    tiles: initializeMap(mapSize, PREDEFINED_PLAYERS.slice(0, 2)),
+    battlefieldLands: initializeMap(mapSize, PREDEFINED_PLAYERS.slice(0, 2)),
     turn: 0,
     selectedPlayer: mockPlayer,
     opponents: [PREDEFINED_PLAYERS[0]],
   };
 
-  const mockTileState: HexTileState = Object.values(mockGameState.tiles).find(
-    (tile) => tile.landType.id === LAND_TYPE.VOLCANO
+  const mockTileState: LandState = Object.values(mockGameState.battlefieldLands).find(
+    (tile) => tile.land.id === LAND_TYPE.VOLCANO
   )!;
 
   const mockPosition = { x: 100, y: 100 };
@@ -129,7 +129,7 @@ describe('LandCharacteristicsPopup', () => {
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(mockTileState.landType.id).toBe(LAND_TYPE.VOLCANO);
+    expect(mockTileState.land.id).toBe(LAND_TYPE.VOLCANO);
     expect(mockTileState.controlledBy).toBe(mockPlayer.id);
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
@@ -198,7 +198,7 @@ describe('LandCharacteristicsPopup', () => {
       const gameStateWithArmy = {
         ...mockGameState,
         tiles: {
-          ...mockGameState.tiles,
+          ...mockGameState.battlefieldLands,
           [tileId]: tileWithHeroes,
         },
       };
@@ -231,7 +231,7 @@ describe('LandCharacteristicsPopup', () => {
       const gameStateWithArmy = {
         ...mockGameState,
         tiles: {
-          ...mockGameState.tiles,
+          ...mockGameState.battlefieldLands,
           [tileId]: tileWithUnits,
         },
       };
@@ -266,7 +266,7 @@ describe('LandCharacteristicsPopup', () => {
       const gameStateWithArmy = {
         ...mockGameState,
         tiles: {
-          ...mockGameState.tiles,
+          ...mockGameState.battlefieldLands,
           [tileId]: tileWithMixedArmy,
         },
       };
@@ -300,7 +300,7 @@ describe('LandCharacteristicsPopup', () => {
       const gameStateWithoutArmy = {
         ...mockGameState,
         tiles: {
-          ...mockGameState.tiles,
+          ...mockGameState.battlefieldLands,
           [tileId]: tileWithoutArmy,
         },
       };
@@ -332,7 +332,7 @@ describe('LandCharacteristicsPopup', () => {
       const gameStateWithArmy = {
         ...mockGameState,
         tiles: {
-          ...mockGameState.tiles,
+          ...mockGameState.battlefieldLands,
           [tileId]: tileWithHeroesOnly,
         },
       };
@@ -366,7 +366,7 @@ describe('LandCharacteristicsPopup', () => {
       const gameStateWithArmy = {
         ...mockGameState,
         tiles: {
-          ...mockGameState.tiles,
+          ...mockGameState.battlefieldLands,
           [tileId]: tileWithUnitsOnly,
         },
       };

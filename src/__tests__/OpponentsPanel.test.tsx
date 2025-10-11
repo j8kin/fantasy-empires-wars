@@ -20,7 +20,7 @@ const TestWrapper: React.FC<{
         selectedPlayer,
         opponents,
         mapSize: 'medium',
-        tiles: {},
+        battlefieldLands: {},
         turn: 1,
       });
     }, [updateGameState]);

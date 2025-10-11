@@ -3,9 +3,10 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameState } from '../../contexts/GameContext';
 
-import { createTileId, getPlayerById } from '../../types/HexTileState';
+import { createTileId, getPlayerById } from '../../types/GameState';
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 import { Position } from '../../map/utils/mapTypes';
+import { LAND_TYPE } from '../../types/Land';
 
 import darkforestImg from '../../assets/map-tiles/darkforest.png';
 import greenforestImg from '../../assets/map-tiles/greenforest.png';
@@ -31,25 +32,39 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
     landPopupPosition?.row === battlefieldPosition.row &&
     landPopupPosition?.col === battlefieldPosition.col;
 
-  const imageMap: { [key: string]: string } = {
-    'darkforest.png': darkforestImg,
-    'greenforest.png': greenforestImg,
-    'hills.png': hillsImg,
-    'lava.png': lavaImg,
-    'mountains.png': mountainsImg,
-    'plains.png': plainsImg,
-    'swamp.png': swampImg,
-    'desert.png': desertImg,
-    'volcano.png': volcanoImg,
+  const getLandImage = (landType: LAND_TYPE): string | undefined => {
+    switch (landType) {
+      case LAND_TYPE.PLAINS:
+        return plainsImg;
+      case LAND_TYPE.HILLS:
+        return hillsImg;
+      case LAND_TYPE.MOUNTAINS:
+        return mountainsImg;
+      case LAND_TYPE.SWAMP:
+        return swampImg;
+      case LAND_TYPE.DESERT:
+        return desertImg;
+      case LAND_TYPE.GREEN_FOREST:
+        return greenforestImg;
+      case LAND_TYPE.DARK_FOREST:
+        return darkforestImg;
+      case LAND_TYPE.LAVA:
+        return lavaImg;
+      case LAND_TYPE.VOLCANO:
+        return volcanoImg;
+      default:
+        return undefined;
+    }
   };
-  const battlefieldTile = gameState.tiles[createTileId(battlefieldPosition)];
+
+  const battlefieldTile = gameState.battlefieldLands[createTileId(battlefieldPosition)];
 
   if (!battlefieldTile) {
     return <div className={styles.hexTile} title="Empty Tile" />;
   }
 
-  const imageSrc = imageMap[battlefieldTile.landType.imageName];
-  const altText = battlefieldTile.landType.id;
+  const imageSrc = getLandImage(battlefieldTile.land.id);
+  const altText = battlefieldTile.land.id;
 
   // Get the controlling player's color or default to white if not controlled
   const getBackgroundColor = (): string => {
@@ -96,7 +111,7 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
     <>
       <div
         className={styles.hexTile}
-        title={`${battlefieldTile.landType.id} (${battlefieldTile.landType.alignment})`}
+        title={`${battlefieldTile.land.id} (${battlefieldTile.land.alignment})`}
         onContextMenu={handleRightClick}
         onClick={handleClick}
         style={tileStyle}

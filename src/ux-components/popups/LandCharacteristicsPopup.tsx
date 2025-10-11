@@ -1,6 +1,6 @@
 import React from 'react';
 import { getAlignmentColor } from '../../types/Alignment';
-import { createTileId, getPlayerById } from '../../types/HexTileState';
+import { createTileId, getPlayerById } from '../../types/GameState';
 import styles from '../battlefield/css/LandCharacteristicsPopup.module.css';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../../map/utils/mapTypes';
@@ -18,8 +18,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 }) => {
   const { hideLandPopup } = useApplicationContext();
   const { gameState } = useGameState();
-  const battlefieldTile = gameState!.tiles[createTileId(battlefieldPosition)];
-  const displayLandType = battlefieldTile.landType;
+  const battlefieldTile = gameState!.battlefieldLands[createTileId(battlefieldPosition)];
+  const displayLandType = battlefieldTile.land;
   if (!displayLandType) return null;
 
   // Calculate dynamic size based on content type

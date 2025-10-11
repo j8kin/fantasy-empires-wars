@@ -5,11 +5,11 @@ import { GamePlayer } from './GamePlayer';
 import { BattlefieldSize } from './BattlefieldSize';
 import { Position } from '../map/utils/mapTypes';
 
-export type MapTilesType = Record<string, HexTileState>;
+export type BattlefieldLands = Record<string, LandState>;
 
-export interface HexTileState {
+export interface LandState {
   mapPos: Position;
-  landType: Land;
+  land: Land;
   controlledBy: string;
   goldPerTurn: number;
   buildings: Building[];
@@ -19,9 +19,8 @@ export interface HexTileState {
 
 export interface GameState {
   mapSize: BattlefieldSize;
-  tiles: MapTilesType;
+  battlefieldLands: BattlefieldLands;
   turn: number;
-  // Game configuration data
   selectedPlayer?: GamePlayer;
   opponents?: GamePlayer[];
 }

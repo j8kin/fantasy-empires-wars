@@ -1,5 +1,5 @@
-import { createTileId, HexTileState, MapTilesType } from '../../types/HexTileState';
-import { getLandById, Land, LAND_TYPE, LandType } from '../../types/Land';
+import { createTileId, LandState, BattlefieldLands } from '../../types/GameState';
+import { getLandById, Land, LAND_TYPE } from '../../types/Land';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { Position } from '../utils/mapTypes';
@@ -11,21 +11,21 @@ import { getUnit } from '../../types/Army';
 import { recruitHero } from '../army/recruit';
 import { BuildingType } from '../../types/Building';
 
-const positionsToTiles = (pos: Position[], tiles: MapTilesType): HexTileState[] => {
+const positionsToTiles = (pos: Position[], tiles: BattlefieldLands): LandState[] => {
   return pos.map((p) => tiles[createTileId(p)]).filter((tile) => tile !== undefined);
 };
 
-const calculateBaseLandGold = (landType: Land): number => {
-  const { min, max } = landType?.goldPerTurn;
+const calculateBaseLandGold = (land: Land): number => {
+  const { min, max } = land?.goldPerTurn;
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const getNumberOfLands = (tiles: MapTilesType, landType: LandType): number => {
-  return Object.values(tiles).filter((tile) => tile.landType.id === landType).length;
+const getNumberOfLands = (tiles: BattlefieldLands, landType: LAND_TYPE): number => {
+  return Object.values(tiles).filter((tile) => tile.land.id === landType).length;
 };
 
-const getRandomEmptyLandType = (tiles: MapTilesType): HexTileState | null => {
-  const emptyLands = Object.values(tiles).filter((tile) => tile.landType.id === LAND_TYPE.NONE);
+const getRandomEmptyLandType = (tiles: BattlefieldLands): LandState | null => {
+  const emptyLands = Object.values(tiles).filter((tile) => tile.land.id === LAND_TYPE.NONE);
   if (emptyLands.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * emptyLands.length);
   return emptyLands[randomIndex];
@@ -34,16 +34,16 @@ const getRandomEmptyLandType = (tiles: MapTilesType): HexTileState | null => {
 const getEmptyNeighbors = (
   mapSize: BattlefieldSize,
   position: Position,
-  tiles: MapTilesType
+  tiles: BattlefieldLands
 ): Position[] =>
   positionsToTiles(getTilesInRadius(mapSize, position, 1), tiles)
-    .filter((tile) => tile.landType.id === LAND_TYPE.NONE)
+    .filter((tile) => tile.land.id === LAND_TYPE.NONE)
     .map((tile) => tile.mapPos);
 
 const getRandomNoneNeighbor = (
   mapSize: BattlefieldSize,
   pos: Position,
-  tiles: MapTilesType
+  tiles: BattlefieldLands
 ): Position | null => {
   const noneNeighbors = getEmptyNeighbors(mapSize, pos, tiles);
 
@@ -54,18 +54,18 @@ const getRandomNoneNeighbor = (
 };
 
 const findSuitableHomeland = (
-  tiles: MapTilesType,
+  tiles: BattlefieldLands,
   player: GamePlayer,
   existingPlayerPositions: Position[],
   mapSize: BattlefieldSize
-): HexTileState | undefined => {
-  let candidates: HexTileState[] = [];
+): LandState | undefined => {
+  let candidates: LandState[] = [];
   const battlefieldDimensions = getBattlefieldDimensions(mapSize);
 
   // For Necromancer (Undead race), look for the volcano first
   if (player.race === 'Undead') {
     candidates = Object.values(tiles).filter(
-      (tile) => tile.landType.id === LAND_TYPE.VOLCANO && tile.controlledBy === NO_PLAYER.id
+      (tile) => tile.land.id === LAND_TYPE.VOLCANO && tile.controlledBy === NO_PLAYER.id
     );
   }
 
@@ -74,12 +74,12 @@ const findSuitableHomeland = (
     candidates = Object.values(tiles).filter(
       (tile) =>
         tile.controlledBy === NO_PLAYER.id &&
-        tile.landType.alignment === player.alignment &&
-        tile.landType.id !== LAND_TYPE.NONE &&
-        tile.landType.id !== LAND_TYPE.VOLCANO &&
-        tile.landType.id !== LAND_TYPE.LAVA &&
+        tile.land.alignment === player.alignment &&
+        tile.land.id !== LAND_TYPE.NONE &&
+        tile.land.id !== LAND_TYPE.VOLCANO &&
+        tile.land.id !== LAND_TYPE.LAVA &&
         // deserts are having a very lack of resources avoid to place home land there
-        tile.landType.id !== LAND_TYPE.DESERT &&
+        tile.land.id !== LAND_TYPE.DESERT &&
         // do not place homeland on the edge of the battlefield
         tile.mapPos.row >= 2 &&
         tile.mapPos.row <= battlefieldDimensions.rows - 2 &&
@@ -93,10 +93,10 @@ const findSuitableHomeland = (
     candidates = Object.values(tiles).filter(
       (tile) =>
         tile.controlledBy === NO_PLAYER.id &&
-        tile.landType.alignment === Alignment.NEUTRAL &&
-        tile.landType.id !== LAND_TYPE.NONE &&
-        tile.landType.id !== LAND_TYPE.VOLCANO &&
-        tile.landType.id !== LAND_TYPE.LAVA
+        tile.land.alignment === Alignment.NEUTRAL &&
+        tile.land.id !== LAND_TYPE.NONE &&
+        tile.land.id !== LAND_TYPE.VOLCANO &&
+        tile.land.id !== LAND_TYPE.LAVA
     );
   }
 
@@ -137,7 +137,7 @@ const findSuitableHomeland = (
   return undefined; // No suitable homeland found. Should never reach here
 };
 
-const assignPlayerHero = (homeland: HexTileState, player: GamePlayer) => {
+const assignPlayerHero = (homeland: LandState, player: GamePlayer) => {
   const hero = getUnit(player.type);
   hero.name = player.name;
   hero.level = player.level;
@@ -148,7 +148,7 @@ const assignPlayerHero = (homeland: HexTileState, player: GamePlayer) => {
 const addPlayer = (
   player: GamePlayer,
   existingPlayersPositions: Position[],
-  tiles: MapTilesType,
+  tiles: BattlefieldLands,
   mapSize: BattlefieldSize
 ) => {
   const homeland = findSuitableHomeland(tiles, player, existingPlayersPositions, mapSize);
@@ -161,7 +161,7 @@ const addPlayer = (
   const playerLands = getLands(
     tiles,
     [player],
-    homeland.landType.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
+    homeland.land.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
     player.alignment,
     []
   );
@@ -175,7 +175,7 @@ const addPlayer = (
 };
 
 const assignPlayerLands = (
-  tiles: MapTilesType,
+  tiles: BattlefieldLands,
   players: GamePlayer[],
   mapSize: BattlefieldSize
 ): void => {
@@ -197,9 +197,9 @@ const assignPlayerLands = (
 export const initializeMap = (
   mapSize: BattlefieldSize,
   players: GamePlayer[] = []
-): MapTilesType => {
+): BattlefieldLands => {
   const { rows, cols } = getBattlefieldDimensions(mapSize);
-  const tiles: MapTilesType = {};
+  const tiles: BattlefieldLands = {};
 
   // Calculate the total number of tiles
   let totalTiles = 0;
@@ -213,7 +213,7 @@ export const initializeMap = (
       const tileId = createTileId(mapPos);
       tiles[tileId] = {
         mapPos: mapPos,
-        landType: getLandById(LAND_TYPE.NONE), // Temporary, will be overwritten
+        land: getLandById(LAND_TYPE.NONE), // Temporary, will be overwritten
         controlledBy: NO_PLAYER.id,
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
@@ -229,7 +229,7 @@ export const initializeMap = (
   const volcanoPos = { row: volcanoRow, col: volcanoCol };
   const volcanoId = createTileId(volcanoPos);
   if (tiles[volcanoId]) {
-    tiles[volcanoId].landType = getLandById(LAND_TYPE.VOLCANO);
+    tiles[volcanoId].land = getLandById(LAND_TYPE.VOLCANO);
   }
 
   // 2. Place up to 6 lava tiles connected to the volcano
@@ -244,7 +244,7 @@ export const initializeMap = (
     const lavaPos = shuffledCandidates[i];
     const lavaId = createTileId(lavaPos);
     if (tiles[lavaId]) {
-      tiles[lavaId].landType = getLandById(LAND_TYPE.LAVA);
+      tiles[lavaId].land = getLandById(LAND_TYPE.LAVA);
       lavaPositions.push(lavaPos);
     }
   }
@@ -253,7 +253,7 @@ export const initializeMap = (
   getEmptyNeighbors(mapSize, volcanoPos, tiles)?.forEach((neighbor) => {
     const tileId = createTileId(neighbor);
     if (tiles[tileId]) {
-      tiles[tileId].landType = getLandById(LAND_TYPE.MOUNTAINS);
+      tiles[tileId].land = getLandById(LAND_TYPE.MOUNTAINS);
     }
   });
 
@@ -262,8 +262,8 @@ export const initializeMap = (
       const nMountains = getNumberOfLands(tiles, LAND_TYPE.MOUNTAINS);
       const tileId = createTileId(neighbor);
       if (tiles[tileId]) {
-        tiles[tileId].landType = getLandById(
-          nMountains < 6 ? LAND_TYPE.MOUNTAINS : LAND_TYPE.DARKFOREST
+        tiles[tileId].land = getLandById(
+          nMountains < 6 ? LAND_TYPE.MOUNTAINS : LAND_TYPE.DARK_FOREST
         );
       }
     });
@@ -282,7 +282,7 @@ export const initializeMap = (
       if (startLand == null) break;
       const tileId = createTileId(startLand.mapPos);
       if (tiles[tileId]) {
-        tiles[tileId].landType = getLandById(landType);
+        tiles[tileId].land = getLandById(landType);
       }
 
       // place 6 land of the same time nearby
@@ -291,7 +291,7 @@ export const initializeMap = (
         if (emptyNeighbor == null) break;
         const neighborTileId = createTileId(emptyNeighbor);
         if (tiles[neighborTileId]) {
-          tiles[neighborTileId].landType = getLandById(landType);
+          tiles[neighborTileId].land = getLandById(landType);
           startLand = tiles[neighborTileId];
         }
       }
@@ -300,12 +300,12 @@ export const initializeMap = (
 
   // if we have empty lands fill with deserts
   Object.values(tiles)
-    .filter((tile) => tile.landType.id === LAND_TYPE.NONE)
-    .forEach((tile) => (tile.landType = getLandById(LAND_TYPE.DESERT)));
+    .filter((tile) => tile.land.id === LAND_TYPE.NONE)
+    .forEach((tile) => (tile.land = getLandById(LAND_TYPE.DESERT)));
 
   // Calculate gold for all tiles
   Object.values(tiles).forEach((tile) => {
-    tile.goldPerTurn = calculateBaseLandGold(tile.landType);
+    tile.goldPerTurn = calculateBaseLandGold(tile.land);
   });
 
   // Assign players to homelands if players are provided

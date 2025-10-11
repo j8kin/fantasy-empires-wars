@@ -1,24 +1,24 @@
-import { HexTileState, MapTilesType } from '../../types/HexTileState';
+import { LandState, BattlefieldLands } from '../../types/GameState';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
-import { LandType } from '../../types/Land';
+import { LAND_TYPE } from '../../types/Land';
 import { BuildingType } from '../../types/Building';
 
 export const getLands = (
-  tiles: MapTilesType,
+  tiles: BattlefieldLands,
   player?: GamePlayer[],
-  landType?: LandType,
+  landType?: LAND_TYPE,
   landAlignment?: Alignment,
   buildings?: BuildingType[],
   noArmy?: boolean
-): HexTileState[] => {
+): LandState[] => {
   return Object.values(tiles).filter(
     (tile) =>
       (player == null ||
         (player.length === 0 && tile.controlledBy === NO_PLAYER.id) ||
         (player.length > 0 && player.some((gp) => gp.id === tile.controlledBy))) &&
-      (landType == null || tile.landType.id === landType) &&
-      (landAlignment == null || tile.landType.alignment === landAlignment) &&
+      (landType == null || tile.land.id === landType) &&
+      (landAlignment == null || tile.land.alignment === landAlignment) &&
       // ignore buildings
       (buildings == null ||
         // require no building on Land

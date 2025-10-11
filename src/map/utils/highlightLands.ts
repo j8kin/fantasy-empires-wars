@@ -1,4 +1,4 @@
-import { GameState, createTileId } from '../../types/HexTileState';
+import { GameState, createTileId } from '../../types/GameState';
 import { getLands } from './mapLands';
 import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType } from '../../types/Building';
@@ -8,10 +8,10 @@ export const highlightLands = (
   actionType: 'spell' | 'building',
   name: SpellName | BuildingType
 ): string[] => {
-  const { tiles, selectedPlayer, opponents } = gameState;
+  const { battlefieldLands, selectedPlayer, opponents } = gameState;
 
   if (actionType === 'building') {
-    const lands = getLands(tiles, [selectedPlayer!], undefined, undefined, []);
+    const lands = getLands(battlefieldLands, [selectedPlayer!], undefined, undefined, []);
     return lands.map((land) => createTileId(land.mapPos));
   } else {
     const spell = getSpellById(name as SpellName);
@@ -22,7 +22,7 @@ export const highlightLands = (
         : spellApply === 'opponent'
           ? opponents
           : [selectedPlayer!, ...opponents!];
-    const lands = getLands(tiles, playerFilter);
+    const lands = getLands(battlefieldLands, playerFilter);
     return lands.map((land) => createTileId(land.mapPos));
   }
 };

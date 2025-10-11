@@ -3,7 +3,7 @@ import styles from './css/Battlefield.module.css';
 import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
-import { createTileId } from '../../types/HexTileState';
+import { createTileId } from '../../types/GameState';
 import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import { useGameState } from '../../contexts/GameContext';
 

@@ -1,4 +1,4 @@
-import { createTileId } from '../types/HexTileState';
+import { createTileId } from '../types/GameState';
 import { getBattlefieldDimensions } from '../types/BattlefieldSize';
 
 describe('HexTileState Utility Functions', () => {

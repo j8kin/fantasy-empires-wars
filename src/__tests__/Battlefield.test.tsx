@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Battlefield from '../ux-components/battlefield/Battlefield';
-import { GameState, MapTilesType } from '../types/HexTileState';
+import { GameState, BattlefieldLands } from '../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { Land, LAND_TYPE } from '../types/Land';
 import { BattlefieldSize } from '../types/BattlefieldSize';
@@ -21,14 +21,14 @@ jest.mock('../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 
 // Mock HexTile component
 jest.mock('../ux-components/battlefield/HexTile', () => {
-  const { createTileId } = require('../types/HexTileState');
+  const { createTileId } = require('../types/GameState');
   const { useGameState } = require('../contexts/GameContext');
 
   return (props: { battlefieldPosition: Position }) => {
     const { battlefieldPosition } = props;
     const tileId: string = createTileId(battlefieldPosition);
     const { gameState } = useGameState();
-    const tile = gameState.tiles[tileId];
+    const tile = gameState.battlefieldLands[tileId];
 
     return (
       <div
@@ -37,7 +37,7 @@ jest.mock('../ux-components/battlefield/HexTile', () => {
         data-row={battlefieldPosition.row}
         data-col={battlefieldPosition.col}
         data-controlled-by={tile?.controlledBy}
-        data-land-type={tile?.landType?.id}
+        data-land-type={tile?.land?.id}
       />
     );
   };
@@ -79,7 +79,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
     };
   };
 
-  const tiles: MapTilesType = {};
+  const tiles: BattlefieldLands = {};
 
   // Create some sample tiles for testing
   for (let row = 0; row < 3; row++) {
@@ -88,7 +88,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
       const mapPos = { row: row, col: col };
       tiles[tileId] = {
         mapPos: mapPos,
-        landType: mockLandType(),
+        land: mockLandType(),
         controlledBy: mockPlayer.id,
         goldPerTurn: 1,
         buildings: [],
@@ -99,7 +99,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
 
   return {
     mapSize,
-    tiles,
+    battlefieldLands: tiles,
     turn: 0,
     selectedPlayer: mockPlayer,
     opponents: [],
@@ -339,7 +339,7 @@ describe('Battlefield Component', () => {
 
     it('handles missing tile states gracefully', () => {
       mockGameState = createMockGameState('large');
-      mockGameState.tiles = {}; // Empty tiles object
+      mockGameState.battlefieldLands = {}; // Empty tiles object
 
       expect(() => {
         render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
@@ -431,7 +431,7 @@ describe('Battlefield Component', () => {
       const mapSize = 'medium';
       mockGameState = {
         mapSize: mapSize,
-        tiles: initializeMap(mapSize, PREDEFINED_PLAYERS.slice(0, 2)),
+        battlefieldLands: initializeMap(mapSize, PREDEFINED_PLAYERS.slice(0, 2)),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[1],
         opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],

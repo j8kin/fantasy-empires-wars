@@ -4,7 +4,7 @@ import { construct } from '../map/building/construct';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { Position } from '../map/utils/mapTypes';
 import { BuildingType } from '../types/Building';
-import { createTileId, MapTilesType } from '../types/HexTileState';
+import { createTileId, BattlefieldLands } from '../types/GameState';
 import { getLandById, LAND_TYPE } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { recruitHero } from '../map/army/recruit';
@@ -19,7 +19,7 @@ describe('MapLands', () => {
 
   describe('Get lands', () => {
     it('should return all lands', () => {
-      const mockMap: MapTilesType = generateMockMap(5, 5);
+      const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
       expect(
         getLands(mockMap, undefined, undefined, undefined, undefined, undefined).length
@@ -28,10 +28,10 @@ describe('MapLands', () => {
 
     describe('Get lands with LandType', () => {
       it('should return only related lands based on LandType', () => {
-        const mockMap: MapTilesType = generateMockMap(5, 5);
+        const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
-        mockMap['0-0'].landType = getLandById(LAND_TYPE.VOLCANO);
-        mockMap['0-1'].landType = getLandById(LAND_TYPE.LAVA);
+        mockMap['0-0'].land = getLandById(LAND_TYPE.VOLCANO);
+        mockMap['0-1'].land = getLandById(LAND_TYPE.LAVA);
         mockMap['0-1'].controlledBy = player.id;
         expect(getLands(mockMap, undefined, LAND_TYPE.VOLCANO).length).toEqual(1);
         expect(getLands(mockMap, [player], LAND_TYPE.LAVA).length).toEqual(1);
@@ -42,10 +42,10 @@ describe('MapLands', () => {
 
     describe('Get lands with Land Alignment', () => {
       it('should return only related lands based on Land Alignment', () => {
-        const mockMap: MapTilesType = generateMockMap(5, 5);
+        const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
-        mockMap['0-0'].landType = getLandById(LAND_TYPE.VOLCANO);
-        mockMap['0-1'].landType = getLandById(LAND_TYPE.LAVA);
+        mockMap['0-0'].land = getLandById(LAND_TYPE.VOLCANO);
+        mockMap['0-1'].land = getLandById(LAND_TYPE.LAVA);
 
         expect(getLands(mockMap, undefined, undefined, Alignment.CHAOTIC).length).toEqual(2);
         expect(getLands(mockMap, undefined, undefined, Alignment.LAWFUL).length).toEqual(0); // Plants have NEUTRAL alignment
@@ -55,7 +55,7 @@ describe('MapLands', () => {
       });
 
       it('should return only related lands based on Land Alignment & Building', () => {
-        const mockMap: MapTilesType = generateMockMap(5, 5);
+        const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
         expect(
@@ -65,7 +65,7 @@ describe('MapLands', () => {
       });
 
       it('should return only related lands based on Land Alignment & No Building', () => {
-        const mockMap: MapTilesType = generateMockMap(5, 5);
+        const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
         expect(getLands(mockMap, undefined, undefined, Alignment.NEUTRAL, []).length).toEqual(
@@ -76,7 +76,7 @@ describe('MapLands', () => {
 
     describe('Get lands with buildings', () => {
       it('should return the lands of the owner', () => {
-        const mockMap: MapTilesType = generateMockMap(5, 5);
+        const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
         const playerLands = getLands(mockMap, [player]);
@@ -84,7 +84,7 @@ describe('MapLands', () => {
       });
 
       it('should return the lands without owner', () => {
-        const mockMap: MapTilesType = generateMockMap(5, 5);
+        const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
         const playerLands = getLands(mockMap, []);
@@ -92,7 +92,7 @@ describe('MapLands', () => {
       });
 
       it('should return the lands of the owner without stronghold', () => {
-        const mockMap: MapTilesType = generateMockMap(5, 5);
+        const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
         const playerLands = getLands(mockMap, [player], undefined, undefined, []);
@@ -100,7 +100,7 @@ describe('MapLands', () => {
       });
 
       it('should return the lands of the owner with stronghold', () => {
-        const mockMap: MapTilesType = generateMockMap(5, 5);
+        const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
         construct(player, BuildingType.BARRACKS, { row: 1, col: 2 }, mockMap, 'small');
@@ -117,7 +117,7 @@ describe('MapLands', () => {
     });
 
     describe('Get lands with Army', () => {
-      const mockMap: MapTilesType = generateMockMap(5, 5);
+      const mockMap: BattlefieldLands = generateMockMap(5, 5);
 
       const unit: Unit = {
         attack: 10,

@@ -3,7 +3,7 @@ import { LAND_TYPE } from '../types/Land';
 import { BuildingType, getBuilding } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
-import { createTileId } from '../types/HexTileState';
+import { createTileId } from '../types/GameState';
 import { calculateHexDistance } from '../map/utils/mapAlgorithms';
 import { Alignment } from '../types/Alignment';
 
@@ -23,9 +23,9 @@ describe('Map Generation with Players', () => {
 
       // Should have volcano and lava tiles
       const volcanoTiles = Object.values(tiles).filter(
-        (tile) => tile.landType.id === LAND_TYPE.VOLCANO
+        (tile) => tile.land.id === LAND_TYPE.VOLCANO
       );
-      const lavaTiles = Object.values(tiles).filter((tile) => tile.landType.id === LAND_TYPE.LAVA);
+      const lavaTiles = Object.values(tiles).filter((tile) => tile.land.id === LAND_TYPE.LAVA);
 
       expect(volcanoTiles.length).toBe(1);
       expect(lavaTiles.length).toBeGreaterThan(0);
@@ -40,7 +40,7 @@ describe('Map Generation with Players', () => {
 
       // Find volcano tile
       const volcanoTiles = Object.values(tiles).filter(
-        (tile) => tile.landType.id === LAND_TYPE.VOLCANO
+        (tile) => tile.land.id === LAND_TYPE.VOLCANO
       );
       expect(volcanoTiles.length).toBe(1);
 
@@ -106,8 +106,7 @@ describe('Map Generation with Players', () => {
         const testPlayer = testPlayers.find((p) => p.id === tile.controlledBy);
         expect(testPlayer).toBeDefined();
         expect(
-          tile.landType.alignment === testPlayer?.alignment ||
-            tile.landType.alignment === Alignment.NEUTRAL
+          tile.land.alignment === testPlayer?.alignment || tile.land.alignment === Alignment.NEUTRAL
         ).toBeTruthy();
       });
     });
@@ -199,7 +198,7 @@ describe('Map Generation with Players', () => {
 
       // Check that necromancer players got volcano
       const volcanoTiles = Object.values(tiles).filter(
-        (tile) => tile.landType.id === LAND_TYPE.VOLCANO
+        (tile) => tile.land.id === LAND_TYPE.VOLCANO
       );
       expect(volcanoTiles.length).toBe(1);
 
@@ -216,7 +215,7 @@ describe('Map Generation with Players', () => {
 
       // Only one can own the volcano
       const volcanoTiles = Object.values(tiles).filter(
-        (tile) => tile.landType.id === LAND_TYPE.VOLCANO
+        (tile) => tile.land.id === LAND_TYPE.VOLCANO
       );
       expect(volcanoTiles.length).toBe(1);
 
@@ -282,7 +281,7 @@ describe('Map Generation with Players', () => {
 
       // Check no invalid land types
       Object.values(tiles).forEach((tile) => {
-        expect(tile.landType.id).not.toBe(LAND_TYPE.NONE);
+        expect(tile.land.id).not.toBe(LAND_TYPE.NONE);
       });
     });
   });

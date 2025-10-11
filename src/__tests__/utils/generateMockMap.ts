@@ -1,10 +1,10 @@
-import { createTileId, MapTilesType } from '../../types/HexTileState';
+import { createTileId, BattlefieldLands } from '../../types/GameState';
 import { Position } from '../../map/utils/mapTypes';
 import { getLandById, LAND_TYPE } from '../../types/Land';
 import { NO_PLAYER } from '../../types/GamePlayer';
 
-export const generateMockMap = (rows: number, cols: number): MapTilesType => {
-  const result: MapTilesType = {};
+export const generateMockMap = (rows: number, cols: number): BattlefieldLands => {
+  const result: BattlefieldLands = {};
   for (let row = 0; row < rows; row++) {
     const colsInRow = row % 2 === 0 ? cols : cols - 1;
     for (let col = 0; col < colsInRow; col++) {
@@ -12,7 +12,7 @@ export const generateMockMap = (rows: number, cols: number): MapTilesType => {
       const key = createTileId(position);
       result[key] = {
         mapPos: position,
-        landType: getLandById(LAND_TYPE.PLAINS),
+        land: getLandById(LAND_TYPE.PLAINS),
         controlledBy: NO_PLAYER.id,
         buildings: [],
         goldPerTurn: 0,

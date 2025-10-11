@@ -1,6 +1,6 @@
 import { BuildingType, getBuilding } from '../../types/Building';
 import { Position } from '../utils/mapTypes';
-import { createTileId, MapTilesType } from '../../types/HexTileState';
+import { createTileId, BattlefieldLands } from '../../types/GameState';
 import { calculateHexDistance, getTilesInRadius } from '../utils/mapAlgorithms';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
@@ -9,7 +9,7 @@ export const construct = (
   owner: GamePlayer,
   building: BuildingType,
   position: Position,
-  tiles: MapTilesType,
+  tiles: BattlefieldLands,
   mapSize: BattlefieldSize
 ) => {
   const mapPosition = createTileId(position);

@@ -2,90 +2,87 @@ import { Alignment } from './Alignment';
 
 // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
 
-export const LAND_TYPE = {
-  NONE: 'None',
-  PLAINS: 'Plains',
-  MOUNTAINS: 'Mountains',
-  GREENFOREST: 'Green Forest',
-  DARKFOREST: 'Dark Forest',
-  HILLS: 'Hills',
-  SWAMP: 'Swamp',
-  DESERT: 'Desert',
-  LAVA: 'Lava',
-  VOLCANO: 'Volcano',
-} as const;
-
-export type LandType = (typeof LAND_TYPE)[keyof typeof LAND_TYPE];
+export enum LAND_TYPE {
+  NONE = 'None',
+  PLAINS = 'Plains',
+  MOUNTAINS = 'Mountains',
+  GREEN_FOREST = 'Green Forest',
+  DARK_FOREST = 'Dark Forest',
+  HILLS = 'Hills',
+  SWAMP = 'Swamp',
+  DESERT = 'Desert',
+  LAVA = 'Lava',
+  VOLCANO = 'Volcano',
+}
 
 export interface Land {
-  id: LandType;
+  id: LAND_TYPE;
   alignment: Alignment;
-  imageName: string;
   goldPerTurn: { min: number; max: number };
 }
 
-export const getLandById = (id: LandType): Land => PREDEFINED_LANDS.find((land) => land.id === id)!;
-
-const PREDEFINED_LANDS: Land[] = [
-  // none is used only for map generation
-  {
-    id: LAND_TYPE.NONE,
-    alignment: Alignment.NEUTRAL,
-    imageName: 'none.png',
-    goldPerTurn: { min: 0, max: 0 },
-  },
-  {
-    id: LAND_TYPE.PLAINS,
-    alignment: Alignment.NEUTRAL,
-    imageName: 'plains.png',
-    goldPerTurn: { min: 2000, max: 3000 },
-  },
-  {
-    id: LAND_TYPE.MOUNTAINS,
-    alignment: Alignment.LAWFUL,
-    imageName: 'mountains.png',
-    goldPerTurn: { min: 2700, max: 3400 },
-  },
-  {
-    id: LAND_TYPE.GREENFOREST,
-    alignment: Alignment.LAWFUL,
-    imageName: 'greenforest.png',
-    goldPerTurn: { min: 2500, max: 2800 },
-  },
-  {
-    id: LAND_TYPE.DARKFOREST,
-    alignment: Alignment.CHAOTIC,
-    imageName: 'darkforest.png',
-    goldPerTurn: { min: 2500, max: 2800 },
-  },
-  {
-    id: LAND_TYPE.HILLS,
-    alignment: Alignment.NEUTRAL,
-    imageName: 'hills.png',
-    goldPerTurn: { min: 1500, max: 2200 },
-  },
-  {
-    id: LAND_TYPE.SWAMP,
-    alignment: Alignment.CHAOTIC,
-    imageName: 'swamp.png',
-    goldPerTurn: { min: 1100, max: 1700 },
-  },
-  {
-    id: LAND_TYPE.DESERT,
-    alignment: Alignment.NEUTRAL,
-    imageName: 'desert.png',
-    goldPerTurn: { min: 500, max: 700 },
-  },
-  {
-    id: LAND_TYPE.LAVA,
-    alignment: Alignment.CHAOTIC,
-    imageName: 'lava.png',
-    goldPerTurn: { min: 1500, max: 1900 },
-  },
-  {
-    id: LAND_TYPE.VOLCANO,
-    alignment: Alignment.CHAOTIC,
-    imageName: 'volcano.png',
-    goldPerTurn: { min: 3000, max: 3000 },
-  },
-];
+export const getLandById = (id: LAND_TYPE): Land => {
+  switch (id) {
+    case LAND_TYPE.PLAINS:
+      return {
+        id: LAND_TYPE.PLAINS,
+        alignment: Alignment.NEUTRAL,
+        goldPerTurn: { min: 2000, max: 3000 },
+      };
+    case LAND_TYPE.MOUNTAINS:
+      return {
+        id: LAND_TYPE.MOUNTAINS,
+        alignment: Alignment.LAWFUL,
+        goldPerTurn: { min: 2700, max: 3400 },
+      };
+    case LAND_TYPE.GREEN_FOREST:
+      return {
+        id: LAND_TYPE.GREEN_FOREST,
+        alignment: Alignment.LAWFUL,
+        goldPerTurn: { min: 2500, max: 2800 },
+      };
+    case LAND_TYPE.DARK_FOREST:
+      return {
+        id: LAND_TYPE.DARK_FOREST,
+        alignment: Alignment.CHAOTIC,
+        goldPerTurn: { min: 2500, max: 2800 },
+      };
+    case LAND_TYPE.HILLS:
+      return {
+        id: LAND_TYPE.HILLS,
+        alignment: Alignment.NEUTRAL,
+        goldPerTurn: { min: 1500, max: 2200 },
+      };
+    case LAND_TYPE.SWAMP:
+      return {
+        id: LAND_TYPE.SWAMP,
+        alignment: Alignment.CHAOTIC,
+        goldPerTurn: { min: 1100, max: 1700 },
+      };
+    case LAND_TYPE.DESERT:
+      return {
+        id: LAND_TYPE.DESERT,
+        alignment: Alignment.NEUTRAL,
+        goldPerTurn: { min: 500, max: 700 },
+      };
+    case LAND_TYPE.LAVA:
+      return {
+        id: LAND_TYPE.LAVA,
+        alignment: Alignment.CHAOTIC,
+        goldPerTurn: { min: 1500, max: 1900 },
+      };
+    case LAND_TYPE.VOLCANO:
+      return {
+        id: LAND_TYPE.VOLCANO,
+        alignment: Alignment.CHAOTIC,
+        goldPerTurn: { min: 3000, max: 3000 },
+      };
+    default:
+      // use on map generation
+      return {
+        id: LAND_TYPE.NONE,
+        alignment: Alignment.NEUTRAL,
+        goldPerTurn: { min: 0, max: 0 },
+      };
+  }
+};

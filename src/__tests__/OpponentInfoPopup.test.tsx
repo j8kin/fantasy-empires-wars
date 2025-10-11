@@ -4,7 +4,7 @@ import OpponentInfoPopup from '../ux-components/popups/OpponentInfoPopup';
 import { PREDEFINED_PLAYERS, DiplomacyStatus, GamePlayer } from '../types/GamePlayer';
 import { Alignment } from '../types/Alignment';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
-import { GameState } from '../types/HexTileState';
+import { GameState } from '../types/GameState';
 
 jest.mock('../ux-components/dialogs/css/OpponentInfoDialog.module.css', () => ({
   popupContent: 'mocked-popup-content',
