@@ -9,6 +9,7 @@ import { LandPosition } from '../map/utils/mapLands';
 import { GamePlayer } from '../types/GamePlayer';
 import { Building } from '../types/Building';
 import { Army } from '../types/Army';
+import { calculateIncome } from '../map/income/calculate';
 
 interface GameContextType {
   // Game State
@@ -24,6 +25,7 @@ interface GameContextType {
   // Player Management
   getPlayerLands: (player: GamePlayer) => LandState[];
   getTotalPlayerGold: (player: GamePlayer) => number;
+  recalculateAllPlayersIncome: () => void;
 
   // Game Flow
   nextTurn: () => void;
@@ -156,6 +158,37 @@ export const GameProvider: React.FC<GameProviderProps> = ({
     [getPlayerLands]
   );
 
+  const recalculateAllPlayersIncome = useCallback(() => {
+    setGameState((prev) => {
+      if (!prev) return prev;
+
+      // Calculate income for selected player
+      const selectedPlayerIncome = calculateIncome(prev, prev.selectedPlayer);
+
+      // Calculate income for all opponents
+      const updatedOpponents = prev.opponents.map((opponent) => {
+        const tempGameState = { ...prev, selectedPlayer: opponent };
+        const opponentIncome = calculateIncome(tempGameState, opponent);
+        return {
+          ...opponent,
+          income: opponentIncome,
+        };
+      });
+
+      // Update selected player with their income
+      const updatedSelectedPlayer = {
+        ...prev.selectedPlayer,
+        income: selectedPlayerIncome,
+      };
+
+      return {
+        ...prev,
+        selectedPlayer: updatedSelectedPlayer,
+        opponents: updatedOpponents,
+      };
+    });
+  }, []);
+
   const mapDimensions = useMemo(
     () => getBattlefieldDimensions(gameState?.mapSize || initialMapSize),
     [gameState?.mapSize, initialMapSize]
@@ -173,6 +206,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({
     getTile: getBattlefieldLand,
     getPlayerLands: getPlayerLands,
     getTotalPlayerGold,
+    recalculateAllPlayersIncome,
     mapDimensions,
   };
 

@@ -3,10 +3,10 @@ import { GameState } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 import { calculateHexDistance } from '../utils/mapAlgorithms';
 import { Alignment } from '../../types/Alignment';
+import { GamePlayer } from '../../types/GamePlayer';
 
-// todo: mapSize is used to calculate the distance between Lands. Probably need to be refactored.
-export const calculateIncome = (gameState: GameState) => {
-  const { battlefieldLands: battlefield, mapSize, selectedPlayer: player } = gameState;
+export const calculateIncome = (gameState: GameState, player: GamePlayer) => {
+  const { battlefieldLands: battlefield, mapSize } = gameState;
   if (player == null || !battlefield) return 0; // should not happen
 
   const playerLands = getLands(battlefield, [player]);
@@ -51,6 +51,6 @@ export const calculateIncome = (gameState: GameState) => {
       }
     }
 
-    return acc + landIncome;
+    return Math.ceil(acc + landIncome);
   }, 0);
 };

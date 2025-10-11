@@ -49,7 +49,7 @@ const NewGameDialog: React.FC = () => {
     showSelectOpponentDialogWithConfig,
   } = useApplicationContext();
 
-  const { updateGameState } = useGameState();
+  const { updateGameState, recalculateAllPlayersIncome } = useGameState();
 
   // Use context state as local variables for easier refactoring
   const mapSize = newGameMapSize;
@@ -282,6 +282,7 @@ const NewGameDialog: React.FC = () => {
       };
 
       updateGameState(gameState);
+      recalculateAllPlayersIncome();
       setGameStarted(true);
       setShowProgressPopup(false);
     }, 100);
@@ -294,6 +295,7 @@ const NewGameDialog: React.FC = () => {
     setProgressMessage,
     setShowProgressPopup,
     updateGameState,
+    recalculateAllPlayersIncome,
     setGameStarted,
   ]);
 
