@@ -237,11 +237,14 @@ const NewGameDialog: React.FC = () => {
     // Initialize diplomacy relations: selected player vs opponents (and mirror on opponents)
     const playerDiplomacy = { ...(selectedPlayer.diplomacy || {}) };
 
-    // Initialize starting mana values
-    const initialMana: Mana = Object.values(ManaType).reduce((acc, type) => {
-      acc[type] = 0;
-      return acc;
-    }, {} as Mana);
+    // Initialize starting mana values todo: set to 0 when mana is implemented
+    const initialMana: Mana = {
+      [ManaType.GREEN]: 50,
+      [ManaType.BLUE]: 100,
+      [ManaType.RED]: 10,
+      [ManaType.WHITE]: 400,
+      [ManaType.BLACK]: 130,
+    };
 
     const updatedOpponents: GamePlayer[] = opponents.map((opponent) => {
       const oppDiplomacy = { ...(opponent.diplomacy || {}) };

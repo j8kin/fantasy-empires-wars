@@ -62,8 +62,8 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
             </div>
           )}
 
-          {/* Center - Mana Vials */}
-          <VialPanel />
+          {/* Center - Mana Vials only if Game Started */}
+          {selectedPlayer && <VialPanel />}
 
           {/* Display Opponents only if Game Started */}
           {selectedPlayer && <OpponentsPanel />}

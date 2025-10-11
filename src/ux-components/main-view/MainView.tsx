@@ -49,6 +49,7 @@ const MainViewContent: React.FC = () => {
     <main className={styles.backgroundStyle} id="MainCanvas" onClick={handleMainViewClick}>
       {/* Content components */}
       <TopPanel height={TOP_PANEL_HEIGHT} tileDimensions={TILE_SIZE} />
+
       <Battlefield
         topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}

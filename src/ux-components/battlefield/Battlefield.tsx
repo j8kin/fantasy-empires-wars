@@ -106,9 +106,8 @@ const Battlefield: React.FC<BattlefieldProps> = ({
           } as React.CSSProperties
         }
       >
-        {/* Add content or placeholders for map elements */}
-        {/*<p>Main Map will be implemented here.</p>*/}
-        <div>{hexGrid}</div>
+        {/* Draw map if game started */}
+        {gameState.selectedPlayer && <div>{hexGrid}</div>}
       </div>
     </FantasyBorderFrame>
   );

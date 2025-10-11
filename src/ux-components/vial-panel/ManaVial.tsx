@@ -3,10 +3,12 @@ import styles from './css/ManaVial.module.css';
 
 interface ManaVialProps {
   color: string;
-  mana: number;
+  mana?: number;
 }
 
 const ManaVial: React.FC<ManaVialProps> = ({ color, mana }) => {
+  if (mana == null) return null;
+
   const MANA_100_PERCENTAGE = 200;
   const percentage = mana >= MANA_100_PERCENTAGE ? 100 : mana / 2;
 
