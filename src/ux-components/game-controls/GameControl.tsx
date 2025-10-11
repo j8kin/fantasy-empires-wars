@@ -1,9 +1,11 @@
 import React, { useCallback } from 'react';
+import styles from './css/GameControl.module.css';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { ButtonName } from '../buttons/GameButtonProps';
+
 import GameButton from '../buttons/GameButton';
 
-import styles from './css/GameControl.module.css';
+import { ButtonName } from '../buttons/GameButtonProps';
 
 const GameControl: React.FC = () => {
   const { setShowStartWindow, setShowSaveDialog } = useApplicationContext();

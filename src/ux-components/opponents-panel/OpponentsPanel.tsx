@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
+import styles from './css/OpponentsPanel.module.css';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameState } from '../../contexts/GameContext';
 
-import { GamePlayer } from '../../types/GamePlayer';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 
-import styles from './css/OpponentsPanel.module.css';
+import { GamePlayer } from '../../types/GamePlayer';
 
 const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameState();

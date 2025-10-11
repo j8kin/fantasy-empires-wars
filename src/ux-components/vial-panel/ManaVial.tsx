@@ -1,6 +1,7 @@
 import React from 'react';
-import { Mana } from '../../types/Mana';
 import styles from './css/ManaVial.module.css';
+
+import { Mana } from '../../types/Mana';
 
 const ManaVial: React.FC<Mana> = ({ color, mana }) => {
   const MANA_100_PERCENTAGE = 200;

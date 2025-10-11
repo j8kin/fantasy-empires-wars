@@ -3,8 +3,9 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameState } from '../../contexts/GameContext';
 
-import { battlefieldLandId, getPlayerById } from '../../types/GameState';
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
+
+import { battlefieldLandId, getPlayerById } from '../../types/GameState';
 import { LandPosition } from '../../map/utils/mapLands';
 import { LAND_TYPE } from '../../types/Land';
 

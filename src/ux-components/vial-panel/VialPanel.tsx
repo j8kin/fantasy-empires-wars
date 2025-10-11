@@ -1,7 +1,9 @@
 import React from 'react';
-import ManaVial from './ManaVial';
-import { ManaType } from '../../types/Mana';
 import styles from './css/VialPanel.module.css';
+
+import ManaVial from './ManaVial';
+
+import { ManaType } from '../../types/Mana';
 
 const VialPanel: React.FC = () => {
   return (

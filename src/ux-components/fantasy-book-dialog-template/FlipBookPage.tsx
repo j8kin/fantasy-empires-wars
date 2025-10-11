@@ -1,11 +1,13 @@
 import React from 'react';
-import { toRoman } from '../../map/utils/romanNumerals';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
 import './css/FlipBook.css';
+
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameState } from '../../contexts/GameContext';
+
 import { getSpellById, SpellName } from '../../types/Spell';
 import { highlightLands } from '../../map/utils/highlightLands';
 import { BuildingType } from '../../types/Building';
+import { toRoman } from '../../map/utils/romanNumerals';
 
 interface FlipBookPageProps {
   pageNum: number;

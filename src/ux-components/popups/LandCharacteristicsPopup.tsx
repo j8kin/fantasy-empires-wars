@@ -1,11 +1,14 @@
 import React from 'react';
-import { getAlignmentColor } from '../../types/Alignment';
-import { battlefieldLandId, getPlayerById } from '../../types/GameState';
 import styles from '../battlefield/css/LandCharacteristicsPopup.module.css';
+
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { battlefieldLandId, getPlayerById } from '../../types/GameState';
+
+import PopupWrapper, { PopupProps } from './PopupWrapper';
+
+import { getAlignmentColor } from '../../types/Alignment';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { LandPosition } from '../../map/utils/mapLands';
-import PopupWrapper, { PopupProps } from './PopupWrapper';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameState } from '../../contexts/GameContext';
 
 interface LandCharacteristicsPopupProps extends PopupProps {

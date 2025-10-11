@@ -1,16 +1,19 @@
 import React, { useCallback, useEffect } from 'react';
+import styles from './css/NewGameDialog.module.css';
+
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameState } from '../../contexts/GameContext';
+
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
-import { BattlefieldSize } from '../../types/BattlefieldSize';
-import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
-import styles from './css/NewGameDialog.module.css';
+
+import { BattlefieldSize } from '../../types/BattlefieldSize';
+import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { GameState } from '../../types/GameState';
 import { ButtonName } from '../buttons/GameButtonProps';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameState } from '../../contexts/GameContext';
 
 const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   switch (mapSize) {

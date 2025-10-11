@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from 'react';
+
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+
 import FantasyBorderFrame, {
   Dimensions,
   ScreenPosition,
 } from '../fantasy-border-frame/FantasyBorderFrame';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 export interface PopupProps {
   screenPosition: ScreenPosition;

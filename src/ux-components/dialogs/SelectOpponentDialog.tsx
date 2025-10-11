@@ -1,10 +1,12 @@
 import React, { useMemo, useEffect, useCallback } from 'react';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
-import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import GameButton from '../buttons/GameButton';
+
+import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { ButtonName } from '../buttons/GameButtonProps';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 export interface SelectOpponentDialogProps {
   excludedPlayerIds: string[];

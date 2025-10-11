@@ -1,11 +1,14 @@
 import React from 'react';
-import { DiplomacyStatus, GamePlayer } from '../../types/GamePlayer';
-import { getAlignmentColor } from '../../types/Alignment';
-import PlayerAvatar from '../avatars/PlayerAvatar';
 import styles from '../dialogs/css/OpponentInfoDialog.module.css';
-import PopupWrapper, { PopupProps } from './PopupWrapper';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameState } from '../../contexts/GameContext';
+
+import PlayerAvatar from '../avatars/PlayerAvatar';
+import PopupWrapper, { PopupProps } from './PopupWrapper';
+
+import { getAlignmentColor } from '../../types/Alignment';
+import { DiplomacyStatus, GamePlayer } from '../../types/GamePlayer';
 
 export interface OpponentInfoProps extends PopupProps {
   opponent?: GamePlayer;

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import CelticPatternCorner from '../../assets/border/CelticPatternCorner.png';
 
 interface BorderCornerProps {

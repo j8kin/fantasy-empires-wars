@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
+
 import { ButtonName, GameButtonProps } from './GameButtonProps';
 
 import BuildImg from '../../assets/buttons/Build.png';

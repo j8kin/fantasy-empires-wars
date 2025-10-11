@@ -1,6 +1,7 @@
 import React from 'react';
-import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import styles from './css/PlayerAvatar.module.css';
+
+import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 
 type AvatarShape = 'circle' | 'rectangle';
 

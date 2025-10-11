@@ -1,11 +1,13 @@
 import React from 'react';
 import styles from './css/Battlefield.module.css';
-import HexTile from './HexTile';
 import hexStyles from './css/Hexagonal.module.css';
+
+import { useGameState } from '../../contexts/GameContext';
+
+import HexTile from './HexTile';
+import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { battlefieldLandId } from '../../types/GameState';
-import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
-import { useGameState } from '../../contexts/GameContext';
 
 export interface BattlefieldProps {
   topPanelHeight: number;

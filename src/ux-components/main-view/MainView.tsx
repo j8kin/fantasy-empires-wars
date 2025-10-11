@@ -1,12 +1,11 @@
 import React from 'react';
 import styles from './css/Background.module.css';
+
 import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameState } from '../../contexts/GameContext';
-
-import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
@@ -15,9 +14,10 @@ import SaveGameDialog from '../dialogs/SaveGameDialog';
 import CastSpellDialog from '../dialogs/CastSpellDialog';
 import ConstructBuildingDialog from '../dialogs/ConstructBuildingDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
-
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
+
+import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 
 const MainViewContent: React.FC = () => {
   const {

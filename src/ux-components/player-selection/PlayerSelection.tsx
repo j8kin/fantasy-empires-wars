@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import styles from './css/PlayerSelection.module.css';
+
+import PlayerAvatar from '../avatars/PlayerAvatar';
+
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { getAlignmentColor } from '../../types/Alignment';
-import PlayerAvatar from '../avatars/PlayerAvatar';
-import styles from './css/PlayerSelection.module.css';
 
 interface PlayerSelectionProps {
   label?: string;
