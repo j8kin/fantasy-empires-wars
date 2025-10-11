@@ -6,7 +6,4 @@ export enum ManaType {
   RED = 'red',
 }
 
-export interface Mana {
-  color: ManaType;
-  mana: number;
-}
+export type Mana = Record<ManaType, number>;

@@ -16,6 +16,7 @@ import elderoak from '../assets/avatars/elderoak.png';
 import valdris from '../assets/avatars/valdris.png';
 import ignatius from '../assets/avatars/ignatius.png';
 import ember from '../assets/avatars/ember.png';
+import { Mana } from './Mana';
 
 export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
 
@@ -36,9 +37,10 @@ export interface GamePlayer {
   type: UnitType;
   level: number; // 1-32
   description: string;
-  avatar?: string; // path to avatar image
+  mana?: Mana;
   diplomacy?: Diplomacy;
   color: PlayerColorName;
+  avatar?: string; // path to avatar image
 }
 
 export const NO_PLAYER: GamePlayer = {
@@ -49,8 +51,8 @@ export const NO_PLAYER: GamePlayer = {
   type: UnitType.WARRIOR,
   level: 1,
   description: 'None',
-  avatar: undefined,
   color: 'white',
+  avatar: undefined,
 };
 
 export const PREDEFINED_PLAYERS: GamePlayer[] = [

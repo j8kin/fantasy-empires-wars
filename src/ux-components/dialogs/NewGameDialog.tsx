@@ -14,6 +14,7 @@ import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../.
 import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { GameState } from '../../types/GameState';
 import { ButtonName } from '../buttons/GameButtonProps';
+import { Mana, ManaType } from '../../types/Mana';
 
 const getMaxOpponents = (mapSize: BattlefieldSize): number => {
   switch (mapSize) {
@@ -235,14 +236,25 @@ const NewGameDialog: React.FC = () => {
 
     // Initialize diplomacy relations: selected player vs opponents (and mirror on opponents)
     const playerDiplomacy = { ...(selectedPlayer.diplomacy || {}) };
+
+    // Initialize starting mana values
+    const initialMana: Mana = Object.values(ManaType).reduce((acc, type) => {
+      acc[type] = 0;
+      return acc;
+    }, {} as Mana);
+
     const updatedOpponents: GamePlayer[] = opponents.map((opponent) => {
       const oppDiplomacy = { ...(opponent.diplomacy || {}) };
       playerDiplomacy[opponent.id] = DiplomacyStatus.NO_TREATY;
       oppDiplomacy[selectedPlayer.id] = DiplomacyStatus.NO_TREATY;
-      return { ...opponent, diplomacy: oppDiplomacy };
+      return { ...opponent, diplomacy: oppDiplomacy, mana: opponent.mana ?? { ...initialMana } };
     });
 
-    const updatedSelectedPlayer: GamePlayer = { ...selectedPlayer, diplomacy: playerDiplomacy };
+    const updatedSelectedPlayer: GamePlayer = {
+      ...selectedPlayer,
+      diplomacy: playerDiplomacy,
+      mana: selectedPlayer.mana ?? { ...initialMana },
+    };
 
     const gameState: GameState = {
       battlefieldLands: {},
