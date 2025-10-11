@@ -37,8 +37,8 @@ export interface GamePlayer {
   level: number; // 1-32
   description: string;
   avatar?: string; // path to avatar image
-  color: PlayerColorName;
   diplomacy?: Diplomacy;
+  color: PlayerColorName;
 }
 
 export const NO_PLAYER: GamePlayer = {
@@ -50,7 +50,7 @@ export const NO_PLAYER: GamePlayer = {
   level: 1,
   description: 'None',
   avatar: undefined,
-  color: 'gray',
+  color: 'white',
 };
 
 export const PREDEFINED_PLAYERS: GamePlayer[] = [

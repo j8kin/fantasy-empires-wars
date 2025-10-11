@@ -104,11 +104,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 <span className={styles.label}>Controlled By:</span>
                 <span className={styles.value}>
                   {(() => {
-                    if (battlefieldTile.controlledBy === NO_PLAYER.id) {
-                      return 'None';
-                    }
                     const player = getPlayerById(gameState, battlefieldTile.controlledBy);
-                    return player ? player.name : battlefieldTile.controlledBy;
+                    return player ? player.name : NO_PLAYER.name;
                   })()}
                 </span>
               </div>

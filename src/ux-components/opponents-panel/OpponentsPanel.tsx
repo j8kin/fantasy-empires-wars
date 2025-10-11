@@ -1,36 +1,11 @@
-import React, { useCallback, useMemo } from 'react';
-import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import PlayerAvatar from '../avatars/PlayerAvatar';
-import { useGameState } from '../../contexts/GameContext';
+import React, { useCallback } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameState } from '../../contexts/GameContext';
+
+import { GamePlayer } from '../../types/GamePlayer';
+import PlayerAvatar from '../avatars/PlayerAvatar';
+
 import styles from './css/OpponentsPanel.module.css';
-
-// TODO: Remove since Diplomacy status is created during new game and read game state
-const getRandomDiplomacyStatus = (): DiplomacyStatus => {
-  const statuses: DiplomacyStatus[] = Object.values(DiplomacyStatus);
-  return statuses[Math.floor(Math.random() * statuses.length)];
-};
-
-const getRandomOpponents = (excludePlayer?: GamePlayer, count: number = 2): GamePlayer[] => {
-  const availablePlayers = PREDEFINED_PLAYERS.filter(
-    (player) => !excludePlayer || player.id !== excludePlayer.id
-  );
-
-  const shuffled = [...availablePlayers].sort(() => 0.5 - Math.random());
-  const selectedPlayers = shuffled.slice(0, Math.min(count, shuffled.length));
-
-  // If we need more opponents than available unique players, add random duplicates
-  // This shouldn't happen in practice since we have enough predefined players
-  while (selectedPlayers.length < count && availablePlayers.length > 0) {
-    const randomPlayer = availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
-    selectedPlayers.push(randomPlayer);
-  }
-
-  return selectedPlayers.map((player) => ({
-    ...player,
-    diplomacyStatus: getRandomDiplomacyStatus(),
-  }));
-};
 
 const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameState();
@@ -44,28 +19,8 @@ const OpponentsPanel: React.FC = () => {
     [setLandHideModePlayerId, showOpponentInfo]
   );
 
-  const selectedPlayer = gameState?.selectedPlayer;
-  const providedOpponents = gameState?.opponents;
-  const numberOfOpponents = providedOpponents?.length || 2;
-  const opponents = useMemo(() => {
-    // If we have provided opponents from the game config, use only those
-    // This takes precedence over numberOfOpponents parameter
-    if (providedOpponents && providedOpponents.length > 0) {
-      const filteredOpponents = providedOpponents.filter(
-        (opponent) => opponent.id !== NO_PLAYER.id
-      );
-      // If after filtering EmptyPlayer we have no valid opponents, generate random ones
-      if (filteredOpponents.length === 0) {
-        return getRandomOpponents(selectedPlayer, numberOfOpponents);
-      }
-      return filteredOpponents.map((opponent) => ({
-        ...opponent,
-        diplomacyStatus: getRandomDiplomacyStatus(),
-      })) as GamePlayer[];
-    }
-    // Only generate random opponents if no specific opponents were provided
-    return getRandomOpponents(selectedPlayer, numberOfOpponents);
-  }, [providedOpponents, selectedPlayer, numberOfOpponents]);
+  // Simply use opponents directly from gameState - they are set during game initialization
+  const opponents = gameState?.opponents || [];
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {
@@ -81,9 +36,9 @@ const OpponentsPanel: React.FC = () => {
 
   const renderAvatarRow = (avatars: GamePlayer[], rowIndex: number) => (
     <div key={rowIndex} className={styles.avatarRow}>
-      {avatars.map((opponent) => (
+      {avatars.map((opponent, opponentIndex) => (
         <div
-          key={opponent.id}
+          key={`${rowIndex}-${opponentIndex}-${opponent.id}`}
           className={styles.avatarContainer}
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
@@ -93,7 +48,7 @@ const OpponentsPanel: React.FC = () => {
         >
           <PlayerAvatar
             player={opponent}
-            size={numberOfOpponents <= 4 ? 120 : 90}
+            size={opponents.length <= 4 ? 120 : 90}
             shape="circle"
             borderColor={opponent.color}
           />

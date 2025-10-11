@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './css/Hexagonal.module.css';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameState } from '../../contexts/GameContext';
+
 import { createTileId, getPlayerById } from '../../types/HexTileState';
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 import { Position } from '../../map/utils/mapTypes';
-import { PLAYER_COLORS } from '../../types/PlayerColors';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameState } from '../../contexts/GameContext';
 
 import darkforestImg from '../../assets/map-tiles/darkforest.png';
 import greenforestImg from '../../assets/map-tiles/greenforest.png';
@@ -53,15 +53,8 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
 
   // Get the controlling player's color or default to white if not controlled
   const getBackgroundColor = (): string => {
-    if (!battlefieldTile.controlledBy) {
-      return 'white';
-    }
     const controllingPlayer = getPlayerById(gameState, battlefieldTile.controlledBy);
-    if (!controllingPlayer) {
-      return 'white';
-    }
-    const playerColor = PLAYER_COLORS.find((color) => color.name === controllingPlayer.color);
-    return playerColor?.value ?? 'white';
+    return controllingPlayer?.color ?? 'white';
   };
 
   const handleRightClick = (event: React.MouseEvent) => {

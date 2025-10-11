@@ -1,4 +1,5 @@
 export type PlayerColorName =
+  | 'white' // use for neutral Lands which no one controls
   | 'blue'
   | 'red'
   | 'green'
