@@ -39,12 +39,12 @@ describe('GameContext', () => {
       });
 
       // Check that all expected methods are available
-      expect(typeof result.current.updateTile).toBe('function');
+      expect(typeof result.current.updateLand).toBe('function');
       expect(typeof result.current.setTileController).toBe('function');
-      expect(typeof result.current.addBuildingToTile).toBe('function');
-      expect(typeof result.current.updateTileArmy).toBe('function');
+      expect(typeof result.current.addBuildingToLand).toBe('function');
+      expect(typeof result.current.updateLandArmy).toBe('function');
       expect(typeof result.current.getTile).toBe('function');
-      expect(typeof result.current.getPlayerTiles).toBe('function');
+      expect(typeof result.current.getPlayerLands).toBe('function');
       expect(typeof result.current.getTotalPlayerGold).toBe('function');
       expect(typeof result.current.nextTurn).toBe('function');
       expect(typeof result.current.changeBattlefieldSize).toBe('function');
@@ -74,7 +74,7 @@ describe('GameContext', () => {
 
       // This should not throw an error
       expect(() => {
-        result.current.updateTile('non-existent', { glow: true });
+        result.current.updateLand('non-existent', { glow: true });
       }).not.toThrow();
 
       // State should remain unchanged
@@ -96,7 +96,7 @@ describe('GameContext', () => {
       });
 
       const mockPlayer = { id: 'test-player' } as any;
-      const tiles = result.current.getPlayerTiles(mockPlayer);
+      const tiles = result.current.getPlayerLands(mockPlayer);
       expect(tiles).toEqual([]);
     });
 
