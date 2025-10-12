@@ -1,8 +1,6 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
 
-import { ButtonName, GameButtonProps } from './GameButtonProps';
-
 import BuildImg from '../../assets/buttons/Build.png';
 import CancelImg from '../../assets/buttons/Cancel.png';
 import CastImg from '../../assets/buttons/Cast.png';
@@ -15,6 +13,25 @@ import QuestImg from '../../assets/buttons/Quest.png';
 import RecruitImg from '../../assets/buttons/Recruit.png';
 import SaveGameImg from '../../assets/buttons/SaveGame.png';
 import StartGameImg from '../../assets/buttons/StartGame.png';
+
+export enum ButtonName {
+  CANCEL = 'Cancel',
+  OK = 'Ok',
+  NEW = 'New game',
+  LOAD = 'Load game',
+  SAVE = 'Save game',
+  START = 'Start game',
+  BUILD = 'Construct Buildings',
+  CAST = 'Cast spell',
+  MOVE = 'Move army',
+  QUEST = 'Hero quest',
+  RECRUIT = 'Recruit amy',
+  TURN = 'End of turn',
+}
+export interface GameButtonProps {
+  buttonName: ButtonName;
+  onClick?: () => void;
+}
 
 const GameButton: React.FC<GameButtonProps> = ({ buttonName, onClick }) => {
   const handleButton = () => {

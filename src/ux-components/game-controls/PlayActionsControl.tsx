@@ -3,9 +3,7 @@ import styles from './css/GameControl.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
-import GameButton from '../buttons/GameButton';
-
-import { ButtonName } from '../buttons/GameButtonProps';
+import GameButton, { ButtonName } from '../buttons/GameButton';
 
 const PlayActionsControl: React.FC = () => {
   const { setShowCastSpellDialog, setShowConstructBuildingDialog } = useApplicationContext();

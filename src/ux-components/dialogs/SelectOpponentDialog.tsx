@@ -3,10 +3,9 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import PlayerSelection from '../player-selection/PlayerSelection';
-import GameButton from '../buttons/GameButton';
+import GameButton, { ButtonName } from '../buttons/GameButton';
 
 import { GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { ButtonName } from '../buttons/GameButtonProps';
 
 export interface SelectOpponentDialogProps {
   excludedPlayerIds: string[];

@@ -7,11 +7,9 @@ import GameControl from '../game-controls/GameControl';
 import PlayActionsControl from '../game-controls/PlayActionsControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
-import GameButton from '../buttons/GameButton';
+import GameButton, { ButtonName } from '../buttons/GameButton';
 import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import PlayerInfo from './PlayerInfo';
-
-import { ButtonName } from '../buttons/GameButtonProps';
 
 export interface TopPanelProps {
   height: number;

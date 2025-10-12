@@ -6,14 +6,13 @@ import { useGameState } from '../../contexts/GameContext';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import PlayerAvatar from '../avatars/PlayerAvatar';
-import GameButton from '../buttons/GameButton';
+import GameButton, { ButtonName } from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { GameState } from '../../types/GameState';
-import { ButtonName } from '../buttons/GameButtonProps';
 import { Mana, ManaType } from '../../types/Mana';
 import { initializeMap } from '../../map/generation/mapGeneration';
 
