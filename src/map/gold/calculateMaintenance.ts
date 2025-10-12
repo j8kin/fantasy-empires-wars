@@ -39,7 +39,7 @@ export const calculateMaintenance = (gameState: GameState, player: GamePlayer) =
     [player],
     undefined,
     undefined,
-    [],
+    undefined,
     false
   ).reduce((acc, army) => {
     return (
