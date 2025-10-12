@@ -3,7 +3,7 @@ import { battlefieldLandId, GameState } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { getUnit, UnitType } from '../types/Army';
-import { BuildingType, getBuilding } from '../types/Building';
+import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
 import { recruitWarriors } from '../map/army/recruit';
 import { LandPosition } from '../map/utils/mapLands';
@@ -102,24 +102,44 @@ describe('Calculate Maintenance', () => {
       [BuildingType.OUTPOST, 1000],
       [BuildingType.WALL, 100],
     ])('Building %s maintenance cost', (building, expected) => {
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.id;
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 0, col: 0 })].buildings = [
-        getBuilding(building),
-      ];
+      const buildingPos: LandPosition = { row: 5, col: 5 };
+      mockGameState.battlefieldLands[battlefieldLandId(buildingPos)].controlledBy = player.id;
+      construct(
+        player,
+        building,
+        buildingPos,
+        mockGameState.battlefieldLands,
+        mockGameState.mapSize
+      );
 
       const maintenance = calculateMaintenance(mockGameState, player);
       expect(maintenance).toBe(expected);
     });
 
     it('Multiple buildings', () => {
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.id;
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 0, col: 0 })].buildings = [
-        getBuilding(BuildingType.WALL),
-        getBuilding(BuildingType.WALL),
-        getBuilding(BuildingType.OUTPOST),
-      ];
+      const buildingPos: LandPosition = { row: 5, col: 5 };
+      mockGameState.battlefieldLands[battlefieldLandId(buildingPos)].controlledBy = player.id;
+      construct(
+        player,
+        BuildingType.BARRACKS,
+        buildingPos,
+        mockGameState.battlefieldLands,
+        mockGameState.mapSize
+      );
+      construct(
+        player,
+        BuildingType.WALL,
+        buildingPos,
+        mockGameState.battlefieldLands,
+        mockGameState.mapSize
+      );
+      construct(
+        player,
+        BuildingType.WALL,
+        buildingPos,
+        mockGameState.battlefieldLands,
+        mockGameState.mapSize
+      );
 
       const maintenance = calculateMaintenance(mockGameState, player);
       expect(maintenance).toBe(1200);
