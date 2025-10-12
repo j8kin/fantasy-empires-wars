@@ -7,7 +7,6 @@ import { GamePlayer } from '../../types/GamePlayer';
 
 export const calculateIncome = (gameState: GameState, player: GamePlayer) => {
   const { battlefieldLands: battlefield, mapSize } = gameState;
-  if (player == null || !battlefield) return 0; // should not happen
 
   const playerLands = getLands(battlefield, [player]);
   const playerStrongholds = getLands(battlefield, [player], undefined, undefined, [
@@ -16,7 +15,7 @@ export const calculateIncome = (gameState: GameState, player: GamePlayer) => {
 
   return playerLands.reduce((acc, land) => {
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
-    if ((player.alignment === Alignment.CHAOTIC && land.land.alignment) === Alignment.LAWFUL)
+    if (player.alignment === Alignment.CHAOTIC && land.land.alignment === Alignment.LAWFUL)
       return acc;
 
     const landPos = land.mapPos;
@@ -48,6 +47,11 @@ export const calculateIncome = (gameState: GameState, player: GamePlayer) => {
       }
       if (land.land.alignment === Alignment.CHAOTIC) {
         landIncome = landIncome * 0.9;
+      }
+    }
+    if (player.alignment === Alignment.CHAOTIC) {
+      if (land.land.alignment === Alignment.CHAOTIC) {
+        landIncome = landIncome * 2;
       }
     }
 

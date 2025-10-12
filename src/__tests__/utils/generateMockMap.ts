@@ -5,6 +5,7 @@ import { NO_PLAYER } from '../../types/GamePlayer';
 
 export const generateMockMap = (rows: number, cols: number): BattlefieldLands => {
   const result: BattlefieldLands = {};
+  let landNumber = 1;
   for (let row = 0; row < rows; row++) {
     const colsInRow = row % 2 === 0 ? cols : cols - 1;
     for (let col = 0; col < colsInRow; col++) {
@@ -15,9 +16,10 @@ export const generateMockMap = (rows: number, cols: number): BattlefieldLands =>
         land: getLandById(LAND_TYPE.PLAINS),
         controlledBy: NO_PLAYER.id,
         buildings: [],
-        goldPerTurn: 0,
+        goldPerTurn: landNumber,
         army: [],
       };
+      landNumber++;
     }
   }
   return result;
