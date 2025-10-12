@@ -122,7 +122,7 @@ describe('MapLands', () => {
       const unit: Unit = {
         attack: 10,
         defense: 10,
-        goldCost: 10,
+        maintainCost: 10,
         health: 10,
         hero: true,
         id: 'mockHero',

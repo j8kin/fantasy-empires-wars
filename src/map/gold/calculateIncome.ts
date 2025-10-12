@@ -1,7 +1,9 @@
-import { getLands } from '../utils/mapLands';
 import { GameState } from '../../types/GameState';
-import { BuildingType } from '../../types/Building';
+
+import { getLands } from '../utils/mapLands';
 import { calculateHexDistance } from '../utils/mapAlgorithms';
+
+import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { GamePlayer } from '../../types/GamePlayer';
 

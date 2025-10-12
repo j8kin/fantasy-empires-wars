@@ -1,4 +1,4 @@
-import { calculateIncome } from '../map/income/calculate';
+import { calculateIncome } from '../map/gold/calculateIncome';
 import { battlefieldLandId, GameState } from '../types/GameState';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { generateMockMap } from './utils/generateMockMap';
@@ -36,7 +36,7 @@ describe('Calculate Income', () => {
     expect(income).toBe(0);
   });
 
-  test.each([
+  it.each([
     ['100%', 5, 100], // only one land
     ['90%', 6, 190], // the second land with 10% penalty
     ['80%', 7, 180], // the second land with 20% penalty
@@ -110,7 +110,7 @@ describe('Calculate Income', () => {
     expect(income).toBe(290);
   });
 
-  test.each([
+  it.each([
     [lawfulPlayer, LAND_TYPE.PLAINS, 100],
     [lawfulPlayer, LAND_TYPE.VOLCANO, 90],
     [lawfulPlayer, LAND_TYPE.MOUNTAINS, 130],
@@ -138,7 +138,7 @@ describe('Calculate Income', () => {
     }
   );
 
-  test.each([
+  it.each([
     [lawfulPlayer, LAND_TYPE.PLAINS, 190],
     [lawfulPlayer, LAND_TYPE.VOLCANO, 181],
     [lawfulPlayer, LAND_TYPE.MOUNTAINS, 217],

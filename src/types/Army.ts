@@ -24,14 +24,14 @@ export interface Unit {
   range?: number;
   rangeDamage?: number;
   health: number;
-  goldCost: number;
+  maintainCost: number;
   movement: number;
   level: number; // for non-hero units 1-regular, 2-veteran, 3-elite
   mana?: number; // how many mana produced per turn (only for heroes)
   hero: boolean;
 }
 
-export type Army = { unit: Unit; count: number }[];
+export type Army = { unit: Unit; quantity: number }[];
 
 export const getUnit = (unitType: UnitType): Unit => {
   switch (unitType) {
@@ -42,7 +42,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         attack: 8,
         defense: 6,
         health: 25,
-        goldCost: 40,
+        maintainCost: 4,
         movement: 2,
         level: 1,
         hero: false,
@@ -54,7 +54,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         attack: 12,
         defense: 20,
         health: 40,
-        goldCost: 50,
+        maintainCost: 5,
         movement: 1,
         level: 1,
         hero: false,
@@ -66,7 +66,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         attack: 10,
         defense: 15,
         health: 30,
-        goldCost: 45,
+        maintainCost: 4.5,
         movement: 2,
         level: 1,
         hero: false,
@@ -80,7 +80,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 20,
         rangeDamage: 15,
         health: 20,
-        goldCost: 50,
+        maintainCost: 5,
         movement: 3,
         level: 1,
         hero: false,
@@ -94,7 +94,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 25,
         rangeDamage: 25,
         health: 20,
-        goldCost: 70,
+        maintainCost: 5,
         movement: 3,
         level: 1,
         hero: false,
@@ -110,7 +110,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 35,
         rangeDamage: 25,
         health: 15,
-        goldCost: 150,
+        maintainCost: 150,
         movement: 0,
         level: 1,
         hero: false,
@@ -122,7 +122,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         attack: 0,
         defense: 0,
         health: 30,
-        goldCost: 50,
+        maintainCost: 50,
         movement: 0,
         level: 1,
         hero: false,
@@ -139,7 +139,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 2,
         rangeDamage: 30,
         health: 18,
-        goldCost: 100,
+        maintainCost: 100,
         movement: 4,
         level: 1,
         hero: true,
@@ -154,7 +154,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 2,
         rangeDamage: 40,
         health: 25,
-        goldCost: 100,
+        maintainCost: 100,
         movement: 4,
         level: 1,
         hero: true,
@@ -169,7 +169,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 30,
         rangeDamage: 30,
         health: 18,
-        goldCost: 100,
+        maintainCost: 100,
         movement: 5,
         level: 1,
         hero: true,
@@ -185,7 +185,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 30,
         rangeDamage: 30,
         health: 18,
-        goldCost: 100,
+        maintainCost: 100,
         movement: 2,
         level: 1,
         mana: 1,
@@ -201,7 +201,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 25,
         rangeDamage: 25,
         health: 20,
-        goldCost: 100,
+        maintainCost: 100,
         movement: 2,
         level: 1,
         mana: 1,
@@ -217,7 +217,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 20,
         rangeDamage: 20,
         health: 22,
-        goldCost: 100,
+        maintainCost: 100,
         movement: 3,
         level: 1,
         mana: 1,
@@ -233,7 +233,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 35,
         rangeDamage: 15,
         health: 16,
-        goldCost: 100,
+        maintainCost: 100,
         movement: 2,
         level: 1,
         mana: 1,
@@ -249,7 +249,7 @@ export const getUnit = (unitType: UnitType): Unit => {
         range: 25,
         rangeDamage: 35,
         health: 15,
-        goldCost: 100,
+        maintainCost: 100,
         movement: 2,
         level: 1,
         mana: 1,

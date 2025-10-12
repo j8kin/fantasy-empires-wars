@@ -149,9 +149,9 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                       <div className={styles.buildingsList}>
                         {battlefieldTile.army
                           .filter(({ unit }) => !unit.hero)
-                          .map(({ unit, count }, index) => (
+                          .map(({ unit, quantity }, index) => (
                             <span key={index} className={styles.value}>
-                              {unit.name} ({count})
+                              {unit.name} ({quantity})
                             </span>
                           ))}
                       </div>
