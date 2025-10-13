@@ -20,7 +20,7 @@ jest.mock('../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 }));
 
 // Mock HexTile component
-jest.mock('../ux-components/battlefield/HexTile', () => {
+jest.mock('../ux-components/battlefield/LandTile', () => {
   const { battlefieldLandId } = require('../types/GameState');
   const { useGameState } = require('../contexts/GameContext');
 

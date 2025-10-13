@@ -14,7 +14,7 @@ interface HexTileProps {
   landHideModePlayerId?: string;
 }
 
-const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlayerId }) => {
+const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlayerId }) => {
   const {
     landPopupPosition,
     landPopupScreenPosition,
@@ -108,4 +108,4 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
   );
 };
 
-export default HexTile;
+export default LandTile;
