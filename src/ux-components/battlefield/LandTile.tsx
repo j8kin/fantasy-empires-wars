@@ -14,10 +14,9 @@ import { getLandImg } from '../../assets/getLandImg';
 
 interface HexTileProps {
   battlefieldPosition: LandPosition;
-  landHideModePlayerId?: string;
 }
 
-const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlayerId }) => {
+const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
   const {
     landPopupPosition,
     landPopupScreenPosition,
@@ -52,12 +51,6 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePla
     event.preventDefault();
     showLandPopup(battlefieldPosition, { x: event.clientX, y: event.clientY });
   };
-
-  // Determine if land image should be hidden
-  // Hide land images only for tiles controlled by the selected player (to show their territories clearly)
-  // Uncontrolled tiles and other players' tiles should show normally
-  const shouldHideLandImage =
-    landHideModePlayerId && battlefieldTile.controlledBy === landHideModePlayerId;
 
   const tileId = battlefieldLandId(battlefieldPosition);
   const isGlowing = glowingTiles.has(tileId) || battlefieldTile.glow;
@@ -118,11 +111,11 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePla
         onClick={handleClick}
         style={tileStyle}
       >
-        {!shouldHideLandImage && imageSrc ? (
+        {imageSrc ? (
           <img src={imageSrc} alt={altText} className={styles.hexTileImg} />
-        ) : !shouldHideLandImage && !imageSrc ? (
+        ) : (
           <p>no image</p>
-        ) : null}
+        )}
       </div>
       {showPopup && (
         <LandCharacteristicsPopup

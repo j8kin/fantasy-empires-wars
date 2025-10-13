@@ -27,8 +27,7 @@ jest.mock('../ux-components/top-panel/TopPanel', () => {
     const { PREDEFINED_PLAYERS } = jest.requireActual('../types/GamePlayer');
     const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
     const mockPlayer = PREDEFINED_PLAYERS[0];
-    const { setShowStartWindow, setShowSaveDialog, showOpponentInfo, setLandHideModePlayerId } =
-      useApplicationContext();
+    const { setShowStartWindow, setShowSaveDialog, showOpponentInfo } = useApplicationContext();
     return (
       <div data-testid="TopPanel">
         <button onClick={() => setShowStartWindow(true)}>New Game</button>
@@ -38,7 +37,6 @@ jest.mock('../ux-components/top-panel/TopPanel', () => {
           onClick={() => {
             const opponent = { ...mockPlayer, diplomacyStatus: 'Peace' as const };
             showOpponentInfo(opponent, { x: 0, y: 0 });
-            setLandHideModePlayerId(opponent.id);
           }}
         >
           Select Opponent
@@ -83,11 +81,10 @@ jest.mock('../ux-components/popups/OpponentInfoPopup', () => {
   return (props: OpponentInfoProps) => {
     // Import ApplicationContext hook to access hideOpponentInfo
     const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
-    const { hideOpponentInfo, setLandHideModePlayerId } = useApplicationContext();
+    const { hideOpponentInfo } = useApplicationContext();
 
     const handleClose = () => {
       hideOpponentInfo();
-      setLandHideModePlayerId(undefined);
     };
 
     return props.opponent ? (

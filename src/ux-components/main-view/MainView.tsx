@@ -30,7 +30,6 @@ const MainViewContent: React.FC = () => {
     showProgressPopup,
     progressMessage,
     gameStarted,
-    landHideModePlayerId,
     clearAllGlow,
     setSelectedLandAction,
   } = useApplicationContext();
@@ -55,7 +54,6 @@ const MainViewContent: React.FC = () => {
       <Battlefield
         topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}
-        landHideModePlayerId={landHideModePlayerId}
         key={`map-${gameState?.mapSize || 'medium'}-${gameStarted}`}
       />
 

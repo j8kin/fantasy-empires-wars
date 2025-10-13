@@ -44,7 +44,6 @@ interface ApplicationContextType {
 
   // Game states
   gameStarted: boolean;
-  landHideModePlayerId: string | undefined;
   glowingTiles: Set<string>;
 
   // Dialog actions
@@ -86,7 +85,6 @@ interface ApplicationContextType {
 
   // Game actions
   setGameStarted: (started: boolean) => void;
-  setLandHideModePlayerId: (playerId: string | undefined) => void;
   setGlowingTiles: (tiles: Set<string>) => void;
   addGlowingTile: (tileId: string) => void;
   removeGlowingTile: (tileId: string) => void;
@@ -159,7 +157,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   // Game states
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [landHideModePlayerId, setLandHideModePlayerId] = useState<string | undefined>(undefined);
   const [glowingTiles, setGlowingTiles] = useState<Set<string>>(new Set());
 
   // HexTile popup actions
@@ -284,7 +281,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
         // Game states
         gameStarted,
-        landHideModePlayerId,
         glowingTiles,
 
         // Dialog actions
@@ -326,7 +322,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
         // Game actions
         setGameStarted,
-        setLandHideModePlayerId,
         setGlowingTiles,
         addGlowingTile,
         removeGlowingTile,

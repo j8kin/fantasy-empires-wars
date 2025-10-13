@@ -12,7 +12,6 @@ import { battlefieldLandId } from '../../types/GameState';
 export interface BattlefieldProps {
   topPanelHeight: number;
   tileSize: Dimensions;
-  landHideModePlayerId?: string;
 }
 
 const getHexTileSize = (battlefieldSize: BattlefieldSize): Dimensions => {
@@ -43,11 +42,7 @@ const getHexTileSize = (battlefieldSize: BattlefieldSize): Dimensions => {
   return { width, height };
 };
 
-const Battlefield: React.FC<BattlefieldProps> = ({
-  topPanelHeight,
-  tileSize,
-  landHideModePlayerId,
-}) => {
+const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) => {
   const { gameState } = useGameContext();
 
   // Battlefield generated at application startup but gameState is not initialize yet - use dummy map size
@@ -66,13 +61,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({
       const mapPosition = { row: row, col: col };
       const tileId = battlefieldLandId(mapPosition);
 
-      hexRow.push(
-        <LandTile
-          key={tileId}
-          battlefieldPosition={mapPosition}
-          landHideModePlayerId={landHideModePlayerId}
-        />
-      );
+      hexRow.push(<LandTile key={tileId} battlefieldPosition={mapPosition} />);
     }
 
     hexGrid.push(

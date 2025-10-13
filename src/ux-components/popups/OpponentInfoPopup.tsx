@@ -15,7 +15,7 @@ export interface OpponentInfoProps extends PopupProps {
 }
 
 const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition }) => {
-  const { hideOpponentInfo, setLandHideModePlayerId, clearAllGlow } = useApplicationContext();
+  const { hideOpponentInfo, clearAllGlow } = useApplicationContext();
   const { gameState } = useGameContext();
 
   if (opponent == null || gameState == null) return null;
@@ -25,7 +25,6 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
 
   const handleClose = () => {
     hideOpponentInfo();
-    setLandHideModePlayerId(undefined);
     clearAllGlow(); // Clear glow effect when closing popup
   };
 
