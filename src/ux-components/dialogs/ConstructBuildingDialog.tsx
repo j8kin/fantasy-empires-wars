@@ -5,24 +5,9 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { BuildingType, getAllBuildings } from '../../types/Building';
-import strongholdImg from '../../assets/buildings/stronghold.png';
-import barracksImg from '../../assets/buildings/barracks.png';
+import { getAllBuildings } from '../../types/Building';
 
-const getBuildingIcon = (building: BuildingType) => {
-  switch (building) {
-    case BuildingType.STRONGHOLD:
-      return strongholdImg;
-    case BuildingType.BARRACKS:
-      return barracksImg;
-    case BuildingType.MAGE_TOWER:
-    case BuildingType.OUTPOST:
-    case BuildingType.WATCH_TOWER:
-    case BuildingType.WALL:
-    default:
-      return undefined;
-  }
-};
+import { getBuildingImg } from '../../assets/getBuildingImg';
 
 const ConstructBuildingDialog: React.FC = () => {
   const { showConstructBuildingDialog, setShowConstructBuildingDialog, selectedLandAction } =
@@ -60,7 +45,7 @@ const ConstructBuildingDialog: React.FC = () => {
           key={building.id}
           pageNum={index}
           header={building.id}
-          iconPath={getBuildingIcon(building.id)}
+          iconPath={getBuildingImg(building.id)}
           description={building.description}
           cost={building.buildCost}
           costLabel="Build Cost"
