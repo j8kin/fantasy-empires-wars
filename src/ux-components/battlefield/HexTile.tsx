@@ -7,17 +7,7 @@ import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
 import { battlefieldLandId, getPlayerById } from '../../types/GameState';
 import { LandPosition } from '../../map/utils/mapLands';
-import { LAND_TYPE } from '../../types/Land';
-
-import darkforestImg from '../../assets/map-tiles/darkforest.png';
-import greenforestImg from '../../assets/map-tiles/greenforest.png';
-import hillsImg from '../../assets/map-tiles/hills.png';
-import lavaImg from '../../assets/map-tiles/lava.png';
-import mountainsImg from '../../assets/map-tiles/mountains.png';
-import plainsImg from '../../assets/map-tiles/plains.png';
-import swampImg from '../../assets/map-tiles/swamp.png';
-import desertImg from '../../assets/map-tiles/desert.png';
-import volcanoImg from '../../assets/map-tiles/volcano.png';
+import { getLandImg } from '../../assets/getLandImg';
 
 interface HexTileProps {
   battlefieldPosition: LandPosition;
@@ -25,38 +15,20 @@ interface HexTileProps {
 }
 
 const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlayerId }) => {
-  const { landPopupPosition, landPopupScreenPosition, showLandPopup, glowingTiles, clearAllGlow } =
-    useApplicationContext();
+  const {
+    landPopupPosition,
+    landPopupScreenPosition,
+    showLandPopup,
+    glowingTiles,
+    clearAllGlow,
+    selectedLandAction,
+    setSelectedLandAction,
+  } = useApplicationContext();
   const { gameState } = useGameState();
 
   const showPopup =
     landPopupPosition?.row === battlefieldPosition.row &&
     landPopupPosition?.col === battlefieldPosition.col;
-
-  const getLandImage = (landType: LAND_TYPE): string | undefined => {
-    switch (landType) {
-      case LAND_TYPE.PLAINS:
-        return plainsImg;
-      case LAND_TYPE.HILLS:
-        return hillsImg;
-      case LAND_TYPE.MOUNTAINS:
-        return mountainsImg;
-      case LAND_TYPE.SWAMP:
-        return swampImg;
-      case LAND_TYPE.DESERT:
-        return desertImg;
-      case LAND_TYPE.GREEN_FOREST:
-        return greenforestImg;
-      case LAND_TYPE.DARK_FOREST:
-        return darkforestImg;
-      case LAND_TYPE.LAVA:
-        return lavaImg;
-      case LAND_TYPE.VOLCANO:
-        return volcanoImg;
-      default:
-        return undefined;
-    }
-  };
 
   const battlefieldTile = gameState!.battlefieldLands[battlefieldLandId(battlefieldPosition)];
 
@@ -64,7 +36,7 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
     return <div className={styles.hexTile} title="Empty Tile" />;
   }
 
-  const imageSrc = getLandImage(battlefieldTile.land.id);
+  const imageSrc = getLandImg(battlefieldTile.land.id);
   const altText = battlefieldTile.land.id;
 
   // Get the controlling player's color or default to white if not controlled
@@ -91,8 +63,11 @@ const HexTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePlay
     if (isGlowing) {
       event.preventDefault();
       event.stopPropagation(); // Prevent the battlefield click handler from firing
-      alert(`Perform action for Land ${tileId}`);
+      alert(
+        `Perform action for Land ${tileId}. Selected item: ${JSON.stringify(selectedLandAction)}`
+      );
       clearAllGlow();
+      setSelectedLandAction(null); // Clear selected item after action is performed
     }
   };
 

@@ -7,8 +7,8 @@ import { LandPosition } from '../map/utils/mapLands';
 type OpponentSelectionMode = 'random' | 'manual';
 
 interface ApplicationContextType {
-  selectedItem: string | null;
-  setSelectedItem: (item: string | null) => void;
+  selectedLandAction: string | null;
+  setSelectedLandAction: (item: string | null) => void;
 
   // Dialog states
   showStartWindow: boolean;
@@ -106,7 +106,7 @@ interface ApplicationContextType {
 const ApplicationContext = createContext<ApplicationContextType | undefined>(undefined);
 
 export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedLandAction, setSelectedLandAction] = useState<string | null>(null);
 
   // Dialog states
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
@@ -245,8 +245,8 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   return (
     <ApplicationContext.Provider
       value={{
-        selectedItem,
-        setSelectedItem,
+        selectedLandAction,
+        setSelectedLandAction,
 
         // Dialog states
         showStartWindow,

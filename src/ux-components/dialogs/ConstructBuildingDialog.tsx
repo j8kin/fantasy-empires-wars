@@ -24,21 +24,16 @@ const getBuildingIcon = (building: BuildingType) => {
 };
 
 const ConstructBuildingDialog: React.FC = () => {
-  const {
-    showConstructBuildingDialog,
-    setShowConstructBuildingDialog,
-    selectedItem,
-    setSelectedItem,
-  } = useApplicationContext();
+  const { showConstructBuildingDialog, setShowConstructBuildingDialog, selectedLandAction } =
+    useApplicationContext();
 
   const handleClose = useCallback(() => {
-    setSelectedItem(null);
     setShowConstructBuildingDialog(false);
-  }, [setSelectedItem, setShowConstructBuildingDialog]);
+  }, [setShowConstructBuildingDialog]);
 
   useEffect(() => {
-    if (selectedItem && showConstructBuildingDialog) {
-      const building = getAllBuildings().find((s) => s.id === selectedItem);
+    if (selectedLandAction && showConstructBuildingDialog) {
+      const building = getAllBuildings().find((s) => s.id === selectedLandAction);
       if (building) {
         setTimeout(() => {
           alert(
@@ -48,7 +43,7 @@ const ConstructBuildingDialog: React.FC = () => {
         }, 100);
       }
     }
-  }, [selectedItem, showConstructBuildingDialog, handleClose]);
+  }, [selectedLandAction, showConstructBuildingDialog, handleClose]);
 
   if (!showConstructBuildingDialog) return null;
 

@@ -32,6 +32,7 @@ const MainViewContent: React.FC = () => {
     gameStarted,
     landHideModePlayerId,
     clearAllGlow,
+    setSelectedLandAction,
   } = useApplicationContext();
 
   // Access game state from context
@@ -41,8 +42,9 @@ const MainViewContent: React.FC = () => {
   const TILE_SIZE = defaultTileDimensions;
 
   const handleMainViewClick = () => {
-    // Clear glow when clicking on the main background
+    // Clear glow and selected item when clicking on the main background
     clearAllGlow();
+    setSelectedLandAction(null);
   };
 
   return (

@@ -40,7 +40,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     },
     ref
   ) => {
-    const { setSelectedItem, addGlowingTile } = useApplicationContext();
+    const { setSelectedLandAction, addGlowingTile } = useApplicationContext();
     const { gameState } = useGameState();
 
     const isEvenPage = pageNum % 2 === 1;
@@ -52,7 +52,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
 
     const handleIconClick = () => {
       if (header) {
-        setSelectedItem(isSpellBook ? 'Spell: ' : 'Building: ' + header);
+        setSelectedLandAction((isSpellBook ? 'Spell: ' : 'Building: ') + header);
         const actionType = isSpellBook ? 'spell' : 'building';
         const name = isSpellBook ? getSpellById(header as SpellName).id : (header as BuildingType);
 

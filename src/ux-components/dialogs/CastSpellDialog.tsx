@@ -44,17 +44,16 @@ const getSpellIcon = (spell: Spell) => {
 };
 
 const CastSpellDialog: React.FC = () => {
-  const { showCastSpellDialog, setShowCastSpellDialog, selectedItem, setSelectedItem } =
+  const { showCastSpellDialog, setShowCastSpellDialog, selectedLandAction } =
     useApplicationContext();
 
   const handleClose = useCallback(() => {
-    setSelectedItem(null);
     setShowCastSpellDialog(false);
-  }, [setSelectedItem, setShowCastSpellDialog]);
+  }, [setShowCastSpellDialog]);
 
   useEffect(() => {
-    if (selectedItem && showCastSpellDialog) {
-      const spell = AllSpells.find((s) => s.id === selectedItem);
+    if (selectedLandAction && showCastSpellDialog) {
+      const spell = AllSpells.find((s) => s.id === selectedLandAction);
       if (spell) {
         setTimeout(() => {
           alert(
@@ -64,7 +63,7 @@ const CastSpellDialog: React.FC = () => {
         }, 100);
       }
     }
-  }, [selectedItem, showCastSpellDialog, handleClose]);
+  }, [selectedLandAction, showCastSpellDialog, handleClose]);
 
   if (!showCastSpellDialog) return null;
 
