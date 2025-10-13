@@ -7,17 +7,24 @@ import { useGameContext } from '../../contexts/GameContext';
 import PlayerAvatar from '../avatars/PlayerAvatar';
 
 import { GamePlayer } from '../../types/GamePlayer';
+import { battlefieldLandId } from '../../types/GameState';
+import { getLands } from '../../map/utils/mapLands';
 
 const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameContext();
-  const { setLandHideModePlayerId, showOpponentInfo } = useApplicationContext();
+  const { showOpponentInfo, addGlowingTile } = useApplicationContext();
 
   const handleShowOpponentInfo = useCallback(
     (opponent: GamePlayer, screenPosition: { x: number; y: number }) => {
       showOpponentInfo(opponent, screenPosition);
-      setLandHideModePlayerId(opponent.id);
+
+      setTimeout(() => {
+        getLands(gameState!.battlefieldLands, [opponent]).forEach((land) => {
+          addGlowingTile(battlefieldLandId(land.mapPos));
+        });
+      }, 0);
     },
-    [setLandHideModePlayerId, showOpponentInfo]
+    [showOpponentInfo, addGlowingTile, gameState]
   );
 
   // Simply use opponents directly from gameState - they are set during game initialization

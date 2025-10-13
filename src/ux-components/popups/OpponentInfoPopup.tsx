@@ -15,7 +15,7 @@ export interface OpponentInfoProps extends PopupProps {
 }
 
 const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition }) => {
-  const { hideOpponentInfo, setLandHideModePlayerId } = useApplicationContext();
+  const { hideOpponentInfo, setLandHideModePlayerId, clearAllGlow } = useApplicationContext();
   const { gameState } = useGameContext();
 
   if (opponent == null || gameState == null) return null;
@@ -26,6 +26,7 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
   const handleClose = () => {
     hideOpponentInfo();
     setLandHideModePlayerId(undefined);
+    clearAllGlow(); // Clear glow effect when closing popup
   };
 
   // Calculate dynamic size based on content (larger than LandCharacteristicsPopup)
