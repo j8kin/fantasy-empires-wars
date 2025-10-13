@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
-import { BuildingType, getAllBuildings } from '../../types/Building';
 
+import { BuildingType, getAllBuildings } from '../../types/Building';
 import strongholdImg from '../../assets/buildings/stronghold.png';
 import barracksImg from '../../assets/buildings/barracks.png';
 
@@ -26,6 +27,7 @@ const getBuildingIcon = (building: BuildingType) => {
 const ConstructBuildingDialog: React.FC = () => {
   const { showConstructBuildingDialog, setShowConstructBuildingDialog, selectedLandAction } =
     useApplicationContext();
+  const { gameState } = useGameContext();
 
   const handleClose = useCallback(() => {
     setShowConstructBuildingDialog(false);
@@ -47,9 +49,13 @@ const ConstructBuildingDialog: React.FC = () => {
 
   if (!showConstructBuildingDialog) return null;
 
+  const availableBuildings = getAllBuildings().filter(
+    (building) => building.buildCost <= gameState!.selectedPlayer.money!
+  );
+
   return (
     <FlipBook onClickOutside={handleClose}>
-      {getAllBuildings().map((building, index) => (
+      {availableBuildings.map((building, index) => (
         <FlipBookPage
           key={building.id}
           pageNum={index}
