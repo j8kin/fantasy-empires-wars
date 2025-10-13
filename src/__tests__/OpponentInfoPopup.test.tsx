@@ -43,7 +43,7 @@ jest.mock('../contexts/GameContext', () => {
   const originalModule = jest.requireActual('../contexts/GameContext');
   return {
     ...originalModule,
-    useGameState: jest.fn(),
+    useGameContext: jest.fn(),
   };
 });
 
@@ -72,9 +72,9 @@ describe('OpponentInfoPopup', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Set up the default mock for useGameState
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    // Set up the default mock for useGameContext
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -103,8 +103,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent();
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -137,8 +137,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent();
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -171,8 +171,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent();
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -209,8 +209,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent();
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -244,8 +244,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent(Alignment.CHAOTIC);
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -279,8 +279,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent();
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -315,8 +315,8 @@ describe('OpponentInfoPopup', () => {
       const mockOpponent = createMockOpponent();
       const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-      const { useGameState } = require('../contexts/GameContext');
-      useGameState.mockReturnValue({
+      const { useGameContext } = require('../contexts/GameContext');
+      useGameContext.mockReturnValue({
         gameState: {
           mapSize: 'medium',
           tiles: {},
@@ -350,8 +350,8 @@ describe('OpponentInfoPopup', () => {
       const mockOpponent = createMockOpponent();
       const gameState = createMockGameState(mockOpponent, DiplomacyStatus.PEACE);
 
-      const { useGameState } = require('../contexts/GameContext');
-      useGameState.mockReturnValue({
+      const { useGameContext } = require('../contexts/GameContext');
+      useGameContext.mockReturnValue({
         gameState: {
           mapSize: 'medium',
           tiles: {},
@@ -385,8 +385,8 @@ describe('OpponentInfoPopup', () => {
       const mockOpponent = createMockOpponent();
       const gameState = createMockGameState(mockOpponent, DiplomacyStatus.WAR);
 
-      const { useGameState } = require('../contexts/GameContext');
-      useGameState.mockReturnValue({
+      const { useGameContext } = require('../contexts/GameContext');
+      useGameContext.mockReturnValue({
         gameState: {
           mapSize: 'medium',
           tiles: {},
@@ -422,8 +422,8 @@ describe('OpponentInfoPopup', () => {
     const customPosition = { x: 200, y: 150 };
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -458,8 +458,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent();
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -494,8 +494,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent();
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -530,8 +530,8 @@ describe('OpponentInfoPopup', () => {
     const mockOpponent = createMockOpponent();
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -571,8 +571,8 @@ describe('OpponentInfoPopup', () => {
     };
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.WAR);
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},
@@ -614,8 +614,8 @@ describe('OpponentInfoPopup', () => {
       opponents: [mockOpponent],
     };
 
-    const { useGameState } = require('../contexts/GameContext');
-    useGameState.mockReturnValue({
+    const { useGameContext } = require('../contexts/GameContext');
+    useGameContext.mockReturnValue({
       gameState: {
         mapSize: 'medium',
         tiles: {},

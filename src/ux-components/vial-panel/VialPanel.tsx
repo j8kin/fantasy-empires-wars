@@ -1,14 +1,14 @@
 import React from 'react';
 import styles from './css/VialPanel.module.css';
 
-import { useGameState } from '../../contexts/GameContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import ManaVial from './ManaVial';
 
 import { ManaType } from '../../types/Mana';
 
 const VialPanel: React.FC = () => {
-  const { gameState } = useGameState();
+  const { gameState } = useGameContext();
 
   return (
     <div className={styles.vialPanel}>

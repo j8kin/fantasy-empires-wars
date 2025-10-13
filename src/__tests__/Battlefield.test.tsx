@@ -22,12 +22,12 @@ jest.mock('../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 // Mock HexTile component
 jest.mock('../ux-components/battlefield/LandTile', () => {
   const { battlefieldLandId } = require('../types/GameState');
-  const { useGameState } = require('../contexts/GameContext');
+  const { useGameContext } = require('../contexts/GameContext');
 
   return (props: { battlefieldPosition: LandPosition }) => {
     const { battlefieldPosition } = props;
     const tileId: string = battlefieldLandId(battlefieldPosition);
-    const { gameState } = useGameState();
+    const { gameState } = useGameContext();
     const tile = gameState.battlefieldLands[tileId];
 
     return (
@@ -110,7 +110,7 @@ let mockGameState: GameState;
 // Mock GameContext to provide the game state
 jest.mock('../contexts/GameContext', () => ({
   ...jest.requireActual('../contexts/GameContext'),
-  useGameState: () => ({
+  useGameContext: () => ({
     gameState: mockGameState || createMockGameState('medium'),
     updateTile: jest.fn(),
     setTileController: jest.fn(),

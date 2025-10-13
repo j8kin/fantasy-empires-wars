@@ -2,7 +2,7 @@ import React from 'react';
 import styles from '../dialogs/css/OpponentInfoDialog.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameState } from '../../contexts/GameContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import PlayerAvatar from '../avatars/PlayerAvatar';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
@@ -16,7 +16,7 @@ export interface OpponentInfoProps extends PopupProps {
 
 const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition }) => {
   const { hideOpponentInfo, setLandHideModePlayerId } = useApplicationContext();
-  const { gameState } = useGameState();
+  const { gameState } = useGameContext();
 
   if (opponent == null || gameState == null) return null;
 

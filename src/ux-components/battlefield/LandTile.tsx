@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameState } from '../../contexts/GameContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
@@ -27,7 +27,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition, landHideModePla
     selectedLandAction,
     setSelectedLandAction,
   } = useApplicationContext();
-  const { gameState, updateGameState } = useGameState();
+  const { gameState, updateGameState } = useGameContext();
 
   const showPopup =
     landPopupPosition?.row === battlefieldPosition.row &&

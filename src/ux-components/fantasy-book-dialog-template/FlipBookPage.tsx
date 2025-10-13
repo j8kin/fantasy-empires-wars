@@ -2,7 +2,7 @@ import React from 'react';
 import './css/FlipBook.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameState } from '../../contexts/GameContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import { getSpellById, SpellName } from '../../types/Spell';
 import { highlightLands } from '../../map/utils/highlightLands';
@@ -41,7 +41,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     ref
   ) => {
     const { setSelectedLandAction, addGlowingTile } = useApplicationContext();
-    const { gameState } = useGameState();
+    const { gameState } = useGameContext();
 
     const isEvenPage = pageNum % 2 === 1;
     const defaultClassName = isEvenPage ? 'evenPage' : 'oddPage';

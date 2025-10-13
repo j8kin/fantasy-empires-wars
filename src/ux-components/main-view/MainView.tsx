@@ -5,7 +5,7 @@ import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../contexts/ApplicationContext';
-import { GameProvider, useGameState } from '../../contexts/GameContext';
+import { GameProvider, useGameContext } from '../../contexts/GameContext';
 
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
@@ -36,7 +36,7 @@ const MainViewContent: React.FC = () => {
   } = useApplicationContext();
 
   // Access game state from context
-  const { gameState } = useGameState();
+  const { gameState } = useGameContext();
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;

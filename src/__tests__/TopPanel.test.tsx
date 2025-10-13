@@ -4,12 +4,12 @@ import userEvent from '@testing-library/user-event';
 import TopPanel from '../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
-import { GameProvider, useGameState } from '../contexts/GameContext';
+import { GameProvider, useGameContext } from '../contexts/GameContext';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { updateGameState, gameState } = useGameState();
+    const { updateGameState, gameState } = useGameContext();
     React.useEffect(() => {
       const selectedPlayer = {
         ...PREDEFINED_PLAYERS[0],
@@ -95,7 +95,7 @@ describe('TopPanel Component', () => {
       const TestComponentWithoutPlayer: React.FC<{ children: React.ReactNode }> = ({
         children,
       }) => {
-        const { updateGameState, gameState } = useGameState();
+        const { updateGameState, gameState } = useGameContext();
         React.useEffect(() => {
           // This test is no longer valid since selectedPlayer is required
           // We'll simulate a null gameState instead
@@ -206,7 +206,7 @@ describe('TopPanel Component', () => {
       const TestComponentWithMinOpponents: React.FC<{ children: React.ReactNode }> = ({
         children,
       }) => {
-        const { updateGameState, gameState } = useGameState();
+        const { updateGameState, gameState } = useGameContext();
         React.useEffect(() => {
           if (gameState) {
             updateGameState({

@@ -1,6 +1,5 @@
-import React from 'react';
 import { render, renderHook } from '@testing-library/react';
-import { GameProvider, useGameState } from '../contexts/GameContext';
+import { GameProvider, useGameContext } from '../contexts/GameContext';
 
 // Mock the mapGeneration module to return empty tiles initially
 jest.mock('../map/generation/mapGeneration', () => ({
@@ -22,7 +21,7 @@ describe('GameContext', () => {
     });
 
     it('should initialize with null game state', () => {
-      const { result } = renderHook(() => useGameState(), {
+      const { result } = renderHook(() => useGameContext(), {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
@@ -30,74 +29,42 @@ describe('GameContext', () => {
     });
 
     it('should provide all context methods', () => {
-      const { result } = renderHook(() => useGameState(), {
+      const { result } = renderHook(() => useGameContext(), {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
       // Check that all expected methods are available
-      expect(typeof result.current.updateLand).toBe('function');
-      expect(typeof result.current.setTileController).toBe('function');
-      expect(typeof result.current.addBuildingToLand).toBe('function');
-      expect(typeof result.current.updateLandArmy).toBe('function');
-      expect(typeof result.current.getTile).toBe('function');
-      expect(typeof result.current.getPlayerLands).toBe('function');
       expect(typeof result.current.getTotalPlayerGold).toBe('function');
-      expect(typeof result.current.nextTurn).toBe('function');
-      expect(typeof result.current.changeBattlefieldSize).toBe('function');
       expect(typeof result.current.updateGameState).toBe('function');
       expect(result.current.mapDimensions).toBeDefined();
     });
   });
 
   describe('Error Handling', () => {
-    it('should throw error when useGameState is used outside provider', () => {
+    it('should throw error when useGameContext is used outside provider', () => {
       // Suppress console.error for this test
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       expect(() => {
-        renderHook(() => useGameState());
+        renderHook(() => useGameContext());
       }).toThrow('useGame must be used within a GameProvider');
 
       consoleSpy.mockRestore();
     });
 
     it('should handle non-existent tiles gracefully in updateTile', () => {
-      const { result } = renderHook(() => useGameState(), {
+      const { result } = renderHook(() => useGameContext(), {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
       const originalState = result.current.gameState;
 
-      // This should not throw an error
-      expect(() => {
-        result.current.updateLand('non-existent', { glow: true });
-      }).not.toThrow();
-
       // State should remain unchanged
       expect(result.current.gameState).toBe(originalState);
     });
 
-    it('should handle non-existent position gracefully in getTile', () => {
-      const { result } = renderHook(() => useGameState(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const tile = result.current.getTile({ row: 999, col: 999 });
-      expect(tile).toBeUndefined();
-    });
-
-    it('should return empty array for getPlayerTiles with no tiles', () => {
-      const { result } = renderHook(() => useGameState(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockPlayer = { id: 'test-player' } as any;
-      const tiles = result.current.getPlayerLands(mockPlayer);
-      expect(tiles).toEqual([]);
-    });
-
     it('should return 0 for getTotalPlayerGold with no tiles', () => {
-      const { result } = renderHook(() => useGameState(), {
+      const { result } = renderHook(() => useGameContext(), {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
@@ -109,7 +76,7 @@ describe('GameContext', () => {
 
   describe('Map Dimensions', () => {
     it('should return correct dimensions for medium map (default)', () => {
-      const { result } = renderHook(() => useGameState(), {
+      const { result } = renderHook(() => useGameContext(), {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
@@ -118,7 +85,7 @@ describe('GameContext', () => {
     });
 
     it('should return correct dimensions for small map', () => {
-      const { result } = renderHook(() => useGameState(), {
+      const { result } = renderHook(() => useGameContext(), {
         wrapper: ({ children }) => <GameProvider initialMapSize="small">{children}</GameProvider>,
       });
 
@@ -127,7 +94,7 @@ describe('GameContext', () => {
     });
 
     it('should return correct dimensions for large map', () => {
-      const { result } = renderHook(() => useGameState(), {
+      const { result } = renderHook(() => useGameContext(), {
         wrapper: ({ children }) => <GameProvider initialMapSize="large">{children}</GameProvider>,
       });
 

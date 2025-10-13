@@ -1,14 +1,14 @@
 import React from 'react';
 import styles from './css/PlayerInfo.module.css';
 import PlayerAvatar from '../avatars/PlayerAvatar';
-import { useGameState } from '../../contexts/GameContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 export interface PlayerInfoProps {
   avatarSize: number;
 }
 
 const PlayerInfo: React.FC<PlayerInfoProps> = ({ avatarSize }) => {
-  const { gameState, getTotalPlayerGold } = useGameState();
+  const { gameState, getTotalPlayerGold } = useGameContext();
   const selectedPlayer = gameState?.selectedPlayer;
 
   if (!selectedPlayer) {

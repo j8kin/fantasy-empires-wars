@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './css/Battlefield.module.css';
 import hexStyles from './css/Hexagonal.module.css';
 
-import { useGameState } from '../../contexts/GameContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import LandTile from './LandTile';
 import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
@@ -48,7 +48,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({
   tileSize,
   landHideModePlayerId,
 }) => {
-  const { gameState } = useGameState();
+  const { gameState } = useGameContext();
 
   // Battlefield generated at application startup but gameState is not initialize yet - use dummy map size
   const mapSize = gameState?.mapSize || 'small';

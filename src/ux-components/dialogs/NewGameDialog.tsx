@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import styles from './css/NewGameDialog.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameState } from '../../contexts/GameContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import PlayerAvatar from '../avatars/PlayerAvatar';
@@ -48,7 +48,7 @@ const NewGameDialog: React.FC = () => {
     showSelectOpponentDialogWithConfig,
   } = useApplicationContext();
 
-  const { updateGameState, recalculateAllPlayersIncome } = useGameState();
+  const { updateGameState, recalculateAllPlayersIncome } = useGameContext();
 
   // Use context state as local variables for easier refactoring
   const mapSize = newGameMapSize;

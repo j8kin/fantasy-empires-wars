@@ -2,14 +2,14 @@ import React, { useCallback } from 'react';
 import styles from './css/OpponentsPanel.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameState } from '../../contexts/GameContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import PlayerAvatar from '../avatars/PlayerAvatar';
 
 import { GamePlayer } from '../../types/GamePlayer';
 
 const OpponentsPanel: React.FC = () => {
-  const { gameState } = useGameState();
+  const { gameState } = useGameContext();
   const { setLandHideModePlayerId, showOpponentInfo } = useApplicationContext();
 
   const handleShowOpponentInfo = useCallback(

@@ -17,15 +17,15 @@ const renderWithProviders = (ui: React.ReactElement, gameState?: GameState) => {
   return render(ui, { wrapper: Wrapper });
 };
 
-// Mock the useGameState hook
-let mockUseGameState: jest.Mock;
+// Mock the useGameContext hook
+let mockUseGameContext: jest.Mock;
 jest.mock('../contexts/GameContext', () => ({
-  useGameState: jest.fn(),
+  useGameContext: jest.fn(),
 }));
 
 // Get the mocked function after module mocking
-const { useGameState } = require('../contexts/GameContext');
-mockUseGameState = useGameState as jest.Mock;
+const { useGameContext } = require('../contexts/GameContext');
+mockUseGameContext = useGameContext as jest.Mock;
 
 // Custom GameProvider for testing that accepts a specific gameState
 const TestGameProvider: React.FC<{ children: React.ReactNode; gameState?: GameState }> = ({
@@ -34,7 +34,7 @@ const TestGameProvider: React.FC<{ children: React.ReactNode; gameState?: GameSt
 }) => {
   // Update the mock if a specific gameState is provided
   if (gameState) {
-    mockUseGameState.mockReturnValue({
+    mockUseGameContext.mockReturnValue({
       gameState,
       updateTile: jest.fn(),
       setTileController: jest.fn(),
@@ -87,8 +87,8 @@ describe('LandCharacteristicsPopup', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Set up default mock return for useGameState
-    mockUseGameState.mockReturnValue({
+    // Set up default mock return for useGameContext
+    mockUseGameContext.mockReturnValue({
       gameState: mockGameState,
       updateTile: jest.fn(),
       setTileController: jest.fn(),

@@ -5,7 +5,7 @@ import { BattlefieldProps } from '../ux-components/battlefield/Battlefield';
 import { OpponentInfoProps } from '../ux-components/popups/OpponentInfoPopup';
 import { SelectOpponentDialogProps } from '../ux-components/dialogs/SelectOpponentDialog';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
-import { GameProvider } from '../contexts/GameContext';
+import { GameProvider, useGameContext } from '../contexts/GameContext';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const AllProvidersWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -50,8 +50,8 @@ jest.mock('../ux-components/top-panel/TopPanel', () => {
 
 jest.mock('../ux-components/battlefield/Battlefield', () => {
   return (props: BattlefieldProps) => {
-    const { useGameState } = jest.requireActual('../contexts/GameContext');
-    const { gameState } = useGameState();
+    const { useGameContext } = jest.requireActual('../contexts/GameContext');
+    const { gameState } = useGameContext();
     return (
       <div
         data-testid="Battlefield"
