@@ -7,22 +7,40 @@ import GameButton from '../buttons/GameButton';
 import { useGameContext } from '../../contexts/GameContext';
 import { getAllBuildings } from '../../types/Building';
 import { ButtonName } from '../../types/ButtonName';
+import { AllSpells, SpellName } from '../../types/Spell';
 
 const PlayActionsControl: React.FC = () => {
   const { setShowCastSpellDialog, setShowConstructBuildingDialog } = useApplicationContext();
   const { gameState } = useGameContext();
 
   const handleShowCastSpellDialog = useCallback(() => {
-    setShowCastSpellDialog(true);
-  }, [setShowCastSpellDialog]);
+    if (gameState == null) return;
+    const playerMana = gameState.selectedPlayer.mana!;
+    if (
+      AllSpells.some(
+        (spell) =>
+          // turn undead could only be cast if related mana is available
+          // todo it should be possible to cast turn undead only once per turn
+          !(spell.id === SpellName.TURN_UNDEAD && playerMana[spell.school] === 0) &&
+          spell.manaCost <= playerMana[spell.school]
+      )
+    ) {
+      setShowCastSpellDialog(true);
+    } else {
+      if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+        // todo replace with Popup with "Not enough mana to cast Spells!" message"
+        alert('Not enough mana to cast Spells!');
+      }
+    }
+  }, [gameState, setShowCastSpellDialog]);
 
   const handleShowConstructBuildingDialog = useCallback(() => {
+    if (gameState == null) return;
     if (
-      gameState != null &&
-      getAllBuildings().some((bilding) => bilding.buildCost <= gameState.selectedPlayer.money!)
-    )
+      getAllBuildings().some((building) => building.buildCost <= gameState.selectedPlayer.money!)
+    ) {
       setShowConstructBuildingDialog(true);
-    else {
+    } else {
       if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
         // todo replace with Popup with "Not enough money to construct a building!" message"
         alert('Not enough money to construct a building!');

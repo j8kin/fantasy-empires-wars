@@ -5,16 +5,24 @@ import TopPanel from '../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../contexts/GameContext';
-import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { ManaType } from '../types/Mana';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState, gameState } = useGameContext();
     React.useEffect(() => {
-      const selectedPlayer = {
+      const selectedPlayer: GamePlayer = {
         ...PREDEFINED_PLAYERS[0],
         money: 1500,
         income: 0, // Will be calculated by recalculateAllPlayersIncome
+        mana: {
+          [ManaType.WHITE]: 100,
+          [ManaType.BLACK]: 100,
+          [ManaType.RED]: 100,
+          [ManaType.GREEN]: 100,
+          [ManaType.BLUE]: 100,
+        },
       };
 
       if (gameState) {

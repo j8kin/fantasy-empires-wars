@@ -7,8 +7,12 @@ import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
 import { battlefieldLandId, getPlayerById } from '../../types/GameState';
 import { LandPosition } from '../../map/utils/mapLands';
+
 import { BuildingType, getBuilding } from '../../types/Building';
 import { construct } from '../../map/building/construct';
+
+import { getSpellById, SpellName } from '../../types/Spell';
+import { castSpell } from '../../map/cast-spell/castSpell';
 
 import { getLandImg } from '../../assets/getLandImg';
 
@@ -61,12 +65,15 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
       event.stopPropagation(); // Prevent the battlefield click handler from firing
 
       if (selectedLandAction?.startsWith('Spell: ')) {
-        alert(
-          `Perform action for Land ${tileId}. Selected item: ${JSON.stringify(selectedLandAction)}`
-        );
+        const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
+        gameState!.selectedPlayer.mana![spellToCast.school] -= spellToCast.manaCost;
+        // todo add animation for casting spell
+        castSpell(spellToCast, battlefieldPosition, gameState!);
+
+        updateGameState(gameState!);
+        alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
       } else if (selectedLandAction?.startsWith('Building: ')) {
         const buildingToConstruct = selectedLandAction?.substring(10) as BuildingType;
-        // todo add filter in ConstructBuildingDialog to prevent construction of buildings that are not available for the player
         if (gameState!.selectedPlayer.money! >= getBuilding(buildingToConstruct).buildCost) {
           // todo add animation for building
           construct(

@@ -1,8 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import CastSpellDialog from '../ux-components/dialogs/CastSpellDialog';
+import { GameProvider, useGameContext } from '../contexts/GameContext';
 import { ApplicationContextProvider, useApplicationContext } from '../contexts/ApplicationContext';
 import { AllSpells } from '../types/Spell';
+import { ManaType } from '../types/Mana';
+import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 
 // Mock CSS modules
 jest.mock('../ux-components/fantasy-book-dialog-template/css/FlipBook.css', () => ({}));
@@ -51,7 +54,9 @@ jest.mock('../assets/spells/blue/teleport.png', () => 'teleport.png');
 
 const CastSpellDialogWithContext: React.FC = () => (
   <ApplicationContextProvider>
-    <CastSpellDialog />
+    <GameProvider initialMapSize="medium">
+      <CastSpellDialog />
+    </GameProvider>
   </ApplicationContextProvider>
 );
 
@@ -73,9 +78,48 @@ const TestComponentWithDialog: React.FC = () => {
 };
 
 const renderWithApplicationContext = () => {
+  const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { updateGameState, gameState } = useGameContext();
+    React.useEffect(() => {
+      const selectedPlayer = {
+        ...PREDEFINED_PLAYERS[0],
+        money: 1500,
+        income: 0,
+        mana: {
+          [ManaType.WHITE]: 1000,
+          [ManaType.BLACK]: 1000,
+          [ManaType.RED]: 1000,
+          [ManaType.GREEN]: 1000,
+          [ManaType.BLUE]: 1000,
+        },
+      };
+
+      if (gameState) {
+        updateGameState({
+          ...gameState,
+          selectedPlayer,
+          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+        });
+      } else {
+        updateGameState({
+          mapSize: 'medium',
+          battlefieldLands: {},
+          turn: 0,
+          selectedPlayer,
+          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+        });
+      }
+    }, []);
+    return <>{children}</>;
+  };
+
   return render(
     <ApplicationContextProvider>
-      <TestComponentWithDialog />
+      <GameProvider initialMapSize="medium">
+        <Bootstrapper>
+          <TestComponentWithDialog />
+        </Bootstrapper>
+      </GameProvider>
     </ApplicationContextProvider>
   );
 };
