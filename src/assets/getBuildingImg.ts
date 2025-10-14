@@ -12,7 +12,11 @@ export const getBuildingImg = (building: BuildingType) => {
       return strongholdImg;
     case BuildingType.BARRACKS:
       return barracksImg;
-    case BuildingType.MAGE_TOWER:
+    case BuildingType.WHITE_MAGE_TOWER:
+    case BuildingType.BLACK_MAGE_TOWER:
+    case BuildingType.BLUE_MAGE_TOWER:
+    case BuildingType.GREEN_MAGE_TOWER:
+    case BuildingType.RED_MAGE_TOWER:
       return undefined;
     case BuildingType.OUTPOST:
       return outpostImg;

@@ -263,7 +263,7 @@ const NewGameDialog: React.FC = () => {
       ...selectedPlayer,
       diplomacy: playerDiplomacy,
       mana: selectedPlayer.mana ?? { ...initialMana },
-      money: 10000,
+      money: 15000,
     };
 
     const allPlayers = [updatedSelectedPlayer, ...updatedOpponents];

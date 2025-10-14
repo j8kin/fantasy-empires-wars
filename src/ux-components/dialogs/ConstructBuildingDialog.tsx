@@ -20,7 +20,9 @@ const ConstructBuildingDialog: React.FC = () => {
 
   useEffect(() => {
     if (selectedLandAction && showConstructBuildingDialog) {
-      const building = getAllBuildings().find((s) => s.id === selectedLandAction);
+      const building = getAllBuildings(gameState?.selectedPlayer!).find(
+        (s) => s.id === selectedLandAction
+      );
       if (building) {
         setTimeout(() => {
           alert(
@@ -30,11 +32,11 @@ const ConstructBuildingDialog: React.FC = () => {
         }, 100);
       }
     }
-  }, [selectedLandAction, showConstructBuildingDialog, handleClose]);
+  }, [gameState?.selectedPlayer, handleClose, selectedLandAction, showConstructBuildingDialog]);
 
   if (!showConstructBuildingDialog) return null;
 
-  const availableBuildings = getAllBuildings().filter(
+  const availableBuildings = getAllBuildings(gameState?.selectedPlayer!).filter(
     (building) => building.buildCost <= gameState!.selectedPlayer.money!
   );
 

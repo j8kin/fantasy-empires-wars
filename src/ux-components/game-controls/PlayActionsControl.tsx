@@ -43,7 +43,9 @@ const PlayActionsControl: React.FC = () => {
   const handleShowConstructBuildingDialog = useCallback(() => {
     if (gameState == null) return;
     if (
-      getAllBuildings().some((building) => building.buildCost <= gameState.selectedPlayer.money!)
+      getAllBuildings(gameState.selectedPlayer).some(
+        (building) => building.buildCost <= gameState.selectedPlayer.money!
+      )
     ) {
       setShowConstructBuildingDialog(true);
     } else {

@@ -97,7 +97,11 @@ describe('Calculate Maintenance', () => {
     it.each([
       [BuildingType.STRONGHOLD, 0],
       [BuildingType.BARRACKS, 1000],
-      [BuildingType.MAGE_TOWER, 2000],
+      [BuildingType.WHITE_MAGE_TOWER, 2000],
+      [BuildingType.BLACK_MAGE_TOWER, 2000],
+      [BuildingType.BLUE_MAGE_TOWER, 2000],
+      [BuildingType.GREEN_MAGE_TOWER, 2000],
+      [BuildingType.RED_MAGE_TOWER, 2000],
       [BuildingType.WATCH_TOWER, 300],
       [BuildingType.OUTPOST, 1000],
       [BuildingType.WALL, 100],

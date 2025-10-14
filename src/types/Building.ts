@@ -1,7 +1,15 @@
+import { Alignment } from './Alignment';
+import { UnitType } from './Army';
+import { GamePlayer } from './GamePlayer';
+
 export enum BuildingType {
   STRONGHOLD = 'Stronghold',
   BARRACKS = 'Barracks',
-  MAGE_TOWER = 'Mage Tower',
+  WHITE_MAGE_TOWER = 'White Mage Tower',
+  BLACK_MAGE_TOWER = 'Black Mage Tower',
+  BLUE_MAGE_TOWER = 'Blue Mage Tower',
+  GREEN_MAGE_TOWER = 'Green Mage Tower',
+  RED_MAGE_TOWER = 'Red Mage Tower',
   WATCH_TOWER = 'Watch Tower',
   OUTPOST = 'Outpost',
   WALL = 'Castle Wall',
@@ -30,9 +38,13 @@ export const getBuilding = (building: BuildingType): Building => {
         maintainCost: 1000,
         description: 'Allows recruitment of military units',
       };
-    case BuildingType.MAGE_TOWER:
+    case BuildingType.WHITE_MAGE_TOWER:
+    case BuildingType.BLACK_MAGE_TOWER:
+    case BuildingType.GREEN_MAGE_TOWER:
+    case BuildingType.BLUE_MAGE_TOWER:
+    case BuildingType.RED_MAGE_TOWER:
       return {
-        id: BuildingType.MAGE_TOWER,
+        id: building,
         buildCost: 15000,
         maintainCost: 2000,
         description: 'Allows recruitment of Mage units',
@@ -62,6 +74,18 @@ export const getBuilding = (building: BuildingType): Building => {
   }
 };
 
-export const getAllBuildings = (): Building[] => {
-  return Object.values(BuildingType).map(getBuilding);
+export const getAllBuildings = (player: GamePlayer): Building[] => {
+  return Object.values(BuildingType)
+    .map(getBuilding)
+    .filter(
+      (building) =>
+        !building.id.toString().includes('Mage Tower') ||
+        building.id === BuildingType.BLUE_MAGE_TOWER ||
+        (building.id === BuildingType.WHITE_MAGE_TOWER && player.type === UnitType.CLERIC) ||
+        (building.id === BuildingType.WHITE_MAGE_TOWER && player.alignment === Alignment.LAWFUL) ||
+        (building.id === BuildingType.BLACK_MAGE_TOWER && player.type === UnitType.NECROMANCER) ||
+        (building.id === BuildingType.BLACK_MAGE_TOWER && player.alignment === Alignment.CHAOTIC) ||
+        (building.id === BuildingType.GREEN_MAGE_TOWER && player.alignment !== Alignment.CHAOTIC) ||
+        (building.id === BuildingType.RED_MAGE_TOWER && player.alignment !== Alignment.LAWFUL)
+    );
 };
