@@ -3,7 +3,8 @@ import React from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
-import GameButton, { ButtonName } from '../buttons/GameButton';
+import GameButton from '../buttons/GameButton';
+import { ButtonName } from '../../types/ButtonName';
 
 const SaveGameDialog: React.FC = () => {
   const { showSaveDialog, setShowSaveDialog, saveGameName, setSaveGameName, resetSaveGameDialog } =

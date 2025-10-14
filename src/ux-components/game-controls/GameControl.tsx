@@ -3,7 +3,8 @@ import styles from './css/GameControl.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
-import GameButton, { ButtonName } from '../buttons/GameButton';
+import GameButton from '../buttons/GameButton';
+import { ButtonName } from '../../types/ButtonName';
 
 const GameControl: React.FC = () => {
   const { setShowStartWindow, setShowSaveDialog } = useApplicationContext();
