@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './css/PlayerSelection.module.css';
 
-import PlayerAvatar from '../avatars/PlayerAvatar';
+import Avatar from '../avatars/Avatar';
 
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { getAlignmentColor } from '../../types/Alignment';
@@ -71,7 +71,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
               </div>
             </div>
             <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-              <PlayerAvatar
+              <Avatar
                 player={displayPlayer}
                 size={120}
                 shape="circle"

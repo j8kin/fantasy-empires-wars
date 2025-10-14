@@ -4,7 +4,7 @@ import styles from '../dialogs/css/OpponentInfoDialog.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import PlayerAvatar from '../avatars/PlayerAvatar';
+import Avatar from '../avatars/Avatar';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
@@ -53,7 +53,7 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
 
         <div className={styles.characteristics}>
           <div className={styles.avatarSection}>
-            <PlayerAvatar
+            <Avatar
               player={opponent}
               size={55}
               shape="rectangle"

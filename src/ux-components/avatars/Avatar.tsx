@@ -5,7 +5,7 @@ import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 
 type AvatarShape = 'circle' | 'rectangle';
 
-interface PlayerAvatarProps {
+interface AvatarProps {
   player: GamePlayer;
   size?: number;
   shape?: AvatarShape;
@@ -14,7 +14,7 @@ interface PlayerAvatarProps {
   style?: React.CSSProperties;
 }
 
-const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
+const Avatar: React.FC<AvatarProps> = ({
   player,
   size = 60,
   shape = 'circle',
@@ -71,4 +71,4 @@ const PlayerAvatar: React.FC<PlayerAvatarProps> = ({
   );
 };
 
-export default PlayerAvatar;
+export default Avatar;

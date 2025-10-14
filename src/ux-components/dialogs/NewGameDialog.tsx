@@ -5,7 +5,7 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
-import PlayerAvatar from '../avatars/PlayerAvatar';
+import Avatar from '../avatars/Avatar';
 import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 
@@ -451,7 +451,7 @@ const NewGameDialog: React.FC = () => {
                         }}
                       />
                     ) : (
-                      <PlayerAvatar
+                      <Avatar
                         player={opponent}
                         size={avatarSize}
                         shape="circle"
@@ -459,7 +459,7 @@ const NewGameDialog: React.FC = () => {
                       />
                     )
                   ) : (
-                    <PlayerAvatar
+                    <Avatar
                       player={NO_PLAYER}
                       size={avatarSize}
                       shape="circle"

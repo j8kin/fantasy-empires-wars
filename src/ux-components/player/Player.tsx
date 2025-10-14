@@ -1,26 +1,27 @@
 import React from 'react';
-import styles from './css/PlayerInfo.module.css';
-import PlayerAvatar from '../avatars/PlayerAvatar';
-import { useGameContext } from '../../contexts/GameContext';
+import styles from './css/Player.module.css';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameContext } from '../../contexts/GameContext';
+
+import Avatar from '../avatars/Avatar';
+
 import { battlefieldLandId } from '../../types/GameState';
 import { getLands } from '../../map/utils/mapLands';
 
-export interface PlayerInfoProps {
+export interface PlayerProps {
   avatarSize: number;
 }
 
-const PlayerInfo: React.FC<PlayerInfoProps> = ({ avatarSize }) => {
-  const { gameState, getTotalPlayerGold } = useGameContext();
+const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
   const { addGlowingTile } = useApplicationContext();
+  const { gameState } = useGameContext();
+
   const selectedPlayer = gameState?.selectedPlayer;
 
   if (!selectedPlayer) {
     return null;
   }
-
-  const money = selectedPlayer.money ?? getTotalPlayerGold(selectedPlayer);
-  const income = selectedPlayer.income ?? 0; // TODO: calculate from battlefield lands
 
   const handleAvatarClick = () => {
     if (!gameState) return;
@@ -33,9 +34,9 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ avatarSize }) => {
   };
 
   return (
-    <div className={styles.playerInfoContainer}>
+    <div className={styles.playerContainer}>
       <div onClick={handleAvatarClick} style={{ cursor: 'pointer' }}>
-        <PlayerAvatar
+        <Avatar
           player={selectedPlayer}
           size={avatarSize}
           shape="rectangle"
@@ -45,12 +46,12 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ avatarSize }) => {
       <div className={styles.playerDetails}>
         <div className={styles.playerName}>{selectedPlayer.name}</div>
         <div className={styles.moneyInfo}>
-          <div className={styles.moneyItem}>Gold: {money.toLocaleString()}</div>
-          <div className={styles.moneyItem}>+{income}/turn</div>
+          <div className={styles.moneyItem}>Gold: {selectedPlayer.money}</div>
+          <div className={styles.moneyItem}>+{selectedPlayer.income}/turn</div>
         </div>
       </div>
     </div>
   );
 };
 
-export default PlayerInfo;
+export default Player;

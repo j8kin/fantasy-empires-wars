@@ -9,7 +9,7 @@ import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import GameButton from '../buttons/GameButton';
 import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
-import PlayerInfo from './PlayerInfo';
+import Player from '../player/Player';
 import { ButtonName } from '../../types/ButtonName';
 
 export interface TopPanelProps {
@@ -44,7 +44,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
           <PlayActionsControl />
 
           {/* Display Player Info only if Game Started */}
-          {selectedPlayer && <PlayerInfo avatarSize={avatarSize} />}
+          {selectedPlayer && <Player avatarSize={avatarSize} />}
 
           {/* Center - Mana Vials only if Game Started */}
           {selectedPlayer && <VialPanel />}

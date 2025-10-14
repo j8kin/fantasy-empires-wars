@@ -4,7 +4,7 @@ import styles from './css/OpponentsPanel.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import PlayerAvatar from '../avatars/PlayerAvatar';
+import Avatar from '../avatars/Avatar';
 
 import { GamePlayer } from '../../types/GamePlayer';
 import { battlefieldLandId } from '../../types/GameState';
@@ -54,7 +54,7 @@ const OpponentsPanel: React.FC = () => {
             handleShowOpponentInfo(opponent, screenPosition);
           }}
         >
-          <PlayerAvatar
+          <Avatar
             player={opponent}
             size={opponents.length <= 4 ? 120 : 90}
             shape="circle"

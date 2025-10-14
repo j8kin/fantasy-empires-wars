@@ -23,7 +23,7 @@ jest.mock('../ux-components/dialogs/css/OpponentInfoDialog.module.css', () => ({
   notreaty: 'mocked-no-treaty',
 }));
 
-jest.mock('../ux-components/avatars/PlayerAvatar', () => {
+jest.mock('../ux-components/avatars/Avatar', () => {
   return ({ player, size, shape, borderColor, className }: any) => {
     return (
       <div
