@@ -10,7 +10,12 @@ import { ButtonName } from '../../types/ButtonName';
 import { AllSpells, SpellName } from '../../types/Spell';
 
 const PlayActionsControl: React.FC = () => {
-  const { setShowCastSpellDialog, setShowConstructBuildingDialog } = useApplicationContext();
+  const {
+    setShowCastSpellDialog,
+    setShowConstructBuildingDialog,
+    setErrorMessagePopupMessage,
+    setShowErrorMessagePopup,
+  } = useApplicationContext();
   const { gameState } = useGameContext();
 
   const handleShowCastSpellDialog = useCallback(() => {
@@ -28,11 +33,12 @@ const PlayActionsControl: React.FC = () => {
       setShowCastSpellDialog(true);
     } else {
       if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
-        // todo replace with Popup with "Not enough mana to cast Spells!" message"
         alert('Not enough mana to cast Spells!');
+        setErrorMessagePopupMessage('Not enough mana to cast Spells!');
+        setShowErrorMessagePopup(true);
       }
     }
-  }, [gameState, setShowCastSpellDialog]);
+  }, [gameState, setErrorMessagePopupMessage, setShowCastSpellDialog, setShowErrorMessagePopup]);
 
   const handleShowConstructBuildingDialog = useCallback(() => {
     if (gameState == null) return;
@@ -42,11 +48,16 @@ const PlayActionsControl: React.FC = () => {
       setShowConstructBuildingDialog(true);
     } else {
       if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
-        // todo replace with Popup with "Not enough money to construct a building!" message"
-        alert('Not enough money to construct a building!');
+        setErrorMessagePopupMessage('Not enough money to construct a building!');
+        setShowErrorMessagePopup(true);
       }
     }
-  }, [gameState, setShowConstructBuildingDialog]);
+  }, [
+    gameState,
+    setErrorMessagePopupMessage,
+    setShowConstructBuildingDialog,
+    setShowErrorMessagePopup,
+  ]);
 
   return (
     <div className={styles.gameControlContainer}>

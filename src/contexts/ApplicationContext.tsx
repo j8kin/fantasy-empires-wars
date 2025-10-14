@@ -26,6 +26,13 @@ interface ApplicationContextType {
   allowEmptyPlayer: boolean;
   progressMessage: string;
 
+  // Game Popups
+  // Error Messages Popup
+  showErrorMessagePopup: boolean;
+  setShowErrorMessagePopup: (show: boolean) => void;
+  errorMessagePopupMessage: string;
+  setErrorMessagePopupMessage: (message: string) => void;
+
   // HexTile popup states
   landPopupPosition: LandPosition | undefined;
   landPopupScreenPosition: ScreenPosition;
@@ -126,6 +133,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   >(null);
   const [allowEmptyPlayer, setAllowEmptyPlayer] = useState<boolean>(true);
   const [progressMessage, setProgressMessage] = useState<string>('');
+
+  // Popup Messages
+  const [showErrorMessagePopup, setShowErrorMessagePopup] = useState<boolean>(false);
+  const [errorMessagePopupMessage, setErrorMessagePopupMessage] = useState<string>('');
 
   // HexTile popup states
   const [landPopupPosition, setLandPopupPosition] = useState<LandPosition | undefined>(undefined);
@@ -260,6 +271,12 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         selectOpponentCallback,
         allowEmptyPlayer,
         progressMessage,
+
+        // Popup Messages
+        showErrorMessagePopup,
+        setShowErrorMessagePopup,
+        errorMessagePopupMessage,
+        setErrorMessagePopupMessage,
 
         // HexTile popup states
         landPopupPosition,

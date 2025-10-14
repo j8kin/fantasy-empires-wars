@@ -18,6 +18,7 @@ import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
+import ErrorMessagePopup from '../popups/ErrorMessagePopup';
 
 const MainViewContent: React.FC = () => {
   const {
@@ -29,6 +30,7 @@ const MainViewContent: React.FC = () => {
     allowEmptyPlayer,
     showProgressPopup,
     progressMessage,
+    showErrorMessagePopup,
     gameStarted,
     clearAllGlow,
     setSelectedLandAction,
@@ -61,6 +63,13 @@ const MainViewContent: React.FC = () => {
 
       {/* Start Game Dialog - shown as overlay */}
       {showStartWindow && <NewGameDialog />}
+      {/* Select Opponent Dialog is a part of New Game Dialog - shown as overlay */}
+      {showSelectOpponentDialog && (
+        <SelectOpponentDialog
+          excludedPlayerIds={selectOpponentExcludedIds}
+          allowEmptyPlayer={allowEmptyPlayer}
+        />
+      )}
 
       {/* Save Game Dialog - shown as overlay */}
       <SaveGameDialog />
@@ -74,14 +83,6 @@ const MainViewContent: React.FC = () => {
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />
 
-      {/* Select Opponent Dialog - shown as overlay */}
-      {showSelectOpponentDialog && (
-        <SelectOpponentDialog
-          excludedPlayerIds={selectOpponentExcludedIds}
-          allowEmptyPlayer={allowEmptyPlayer}
-        />
-      )}
-
       {/* Progress Popup - shown as overlay */}
       {showProgressPopup && (
         <ProgressPopup
@@ -90,6 +91,16 @@ const MainViewContent: React.FC = () => {
             y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
           }}
           message={progressMessage}
+        />
+      )}
+
+      {/* Error Message Popup (use setErrorMessagePopupMessage to set message to display) */}
+      {showErrorMessagePopup && (
+        <ErrorMessagePopup
+          screenPosition={{
+            x: typeof window !== 'undefined' ? (window.innerWidth - 400) / 2 : 0,
+            y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
+          }}
         />
       )}
     </main>

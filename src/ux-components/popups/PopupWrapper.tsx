@@ -25,7 +25,7 @@ const PopupWrapper: React.FC<PopupWrapperProps> = ({
   onClose,
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
-  const { hideOpponentInfo, hideLandPopup } = useApplicationContext();
+  const { hideOpponentInfo, hideLandPopup, setShowErrorMessagePopup } = useApplicationContext();
 
   useEffect(() => {
     const handleClosePopup = () => {
@@ -35,6 +35,7 @@ const PopupWrapper: React.FC<PopupWrapperProps> = ({
         // Fallback to original behavior for backwards compatibility
         hideOpponentInfo();
         hideLandPopup();
+        setShowErrorMessagePopup(false);
       }
     };
 
@@ -57,7 +58,7 @@ const PopupWrapper: React.FC<PopupWrapperProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [hideOpponentInfo, hideLandPopup, onClose]);
+  }, [hideOpponentInfo, hideLandPopup, onClose, setShowErrorMessagePopup]);
 
   return (
     <div ref={popupRef}>

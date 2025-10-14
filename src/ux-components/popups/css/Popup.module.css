@@ -1,0 +1,21 @@
+.popupContent {
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.message {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-align: center;
+}
