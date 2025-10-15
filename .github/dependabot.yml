@@ -1,0 +1,6 @@
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    ignore:
+      - dependency-name: "webpack-dev-server"
+        versions: ["5.x"]
