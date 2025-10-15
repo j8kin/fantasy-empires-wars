@@ -170,7 +170,7 @@ describe('TopPanel Component', () => {
       expect(endTurnButton).toBeInTheDocument();
 
       await act(async () => {
-        userEvent.click(endTurnButton);
+        await userEvent.click(endTurnButton);
       });
       expect(consoleSpy).toHaveBeenCalledWith(
         "End of turn clicked! onClick handler: 'not provided'"
