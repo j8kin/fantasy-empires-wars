@@ -18,3 +18,14 @@
   object-fit: cover;
   object-position: top;
 }
+
+.empty-placeholder {
+  color: #8b7355;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}

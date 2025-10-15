@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './css/PlayerAvatar.module.css';
+import styles from './css/Avatar.module.css';
 
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 
@@ -35,20 +35,7 @@ const Avatar: React.FC<AvatarProps> = ({
   if (player.id === NO_PLAYER.id) {
     return (
       <div style={dynamicStyles} className={containerClassName}>
-        <div
-          style={{
-            color: '#8b7355',
-            fontSize: '12px',
-            textAlign: 'center',
-            fontWeight: 'bold',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-          }}
-        >
-          EMPTY
-        </div>
+        <div className={styles['empty-placeholder']}>EMPTY</div>
       </div>
     );
   }
