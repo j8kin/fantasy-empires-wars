@@ -4,4 +4,8 @@ updates:
     directory: '/'
     ignore:
       - dependency-name: 'webpack-dev-server'
+        versions: ['4.x', '5.x']
+      - dependency-name: 'react-scripts'
         versions: ['5.x']
+      - dependency-name: 'postcss'
+        versions: ['8.x']
