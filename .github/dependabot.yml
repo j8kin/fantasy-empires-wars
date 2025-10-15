@@ -2,6 +2,8 @@ version: 2
 updates:
   - package-ecosystem: 'npm'
     directory: '/'
+    schedule:
+      interval: 'weekly'
     ignore:
       - dependency-name: 'webpack-dev-server'
         versions: ['4.x', '5.x']
