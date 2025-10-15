@@ -67,6 +67,6 @@
     ]
   },
   "resolutions": {
-    "fork-ts-checker-webpack-plugin": "^9.0.2"
+    "fork-ts-checker-webpack-plugin": "^6.5.3"
   }
 }
