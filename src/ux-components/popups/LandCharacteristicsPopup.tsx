@@ -1,4 +1,5 @@
 import React from 'react';
+import commonStyles from './css/Popup.module.css';
 import styles from './css/LandCharacteristicsPopup.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
@@ -74,16 +75,16 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
       dimensions={{ width: dynamicWidth, height: dynamicHeight + 30 }}
       onClose={hideLandPopup}
     >
-      <div className={styles.popupContent}>
-        <div className={styles.header}>
-          <h3 className={styles.title}>{displayLandType.id}</h3>
+      <div className={commonStyles.popupContent}>
+        <div className={`${commonStyles.header} ${styles.header}`}>
+          <h3 className={`${commonStyles.title} ${styles.title}`}>{displayLandType.id}</h3>
         </div>
 
-        <div className={styles.characteristics}>
-          <div className={styles.row}>
-            <span className={styles.label}>Alignment:</span>
+        <div className={commonStyles.characteristics}>
+          <div className={`${commonStyles.row} ${styles.row}`}>
+            <span className={`${commonStyles.label} ${styles.label}`}>Alignment:</span>
             <span
-              className={styles.value}
+              className={commonStyles.value}
               style={{ color: getAlignmentColor(displayLandType.alignment) }}
             >
               {displayLandType.alignment}
@@ -92,21 +93,21 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 
           {battlefieldTile && (
             <>
-              <div className={styles.row}>
-                <span className={styles.label}>Position:</span>
-                <span className={styles.value}>
+              <div className={`${commonStyles.row} ${styles.row}`}>
+                <span className={`${commonStyles.label} ${styles.label}`}>Position:</span>
+                <span className={commonStyles.value}>
                   {battlefieldPosition.row}, {battlefieldPosition.col}
                 </span>
               </div>
 
-              <div className={styles.row}>
-                <span className={styles.label}>Gold per Turn:</span>
-                <span className={styles.value}>{battlefieldTile.goldPerTurn}</span>
+              <div className={`${commonStyles.row} ${styles.row}`}>
+                <span className={`${commonStyles.label} ${styles.label}`}>Gold per Turn:</span>
+                <span className={commonStyles.value}>{battlefieldTile.goldPerTurn}</span>
               </div>
 
-              <div className={styles.row}>
-                <span className={styles.label}>Controlled By:</span>
-                <span className={styles.value}>
+              <div className={`${commonStyles.row} ${styles.row}`}>
+                <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
+                <span className={commonStyles.value}>
                   {(() => {
                     const player = getPlayerById(gameState, battlefieldTile.controlledBy);
                     return player ? player.name : NO_PLAYER.name;
@@ -115,8 +116,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
               </div>
 
               {battlefieldTile.buildings && battlefieldTile.buildings.length > 0 && (
-                <div className={styles.row}>
-                  <span className={styles.label}>Buildings:</span>
+                <div className={`${commonStyles.row} ${styles.row}`}>
+                  <span className={`${commonStyles.label} ${styles.label}`}>Buildings:</span>
                   <div className={styles.buildingsList}>
                     {battlefieldTile.buildings.map((building, index) => (
                       <span key={index} className={styles.building}>
@@ -130,8 +131,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
               {battlefieldTile.army && battlefieldTile.army.length > 0 && (
                 <>
                   {battlefieldTile.army.some(({ unit }) => unit.hero) && (
-                    <div className={styles.row}>
-                      <span className={styles.label}>Heroes:</span>
+                    <div className={`${commonStyles.row} ${styles.row}`}>
+                      <span className={`${commonStyles.label} ${styles.label}`}>Heroes:</span>
                       <div className={styles.buildingsList}>
                         {battlefieldTile.army
                           .filter(({ unit }) => unit.hero)
@@ -144,13 +145,13 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                     </div>
                   )}
                   {battlefieldTile.army.some(({ unit }) => !unit.hero) && (
-                    <div className={styles.row}>
-                      <span className={styles.label}>Units:</span>
+                    <div className={`${commonStyles.row} ${styles.row}`}>
+                      <span className={`${commonStyles.label} ${styles.label}`}>Units:</span>
                       <div className={styles.buildingsList}>
                         {battlefieldTile.army
                           .filter(({ unit }) => !unit.hero)
                           .map(({ unit, quantity }, index) => (
-                            <span key={index} className={styles.value}>
+                            <span key={index} className={commonStyles.value}>
                               {unit.name} ({quantity})
                             </span>
                           ))}

@@ -1,28 +1,10 @@
-.popupContent {
-  padding: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: rgba(0, 0, 0, 0.9);
-  border-radius: 4px;
-}
-
+/* OpponentInfoPopup specific styles */
 .header {
-  display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #4a3c2a, #654321);
-  border-bottom: 1px solid #8b6f47;
-  border-radius: 4px 4px 0 0;
 }
 
 .title {
-  margin: 0;
   font-size: 16px;
-  font-weight: bold;
-  color: #ffd700;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .avatarSection {
@@ -37,38 +19,15 @@
   flex-shrink: 0;
 }
 
-.characteristics {
-  padding: 8px 12px 8px 12px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
 .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
   font-size: 14px;
 }
 
-.row:last-child {
-  margin-bottom: 0;
-}
-
 .label {
-  font-weight: bold;
-  color: #cccccc;
   min-width: 120px;
-  flex-shrink: 0;
 }
 
 .value {
-  color: #ffffff;
-  text-align: right;
-  flex-grow: 1;
-  margin-left: 8px;
   text-transform: capitalize;
 }
 

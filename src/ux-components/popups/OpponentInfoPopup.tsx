@@ -1,4 +1,5 @@
 import React from 'react';
+import commonStyles from './css/Popup.module.css';
 import styles from './css/OpponentInfoPopup.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
@@ -46,12 +47,12 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
       dimensions={{ width: dynamicWidth, height: dynamicHeight }}
       onClose={handleClose}
     >
-      <div className={styles.popupContent}>
-        <div className={styles.header}>
-          <h3 className={styles.title}>{opponent.name}</h3>
+      <div className={commonStyles.popupContent}>
+        <div className={`${commonStyles.header} ${styles.header}`}>
+          <h3 className={`${commonStyles.title} ${styles.title}`}>{opponent.name}</h3>
         </div>
 
-        <div className={styles.characteristics}>
+        <div className={commonStyles.characteristics}>
           <div className={styles.avatarSection}>
             <Avatar
               player={opponent}
@@ -62,24 +63,27 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
             />
           </div>
 
-          <div className={styles.row}>
-            <span className={styles.label}>Race:</span>
-            <span className={styles.value}>{opponent.race}</span>
+          <div className={`${commonStyles.row} ${styles.row}`}>
+            <span className={`${commonStyles.label} ${styles.label}`}>Race:</span>
+            <span className={`${commonStyles.value} ${styles.value}`}>{opponent.race}</span>
           </div>
-          <div className={styles.row}>
-            <span className={styles.label}>Alignment:</span>
-            <span className={styles.value} style={{ color: getAlignmentColor(opponent.alignment) }}>
+          <div className={`${commonStyles.row} ${styles.row}`}>
+            <span className={`${commonStyles.label} ${styles.label}`}>Alignment:</span>
+            <span
+              className={`${commonStyles.value} ${styles.value}`}
+              style={{ color: getAlignmentColor(opponent.alignment) }}
+            >
               {opponent.alignment}
             </span>
           </div>
-          <div className={styles.row}>
-            <span className={styles.label}>Level:</span>
-            <span className={styles.value}>{opponent.level}</span>
+          <div className={`${commonStyles.row} ${styles.row}`}>
+            <span className={`${commonStyles.label} ${styles.label}`}>Level:</span>
+            <span className={`${commonStyles.value} ${styles.value}`}>{opponent.level}</span>
           </div>
-          <div className={styles.row}>
-            <span className={styles.label}>Diplomatic Relations:</span>
+          <div className={`${commonStyles.row} ${styles.row}`}>
+            <span className={`${commonStyles.label} ${styles.label}`}>Diplomatic Relations:</span>
             <span
-              className={`${styles.value} ${styles.diplomacyStatus} ${styles[diplomacyStatus.toLowerCase().replace(' ', '')]}`}
+              className={`${commonStyles.value} ${styles.value} ${styles.diplomacyStatus} ${styles[diplomacyStatus.toLowerCase().replace(' ', '')]}`}
             >
               {diplomacyStatus}
             </span>
