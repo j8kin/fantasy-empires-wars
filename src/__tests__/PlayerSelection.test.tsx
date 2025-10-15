@@ -238,13 +238,13 @@ describe('PlayerSelection', () => {
     });
 
     await act(async () => {
-      userEvent.hover(secondPlayerItem);
+      await userEvent.hover(secondPlayerItem);
     });
     expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
 
     // Unhover should revert to selected player
     await act(async () => {
-      userEvent.unhover(secondPlayerItem);
+      await userEvent.unhover(secondPlayerItem);
     });
     expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
     expect(screen.queryByText(PREDEFINED_PLAYERS[1].description)).not.toBeInTheDocument();
