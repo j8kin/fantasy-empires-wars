@@ -1,6 +1,7 @@
+version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     ignore:
-      - dependency-name: "webpack-dev-server"
-        versions: ["5.x"]
+      - dependency-name: 'webpack-dev-server'
+        versions: ['5.x']
