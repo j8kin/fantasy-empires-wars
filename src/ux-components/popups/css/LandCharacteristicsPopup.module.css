@@ -1,16 +1,3 @@
-.popup {
-  position: fixed;
-  z-index: 1000;
-  background: rgba(0, 0, 0, 0.9);
-  border: 2px solid #654321;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  min-width: 200px;
-  max-width: 300px;
-  color: #ffffff;
-  font-family: 'Arial', sans-serif;
-}
-
 .popupContent {
   padding: 0;
   height: 100%;
@@ -30,33 +17,12 @@
   border-radius: 4px 4px 0 0;
 }
 
-.message {
+.title {
   margin: 0;
   font-size: 14px;
   font-weight: bold;
   color: #ffd700;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.closeButton {
-  background: none;
-  border: none;
-  color: #ffd700;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 3px;
-  transition: background-color 0.2s;
-}
-
-.closeButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .characteristics {

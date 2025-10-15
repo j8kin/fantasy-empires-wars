@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../battlefield/css/LandCharacteristicsPopup.module.css';
+import styles from './css/LandCharacteristicsPopup.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { battlefieldLandId, getPlayerById } from '../../types/GameState';

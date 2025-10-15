@@ -54,7 +54,7 @@ const TestGameProvider: React.FC<{ children: React.ReactNode; gameState?: GameSt
 };
 
 // Mock CSS modules
-jest.mock('../ux-components/battlefield/css/LandCharacteristicsPopup.module.css', () => ({
+jest.mock('../ux-components/popups/css/LandCharacteristicsPopup.module.css', () => ({
   popup: 'mocked-popup',
   popupContent: 'mocked-popup-content',
   header: 'mocked-header',
