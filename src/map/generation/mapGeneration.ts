@@ -158,7 +158,7 @@ const addPlayer = (
   construct(player, BuildingType.STRONGHOLD, homeland.mapPos, tiles, mapSize);
 
   // construct one barrack on the same alignment land except homeland
-  const playerLands = getLands(
+  let playerLands = getLands(
     tiles,
     [player],
     homeland.land.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
@@ -166,7 +166,19 @@ const addPlayer = (
     []
   );
   const barrackLand = playerLands[Math.floor(Math.random() * playerLands.length)];
-  construct(player, BuildingType.BARRACKS, barrackLand.mapPos, tiles, mapSize);
+  if (barrackLand != null) {
+    construct(player, BuildingType.BARRACKS, barrackLand.mapPos, tiles, mapSize);
+  } else {
+    // if no lands with the same alignment try to build on neutral land
+    playerLands = getLands(tiles, [player], undefined, Alignment.NEUTRAL, []);
+    construct(
+      player,
+      BuildingType.BARRACKS,
+      playerLands[Math.floor(Math.random() * playerLands.length)].mapPos,
+      tiles,
+      mapSize
+    );
+  }
 
   existingPlayersPositions.push(homeland.mapPos);
 
