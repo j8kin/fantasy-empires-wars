@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../dialogs/css/OpponentInfoDialog.module.css';
+import styles from './css/OpponentInfoPopup.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';

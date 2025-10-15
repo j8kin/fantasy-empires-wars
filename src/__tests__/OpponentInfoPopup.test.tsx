@@ -6,7 +6,7 @@ import { Alignment } from '../types/Alignment';
 import { ApplicationContextProvider } from '../contexts/ApplicationContext';
 import { GameState } from '../types/GameState';
 
-jest.mock('../ux-components/dialogs/css/OpponentInfoDialog.module.css', () => ({
+jest.mock('../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
   popupContent: 'mocked-popup-content',
   header: 'mocked-header',
   title: 'mocked-title',
