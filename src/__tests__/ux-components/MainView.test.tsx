@@ -17,15 +17,15 @@ const renderWithProvider = (ui: React.ReactElement) => {
 };
 
 // Mock CSS modules
-jest.mock('../../ux-components/main-view/css/Background.module.css', () => ({
+jest.mock('../../../ux-components/main-view/css/Background.module.css', () => ({
   backgroundStyle: 'mocked-background-style',
 }));
 
 // Mock child components
 jest.mock('../../ux-components/top-panel/TopPanel', () => {
   return () => {
-    const { PREDEFINED_PLAYERS } = jest.requireActual('../types/GamePlayer');
-    const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
+    const { PREDEFINED_PLAYERS } = jest.requireActual('../../types/GamePlayer');
+    const { useApplicationContext } = jest.requireActual('../../contexts/ApplicationContext');
     const mockPlayer = PREDEFINED_PLAYERS[0];
     const { setShowStartWindow, setShowSaveDialog, showOpponentInfo } = useApplicationContext();
     return (
@@ -48,7 +48,7 @@ jest.mock('../../ux-components/top-panel/TopPanel', () => {
 
 jest.mock('../../ux-components/battlefield/Battlefield', () => {
   return (props: BattlefieldProps) => {
-    const { useGameContext } = jest.requireActual('../contexts/GameContext');
+    const { useGameContext } = jest.requireActual('../../contexts/GameContext');
     const { gameState } = useGameContext();
     return (
       <div
@@ -62,7 +62,7 @@ jest.mock('../../ux-components/battlefield/Battlefield', () => {
 
 jest.mock('../../ux-components/dialogs/NewGameDialog', () => {
   return () => {
-    const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
+    const { useApplicationContext } = jest.requireActual('../../contexts/ApplicationContext');
     const { showSelectOpponentDialogWithConfig } = useApplicationContext();
     return (
       <div data-testid="NewGameDialog">
@@ -80,7 +80,7 @@ jest.mock('../../ux-components/dialogs/NewGameDialog', () => {
 jest.mock('../../ux-components/popups/OpponentInfoPopup', () => {
   return (props: OpponentInfoProps) => {
     // Import ApplicationContext hook to access hideOpponentInfo
-    const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
+    const { useApplicationContext } = jest.requireActual('../../contexts/ApplicationContext');
     const { hideOpponentInfo } = useApplicationContext();
 
     const handleClose = () => {
@@ -98,7 +98,7 @@ jest.mock('../../ux-components/popups/OpponentInfoPopup', () => {
 
 jest.mock('../../ux-components/dialogs/SelectOpponentDialog', () => {
   return (_props: SelectOpponentDialogProps) => {
-    const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
+    const { useApplicationContext } = jest.requireActual('../../contexts/ApplicationContext');
     const { hideSelectOpponentDialog } = useApplicationContext();
     return (
       <div data-testid="SelectOpponentDialog">

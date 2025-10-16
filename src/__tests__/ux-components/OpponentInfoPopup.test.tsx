@@ -40,7 +40,7 @@ jest.mock('../../ux-components/avatars/Avatar', () => {
 
 // Mock the GameContext hook
 jest.mock('../../contexts/GameContext', () => {
-  const originalModule = jest.requireActual('../contexts/GameContext');
+  const originalModule = jest.requireActual('../../contexts/GameContext');
   return {
     ...originalModule,
     useGameContext: jest.fn(),
