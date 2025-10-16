@@ -27,9 +27,11 @@ export const construct = (
         if (tiles[battlefieldLandId(candidate)].buildings.length === 0) {
           // no buildings on the land, so we can take it if the distance is too far from the opponent stronghold
           if (
-            !getTilesInRadius(mapSize, candidate, 1).some((pos) =>
-              tiles[battlefieldLandId(pos)].buildings?.some((b) => b.id === BuildingType.STRONGHOLD) &&
-                tiles[battlefieldLandId(pos)].controlledBy === currentOwner
+            !getTilesInRadius(mapSize, candidate, 1).some(
+              (pos) =>
+                tiles[battlefieldLandId(pos)].buildings?.some(
+                  (b) => b.id === BuildingType.STRONGHOLD
+                ) && tiles[battlefieldLandId(pos)].controlledBy === currentOwner
             )
           ) {
             tiles[battlefieldLandId(candidate)].controlledBy = owner.id;
