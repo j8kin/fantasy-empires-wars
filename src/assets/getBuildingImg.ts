@@ -2,6 +2,10 @@ import { BuildingType } from '../types/Building';
 
 import strongholdImg from './buildings/stronghold.png';
 import barracksImg from './buildings/barracks.png';
+import mageTowerWhite from './buildings/magic-tower-white.png';
+import mageTowerBlue from './buildings/magic-tower-blue.png';
+import mageTowerGreen from './buildings/magic-tower-green.png';
+import mageTowerRed from './buildings/magic-tower-red.png';
 import watchTowerImg from './buildings/watchtower.png';
 import outpostImg from './buildings/outpost.png';
 import wallImg from './buildings/wall.png';
@@ -13,10 +17,14 @@ export const getBuildingImg = (building: BuildingType) => {
     case BuildingType.BARRACKS:
       return barracksImg;
     case BuildingType.WHITE_MAGE_TOWER:
-    case BuildingType.BLACK_MAGE_TOWER:
+      return mageTowerWhite;
     case BuildingType.BLUE_MAGE_TOWER:
+      return mageTowerBlue;
     case BuildingType.GREEN_MAGE_TOWER:
+      return mageTowerGreen;
     case BuildingType.RED_MAGE_TOWER:
+      return mageTowerRed;
+    case BuildingType.BLACK_MAGE_TOWER:
       return undefined;
     case BuildingType.OUTPOST:
       return outpostImg;
