@@ -24,23 +24,16 @@ export const construct = (
       if (currentOwner === NO_PLAYER.id) {
         tiles[battlefieldLandId(candidate)].controlledBy = owner.id;
       } else {
-        // compare which stronghold is nearest
-        const newStrongholdDistance = calculateHexDistance(mapSize, position, candidate);
-        const oldOwnerStrongholds = getTilesInRadius(mapSize, candidate, 2)
-          .map((t) => tiles[battlefieldLandId(t)])
-          .filter(
-            (t) =>
-              t.controlledBy === currentOwner &&
-              t.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
-          );
-        const oldOwnerDistance = oldOwnerStrongholds
-          .map((t) => calculateHexDistance(mapSize, position, t.mapPos))
-          .reduce((a, b) => Math.min(a, b), Infinity);
-        if (
-          newStrongholdDistance < oldOwnerDistance &&
-          tiles[battlefieldLandId(candidate)].buildings.length === 0
-        ) {
-          tiles[battlefieldLandId(candidate)].controlledBy = owner.id;
+        if (tiles[battlefieldLandId(candidate)].buildings.length === 0) {
+          // no buildings on the land, so we can take it if the distance is too far from the opponent stronghold
+          if (
+            !getTilesInRadius(mapSize, candidate, 1).some((pos) =>
+              tiles[battlefieldLandId(pos)].buildings?.some((b) => b.id === BuildingType.STRONGHOLD) &&
+                tiles[battlefieldLandId(pos)].controlledBy === currentOwner
+            )
+          ) {
+            tiles[battlefieldLandId(candidate)].controlledBy = owner.id;
+          }
         }
       }
     }
