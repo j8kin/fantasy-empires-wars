@@ -1,7 +1,7 @@
 import { GameState } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { getAvailableLands } from '../map/building/getAvailableLands';
+import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
 
@@ -19,7 +19,7 @@ describe('getAvailableLands', () => {
   });
 
   it('should return no available lands for non-stronghold building when player has no lands under control', () => {
-    const availableLands = getAvailableLands(
+    const availableLands = getAvailableToConstructLands(
       BuildingType.BARRACKS,
       gameState.selectedPlayer,
       gameState
@@ -36,7 +36,7 @@ describe('getAvailableLands', () => {
       gameState.mapSize
     );
 
-    const availableLands = getAvailableLands(
+    const availableLands = getAvailableToConstructLands(
       BuildingType.BARRACKS,
       gameState.selectedPlayer,
       gameState
@@ -78,7 +78,7 @@ describe('getAvailableLands', () => {
       gameState.mapSize
     );
 
-    const availableLands = getAvailableLands(
+    const availableLands = getAvailableToConstructLands(
       BuildingType.STRONGHOLD,
       gameState.selectedPlayer,
       gameState
@@ -116,7 +116,7 @@ describe('getAvailableLands', () => {
       gameState.mapSize
     );
 
-    const availableLands = getAvailableLands(
+    const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
       gameState.selectedPlayer,
       gameState
@@ -162,7 +162,7 @@ describe('getAvailableLands', () => {
       gameState.mapSize
     );
 
-    const availableLands = getAvailableLands(
+    const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
       gameState.selectedPlayer,
       gameState
@@ -217,7 +217,7 @@ describe('getAvailableLands', () => {
       gameState.mapSize
     );
 
-    const availableLands = getAvailableLands(
+    const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
       gameState.selectedPlayer,
       gameState
@@ -264,7 +264,7 @@ describe('getAvailableLands', () => {
       gameState.mapSize
     );
 
-    const availableLands = getAvailableLands(
+    const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
       gameState.selectedPlayer,
       gameState
@@ -311,7 +311,7 @@ describe('getAvailableLands', () => {
       gameState.mapSize
     );
 
-    const availableLands = getAvailableLands(
+    const availableLands = getAvailableToConstructLands(
       BuildingType.BARRACKS,
       gameState.selectedPlayer,
       gameState
@@ -363,7 +363,7 @@ describe('getAvailableLands', () => {
       gameState.mapSize
     );
 
-    const availableLands = getAvailableLands(
+    const availableLands = getAvailableToConstructLands(
       BuildingType.STRONGHOLD,
       gameState.selectedPlayer,
       gameState

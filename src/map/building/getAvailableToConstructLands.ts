@@ -4,7 +4,7 @@ import { getLands } from '../utils/mapLands';
 import { GamePlayer } from '../../types/GamePlayer';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 
-export const getAvailableLands = (
+export const getAvailableToConstructLands = (
   buildingType: BuildingType,
   player: GamePlayer,
   gameState: GameState

@@ -5,9 +5,11 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
 import { getSpellById, SpellName } from '../../types/Spell';
-import { highlightLands } from '../../map/utils/highlightLands';
 import { BuildingType } from '../../types/Building';
 import { toRoman } from '../../map/utils/romanNumerals';
+import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
+import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
+import { GameState } from '../../types/GameState';
 
 interface FlipBookPageProps {
   pageNum: number;
@@ -22,6 +24,20 @@ interface FlipBookPageProps {
   style?: React.CSSProperties;
   onClose?: () => void;
 }
+
+const getAvailableLands = (
+  gameState: GameState,
+  actionType: 'spell' | 'building',
+  name: SpellName | BuildingType
+): string[] => {
+  if (gameState == null) return [];
+
+  if (actionType === 'building') {
+    return getAvailableToConstructLands(name as BuildingType, gameState.selectedPlayer!, gameState);
+  } else {
+    return getAvailableToCastSpellLands(name as SpellName, gameState.selectedPlayer!, gameState);
+  }
+};
 
 const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
   (
@@ -60,10 +76,8 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
           onClose(); // close dialog to apply spell or construction
         }
 
-        // Get the tile IDs that should be highlighted
-        const landsToHighlight = highlightLands(gameState!, actionType, name);
         // Add tiles to the glowing tiles set for visual highlighting
-        landsToHighlight.forEach((tileId) => {
+        getAvailableLands(gameState!, actionType, name).forEach((tileId) => {
           addGlowingTile(tileId);
         });
       }
