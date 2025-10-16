@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ManaType } from '../types/Mana';
-import ManaVial from '../ux-components/vial-panel/ManaVial';
+import { ManaType } from '../../types/Mana';
+import ManaVial from '../../ux-components/vial-panel/ManaVial';
 
 describe('ManaVial Component - Basic Tests', () => {
   it('should render with percentage text', () => {

@@ -2,16 +2,16 @@ import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import SelectOpponentDialog from '../ux-components/dialogs/SelectOpponentDialog';
-import { PREDEFINED_PLAYERS, NO_PLAYER } from '../types/GamePlayer';
-import { FantasyBorderFrameProps } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
-import { ApplicationContextProvider } from '../contexts/ApplicationContext';
+import SelectOpponentDialog from '../../ux-components/dialogs/SelectOpponentDialog';
+import { PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
+import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
+import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 
 const renderWithProvider = (ui: React.ReactElement) =>
   render(ui, { wrapper: ApplicationContextProvider });
 
 // Mock FantasyBorderFrame to avoid complex rendering issues
-jest.mock('../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
+jest.mock('../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
   return ({ children, secondaryButton }: FantasyBorderFrameProps) => {
     return (
       <div data-testid="fantasy-border-frame">

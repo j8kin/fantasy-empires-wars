@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import MainView from '../ux-components/main-view/MainView';
-import { BattlefieldProps } from '../ux-components/battlefield/Battlefield';
-import { OpponentInfoProps } from '../ux-components/popups/OpponentInfoPopup';
-import { SelectOpponentDialogProps } from '../ux-components/dialogs/SelectOpponentDialog';
-import { ApplicationContextProvider } from '../contexts/ApplicationContext';
-import { GameProvider, useGameContext } from '../contexts/GameContext';
+import MainView from '../../ux-components/main-view/MainView';
+import { BattlefieldProps } from '../../ux-components/battlefield/Battlefield';
+import { OpponentInfoProps } from '../../ux-components/popups/OpponentInfoPopup';
+import { SelectOpponentDialogProps } from '../../ux-components/dialogs/SelectOpponentDialog';
+import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
+import { GameProvider, useGameContext } from '../../contexts/GameContext';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const AllProvidersWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -17,12 +17,12 @@ const renderWithProvider = (ui: React.ReactElement) => {
 };
 
 // Mock CSS modules
-jest.mock('../ux-components/main-view/css/Background.module.css', () => ({
+jest.mock('../../ux-components/main-view/css/Background.module.css', () => ({
   backgroundStyle: 'mocked-background-style',
 }));
 
 // Mock child components
-jest.mock('../ux-components/top-panel/TopPanel', () => {
+jest.mock('../../ux-components/top-panel/TopPanel', () => {
   return () => {
     const { PREDEFINED_PLAYERS } = jest.requireActual('../types/GamePlayer');
     const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
@@ -46,7 +46,7 @@ jest.mock('../ux-components/top-panel/TopPanel', () => {
   };
 });
 
-jest.mock('../ux-components/battlefield/Battlefield', () => {
+jest.mock('../../ux-components/battlefield/Battlefield', () => {
   return (props: BattlefieldProps) => {
     const { useGameContext } = jest.requireActual('../contexts/GameContext');
     const { gameState } = useGameContext();
@@ -60,7 +60,7 @@ jest.mock('../ux-components/battlefield/Battlefield', () => {
   };
 });
 
-jest.mock('../ux-components/dialogs/NewGameDialog', () => {
+jest.mock('../../ux-components/dialogs/NewGameDialog', () => {
   return () => {
     const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
     const { showSelectOpponentDialogWithConfig } = useApplicationContext();
@@ -77,7 +77,7 @@ jest.mock('../ux-components/dialogs/NewGameDialog', () => {
 
 // Don't mock SaveGameDialog, let it use the real component with ApplicationContext
 
-jest.mock('../ux-components/popups/OpponentInfoPopup', () => {
+jest.mock('../../ux-components/popups/OpponentInfoPopup', () => {
   return (props: OpponentInfoProps) => {
     // Import ApplicationContext hook to access hideOpponentInfo
     const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
@@ -96,7 +96,7 @@ jest.mock('../ux-components/popups/OpponentInfoPopup', () => {
   };
 });
 
-jest.mock('../ux-components/dialogs/SelectOpponentDialog', () => {
+jest.mock('../../ux-components/dialogs/SelectOpponentDialog', () => {
   return (_props: SelectOpponentDialogProps) => {
     const { useApplicationContext } = jest.requireActual('../contexts/ApplicationContext');
     const { hideSelectOpponentDialog } = useApplicationContext();

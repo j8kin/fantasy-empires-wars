@@ -1,12 +1,12 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ApplicationContextProvider } from '../contexts/ApplicationContext';
-import LandCharacteristicsPopup from '../ux-components/popups/LandCharacteristicsPopup';
-import { GameState, LandState } from '../types/GameState';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { LAND_TYPE } from '../types/Land';
-import { initializeMap } from '../map/generation/mapGeneration';
-import { Army, UnitType, getUnit } from '../types/Army';
+import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
+import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
+import { GameState, LandState } from '../../types/GameState';
+import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { LAND_TYPE } from '../../types/Land';
+import { initializeMap } from '../../map/generation/mapGeneration';
+import { Army, UnitType, getUnit } from '../../types/Army';
 
 const renderWithProviders = (ui: React.ReactElement, gameState?: GameState) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -19,12 +19,12 @@ const renderWithProviders = (ui: React.ReactElement, gameState?: GameState) => {
 
 // Mock the useGameContext hook
 let mockUseGameContext: jest.Mock;
-jest.mock('../contexts/GameContext', () => ({
+jest.mock('../../contexts/GameContext', () => ({
   useGameContext: jest.fn(),
 }));
 
 // Get the mocked function after module mocking
-const { useGameContext } = require('../contexts/GameContext');
+const { useGameContext } = require('../../contexts/GameContext');
 mockUseGameContext = useGameContext as jest.Mock;
 
 // Custom GameProvider for testing that accepts a specific gameState
@@ -54,7 +54,7 @@ const TestGameProvider: React.FC<{ children: React.ReactNode; gameState?: GameSt
 };
 
 // Mock CSS modules
-jest.mock('../ux-components/popups/css/LandCharacteristicsPopup.module.css', () => ({
+jest.mock('../../ux-components/popups/css/LandCharacteristicsPopup.module.css', () => ({
   popup: 'mocked-popup',
   popupContent: 'mocked-popup-content',
   header: 'mocked-header',

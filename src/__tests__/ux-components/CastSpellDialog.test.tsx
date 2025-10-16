@@ -1,17 +1,20 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import CastSpellDialog from '../ux-components/dialogs/CastSpellDialog';
-import { GameProvider, useGameContext } from '../contexts/GameContext';
-import { ApplicationContextProvider, useApplicationContext } from '../contexts/ApplicationContext';
-import { AllSpells } from '../types/Spell';
-import { ManaType } from '../types/Mana';
-import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import CastSpellDialog from '../../ux-components/dialogs/CastSpellDialog';
+import { GameProvider, useGameContext } from '../../contexts/GameContext';
+import {
+  ApplicationContextProvider,
+  useApplicationContext,
+} from '../../contexts/ApplicationContext';
+import { AllSpells } from '../../types/Spell';
+import { ManaType } from '../../types/Mana';
+import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 
 // Mock CSS modules
-jest.mock('../ux-components/fantasy-book-dialog-template/css/FlipBook.css', () => ({}));
+jest.mock('../../ux-components/fantasy-book-dialog-template/css/FlipBook.css', () => ({}));
 
 // Mock child components
-jest.mock('../ux-components/fantasy-book-dialog-template/FlipBook', () => {
+jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
   return ({ children, onClickOutside }: any) => (
     <div data-testid="FlipBook" onClick={onClickOutside}>
       {children}
@@ -22,7 +25,7 @@ jest.mock('../ux-components/fantasy-book-dialog-template/FlipBook', () => {
 // Mock FlipBookPage with minimal behavior simulation
 const mockFlipBookPageClick = jest.fn();
 
-jest.mock('../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
+jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
   return ({ header, description, cost, costLabel, onClose }: any) => (
     <div data-testid={`FlipBookPage-${header}`}>
       <h3>{header}</h3>
@@ -45,12 +48,12 @@ jest.mock('../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
 });
 
 // Mock spell images
-jest.mock('../assets/spells/white/blessing.png', () => 'blessing.png');
-jest.mock('../assets/spells/white/heal.png', () => 'heal.png');
-jest.mock('../assets/spells/white/turn-undead.png', () => 'turn-undead.png');
-jest.mock('../assets/spells/white/view.png', () => 'view.png');
-jest.mock('../assets/spells/blue/illusion.png', () => 'illusion.png');
-jest.mock('../assets/spells/blue/teleport.png', () => 'teleport.png');
+jest.mock('../../assets/spells/white/blessing.png', () => 'blessing.png');
+jest.mock('../../assets/spells/white/heal.png', () => 'heal.png');
+jest.mock('../../assets/spells/white/turn-undead.png', () => 'turn-undead.png');
+jest.mock('../../assets/spells/white/view.png', () => 'view.png');
+jest.mock('../../assets/spells/blue/illusion.png', () => 'illusion.png');
+jest.mock('../../assets/spells/blue/teleport.png', () => 'teleport.png');
 
 const CastSpellDialogWithContext: React.FC = () => (
   <ApplicationContextProvider>
