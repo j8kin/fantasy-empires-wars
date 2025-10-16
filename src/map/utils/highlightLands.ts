@@ -2,6 +2,7 @@ import { GameState, battlefieldLandId } from '../../types/GameState';
 import { getLands } from './mapLands';
 import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType } from '../../types/Building';
+import { getAvailableLands } from '../building/getAvailableLands';
 
 export const highlightLands = (
   gameState: GameState,
@@ -13,18 +14,15 @@ export const highlightLands = (
   if (!battlefieldLands) return [];
 
   if (actionType === 'building') {
-    const lands = getLands(battlefieldLands, [selectedPlayer!], undefined, undefined, []);
-    return lands.map((land) => battlefieldLandId(land.mapPos));
+    return getAvailableLands(name as BuildingType, selectedPlayer!, gameState);
   } else {
-    const spell = getSpellById(name as SpellName);
-    const spellApply = spell.apply;
+    const spellApply = getSpellById(name as SpellName).apply;
     const playerFilter =
       spellApply === 'player'
         ? [selectedPlayer!]
         : spellApply === 'opponent'
           ? opponents
           : [selectedPlayer!, ...opponents!];
-    const lands = getLands(battlefieldLands, playerFilter);
-    return lands.map((land) => battlefieldLandId(land.mapPos));
+    return getLands(battlefieldLands, playerFilter).map((land) => battlefieldLandId(land.mapPos));
   }
 };
