@@ -6,9 +6,11 @@ import mageTowerWhite from './buildings/magic-tower-white.png';
 import mageTowerBlue from './buildings/magic-tower-blue.png';
 import mageTowerGreen from './buildings/magic-tower-green.png';
 import mageTowerRed from './buildings/magic-tower-red.png';
+import mageTowerBlack from './buildings/magic-tower-black.png';
 import watchTowerImg from './buildings/watchtower.png';
 import outpostImg from './buildings/outpost.png';
 import wallImg from './buildings/wall.png';
+import demolishImg from './buildings/demolish.png';
 
 export const getBuildingImg = (building: BuildingType) => {
   switch (building) {
@@ -25,7 +27,7 @@ export const getBuildingImg = (building: BuildingType) => {
     case BuildingType.RED_MAGE_TOWER:
       return mageTowerRed;
     case BuildingType.BLACK_MAGE_TOWER:
-      return undefined;
+      return mageTowerBlack;
     case BuildingType.OUTPOST:
       return outpostImg;
     case BuildingType.WATCH_TOWER:
@@ -33,6 +35,7 @@ export const getBuildingImg = (building: BuildingType) => {
     case BuildingType.WALL:
       return wallImg;
     case BuildingType.DEMOLITION:
+      return demolishImg;
     default:
       return undefined;
   }
