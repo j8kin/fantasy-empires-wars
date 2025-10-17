@@ -9,7 +9,7 @@ import Avatar from '../avatars/Avatar';
 import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 
-import { initializeMap } from '../../map/generation/mapGeneration';
+import { addPlayerToMap, initializeMap } from '../../map/generation/mapGeneration';
 import { ButtonName } from '../../types/ButtonName';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
@@ -266,20 +266,20 @@ const NewGameDialog: React.FC = () => {
       money: 15000,
     };
 
-    const allPlayers = [updatedSelectedPlayer, ...updatedOpponents];
-
     setShowStartWindow(false);
     setProgressMessage('Creating new game...');
     setShowProgressPopup(true);
 
     setTimeout(() => {
       const gameState: GameState = {
-        battlefieldLands: initializeMap(mapSize, allPlayers),
+        battlefieldLands: initializeMap(mapSize),
         turn: 0,
         mapSize,
         selectedPlayer: updatedSelectedPlayer,
         opponents: updatedOpponents,
       };
+
+      addPlayerToMap(gameState);
 
       updateGameState(gameState);
       recalculateAllPlayersIncome();

@@ -5,7 +5,7 @@ import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteris
 import { GameState, LandState } from '../../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { LAND_TYPE } from '../../types/Land';
-import { initializeMap } from '../../map/generation/mapGeneration';
+import { addPlayerToMap, initializeMap } from '../../map/generation/mapGeneration';
 import { Army, UnitType, getUnit } from '../../types/Army';
 
 const renderWithProviders = (ui: React.ReactElement, gameState?: GameState) => {
@@ -73,11 +73,12 @@ describe('LandCharacteristicsPopup', () => {
   const mapSize = 'medium';
   const mockGameState: GameState = {
     mapSize: mapSize,
-    battlefieldLands: initializeMap(mapSize, PREDEFINED_PLAYERS.slice(0, 2)),
+    battlefieldLands: initializeMap(mapSize),
     turn: 0,
     selectedPlayer: mockPlayer,
-    opponents: [PREDEFINED_PLAYERS[0]],
+    opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],
   };
+  addPlayerToMap(mockGameState);
 
   const mockTileState: LandState = Object.values(mockGameState.battlefieldLands).find(
     (tile) => tile.land.id === LAND_TYPE.VOLCANO

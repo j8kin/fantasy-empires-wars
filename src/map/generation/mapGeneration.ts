@@ -1,4 +1,4 @@
-import { battlefieldLandId, LandState, BattlefieldLands } from '../../types/GameState';
+import { battlefieldLandId, LandState, BattlefieldLands, GameState } from '../../types/GameState';
 import { getLandById, Land, LAND_TYPE } from '../../types/Land';
 import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
@@ -148,18 +148,22 @@ const assignPlayerHero = (homeland: LandState, player: GamePlayer) => {
 const addPlayer = (
   player: GamePlayer,
   existingPlayersPositions: LandPosition[],
-  tiles: BattlefieldLands,
-  mapSize: BattlefieldSize
+  gameState: GameState
 ) => {
-  const homeland = findSuitableHomeland(tiles, player, existingPlayersPositions, mapSize);
+  const homeland = findSuitableHomeland(
+    gameState.battlefieldLands,
+    player,
+    existingPlayersPositions,
+    gameState.mapSize
+  );
   if (!homeland) return; // should never reach here
 
   homeland.controlledBy = player.id;
-  construct(player, BuildingType.STRONGHOLD, homeland.mapPos, tiles, mapSize);
+  construct(player, BuildingType.STRONGHOLD, homeland.mapPos, gameState);
 
   // construct one barrack on the same alignment land except homeland
   let playerLands = getLands(
-    tiles,
+    gameState.battlefieldLands,
     [player],
     homeland.land.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
     player.alignment,
@@ -167,16 +171,15 @@ const addPlayer = (
   );
   const barrackLand = playerLands[Math.floor(Math.random() * playerLands.length)];
   if (barrackLand != null) {
-    construct(player, BuildingType.BARRACKS, barrackLand.mapPos, tiles, mapSize);
+    construct(player, BuildingType.BARRACKS, barrackLand.mapPos, gameState);
   } else {
     // if no lands with the same alignment try to build on neutral land
-    playerLands = getLands(tiles, [player], undefined, Alignment.NEUTRAL, []);
+    playerLands = getLands(gameState.battlefieldLands, [player], undefined, Alignment.NEUTRAL, []);
     construct(
       player,
       BuildingType.BARRACKS,
       playerLands[Math.floor(Math.random() * playerLands.length)].mapPos,
-      tiles,
-      mapSize
+      gameState
     );
   }
 
@@ -186,30 +189,25 @@ const addPlayer = (
   assignPlayerHero(homeland, player);
 };
 
-const assignPlayerLands = (
-  tiles: BattlefieldLands,
-  players: GamePlayer[],
-  mapSize: BattlefieldSize
-): void => {
+const assignPlayerLands = (gameState: GameState): void => {
+  const { selectedPlayer, opponents } = gameState;
+  const allyPlayers = [selectedPlayer, ...opponents];
   const playerPositions: LandPosition[] = [];
 
   // Place Necromancer on volcano first if necromancer is present
-  const necromancer = players.find((player) => player.race === 'Undead');
+  const necromancer = allyPlayers.find((player) => player.race === 'Undead');
   if (necromancer != null) {
-    addPlayer(necromancer, playerPositions, tiles, mapSize);
+    addPlayer(necromancer, playerPositions, gameState);
   }
 
-  players
+  allyPlayers
     .filter((player) => player.id !== necromancer?.id)
     .forEach((player) => {
-      addPlayer(player, playerPositions, tiles, mapSize);
+      addPlayer(player, playerPositions, gameState);
     });
 };
 
-export const initializeMap = (
-  mapSize: BattlefieldSize,
-  players: GamePlayer[] = []
-): BattlefieldLands => {
+export const initializeMap = (mapSize: BattlefieldSize): BattlefieldLands => {
   const { rows, cols } = getBattlefieldDimensions(mapSize);
   const tiles: BattlefieldLands = {};
 
@@ -320,10 +318,9 @@ export const initializeMap = (
     tile.goldPerTurn = calculateBaseLandGold(tile.land);
   });
 
-  // Assign players to homelands if players are provided
-  if (players.length > 0) {
-    assignPlayerLands(tiles, players, mapSize);
-  }
-
   return tiles;
+};
+
+export const addPlayerToMap = (gameState: GameState) => {
+  assignPlayerLands(gameState);
 };

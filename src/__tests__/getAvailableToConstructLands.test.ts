@@ -28,13 +28,7 @@ describe('getAvailableLands', () => {
   });
 
   it('should return all available lands for non-stronghold building where there are no buildings', () => {
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.BARRACKS,
@@ -70,13 +64,7 @@ describe('getAvailableLands', () => {
   });
 
   it('should return all available lands for stronghold building where there are no buildings', () => {
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.STRONGHOLD,
@@ -108,13 +96,7 @@ describe('getAvailableLands', () => {
   });
 
   it('should return only border lands if user wants to construct the wall', () => {
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
@@ -146,21 +128,9 @@ describe('getAvailableLands', () => {
   });
 
   it('should return only border lands even with building if user wants to construct the wall', () => {
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.BARRACKS,
-      { row: 1, col: 2 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.BARRACKS, { row: 1, col: 2 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
@@ -193,29 +163,11 @@ describe('getAvailableLands', () => {
   });
 
   it('should return only border lands land with wall should be excluded if user wants to construct the wall', () => {
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.BARRACKS,
-      { row: 1, col: 2 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.BARRACKS, { row: 1, col: 2 }, gameState);
 
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.WALL,
-      { row: 1, col: 2 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.WALL, { row: 1, col: 2 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
@@ -249,19 +201,12 @@ describe('getAvailableLands', () => {
   });
 
   it('should return all barder lands when have a border with other plyer', () => {
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
     construct(
       PREDEFINED_PLAYERS[1], // other player
       BuildingType.STRONGHOLD,
       { row: 3, col: 6 },
-      gameState.battlefieldLands,
-      gameState.mapSize
+      gameState
     );
 
     const availableLands = getAvailableToConstructLands(
@@ -295,21 +240,9 @@ describe('getAvailableLands', () => {
   });
 
   it('should return land with WALL for non-wall build request', () => {
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.WALL,
-      { row: 1, col: 2 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.WALL, { row: 1, col: 2 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.BARRACKS,
@@ -347,21 +280,9 @@ describe('getAvailableLands', () => {
   });
 
   it('should return land with WALL for stronghold build request', () => {
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
-    construct(
-      gameState.selectedPlayer,
-      BuildingType.WALL,
-      { row: 1, col: 2 },
-      gameState.battlefieldLands,
-      gameState.mapSize
-    );
+    construct(gameState.selectedPlayer, BuildingType.WALL, { row: 1, col: 2 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.STRONGHOLD,

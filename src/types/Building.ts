@@ -13,6 +13,7 @@ export enum BuildingType {
   WATCH_TOWER = 'Watch Tower',
   OUTPOST = 'Outpost',
   WALL = 'Castle Wall',
+  DEMOLITION = 'Building Demolition',
 }
 
 export interface Building {
@@ -61,8 +62,7 @@ export const getBuilding = (building: BuildingType): Building => {
         id: BuildingType.OUTPOST,
         buildCost: 10000,
         maintainCost: 1000,
-        description:
-          'The army stationed at the outpost becomes the defender for all border lands within a radius of 4',
+        description: 'The army stationed at the outpost defend all lands within a radius of 4',
       };
     case BuildingType.WALL:
       return {
@@ -70,6 +70,14 @@ export const getBuilding = (building: BuildingType): Building => {
         buildCost: 5000,
         maintainCost: 100,
         description: 'Provides strong defensive bonuses',
+      };
+    // this is not an actual building this is only an action to destroy previous building to be able to construct a new one
+    case BuildingType.DEMOLITION:
+      return {
+        id: BuildingType.DEMOLITION,
+        buildCost: 2000,
+        maintainCost: -1,
+        description: 'Demolish building and prepare territory for a new construction',
       };
   }
 };

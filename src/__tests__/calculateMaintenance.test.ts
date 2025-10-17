@@ -108,13 +108,7 @@ describe('Calculate Maintenance', () => {
     ])('Building %s maintenance cost', (building, expected) => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
       mockGameState.battlefieldLands[battlefieldLandId(buildingPos)].controlledBy = player.id;
-      construct(
-        player,
-        building,
-        buildingPos,
-        mockGameState.battlefieldLands,
-        mockGameState.mapSize
-      );
+      construct(player, building, buildingPos, mockGameState);
 
       const maintenance = calculateMaintenance(mockGameState, player);
       expect(maintenance).toBe(expected);
@@ -123,27 +117,9 @@ describe('Calculate Maintenance', () => {
     it('Multiple buildings', () => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
       mockGameState.battlefieldLands[battlefieldLandId(buildingPos)].controlledBy = player.id;
-      construct(
-        player,
-        BuildingType.BARRACKS,
-        buildingPos,
-        mockGameState.battlefieldLands,
-        mockGameState.mapSize
-      );
-      construct(
-        player,
-        BuildingType.WALL,
-        buildingPos,
-        mockGameState.battlefieldLands,
-        mockGameState.mapSize
-      );
-      construct(
-        player,
-        BuildingType.WALL,
-        buildingPos,
-        mockGameState.battlefieldLands,
-        mockGameState.mapSize
-      );
+      construct(player, BuildingType.BARRACKS, buildingPos, mockGameState);
+      construct(player, BuildingType.WALL, buildingPos, mockGameState);
+      construct(player, BuildingType.WALL, buildingPos, mockGameState);
 
       const maintenance = calculateMaintenance(mockGameState, player);
       expect(maintenance).toBe(1200);
@@ -159,20 +135,8 @@ describe('Calculate Maintenance', () => {
     it('Army and Buildings', () => {
       const barracksPos: LandPosition = { row: 5, col: 6 };
 
-      construct(
-        player,
-        BuildingType.STRONGHOLD,
-        { row: 5, col: 5 },
-        mockGameState.battlefieldLands,
-        mockGameState.mapSize
-      );
-      construct(
-        player,
-        BuildingType.BARRACKS,
-        barracksPos,
-        mockGameState.battlefieldLands,
-        mockGameState.mapSize
-      );
+      construct(player, BuildingType.STRONGHOLD, { row: 5, col: 5 }, mockGameState);
+      construct(player, BuildingType.BARRACKS, barracksPos, mockGameState);
       recruitWarriors(
         getUnit(UnitType.DWARF),
         mockGameState.battlefieldLands[battlefieldLandId(barracksPos)]

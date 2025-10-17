@@ -1,0 +1,39 @@
+import { battlefieldLandId, GameState } from '../../types/GameState';
+import { BuildingType } from '../../types/Building';
+import { getNearestStrongholdLand, getTilesInRadius } from './mapAlgorithms';
+import { NO_PLAYER } from '../../types/GamePlayer';
+import { LandPosition } from './mapLands';
+
+/**
+ * The building could be destroyed by player as Demolition before construction of a new one
+ * it could be destroyed in the battle or by spell from the player opponent
+ * @param landPos - identify the land where building should be destroyed
+ * @param gameState - Game State (income and player lands could be updated)
+ */
+export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => {
+  const landId = battlefieldLandId(landPos);
+  const player = gameState.battlefieldLands[landId].controlledBy;
+  const isStronghold = gameState.battlefieldLands[landId].buildings.some(
+    (b) => b.id === BuildingType.STRONGHOLD
+  );
+
+  gameState.battlefieldLands[landId].buildings = []; // delete all buildings since only one could be on the land (todo: think about WALL it could be an additional building for now destroy all)
+
+  if (isStronghold) {
+    // if stronghold destroyed then all Lands in radius two should be neutral or could be taken under control by another player
+    // if there is an amy on the land not change the owner
+    getTilesInRadius(gameState.mapSize, gameState.battlefieldLands[landId].mapPos, 2, false)
+      .map(battlefieldLandId)
+      .filter(
+        (l) =>
+          gameState.battlefieldLands[l].controlledBy === player &&
+          gameState.battlefieldLands[l].army.length === 0
+      )
+      .forEach(
+        (land) =>
+          (gameState.battlefieldLands[land].controlledBy =
+            getNearestStrongholdLand(gameState.battlefieldLands[land].mapPos, gameState)
+              ?.controlledBy ?? NO_PLAYER.id)
+      );
+  }
+};

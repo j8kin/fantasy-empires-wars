@@ -4,7 +4,7 @@ import { construct } from '../map/building/construct';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { LandPosition } from '../map/utils/mapLands';
 import { BuildingType } from '../types/Building';
-import { battlefieldLandId, BattlefieldLands } from '../types/GameState';
+import { battlefieldLandId, BattlefieldLands, GameState } from '../types/GameState';
 import { getLandById, LAND_TYPE } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { recruitHero } from '../map/army/recruit';
@@ -56,8 +56,15 @@ describe('MapLands', () => {
 
       it('should return only related lands based on Land Alignment & Building', () => {
         const mockMap: BattlefieldLands = generateMockMap(5, 5);
+        const mockGameState: GameState = {
+          battlefieldLands: mockMap,
+          mapSize: 'small',
+          selectedPlayer: player,
+          opponents: [],
+          turn: 1,
+        };
 
-        construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
+        construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
         expect(
           getLands(mockMap, undefined, undefined, Alignment.NEUTRAL, [BuildingType.STRONGHOLD])
             .length
@@ -66,8 +73,15 @@ describe('MapLands', () => {
 
       it('should return only related lands based on Land Alignment & No Building', () => {
         const mockMap: BattlefieldLands = generateMockMap(5, 5);
+        const mockGameState: GameState = {
+          battlefieldLands: mockMap,
+          mapSize: 'small',
+          selectedPlayer: player,
+          opponents: [],
+          turn: 1,
+        };
 
-        construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
+        construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
         expect(getLands(mockMap, undefined, undefined, Alignment.NEUTRAL, []).length).toEqual(
           nTiles5x5 - 1
         );
@@ -75,35 +89,41 @@ describe('MapLands', () => {
     });
 
     describe('Get lands with buildings', () => {
-      it('should return the lands of the owner', () => {
-        const mockMap: BattlefieldLands = generateMockMap(5, 5);
+      let mockMap: BattlefieldLands;
+      let mockGameState: GameState;
 
-        construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
+      beforeEach(() => {
+        mockMap = generateMockMap(5, 5);
+        mockGameState = {
+          battlefieldLands: mockMap,
+          mapSize: 'small',
+          selectedPlayer: player,
+          opponents: [],
+          turn: 1,
+        };
+      });
+
+      it('should return the lands of the owner', () => {
+        construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
         const playerLands = getLands(mockMap, [player]);
         expect(playerLands.length).toEqual(nTilesInRadius2);
       });
 
       it('should return the lands without owner', () => {
-        const mockMap: BattlefieldLands = generateMockMap(5, 5);
-
-        construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
+        construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
         const playerLands = getLands(mockMap, []);
         expect(playerLands.length).toEqual(nTiles5x5 - nTilesInRadius2);
       });
 
       it('should return the lands of the owner without stronghold', () => {
-        const mockMap: BattlefieldLands = generateMockMap(5, 5);
-
-        construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
+        construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
         const playerLands = getLands(mockMap, [player], undefined, undefined, []);
         expect(playerLands.length).toEqual(nTilesInRadius2 - 1);
       });
 
       it('should return the lands of the owner with stronghold', () => {
-        const mockMap: BattlefieldLands = generateMockMap(5, 5);
-
-        construct(player, BuildingType.STRONGHOLD, homeland, mockMap, 'small');
-        construct(player, BuildingType.BARRACKS, { row: 1, col: 2 }, mockMap, 'small');
+        construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
+        construct(player, BuildingType.BARRACKS, { row: 1, col: 2 }, mockGameState);
         let playerLands = getLands(mockMap, [player], undefined, undefined, [
           BuildingType.STRONGHOLD,
         ]);

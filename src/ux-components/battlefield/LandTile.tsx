@@ -80,8 +80,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
             gameState!.selectedPlayer,
             buildingToConstruct,
             battlefieldPosition,
-            gameState!.battlefieldLands,
-            gameState!.mapSize
+            gameState!
           );
           gameState!.selectedPlayer.money! -= getBuilding(buildingToConstruct).buildCost;
           updateGameState(gameState!);

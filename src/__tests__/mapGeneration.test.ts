@@ -1,9 +1,9 @@
-import { initializeMap } from '../map/generation/mapGeneration';
+import { addPlayerToMap, initializeMap } from '../map/generation/mapGeneration';
 import { LAND_TYPE } from '../types/Land';
 import { BuildingType, getBuilding } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
-import { battlefieldLandId } from '../types/GameState';
+import { battlefieldLandId, GameState } from '../types/GameState';
 import { calculateHexDistance } from '../map/utils/mapAlgorithms';
 import { Alignment } from '../types/Alignment';
 
@@ -36,10 +36,17 @@ describe('Map Generation with Players', () => {
     it('should assign necromancer to volcano land', () => {
       const mapSize: BattlefieldSize = 'medium';
       const necromancerPlayer = PREDEFINED_PLAYERS[1]; // Undead necromancer
-      const tiles = initializeMap(mapSize, [necromancerPlayer]);
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: necromancerPlayer,
+        opponents: [],
+      };
+      addPlayerToMap(mockGameState);
 
       // Find volcano tile
-      const volcanoTiles = Object.values(tiles).filter(
+      const volcanoTiles = Object.values(mockGameState.battlefieldLands).filter(
         (tile) => tile.land.id === LAND_TYPE.VOLCANO
       );
       expect(volcanoTiles.length).toBe(1);
@@ -51,15 +58,25 @@ describe('Map Generation with Players', () => {
     it('should assign stronghold building to player homelands and add Players Hero', () => {
       const mapSize: BattlefieldSize = 'medium';
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
-      const tiles = initializeMap(mapSize, testPlayers);
+
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: PREDEFINED_PLAYERS[0],
+        opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+      };
+      addPlayerToMap(mockGameState);
 
       // Find player-owned tiles
-      const playerTiles = Object.values(tiles).filter((tile) => tile.controlledBy !== NO_PLAYER.id);
+      const playerTiles = Object.values(mockGameState.battlefieldLands).filter(
+        (tile) => tile.controlledBy !== NO_PLAYER.id
+      );
 
       expect(playerTiles.length).toBeGreaterThan(0);
 
       // Find strongholds
-      const strongholdTiles = Object.values(tiles).filter((tile) =>
+      const strongholdTiles = Object.values(mockGameState.battlefieldLands).filter((tile) =>
         tile.buildings.some((building) => building.id === BuildingType.STRONGHOLD)
       );
 
@@ -85,9 +102,16 @@ describe('Map Generation with Players', () => {
     it('should assign lands based on player alignment', () => {
       const mapSize: BattlefieldSize = 'small';
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
-      const tiles = initializeMap(mapSize, testPlayers);
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: PREDEFINED_PLAYERS[0],
+        opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+      };
+      addPlayerToMap(mockGameState);
 
-      const playersTiles = Object.values(tiles).filter(
+      const playersTiles = Object.values(mockGameState.battlefieldLands).filter(
         (tile) => tile.controlledBy !== NO_PLAYER.id
       );
 
@@ -114,10 +138,17 @@ describe('Map Generation with Players', () => {
     it('should maintain player distance constraints', () => {
       const mapSize: BattlefieldSize = 'large';
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
-      const tiles = initializeMap(mapSize, testPlayers);
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: PREDEFINED_PLAYERS[0],
+        opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+      };
+      addPlayerToMap(mockGameState);
 
       // Find stronghold positions (homelands)
-      const strongholdTiles = Object.values(tiles).filter((tile) =>
+      const strongholdTiles = Object.values(mockGameState.battlefieldLands).filter((tile) =>
         tile.buildings.some((building) => building.id === BuildingType.STRONGHOLD)
       );
 
@@ -136,15 +167,22 @@ describe('Map Generation with Players', () => {
     it('should assign lands within radius 2 of strongholds', () => {
       const mapSize: BattlefieldSize = 'medium';
       const singlePlayer = [PREDEFINED_PLAYERS[0]];
-      const tiles = initializeMap(mapSize, singlePlayer);
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: PREDEFINED_PLAYERS[0],
+        opponents: [],
+      };
+      addPlayerToMap(mockGameState);
 
-      const strongholdTile = Object.values(tiles).find((tile) =>
+      const strongholdTile = Object.values(mockGameState.battlefieldLands).find((tile) =>
         tile.buildings.some((building) => building.id === BuildingType.STRONGHOLD)
       );
 
       expect(strongholdTile).toBeDefined();
 
-      const playerTiles = Object.values(tiles).filter(
+      const playerTiles = Object.values(mockGameState.battlefieldLands).filter(
         (tile) => tile.controlledBy === singlePlayer[0].id
       );
 
@@ -161,12 +199,19 @@ describe('Map Generation with Players', () => {
 
     it('should handle conflicts where multiple players could own same land', () => {
       const mapSize: BattlefieldSize = 'small'; // Small map to force overlaps
-      const tiles = initializeMap(mapSize, PREDEFINED_PLAYERS.slice(0, 2)); // Use only 2 players
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: PREDEFINED_PLAYERS[0],
+        opponents: [PREDEFINED_PLAYERS[1]],
+      };
+      addPlayerToMap(mockGameState);
 
-      const player1Tiles = Object.values(tiles).filter(
+      const player1Tiles = Object.values(mockGameState.battlefieldLands).filter(
         (tile) => tile.controlledBy === PREDEFINED_PLAYERS[0].id
       );
-      const player2Tiles = Object.values(tiles).filter(
+      const player2Tiles = Object.values(mockGameState.battlefieldLands).filter(
         (tile) => tile.controlledBy === PREDEFINED_PLAYERS[1].id
       );
 
@@ -184,11 +229,18 @@ describe('Map Generation with Players', () => {
     it('should work with predefined players from GamePlayer', () => {
       const mapSize: BattlefieldSize = 'large';
       const somePredefinedPlayers = PREDEFINED_PLAYERS.slice(0, 4);
-      const tiles = initializeMap(mapSize, somePredefinedPlayers);
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: PREDEFINED_PLAYERS[0],
+        opponents: PREDEFINED_PLAYERS.slice(1, 4),
+      };
+      addPlayerToMap(mockGameState);
 
       // Should assign all players
       const assignedPlayerIds = new Set();
-      Object.values(tiles).forEach((tile) => {
+      Object.values(mockGameState.battlefieldLands).forEach((tile) => {
         if (tile.controlledBy !== NO_PLAYER.id) {
           assignedPlayerIds.add(tile.controlledBy);
         }
@@ -197,7 +249,7 @@ describe('Map Generation with Players', () => {
       expect(assignedPlayerIds.size).toBe(somePredefinedPlayers.length);
 
       // Check that necromancer players got volcano
-      const volcanoTiles = Object.values(tiles).filter(
+      const volcanoTiles = Object.values(mockGameState.battlefieldLands).filter(
         (tile) => tile.land.id === LAND_TYPE.VOLCANO
       );
       expect(volcanoTiles.length).toBe(1);
@@ -211,10 +263,17 @@ describe('Map Generation with Players', () => {
       const mapSize: BattlefieldSize = 'medium';
       const necromancers = PREDEFINED_PLAYERS.filter((p) => p.race === 'Undead').slice(0, 2);
 
-      const tiles = initializeMap(mapSize, necromancers);
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: necromancers[0],
+        opponents: [necromancers[1]],
+      };
+      addPlayerToMap(mockGameState);
 
       // Only one can own the volcano
-      const volcanoTiles = Object.values(tiles).filter(
+      const volcanoTiles = Object.values(mockGameState.battlefieldLands).filter(
         (tile) => tile.land.id === LAND_TYPE.VOLCANO
       );
       expect(volcanoTiles.length).toBe(1);
@@ -224,7 +283,7 @@ describe('Map Generation with Players', () => {
 
       // The other necromancer should still be assigned somewhere
       const assignedPlayerIds = new Set();
-      Object.values(tiles).forEach((tile) => {
+      Object.values(mockGameState.battlefieldLands).forEach((tile) => {
         if (tile.controlledBy !== NO_PLAYER.id) {
           assignedPlayerIds.add(tile.controlledBy);
         }
@@ -237,9 +296,15 @@ describe('Map Generation with Players', () => {
   describe('Edge Cases', () => {
     it('should handle empty player array gracefully', () => {
       const mapSize: BattlefieldSize = 'medium';
-      const tiles = initializeMap(mapSize, []);
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize), // test verifies only initializeMap
+        turn: 0,
+        selectedPlayer: PREDEFINED_PLAYERS[0],
+        opponents: [],
+      };
 
-      Object.values(tiles).forEach((tile) => {
+      Object.values(mockGameState.battlefieldLands).forEach((tile) => {
         expect(tile.controlledBy).toBe(NO_PLAYER.id);
         expect(tile.buildings.length).toBe(0);
       });
@@ -247,16 +312,23 @@ describe('Map Generation with Players', () => {
 
     it('should handle single player', () => {
       const mapSize: BattlefieldSize = 'medium';
-      const singlePlayer = [PREDEFINED_PLAYERS[3]];
-      const tiles = initializeMap(mapSize, singlePlayer);
+      const singlePlayer = PREDEFINED_PLAYERS[3];
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: singlePlayer,
+        opponents: [],
+      };
+      addPlayerToMap(mockGameState);
 
-      const playerTiles = Object.values(tiles).filter(
-        (tile) => tile.controlledBy === singlePlayer[0].id
+      const playerTiles = Object.values(mockGameState.battlefieldLands).filter(
+        (tile) => tile.controlledBy === singlePlayer.id
       );
 
       expect(playerTiles.length).toBeGreaterThan(0);
 
-      const strongholdTiles = Object.values(tiles).filter((tile) =>
+      const strongholdTiles = Object.values(mockGameState.battlefieldLands).filter((tile) =>
         tile.buildings.some((building) => building.id === BuildingType.STRONGHOLD)
       );
 
@@ -266,21 +338,28 @@ describe('Map Generation with Players', () => {
     it('should maintain map integrity after player assignment', () => {
       const mapSize: BattlefieldSize = 'medium';
       const { rows, cols } = getBattlefieldDimensions(mapSize);
-      const tiles = initializeMap(mapSize, PREDEFINED_PLAYERS.slice(0, 3));
+      const mockGameState: GameState = {
+        mapSize: mapSize,
+        battlefieldLands: initializeMap(mapSize),
+        turn: 0,
+        selectedPlayer: PREDEFINED_PLAYERS[0],
+        opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+      };
+      addPlayerToMap(mockGameState);
 
       // Check all expected tiles exist
       for (let row = 0; row < rows; row++) {
         const colsInRow = row % 2 === 0 ? cols : cols - 1;
         for (let col = 0; col < colsInRow; col++) {
           const tileId = battlefieldLandId({ row: row, col: col });
-          expect(tiles[tileId]).toBeDefined();
-          expect(tiles[tileId].mapPos.row).toBe(row);
-          expect(tiles[tileId].mapPos.col).toBe(col);
+          expect(mockGameState.battlefieldLands[tileId]).toBeDefined();
+          expect(mockGameState.battlefieldLands[tileId].mapPos.row).toBe(row);
+          expect(mockGameState.battlefieldLands[tileId].mapPos.col).toBe(col);
         }
       }
 
       // Check no invalid land types
-      Object.values(tiles).forEach((tile) => {
+      Object.values(mockGameState.battlefieldLands).forEach((tile) => {
         expect(tile.land.id).not.toBe(LAND_TYPE.NONE);
       });
     });

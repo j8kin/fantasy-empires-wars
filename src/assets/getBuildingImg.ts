@@ -32,6 +32,7 @@ export const getBuildingImg = (building: BuildingType) => {
       return watchTowerImg;
     case BuildingType.WALL:
       return wallImg;
+    case BuildingType.DEMOLITION:
     default:
       return undefined;
   }

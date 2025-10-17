@@ -116,7 +116,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
               }}
             />
             <div className="description">
-              <h4 style={{ margin: '0 0 8px 0', color: '#2c1810', fontSize: '1rem' }}>
+              <h4 style={{ margin: '0 0 4px 0', color: '#2c1810', fontSize: '1rem' }}>
                 Description:
               </h4>
               <p
@@ -124,7 +124,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                   margin: 0,
                   fontSize: '0.9rem',
                   lineHeight: '1.4',
-                  height: '2.8rem',
+                  height: '1.7rem',
                   display: 'flex',
                   alignItems: 'center',
                 }}
@@ -133,13 +133,13 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
               </p>
               <br />
               <div className="costSection">
-                <h4 style={{ margin: '0 0 5px 0', color: '#5d4037', fontSize: '1rem' }}>
+                <h4 style={{ margin: '0 0 1px 0', color: '#5d4037', fontSize: '1rem' }}>
                   {costLabel}: <span className="costValue">{cost}</span>
                 </h4>
               </div>
-              {!isSpellBook && (
+              {!isSpellBook && maintainCost! >= 0 && (
                 <div className="costSection">
-                  <h4 style={{ margin: '0 0 5px 0', color: '#5d4037', fontSize: '1rem' }}>
+                  <h4 style={{ margin: '0 0 1px 0', color: '#5d4037', fontSize: '1rem' }}>
                     Maintain Cost: <span className="costValue">{maintainCost}</span>
                   </h4>
                 </div>
@@ -147,7 +147,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
             </div>
             <h4
               style={{
-                margin: '0 0 5px 0',
+                margin: '0 0 2px 0',
                 color: '#5d4037',
                 fontSize: '1rem',
                 textAlign: 'center',
