@@ -5,7 +5,8 @@ import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteris
 import { GameState, LandState } from '../../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { LAND_TYPE } from '../../types/Land';
-import { addPlayerToMap, initializeMap } from '../../map/generation/mapGeneration';
+import { generateMap } from '../../map/generation/generateMap';
+import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { Army, UnitType, getUnit } from '../../types/Army';
 
 const renderWithProviders = (ui: React.ReactElement, gameState?: GameState) => {
@@ -73,7 +74,7 @@ describe('LandCharacteristicsPopup', () => {
   const mapSize = 'medium';
   const mockGameState: GameState = {
     mapSize: mapSize,
-    battlefieldLands: initializeMap(mapSize),
+    battlefieldLands: generateMap(mapSize),
     turn: 0,
     selectedPlayer: mockPlayer,
     opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],

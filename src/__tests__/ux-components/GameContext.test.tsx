@@ -2,7 +2,7 @@ import { render, renderHook } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 
 // Mock the mapGeneration module to return empty tiles initially
-jest.mock('../../map/generation/mapGeneration', () => ({
+jest.mock('../../map/generation/generateMap', () => ({
   initializeMap: jest.fn(() => ({})),
 }));
 

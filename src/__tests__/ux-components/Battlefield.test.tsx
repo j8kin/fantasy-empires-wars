@@ -5,7 +5,8 @@ import { GameState, BattlefieldLands } from '../../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { Land, LAND_TYPE } from '../../types/Land';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
-import { addPlayerToMap, initializeMap } from '../../map/generation/mapGeneration';
+import { generateMap } from '../../map/generation/generateMap';
+import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { LandPosition } from '../../map/utils/mapLands';
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { Alignment } from '../../types/Alignment';
@@ -430,7 +431,7 @@ describe('Battlefield Component', () => {
       const mapSize = 'medium';
       mockGameState = {
         mapSize: mapSize,
-        battlefieldLands: initializeMap(mapSize),
+        battlefieldLands: generateMap(mapSize),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[1],
         opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],

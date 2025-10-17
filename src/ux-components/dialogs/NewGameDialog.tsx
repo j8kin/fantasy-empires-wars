@@ -9,7 +9,8 @@ import Avatar from '../avatars/Avatar';
 import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 
-import { addPlayerToMap, initializeMap } from '../../map/generation/mapGeneration';
+import { generateMap } from '../../map/generation/generateMap';
+import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { ButtonName } from '../../types/ButtonName';
 import { BattlefieldSize } from '../../types/BattlefieldSize';
 import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
@@ -272,7 +273,7 @@ const NewGameDialog: React.FC = () => {
 
     setTimeout(() => {
       const gameState: GameState = {
-        battlefieldLands: initializeMap(mapSize),
+        battlefieldLands: generateMap(mapSize),
         turn: 0,
         mapSize,
         selectedPlayer: updatedSelectedPlayer,
