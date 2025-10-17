@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.90b38682.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.faba341a.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.37460168.js",
     "static/js/453.b8bdb5db.chunk.js": "/fantasy-empires-wars/static/js/453.b8bdb5db.chunk.js",
     "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
@@ -36,6 +36,7 @@
     "static/media/alaric.png": "/fantasy-empires-wars/static/media/alaric.7890a445d08a78626caa.png",
     "static/media/outpost.png": "/fantasy-empires-wars/static/media/outpost.0366fa6ade6238faf9de.png",
     "static/media/turn-undead.png": "/fantasy-empires-wars/static/media/turn-undead.e4530239051f374bb15e.png",
+    "static/media/demolish.png": "/fantasy-empires-wars/static/media/demolish.67037f98c240acd6e800.png",
     "static/media/magic-tower-white.png": "/fantasy-empires-wars/static/media/magic-tower-white.40bb3ff7e2e70d07f862.png",
     "static/media/fertile-lands.png": "/fantasy-empires-wars/static/media/fertile-lands.17d9c5cb892b6cf4c929.png",
     "static/media/blessing.png": "/fantasy-empires-wars/static/media/blessing.fa33dd9719ac65d20285.png",
@@ -44,6 +45,7 @@
     "static/media/heal.png": "/fantasy-empires-wars/static/media/heal.98c05b2155127ce2dda7.png",
     "static/media/stronghold.png": "/fantasy-empires-wars/static/media/stronghold.8cb171bb15d7feea8144.png",
     "static/media/view.png": "/fantasy-empires-wars/static/media/view.87c989d47f940607d4b4.png",
+    "static/media/magic-tower-black.png": "/fantasy-empires-wars/static/media/magic-tower-black.503edc29f75306db50d8.png",
     "static/media/watchtower.png": "/fantasy-empires-wars/static/media/watchtower.01657d8069800b12ece9.png",
     "static/media/barracks.png": "/fantasy-empires-wars/static/media/barracks.f86079d41f568bd610a5.png",
     "static/media/CelticBackground.png": "/fantasy-empires-wars/static/media/CelticBackground.1303f01751ba46f7a77b.png",
@@ -64,11 +66,11 @@
     "static/media/PageEven.png": "/fantasy-empires-wars/static/media/PageEven.8a6a120c45b62dd81d2c.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.90b38682.css.map": "/fantasy-empires-wars/static/css/main.90b38682.css.map",
-    "main.faba341a.js.map": "/fantasy-empires-wars/static/js/main.faba341a.js.map",
+    "main.37460168.js.map": "/fantasy-empires-wars/static/js/main.37460168.js.map",
     "453.b8bdb5db.chunk.js.map": "/fantasy-empires-wars/static/js/453.b8bdb5db.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.90b38682.css",
-    "static/js/main.faba341a.js"
+    "static/js/main.37460168.js"
   ]
 }
