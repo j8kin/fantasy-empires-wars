@@ -34,7 +34,6 @@ interface ApplicationContextType {
   landPopupPosition: LandPosition | undefined;
   landPopupScreenPosition: ScreenPosition;
 
-
   // Select Opponent Dialog states
   selectOpponentSelectedPlayer: GamePlayer;
 
@@ -64,7 +63,6 @@ interface ApplicationContextType {
   setLandPopupScreenPosition: (position: ScreenPosition) => void;
   showLandPopup: (battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => void;
   hideLandPopup: () => void;
-
 
   // Select Opponent Dialog actions
   setSelectOpponentSelectedPlayer: (player: GamePlayer) => void;
@@ -131,7 +129,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     y: 0,
   });
 
-
   // Select Opponent Dialog states
   const [selectOpponentSelectedPlayer, setSelectOpponentSelectedPlayer] = useState<GamePlayer>(
     PREDEFINED_PLAYERS[0]
@@ -158,7 +155,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const hideLandPopup = useCallback(() => {
     setLandPopupPosition(undefined);
   }, []);
-
 
   // Select Opponent Dialog actions
   const resetSelectOpponentDialog = useCallback((availablePlayers: GamePlayer[]) => {
@@ -251,7 +247,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         landPopupPosition,
         landPopupScreenPosition,
 
-
         // Select Opponent Dialog states
         selectOpponentSelectedPlayer,
 
@@ -283,7 +278,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setLandPopupScreenPosition,
         showLandPopup,
         hideLandPopup,
-
 
         // Select Opponent Dialog actions
         setSelectOpponentSelectedPlayer,
