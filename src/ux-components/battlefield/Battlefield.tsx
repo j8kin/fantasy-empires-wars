@@ -6,7 +6,6 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandTile from './LandTile';
 import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
-import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { battlefieldLandId } from '../../types/GameState';
 
 export interface BattlefieldProps {
@@ -14,22 +13,23 @@ export interface BattlefieldProps {
   tileSize: Dimensions;
 }
 
-const getHexTileSize = (battlefieldSize: BattlefieldSize): Dimensions => {
+// todo refactor and remove the same size should be used + scroll map
+const getHexTileSize = (battlefieldSize: number): Dimensions => {
   // Base size for small map, decrease as map size increases
   const baseWidth = 100;
   let scaleFactor: number;
 
   switch (battlefieldSize) {
-    case 'small':
+    case 13:
       scaleFactor = 1.4; // Largest tiles for smallest map
       break;
-    case 'medium':
+    case 18:
       scaleFactor = 1.0; // Smallest tiles for medium map (has most tiles)
       break;
-    case 'large':
+    case 23:
       scaleFactor = 0.8; // Medium size tiles
       break;
-    case 'huge':
+    case 31:
       scaleFactor = 0.6; // Smaller tiles for huge map
       break;
     default:
@@ -45,10 +45,9 @@ const getHexTileSize = (battlefieldSize: BattlefieldSize): Dimensions => {
 const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) => {
   const { gameState } = useGameContext();
 
-  // Battlefield generated at application startup but gameState is not initialize yet - use dummy map size
-  const mapSize = gameState?.mapSize || 'small';
-  const { rows, cols } = getBattlefieldDimensions(mapSize);
-  const { width: tileWidth, height: tileHeight } = getHexTileSize(mapSize);
+  // Battlefield generated at application startup, but gameState is not initialized yet - use dummy map size todo: refactor
+  const { rows, cols } = gameState?.battlefield.size || { rows: 1, cols: 1 };
+  const { width: tileWidth, height: tileHeight } = getHexTileSize(cols);
   const hexGrid = [];
 
   // Loop to generate rows and columns of hex tiles using map state
@@ -82,7 +81,6 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
       <div
         id="Battlefield"
         data-testid="Battlefield"
-        data-battlefield-size={mapSize}
         className={styles.mapContainer}
         style={
           {

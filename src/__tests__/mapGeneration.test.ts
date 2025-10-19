@@ -3,7 +3,6 @@ import { addPlayerToMap } from '../map/generation/addPlayerToMap';
 import { LAND_TYPE } from '../types/Land';
 import { BuildingType, getBuilding } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { BattlefieldSize, getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { battlefieldLandId, GameState } from '../types/GameState';
 import { calculateHexDistance } from '../map/utils/mapAlgorithms';
 import { Alignment } from '../types/Alignment';
@@ -11,8 +10,7 @@ import { Alignment } from '../types/Alignment';
 describe('Map Generation with Players', () => {
   describe('Basic Map Generation Without Players', () => {
     it('should generate map without players when no players provided', () => {
-      const mapSize: BattlefieldSize = 'medium';
-      const dimensions = getBattlefieldDimensions(mapSize);
+      const dimensions = { rows: 9, cols: 18 };
       const tiles = generateMap(dimensions);
 
       // Should generate tiles
@@ -38,11 +36,10 @@ describe('Map Generation with Players', () => {
 
   describe('Player Positioning', () => {
     it('should assign necromancer to volcano land', () => {
-      const mapSize: BattlefieldSize = 'medium';
       const necromancerPlayer = PREDEFINED_PLAYERS[1]; // Undead necromancer
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'medium',
+        battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: necromancerPlayer,
         opponents: [],
@@ -60,12 +57,11 @@ describe('Map Generation with Players', () => {
     });
 
     it('should assign stronghold building to player homelands and add Players Hero', () => {
-      const mapSize: BattlefieldSize = 'medium';
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
 
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'medium',
+        battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -104,11 +100,10 @@ describe('Map Generation with Players', () => {
     });
 
     it('should assign lands based on player alignment', () => {
-      const mapSize: BattlefieldSize = 'small';
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'small',
+        battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -140,11 +135,11 @@ describe('Map Generation with Players', () => {
     });
 
     it('should maintain player distance constraints', () => {
-      const mapSize: BattlefieldSize = 'large';
+      const dimensions = { rows: 11, cols: 23 };
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'large',
+        battlefield: generateMap(dimensions),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -158,34 +153,22 @@ describe('Map Generation with Players', () => {
 
       expect(strongholdTiles.length).toBe(testPlayers.length);
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(mapSize),
-          strongholdTiles[0].mapPos,
-          strongholdTiles[1].mapPos
-        )
+        calculateHexDistance(dimensions, strongholdTiles[0].mapPos, strongholdTiles[1].mapPos)
       ).toBeGreaterThanOrEqual(3);
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(mapSize),
-          strongholdTiles[0].mapPos,
-          strongholdTiles[2].mapPos
-        )
+        calculateHexDistance(dimensions, strongholdTiles[0].mapPos, strongholdTiles[2].mapPos)
       ).toBeGreaterThanOrEqual(3);
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(mapSize),
-          strongholdTiles[1].mapPos,
-          strongholdTiles[2].mapPos
-        )
+        calculateHexDistance(dimensions, strongholdTiles[1].mapPos, strongholdTiles[2].mapPos)
       ).toBeGreaterThanOrEqual(3);
     });
 
     it('should assign lands within radius 2 of strongholds', () => {
-      const mapSize: BattlefieldSize = 'medium';
+      const dimensions = { rows: 9, cols: 18 };
       const singlePlayer = [PREDEFINED_PLAYERS[0]];
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'medium',
+        battlefield: generateMap(dimensions),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [],
@@ -205,11 +188,7 @@ describe('Map Generation with Players', () => {
       // All player tiles should be within radius 2 of the stronghold
       playerTiles.forEach((tile) => {
         expect(
-          calculateHexDistance(
-            getBattlefieldDimensions(mapSize),
-            strongholdTile!.mapPos,
-            tile.mapPos
-          )
+          calculateHexDistance(dimensions, strongholdTile!.mapPos, tile.mapPos)
         ).toBeLessThanOrEqual(2);
       });
 
@@ -218,10 +197,9 @@ describe('Map Generation with Players', () => {
     });
 
     it('should handle conflicts where multiple players could own same land', () => {
-      const mapSize: BattlefieldSize = 'small'; // Small map to force overlaps
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'small',
+        battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1]],
@@ -247,11 +225,10 @@ describe('Map Generation with Players', () => {
 
   describe('Integration with Predefined Players', () => {
     it('should work with predefined players from GamePlayer', () => {
-      const mapSize: BattlefieldSize = 'large';
       const somePredefinedPlayers = PREDEFINED_PLAYERS.slice(0, 4);
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'large',
+        battlefield: generateMap({ rows: 11, cols: 23 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: PREDEFINED_PLAYERS.slice(1, 4),
@@ -280,12 +257,11 @@ describe('Map Generation with Players', () => {
     });
 
     it('should handle multiple necromancers competing for volcano', () => {
-      const mapSize: BattlefieldSize = 'medium';
       const necromancers = PREDEFINED_PLAYERS.filter((p) => p.race === 'Undead').slice(0, 2);
 
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'medium',
+        battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: necromancers[0],
         opponents: [necromancers[1]],
@@ -315,10 +291,9 @@ describe('Map Generation with Players', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty player array gracefully', () => {
-      const mapSize: BattlefieldSize = 'medium';
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)), // test verifies only initializeMap
+        mapSize: 'medium',
+        battlefield: generateMap({ rows: 9, cols: 18 }), // test verifies only initializeMap
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [],
@@ -331,11 +306,10 @@ describe('Map Generation with Players', () => {
     });
 
     it('should handle single player', () => {
-      const mapSize: BattlefieldSize = 'medium';
       const singlePlayer = PREDEFINED_PLAYERS[3];
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'medium',
+        battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: singlePlayer,
         opponents: [],
@@ -356,11 +330,10 @@ describe('Map Generation with Players', () => {
     });
 
     it('should maintain map integrity after player assignment', () => {
-      const mapSize: BattlefieldSize = 'medium';
-      const { rows, cols } = getBattlefieldDimensions(mapSize);
+      const dimensions = { rows: 9, cols: 18 };
       const mockGameState: GameState = {
-        mapSize: mapSize,
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
+        mapSize: 'medium',
+        battlefield: generateMap(dimensions),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -368,8 +341,8 @@ describe('Map Generation with Players', () => {
       addPlayerToMap(mockGameState);
 
       // Check all expected tiles exist
-      for (let row = 0; row < rows; row++) {
-        const colsInRow = row % 2 === 0 ? cols : cols - 1;
+      for (let row = 0; row < dimensions.rows; row++) {
+        const colsInRow = row % 2 === 0 ? dimensions.cols : dimensions.cols - 1;
         for (let col = 0; col < colsInRow; col++) {
           const tileId = battlefieldLandId({ row: row, col: col });
           expect(mockGameState.battlefield.lands[tileId]).toBeDefined();

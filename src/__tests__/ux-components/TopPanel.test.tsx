@@ -7,7 +7,6 @@ import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { ManaType } from '../../types/Mana';
-import { getBattlefieldDimensions } from '../../types/BattlefieldSize';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -36,7 +35,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
         updateGameState({
           mapSize: 'medium',
           battlefield: {
-            size: getBattlefieldDimensions('medium'),
+            size: { rows: 9, cols: 18 },
             lands: {},
           },
           turn: 0,
@@ -195,7 +194,7 @@ describe('TopPanel Component', () => {
             updateGameState({
               mapSize: 'medium',
               battlefield: {
-                size: getBattlefieldDimensions('medium'),
+                size: { rows: 9, cols: 18 },
                 lands: {},
               },
               turn: 0,

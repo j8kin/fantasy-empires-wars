@@ -1,4 +1,3 @@
-import { getBattlefieldDimensions } from '../types/BattlefieldSize';
 import { calculateHexDistance, getTilesInRadius } from '../map/utils/mapAlgorithms';
 import { LandPosition } from '../map/utils/mapLands';
 
@@ -10,9 +9,7 @@ describe('Map Algorithms', () => {
 
   describe('Get Neighboring Hexes in Radius', () => {
     describe('Number of Tiles in Radius for Corners', () => {
-      const mapSize = 'small';
-
-      const mapDimensions = getBattlefieldDimensions(mapSize);
+      const mapDimensions = { rows: 6, cols: 13 };
 
       const LeftUpperCorner = { row: 0, col: 0 };
       const RightUpperCorner = { row: 0, col: mapDimensions.cols - 1 };
@@ -118,8 +115,7 @@ describe('Map Algorithms', () => {
     });
 
     describe('Number of Tiles in Radius for Middle of borders', () => {
-      const mapSize = 'large';
-      const mapDimensions = getBattlefieldDimensions(mapSize);
+      const mapDimensions = { rows: 11, cols: 23 };
 
       describe('Upper Border', () => {
         const position = { row: 0, col: Math.ceil(mapDimensions.cols / 2) };
@@ -450,211 +446,101 @@ describe('Map Algorithms', () => {
     });
 
     it('should calculate distance between two hexagonal coordinates. Left Bottom Corner', () => {
-      const size = 'small';
-      const rows = getBattlefieldDimensions(size).rows - 1;
-      expect(rows % 2).toBe(1);
-
       expect(
-        calculateHexDistance(
-          { rows: getBattlefieldDimensions(size).rows, cols: 18 },
-          { row: rows, col: 0 },
-          { row: rows, col: 0 }
-        )
+        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 5, col: 0 })
       ).toBe(0);
 
       expect(
-        calculateHexDistance(
-          { rows: getBattlefieldDimensions(size).rows, cols: 18 },
-          { row: rows, col: 0 },
-          { row: rows, col: 1 }
-        )
+        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 5, col: 1 })
       ).toBe(1);
       expect(
-        calculateHexDistance(
-          { rows: getBattlefieldDimensions(size).rows, cols: 18 },
-          { row: rows, col: 0 },
-          { row: rows - 1, col: 0 }
-        )
+        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 4, col: 0 })
       ).toBe(1);
       expect(
-        calculateHexDistance(
-          { rows: getBattlefieldDimensions(size).rows, cols: 18 },
-          { row: rows, col: 0 },
-          { row: rows - 1, col: 1 }
-        )
+        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 4, col: 1 })
       ).toBe(1);
 
       expect(
-        calculateHexDistance(
-          { rows: getBattlefieldDimensions(size).rows, cols: 18 },
-          { row: rows, col: 0 },
-          { row: rows - 2, col: 0 }
-        )
+        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 3, col: 0 })
       ).toBe(2);
       expect(
-        calculateHexDistance(
-          { rows: getBattlefieldDimensions(size).rows, cols: 18 },
-          { row: rows, col: 0 },
-          { row: rows - 2, col: 1 }
-        )
+        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 3, col: 1 })
       ).toBe(2);
       expect(
-        calculateHexDistance(
-          { rows: getBattlefieldDimensions(size).rows, cols: 18 },
-          { row: rows, col: 0 },
-          { row: rows - 1, col: 2 }
-        )
+        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 4, col: 2 })
       ).toBe(2);
       expect(
-        calculateHexDistance(
-          { rows: getBattlefieldDimensions(size).rows, cols: 18 },
-          { row: rows, col: 0 },
-          { row: rows, col: 2 }
-        )
+        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 5, col: 2 })
       ).toBe(2);
     });
 
     it('should calculate distance between two hexagonal coordinates. Right Upper Corner', () => {
-      const size = 'medium';
-      const cols = getBattlefieldDimensions(size).cols - 1;
       expect(
-        calculateHexDistance(
-          { rows: 9, cols: getBattlefieldDimensions(size).cols },
-          { row: 0, col: cols },
-          { row: 0, col: cols }
-        )
+        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 0, col: 17 })
       ).toBe(0);
 
       expect(
-        calculateHexDistance(
-          { rows: 9, cols: getBattlefieldDimensions(size).cols },
-          { row: 0, col: cols },
-          { row: 0, col: cols - 1 }
-        )
+        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 0, col: 16 })
       ).toBe(1);
       expect(
-        calculateHexDistance(
-          { rows: 9, cols: getBattlefieldDimensions(size).cols },
-          { row: 0, col: cols },
-          { row: 1, col: cols - 1 }
-        )
+        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 1, col: 16 })
       ).toBe(1); // even rows has 1 less column
 
       expect(
-        calculateHexDistance(
-          { rows: 9, cols: getBattlefieldDimensions(size).cols },
-          { row: 0, col: cols },
-          { row: 1, col: cols - 2 }
-        )
+        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 1, col: 15 })
       ).toBe(2); // even rows has 1 less column
       expect(
-        calculateHexDistance(
-          { rows: 9, cols: getBattlefieldDimensions(size).cols },
-          { row: 0, col: cols },
-          { row: 0, col: cols - 2 }
-        )
+        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 0, col: 15 })
       ).toBe(2);
       expect(
-        calculateHexDistance(
-          { rows: 9, cols: getBattlefieldDimensions(size).cols },
-          { row: 0, col: cols },
-          { row: 2, col: cols }
-        )
+        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 2, col: 17 })
       ).toBe(2);
 
       expect(
-        calculateHexDistance(
-          { rows: 9, cols: getBattlefieldDimensions(size).cols },
-          { row: 0, col: cols },
-          { row: 1, col: cols }
-        )
+        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 1, col: 17 })
       ).toBe(-1); // the second position is not exists since on even rows there is 1 less column
     });
 
     it('should calculate distance between two hexagonal coordinates. Right Bottom Corner', () => {
-      const size = 'huge';
-      let { rows, cols } = getBattlefieldDimensions(size);
-      rows -= 1;
-      cols -= 1;
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(size),
-          { row: rows, col: cols },
-          { row: rows, col: cols }
-        )
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 14, col: 30 })
       ).toBe(0);
 
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(size),
-          { row: rows, col: cols },
-          { row: rows, col: cols - 1 }
-        )
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 14, col: 29 })
       ).toBe(1);
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(size),
-          { row: rows, col: cols },
-          { row: rows - 1, col: cols - 1 }
-        )
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 13, col: 29 })
       ).toBe(1); // even rows has 1 less column
 
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(size),
-          { row: rows, col: cols },
-          { row: rows - 1, col: cols - 2 }
-        )
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 13, col: 28 })
       ).toBe(2); // even rows has 1 less column
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(size),
-          { row: rows, col: cols },
-          { row: rows, col: cols - 2 }
-        )
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 14, col: 28 })
       ).toBe(2);
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(size),
-          { row: rows, col: cols },
-          { row: rows - 2, col: cols }
-        )
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 12, col: 30 })
       ).toBe(2);
 
       expect(
-        calculateHexDistance(
-          getBattlefieldDimensions(size),
-          { row: rows, col: cols },
-          { row: rows - 1, col: cols }
-        )
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 13, col: 30 })
       ).toBe(-1); // the second position is not exists since on even rows there is 1 less column
     });
 
     it('should calculate distance between two hexagonal coordinates. Middle', () => {
-      const size = 'huge';
-      let { rows, cols } = getBattlefieldDimensions(size);
       expect(
-        calculateHexDistance(
-          { rows: rows, cols: cols },
-          { row: 0, col: 0 },
-          { row: rows - 1, col: cols - 1 }
-        )
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 0, col: 0 }, { row: 14, col: 30 })
       ).toBe(37);
 
       expect(
-        calculateHexDistance({ rows: rows, cols: cols }, { row: 3, col: 6 }, { row: 5, col: 11 })
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 3, col: 6 }, { row: 5, col: 11 })
       ).toBe(6);
     });
 
     it('should calculate distance between two hexagonal coordinates. Not-Exists', () => {
-      const size = 'huge';
-      let { rows, cols } = getBattlefieldDimensions(size);
       expect(
-        calculateHexDistance(
-          { rows: rows, cols: cols },
-          { row: rows - 1, col: cols - 1 },
-          { row: rows, col: cols }
-        )
+        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 15, col: 31 })
       ).toBe(-1);
     });
   });

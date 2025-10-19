@@ -36,7 +36,6 @@ describe('GameContext', () => {
       // Check that all expected methods are available
       expect(typeof result.current.getTotalPlayerGold).toBe('function');
       expect(typeof result.current.updateGameState).toBe('function');
-      expect(result.current.mapDimensions).toBeDefined();
     });
   });
 
@@ -71,35 +70,6 @@ describe('GameContext', () => {
       const mockPlayer = { id: 'test-player' } as any;
       const gold = result.current.getTotalPlayerGold(mockPlayer);
       expect(gold).toBe(0);
-    });
-  });
-
-  describe('Map Dimensions', () => {
-    it('should return correct dimensions for medium map (default)', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      // When game state is null, should use initialMapSize (default: medium)
-      expect(result.current.mapDimensions).toEqual({ rows: 9, cols: 18 });
-    });
-
-    it('should return correct dimensions for small map', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider initialMapSize="small">{children}</GameProvider>,
-      });
-
-      // When game state is null, should use initialMapSize (small)
-      expect(result.current.mapDimensions).toEqual({ rows: 6, cols: 13 });
-    });
-
-    it('should return correct dimensions for large map', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider initialMapSize="large">{children}</GameProvider>,
-      });
-
-      // When game state is null, should use initialMapSize (large)
-      expect(result.current.mapDimensions).toEqual({ rows: 11, cols: 23 });
     });
   });
 });

@@ -3,7 +3,6 @@ import { battlefieldLandId, GameState } from '../../types/GameState';
 import { getLands } from '../utils/mapLands';
 import { GamePlayer } from '../../types/GamePlayer';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getBattlefieldDimensions } from '../../types/BattlefieldSize';
 
 export const getAvailableToConstructLands = (
   buildingType: BuildingType,
@@ -20,12 +19,7 @@ export const getAvailableToConstructLands = (
           (land) =>
             (land.buildings.length === 0 ||
               !land.buildings?.some((b) => b.id === BuildingType.WALL)) &&
-            getTilesInRadius(
-              getBattlefieldDimensions(gameState.mapSize),
-              land.mapPos,
-              1,
-              true
-            ).some(
+            getTilesInRadius(gameState.battlefield.size, land.mapPos, 1, true).some(
               (tile) =>
                 gameState.battlefield.lands[battlefieldLandId(tile)].controlledBy !== player.id
             )
@@ -41,12 +35,9 @@ export const getAvailableToConstructLands = (
         [BuildingType.STRONGHOLD]
       );
       const strongholdsExcludedArea = allStrongholds.flatMap((stronghold) =>
-        getTilesInRadius(
-          getBattlefieldDimensions(gameState.mapSize),
-          stronghold.mapPos,
-          1,
-          false
-        ).map((tile) => battlefieldLandId(tile))
+        getTilesInRadius(gameState.battlefield.size, stronghold.mapPos, 1, false).map((tile) =>
+          battlefieldLandId(tile)
+        )
       );
 
       return playerLands

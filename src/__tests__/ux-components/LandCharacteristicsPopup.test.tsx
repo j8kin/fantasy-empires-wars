@@ -47,7 +47,6 @@ const TestGameProvider: React.FC<{ children: React.ReactNode; gameState?: GameSt
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { width: 7, height: 7 },
     });
   }
 
@@ -101,7 +100,6 @@ describe('LandCharacteristicsPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { width: 7, height: 7 },
     });
   });
 

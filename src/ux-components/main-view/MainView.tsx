@@ -110,7 +110,7 @@ const MainViewContent: React.FC = () => {
 const MainView: React.FC = () => {
   return (
     <ApplicationContextProvider>
-      <GameProvider initialMapSize="medium">
+      <GameProvider>
         <MainViewContent />
       </GameProvider>
     </ApplicationContextProvider>

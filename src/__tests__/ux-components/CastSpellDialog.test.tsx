@@ -57,7 +57,7 @@ jest.mock('../../assets/spells/blue/teleport.png', () => 'teleport.png');
 
 const CastSpellDialogWithContext: React.FC = () => (
   <ApplicationContextProvider>
-    <GameProvider initialMapSize="medium">
+    <GameProvider>
       <CastSpellDialog />
     </GameProvider>
   </ApplicationContextProvider>
@@ -106,7 +106,10 @@ const renderWithApplicationContext = () => {
       } else {
         updateGameState({
           mapSize: 'medium',
-          battlefield: {},
+          battlefield: {
+            size: { rows: 9, cols: 18 },
+            lands: {},
+          },
           turn: 0,
           selectedPlayer,
           opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -118,7 +121,7 @@ const renderWithApplicationContext = () => {
 
   return render(
     <ApplicationContextProvider>
-      <GameProvider initialMapSize="medium">
+      <GameProvider>
         <Bootstrapper>
           <TestComponentWithDialog />
         </Bootstrapper>

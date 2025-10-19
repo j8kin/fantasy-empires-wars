@@ -12,7 +12,7 @@ import PlayerSelection from '../player-selection/PlayerSelection';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { ButtonName } from '../../types/ButtonName';
-import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
+import { BattlefieldDimensions, BattlefieldSize } from '../../types/BattlefieldSize';
 import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { GameState } from '../../types/GameState';
@@ -20,6 +20,21 @@ import { Mana, ManaType } from '../../types/Mana';
 
 // Local map size type for this dialog only
 type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';
+
+const getBattlefieldDimensions = (selectedMapSize: DialogMapSize): BattlefieldDimensions => {
+  switch (selectedMapSize) {
+    case 'small':
+      return { rows: 6, cols: 13 };
+    case 'medium':
+      return { rows: 9, cols: 18 };
+    case 'large':
+      return { rows: 11, cols: 23 };
+    case 'huge':
+      return { rows: 15, cols: 31 };
+    default:
+      return { rows: 9, cols: 18 };
+  }
+};
 
 const getMaxOpponents = (mapSize: DialogMapSize): number => {
   switch (mapSize) {
@@ -264,7 +279,7 @@ const NewGameDialog: React.FC = () => {
 
     setTimeout(() => {
       const gameState: GameState = {
-        battlefield: generateMap(getBattlefieldDimensions(mapSize as BattlefieldSize)),
+        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         mapSize: mapSize as BattlefieldSize,
         selectedPlayer: updatedSelectedPlayer,

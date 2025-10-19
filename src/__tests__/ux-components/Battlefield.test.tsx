@@ -4,7 +4,7 @@ import Battlefield from '../../ux-components/battlefield/Battlefield';
 import { GameState, BattlefieldMap } from '../../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { Land, LAND_TYPE } from '../../types/Land';
-import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
+import { BattlefieldDimensions } from '../../types/BattlefieldSize';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { LandPosition } from '../../map/utils/mapLands';
@@ -68,7 +68,7 @@ jest.mock('../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
 // Test data setup
 const testTileDimensions = { width: 50, height: 180 };
 
-const createMockGameState = (mapSize: BattlefieldSize): GameState => {
+const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState => {
   const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[0];
 
   const mockLandType = (): Land => {
@@ -80,7 +80,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
   };
 
   const tiles: BattlefieldMap = {
-    size: getBattlefieldDimensions(mapSize),
+    size: mapDimensions,
     lands: {},
   };
 
@@ -101,7 +101,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
   }
 
   return {
-    mapSize,
+    mapSize: 'medium',
     battlefield: tiles,
     turn: 0,
     selectedPlayer: mockPlayer,
@@ -115,7 +115,7 @@ let mockGameState: GameState;
 jest.mock('../../contexts/GameContext', () => ({
   ...jest.requireActual('../../contexts/GameContext'),
   useGameContext: () => ({
-    gameState: mockGameState || createMockGameState('medium'),
+    gameState: mockGameState || createMockGameState({ rows: 9, cols: 18 }),
     updateTile: jest.fn(),
     setTileController: jest.fn(),
     addBuildingToTile: jest.fn(),
@@ -126,7 +126,6 @@ jest.mock('../../contexts/GameContext', () => ({
     getTile: jest.fn(),
     getPlayerTiles: jest.fn(),
     getTotalPlayerGold: jest.fn(),
-    mapDimensions: { rows: 9, cols: 18 },
   }),
 }));
 
@@ -151,7 +150,7 @@ describe('Battlefield Component', () => {
 
   describe('Basic Rendering', () => {
     it('renders battlefield with correct props', () => {
-      mockGameState = createMockGameState('medium');
+      mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       expect(screen.getByTestId('fantasy-border-frame')).toBeInTheDocument();
@@ -159,16 +158,15 @@ describe('Battlefield Component', () => {
     });
 
     it('renders with correct battlefield data attributes', () => {
-      mockGameState = createMockGameState('large');
+      mockGameState = createMockGameState({ rows: 11, cols: 23 });
       render(<Battlefield topPanelHeight={200} tileSize={testTileDimensions} />);
 
       const battlefield = screen.getByTestId('Battlefield');
-      expect(battlefield).toHaveAttribute('data-battlefield-size', 'large');
       expect(battlefield).toHaveAttribute('id', 'Battlefield');
     });
 
     it('has the Battlefield container structure', () => {
-      mockGameState = createMockGameState('small');
+      mockGameState = createMockGameState({ rows: 6, cols: 13 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const battlefield = screen.getByTestId('Battlefield');
@@ -179,7 +177,7 @@ describe('Battlefield Component', () => {
 
   describe('FantasyBorderFrame Integration', () => {
     it('passes correct props to FantasyBorderFrame', () => {
-      mockGameState = createMockGameState('huge');
+      mockGameState = createMockGameState({ rows: 15, cols: 31 });
       const top = 150;
       render(<Battlefield topPanelHeight={top} tileSize={testTileDimensions} />);
 
@@ -197,7 +195,7 @@ describe('Battlefield Component', () => {
 
   describe('Hex Tile Generation', () => {
     it('generates correct number of hex tiles for small map', () => {
-      mockGameState = createMockGameState('small');
+      mockGameState = createMockGameState({ rows: 6, cols: 13 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       // Small map should have some hex tiles
@@ -206,7 +204,7 @@ describe('Battlefield Component', () => {
     });
 
     it('generates correct number of hex tiles for medium map', () => {
-      mockGameState = createMockGameState('medium');
+      mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexTiles = screen.getAllByTestId('hex-tile');
@@ -214,7 +212,7 @@ describe('Battlefield Component', () => {
     });
 
     it('generates correct number of hex tiles for large map', () => {
-      mockGameState = createMockGameState('large');
+      mockGameState = createMockGameState({ rows: 11, cols: 23 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexTiles = screen.getAllByTestId('hex-tile');
@@ -222,7 +220,7 @@ describe('Battlefield Component', () => {
     });
 
     it('generates correct number of hex tiles for huge map', () => {
-      mockGameState = createMockGameState('huge');
+      mockGameState = createMockGameState({ rows: 15, cols: 31 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexTiles = screen.getAllByTestId('hex-tile');
@@ -230,7 +228,7 @@ describe('Battlefield Component', () => {
     });
 
     it('generates hex rows with correct CSS classes', () => {
-      mockGameState = createMockGameState('medium');
+      mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexRows = screen
@@ -245,7 +243,7 @@ describe('Battlefield Component', () => {
   describe('Hex Tile Size Calculations', () => {
     it('calculates correct tile sizes for small map', () => {
       const scaleFactor = 1.4;
-      mockGameState = createMockGameState('small');
+      mockGameState = createMockGameState({ rows: 6, cols: 13 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const battlefield = screen.getByTestId('Battlefield');
@@ -261,7 +259,7 @@ describe('Battlefield Component', () => {
 
     it('calculates correct tile sizes for medium map', () => {
       const scaleFactor = 1.0;
-      mockGameState = createMockGameState('medium');
+      mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const battlefield = screen.getByTestId('Battlefield');
@@ -277,7 +275,7 @@ describe('Battlefield Component', () => {
 
     it('calculates correct tile sizes for large map', () => {
       const scaleFactor = 0.8;
-      mockGameState = createMockGameState('large');
+      mockGameState = createMockGameState({ rows: 11, cols: 23 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const battlefield = screen.getByTestId('Battlefield');
@@ -293,7 +291,7 @@ describe('Battlefield Component', () => {
 
     it('calculates correct tile sizes for huge map', () => {
       const scaleFactor = 0.6;
-      mockGameState = createMockGameState('huge');
+      mockGameState = createMockGameState({ rows: 15, cols: 31 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const battlefield = screen.getByTestId('Battlefield');
@@ -310,7 +308,7 @@ describe('Battlefield Component', () => {
 
   describe('CSS Custom Properties', () => {
     it('sets correct hex row margin and offset', () => {
-      mockGameState = createMockGameState('medium');
+      mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const battlefield = screen.getByTestId('Battlefield');
@@ -327,7 +325,7 @@ describe('Battlefield Component', () => {
 
   describe('Tile State Integration', () => {
     it('passes tile states to HexTile components correctly', () => {
-      mockGameState = createMockGameState('medium');
+      mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexTiles = screen.getAllByTestId('hex-tile');
@@ -341,7 +339,7 @@ describe('Battlefield Component', () => {
     });
 
     it('handles missing tile states gracefully', () => {
-      mockGameState = createMockGameState('large');
+      mockGameState = createMockGameState({ rows: 11, cols: 23 });
       mockGameState.battlefield.lands = {}; // Empty tiles object
 
       expect(() => {
@@ -355,7 +353,7 @@ describe('Battlefield Component', () => {
 
   describe('Container Styling', () => {
     it('applies correct container styles', () => {
-      mockGameState = createMockGameState('huge');
+      mockGameState = createMockGameState({ rows: 15, cols: 31 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const battlefield = screen.getByTestId('Battlefield');
@@ -370,7 +368,7 @@ describe('Battlefield Component', () => {
 
   describe('Edge Cases', () => {
     it('handles undefined map size gracefully', () => {
-      mockGameState = createMockGameState('small');
+      mockGameState = createMockGameState({ rows: 6, cols: 13 });
       // @ts-ignore - Testing edge case
       mockGameState.mapSize = undefined;
 
@@ -380,7 +378,7 @@ describe('Battlefield Component', () => {
     });
 
     it('handles zero top position', () => {
-      mockGameState = createMockGameState('medium');
+      mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={0} tileSize={testTileDimensions} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');
@@ -389,7 +387,7 @@ describe('Battlefield Component', () => {
     });
 
     it('handles negative top position', () => {
-      mockGameState = createMockGameState('medium');
+      mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={-50} tileSize={testTileDimensions} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');
@@ -399,7 +397,7 @@ describe('Battlefield Component', () => {
 
     it('handles custom tile size', () => {
       const customTileSize = { width: 75, height: 200 };
-      mockGameState = createMockGameState('huge');
+      mockGameState = createMockGameState({ rows: 15, cols: 31 });
       render(<Battlefield topPanelHeight={100} tileSize={customTileSize} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');
@@ -410,7 +408,7 @@ describe('Battlefield Component', () => {
 
   describe('Component Integration', () => {
     it('renders all required child components', () => {
-      mockGameState = createMockGameState('large');
+      mockGameState = createMockGameState({ rows: 11, cols: 23 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       expect(screen.getByTestId('fantasy-border-frame')).toBeInTheDocument();
@@ -419,7 +417,7 @@ describe('Battlefield Component', () => {
     });
 
     it('maintains component hierarchy', () => {
-      mockGameState = createMockGameState('medium');
+      mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');

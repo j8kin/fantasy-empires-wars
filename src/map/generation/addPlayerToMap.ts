@@ -1,4 +1,4 @@
-import { BattlefieldLands, GameState, LandState } from '../../types/GameState';
+import { BattlefieldMap, GameState, LandState } from '../../types/GameState';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { getUnit } from '../../types/Army';
 import { recruitHero } from '../army/recruit';
@@ -7,27 +7,25 @@ import { construct } from '../building/construct';
 import { BuildingType } from '../../types/Building';
 import { LAND_TYPE } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
-import { BattlefieldDimensions, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { calculateHexDistance } from '../utils/mapAlgorithms';
 
 const findSuitableHomeland = (
-  tiles: BattlefieldLands,
+  battlefield: BattlefieldMap,
   player: GamePlayer,
-  existingPlayerPositions: LandPosition[],
-  dimensions: BattlefieldDimensions
+  existingPlayerPositions: LandPosition[]
 ): LandState | undefined => {
   let candidates: LandState[] = [];
 
   // For Necromancer (Undead race), look for the volcano first
   if (player.race === 'Undead') {
-    candidates = Object.values(tiles).filter(
+    candidates = Object.values(battlefield.lands).filter(
       (tile) => tile.land.id === LAND_TYPE.VOLCANO && tile.controlledBy === NO_PLAYER.id
     );
   }
 
   // If no volcano found for Necromancer or other players, look for alignment-matching lands
   if (candidates.length === 0) {
-    candidates = Object.values(tiles).filter(
+    candidates = Object.values(battlefield.lands).filter(
       (tile) =>
         tile.controlledBy === NO_PLAYER.id &&
         tile.land.alignment === player.alignment &&
@@ -38,15 +36,15 @@ const findSuitableHomeland = (
         tile.land.id !== LAND_TYPE.DESERT &&
         // do not place homeland on the edge of the battlefield
         tile.mapPos.row >= 2 &&
-        tile.mapPos.row <= dimensions.rows - 2 &&
+        tile.mapPos.row <= battlefield.size.rows - 2 &&
         tile.mapPos.col >= 2 &&
-        tile.mapPos.col <= dimensions.cols - 2
+        tile.mapPos.col <= battlefield.size.cols - 2
     );
   }
 
   // If no alignment match, use neutral lands
   if (candidates.length === 0) {
-    candidates = Object.values(tiles).filter(
+    candidates = Object.values(battlefield.lands).filter(
       (tile) =>
         tile.controlledBy === NO_PLAYER.id &&
         tile.land.alignment === Alignment.NEUTRAL &&
@@ -59,7 +57,7 @@ const findSuitableHomeland = (
   // Filter by distance constraints
   const validCandidates = candidates.filter((candidate) => {
     return existingPlayerPositions.every((pos) => {
-      const distance = calculateHexDistance(dimensions, candidate.mapPos, pos);
+      const distance = calculateHexDistance(battlefield.size, candidate.mapPos, pos);
       return distance >= 4; // Try radius 4 first
     });
   });
@@ -68,7 +66,7 @@ const findSuitableHomeland = (
   if (validCandidates.length === 0) {
     const radius3Candidates = candidates.filter((candidate) => {
       return existingPlayerPositions.every((pos) => {
-        const distance = calculateHexDistance(dimensions, candidate.mapPos, pos);
+        const distance = calculateHexDistance(battlefield.size, candidate.mapPos, pos);
         return distance >= 3;
       });
     });
@@ -106,12 +104,7 @@ const addPlayer = (
   existingPlayersPositions: LandPosition[],
   gameState: GameState
 ) => {
-  const homeland = findSuitableHomeland(
-    gameState.battlefield.lands,
-    player,
-    existingPlayersPositions,
-    getBattlefieldDimensions(gameState.mapSize)
-  );
+  const homeland = findSuitableHomeland(gameState.battlefield, player, existingPlayersPositions);
   if (!homeland) return; // should never reach here
 
   homeland.controlledBy = player.id;

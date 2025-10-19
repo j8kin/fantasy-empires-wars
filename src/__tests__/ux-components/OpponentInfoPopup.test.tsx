@@ -95,7 +95,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
   });
 
@@ -121,7 +120,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     const { container } = render(
@@ -155,7 +153,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -189,7 +186,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -227,7 +223,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -262,7 +257,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -297,7 +291,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -333,7 +326,6 @@ describe('OpponentInfoPopup', () => {
         getTile: jest.fn(),
         getPlayerTiles: jest.fn(),
         getTotalPlayerGold: jest.fn(),
-        mapDimensions: { rows: 10, cols: 10 },
       });
 
       render(
@@ -368,7 +360,6 @@ describe('OpponentInfoPopup', () => {
         getTile: jest.fn(),
         getPlayerTiles: jest.fn(),
         getTotalPlayerGold: jest.fn(),
-        mapDimensions: { rows: 10, cols: 10 },
       });
 
       render(
@@ -403,7 +394,6 @@ describe('OpponentInfoPopup', () => {
         getTile: jest.fn(),
         getPlayerTiles: jest.fn(),
         getTotalPlayerGold: jest.fn(),
-        mapDimensions: { rows: 10, cols: 10 },
       });
 
       render(
@@ -440,7 +430,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -476,7 +465,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -512,7 +500,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -548,7 +535,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -589,7 +575,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(
@@ -632,7 +617,6 @@ describe('OpponentInfoPopup', () => {
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
-      mapDimensions: { rows: 10, cols: 10 },
     });
 
     render(

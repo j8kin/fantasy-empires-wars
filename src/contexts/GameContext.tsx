@@ -1,10 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { GameState } from '../types/GameState';
-import {
-  BattlefieldDimensions,
-  BattlefieldSize,
-  getBattlefieldDimensions,
-} from '../types/BattlefieldSize';
 import { GamePlayer } from '../types/GamePlayer';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
@@ -19,22 +14,15 @@ interface GameContextType {
 
   // Game Flow
   updateGameState: (gameState: GameState) => void;
-
-  // Utilities
-  mapDimensions: BattlefieldDimensions;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 interface GameProviderProps {
   children: ReactNode;
-  initialMapSize?: BattlefieldSize;
 }
 
-export const GameProvider: React.FC<GameProviderProps> = ({
-  children,
-  initialMapSize = 'medium',
-}) => {
+export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const [gameState, setGameState] = useState<GameState | undefined>(undefined);
 
   const updateGameConfig = useCallback((config: GameState) => {
@@ -84,17 +72,11 @@ export const GameProvider: React.FC<GameProviderProps> = ({
     });
   }, []);
 
-  const mapDimensions = useMemo(
-    () => getBattlefieldDimensions(gameState?.mapSize || initialMapSize),
-    [gameState?.mapSize, initialMapSize]
-  );
-
   const contextValue: GameContextType = {
     gameState,
     updateGameState: updateGameConfig,
     getTotalPlayerGold,
     recalculateAllPlayersIncome,
-    mapDimensions,
   };
 
   return <GameContext.Provider value={contextValue}>{children}</GameContext.Provider>;
