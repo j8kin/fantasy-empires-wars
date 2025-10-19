@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './css/NewGameDialog.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
@@ -308,19 +308,26 @@ const NewGameDialog: React.FC = () => {
     setShowStartWindow(false);
   }, [setShowStartWindow]);
 
-  // Calculate dialog dimensions
-  const dialogWidth = Math.min(900, typeof window !== 'undefined' ? window.innerWidth * 0.9 : 900);
-  const dialogHeight = Math.min(
-    650,
-    typeof window !== 'undefined' ? window.innerHeight * 0.75 : 650
-  );
-  const dialogX = typeof window !== 'undefined' ? (window.innerWidth - dialogWidth) / 2 : 0;
-  const dialogY = typeof window !== 'undefined' ? (window.innerHeight - dialogHeight) / 2 : 0;
+  // Calculate dialog dimensions (memoized to avoid recalculation on every render)
+  const dialogDimensions = useMemo(() => {
+    const dialogWidth = Math.min(
+      900,
+      typeof window !== 'undefined' ? window.innerWidth * 0.9 : 900
+    );
+    const dialogHeight = Math.min(
+      650,
+      typeof window !== 'undefined' ? window.innerHeight * 0.75 : 650
+    );
+    const dialogX = typeof window !== 'undefined' ? (window.innerWidth - dialogWidth) / 2 : 0;
+    const dialogY = typeof window !== 'undefined' ? (window.innerHeight - dialogHeight) / 2 : 0;
+
+    return { dialogWidth, dialogHeight, dialogX, dialogY };
+  }, []);
 
   return (
     <FantasyBorderFrame
-      screenPosition={{ x: dialogX, y: dialogY }}
-      windowDimensions={{ width: dialogWidth, height: dialogHeight }}
+      screenPosition={{ x: dialogDimensions.dialogX, y: dialogDimensions.dialogY }}
+      frameSize={{ width: dialogDimensions.dialogWidth, height: dialogDimensions.dialogHeight }}
       primaryButton={<GameButton buttonName={ButtonName.START} onClick={handleStartGame} />}
       secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />}
       zIndex={1005}

@@ -38,7 +38,7 @@ const SaveGameDialog: React.FC = () => {
     <div data-testid="SaveGameDialog">
       <FantasyBorderFrame
         screenPosition={{ x, y }}
-        windowDimensions={{ width: dialogWidth, height: dialogHeight }}
+        frameSize={{ width: dialogWidth, height: dialogHeight }}
         primaryButton={<GameButton buttonName={ButtonName.SAVE} onClick={handleSave} />}
         secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />}
       >

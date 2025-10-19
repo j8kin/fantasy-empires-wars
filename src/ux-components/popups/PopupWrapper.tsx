@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 import FantasyBorderFrame, {
-  DialogSize,
+  FrameSize,
   ScreenPosition,
 } from '../fantasy-border-frame/FantasyBorderFrame';
 
@@ -11,7 +11,7 @@ export interface PopupProps {
   screenPosition: ScreenPosition;
 }
 interface PopupWrapperProps extends PopupProps {
-  dimensions: DialogSize;
+  dimensions: FrameSize;
   accessible?: boolean;
   children: React.ReactNode;
   onClose?: () => void;
@@ -64,7 +64,7 @@ const PopupWrapper: React.FC<PopupWrapperProps> = ({
     <div ref={popupRef}>
       <FantasyBorderFrame
         screenPosition={screenPosition}
-        windowDimensions={dimensions}
+        frameSize={dimensions}
         tileDimensions={{ width: 20, height: 70 }}
         accessible={accessible}
         flexibleSizing={true}

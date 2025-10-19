@@ -8,13 +8,13 @@ import PlayActionsControl from '../game-controls/PlayActionsControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import GameButton from '../buttons/GameButton';
-import FantasyBorderFrame, { DialogSize } from '../fantasy-border-frame/FantasyBorderFrame';
+import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
 import Player from '../player/Player';
 import { ButtonName } from '../../types/ButtonName';
 
 export interface TopPanelProps {
   height: number;
-  tileDimensions: DialogSize;
+  tileDimensions: FrameSize;
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
@@ -27,7 +27,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
   return (
     <FantasyBorderFrame
       screenPosition={{ x: 0, y: 0 }}
-      windowDimensions={{ width: window.innerWidth, height }}
+      frameSize={{ width: window.innerWidth, height }}
       primaryButton={endTurnButton}
       tileDimensions={tileDimensions}
       accessible={true}

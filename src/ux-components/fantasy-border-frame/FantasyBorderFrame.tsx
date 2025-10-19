@@ -15,34 +15,34 @@ export interface ScreenPosition {
 /**
  * Width and height of the window/dialog/popup
  */
-export interface DialogSize {
+export interface FrameSize {
   width: number;
   height: number;
 }
 
 export interface FantasyBorderFrameProps {
   screenPosition: ScreenPosition;
-  windowDimensions: DialogSize;
+  frameSize: FrameSize;
   children: React.ReactNode;
   primaryButton?: React.ReactElement;
   secondaryButton?: React.ReactElement;
-  tileDimensions?: DialogSize;
+  tileDimensions?: FrameSize;
   zIndex?: number;
   accessible?: boolean;
   flexibleSizing?: boolean;
 }
 
-// 50*180 since base tile is vertical
-export const defaultTileDimensions: DialogSize = {
+// 50*180 since the base tile is vertical
+export const defaultTileDimensions: FrameSize = {
   width: 50,
   height: 180,
 };
-const cornerSize = (tileDimensions: DialogSize): number =>
+const cornerSize = (tileDimensions: FrameSize): number =>
   Math.min(tileDimensions.width, tileDimensions.height);
 
 const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
   screenPosition,
-  windowDimensions,
+  frameSize,
   children,
   primaryButton,
   secondaryButton,
@@ -52,7 +52,7 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
   flexibleSizing = false,
 }) => {
   const { x, y } = screenPosition;
-  const { width, height } = windowDimensions;
+  const { width, height } = frameSize;
   return (
     <>
       {/* Backdrop */}

@@ -5,16 +5,16 @@ import hexStyles from './css/Hexagonal.module.css';
 import { useGameContext } from '../../contexts/GameContext';
 
 import LandTile from './LandTile';
-import FantasyBorderFrame, { DialogSize } from '../fantasy-border-frame/FantasyBorderFrame';
+import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
 import { battlefieldLandId } from '../../types/GameState';
 
 export interface BattlefieldProps {
   topPanelHeight: number;
-  tileSize: DialogSize;
+  tileSize: FrameSize;
 }
 
 // todo refactor and remove the same size should be used + scroll map
-const getHexTileSize = (battlefieldCols: number): DialogSize => {
+const getHexTileSize = (battlefieldCols: number): FrameSize => {
   // Base size for small map, decrease as map size increases
   const baseWidth = 100;
   let scaleFactor: number;
@@ -73,7 +73,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
   return (
     <FantasyBorderFrame
       screenPosition={{ x: 0, y: topPanelHeight }}
-      windowDimensions={{ width: window.innerWidth, height: window.innerHeight - topPanelHeight }}
+      frameSize={{ width: window.innerWidth, height: window.innerHeight - topPanelHeight }}
       tileDimensions={tileSize}
       accessible={true}
       zIndex={90}
