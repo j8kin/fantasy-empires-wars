@@ -76,7 +76,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         selectedPlayer: {
@@ -105,7 +104,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -138,7 +136,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -171,7 +168,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -208,7 +204,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -242,7 +237,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -276,7 +270,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -311,7 +304,6 @@ describe('OpponentInfoPopup', () => {
       const { useGameContext } = require('../../contexts/GameContext');
       useGameContext.mockReturnValue({
         gameState: {
-          mapSize: 'medium',
           tiles: {},
           turn: 1,
           ...gameState,
@@ -345,7 +337,6 @@ describe('OpponentInfoPopup', () => {
       const { useGameContext } = require('../../contexts/GameContext');
       useGameContext.mockReturnValue({
         gameState: {
-          mapSize: 'medium',
           tiles: {},
           turn: 1,
           ...gameState,
@@ -379,7 +370,6 @@ describe('OpponentInfoPopup', () => {
       const { useGameContext } = require('../../contexts/GameContext');
       useGameContext.mockReturnValue({
         gameState: {
-          mapSize: 'medium',
           tiles: {},
           turn: 1,
           ...gameState,
@@ -415,7 +405,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -450,7 +439,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -485,7 +473,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -520,7 +507,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -560,7 +546,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,
@@ -602,7 +587,6 @@ describe('OpponentInfoPopup', () => {
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: {
-        mapSize: 'medium',
         tiles: {},
         turn: 1,
         ...gameState,

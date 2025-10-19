@@ -23,7 +23,7 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
     // if stronghold destroyed then all Lands in radius two should be neutral or could be taken under control by another player
     // if there is an amy on the land not change the owner
     getTilesInRadius(
-      gameState.battlefield.size,
+      gameState.battlefield.dimensions,
       gameState.battlefield.lands[landId].mapPos,
       2,
       false

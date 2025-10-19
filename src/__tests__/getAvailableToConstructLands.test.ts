@@ -8,7 +8,6 @@ import { construct } from '../map/building/construct';
 describe('getAvailableLands', () => {
   const gameState: GameState = {
     battlefield: generateMockMap(1, 1),
-    mapSize: 'huge',
     selectedPlayer: PREDEFINED_PLAYERS[0],
     opponents: [],
     turn: 1,

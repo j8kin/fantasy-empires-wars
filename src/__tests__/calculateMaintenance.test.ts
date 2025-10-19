@@ -13,7 +13,6 @@ describe('Calculate Maintenance', () => {
 
   const mockGameState: GameState = {
     battlefield: generateMockMap(10, 10),
-    mapSize: 'huge',
     selectedPlayer: player,
     opponents: PREDEFINED_PLAYERS.slice(1, 3),
     turn: 0,

@@ -2,8 +2,12 @@ import { Land } from './Land';
 import { Building } from './Building';
 import { Army } from './Army';
 import { GamePlayer } from './GamePlayer';
-import { BattlefieldDimensions, BattlefieldSize } from './BattlefieldSize';
 import { LandPosition } from '../map/utils/mapLands';
+
+export interface BattlefieldDimensions {
+  rows: number;
+  cols: number;
+}
 
 export type BattlefieldLands = Record<string, LandState>;
 
@@ -17,12 +21,11 @@ export interface LandState {
   glow?: boolean;
 }
 export type BattlefieldMap = {
-  size: BattlefieldDimensions;
+  dimensions: BattlefieldDimensions;
   lands: Record<string, LandState>;
 };
 
 export interface GameState {
-  mapSize: BattlefieldSize;
   battlefield: BattlefieldMap;
   turn: number;
   selectedPlayer: GamePlayer;

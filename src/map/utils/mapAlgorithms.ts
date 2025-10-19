@@ -1,6 +1,10 @@
-import { BattlefieldDimensions } from '../../types/BattlefieldSize';
 import { getLands, LandPosition } from './mapLands';
-import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
+import {
+  BattlefieldDimensions,
+  battlefieldLandId,
+  GameState,
+  LandState,
+} from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 
 export const calculateHexDistance = (
@@ -93,7 +97,7 @@ export const getNearestStrongholdLand = (
     )
     .filter(
       (stronghold) =>
-        calculateHexDistance(gameState.battlefield.size, landPos, stronghold.mapPos) <= radius
+        calculateHexDistance(gameState.battlefield.dimensions, landPos, stronghold.mapPos) <= radius
     );
 
   // no stronghold in radius 2

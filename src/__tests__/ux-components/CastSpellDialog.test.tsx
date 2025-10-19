@@ -105,9 +105,8 @@ const renderWithApplicationContext = () => {
         });
       } else {
         updateGameState({
-          mapSize: 'medium',
           battlefield: {
-            size: { rows: 9, cols: 18 },
+            dimensions: { rows: 9, cols: 18 },
             lands: {},
           },
           turn: 0,

@@ -36,9 +36,9 @@ const findSuitableHomeland = (
         tile.land.id !== LAND_TYPE.DESERT &&
         // do not place homeland on the edge of the battlefield
         tile.mapPos.row >= 2 &&
-        tile.mapPos.row <= battlefield.size.rows - 2 &&
+        tile.mapPos.row <= battlefield.dimensions.rows - 2 &&
         tile.mapPos.col >= 2 &&
-        tile.mapPos.col <= battlefield.size.cols - 2
+        tile.mapPos.col <= battlefield.dimensions.cols - 2
     );
   }
 
@@ -57,7 +57,7 @@ const findSuitableHomeland = (
   // Filter by distance constraints
   const validCandidates = candidates.filter((candidate) => {
     return existingPlayerPositions.every((pos) => {
-      const distance = calculateHexDistance(battlefield.size, candidate.mapPos, pos);
+      const distance = calculateHexDistance(battlefield.dimensions, candidate.mapPos, pos);
       return distance >= 4; // Try radius 4 first
     });
   });
@@ -66,7 +66,7 @@ const findSuitableHomeland = (
   if (validCandidates.length === 0) {
     const radius3Candidates = candidates.filter((candidate) => {
       return existingPlayerPositions.every((pos) => {
-        const distance = calculateHexDistance(battlefield.size, candidate.mapPos, pos);
+        const distance = calculateHexDistance(battlefield.dimensions, candidate.mapPos, pos);
         return distance >= 3;
       });
     });

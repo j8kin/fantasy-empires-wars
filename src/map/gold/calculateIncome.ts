@@ -23,7 +23,7 @@ export const calculateIncome = (gameState: GameState, player: GamePlayer) => {
     const landPos = land.mapPos;
     const distanceToStronghold = Math.min(
       ...playerStrongholds.map((stronghold) =>
-        calculateHexDistance(battlefield.size, landPos, stronghold)
+        calculateHexDistance(battlefield.dimensions, landPos, stronghold)
       )
     );
 

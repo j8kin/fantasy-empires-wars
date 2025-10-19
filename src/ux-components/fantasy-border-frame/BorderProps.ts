@@ -1,8 +1,8 @@
-import { Dimensions } from './FantasyBorderFrame';
+import { DialogSize } from './FantasyBorderFrame';
 
 export interface BorderProps {
   side: 'left' | 'right' | 'top' | 'bottom';
-  tileDimensions: Dimensions;
+  tileDimensions: DialogSize;
   length: number;
   zIndex: number;
 }

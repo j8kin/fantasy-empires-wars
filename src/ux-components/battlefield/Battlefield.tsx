@@ -5,21 +5,21 @@ import hexStyles from './css/Hexagonal.module.css';
 import { useGameContext } from '../../contexts/GameContext';
 
 import LandTile from './LandTile';
-import FantasyBorderFrame, { Dimensions } from '../fantasy-border-frame/FantasyBorderFrame';
+import FantasyBorderFrame, { DialogSize } from '../fantasy-border-frame/FantasyBorderFrame';
 import { battlefieldLandId } from '../../types/GameState';
 
 export interface BattlefieldProps {
   topPanelHeight: number;
-  tileSize: Dimensions;
+  tileSize: DialogSize;
 }
 
 // todo refactor and remove the same size should be used + scroll map
-const getHexTileSize = (battlefieldSize: number): Dimensions => {
+const getHexTileSize = (battlefieldCols: number): DialogSize => {
   // Base size for small map, decrease as map size increases
   const baseWidth = 100;
   let scaleFactor: number;
 
-  switch (battlefieldSize) {
+  switch (battlefieldCols) {
     case 13:
       scaleFactor = 1.4; // Largest tiles for smallest map
       break;
@@ -46,7 +46,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
   const { gameState } = useGameContext();
 
   // Battlefield generated at application startup, but gameState is not initialized yet - use dummy map size todo: refactor
-  const { rows, cols } = gameState?.battlefield.size || { rows: 1, cols: 1 };
+  const { rows, cols } = gameState?.battlefield.dimensions || { rows: 1, cols: 1 };
   const { width: tileWidth, height: tileHeight } = getHexTileSize(cols);
   const hexGrid = [];
 

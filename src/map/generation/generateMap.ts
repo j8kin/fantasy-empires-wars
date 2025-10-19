@@ -3,9 +3,9 @@ import {
   LandState,
   BattlefieldLands,
   BattlefieldMap,
+  BattlefieldDimensions,
 } from '../../types/GameState';
 import { getLandById, Land, LAND_TYPE } from '../../types/Land';
-import { BattlefieldDimensions } from '../../types/BattlefieldSize';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { LandPosition } from '../utils/mapLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
@@ -55,7 +55,7 @@ const getRandomNoneNeighbor = (
 export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap => {
   const { rows, cols } = dimensions;
   const battlefield: BattlefieldMap = {
-    size: dimensions,
+    dimensions: dimensions,
     lands: {},
   };
 

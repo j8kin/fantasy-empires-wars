@@ -1,10 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Battlefield from '../../ux-components/battlefield/Battlefield';
-import { GameState, BattlefieldMap } from '../../types/GameState';
+import { GameState, BattlefieldMap, BattlefieldDimensions } from '../../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { Land, LAND_TYPE } from '../../types/Land';
-import { BattlefieldDimensions } from '../../types/BattlefieldSize';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { LandPosition } from '../../map/utils/mapLands';
@@ -80,7 +79,7 @@ const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState =>
   };
 
   const tiles: BattlefieldMap = {
-    size: mapDimensions,
+    dimensions: mapDimensions,
     lands: {},
   };
 
@@ -101,7 +100,6 @@ const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState =>
   }
 
   return {
-    mapSize: 'medium',
     battlefield: tiles,
     turn: 0,
     selectedPlayer: mockPlayer,
@@ -367,16 +365,6 @@ describe('Battlefield Component', () => {
   });
 
   describe('Edge Cases', () => {
-    it('handles undefined map size gracefully', () => {
-      mockGameState = createMockGameState({ rows: 6, cols: 13 });
-      // @ts-ignore - Testing edge case
-      mockGameState.mapSize = undefined;
-
-      expect(() => {
-        render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
-      }).not.toThrow();
-    });
-
     it('handles zero top position', () => {
       mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={0} tileSize={testTileDimensions} />);
@@ -430,7 +418,6 @@ describe('Battlefield Component', () => {
   describe('Create Battlefield which generated Map', () => {
     it('renders all required child components', () => {
       mockGameState = {
-        mapSize: 'medium',
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[1],

@@ -58,7 +58,6 @@ describe('MapLands', () => {
         const mockMap: BattlefieldMap = generateMockMap(5, 5);
         const mockGameState: GameState = {
           battlefield: mockMap,
-          mapSize: 'small',
           selectedPlayer: player,
           opponents: [],
           turn: 1,
@@ -76,7 +75,6 @@ describe('MapLands', () => {
         const mockMap: BattlefieldMap = generateMockMap(5, 5);
         const mockGameState: GameState = {
           battlefield: mockMap,
-          mapSize: 'small',
           selectedPlayer: player,
           opponents: [],
           turn: 1,
@@ -97,7 +95,6 @@ describe('MapLands', () => {
         mockMap = generateMockMap(5, 5);
         mockGameState = {
           battlefield: mockMap,
-          mapSize: 'small',
           selectedPlayer: player,
           opponents: [],
           turn: 1,

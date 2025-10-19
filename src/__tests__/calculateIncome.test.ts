@@ -12,7 +12,6 @@ describe('Calculate Income', () => {
 
   const mockGameState: GameState = {
     battlefield: generateMockMap(10, 10),
-    mapSize: 'huge',
     selectedPlayer: lawfulPlayer,
     opponents: [chaoticPlayer, neutralPlayer],
     turn: 0,

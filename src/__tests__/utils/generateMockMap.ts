@@ -5,7 +5,7 @@ import { NO_PLAYER } from '../../types/GamePlayer';
 
 export const generateMockMap = (rows: number, cols: number): BattlefieldMap => {
   const result: BattlefieldMap = {
-    size: { rows: rows, cols: cols },
+    dimensions: { rows: rows, cols: cols },
     lands: {},
   };
   let landNumber = 1;

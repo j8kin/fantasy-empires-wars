@@ -38,7 +38,6 @@ describe('Map Generation with Players', () => {
     it('should assign necromancer to volcano land', () => {
       const necromancerPlayer = PREDEFINED_PLAYERS[1]; // Undead necromancer
       const mockGameState: GameState = {
-        mapSize: 'medium',
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: necromancerPlayer,
@@ -60,7 +59,6 @@ describe('Map Generation with Players', () => {
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
 
       const mockGameState: GameState = {
-        mapSize: 'medium',
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
@@ -102,7 +100,6 @@ describe('Map Generation with Players', () => {
     it('should assign lands based on player alignment', () => {
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
       const mockGameState: GameState = {
-        mapSize: 'small',
         battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
@@ -138,7 +135,6 @@ describe('Map Generation with Players', () => {
       const dimensions = { rows: 11, cols: 23 };
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
       const mockGameState: GameState = {
-        mapSize: 'large',
         battlefield: generateMap(dimensions),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
@@ -167,7 +163,6 @@ describe('Map Generation with Players', () => {
       const dimensions = { rows: 9, cols: 18 };
       const singlePlayer = [PREDEFINED_PLAYERS[0]];
       const mockGameState: GameState = {
-        mapSize: 'medium',
         battlefield: generateMap(dimensions),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
@@ -198,7 +193,6 @@ describe('Map Generation with Players', () => {
 
     it('should handle conflicts where multiple players could own same land', () => {
       const mockGameState: GameState = {
-        mapSize: 'small',
         battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
@@ -227,7 +221,6 @@ describe('Map Generation with Players', () => {
     it('should work with predefined players from GamePlayer', () => {
       const somePredefinedPlayers = PREDEFINED_PLAYERS.slice(0, 4);
       const mockGameState: GameState = {
-        mapSize: 'large',
         battlefield: generateMap({ rows: 11, cols: 23 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
@@ -260,7 +253,6 @@ describe('Map Generation with Players', () => {
       const necromancers = PREDEFINED_PLAYERS.filter((p) => p.race === 'Undead').slice(0, 2);
 
       const mockGameState: GameState = {
-        mapSize: 'medium',
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: necromancers[0],
@@ -292,7 +284,6 @@ describe('Map Generation with Players', () => {
   describe('Edge Cases', () => {
     it('should handle empty player array gracefully', () => {
       const mockGameState: GameState = {
-        mapSize: 'medium',
         battlefield: generateMap({ rows: 9, cols: 18 }), // test verifies only initializeMap
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
@@ -308,7 +299,6 @@ describe('Map Generation with Players', () => {
     it('should handle single player', () => {
       const singlePlayer = PREDEFINED_PLAYERS[3];
       const mockGameState: GameState = {
-        mapSize: 'medium',
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: singlePlayer,
@@ -332,7 +322,6 @@ describe('Map Generation with Players', () => {
     it('should maintain map integrity after player assignment', () => {
       const dimensions = { rows: 9, cols: 18 };
       const mockGameState: GameState = {
-        mapSize: 'medium',
         battlefield: generateMap(dimensions),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],

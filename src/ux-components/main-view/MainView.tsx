@@ -5,7 +5,7 @@ import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../contexts/ApplicationContext';
-import { GameProvider, useGameContext } from '../../contexts/GameContext';
+import { GameProvider } from '../../contexts/GameContext';
 
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
@@ -16,9 +16,9 @@ import ConstructBuildingDialog from '../dialogs/ConstructBuildingDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
+import ErrorMessagePopup from '../popups/ErrorMessagePopup';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
-import ErrorMessagePopup from '../popups/ErrorMessagePopup';
 
 const MainViewContent: React.FC = () => {
   const {
@@ -35,9 +35,6 @@ const MainViewContent: React.FC = () => {
     clearAllGlow,
     setSelectedLandAction,
   } = useApplicationContext();
-
-  // Access game state from context
-  const { gameState } = useGameContext();
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
@@ -56,7 +53,7 @@ const MainViewContent: React.FC = () => {
       <Battlefield
         topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}
-        key={`map-${gameState?.mapSize || 'medium'}-${gameStarted}`}
+        key={`map-${gameStarted}`}
       />
 
       {/*Game Dialogs */}

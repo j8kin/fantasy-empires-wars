@@ -5,7 +5,7 @@ import { BattlefieldProps } from '../../ux-components/battlefield/Battlefield';
 import { OpponentInfoProps } from '../../ux-components/popups/OpponentInfoPopup';
 import { SelectOpponentDialogProps } from '../../ux-components/dialogs/SelectOpponentDialog';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
-import { GameProvider, useGameContext } from '../../contexts/GameContext';
+import { GameProvider } from '../../contexts/GameContext';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const AllProvidersWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -48,15 +48,7 @@ jest.mock('../../ux-components/top-panel/TopPanel', () => {
 
 jest.mock('../../ux-components/battlefield/Battlefield', () => {
   return (props: BattlefieldProps) => {
-    const { useGameContext } = jest.requireActual('../../contexts/GameContext');
-    const { gameState } = useGameContext();
-    return (
-      <div
-        data-testid="Battlefield"
-        data-battlefield-size={gameState?.mapSize || 'medium'}
-        data-top={props.topPanelHeight}
-      />
-    );
+    return <div data-testid="Battlefield" data-top={props.topPanelHeight} />;
   };
 });
 
@@ -142,7 +134,6 @@ describe('MainView Component', () => {
     renderWithProvider(<MainView />);
     const battlefield = screen.getByTestId('Battlefield');
     expect(battlefield).toBeInTheDocument();
-    expect(battlefield).toHaveAttribute('data-battlefield-size', 'medium');
   });
 
   it('shows NewGameDialog initially', () => {
@@ -160,10 +151,6 @@ describe('MainView Component', () => {
       // Since NewGameDialog now handles game start internally, it should still show
       // The test expectation has changed - the dialog doesn't automatically close in the mock
       expect(screen.getByTestId('NewGameDialog')).toBeInTheDocument();
-
-      // Battlefield should update with a new config
-      const battlefield = screen.getByTestId('Battlefield');
-      expect(battlefield).toHaveAttribute('data-battlefield-size', 'medium');
     });
 
     it('updates battlefield size based on game config', () => {
@@ -172,9 +159,6 @@ describe('MainView Component', () => {
       // Mock a different map size by modifying the mock
       const startButton = screen.getByText('Start Game');
       fireEvent.click(startButton);
-
-      const battlefield = screen.getByTestId('Battlefield');
-      expect(battlefield).toHaveAttribute('data-battlefield-size', 'medium');
     });
 
     it('shows start window when new game is clicked in TopPanel', () => {

@@ -12,10 +12,9 @@ import PlayerSelection from '../player-selection/PlayerSelection';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { ButtonName } from '../../types/ButtonName';
-import { BattlefieldDimensions, BattlefieldSize } from '../../types/BattlefieldSize';
 import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
-import { GameState } from '../../types/GameState';
+import { BattlefieldDimensions, GameState } from '../../types/GameState';
 import { Mana, ManaType } from '../../types/Mana';
 
 // Local map size type for this dialog only
@@ -281,7 +280,6 @@ const NewGameDialog: React.FC = () => {
       const gameState: GameState = {
         battlefield: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
-        mapSize: mapSize as BattlefieldSize,
         selectedPlayer: updatedSelectedPlayer,
         opponents: updatedOpponents,
       };

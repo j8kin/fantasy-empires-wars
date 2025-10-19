@@ -15,7 +15,6 @@ describe('Construct Buildings', () => {
   beforeEach(() => {
     mockGameState = {
       battlefield: generateMockMap(6, 12),
-      mapSize: 'huge',
       turn: 1,
       selectedPlayer: player1,
       opponents: [player2],
