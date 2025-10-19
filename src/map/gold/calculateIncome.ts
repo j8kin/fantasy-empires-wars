@@ -6,6 +6,7 @@ import { calculateHexDistance } from '../utils/mapAlgorithms';
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { GamePlayer } from '../../types/GamePlayer';
+import { getBattlefieldDimensions } from '../../types/BattlefieldSize';
 
 export const calculateIncome = (gameState: GameState, player: GamePlayer) => {
   const { battlefieldLands: battlefield, mapSize } = gameState;
@@ -22,7 +23,9 @@ export const calculateIncome = (gameState: GameState, player: GamePlayer) => {
 
     const landPos = land.mapPos;
     const distanceToStronghold = Math.min(
-      ...playerStrongholds.map((stronghold) => calculateHexDistance(mapSize, landPos, stronghold))
+      ...playerStrongholds.map((stronghold) =>
+        calculateHexDistance(getBattlefieldDimensions(mapSize), landPos, stronghold)
+      )
     );
 
     let landIncome = land.goldPerTurn;

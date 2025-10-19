@@ -71,10 +71,9 @@ jest.mock('../../ux-components/popups/css/LandCharacteristicsPopup.module.css', 
 
 describe('LandCharacteristicsPopup', () => {
   const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[1]; // Morgana
-  const mapSize = 'medium';
   const mockGameState: GameState = {
-    mapSize: mapSize,
-    battlefieldLands: generateMap(mapSize),
+    mapSize: 'medium',
+    battlefieldLands: generateMap({ rows: 9, cols: 18 }),
     turn: 0,
     selectedPlayer: mockPlayer,
     opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],

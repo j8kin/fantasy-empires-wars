@@ -428,10 +428,9 @@ describe('Battlefield Component', () => {
 
   describe('Create Battlefield which generated Map', () => {
     it('renders all required child components', () => {
-      const mapSize = 'medium';
       mockGameState = {
-        mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        mapSize: 'medium',
+        battlefieldLands: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[1],
         opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],

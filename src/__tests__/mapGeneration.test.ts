@@ -12,7 +12,8 @@ describe('Map Generation with Players', () => {
   describe('Basic Map Generation Without Players', () => {
     it('should generate map without players when no players provided', () => {
       const mapSize: BattlefieldSize = 'medium';
-      const tiles = generateMap(mapSize);
+      const dimensions = getBattlefieldDimensions(mapSize);
+      const tiles = generateMap(dimensions);
 
       // Should generate tiles
       expect(Object.keys(tiles).length).toBeGreaterThan(0);
@@ -39,7 +40,7 @@ describe('Map Generation with Players', () => {
       const necromancerPlayer = PREDEFINED_PLAYERS[1]; // Undead necromancer
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: necromancerPlayer,
         opponents: [],
@@ -62,7 +63,7 @@ describe('Map Generation with Players', () => {
 
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -105,7 +106,7 @@ describe('Map Generation with Players', () => {
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -141,7 +142,7 @@ describe('Map Generation with Players', () => {
       const testPlayers = PREDEFINED_PLAYERS.slice(0, 3);
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -155,13 +156,25 @@ describe('Map Generation with Players', () => {
 
       expect(strongholdTiles.length).toBe(testPlayers.length);
       expect(
-        calculateHexDistance(mapSize, strongholdTiles[0].mapPos, strongholdTiles[1].mapPos)
+        calculateHexDistance(
+          getBattlefieldDimensions(mapSize),
+          strongholdTiles[0].mapPos,
+          strongholdTiles[1].mapPos
+        )
       ).toBeGreaterThanOrEqual(3);
       expect(
-        calculateHexDistance(mapSize, strongholdTiles[0].mapPos, strongholdTiles[2].mapPos)
+        calculateHexDistance(
+          getBattlefieldDimensions(mapSize),
+          strongholdTiles[0].mapPos,
+          strongholdTiles[2].mapPos
+        )
       ).toBeGreaterThanOrEqual(3);
       expect(
-        calculateHexDistance(mapSize, strongholdTiles[1].mapPos, strongholdTiles[2].mapPos)
+        calculateHexDistance(
+          getBattlefieldDimensions(mapSize),
+          strongholdTiles[1].mapPos,
+          strongholdTiles[2].mapPos
+        )
       ).toBeGreaterThanOrEqual(3);
     });
 
@@ -170,7 +183,7 @@ describe('Map Generation with Players', () => {
       const singlePlayer = [PREDEFINED_PLAYERS[0]];
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [],
@@ -190,7 +203,11 @@ describe('Map Generation with Players', () => {
       // All player tiles should be within radius 2 of the stronghold
       playerTiles.forEach((tile) => {
         expect(
-          calculateHexDistance(mapSize, strongholdTile!.mapPos, tile.mapPos)
+          calculateHexDistance(
+            getBattlefieldDimensions(mapSize),
+            strongholdTile!.mapPos,
+            tile.mapPos
+          )
         ).toBeLessThanOrEqual(2);
       });
 
@@ -202,7 +219,7 @@ describe('Map Generation with Players', () => {
       const mapSize: BattlefieldSize = 'small'; // Small map to force overlaps
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1]],
@@ -232,7 +249,7 @@ describe('Map Generation with Players', () => {
       const somePredefinedPlayers = PREDEFINED_PLAYERS.slice(0, 4);
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: PREDEFINED_PLAYERS.slice(1, 4),
@@ -266,7 +283,7 @@ describe('Map Generation with Players', () => {
 
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: necromancers[0],
         opponents: [necromancers[1]],
@@ -299,7 +316,7 @@ describe('Map Generation with Players', () => {
       const mapSize: BattlefieldSize = 'medium';
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize), // test verifies only initializeMap
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)), // test verifies only initializeMap
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [],
@@ -316,7 +333,7 @@ describe('Map Generation with Players', () => {
       const singlePlayer = PREDEFINED_PLAYERS[3];
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: singlePlayer,
         opponents: [],
@@ -341,7 +358,7 @@ describe('Map Generation with Players', () => {
       const { rows, cols } = getBattlefieldDimensions(mapSize);
       const mockGameState: GameState = {
         mapSize: mapSize,
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[0],
         opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],

@@ -7,17 +7,16 @@ import { construct } from '../building/construct';
 import { BuildingType } from '../../types/Building';
 import { LAND_TYPE } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
-import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
+import { BattlefieldDimensions, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { calculateHexDistance } from '../utils/mapAlgorithms';
 
 const findSuitableHomeland = (
   tiles: BattlefieldLands,
   player: GamePlayer,
   existingPlayerPositions: LandPosition[],
-  mapSize: BattlefieldSize
+  dimensions: BattlefieldDimensions
 ): LandState | undefined => {
   let candidates: LandState[] = [];
-  const battlefieldDimensions = getBattlefieldDimensions(mapSize);
 
   // For Necromancer (Undead race), look for the volcano first
   if (player.race === 'Undead') {
@@ -39,9 +38,9 @@ const findSuitableHomeland = (
         tile.land.id !== LAND_TYPE.DESERT &&
         // do not place homeland on the edge of the battlefield
         tile.mapPos.row >= 2 &&
-        tile.mapPos.row <= battlefieldDimensions.rows - 2 &&
+        tile.mapPos.row <= dimensions.rows - 2 &&
         tile.mapPos.col >= 2 &&
-        tile.mapPos.col <= battlefieldDimensions.cols - 2
+        tile.mapPos.col <= dimensions.cols - 2
     );
   }
 
@@ -60,7 +59,7 @@ const findSuitableHomeland = (
   // Filter by distance constraints
   const validCandidates = candidates.filter((candidate) => {
     return existingPlayerPositions.every((pos) => {
-      const distance = calculateHexDistance(mapSize, candidate.mapPos, pos);
+      const distance = calculateHexDistance(dimensions, candidate.mapPos, pos);
       return distance >= 4; // Try radius 4 first
     });
   });
@@ -69,7 +68,7 @@ const findSuitableHomeland = (
   if (validCandidates.length === 0) {
     const radius3Candidates = candidates.filter((candidate) => {
       return existingPlayerPositions.every((pos) => {
-        const distance = calculateHexDistance(mapSize, candidate.mapPos, pos);
+        const distance = calculateHexDistance(dimensions, candidate.mapPos, pos);
         return distance >= 3;
       });
     });
@@ -111,7 +110,7 @@ const addPlayer = (
     gameState.battlefieldLands,
     player,
     existingPlayersPositions,
-    gameState.mapSize
+    getBattlefieldDimensions(gameState.mapSize)
   );
   if (!homeland) return; // should never reach here
 

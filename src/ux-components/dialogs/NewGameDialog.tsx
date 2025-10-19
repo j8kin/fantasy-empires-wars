@@ -12,7 +12,7 @@ import PlayerSelection from '../player-selection/PlayerSelection';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { ButtonName } from '../../types/ButtonName';
-import { BattlefieldSize } from '../../types/BattlefieldSize';
+import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { GameState } from '../../types/GameState';
@@ -264,7 +264,7 @@ const NewGameDialog: React.FC = () => {
 
     setTimeout(() => {
       const gameState: GameState = {
-        battlefieldLands: generateMap(mapSize as BattlefieldSize),
+        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize as BattlefieldSize)),
         turn: 0,
         mapSize: mapSize as BattlefieldSize,
         selectedPlayer: updatedSelectedPlayer,

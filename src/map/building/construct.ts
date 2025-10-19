@@ -4,6 +4,7 @@ import { battlefieldLandId, GameState } from '../../types/GameState';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { destroyBuilding } from '../utils/destroyBuilding';
+import { getBattlefieldDimensions } from '../../types/BattlefieldSize';
 
 export const construct = (
   owner: GamePlayer,
@@ -12,6 +13,7 @@ export const construct = (
   gameState: GameState
 ) => {
   const { battlefieldLands, mapSize } = gameState;
+  const dimensions = getBattlefieldDimensions(mapSize);
   const mapPosition = battlefieldLandId(position);
   switch (building) {
     case BuildingType.DEMOLITION:
@@ -21,7 +23,7 @@ export const construct = (
     case BuildingType.STRONGHOLD:
       battlefieldLands[mapPosition].buildings.push(getBuilding(building));
       battlefieldLands[mapPosition].controlledBy = owner.id;
-      const newLandsCandidates = getTilesInRadius(mapSize, position, 2, true);
+      const newLandsCandidates = getTilesInRadius(dimensions, position, 2, true);
       for (const candidate of newLandsCandidates) {
         const currentOwner = battlefieldLands[battlefieldLandId(candidate)].controlledBy;
         if (currentOwner === NO_PLAYER.id) {
@@ -30,7 +32,7 @@ export const construct = (
           if (battlefieldLands[battlefieldLandId(candidate)].buildings.length === 0) {
             // no buildings on the land, so we can take it if the distance is too far from the opponent stronghold
             if (
-              !getTilesInRadius(mapSize, candidate, 1).some(
+              !getTilesInRadius(dimensions, candidate, 1).some(
                 (pos) =>
                   battlefieldLands[battlefieldLandId(pos)].buildings?.some(
                     (b) => b.id === BuildingType.STRONGHOLD

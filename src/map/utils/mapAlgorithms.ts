@@ -1,14 +1,14 @@
-import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
+import { BattlefieldDimensions, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { getLands, LandPosition } from './mapLands';
 import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 
 export const calculateHexDistance = (
-  mapSize: BattlefieldSize,
+  dimensions: BattlefieldDimensions,
   startPoint: LandPosition,
   endPoint: LandPosition
 ): number => {
-  if (!isValidPosition(mapSize, startPoint) || !isValidPosition(mapSize, endPoint)) return -1;
+  if (!isValidPosition(dimensions, startPoint) || !isValidPosition(dimensions, endPoint)) return -1;
 
   let visited = new Set<LandPosition>();
   let queue: { pos: LandPosition; dist: number }[] = [];
@@ -21,7 +21,7 @@ export const calculateHexDistance = (
     if (current.pos.row === endPoint.row && current.pos.col === endPoint.col) {
       return current.dist;
     }
-    const neighbours = getValidNeighbors(mapSize, current.pos);
+    const neighbours = getValidNeighbors(dimensions, current.pos);
 
     for (let neighbour of neighbours) {
       if (!Array.from(visited).some((n) => n.row === neighbour.row && n.col === neighbour.col)) {
@@ -38,19 +38,19 @@ const excludePosition = (arr: LandPosition[], exclude: LandPosition): LandPositi
 };
 
 export const getTilesInRadius = (
-  mapSize: BattlefieldSize,
+  dimensions: BattlefieldDimensions,
   center: LandPosition,
   radius: number,
   excludeCenter: boolean = false
 ): LandPosition[] => {
-  if (!isValidPosition(mapSize, center) || radius < 0) return [];
+  if (!isValidPosition(dimensions, center) || radius < 0) return [];
 
   const queue: { pos: LandPosition; dist: number }[] = [];
   const tilesInRadius: LandPosition[] = [center];
 
   if (radius === 0) return tilesInRadius;
   if (radius === 1) {
-    tilesInRadius.push(...getValidNeighbors(mapSize, center));
+    tilesInRadius.push(...getValidNeighbors(dimensions, center));
     return excludeCenter ? excludePosition(tilesInRadius, center) : tilesInRadius;
   }
 
@@ -59,7 +59,7 @@ export const getTilesInRadius = (
   while (queue.length > 0) {
     const current = queue.shift()!;
 
-    const neighbours = getValidNeighbors(mapSize, current.pos);
+    const neighbours = getValidNeighbors(dimensions, current.pos);
 
     for (let neighbour of neighbours) {
       if (
@@ -92,7 +92,12 @@ export const getNearestStrongholdLand = (
       (stronghold) => stronghold.mapPos.row !== landPos.row || stronghold.mapPos.col !== landPos.col
     )
     .filter(
-      (stronghold) => calculateHexDistance(gameState.mapSize, landPos, stronghold.mapPos) <= radius
+      (stronghold) =>
+        calculateHexDistance(
+          getBattlefieldDimensions(gameState.mapSize),
+          landPos,
+          stronghold.mapPos
+        ) <= radius
     );
 
   // no stronghold in radius 2
@@ -110,15 +115,18 @@ export const getNearestStrongholdLand = (
   return allStrongholdsInRadius2[0];
 };
 
-const isValidPosition = (mapSize: BattlefieldSize, pos: LandPosition): boolean => {
-  const { rows, cols } = getBattlefieldDimensions(mapSize);
+const isValidPosition = (dimensions: BattlefieldDimensions, pos: LandPosition): boolean => {
+  const { rows, cols } = dimensions;
   if (pos.row < 0 || pos.row >= rows) return false;
   const colsInRow = pos.row % 2 === 0 ? cols : cols - 1;
   return pos.col >= 0 && pos.col < colsInRow;
 };
 
-const getValidNeighbors = (mapSize: BattlefieldSize, pos: LandPosition): LandPosition[] => {
-  return getHexNeighbors(pos).filter((pos) => isValidPosition(mapSize, pos));
+const getValidNeighbors = (
+  dimensions: BattlefieldDimensions,
+  pos: LandPosition
+): LandPosition[] => {
+  return getHexNeighbors(pos).filter((pos) => isValidPosition(dimensions, pos));
 };
 
 // Get neighbors for hexagonal grid (offset coordinates)

@@ -3,6 +3,7 @@ import { BuildingType } from '../../types/Building';
 import { getNearestStrongholdLand, getTilesInRadius } from './mapAlgorithms';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { LandPosition } from './mapLands';
+import { getBattlefieldDimensions } from '../../types/BattlefieldSize';
 
 /**
  * The building could be destroyed by player as Demolition before construction of a new one
@@ -22,7 +23,12 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
   if (isStronghold) {
     // if stronghold destroyed then all Lands in radius two should be neutral or could be taken under control by another player
     // if there is an amy on the land not change the owner
-    getTilesInRadius(gameState.mapSize, gameState.battlefieldLands[landId].mapPos, 2, false)
+    getTilesInRadius(
+      getBattlefieldDimensions(gameState.mapSize),
+      gameState.battlefieldLands[landId].mapPos,
+      2,
+      false
+    )
       .map(battlefieldLandId)
       .filter(
         (l) =>

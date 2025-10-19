@@ -1,6 +1,6 @@
 import { battlefieldLandId, LandState, BattlefieldLands } from '../../types/GameState';
 import { getLandById, Land, LAND_TYPE } from '../../types/Land';
-import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
+import { BattlefieldDimensions } from '../../types/BattlefieldSize';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { LandPosition } from '../utils/mapLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
@@ -26,20 +26,20 @@ const getRandomEmptyLandType = (tiles: BattlefieldLands): LandState | null => {
 };
 
 const getEmptyNeighbors = (
-  mapSize: BattlefieldSize,
+  dimensions: BattlefieldDimensions,
   position: LandPosition,
   tiles: BattlefieldLands
 ): LandPosition[] =>
-  positionsToTiles(getTilesInRadius(mapSize, position, 1), tiles)
+  positionsToTiles(getTilesInRadius(dimensions, position, 1), tiles)
     .filter((tile) => tile.land.id === LAND_TYPE.NONE)
     .map((tile) => tile.mapPos);
 
 const getRandomNoneNeighbor = (
-  mapSize: BattlefieldSize,
+  dimensions: BattlefieldDimensions,
   pos: LandPosition,
   tiles: BattlefieldLands
 ): LandPosition | null => {
-  const noneNeighbors = getEmptyNeighbors(mapSize, pos, tiles);
+  const noneNeighbors = getEmptyNeighbors(dimensions, pos, tiles);
 
   if (noneNeighbors.length === 0) return null;
 
@@ -47,8 +47,8 @@ const getRandomNoneNeighbor = (
   return noneNeighbors[randomIndex];
 };
 
-export const generateMap = (mapSize: BattlefieldSize): BattlefieldLands => {
-  const { rows, cols } = getBattlefieldDimensions(mapSize);
+export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldLands => {
+  const { rows, cols } = dimensions;
   const tiles: BattlefieldLands = {};
 
   // Calculate the total number of tiles
@@ -84,7 +84,7 @@ export const generateMap = (mapSize: BattlefieldSize): BattlefieldLands => {
 
   // 2. Place up to 6 lava tiles connected to the volcano
   const lavaPositions: LandPosition[] = [];
-  const candidateLavaPositions = getTilesInRadius(mapSize, volcanoPos, 1, true);
+  const candidateLavaPositions = getTilesInRadius(dimensions, volcanoPos, 1, true);
 
   // Randomly select and place lava tiles (up to 6)
   const numLava = Math.min(6, Math.floor(Math.random() * 4) + 2); // 2-5 lava tiles
@@ -100,7 +100,7 @@ export const generateMap = (mapSize: BattlefieldSize): BattlefieldLands => {
   }
 
   // 3. Set Mountains and DarkForest on Neighbor lands near volcano and lava lands
-  getEmptyNeighbors(mapSize, volcanoPos, tiles)?.forEach((neighbor) => {
+  getEmptyNeighbors(dimensions, volcanoPos, tiles)?.forEach((neighbor) => {
     const tileId = battlefieldLandId(neighbor);
     if (tiles[tileId]) {
       tiles[tileId].land = getLandById(LAND_TYPE.MOUNTAINS);
@@ -108,7 +108,7 @@ export const generateMap = (mapSize: BattlefieldSize): BattlefieldLands => {
   });
 
   for (const lavaPos of lavaPositions) {
-    getEmptyNeighbors(mapSize, lavaPos, tiles)?.forEach((neighbor) => {
+    getEmptyNeighbors(dimensions, lavaPos, tiles)?.forEach((neighbor) => {
       const nMountains = getNumberOfLands(tiles, LAND_TYPE.MOUNTAINS);
       const tileId = battlefieldLandId(neighbor);
       if (tiles[tileId]) {
@@ -137,7 +137,7 @@ export const generateMap = (mapSize: BattlefieldSize): BattlefieldLands => {
 
       // place 6 land of the same time nearby
       for (let i = 0; i < 5 && getNumberOfLands(tiles, landType) < maxTilesPerType; i++) {
-        const emptyNeighbor = getRandomNoneNeighbor(mapSize, startLand.mapPos, tiles);
+        const emptyNeighbor = getRandomNoneNeighbor(dimensions, startLand.mapPos, tiles);
         if (emptyNeighbor == null) break;
         const neighborTileId = battlefieldLandId(emptyNeighbor);
         if (tiles[neighborTileId]) {
