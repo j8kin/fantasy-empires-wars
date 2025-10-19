@@ -18,7 +18,10 @@ import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { GameState } from '../../types/GameState';
 import { Mana, ManaType } from '../../types/Mana';
 
-const getMaxOpponents = (mapSize: BattlefieldSize): number => {
+// Local map size type for this dialog only
+type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';
+
+const getMaxOpponents = (mapSize: DialogMapSize): number => {
   switch (mapSize) {
     case 'small':
       return 2;
@@ -45,7 +48,7 @@ const NewGameDialog: React.FC = () => {
   const { updateGameState, recalculateAllPlayersIncome } = useGameContext();
 
   // Local state for dialog-specific values
-  const [mapSize, setMapSize] = useState<BattlefieldSize>('medium');
+  const [mapSize, setMapSize] = useState<DialogMapSize>('medium');
   const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(PREDEFINED_PLAYERS[0]);
   const [opponentSelectionMode, setOpponentSelectionMode] = useState<'random' | 'manual'>('manual');
   const [selectedOpponents, setSelectedOpponents] = useState<(GamePlayer | null)[]>([]);
@@ -150,7 +153,7 @@ const NewGameDialog: React.FC = () => {
   }, [initializeOpponentsForMapSize, maxOpponents]);
 
   const handleMapSizeChange = useCallback(
-    (newMapSize: BattlefieldSize) => {
+    (newMapSize: DialogMapSize) => {
       setMapSize(newMapSize);
       // Reinitialize opponents for new map size immediately
       const newMaxOpponents = getMaxOpponents(newMapSize);
@@ -261,9 +264,9 @@ const NewGameDialog: React.FC = () => {
 
     setTimeout(() => {
       const gameState: GameState = {
-        battlefieldLands: generateMap(mapSize),
+        battlefieldLands: generateMap(mapSize as BattlefieldSize),
         turn: 0,
-        mapSize,
+        mapSize: mapSize as BattlefieldSize,
         selectedPlayer: updatedSelectedPlayer,
         opponents: updatedOpponents,
       };
@@ -361,7 +364,7 @@ const NewGameDialog: React.FC = () => {
                 <select
                   className={styles.dropdown}
                   value={mapSize}
-                  onChange={(e) => handleMapSizeChange(e.target.value as BattlefieldSize)}
+                  onChange={(e) => handleMapSizeChange(e.target.value as DialogMapSize)}
                 >
                   <option value="small">Small</option>
                   <option value="medium">Medium</option>
