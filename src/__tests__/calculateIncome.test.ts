@@ -11,7 +11,7 @@ describe('Calculate Income', () => {
   const neutralPlayer = PREDEFINED_PLAYERS[2];
 
   const mockGameState: GameState = {
-    battlefieldLands: generateMockMap(10, 10),
+    battlefield: generateMockMap(10, 10),
     mapSize: 'huge',
     selectedPlayer: lawfulPlayer,
     opponents: [chaoticPlayer, neutralPlayer],
@@ -20,7 +20,7 @@ describe('Calculate Income', () => {
 
   beforeEach(() => {
     // clear the map before each test
-    mockGameState.battlefieldLands = generateMockMap(10, 10);
+    mockGameState.battlefield = generateMockMap(10, 10);
   });
 
   it('No land owned', () => {
@@ -29,7 +29,7 @@ describe('Calculate Income', () => {
   });
 
   it('Corner case: No owned strongholds', () => {
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
       lawfulPlayer.id;
 
     const income = calculateIncome(mockGameState, lawfulPlayer);
@@ -45,17 +45,18 @@ describe('Calculate Income', () => {
     'Calculate income with penalty if it is not stronghold land (%s)',
     (penalty, landCol, expected) => {
       // stronghold
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
+      mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
         lawfulPlayer.id;
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].goldPerTurn = 100;
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].buildings = [
+      mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].goldPerTurn = 100;
+      mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
       ];
 
       // additional land (should be calculated with penalty
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: landCol })].controlledBy =
+      mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: landCol })].controlledBy =
         lawfulPlayer.id;
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: landCol })].goldPerTurn = 100;
+      mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: landCol })].goldPerTurn =
+        100;
 
       const income = calculateIncome(mockGameState, lawfulPlayer);
 
@@ -65,18 +66,18 @@ describe('Calculate Income', () => {
 
   it('2 lands with strongholds', () => {
     // stronghold 1
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
       lawfulPlayer.id;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].goldPerTurn = 100;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].buildings = [
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].goldPerTurn = 100;
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].buildings = [
       getBuilding(BuildingType.STRONGHOLD),
     ];
 
     // stronghold 2 - penalty from this one should be applied
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 8 })].controlledBy =
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 8 })].controlledBy =
       lawfulPlayer.id;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 8 })].goldPerTurn = 100;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 8 })].buildings = [
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 8 })].goldPerTurn = 100;
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 8 })].buildings = [
       getBuilding(BuildingType.STRONGHOLD),
     ];
 
@@ -86,23 +87,23 @@ describe('Calculate Income', () => {
 
   it('Calculate income based on nearest stronghold', () => {
     // land without stronghold
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 7 })].controlledBy =
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 7 })].controlledBy =
       lawfulPlayer.id;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 7 })].goldPerTurn = 100;
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 7 })].goldPerTurn = 100;
 
     // stronghold 1
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
       lawfulPlayer.id;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].goldPerTurn = 100;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 5 })].buildings = [
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].goldPerTurn = 100;
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].buildings = [
       getBuilding(BuildingType.STRONGHOLD),
     ];
 
     // stronghold 2 - penalty from this one should be applied
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 8 })].controlledBy =
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 8 })].controlledBy =
       lawfulPlayer.id;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 8 })].goldPerTurn = 100;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 5, col: 8 })].buildings = [
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 8 })].goldPerTurn = 100;
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 8 })].buildings = [
       getBuilding(BuildingType.STRONGHOLD),
     ];
 
@@ -124,12 +125,12 @@ describe('Calculate Income', () => {
     `Calculate income with land alignment penalty based on player's alignment`,
     (player, land, expected) => {
       // add different type land in the stronghold radius to demonstrate different income calculations
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 4 })].land =
+      mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].land =
         getLandById(land);
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 4 })].controlledBy =
+      mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].controlledBy =
         player.id;
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 4 })].goldPerTurn = 100;
-      mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 4 })].buildings = [
+      mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].goldPerTurn = 100;
+      mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
       ];
 
@@ -151,15 +152,15 @@ describe('Calculate Income', () => {
     [neutralPlayer, LAND_TYPE.MOUNTAINS, 190],
   ])(`Both penalties are taking in acount`, (player, land, expected) => {
     // add different type land in the stronghold radius to demonstrate different income calculations
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 4 })].controlledBy = player.id;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 4 })].goldPerTurn = 100;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 4 })].buildings = [
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].controlledBy = player.id;
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].goldPerTurn = 100;
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].buildings = [
       getBuilding(BuildingType.STRONGHOLD),
     ];
     // additionl land with different type of Lands and both penalties should be applied
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 5 })].land = getLandById(land);
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 5 })].goldPerTurn = 100;
-    mockGameState.battlefieldLands[battlefieldLandId({ row: 4, col: 5 })].controlledBy = player.id;
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 5 })].land = getLandById(land);
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 5 })].goldPerTurn = 100;
+    mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 5 })].controlledBy = player.id;
 
     const income = calculateIncome(mockGameState, player);
     expect(income).toBe(expected);

@@ -7,7 +7,7 @@ import { construct } from '../map/building/construct';
 
 describe('getAvailableLands', () => {
   const gameState: GameState = {
-    battlefieldLands: generateMockMap(1, 1),
+    battlefield: generateMockMap(1, 1),
     mapSize: 'huge',
     selectedPlayer: PREDEFINED_PLAYERS[0],
     opponents: [],
@@ -15,7 +15,7 @@ describe('getAvailableLands', () => {
   };
 
   beforeEach(() => {
-    gameState.battlefieldLands = generateMockMap(7, 10);
+    gameState.battlefield = generateMockMap(7, 10);
   });
 
   it('should return no available lands for non-stronghold building when player has no lands under control', () => {
@@ -140,7 +140,7 @@ describe('getAvailableLands', () => {
 
     expect(availableLands.length).toBe(12); // number of lands outside radius 1 from stronghold
     // row 1
-    expect(gameState.battlefieldLands['1-2'].buildings[0].id).toEqual(BuildingType.BARRACKS);
+    expect(gameState.battlefield.lands['1-2'].buildings[0].id).toEqual(BuildingType.BARRACKS);
     expect(availableLands).toContain('1-2'); // land with barrack
     expect(availableLands).toContain('1-3');
     expect(availableLands).toContain('1-4');
@@ -177,8 +177,8 @@ describe('getAvailableLands', () => {
 
     expect(availableLands.length).toBe(11); // number of lands outside radius 1 from stronghold
     // row 1
-    expect(gameState.battlefieldLands['1-2'].buildings[0].id).toEqual(BuildingType.BARRACKS);
-    expect(gameState.battlefieldLands['1-2'].buildings[1].id).toEqual(BuildingType.WALL);
+    expect(gameState.battlefield.lands['1-2'].buildings[0].id).toEqual(BuildingType.BARRACKS);
+    expect(gameState.battlefield.lands['1-2'].buildings[1].id).toEqual(BuildingType.WALL);
     // land 1-2 is not available for construction
     expect(availableLands).toContain('1-3');
     expect(availableLands).toContain('1-4');
@@ -253,7 +253,7 @@ describe('getAvailableLands', () => {
     expect(availableLands.length).toBe(18); // number of lands without stronghold
     // row 1
     // border lnd with wall should be also available for construction
-    expect(gameState.battlefieldLands['1-2'].buildings[0].id).toEqual(BuildingType.WALL);
+    expect(gameState.battlefield.lands['1-2'].buildings[0].id).toEqual(BuildingType.WALL);
     expect(availableLands).toContain('1-2');
     expect(availableLands).toContain('1-3');
     expect(availableLands).toContain('1-4');
@@ -293,7 +293,7 @@ describe('getAvailableLands', () => {
     expect(availableLands.length).toBe(12); // number of lands outside radius 1 from stronghold
     // row 1
     // border lnd with wall should be also available for construction
-    expect(gameState.battlefieldLands['1-2'].buildings[0].id).toEqual(BuildingType.WALL);
+    expect(gameState.battlefield.lands['1-2'].buildings[0].id).toEqual(BuildingType.WALL);
     expect(availableLands).toContain('1-2');
     expect(availableLands).toContain('1-3');
     expect(availableLands).toContain('1-4');

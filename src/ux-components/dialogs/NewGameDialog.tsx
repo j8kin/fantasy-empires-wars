@@ -264,7 +264,7 @@ const NewGameDialog: React.FC = () => {
 
     setTimeout(() => {
       const gameState: GameState = {
-        battlefieldLands: generateMap(getBattlefieldDimensions(mapSize as BattlefieldSize)),
+        battlefield: generateMap(getBattlefieldDimensions(mapSize as BattlefieldSize)),
         turn: 0,
         mapSize: mapSize as BattlefieldSize,
         selectedPlayer: updatedSelectedPlayer,

@@ -82,7 +82,7 @@ export const getNearestStrongholdLand = (
   radius: number = 2
 ): LandState | undefined => {
   const allStrongholdsInRadius2 = getLands(
-    gameState.battlefieldLands,
+    gameState.battlefield.lands,
     undefined,
     undefined,
     undefined,
@@ -105,7 +105,7 @@ export const getNearestStrongholdLand = (
 
   // if there is a stronghold in radius 2 with the same owner as the land, return it
   const sameOwnerStronghold = allStrongholdsInRadius2.find(
-    (s) => s.controlledBy === gameState.battlefieldLands[battlefieldLandId(landPos)].controlledBy
+    (s) => s.controlledBy === gameState.battlefield.lands[battlefieldLandId(landPos)].controlledBy
   );
   if (sameOwnerStronghold) {
     return sameOwnerStronghold;

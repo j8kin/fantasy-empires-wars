@@ -27,7 +27,7 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
     if (!gameState) return;
     // Find all lands controlled by the selected player
     setTimeout(() => {
-      getLands(gameState.battlefieldLands, [gameState.selectedPlayer]).forEach((land) => {
+      getLands(gameState.battlefield.lands, [gameState.selectedPlayer]).forEach((land) => {
         addGlowingTile(battlefieldLandId(land.mapPos));
       });
     }, 0);

@@ -16,7 +16,7 @@ export const getAvailableToCastSpellLands = (
         ? [gameState.selectedPlayer!, ...gameState.opponents!].filter((p) => p !== player)
         : [gameState.selectedPlayer!, ...gameState.opponents!];
 
-  return getLands(gameState.battlefieldLands, playerFilter).map((land) =>
+  return getLands(gameState.battlefield.lands, playerFilter).map((land) =>
     battlefieldLandId(land.mapPos)
   );
 };

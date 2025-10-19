@@ -9,10 +9,10 @@ import { GamePlayer } from '../../types/GamePlayer';
 import { getBattlefieldDimensions } from '../../types/BattlefieldSize';
 
 export const calculateIncome = (gameState: GameState, player: GamePlayer) => {
-  const { battlefieldLands: battlefield, mapSize } = gameState;
+  const { battlefield, mapSize } = gameState;
 
-  const playerLands = getLands(battlefield, [player]);
-  const playerStrongholds = getLands(battlefield, [player], undefined, undefined, [
+  const playerLands = getLands(battlefield.lands, [player]);
+  const playerStrongholds = getLands(battlefield.lands, [player], undefined, undefined, [
     BuildingType.STRONGHOLD,
   ]).map((land) => land.mapPos);
 

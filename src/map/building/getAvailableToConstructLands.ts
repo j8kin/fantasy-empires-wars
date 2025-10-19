@@ -10,7 +10,7 @@ export const getAvailableToConstructLands = (
   player: GamePlayer,
   gameState: GameState
 ): string[] => {
-  const playerLands = getLands(gameState.battlefieldLands, [player]);
+  const playerLands = getLands(gameState.battlefield.lands, [player]);
 
   switch (buildingType) {
     case BuildingType.WALL:
@@ -27,15 +27,19 @@ export const getAvailableToConstructLands = (
               true
             ).some(
               (tile) =>
-                gameState.battlefieldLands[battlefieldLandId(tile)].controlledBy !== player.id
+                gameState.battlefield.lands[battlefieldLandId(tile)].controlledBy !== player.id
             )
         )
         .map((l) => battlefieldLandId(l.mapPos));
 
     case BuildingType.STRONGHOLD:
-      const allStrongholds = getLands(gameState.battlefieldLands, undefined, undefined, undefined, [
-        BuildingType.STRONGHOLD,
-      ]);
+      const allStrongholds = getLands(
+        gameState.battlefield.lands,
+        undefined,
+        undefined,
+        undefined,
+        [BuildingType.STRONGHOLD]
+      );
       const strongholdsExcludedArea = allStrongholds.flatMap((stronghold) =>
         getTilesInRadius(
           getBattlefieldDimensions(gameState.mapSize),

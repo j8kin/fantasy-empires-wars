@@ -1,4 +1,9 @@
-import { battlefieldLandId, LandState, BattlefieldLands } from '../../types/GameState';
+import {
+  battlefieldLandId,
+  LandState,
+  BattlefieldLands,
+  BattlefieldMap,
+} from '../../types/GameState';
 import { getLandById, Land, LAND_TYPE } from '../../types/Land';
 import { BattlefieldDimensions } from '../../types/BattlefieldSize';
 import { NO_PLAYER } from '../../types/GamePlayer';
@@ -47,9 +52,12 @@ const getRandomNoneNeighbor = (
   return noneNeighbors[randomIndex];
 };
 
-export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldLands => {
+export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap => {
   const { rows, cols } = dimensions;
-  const tiles: BattlefieldLands = {};
+  const battlefield: BattlefieldMap = {
+    size: dimensions,
+    lands: {},
+  };
 
   // Calculate the total number of tiles
   let totalTiles = 0;
@@ -61,7 +69,7 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldLands
     for (let col = 0; col < colsInRow; col++) {
       const mapPos: LandPosition = { row: row, col: col };
       const tileId = battlefieldLandId(mapPos);
-      tiles[tileId] = {
+      battlefield.lands[tileId] = {
         mapPos: mapPos,
         land: getLandById(LAND_TYPE.NONE), // Temporary, will be overwritten
         controlledBy: NO_PLAYER.id,
@@ -78,8 +86,8 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldLands
   const volcanoCol = Math.floor(Math.random() * (volcanoColsInRow - 4)) + 2;
   const volcanoPos = { row: volcanoRow, col: volcanoCol };
   const volcanoId = battlefieldLandId(volcanoPos);
-  if (tiles[volcanoId]) {
-    tiles[volcanoId].land = getLandById(LAND_TYPE.VOLCANO);
+  if (battlefield.lands[volcanoId]) {
+    battlefield.lands[volcanoId].land = getLandById(LAND_TYPE.VOLCANO);
   }
 
   // 2. Place up to 6 lava tiles connected to the volcano
@@ -93,26 +101,26 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldLands
   for (let i = 0; i < numLava && i < shuffledCandidates.length; i++) {
     const lavaPos = shuffledCandidates[i];
     const lavaId = battlefieldLandId(lavaPos);
-    if (tiles[lavaId]) {
-      tiles[lavaId].land = getLandById(LAND_TYPE.LAVA);
+    if (battlefield.lands[lavaId]) {
+      battlefield.lands[lavaId].land = getLandById(LAND_TYPE.LAVA);
       lavaPositions.push(lavaPos);
     }
   }
 
   // 3. Set Mountains and DarkForest on Neighbor lands near volcano and lava lands
-  getEmptyNeighbors(dimensions, volcanoPos, tiles)?.forEach((neighbor) => {
+  getEmptyNeighbors(dimensions, volcanoPos, battlefield.lands)?.forEach((neighbor) => {
     const tileId = battlefieldLandId(neighbor);
-    if (tiles[tileId]) {
-      tiles[tileId].land = getLandById(LAND_TYPE.MOUNTAINS);
+    if (battlefield.lands[tileId]) {
+      battlefield.lands[tileId].land = getLandById(LAND_TYPE.MOUNTAINS);
     }
   });
 
   for (const lavaPos of lavaPositions) {
-    getEmptyNeighbors(dimensions, lavaPos, tiles)?.forEach((neighbor) => {
-      const nMountains = getNumberOfLands(tiles, LAND_TYPE.MOUNTAINS);
+    getEmptyNeighbors(dimensions, lavaPos, battlefield.lands)?.forEach((neighbor) => {
+      const nMountains = getNumberOfLands(battlefield.lands, LAND_TYPE.MOUNTAINS);
       const tileId = battlefieldLandId(neighbor);
-      if (tiles[tileId]) {
-        tiles[tileId].land = getLandById(
+      if (battlefield.lands[tileId]) {
+        battlefield.lands[tileId].land = getLandById(
           nMountains < 6 ? LAND_TYPE.MOUNTAINS : LAND_TYPE.DARK_FOREST
         );
       }
@@ -127,36 +135,44 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldLands
   const maxTilesPerType = Math.floor(totalTiles / remainingLandTypes.length);
 
   remainingLandTypes.forEach((landType) => {
-    while (getNumberOfLands(tiles, landType) < maxTilesPerType) {
-      let startLand = getRandomEmptyLandType(tiles);
+    while (getNumberOfLands(battlefield.lands, landType) < maxTilesPerType) {
+      let startLand = getRandomEmptyLandType(battlefield.lands);
       if (startLand == null) break;
       const tileId = battlefieldLandId(startLand.mapPos);
-      if (tiles[tileId]) {
-        tiles[tileId].land = getLandById(landType);
+      if (battlefield.lands[tileId]) {
+        battlefield.lands[tileId].land = getLandById(landType);
       }
 
       // place 6 land of the same time nearby
-      for (let i = 0; i < 5 && getNumberOfLands(tiles, landType) < maxTilesPerType; i++) {
-        const emptyNeighbor = getRandomNoneNeighbor(dimensions, startLand.mapPos, tiles);
+      for (
+        let i = 0;
+        i < 5 && getNumberOfLands(battlefield.lands, landType) < maxTilesPerType;
+        i++
+      ) {
+        const emptyNeighbor = getRandomNoneNeighbor(
+          dimensions,
+          startLand.mapPos,
+          battlefield.lands
+        );
         if (emptyNeighbor == null) break;
         const neighborTileId = battlefieldLandId(emptyNeighbor);
-        if (tiles[neighborTileId]) {
-          tiles[neighborTileId].land = getLandById(landType);
-          startLand = tiles[neighborTileId];
+        if (battlefield.lands[neighborTileId]) {
+          battlefield.lands[neighborTileId].land = getLandById(landType);
+          startLand = battlefield.lands[neighborTileId];
         }
       }
     }
   });
 
   // if we have empty lands fill with deserts
-  Object.values(tiles)
+  Object.values(battlefield.lands)
     .filter((tile) => tile.land.id === LAND_TYPE.NONE)
     .forEach((tile) => (tile.land = getLandById(LAND_TYPE.DESERT)));
 
   // Calculate gold for all tiles
-  Object.values(tiles).forEach((tile) => {
+  Object.values(battlefield.lands).forEach((tile) => {
     tile.goldPerTurn = calculateBaseLandGold(tile.land);
   });
 
-  return tiles;
+  return battlefield;
 };

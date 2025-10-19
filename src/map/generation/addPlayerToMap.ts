@@ -107,7 +107,7 @@ const addPlayer = (
   gameState: GameState
 ) => {
   const homeland = findSuitableHomeland(
-    gameState.battlefieldLands,
+    gameState.battlefield.lands,
     player,
     existingPlayersPositions,
     getBattlefieldDimensions(gameState.mapSize)
@@ -119,7 +119,7 @@ const addPlayer = (
 
   // construct one barrack on the same alignment land except homeland
   let playerLands = getLands(
-    gameState.battlefieldLands,
+    gameState.battlefield.lands,
     [player],
     homeland.land.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
     player.alignment,
@@ -130,7 +130,7 @@ const addPlayer = (
     construct(player, BuildingType.BARRACKS, barrackLand.mapPos, gameState);
   } else {
     // if no lands with the same alignment try to build on neutral land
-    playerLands = getLands(gameState.battlefieldLands, [player], undefined, Alignment.NEUTRAL, []);
+    playerLands = getLands(gameState.battlefield.lands, [player], undefined, Alignment.NEUTRAL, []);
     construct(
       player,
       BuildingType.BARRACKS,

@@ -14,7 +14,7 @@ describe('Construct Buildings', () => {
 
   beforeEach(() => {
     mockGameState = {
-      battlefieldLands: generateMockMap(6, 12),
+      battlefield: generateMockMap(6, 12),
       mapSize: 'huge',
       turn: 1,
       selectedPlayer: player1,
@@ -25,7 +25,7 @@ describe('Construct Buildings', () => {
   describe('Constructing a building', () => {
     it('Build one Stronghold', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, mockGameState);
-      const player1Lands = getLands(mockGameState.battlefieldLands, [player1]).map((land) =>
+      const player1Lands = getLands(mockGameState.battlefield.lands, [player1]).map((land) =>
         battlefieldLandId(land.mapPos)
       );
 
@@ -62,7 +62,7 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, mockGameState);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 8 }, mockGameState);
 
-      const player1Lands = getLands(mockGameState.battlefieldLands, [player1]).map((land) =>
+      const player1Lands = getLands(mockGameState.battlefield.lands, [player1]).map((land) =>
         battlefieldLandId(land.mapPos)
       );
       // row 1
@@ -93,7 +93,7 @@ describe('Construct Buildings', () => {
 
       expect(player1Lands.length).toBe(19);
 
-      const player2Lands = getLands(mockGameState.battlefieldLands, [player2]).map((land) =>
+      const player2Lands = getLands(mockGameState.battlefield.lands, [player2]).map((land) =>
         battlefieldLandId(land.mapPos)
       );
       // row 1
@@ -129,7 +129,7 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, mockGameState);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 7 }, mockGameState);
 
-      const player1Lands = getLands(mockGameState.battlefieldLands, [player1]).map((land) =>
+      const player1Lands = getLands(mockGameState.battlefield.lands, [player1]).map((land) =>
         battlefieldLandId(land.mapPos)
       );
       // row 1
@@ -160,7 +160,7 @@ describe('Construct Buildings', () => {
       //no other lands should be in the player's land's
       expect(player1Lands.length).toBe(18);
 
-      const player2Lands = getLands(mockGameState.battlefieldLands, [player2]).map((land) =>
+      const player2Lands = getLands(mockGameState.battlefield.lands, [player2]).map((land) =>
         battlefieldLandId(land.mapPos)
       );
       // row 1
@@ -196,7 +196,7 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, mockGameState);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, mockGameState);
 
-      const player1Lands = getLands(mockGameState.battlefieldLands, [player1]).map((land) =>
+      const player1Lands = getLands(mockGameState.battlefield.lands, [player1]).map((land) =>
         battlefieldLandId(land.mapPos)
       );
       // row 1
@@ -227,7 +227,7 @@ describe('Construct Buildings', () => {
       //no other lands should be in the player's land's
       expect(player1Lands.length).toBe(16);
 
-      const player2Lands = getLands(mockGameState.battlefieldLands, [player2]).map((land) =>
+      const player2Lands = getLands(mockGameState.battlefield.lands, [player2]).map((land) =>
         battlefieldLandId(land.mapPos)
       );
       // row 1
@@ -264,7 +264,7 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.BARRACKS, { row: 3, col: 5 }, mockGameState);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, mockGameState);
 
-      const player1Lands = getLands(mockGameState.battlefieldLands, [player1]).map((land) =>
+      const player1Lands = getLands(mockGameState.battlefield.lands, [player1]).map((land) =>
         battlefieldLandId(land.mapPos)
       );
       // row 1
@@ -295,7 +295,7 @@ describe('Construct Buildings', () => {
       //no other lands should be in the player's land's
       expect(player1Lands.length).toBe(17);
 
-      const player2Lands = getLands(mockGameState.battlefieldLands, [player2]).map((land) =>
+      const player2Lands = getLands(mockGameState.battlefield.lands, [player2]).map((land) =>
         battlefieldLandId(land.mapPos)
       );
       // row 1
@@ -337,10 +337,10 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.DEMOLITION, strongholdPos, mockGameState);
 
       expect(
-        mockGameState.battlefieldLands[battlefieldLandId(strongholdPos)].buildings.length
+        mockGameState.battlefield.lands[battlefieldLandId(strongholdPos)].buildings.length
       ).toBe(0);
 
-      const player1Lands = getLands(mockGameState.battlefieldLands, [player1]);
+      const player1Lands = getLands(mockGameState.battlefield.lands, [player1]);
       expect(player1Lands.length).toBe(0);
     });
 
@@ -350,17 +350,17 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.DEMOLITION, buildingPos, mockGameState);
 
       // stronghold is not destroyed
-      expect(mockGameState.battlefieldLands[battlefieldLandId(strongholdPos)].buildings[0].id).toBe(
-        BuildingType.STRONGHOLD
-      );
+      expect(
+        mockGameState.battlefield.lands[battlefieldLandId(strongholdPos)].buildings[0].id
+      ).toBe(BuildingType.STRONGHOLD);
 
       // barracks is destroyed
-      expect(mockGameState.battlefieldLands[battlefieldLandId(buildingPos)].buildings.length).toBe(
+      expect(mockGameState.battlefield.lands[battlefieldLandId(buildingPos)].buildings.length).toBe(
         0
       );
 
       // no player lands destroyed
-      const player1Lands = getLands(mockGameState.battlefieldLands, [player1]);
+      const player1Lands = getLands(mockGameState.battlefield.lands, [player1]);
       expect(player1Lands.length).toBe(19);
     });
 
@@ -371,16 +371,16 @@ describe('Construct Buildings', () => {
 
       // stronghold is destroyed
       expect(
-        mockGameState.battlefieldLands[battlefieldLandId(strongholdPos)].buildings.length
+        mockGameState.battlefield.lands[battlefieldLandId(strongholdPos)].buildings.length
       ).toBe(0);
 
       // barracks is not destroyed
-      expect(mockGameState.battlefieldLands[battlefieldLandId(buildingPos)].buildings[0].id).toBe(
+      expect(mockGameState.battlefield.lands[battlefieldLandId(buildingPos)].buildings[0].id).toBe(
         BuildingType.BARRACKS
       );
 
       // no player lands exist
-      const player1Lands = getLands(mockGameState.battlefieldLands, [player1]);
+      const player1Lands = getLands(mockGameState.battlefield.lands, [player1]);
       expect(player1Lands.length).toBe(0);
     });
 
@@ -389,24 +389,24 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.BARRACKS, buildingPos, mockGameState);
       recruitWarriors(
         getUnit(UnitType.FIGHTER),
-        mockGameState.battlefieldLands[battlefieldLandId(buildingPos)]
+        mockGameState.battlefield.lands[battlefieldLandId(buildingPos)]
       );
       construct(player1, BuildingType.DEMOLITION, strongholdPos, mockGameState);
 
       // stronghold is destroyed
       expect(
-        mockGameState.battlefieldLands[battlefieldLandId(strongholdPos)].buildings.length
+        mockGameState.battlefield.lands[battlefieldLandId(strongholdPos)].buildings.length
       ).toBe(0);
 
       // barracks is not destroyed
-      expect(mockGameState.battlefieldLands[battlefieldLandId(buildingPos)].buildings[0].id).toBe(
+      expect(mockGameState.battlefield.lands[battlefieldLandId(buildingPos)].buildings[0].id).toBe(
         BuildingType.BARRACKS
       );
       // army is not lost
-      expect(mockGameState.battlefieldLands[battlefieldLandId(buildingPos)].army.length).toBe(1);
+      expect(mockGameState.battlefield.lands[battlefieldLandId(buildingPos)].army.length).toBe(1);
 
       // no player lands exist
-      const player1Lands = getLands(mockGameState.battlefieldLands, [player1]);
+      const player1Lands = getLands(mockGameState.battlefield.lands, [player1]);
       expect(player1Lands.length).toBe(1);
       expect(battlefieldLandId(player1Lands[0].mapPos)).toBe(battlefieldLandId(buildingPos));
     });
@@ -415,23 +415,23 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, mockGameState);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, mockGameState);
 
-      let player1Lands = getLands(mockGameState.battlefieldLands, [player1]);
+      let player1Lands = getLands(mockGameState.battlefield.lands, [player1]);
       expect(player1Lands.length).toBe(16);
-      let player2Lands = getLands(mockGameState.battlefieldLands, [player2]);
+      let player2Lands = getLands(mockGameState.battlefield.lands, [player2]);
       expect(player2Lands.length).toBe(18);
-      expect(mockGameState.battlefieldLands['3-4'].controlledBy).toBe(player1.id);
+      expect(mockGameState.battlefield.lands['3-4'].controlledBy).toBe(player1.id);
 
       // DEMOLITION
       construct(player1, BuildingType.DEMOLITION, strongholdPos, mockGameState);
 
       // no player lands exist
-      player1Lands = getLands(mockGameState.battlefieldLands, [player1]);
+      player1Lands = getLands(mockGameState.battlefield.lands, [player1]);
       expect(player1Lands.length).toBe(0);
       // player2 lands increased
-      player2Lands = getLands(mockGameState.battlefieldLands, [player2]);
+      player2Lands = getLands(mockGameState.battlefield.lands, [player2]);
       expect(player2Lands.length).toBe(19);
 
-      expect(mockGameState.battlefieldLands['3-4'].controlledBy).toBe(player2.id); // now controlled by player 2
+      expect(mockGameState.battlefield.lands['3-4'].controlledBy).toBe(player2.id); // now controlled by player 2
     });
 
     it('When stronghold destroyed land not change owner if another stronghold of the same owner is near', () => {
@@ -439,23 +439,23 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 1, col: 5 }, mockGameState); // stronghold of player 1 near destroyed land
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, mockGameState);
 
-      let player1Lands = getLands(mockGameState.battlefieldLands, [player1]);
+      let player1Lands = getLands(mockGameState.battlefield.lands, [player1]);
       expect(player1Lands.length).toBe(24);
-      let player2Lands = getLands(mockGameState.battlefieldLands, [player2]);
+      let player2Lands = getLands(mockGameState.battlefield.lands, [player2]);
       expect(player2Lands.length).toBe(14);
 
-      expect(mockGameState.battlefieldLands['3-4'].controlledBy).toBe(player1.id); // under player 1 control before destruction
+      expect(mockGameState.battlefield.lands['3-4'].controlledBy).toBe(player1.id); // under player 1 control before destruction
 
       // DEMOLITION
       construct(player1, BuildingType.DEMOLITION, strongholdPos, mockGameState);
 
       // no player lands exist
-      player1Lands = getLands(mockGameState.battlefieldLands, [player1]);
+      player1Lands = getLands(mockGameState.battlefield.lands, [player1]);
       expect(player1Lands.length).toBe(12);
-      expect(mockGameState.battlefieldLands['3-4'].controlledBy).toBe(player1.id); // still owned by player 1
+      expect(mockGameState.battlefield.lands['3-4'].controlledBy).toBe(player1.id); // still owned by player 1
 
       // player2 lands increased
-      player2Lands = getLands(mockGameState.battlefieldLands, [player2]);
+      player2Lands = getLands(mockGameState.battlefield.lands, [player2]);
       expect(player2Lands.length).toBe(14); // not changed
     });
   });

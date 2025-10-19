@@ -73,14 +73,14 @@ describe('LandCharacteristicsPopup', () => {
   const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[1]; // Morgana
   const mockGameState: GameState = {
     mapSize: 'medium',
-    battlefieldLands: generateMap({ rows: 9, cols: 18 }),
+    battlefield: generateMap({ rows: 9, cols: 18 }),
     turn: 0,
     selectedPlayer: mockPlayer,
     opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],
   };
   addPlayerToMap(mockGameState);
 
-  const mockTileState: LandState = Object.values(mockGameState.battlefieldLands).find(
+  const mockTileState: LandState = Object.values(mockGameState.battlefield.lands).find(
     (tile) => tile.land.id === LAND_TYPE.VOLCANO
   )!;
 
@@ -198,9 +198,12 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        battlefieldLands: {
-          ...mockGameState.battlefieldLands,
-          [tileId]: tileWithHeroes,
+        battlefield: {
+          ...mockGameState.battlefield,
+          lands: {
+            ...mockGameState.battlefield.lands,
+            [tileId]: tileWithHeroes,
+          },
         },
       };
 
@@ -231,9 +234,12 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        battlefieldLands: {
-          ...mockGameState.battlefieldLands,
-          [tileId]: tileWithUnits,
+        battlefield: {
+          ...mockGameState.battlefield,
+          lands: {
+            ...mockGameState.battlefield.lands,
+            [tileId]: tileWithUnits,
+          },
         },
       };
 
@@ -266,9 +272,12 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        battlefieldLands: {
-          ...mockGameState.battlefieldLands,
-          [tileId]: tileWithMixedArmy,
+        battlefield: {
+          ...mockGameState.battlefield,
+          lands: {
+            ...mockGameState.battlefield.lands,
+            [tileId]: tileWithMixedArmy,
+          },
         },
       };
 
@@ -300,9 +309,12 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithoutArmy = {
         ...mockGameState,
-        battlefieldLands: {
-          ...mockGameState.battlefieldLands,
-          [tileId]: tileWithoutArmy,
+        battlefield: {
+          ...mockGameState.battlefield,
+          lands: {
+            ...mockGameState.battlefield.lands,
+            [tileId]: tileWithoutArmy,
+          },
         },
       };
 
@@ -332,9 +344,12 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        battlefieldLands: {
-          ...mockGameState.battlefieldLands,
-          [tileId]: tileWithHeroesOnly,
+        battlefield: {
+          ...mockGameState.battlefield,
+          lands: {
+            ...mockGameState.battlefield.lands,
+            [tileId]: tileWithHeroesOnly,
+          },
         },
       };
 
@@ -366,9 +381,12 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
       const gameStateWithArmy = {
         ...mockGameState,
-        battlefieldLands: {
-          ...mockGameState.battlefieldLands,
-          [tileId]: tileWithUnitsOnly,
+        battlefield: {
+          ...mockGameState.battlefield,
+          lands: {
+            ...mockGameState.battlefield.lands,
+            [tileId]: tileWithUnitsOnly,
+          },
         },
       };
 

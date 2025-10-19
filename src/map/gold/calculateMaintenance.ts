@@ -24,7 +24,7 @@ const unitMaintenanceCost = (unit: Unit): number => {
 export const calculateMaintenance = (gameState: GameState, player: GamePlayer) => {
   // building maintenance
   const buildingMaintenance = getLands(
-    gameState.battlefieldLands,
+    gameState.battlefield.lands,
     [player],
     undefined,
     undefined,
@@ -35,7 +35,7 @@ export const calculateMaintenance = (gameState: GameState, player: GamePlayer) =
 
   // army maintenance
   const armyMaintenance = getLands(
-    gameState.battlefieldLands,
+    gameState.battlefield.lands,
     [player],
     undefined,
     undefined,

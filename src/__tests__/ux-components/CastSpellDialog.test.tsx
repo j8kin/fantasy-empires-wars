@@ -106,7 +106,7 @@ const renderWithApplicationContext = () => {
       } else {
         updateGameState({
           mapSize: 'medium',
-          battlefieldLands: {},
+          battlefield: {},
           turn: 0,
           selectedPlayer,
           opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],

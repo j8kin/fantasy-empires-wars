@@ -7,6 +7,7 @@ import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { ManaType } from '../../types/Mana';
+import { getBattlefieldDimensions } from '../../types/BattlefieldSize';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -34,7 +35,10 @@ const renderWithProvider = (ui: React.ReactElement) => {
       } else {
         updateGameState({
           mapSize: 'medium',
-          battlefieldLands: {},
+          battlefield: {
+            size: getBattlefieldDimensions('medium'),
+            lands: {},
+          },
           turn: 0,
           selectedPlayer,
           opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
@@ -96,41 +100,6 @@ describe('TopPanel Component', () => {
       const tileDimensions = { width: 50, height: 180 };
       const expectedSize = height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10;
       expect(expectedSize).toBe(10); // 120 - 50*2 - 10 = 10
-    });
-
-    it('does not render player info when no player is selected', () => {
-      // Create a test without selected player
-      const TestComponentWithoutPlayer: React.FC<{ children: React.ReactNode }> = ({
-        children,
-      }) => {
-        const { updateGameState, gameState } = useGameContext();
-        React.useEffect(() => {
-          // This test is no longer valid since selectedPlayer is required
-          // We'll simulate a null gameState instead
-          if (false) {
-            updateGameState({
-              mapSize: 'medium',
-              battlefieldLands: {},
-              turn: 0,
-              selectedPlayer: PREDEFINED_PLAYERS[0],
-              opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
-            });
-          }
-        }, []);
-        return <>{children}</>;
-      };
-
-      const WrapperWithoutPlayer: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-        <ApplicationContextProvider>
-          <GameProvider>
-            <TestComponentWithoutPlayer>{children}</TestComponentWithoutPlayer>
-          </GameProvider>
-        </ApplicationContextProvider>
-      );
-
-      render(<TopPanel {...defaultProps} />, { wrapper: WrapperWithoutPlayer });
-      expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
-      expect(screen.queryByText('Alaric the Bold')).not.toBeInTheDocument();
     });
   });
 
@@ -225,7 +194,10 @@ describe('TopPanel Component', () => {
           } else {
             updateGameState({
               mapSize: 'medium',
-              battlefieldLands: {},
+              battlefield: {
+                size: getBattlefieldDimensions('medium'),
+                lands: {},
+              },
               turn: 0,
               selectedPlayer: PREDEFINED_PLAYERS[0],
               opponents: [],

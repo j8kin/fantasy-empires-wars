@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Battlefield from '../../ux-components/battlefield/Battlefield';
-import { GameState, BattlefieldLands } from '../../types/GameState';
+import { GameState, BattlefieldMap } from '../../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { Land, LAND_TYPE } from '../../types/Land';
-import { BattlefieldSize } from '../../types/BattlefieldSize';
+import { BattlefieldSize, getBattlefieldDimensions } from '../../types/BattlefieldSize';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { LandPosition } from '../../map/utils/mapLands';
@@ -29,7 +29,7 @@ jest.mock('../../ux-components/battlefield/LandTile', () => {
     const { battlefieldPosition } = props;
     const tileId: string = battlefieldLandId(battlefieldPosition);
     const { gameState } = useGameContext();
-    const tile = gameState.battlefieldLands[tileId];
+    const tile = gameState.battlefield.lands[tileId];
 
     return (
       <div
@@ -79,14 +79,17 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
     };
   };
 
-  const tiles: BattlefieldLands = {};
+  const tiles: BattlefieldMap = {
+    size: getBattlefieldDimensions(mapSize),
+    lands: {},
+  };
 
   // Create some sample tiles for testing
   for (let row = 0; row < 3; row++) {
     for (let col = 0; col < 3; col++) {
       const tileId = `${row}-${col}`;
       const mapPos = { row: row, col: col };
-      tiles[tileId] = {
+      tiles.lands[tileId] = {
         mapPos: mapPos,
         land: mockLandType(),
         controlledBy: mockPlayer.id,
@@ -99,7 +102,7 @@ const createMockGameState = (mapSize: BattlefieldSize): GameState => {
 
   return {
     mapSize,
-    battlefieldLands: tiles,
+    battlefield: tiles,
     turn: 0,
     selectedPlayer: mockPlayer,
     opponents: [],
@@ -339,7 +342,7 @@ describe('Battlefield Component', () => {
 
     it('handles missing tile states gracefully', () => {
       mockGameState = createMockGameState('large');
-      mockGameState.battlefieldLands = {}; // Empty tiles object
+      mockGameState.battlefield.lands = {}; // Empty tiles object
 
       expect(() => {
         render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
@@ -430,7 +433,7 @@ describe('Battlefield Component', () => {
     it('renders all required child components', () => {
       mockGameState = {
         mapSize: 'medium',
-        battlefieldLands: generateMap({ rows: 9, cols: 18 }),
+        battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         selectedPlayer: PREDEFINED_PLAYERS[1],
         opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],

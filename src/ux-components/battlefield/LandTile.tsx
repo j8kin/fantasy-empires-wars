@@ -36,7 +36,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     landPopupPosition?.row === battlefieldPosition.row &&
     landPopupPosition?.col === battlefieldPosition.col;
 
-  const battlefieldTile = gameState!.battlefieldLands[battlefieldLandId(battlefieldPosition)];
+  const battlefieldTile = gameState!.battlefield.lands[battlefieldLandId(battlefieldPosition)];
 
   if (!battlefieldTile) {
     return <div className={styles.hexTile} title="Empty Tile" />;

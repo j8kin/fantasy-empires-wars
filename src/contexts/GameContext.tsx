@@ -43,11 +43,11 @@ export const GameProvider: React.FC<GameProviderProps> = ({
 
   const getTotalPlayerGold = useCallback(
     (player: GamePlayer) => {
-      return Object.values(gameState?.battlefieldLands || {})
-        .filter((battlefieldLand) => battlefieldLand.controlledBy === player.id)
+      return Object.values(gameState?.battlefield.lands || {})
+        .filter((lands) => lands.controlledBy === player.id)
         .reduce((total, battlefieldLand) => total + battlefieldLand.goldPerTurn, 0);
     },
-    [gameState?.battlefieldLands]
+    [gameState?.battlefield]
   );
 
   const recalculateAllPlayersIncome = useCallback(() => {
