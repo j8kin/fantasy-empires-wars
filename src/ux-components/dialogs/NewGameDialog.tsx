@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styles from './css/NewGameDialog.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
@@ -35,14 +35,6 @@ const getMaxOpponents = (mapSize: BattlefieldSize): number => {
 
 const NewGameDialog: React.FC = () => {
   const {
-    newGameMapSize,
-    newGameSelectedPlayer,
-    newGameOpponentSelectionMode,
-    newGameSelectedOpponents,
-    setNewGameMapSize,
-    setNewGameSelectedPlayer,
-    setNewGameOpponentSelectionMode,
-    setNewGameSelectedOpponents,
     setShowStartWindow,
     setProgressMessage,
     setShowProgressPopup,
@@ -52,15 +44,11 @@ const NewGameDialog: React.FC = () => {
 
   const { updateGameState, recalculateAllPlayersIncome } = useGameContext();
 
-  // Use context state as local variables for easier refactoring
-  const mapSize = newGameMapSize;
-  const selectedPlayer = newGameSelectedPlayer;
-  const opponentSelectionMode = newGameOpponentSelectionMode;
-  const selectedOpponents = newGameSelectedOpponents;
-  const setMapSize = setNewGameMapSize;
-  const setSelectedPlayer = setNewGameSelectedPlayer;
-  const setOpponentSelectionMode = setNewGameOpponentSelectionMode;
-  const setSelectedOpponents = setNewGameSelectedOpponents;
+  // Local state for dialog-specific values
+  const [mapSize, setMapSize] = useState<BattlefieldSize>('medium');
+  const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(PREDEFINED_PLAYERS[0]);
+  const [opponentSelectionMode, setOpponentSelectionMode] = useState<'random' | 'manual'>('manual');
+  const [selectedOpponents, setSelectedOpponents] = useState<(GamePlayer | null)[]>([]);
 
   const maxOpponents = getMaxOpponents(mapSize);
 

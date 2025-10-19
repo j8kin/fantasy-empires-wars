@@ -1,10 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
-import { BattlefieldSize } from '../types/BattlefieldSize';
 import { LandPosition } from '../map/utils/mapLands';
-
-type OpponentSelectionMode = 'random' | 'manual';
 
 interface ApplicationContextType {
   selectedLandAction: string | null;
@@ -37,11 +34,6 @@ interface ApplicationContextType {
   landPopupPosition: LandPosition | undefined;
   landPopupScreenPosition: ScreenPosition;
 
-  // New Game Dialog states
-  newGameMapSize: BattlefieldSize;
-  newGameSelectedPlayer: GamePlayer;
-  newGameOpponentSelectionMode: OpponentSelectionMode;
-  newGameSelectedOpponents: (GamePlayer | null)[];
 
   // Select Opponent Dialog states
   selectOpponentSelectedPlayer: GamePlayer;
@@ -73,12 +65,6 @@ interface ApplicationContextType {
   showLandPopup: (battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => void;
   hideLandPopup: () => void;
 
-  // New Game Dialog actions
-  setNewGameMapSize: (size: BattlefieldSize) => void;
-  setNewGameSelectedPlayer: (player: GamePlayer) => void;
-  setNewGameOpponentSelectionMode: (mode: OpponentSelectionMode) => void;
-  setNewGameSelectedOpponents: (opponents: (GamePlayer | null)[]) => void;
-  resetNewGameDialog: () => void;
 
   // Select Opponent Dialog actions
   setSelectOpponentSelectedPlayer: (player: GamePlayer) => void;
@@ -145,16 +131,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     y: 0,
   });
 
-  // New Game Dialog states
-  const [newGameMapSize, setNewGameMapSize] = useState<BattlefieldSize>('medium');
-  const [newGameSelectedPlayer, setNewGameSelectedPlayer] = useState<GamePlayer>(
-    PREDEFINED_PLAYERS[0]
-  );
-  const [newGameOpponentSelectionMode, setNewGameOpponentSelectionMode] =
-    useState<OpponentSelectionMode>('manual');
-  const [newGameSelectedOpponents, setNewGameSelectedOpponents] = useState<(GamePlayer | null)[]>(
-    []
-  );
 
   // Select Opponent Dialog states
   const [selectOpponentSelectedPlayer, setSelectOpponentSelectedPlayer] = useState<GamePlayer>(
@@ -183,13 +159,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     setLandPopupPosition(undefined);
   }, []);
 
-  // New Game Dialog actions
-  const resetNewGameDialog = useCallback(() => {
-    setNewGameMapSize('medium');
-    setNewGameSelectedPlayer(PREDEFINED_PLAYERS[0]);
-    setNewGameOpponentSelectionMode('manual');
-    setNewGameSelectedOpponents([]);
-  }, []);
 
   // Select Opponent Dialog actions
   const resetSelectOpponentDialog = useCallback((availablePlayers: GamePlayer[]) => {
@@ -282,11 +251,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         landPopupPosition,
         landPopupScreenPosition,
 
-        // New Game Dialog states
-        newGameMapSize,
-        newGameSelectedPlayer,
-        newGameOpponentSelectionMode,
-        newGameSelectedOpponents,
 
         // Select Opponent Dialog states
         selectOpponentSelectedPlayer,
@@ -320,12 +284,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         showLandPopup,
         hideLandPopup,
 
-        // New Game Dialog actions
-        setNewGameMapSize,
-        setNewGameSelectedPlayer,
-        setNewGameOpponentSelectionMode,
-        setNewGameSelectedOpponents,
-        resetNewGameDialog,
 
         // Select Opponent Dialog actions
         setSelectOpponentSelectedPlayer,
