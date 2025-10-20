@@ -18,8 +18,7 @@ describe('Construct Buildings', () => {
       battlefield: generateMockMap(6, 12),
       turn: 1,
       activePlayerId: player1.id,
-      selectedPlayer: player1,
-      opponents: [player2],
+      players: [player1, player2],
     };
   });
 

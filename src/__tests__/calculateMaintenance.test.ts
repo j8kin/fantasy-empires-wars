@@ -15,8 +15,7 @@ describe('Calculate Maintenance', () => {
   const mockGameState: GameState = {
     battlefield: generateMockMap(10, 10),
     activePlayerId: player.id,
-    selectedPlayer: player,
-    opponents: PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer),
+    players: [player, ...PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer)],
     turn: 0,
   };
   beforeEach(() => {

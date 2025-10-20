@@ -6,6 +6,7 @@ import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 import { AllSpells } from '../../types/Spell';
 import { getSpellImg } from '../../assets/getSpellImg';
 import { useGameContext } from '../../contexts/GameContext';
+import { getSelectedPlayer } from '../../types/GameState';
 
 const CastSpellDialog: React.FC = () => {
   const { showCastSpellDialog, setShowCastSpellDialog, selectedLandAction } =
@@ -32,10 +33,13 @@ const CastSpellDialog: React.FC = () => {
 
   if (!showCastSpellDialog) return null;
 
-  const playerMana = gameState?.selectedPlayer.mana!;
+  const selectedPlayer = getSelectedPlayer(gameState);
+  const playerMana = selectedPlayer?.mana;
 
   // todo it should be possible to cast turn undead only once per turn
-  const availableSpells = AllSpells.filter((spell) => spell.manaCost <= playerMana[spell.school]);
+  const availableSpells = playerMana
+    ? AllSpells.filter((spell) => spell.manaCost <= playerMana[spell.school])
+    : [];
 
   return (
     <FlipBook onClickOutside={handleClose}>

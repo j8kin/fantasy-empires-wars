@@ -103,8 +103,11 @@ const renderWithApplicationContext = () => {
       if (gameState) {
         updateGameState({
           ...gameState,
-          selectedPlayer,
-          opponents: [toGamePlayer(PREDEFINED_PLAYERS[1]), toGamePlayer(PREDEFINED_PLAYERS[2])],
+          players: [
+            selectedPlayer,
+            toGamePlayer(PREDEFINED_PLAYERS[1]),
+            toGamePlayer(PREDEFINED_PLAYERS[2]),
+          ],
         });
       } else {
         updateGameState({
@@ -114,8 +117,11 @@ const renderWithApplicationContext = () => {
           },
           turn: 0,
           activePlayerId: selectedPlayer.id,
-          selectedPlayer,
-          opponents: [toGamePlayer(PREDEFINED_PLAYERS[1]), toGamePlayer(PREDEFINED_PLAYERS[2])],
+          players: [
+            selectedPlayer,
+            toGamePlayer(PREDEFINED_PLAYERS[1]),
+            toGamePlayer(PREDEFINED_PLAYERS[2]),
+          ],
         });
       }
     }, []);

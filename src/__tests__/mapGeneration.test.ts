@@ -3,7 +3,7 @@ import { addPlayerToMap } from '../map/generation/addPlayerToMap';
 import { LAND_TYPE } from '../types/Land';
 import { BuildingType, getBuilding } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { battlefieldLandId, GameState } from '../types/GameState';
+import { battlefieldLandId, GameState, getSelectedPlayer } from '../types/GameState';
 import { calculateHexDistance } from '../map/utils/mapAlgorithms';
 import { Alignment } from '../types/Alignment';
 import { toGamePlayer } from './utils/toGamePlayer';
@@ -42,8 +42,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         activePlayerId: necromancerPlayer.id,
-        selectedPlayer: necromancerPlayer,
-        opponents: [],
+        players: [necromancerPlayer],
       };
       addPlayerToMap(mockGameState);
 
@@ -64,8 +63,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         activePlayerId: testPlayers[0].id,
-        selectedPlayer: testPlayers[0],
-        opponents: [testPlayers[1], testPlayers[2]],
+        players: [testPlayers[0], testPlayers[1], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);
 
@@ -106,8 +104,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
         activePlayerId: testPlayers[0].id,
-        selectedPlayer: testPlayers[0],
-        opponents: [testPlayers[1], testPlayers[2]],
+        players: [testPlayers[0], testPlayers[1], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);
 
@@ -142,8 +139,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap(dimensions),
         turn: 0,
         activePlayerId: testPlayers[0].id,
-        selectedPlayer: testPlayers[0],
-        opponents: [testPlayers[1], testPlayers[2]],
+        players: [testPlayers[0], testPlayers[1], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);
 
@@ -171,8 +167,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap(dimensions),
         turn: 0,
         activePlayerId: singlePlayer[0].id,
-        selectedPlayer: singlePlayer[0],
-        opponents: [],
+        players: [singlePlayer[0]],
       };
       addPlayerToMap(mockGameState);
 
@@ -202,8 +197,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
         activePlayerId: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
-        selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
-        opponents: [toGamePlayer(PREDEFINED_PLAYERS[1])],
+        players: [toGamePlayer(PREDEFINED_PLAYERS[0]), toGamePlayer(PREDEFINED_PLAYERS[1])],
       };
       addPlayerToMap(mockGameState);
 
@@ -231,8 +225,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap({ rows: 11, cols: 23 }),
         turn: 0,
         activePlayerId: somePredefinedPlayers[0].id,
-        selectedPlayer: somePredefinedPlayers[0],
-        opponents: somePredefinedPlayers.slice(1, 4),
+        players: somePredefinedPlayers,
       };
       addPlayerToMap(mockGameState);
 
@@ -266,8 +259,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         activePlayerId: necromancers[0].id,
-        selectedPlayer: necromancers[0],
-        opponents: [necromancers[1]],
+        players: necromancers,
       };
       addPlayerToMap(mockGameState);
 
@@ -298,8 +290,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap({ rows: 9, cols: 18 }), // test verifies only initializeMap
         turn: 0,
         activePlayerId: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
-        selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
-        opponents: [],
+        players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
       };
 
       Object.values(mockGameState.battlefield.lands).forEach((tile) => {
@@ -314,8 +305,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         activePlayerId: singlePlayer.id,
-        selectedPlayer: singlePlayer,
-        opponents: [],
+        players: [singlePlayer],
       };
       addPlayerToMap(mockGameState);
 
@@ -339,8 +329,7 @@ describe('Map Generation with Players', () => {
         battlefield: generateMap(dimensions),
         turn: 0,
         activePlayerId: testPlayers[0].id,
-        selectedPlayer: testPlayers[0],
-        opponents: [testPlayers[1], testPlayers[2]],
+        players: [testPlayers[0], testPlayers[1], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);
 

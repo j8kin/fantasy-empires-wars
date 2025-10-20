@@ -294,8 +294,7 @@ const NewGameDialog: React.FC = () => {
         battlefield: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
         activePlayerId: createdPlayer.id,
-        selectedPlayer: createdPlayer,
-        opponents: createdOpponents,
+        players: [createdPlayer, ...createdOpponents],
       };
 
       addPlayerToMap(gameState);

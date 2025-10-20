@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './css/VialPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
+import { getSelectedPlayer } from '../../types/GameState';
 
 import ManaVial from './ManaVial';
 
@@ -9,14 +10,15 @@ import { ManaType } from '../../types/Mana';
 
 const VialPanel: React.FC = () => {
   const { gameState } = useGameContext();
+  const selectedPlayer = getSelectedPlayer(gameState);
 
   return (
     <div className={styles.vialPanel}>
-      <ManaVial color={ManaType.BLACK} mana={gameState?.selectedPlayer.mana?.black} />
-      <ManaVial color={ManaType.WHITE} mana={gameState?.selectedPlayer.mana?.white} />
-      <ManaVial color={ManaType.BLUE} mana={gameState?.selectedPlayer.mana?.blue} />
-      <ManaVial color={ManaType.GREEN} mana={gameState?.selectedPlayer.mana?.green} />
-      <ManaVial color={ManaType.RED} mana={gameState?.selectedPlayer.mana?.red} />
+      <ManaVial color={ManaType.BLACK} mana={selectedPlayer?.mana?.black} />
+      <ManaVial color={ManaType.WHITE} mana={selectedPlayer?.mana?.white} />
+      <ManaVial color={ManaType.BLUE} mana={selectedPlayer?.mana?.blue} />
+      <ManaVial color={ManaType.GREEN} mana={selectedPlayer?.mana?.green} />
+      <ManaVial color={ManaType.RED} mana={selectedPlayer?.mana?.red} />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { GameState } from '../types/GameState';
+import { GameState, getSelectedPlayer } from '../types/GameState';
 import { GamePlayer } from '../types/GamePlayer';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
@@ -42,32 +42,20 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     setGameState((prev) => {
       if (!prev) return prev;
 
-      // Calculate income for a player
-      const selectedPlayerIncome =
-        calculateIncome(prev, prev.selectedPlayer) -
-        calculateMaintenance(prev, prev.selectedPlayer);
-
-      // Calculate income for all opponents
-      const updatedOpponents = prev.opponents.map((opponent) => {
-        const tempGameState = { ...prev, selectedPlayer: opponent };
-        const opponentIncome =
-          calculateIncome(tempGameState, opponent) - calculateMaintenance(tempGameState, opponent);
+      // Calculate income for all players
+      const updatedPlayers = prev.players.map((player) => {
+        const tempGameState = { ...prev, activePlayerId: player.id };
+        const playerIncome =
+          calculateIncome(tempGameState, player) - calculateMaintenance(tempGameState, player);
         return {
-          ...opponent,
-          income: opponentIncome,
+          ...player,
+          income: playerIncome,
         };
       });
 
-      // Update selected player with their income
-      const updatedSelectedPlayer = {
-        ...prev.selectedPlayer,
-        income: selectedPlayerIncome,
-      };
-
       return {
         ...prev,
-        selectedPlayer: updatedSelectedPlayer,
-        opponents: updatedOpponents,
+        players: updatedPlayers,
       };
     });
   }, []);

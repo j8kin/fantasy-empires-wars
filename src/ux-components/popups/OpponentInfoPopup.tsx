@@ -10,6 +10,7 @@ import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
 import { DiplomacyStatus, PlayerInfo } from '../../types/GamePlayer';
+import { getSelectedPlayer } from '../../types/GameState';
 
 export interface OpponentInfoProps extends PopupProps {
   opponent?: PlayerInfo;
@@ -21,8 +22,8 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
 
   if (opponent == null || gameState == null) return null;
 
-  const diplomacyStatus =
-    gameState.selectedPlayer.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
+  const selectedPlayer = getSelectedPlayer(gameState);
+  const diplomacyStatus = selectedPlayer?.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {
     hideOpponentInfo();

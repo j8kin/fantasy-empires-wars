@@ -75,8 +75,7 @@ describe('LandCharacteristicsPopup', () => {
     battlefield: generateMap({ rows: 9, cols: 18 }),
     turn: 0,
     activePlayerId: testPlayers[1].id,
-    selectedPlayer: testPlayers[1], // Morgana
-    opponents: [testPlayers[0], testPlayers[2]],
+    players: [testPlayers[1], testPlayers[0], testPlayers[2]], // Morgana is active player
   };
   addPlayerToMap(mockGameState);
 

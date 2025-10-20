@@ -104,8 +104,7 @@ const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState =>
     battlefield: tiles,
     turn: 0,
     activePlayerId: mockPlayer.id,
-    selectedPlayer: mockPlayer,
-    opponents: [],
+    players: [mockPlayer],
   };
 };
 
@@ -424,8 +423,7 @@ describe('Battlefield Component', () => {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         activePlayerId: testPlayers[1].id,
-        selectedPlayer: testPlayers[1],
-        opponents: [testPlayers[0], testPlayers[2]],
+        players: [testPlayers[1], testPlayers[0], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);
 

@@ -139,17 +139,16 @@ const addPlayer = (
 };
 
 export const addPlayerToMap = (gameState: GameState) => {
-  const { selectedPlayer, opponents } = gameState;
-  const allyPlayers = [selectedPlayer, ...opponents];
+  const { players } = gameState;
   const playerPositions: LandPosition[] = [];
 
   // Place Necromancer on volcano first if necromancer is present
-  const necromancer = allyPlayers.find((player) => player.race === 'Undead');
+  const necromancer = players.find((player) => player.race === 'Undead');
   if (necromancer != null) {
     addPlayer(necromancer, playerPositions, gameState);
   }
 
-  allyPlayers
+  players
     .filter((player) => player.id !== necromancer?.id)
     .forEach((player) => {
       addPlayer(player, playerPositions, gameState);

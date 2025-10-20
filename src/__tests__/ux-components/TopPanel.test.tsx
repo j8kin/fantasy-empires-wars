@@ -31,8 +31,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
       if (gameState) {
         updateGameState({
           ...gameState,
-          selectedPlayer,
-          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]].map(toGamePlayer),
+          players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer)],
         });
       } else {
         updateGameState({
@@ -42,8 +41,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
           },
           turn: 0,
           activePlayerId: selectedPlayer.id,
-          selectedPlayer,
-          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]].map(toGamePlayer),
+          players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer)],
         });
       }
     }, []);
@@ -190,8 +188,7 @@ describe('TopPanel Component', () => {
           if (gameState) {
             updateGameState({
               ...gameState,
-              selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
-              opponents: [],
+              players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
             });
           } else {
             updateGameState({
@@ -201,8 +198,7 @@ describe('TopPanel Component', () => {
               },
               turn: 0,
               activePlayerId: PREDEFINED_PLAYERS[0].id,
-              selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
-              opponents: [],
+              players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
             });
           }
         }, []);

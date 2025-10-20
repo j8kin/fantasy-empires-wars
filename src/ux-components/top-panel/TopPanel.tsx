@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './css/TopPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
+import { getSelectedPlayer } from '../../types/GameState';
 
 import GameControl from '../game-controls/GameControl';
 import PlayActionsControl from '../game-controls/PlayActionsControl';
@@ -19,7 +20,7 @@ export interface TopPanelProps {
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
   const { gameState } = useGameContext();
-  const selectedPlayer = gameState?.selectedPlayer;
+  const selectedPlayer = getSelectedPlayer(gameState);
 
   const avatarSize = height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10;
   const endTurnButton = <GameButton buttonName={ButtonName.TURN} />;

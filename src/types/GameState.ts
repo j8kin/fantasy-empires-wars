@@ -29,16 +29,17 @@ export interface GameState {
   battlefield: BattlefieldMap;
   turn: number;
   activePlayerId: string;
-  selectedPlayer: GamePlayer;
-  opponents: GamePlayer[];
+  players: GamePlayer[];
 }
 
 // Helper function to get player by ID from GameState
 export const getPlayerById = (gameState?: GameState, playerId?: string): GamePlayer | undefined => {
-  if (playerId != null && gameState?.selectedPlayer.id === playerId) {
-    return gameState.selectedPlayer;
-  }
-  return gameState?.opponents.find((player) => player.id === playerId);
+  return gameState?.players.find((player) => player.id === playerId);
+};
+
+// Helper function to get the selected player (active player) from GameState
+export const getSelectedPlayer = (gameState?: GameState): GamePlayer | undefined => {
+  return getPlayerById(gameState, gameState?.activePlayerId);
 };
 
 export const battlefieldLandId = (landPosition: LandPosition): string =>

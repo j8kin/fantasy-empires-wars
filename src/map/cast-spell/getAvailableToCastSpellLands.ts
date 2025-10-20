@@ -13,8 +13,8 @@ export const getAvailableToCastSpellLands = (
     spell.apply === 'player'
       ? [player]
       : spell.apply === 'opponent'
-        ? [gameState.selectedPlayer!, ...gameState.opponents!].filter((p) => p !== player)
-        : [gameState.selectedPlayer!, ...gameState.opponents!];
+        ? gameState.players.filter((p) => p !== player)
+        : gameState.players;
 
   return getLands(gameState.battlefield.lands, playerFilter).map((land) =>
     battlefieldLandId(land.mapPos)

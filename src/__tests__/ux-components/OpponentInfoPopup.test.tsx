@@ -61,8 +61,8 @@ describe('OpponentInfoPopup', () => {
   const createMockGameState = (
     opponent: PlayerInfo,
     diplomacyStatus: DiplomacyStatus
-  ): Partial<GameState> => ({
-    selectedPlayer: {
+  ): Partial<GameState> => {
+    const selectedPlayer = {
       ...PREDEFINED_PLAYERS[1],
       diplomacy: {
         [opponent.id]: diplomacyStatus,
@@ -76,10 +76,13 @@ describe('OpponentInfoPopup', () => {
       },
       money: 0,
       income: 0,
-      playerType: 'human',
-    },
-    opponents: [toGamePlayer(opponent)],
-  });
+      playerType: 'human' as const,
+    };
+    return {
+      activePlayerId: selectedPlayer.id,
+      players: [selectedPlayer, toGamePlayer(opponent)],
+    };
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -90,11 +93,23 @@ describe('OpponentInfoPopup', () => {
       gameState: {
         tiles: {},
         turn: 1,
-        selectedPlayer: {
-          ...PREDEFINED_PLAYERS[1],
-          diplomacy: {},
-        },
-        opponents: [],
+        activePlayerId: PREDEFINED_PLAYERS[1].id,
+        players: [
+          {
+            ...PREDEFINED_PLAYERS[1],
+            diplomacy: {},
+            mana: {
+              [ManaType.WHITE]: 0,
+              [ManaType.BLACK]: 0,
+              [ManaType.GREEN]: 0,
+              [ManaType.BLUE]: 0,
+              [ManaType.RED]: 0,
+            },
+            money: 0,
+            income: 0,
+            playerType: 'human' as const,
+          },
+        ],
       },
       updateTile: jest.fn(),
       setTileController: jest.fn(),
@@ -588,22 +603,23 @@ describe('OpponentInfoPopup', () => {
   it('defaults to "No Treaty" when diplomacy status is not found', () => {
     const mockOpponent = createMockOpponent();
     // Create game state without diplomacy info for this opponent
-    const gameState: Partial<GameState> = {
-      selectedPlayer: {
-        ...PREDEFINED_PLAYERS[1],
-        diplomacy: {},
-        mana: {
-          [ManaType.WHITE]: 0,
-          [ManaType.BLACK]: 0,
-          [ManaType.GREEN]: 0,
-          [ManaType.BLUE]: 0,
-          [ManaType.RED]: 0,
-        },
-        money: 0,
-        income: 0,
-        playerType: 'human',
+    const selectedPlayer = {
+      ...PREDEFINED_PLAYERS[1],
+      diplomacy: {},
+      mana: {
+        [ManaType.WHITE]: 0,
+        [ManaType.BLACK]: 0,
+        [ManaType.GREEN]: 0,
+        [ManaType.BLUE]: 0,
+        [ManaType.RED]: 0,
       },
-      opponents: [toGamePlayer(mockOpponent)],
+      money: 0,
+      income: 0,
+      playerType: 'human' as const,
+    };
+    const gameState: Partial<GameState> = {
+      activePlayerId: selectedPlayer.id,
+      players: [selectedPlayer, toGamePlayer(mockOpponent)],
     };
 
     const { useGameContext } = require('../../contexts/GameContext');
