@@ -1,5 +1,5 @@
 import { GameState } from '../../types/GameState';
-import { GamePlayer } from '../../types/GamePlayer';
+import { GamePlayer, PlayerInfo } from '../../types/GamePlayer';
 
 import { getLands } from '../utils/mapLands';
 
@@ -21,7 +21,7 @@ const unitMaintenanceCost = (unit: Unit): number => {
   }
 };
 
-export const calculateMaintenance = (gameState: GameState, player: GamePlayer) => {
+export const calculateMaintenance = (gameState: GameState, player: PlayerInfo) => {
   // building maintenance
   const buildingMaintenance = getLands(
     gameState.battlefield.lands,

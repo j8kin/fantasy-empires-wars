@@ -5,9 +5,9 @@ import { calculateHexDistance } from '../utils/mapAlgorithms';
 
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
-import { GamePlayer } from '../../types/GamePlayer';
+import { PlayerInfo } from '../../types/GamePlayer';
 
-export const calculateIncome = (gameState: GameState, player: GamePlayer) => {
+export const calculateIncome = (gameState: GameState, player: PlayerInfo) => {
   const { battlefield } = gameState;
 
   const playerLands = getLands(battlefield.lands, [player]);

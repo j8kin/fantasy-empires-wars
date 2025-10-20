@@ -4,11 +4,12 @@ import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { generateMockMap } from './utils/generateMockMap';
 import { BuildingType, getBuilding } from '../types/Building';
 import { getLandById, LAND_TYPE } from '../types/Land';
+import { toGamePlayer } from './utils/toGamePlayer';
 
 describe('Calculate Income', () => {
-  const lawfulPlayer = PREDEFINED_PLAYERS[0];
-  const chaoticPlayer = PREDEFINED_PLAYERS[1];
-  const neutralPlayer = PREDEFINED_PLAYERS[2];
+  const lawfulPlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+  const chaoticPlayer = toGamePlayer(PREDEFINED_PLAYERS[1]);
+  const neutralPlayer = toGamePlayer(PREDEFINED_PLAYERS[2]);
 
   const mockGameState: GameState = {
     battlefield: generateMockMap(10, 10),

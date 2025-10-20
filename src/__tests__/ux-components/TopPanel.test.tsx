@@ -7,6 +7,7 @@ import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { ManaType } from '../../types/Mana';
+import { toGamePlayer } from '../utils/toGamePlayer';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -23,13 +24,14 @@ const renderWithProvider = (ui: React.ReactElement) => {
           [ManaType.GREEN]: 100,
           [ManaType.BLUE]: 100,
         },
+        diplomacy: {},
       };
 
       if (gameState) {
         updateGameState({
           ...gameState,
           selectedPlayer,
-          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]].map(toGamePlayer),
         });
       } else {
         updateGameState({
@@ -39,7 +41,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
           },
           turn: 0,
           selectedPlayer,
-          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]].map(toGamePlayer),
         });
       }
     }, []);
@@ -186,7 +188,7 @@ describe('TopPanel Component', () => {
           if (gameState) {
             updateGameState({
               ...gameState,
-              selectedPlayer: PREDEFINED_PLAYERS[0],
+              selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
               opponents: [],
             });
           } else {
@@ -196,7 +198,7 @@ describe('TopPanel Component', () => {
                 lands: {},
               },
               turn: 0,
-              selectedPlayer: PREDEFINED_PLAYERS[0],
+              selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
               opponents: [],
             });
           }

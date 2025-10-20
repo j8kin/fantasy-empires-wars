@@ -3,11 +3,12 @@ import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
 import { GameState, LandState } from '../../types/GameState';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { LAND_TYPE } from '../../types/Land';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { Army, UnitType, getUnit } from '../../types/Army';
+import { toGamePlayer } from '../utils/toGamePlayer';
 
 const renderWithProviders = (ui: React.ReactElement, gameState?: GameState) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -69,12 +70,12 @@ jest.mock('../../ux-components/popups/css/LandCharacteristicsPopup.module.css', 
 }));
 
 describe('LandCharacteristicsPopup', () => {
-  const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[1]; // Morgana
+  const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer);
   const mockGameState: GameState = {
     battlefield: generateMap({ rows: 9, cols: 18 }),
     turn: 0,
-    selectedPlayer: mockPlayer,
-    opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],
+    selectedPlayer: testPlayers[1], // Morgana
+    opponents: [testPlayers[0], testPlayers[2]],
   };
   addPlayerToMap(mockGameState);
 
@@ -128,7 +129,7 @@ describe('LandCharacteristicsPopup', () => {
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
     expect(mockTileState.land.id).toBe(LAND_TYPE.VOLCANO);
-    expect(mockTileState.controlledBy).toBe(mockPlayer.id);
+    expect(mockTileState.controlledBy).toBe(testPlayers[1].id);
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
 

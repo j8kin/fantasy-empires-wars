@@ -4,11 +4,12 @@ import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
+import { toGamePlayer } from './utils/toGamePlayer';
 
 describe('getAvailableLands', () => {
   const gameState: GameState = {
     battlefield: generateMockMap(1, 1),
-    selectedPlayer: PREDEFINED_PLAYERS[0],
+    selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
     opponents: [],
     turn: 1,
   };
@@ -202,7 +203,7 @@ describe('getAvailableLands', () => {
   it('should return all barder lands when have a border with other plyer', () => {
     construct(gameState.selectedPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
     construct(
-      PREDEFINED_PLAYERS[1], // other player
+      toGamePlayer(PREDEFINED_PLAYERS[1]), // other player
       BuildingType.STRONGHOLD,
       { row: 3, col: 6 },
       gameState

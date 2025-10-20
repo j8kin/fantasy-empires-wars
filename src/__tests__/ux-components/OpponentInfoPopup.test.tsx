@@ -1,10 +1,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import OpponentInfoPopup from '../../ux-components/popups/OpponentInfoPopup';
-import { PREDEFINED_PLAYERS, DiplomacyStatus, GamePlayer } from '../../types/GamePlayer';
+import { PREDEFINED_PLAYERS, DiplomacyStatus, PlayerInfo } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameState } from '../../types/GameState';
+import { toGamePlayer } from '../utils/toGamePlayer';
 
 jest.mock('../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
   popupContent: 'mocked-popup-content',
@@ -51,13 +52,13 @@ describe('OpponentInfoPopup', () => {
   const mockPosition = { x: 100, y: 100 };
   const mockOnClose = jest.fn();
 
-  const createMockOpponent = (alignment: Alignment = Alignment.NEUTRAL): GamePlayer => ({
+  const createMockOpponent = (alignment: Alignment = Alignment.NEUTRAL): PlayerInfo => ({
     ...PREDEFINED_PLAYERS[0],
     alignment,
   });
 
   const createMockGameState = (
-    opponent: GamePlayer,
+    opponent: PlayerInfo,
     diplomacyStatus: DiplomacyStatus
   ): Partial<GameState> => ({
     selectedPlayer: {
@@ -65,8 +66,11 @@ describe('OpponentInfoPopup', () => {
       diplomacy: {
         [opponent.id]: diplomacyStatus,
       },
+      mana: {},
+      money: 0,
+      income: 0,
     },
-    opponents: [opponent],
+    opponents: [toGamePlayer(opponent)],
   });
 
   beforeEach(() => {
@@ -538,7 +542,7 @@ describe('OpponentInfoPopup', () => {
 
   it('works with different predefined players', () => {
     // Test with different predefined player (Morgana)
-    const mockOpponent: GamePlayer = {
+    const mockOpponent: PlayerInfo = {
       ...PREDEFINED_PLAYERS[1], // Morgana Shadowweaver
     };
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.WAR);
@@ -580,8 +584,11 @@ describe('OpponentInfoPopup', () => {
       selectedPlayer: {
         ...PREDEFINED_PLAYERS[1],
         diplomacy: {},
+        mana: {},
+        money: 0,
+        income: 0,
       },
-      opponents: [mockOpponent],
+      opponents: [toGamePlayer(mockOpponent)],
     };
 
     const { useGameContext } = require('../../contexts/GameContext');

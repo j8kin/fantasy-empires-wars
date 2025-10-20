@@ -29,7 +29,7 @@ export enum DiplomacyStatus {
 
 export type Diplomacy = Record<string, DiplomacyStatus>;
 
-export interface GamePlayer {
+export interface PlayerInfo {
   id: string;
   name: string;
   alignment: Alignment;
@@ -37,15 +37,18 @@ export interface GamePlayer {
   type: UnitType;
   level: number; // 1-32
   description: string;
-  mana?: Mana;
-  money?: number;
-  income?: number;
-  diplomacy?: Diplomacy;
-  color: PlayerColorName;
+  color: PlayerColorName; // base player color when game starts continues current color
   avatar?: string; // path to avatar image
 }
 
-export const NO_PLAYER: GamePlayer = {
+export interface GamePlayer extends PlayerInfo {
+  mana: Mana;
+  money: number;
+  income: number;
+  diplomacy: Diplomacy;
+}
+
+export const NO_PLAYER: PlayerInfo = {
   id: 'none',
   name: 'None',
   alignment: Alignment.NEUTRAL,
@@ -57,7 +60,7 @@ export const NO_PLAYER: GamePlayer = {
   avatar: undefined,
 };
 
-export const PREDEFINED_PLAYERS: GamePlayer[] = [
+export const PREDEFINED_PLAYERS: PlayerInfo[] = [
   {
     id: 'alaric',
     name: 'Alaric the Bold',

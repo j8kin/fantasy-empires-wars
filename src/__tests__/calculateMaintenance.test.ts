@@ -7,14 +7,15 @@ import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
 import { recruitWarriors } from '../map/army/recruit';
 import { LandPosition } from '../map/utils/mapLands';
+import { toGamePlayer } from './utils/toGamePlayer';
 
 describe('Calculate Maintenance', () => {
-  const player = PREDEFINED_PLAYERS[0];
+  const player = toGamePlayer(PREDEFINED_PLAYERS[0]);
 
   const mockGameState: GameState = {
     battlefield: generateMockMap(10, 10),
     selectedPlayer: player,
-    opponents: PREDEFINED_PLAYERS.slice(1, 3),
+    opponents: PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer),
     turn: 0,
   };
   beforeEach(() => {

@@ -9,6 +9,7 @@ import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { LandPosition } from '../../map/utils/mapLands';
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { Alignment } from '../../types/Alignment';
+import { toGamePlayer } from '../utils/toGamePlayer';
 
 // Mock CSS modules
 jest.mock('../../ux-components/battlefield/css/Battlefield.module.css', () => ({
@@ -68,7 +69,7 @@ jest.mock('../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
 const testTileDimensions = { width: 50, height: 180 };
 
 const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState => {
-  const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[0];
+  const mockPlayer: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
 
   const mockLandType = (): Land => {
     return {
@@ -417,11 +418,12 @@ describe('Battlefield Component', () => {
 
   describe('Create Battlefield which generated Map', () => {
     it('renders all required child components', () => {
+      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer);
       mockGameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
-        selectedPlayer: PREDEFINED_PLAYERS[1],
-        opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],
+        selectedPlayer: testPlayers[1],
+        opponents: [testPlayers[0], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);
 

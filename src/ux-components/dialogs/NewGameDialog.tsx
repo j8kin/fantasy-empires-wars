@@ -12,7 +12,13 @@ import PlayerSelection from '../player-selection/PlayerSelection';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { ButtonName } from '../../types/ButtonName';
-import { DiplomacyStatus, GamePlayer, NO_PLAYER, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import {
+  DiplomacyStatus,
+  GamePlayer,
+  NO_PLAYER,
+  PlayerInfo,
+  PREDEFINED_PLAYERS,
+} from '../../types/GamePlayer';
 import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { BattlefieldDimensions, GameState } from '../../types/GameState';
 import { Mana, ManaType } from '../../types/Mana';
@@ -63,9 +69,9 @@ const NewGameDialog: React.FC = () => {
 
   // Local state for dialog-specific values
   const [mapSize, setMapSize] = useState<DialogMapSize>('medium');
-  const [selectedPlayer, setSelectedPlayer] = useState<GamePlayer>(PREDEFINED_PLAYERS[0]);
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerInfo>(PREDEFINED_PLAYERS[0]);
   const [opponentSelectionMode, setOpponentSelectionMode] = useState<'random' | 'manual'>('manual');
-  const [selectedOpponents, setSelectedOpponents] = useState<(GamePlayer | null)[]>([]);
+  const [selectedOpponents, setSelectedOpponents] = useState<(PlayerInfo | null)[]>([]);
 
   const maxOpponents = getMaxOpponents(mapSize);
 
@@ -79,7 +85,7 @@ const NewGameDialog: React.FC = () => {
       );
       const uniqueColors = availableColors.slice(0, maxOpponents);
 
-      const opponents: (GamePlayer | null)[] = new Array(maxOpponents).fill(null);
+      const opponents: (PlayerInfo | null)[] = new Array(maxOpponents).fill(null);
       const shuffledPlayers = [...availablePlayers].sort(() => 0.5 - Math.random());
 
       // Add 2 unique random opponents
@@ -122,7 +128,7 @@ const NewGameDialog: React.FC = () => {
       if (opponentSelectionMode === 'random') {
         // Generate unique random opponents for max number
         const shuffledPlayers = [...availablePlayers].sort(() => 0.5 - Math.random());
-        const randomOpponents: GamePlayer[] = [];
+        const randomOpponents: PlayerInfo[] = [];
 
         for (let i = 0; i < newMaxOpponents && i < shuffledPlayers.length; i++) {
           randomOpponents.push({
@@ -145,7 +151,7 @@ const NewGameDialog: React.FC = () => {
         setSelectedOpponents(randomOpponents);
       } else {
         // Manual mode: start with 2 unique random opponents, rest empty
-        const opponents: (GamePlayer | null)[] = new Array(newMaxOpponents).fill(null);
+        const opponents: (PlayerInfo | null)[] = new Array(newMaxOpponents).fill(null);
         const shuffledPlayers = [...availablePlayers].sort(() => 0.5 - Math.random());
 
         // Add 2 unique random opponents
@@ -190,7 +196,7 @@ const NewGameDialog: React.FC = () => {
   }, [initializeOpponents, opponentSelectionMode]);
 
   const handlePlayerChange = useCallback(
-    (player: GamePlayer) => {
+    (player: PlayerInfo) => {
       setSelectedPlayer(player);
     },
     [setSelectedPlayer]
@@ -212,7 +218,7 @@ const NewGameDialog: React.FC = () => {
 
       showSelectOpponentDialogWithConfig(
         excludedPlayerIds,
-        (opponent: GamePlayer) => {
+        (opponent: PlayerInfo) => {
           const newOpponents = [...selectedOpponents];
           const uniqueColors = getUniqueOpponentColors();
           newOpponents[index] = {
@@ -241,9 +247,6 @@ const NewGameDialog: React.FC = () => {
             (opponent) => opponent !== null && opponent.id !== NO_PLAYER.id
           ) as GamePlayer[]);
 
-    // Initialize diplomacy relations: selected player vs opponents (and mirror on opponents)
-    const playerDiplomacy = { ...(selectedPlayer.diplomacy || {}) };
-
     // Initialize starting mana values todo: set to 0 when mana is implemented
     const initialMana: Mana = {
       [ManaType.GREEN]: 50,
@@ -253,23 +256,31 @@ const NewGameDialog: React.FC = () => {
       [ManaType.BLACK]: 130,
     };
 
-    const updatedOpponents: GamePlayer[] = opponents.map((opponent) => {
-      const oppDiplomacy = { ...(opponent.diplomacy || {}) };
-      playerDiplomacy[opponent.id] = DiplomacyStatus.NO_TREATY;
-      oppDiplomacy[selectedPlayer.id] = DiplomacyStatus.NO_TREATY;
+    const initialMoney = 15000;
+
+    const createdOpponents: GamePlayer[] = opponents.map((opponent) => {
       return {
         ...opponent,
-        diplomacy: oppDiplomacy,
-        mana: opponent.mana ?? { ...initialMana },
-        money: 10000,
+        diplomacy: {
+          ...Object.fromEntries(
+            opponents
+              .filter((o) => o.id !== opponent.id)
+              .map((op) => [op.id, DiplomacyStatus.NO_TREATY])
+          ),
+          [selectedPlayer.id]: DiplomacyStatus.NO_TREATY,
+        },
+        mana: initialMana,
+        money: initialMoney,
+        income: 0, // will calculate on game start on first turn
       };
     });
 
-    const updatedSelectedPlayer: GamePlayer = {
+    const createdPlayer: GamePlayer = {
       ...selectedPlayer,
-      diplomacy: playerDiplomacy,
-      mana: selectedPlayer.mana ?? { ...initialMana },
-      money: 15000,
+      diplomacy: Object.fromEntries(opponents.map((op) => [op.id, DiplomacyStatus.NO_TREATY])),
+      mana: { ...initialMana },
+      money: initialMoney,
+      income: 0, // will calculate on game start on first turn
     };
 
     setShowStartWindow(false);
@@ -280,8 +291,8 @@ const NewGameDialog: React.FC = () => {
       const gameState: GameState = {
         battlefield: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
-        selectedPlayer: updatedSelectedPlayer,
-        opponents: updatedOpponents,
+        selectedPlayer: createdPlayer,
+        opponents: createdOpponents,
       };
 
       addPlayerToMap(gameState);

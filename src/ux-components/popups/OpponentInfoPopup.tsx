@@ -9,10 +9,10 @@ import Avatar from '../avatars/Avatar';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { DiplomacyStatus, GamePlayer } from '../../types/GamePlayer';
+import { DiplomacyStatus, PlayerInfo } from '../../types/GamePlayer';
 
 export interface OpponentInfoProps extends PopupProps {
-  opponent?: GamePlayer;
+  opponent?: PlayerInfo;
 }
 
 const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition }) => {

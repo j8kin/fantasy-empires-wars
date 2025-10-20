@@ -6,10 +6,11 @@ import { BuildingType } from '../types/Building';
 import { getLands, LandPosition } from '../map/utils/mapLands';
 import { recruitWarriors } from '../map/army/recruit';
 import { getUnit, UnitType } from '../types/Army';
+import { toGamePlayer } from './utils/toGamePlayer';
 
 describe('Construct Buildings', () => {
-  const player1: GamePlayer = PREDEFINED_PLAYERS[0];
-  const player2: GamePlayer = PREDEFINED_PLAYERS[1];
+  const player1: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+  const player2: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[1]);
   let mockGameState: GameState;
 
   beforeEach(() => {

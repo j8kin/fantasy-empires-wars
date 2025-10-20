@@ -5,13 +5,14 @@ import OpponentsPanel from '../../ux-components/opponents-panel/OpponentsPanel';
 import { PREDEFINED_PLAYERS, NO_PLAYER, GamePlayer } from '../../types/GamePlayer';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
+import { toGamePlayer } from '../utils/toGamePlayer';
 
 // Test wrapper that provides GameContext and ApplicationContext and allows updating game state
 const TestWrapper: React.FC<{
   children: React.ReactNode;
   opponents: GamePlayer[];
   selectedPlayer?: GamePlayer;
-}> = ({ children, opponents, selectedPlayer = PREDEFINED_PLAYERS[0] }) => {
+}> = ({ children, opponents, selectedPlayer = toGamePlayer(PREDEFINED_PLAYERS[0]) }) => {
   const TestComponent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState } = useGameContext();
 
@@ -57,7 +58,7 @@ describe('OpponentsPanel', () => {
   });
 
   it('renders with provided opponents', () => {
-    renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 3));
+    renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer));
 
     // Should render 2 provided opponents
     const avatars = screen.getAllByRole('img', { name: /.+/ });
@@ -71,7 +72,7 @@ describe('OpponentsPanel', () => {
       PREDEFINED_PLAYERS[2],
     ];
 
-    renderWithGameContext(providedOpponents);
+    renderWithGameContext(providedOpponents.map(toGamePlayer));
 
     // Should render all 3 opponents as provided (no filtering)
     // NO_PLAYER renders as text "EMPTY", so we count both images and EMPTY text
@@ -88,7 +89,7 @@ describe('OpponentsPanel', () => {
   it('renders NO_PLAYER opponents when provided', () => {
     const providedOpponents = [NO_PLAYER, NO_PLAYER];
 
-    renderWithGameContext(providedOpponents);
+    renderWithGameContext(providedOpponents.map(toGamePlayer));
 
     // Should render NO_PLAYER opponents as provided (no fallback to random generation)
     // NO_PLAYER renders as "EMPTY" text, not images
@@ -105,7 +106,7 @@ describe('OpponentsPanel', () => {
       PREDEFINED_PLAYERS[3],
     ];
 
-    renderWithGameContext(providedOpponents);
+    renderWithGameContext(providedOpponents.map(toGamePlayer));
 
     // Should render all 5 opponents as provided (no filtering)
     const avatarImages = screen.getAllByRole('img', { name: /.+/ });
@@ -129,7 +130,7 @@ describe('OpponentsPanel', () => {
   // Tests for direct gameState rendering
   describe('Direct gameState rendering', () => {
     it('renders exact opponents provided for huge map scenario', () => {
-      renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8));
+      renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8).map(toGamePlayer));
 
       // Should render exactly the provided opponents
       const avatars = screen.getAllByRole('img', { name: /.+/ });
@@ -137,7 +138,7 @@ describe('OpponentsPanel', () => {
     });
 
     it('correctly handles switching between different opponent sets', () => {
-      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 3));
+      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer));
 
       // Initially should show 2 provided opponents
       expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
@@ -145,7 +146,7 @@ describe('OpponentsPanel', () => {
 
       // Now switch to a new game with a different set of opponents
       rerender(
-        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5).map(toGamePlayer)}>
           <OpponentsPanel />
         </TestWrapper>
       );
@@ -156,7 +157,9 @@ describe('OpponentsPanel', () => {
     });
 
     it('handles switching from all EmptyPlayer to different opponents', () => {
-      const { rerender } = renderWithGameContext([NO_PLAYER, NO_PLAYER, NO_PLAYER]);
+      const { rerender } = renderWithGameContext(
+        [NO_PLAYER, NO_PLAYER, NO_PLAYER].map(toGamePlayer)
+      );
 
       // Should render 3 NO_PLAYER opponents
       let emptyPlayers = screen.getAllByText('EMPTY');
@@ -164,7 +167,7 @@ describe('OpponentsPanel', () => {
 
       // Now switch to a different configuration
       rerender(
-        <TestWrapper opponents={[NO_PLAYER]}>
+        <TestWrapper opponents={[NO_PLAYER].map(toGamePlayer)}>
           <OpponentsPanel />
         </TestWrapper>
       );
@@ -200,7 +203,7 @@ describe('OpponentsPanel', () => {
 
       testCases.forEach(({ opponents, expectedTotalOpponents }) => {
         cleanup();
-        renderWithGameContext(opponents);
+        renderWithGameContext(opponents.map(toGamePlayer));
 
         // Should render all opponents as provided (no filtering)
         const avatarImages = screen.getAllByRole('img', { name: /.+/ });
@@ -210,14 +213,17 @@ describe('OpponentsPanel', () => {
     });
 
     it('renders opponents consistently regardless of selectedPlayer changes', () => {
-      const { rerender } = renderWithGameContext([PREDEFINED_PLAYERS[1]]);
+      const { rerender } = renderWithGameContext([PREDEFINED_PLAYERS[1]].map(toGamePlayer));
 
       // Should show 1 provided opponent
       expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
 
       // Change selectedPlayer - opponents should remain the same
       rerender(
-        <TestWrapper opponents={[PREDEFINED_PLAYERS[1]]} selectedPlayer={PREDEFINED_PLAYERS[2]}>
+        <TestWrapper
+          opponents={[PREDEFINED_PLAYERS[1]].map(toGamePlayer)}
+          selectedPlayer={toGamePlayer(PREDEFINED_PLAYERS[2])}
+        >
           <OpponentsPanel />
         </TestWrapper>
       );
@@ -233,7 +239,7 @@ describe('OpponentsPanel', () => {
 
     it('correctly handles switching from large to small opponent sets', () => {
       // First render with 7 opponents (simulating Huge map)
-      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8));
+      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8).map(toGamePlayer));
 
       // Should render 7 opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
@@ -241,7 +247,7 @@ describe('OpponentsPanel', () => {
 
       // Now switch to 4 opponents (simulating Medium map)
       rerender(
-        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5).map(toGamePlayer)}>
           <OpponentsPanel />
         </TestWrapper>
       );
@@ -252,7 +258,7 @@ describe('OpponentsPanel', () => {
     });
 
     it('correctly updates when switching opponent sets', () => {
-      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8));
+      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8).map(toGamePlayer));
 
       // Should show 7 opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
@@ -260,7 +266,7 @@ describe('OpponentsPanel', () => {
 
       // Now switch to Medium map with 4 provided opponents
       rerender(
-        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5).map(toGamePlayer)}>
           <OpponentsPanel />
         </TestWrapper>
       );
@@ -271,7 +277,7 @@ describe('OpponentsPanel', () => {
     });
 
     it('renders correct number of opponents after gameState updates', () => {
-      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8));
+      const { rerender } = renderWithGameContext(PREDEFINED_PLAYERS.slice(1, 8).map(toGamePlayer));
 
       // Should render 7 opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
@@ -279,7 +285,7 @@ describe('OpponentsPanel', () => {
 
       // Switch to smaller number of opponents (4)
       rerender(
-        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5)}>
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 5).map(toGamePlayer)}>
           <OpponentsPanel />
         </TestWrapper>
       );
@@ -290,7 +296,7 @@ describe('OpponentsPanel', () => {
 
       // Switch to very small number (2)
       rerender(
-        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 3)}>
+        <TestWrapper opponents={PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer)}>
           <OpponentsPanel />
         </TestWrapper>
       );

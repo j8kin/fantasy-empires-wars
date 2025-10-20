@@ -9,11 +9,12 @@ import { getLandById, LAND_TYPE } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { recruitHero } from '../map/army/recruit';
 import { Unit } from '../types/Army';
+import { toGamePlayer } from './utils/toGamePlayer';
 
 describe('MapLands', () => {
   const nTiles5x5 = 5 * 3 + 4 * 2;
   const nTilesInRadius2 = 3 * 2 + 4 * 2 + 5;
-  const player: GamePlayer = PREDEFINED_PLAYERS[0];
+  const player: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
 
   const homeland: LandPosition = { row: 2, col: 2 };
 

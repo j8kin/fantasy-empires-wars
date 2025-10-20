@@ -8,7 +8,8 @@ import {
 } from '../../contexts/ApplicationContext';
 import { AllSpells } from '../../types/Spell';
 import { ManaType } from '../../types/Mana';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { toGamePlayer } from '../utils/toGamePlayer';
 
 // Mock CSS modules
 jest.mock('../../ux-components/fantasy-book-dialog-template/css/FlipBook.css', () => ({}));
@@ -84,10 +85,11 @@ const renderWithApplicationContext = () => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState, gameState } = useGameContext();
     React.useEffect(() => {
-      const selectedPlayer = {
+      const selectedPlayer: GamePlayer = {
         ...PREDEFINED_PLAYERS[0],
         money: 1500,
         income: 0,
+        diplomacy: {},
         mana: {
           [ManaType.WHITE]: 1000,
           [ManaType.BLACK]: 1000,
@@ -101,7 +103,7 @@ const renderWithApplicationContext = () => {
         updateGameState({
           ...gameState,
           selectedPlayer,
-          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+          opponents: [toGamePlayer(PREDEFINED_PLAYERS[1]), toGamePlayer(PREDEFINED_PLAYERS[2])],
         });
       } else {
         updateGameState({
@@ -111,7 +113,7 @@ const renderWithApplicationContext = () => {
           },
           turn: 0,
           selectedPlayer,
-          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]],
+          opponents: [toGamePlayer(PREDEFINED_PLAYERS[1]), toGamePlayer(PREDEFINED_PLAYERS[2])],
         });
       }
     }, []);
