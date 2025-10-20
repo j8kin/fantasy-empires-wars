@@ -9,6 +9,7 @@ import { toGamePlayer } from './utils/toGamePlayer';
 describe('getAvailableLands', () => {
   const gameState: GameState = {
     battlefield: generateMockMap(1, 1),
+    activePlayerId: PREDEFINED_PLAYERS[0].id,
     selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
     opponents: [],
     turn: 1,

@@ -41,6 +41,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
+        activePlayerId: necromancerPlayer.id,
         selectedPlayer: necromancerPlayer,
         opponents: [],
       };
@@ -62,6 +63,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
+        activePlayerId: testPlayers[0].id,
         selectedPlayer: testPlayers[0],
         opponents: [testPlayers[1], testPlayers[2]],
       };
@@ -103,6 +105,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
+        activePlayerId: testPlayers[0].id,
         selectedPlayer: testPlayers[0],
         opponents: [testPlayers[1], testPlayers[2]],
       };
@@ -138,6 +141,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap(dimensions),
         turn: 0,
+        activePlayerId: testPlayers[0].id,
         selectedPlayer: testPlayers[0],
         opponents: [testPlayers[1], testPlayers[2]],
       };
@@ -166,6 +170,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap(dimensions),
         turn: 0,
+        activePlayerId: singlePlayer[0].id,
         selectedPlayer: singlePlayer[0],
         opponents: [],
       };
@@ -188,7 +193,7 @@ describe('Map Generation with Players', () => {
         ).toBeLessThanOrEqual(2);
       });
 
-      // Should have multiple tiles (stronghold + surrounding)
+      // Should have multiple tiles (stronghold plus surrounding)
       expect(playerTiles.length).toBeGreaterThan(1);
     });
 
@@ -196,6 +201,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
+        activePlayerId: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
         selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
         opponents: [toGamePlayer(PREDEFINED_PLAYERS[1])],
       };
@@ -224,6 +230,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 11, cols: 23 }),
         turn: 0,
+        activePlayerId: somePredefinedPlayers[0].id,
         selectedPlayer: somePredefinedPlayers[0],
         opponents: somePredefinedPlayers.slice(1, 4),
       };
@@ -258,6 +265,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
+        activePlayerId: necromancers[0].id,
         selectedPlayer: necromancers[0],
         opponents: [necromancers[1]],
       };
@@ -289,6 +297,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }), // test verifies only initializeMap
         turn: 0,
+        activePlayerId: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
         selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
         opponents: [],
       };
@@ -304,6 +313,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
+        activePlayerId: singlePlayer.id,
         selectedPlayer: singlePlayer,
         opponents: [],
       };
@@ -328,6 +338,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap(dimensions),
         turn: 0,
+        activePlayerId: testPlayers[0].id,
         selectedPlayer: testPlayers[0],
         opponents: [testPlayers[1], testPlayers[2]],
       };

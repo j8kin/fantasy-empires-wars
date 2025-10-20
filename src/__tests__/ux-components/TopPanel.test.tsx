@@ -41,6 +41,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
             lands: {},
           },
           turn: 0,
+          activePlayerId: selectedPlayer.id,
           selectedPlayer,
           opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2]].map(toGamePlayer),
         });
@@ -199,6 +200,7 @@ describe('TopPanel Component', () => {
                 lands: {},
               },
               turn: 0,
+              activePlayerId: PREDEFINED_PLAYERS[0].id,
               selectedPlayer: toGamePlayer(PREDEFINED_PLAYERS[0]),
               opponents: [],
             });

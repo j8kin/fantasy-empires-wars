@@ -18,6 +18,7 @@ const TestWrapper: React.FC<{
 
     React.useEffect(() => {
       updateGameState({
+        activePlayerId: selectedPlayer.id,
         selectedPlayer,
         opponents,
         battlefield: {

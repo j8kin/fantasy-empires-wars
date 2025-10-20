@@ -113,6 +113,7 @@ const renderWithApplicationContext = () => {
             lands: {},
           },
           turn: 0,
+          activePlayerId: selectedPlayer.id,
           selectedPlayer,
           opponents: [toGamePlayer(PREDEFINED_PLAYERS[1]), toGamePlayer(PREDEFINED_PLAYERS[2])],
         });

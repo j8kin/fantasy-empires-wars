@@ -28,6 +28,7 @@ export type BattlefieldMap = {
 export interface GameState {
   battlefield: BattlefieldMap;
   turn: number;
+  activePlayerId: string;
   selectedPlayer: GamePlayer;
   opponents: GamePlayer[];
 }
