@@ -45,7 +45,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       // Calculate income only for the active player
       const updatedPlayers = prev.players.map((player) => {
         if (player.id === prev.activePlayerId) {
-          const playerIncome = calculateIncome(prev) - calculateMaintenance(prev, player);
+          const playerIncome = calculateIncome(prev) - calculateMaintenance(prev);
           return {
             ...player,
             income: playerIncome,
