@@ -1,5 +1,5 @@
 import { GameState } from '../../types/GameState';
-import { GamePlayer, PlayerInfo } from '../../types/GamePlayer';
+import { PlayerInfo } from '../../types/GamePlayer';
 
 import { getLands } from '../utils/mapLands';
 
