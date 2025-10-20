@@ -25,6 +25,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
           [ManaType.BLUE]: 100,
         },
         diplomacy: {},
+        playerType: 'human',
       };
 
       if (gameState) {

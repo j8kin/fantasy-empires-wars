@@ -46,6 +46,7 @@ export interface GamePlayer extends PlayerInfo {
   money: number;
   income: number;
   diplomacy: Diplomacy;
+  playerType: 'human' | 'computer';
 }
 
 export const NO_PLAYER: PlayerInfo = {

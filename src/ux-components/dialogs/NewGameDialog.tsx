@@ -271,8 +271,9 @@ const NewGameDialog: React.FC = () => {
         },
         mana: initialMana,
         money: initialMoney,
-        income: 0, // will calculate on game start on first turn
-      };
+        income: 0, // will calculate on game start on the first turn
+        playerType: 'computer', // all opponents for now are computer players
+      } as GamePlayer;
     });
 
     const createdPlayer: GamePlayer = {
@@ -281,6 +282,7 @@ const NewGameDialog: React.FC = () => {
       mana: { ...initialMana },
       money: initialMoney,
       income: 0, // will calculate on game start on first turn
+      playerType: 'human',
     };
 
     setShowStartWindow(false);

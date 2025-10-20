@@ -97,6 +97,7 @@ const renderWithApplicationContext = () => {
           [ManaType.GREEN]: 1000,
           [ManaType.BLUE]: 1000,
         },
+        playerType: 'human',
       };
 
       if (gameState) {

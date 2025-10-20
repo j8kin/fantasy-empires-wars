@@ -6,6 +6,7 @@ import { Alignment } from '../../types/Alignment';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameState } from '../../types/GameState';
 import { toGamePlayer } from '../utils/toGamePlayer';
+import { ManaType } from '../../types/Mana';
 
 jest.mock('../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
   popupContent: 'mocked-popup-content',
@@ -66,9 +67,16 @@ describe('OpponentInfoPopup', () => {
       diplomacy: {
         [opponent.id]: diplomacyStatus,
       },
-      mana: {},
+      mana: {
+        [ManaType.WHITE]: 0,
+        [ManaType.BLACK]: 0,
+        [ManaType.GREEN]: 0,
+        [ManaType.BLUE]: 0,
+        [ManaType.RED]: 0,
+      },
       money: 0,
       income: 0,
+      playerType: 'human',
     },
     opponents: [toGamePlayer(opponent)],
   });
@@ -584,9 +592,16 @@ describe('OpponentInfoPopup', () => {
       selectedPlayer: {
         ...PREDEFINED_PLAYERS[1],
         diplomacy: {},
-        mana: {},
+        mana: {
+          [ManaType.WHITE]: 0,
+          [ManaType.BLACK]: 0,
+          [ManaType.GREEN]: 0,
+          [ManaType.BLUE]: 0,
+          [ManaType.RED]: 0,
+        },
         money: 0,
         income: 0,
+        playerType: 'human',
       },
       opponents: [toGamePlayer(mockOpponent)],
     };
