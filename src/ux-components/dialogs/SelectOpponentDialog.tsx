@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
@@ -21,13 +21,10 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   onSelect,
   onCancel,
 }) => {
-  const {
-    selectOpponentSelectedPlayer,
-    selectOpponentCallback,
-    setSelectOpponentSelectedPlayer,
-    resetSelectOpponentDialog,
-    hideSelectOpponentDialog,
-  } = useApplicationContext();
+  const { selectOpponentCallback, hideSelectOpponentDialog } = useApplicationContext();
+
+  // Local state for dialog-specific values
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerInfo>(PREDEFINED_PLAYERS[0]);
 
   const availablePlayers = useMemo(
     (): PlayerInfo[] => [
@@ -37,9 +34,10 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     [excludedPlayerIds, allowEmptyPlayer]
   );
 
+  // Reset selected player when available players change
   useEffect(() => {
-    resetSelectOpponentDialog(availablePlayers);
-  }, [availablePlayers, resetSelectOpponentDialog]);
+    setSelectedPlayer(availablePlayers[0] || PREDEFINED_PLAYERS[0]);
+  }, [availablePlayers]);
 
   const handleOpponentSelect = useCallback(
     (player: PlayerInfo) => {
@@ -62,7 +60,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   }, [onCancel, hideSelectOpponentDialog]);
 
   const handlePlayerSelect = (player: PlayerInfo) => {
-    setSelectOpponentSelectedPlayer(player);
+    setSelectedPlayer(player);
     handleOpponentSelect(player);
   };
 
@@ -83,7 +81,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     >
       <PlayerSelection
         label="Select Opponent"
-        selectedPlayer={selectOpponentSelectedPlayer}
+        selectedPlayer={selectedPlayer}
         onPlayerChange={handlePlayerSelect}
         availablePlayers={availablePlayers}
       />

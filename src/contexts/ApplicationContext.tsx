@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { GamePlayer, PlayerInfo, PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { GamePlayer, PlayerInfo } from '../types/GamePlayer';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { LandPosition } from '../map/utils/mapLands';
 
@@ -34,9 +34,6 @@ interface ApplicationContextType {
   landPopupPosition: LandPosition | undefined;
   landPopupScreenPosition: ScreenPosition;
 
-  // Select Opponent Dialog states
-  selectOpponentSelectedPlayer: PlayerInfo;
-
   // Save Game Dialog states
   saveGameName: string;
 
@@ -63,10 +60,6 @@ interface ApplicationContextType {
   setLandPopupScreenPosition: (position: ScreenPosition) => void;
   showLandPopup: (battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => void;
   hideLandPopup: () => void;
-
-  // Select Opponent Dialog actions
-  setSelectOpponentSelectedPlayer: (player: PlayerInfo) => void;
-  resetSelectOpponentDialog: (availablePlayers: PlayerInfo[]) => void;
 
   // Save Game Dialog actions
   setSaveGameName: (name: string) => void;
@@ -129,11 +122,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     y: 0,
   });
 
-  // Select Opponent Dialog states
-  const [selectOpponentSelectedPlayer, setSelectOpponentSelectedPlayer] = useState<PlayerInfo>(
-    PREDEFINED_PLAYERS[0]
-  );
-
   // Save Game Dialog states
   const [saveGameName, setSaveGameName] = useState<string>('');
 
@@ -154,11 +142,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   const hideLandPopup = useCallback(() => {
     setLandPopupPosition(undefined);
-  }, []);
-
-  // Select Opponent Dialog actions
-  const resetSelectOpponentDialog = useCallback((availablePlayers: PlayerInfo[]) => {
-    setSelectOpponentSelectedPlayer(availablePlayers[0] || PREDEFINED_PLAYERS[0]);
   }, []);
 
   // Save Game Dialog actions
@@ -247,9 +230,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         landPopupPosition,
         landPopupScreenPosition,
 
-        // Select Opponent Dialog states
-        selectOpponentSelectedPlayer,
-
         // Save Game Dialog states
         saveGameName,
 
@@ -278,10 +258,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setLandPopupScreenPosition,
         showLandPopup,
         hideLandPopup,
-
-        // Select Opponent Dialog actions
-        setSelectOpponentSelectedPlayer,
-        resetSelectOpponentDialog,
 
         // Save Game Dialog actions
         setSaveGameName,
