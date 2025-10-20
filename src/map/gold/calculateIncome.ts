@@ -1,14 +1,16 @@
-import { GameState } from '../../types/GameState';
+import { GameState, getSelectedPlayer } from '../../types/GameState';
 
 import { getLands } from '../utils/mapLands';
 import { calculateHexDistance } from '../utils/mapAlgorithms';
 
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
-import { PlayerInfo } from '../../types/GamePlayer';
 
-export const calculateIncome = (gameState: GameState, player: PlayerInfo) => {
+export const calculateIncome = (gameState: GameState): number => {
   const { battlefield } = gameState;
+  const player = getSelectedPlayer(gameState);
+
+  if (player == null) return 0;
 
   const playerLands = getLands(battlefield.lands, [player]);
   const playerStrongholds = getLands(battlefield.lands, [player], undefined, undefined, [
