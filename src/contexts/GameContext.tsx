@@ -10,7 +10,7 @@ interface GameContextType {
 
   // Player Management
   getTotalPlayerGold: (player: GamePlayer) => number;
-  recalculateAllPlayersIncome: () => void;
+  recalculateActivePlayerIncome: () => void;
 
   // Game Flow
   updateGameState: (gameState: GameState) => void;
@@ -38,19 +38,20 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     [gameState?.battlefield]
   );
 
-  const recalculateAllPlayersIncome = useCallback(() => {
+  const recalculateActivePlayerIncome = useCallback(() => {
     setGameState((prev) => {
-      if (!prev) return prev;
+      if (!prev || !prev.activePlayerId) return prev;
 
-      // Calculate income for all players
+      // Calculate income only for the active player
       const updatedPlayers = prev.players.map((player) => {
-        const tempGameState = { ...prev, activePlayerId: player.id };
-        const playerIncome =
-          calculateIncome(tempGameState, player) - calculateMaintenance(tempGameState, player);
-        return {
-          ...player,
-          income: playerIncome,
-        };
+        if (player.id === prev.activePlayerId) {
+          const playerIncome = calculateIncome(prev, player) - calculateMaintenance(prev, player);
+          return {
+            ...player,
+            income: playerIncome,
+          };
+        }
+        return player;
       });
 
       return {
@@ -64,7 +65,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     gameState,
     updateGameState: updateGameConfig,
     getTotalPlayerGold,
-    recalculateAllPlayersIncome,
+    recalculateActivePlayerIncome,
   };
 
   return <GameContext.Provider value={contextValue}>{children}</GameContext.Provider>;

@@ -30,7 +30,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     selectedLandAction,
     setSelectedLandAction,
   } = useApplicationContext();
-  const { gameState, updateGameState, recalculateAllPlayersIncome } = useGameContext();
+  const { gameState, updateGameState, recalculateActivePlayerIncome } = useGameContext();
 
   const showPopup =
     landPopupPosition?.row === battlefieldPosition.row &&
@@ -83,7 +83,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
           construct(selectedPlayer, buildingToConstruct, battlefieldPosition, gameState!);
           selectedPlayer.money! -= getBuilding(buildingToConstruct).buildCost;
           updateGameState(gameState!);
-          recalculateAllPlayersIncome();
+          recalculateActivePlayerIncome();
         }
       } else {
         alert(

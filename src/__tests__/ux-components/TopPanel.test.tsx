@@ -16,7 +16,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
       const selectedPlayer: GamePlayer = {
         ...PREDEFINED_PLAYERS[0],
         money: 1500,
-        income: 0, // Will be calculated by recalculateAllPlayersIncome
+        income: 0, // Will be calculated by recalculateActivePlayerIncome
         mana: {
           [ManaType.WHITE]: 100,
           [ManaType.BLACK]: 100,
