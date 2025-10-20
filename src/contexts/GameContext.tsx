@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { GameState, getSelectedPlayer } from '../types/GameState';
+import { GameState } from '../types/GameState';
 import { GamePlayer } from '../types/GamePlayer';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
