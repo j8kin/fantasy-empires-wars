@@ -8,6 +8,7 @@ import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 import { getAllBuildings } from '../../types/Building';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
+import { getTurnOwner } from '../../types/GameState';
 
 const ConstructBuildingDialog: React.FC = () => {
   const { showConstructBuildingDialog, setShowConstructBuildingDialog, selectedLandAction } =
@@ -20,25 +21,29 @@ const ConstructBuildingDialog: React.FC = () => {
 
   useEffect(() => {
     if (selectedLandAction && showConstructBuildingDialog) {
-      const building = getAllBuildings(gameState?.selectedPlayer!).find(
-        (s) => s.id === selectedLandAction
-      );
-      if (building) {
-        setTimeout(() => {
-          alert(
-            `Construct ${building.id}!\n\nBuild Cost: ${building.buildCost}\n\nEffect: ${building.description}`
-          );
-          handleClose();
-        }, 100);
+      const selectedPlayer = getTurnOwner(gameState);
+      if (selectedPlayer) {
+        const building = getAllBuildings(selectedPlayer).find((s) => s.id === selectedLandAction);
+        if (building) {
+          setTimeout(() => {
+            alert(
+              `Construct ${building.id}!\n\nBuild Cost: ${building.buildCost}\n\nEffect: ${building.description}`
+            );
+            handleClose();
+          }, 100);
+        }
       }
     }
-  }, [gameState?.selectedPlayer, handleClose, selectedLandAction, showConstructBuildingDialog]);
+  }, [gameState, handleClose, selectedLandAction, showConstructBuildingDialog]);
 
   if (!showConstructBuildingDialog) return null;
 
-  const availableBuildings = getAllBuildings(gameState?.selectedPlayer!).filter(
-    (building) => building.buildCost <= gameState!.selectedPlayer.money!
-  );
+  const selectedPlayer = getTurnOwner(gameState);
+  const availableBuildings = selectedPlayer
+    ? getAllBuildings(selectedPlayer).filter(
+        (building) => building.buildCost <= selectedPlayer.money!
+      )
+    : [];
 
   return (
     <FlipBook onClickOutside={handleClose}>

@@ -1,5 +1,5 @@
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
-import { battlefieldLandId, GameState } from '../types/GameState';
+import { battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { getUnit, UnitType } from '../types/Army';
@@ -7,15 +7,17 @@ import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
 import { recruitWarriors } from '../map/army/recruit';
 import { LandPosition } from '../map/utils/mapLands';
+import { toGamePlayer } from './utils/toGamePlayer';
 
 describe('Calculate Maintenance', () => {
-  const player = PREDEFINED_PLAYERS[0];
+  const player = toGamePlayer(PREDEFINED_PLAYERS[0]);
 
   const mockGameState: GameState = {
     battlefield: generateMockMap(10, 10),
-    selectedPlayer: player,
-    opponents: PREDEFINED_PLAYERS.slice(1, 3),
+    turnOwner: player.id,
+    players: [player, ...PREDEFINED_PLAYERS.slice(1, 3).map((p) => toGamePlayer(p, 'computer'))],
     turn: 0,
+    turnPhase: TurnPhase.START,
   };
   beforeEach(() => {
     mockGameState.battlefield = generateMockMap(10, 10);
@@ -41,9 +43,13 @@ describe('Calculate Maintenance', () => {
       heroUnit.level = level;
 
       mockGameState.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
-        { unit: heroUnit, quantity: 1 },
+        {
+          unit: heroUnit,
+          quantity: 1,
+          moveInTurn: 0,
+        },
       ];
-      const maintenance = calculateMaintenance(mockGameState, player);
+      const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(expected);
     });
 
@@ -69,9 +75,13 @@ describe('Calculate Maintenance', () => {
       heroUnit.level = level;
 
       mockGameState.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
-        { unit: heroUnit, quantity: quantity },
+        {
+          unit: heroUnit,
+          quantity: quantity,
+          moveInTurn: 0,
+        },
       ];
-      const maintenance = calculateMaintenance(mockGameState, player);
+      const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(expected);
     });
 
@@ -82,12 +92,28 @@ describe('Calculate Maintenance', () => {
       mockGameState.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
         player.id;
       mockGameState.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
-        { unit: getUnit(UnitType.NECROMANCER), quantity: 1 },
-        { unit: getUnit(UnitType.DWARF), quantity: 20 },
-        { unit: getUnit(UnitType.BALISTA), quantity: 1 },
-        { unit: elitDwarf, quantity: 17 },
+        {
+          unit: getUnit(UnitType.NECROMANCER),
+          quantity: 1,
+          moveInTurn: 0,
+        },
+        {
+          unit: getUnit(UnitType.DWARF),
+          quantity: 20,
+          moveInTurn: 0,
+        },
+        {
+          unit: getUnit(UnitType.BALISTA),
+          quantity: 1,
+          moveInTurn: 0,
+        },
+        {
+          unit: elitDwarf,
+          quantity: 17,
+          moveInTurn: 0,
+        },
       ];
-      const maintenance = calculateMaintenance(mockGameState, player);
+      const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(520);
     });
   });
@@ -109,7 +135,7 @@ describe('Calculate Maintenance', () => {
       mockGameState.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy = player.id;
       construct(player, building, buildingPos, mockGameState);
 
-      const maintenance = calculateMaintenance(mockGameState, player);
+      const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(expected);
     });
 
@@ -120,14 +146,14 @@ describe('Calculate Maintenance', () => {
       construct(player, BuildingType.WALL, buildingPos, mockGameState);
       construct(player, BuildingType.WALL, buildingPos, mockGameState);
 
-      const maintenance = calculateMaintenance(mockGameState, player);
+      const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(1200);
     });
   });
 
   describe('Full Maintenance cost', () => {
     it('No Army and Buildings', () => {
-      const maintenance = calculateMaintenance(mockGameState, player);
+      const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(0);
     });
 
@@ -141,7 +167,7 @@ describe('Calculate Maintenance', () => {
         mockGameState.battlefield.lands[battlefieldLandId(barracksPos)]
       );
 
-      const maintenance = calculateMaintenance(mockGameState, player);
+      const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(1000 + 20 * 5);
     });
   });

@@ -6,7 +6,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandTile from './LandTile';
 import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
-import { battlefieldLandId } from '../../types/GameState';
+import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
 
 export interface BattlefieldProps {
   topPanelHeight: number;
@@ -97,7 +97,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
         }
       >
         {/* Draw map if game started */}
-        {gameState?.selectedPlayer && <div>{hexGrid}</div>}
+        {getTurnOwner(gameState) && <div>{hexGrid}</div>}
       </div>
     </FantasyBorderFrame>
   );

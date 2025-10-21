@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Battlefield from '../../ux-components/battlefield/Battlefield';
-import { GameState, BattlefieldMap, BattlefieldDimensions } from '../../types/GameState';
+import { GameState, BattlefieldMap, BattlefieldDimensions, TurnPhase } from '../../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { Land, LAND_TYPE } from '../../types/Land';
 import { generateMap } from '../../map/generation/generateMap';
@@ -9,6 +9,7 @@ import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { LandPosition } from '../../map/utils/mapLands';
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { Alignment } from '../../types/Alignment';
+import { toGamePlayer } from '../utils/toGamePlayer';
 
 // Mock CSS modules
 jest.mock('../../ux-components/battlefield/css/Battlefield.module.css', () => ({
@@ -68,7 +69,7 @@ jest.mock('../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
 const testTileDimensions = { width: 50, height: 180 };
 
 const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState => {
-  const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[0];
+  const mockPlayer: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
 
   const mockLandType = (): Land => {
     return {
@@ -102,8 +103,9 @@ const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState =>
   return {
     battlefield: tiles,
     turn: 0,
-    selectedPlayer: mockPlayer,
-    opponents: [],
+    turnOwner: mockPlayer.id,
+    players: [mockPlayer],
+    turnPhase: TurnPhase.START,
   };
 };
 
@@ -417,11 +419,13 @@ describe('Battlefield Component', () => {
 
   describe('Create Battlefield which generated Map', () => {
     it('renders all required child components', () => {
+      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
       mockGameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
-        selectedPlayer: PREDEFINED_PLAYERS[1],
-        opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],
+        turnOwner: testPlayers[1].id,
+        players: [testPlayers[1], testPlayers[0], testPlayers[2]],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 

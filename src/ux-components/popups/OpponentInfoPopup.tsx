@@ -9,10 +9,11 @@ import Avatar from '../avatars/Avatar';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { DiplomacyStatus, GamePlayer } from '../../types/GamePlayer';
+import { DiplomacyStatus, PlayerInfo } from '../../types/GamePlayer';
+import { getTurnOwner } from '../../types/GameState';
 
 export interface OpponentInfoProps extends PopupProps {
-  opponent?: GamePlayer;
+  opponent?: PlayerInfo;
 }
 
 const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition }) => {
@@ -21,8 +22,8 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
 
   if (opponent == null || gameState == null) return null;
 
-  const diplomacyStatus =
-    gameState.selectedPlayer.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
+  const selectedPlayer = getTurnOwner(gameState);
+  const diplomacyStatus = selectedPlayer?.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {
     hideOpponentInfo();

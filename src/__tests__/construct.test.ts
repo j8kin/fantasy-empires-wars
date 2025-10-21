@@ -1,23 +1,25 @@
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { battlefieldLandId, GameState } from '../types/GameState';
+import { battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
 import { BuildingType } from '../types/Building';
 import { getLands, LandPosition } from '../map/utils/mapLands';
 import { recruitWarriors } from '../map/army/recruit';
 import { getUnit, UnitType } from '../types/Army';
+import { toGamePlayer } from './utils/toGamePlayer';
 
 describe('Construct Buildings', () => {
-  const player1: GamePlayer = PREDEFINED_PLAYERS[0];
-  const player2: GamePlayer = PREDEFINED_PLAYERS[1];
+  const player1: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+  const player2: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[1]);
   let mockGameState: GameState;
 
   beforeEach(() => {
     mockGameState = {
       battlefield: generateMockMap(6, 12),
       turn: 1,
-      selectedPlayer: player1,
-      opponents: [player2],
+      turnOwner: player1.id,
+      players: [player1, player2],
+      turnPhase: TurnPhase.START,
     };
   });
 

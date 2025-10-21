@@ -4,16 +4,17 @@ import { construct } from '../map/building/construct';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { LandPosition } from '../map/utils/mapLands';
 import { BuildingType } from '../types/Building';
-import { BattlefieldMap, battlefieldLandId, GameState } from '../types/GameState';
+import { BattlefieldMap, battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { getLandById, LAND_TYPE } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { recruitHero } from '../map/army/recruit';
 import { Unit } from '../types/Army';
+import { toGamePlayer } from './utils/toGamePlayer';
 
 describe('MapLands', () => {
   const nTiles5x5 = 5 * 3 + 4 * 2;
   const nTilesInRadius2 = 3 * 2 + 4 * 2 + 5;
-  const player: GamePlayer = PREDEFINED_PLAYERS[0];
+  const player: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
 
   const homeland: LandPosition = { row: 2, col: 2 };
 
@@ -58,9 +59,10 @@ describe('MapLands', () => {
         const mockMap: BattlefieldMap = generateMockMap(5, 5);
         const mockGameState: GameState = {
           battlefield: mockMap,
-          selectedPlayer: player,
-          opponents: [],
+          turnOwner: player.id,
+          players: [player],
           turn: 1,
+          turnPhase: TurnPhase.START,
         };
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
@@ -75,9 +77,10 @@ describe('MapLands', () => {
         const mockMap: BattlefieldMap = generateMockMap(5, 5);
         const mockGameState: GameState = {
           battlefield: mockMap,
-          selectedPlayer: player,
-          opponents: [],
+          turnOwner: player.id,
+          players: [player],
           turn: 1,
+          turnPhase: TurnPhase.START,
         };
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
@@ -95,9 +98,10 @@ describe('MapLands', () => {
         mockMap = generateMockMap(5, 5);
         mockGameState = {
           battlefield: mockMap,
-          selectedPlayer: player,
-          opponents: [],
+          turnOwner: player.id,
+          players: [player],
           turn: 1,
+          turnPhase: TurnPhase.START,
         };
       });
 

@@ -8,6 +8,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getAllBuildings } from '../../types/Building';
 import { ButtonName } from '../../types/ButtonName';
 import { AllSpells, SpellName } from '../../types/Spell';
+import { getTurnOwner } from '../../types/GameState';
 
 const PlayActionsControl: React.FC = () => {
   const {
@@ -20,7 +21,9 @@ const PlayActionsControl: React.FC = () => {
 
   const handleShowCastSpellDialog = useCallback(() => {
     if (gameState == null) return;
-    const playerMana = gameState.selectedPlayer.mana!;
+    const selectedPlayer = getTurnOwner(gameState);
+    if (!selectedPlayer) return;
+    const playerMana = selectedPlayer.mana!;
     if (
       AllSpells.some(
         (spell) =>
@@ -42,9 +45,11 @@ const PlayActionsControl: React.FC = () => {
 
   const handleShowConstructBuildingDialog = useCallback(() => {
     if (gameState == null) return;
+    const selectedPlayer = getTurnOwner(gameState);
+    if (!selectedPlayer) return;
     if (
-      getAllBuildings(gameState.selectedPlayer).some(
-        (building) => building.buildCost <= gameState.selectedPlayer.money!
+      getAllBuildings(selectedPlayer).some(
+        (building) => building.buildCost <= selectedPlayer.money!
       )
     ) {
       setShowConstructBuildingDialog(true);

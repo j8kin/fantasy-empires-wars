@@ -1,7 +1,6 @@
 import { BattlefieldMap, GameState, LandState } from '../../types/GameState';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { getUnit } from '../../types/Army';
-import { recruitHero } from '../army/recruit';
 import { getLands, LandPosition } from '../utils/mapLands';
 import { construct } from '../building/construct';
 import { BuildingType } from '../../types/Building';
@@ -96,7 +95,8 @@ const assignPlayerHero = (homeland: LandState, player: GamePlayer) => {
   hero.name = player.name;
   hero.level = player.level;
   // todo increment characteristics (attack, defence etc based on Player Level)
-  recruitHero(hero, homeland);
+  // initial Hero immediately available in normal game it turn 3 turn to recruit
+  homeland.army.push({ unit: hero, quantity: 1, moveInTurn: 0 });
 };
 
 const addPlayer = (
@@ -139,17 +139,16 @@ const addPlayer = (
 };
 
 export const addPlayerToMap = (gameState: GameState) => {
-  const { selectedPlayer, opponents } = gameState;
-  const allyPlayers = [selectedPlayer, ...opponents];
+  const { players } = gameState;
   const playerPositions: LandPosition[] = [];
 
   // Place Necromancer on volcano first if necromancer is present
-  const necromancer = allyPlayers.find((player) => player.race === 'Undead');
+  const necromancer = players.find((player) => player.race === 'Undead');
   if (necromancer != null) {
     addPlayer(necromancer, playerPositions, gameState);
   }
 
-  allyPlayers
+  players
     .filter((player) => player.id !== necromancer?.id)
     .forEach((player) => {
       addPlayer(player, playerPositions, gameState);

@@ -6,7 +6,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { battlefieldLandId } from '../../types/GameState';
+import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../../map/utils/mapLands';
 
 export interface PlayerProps {
@@ -17,17 +17,17 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
   const { addGlowingTile } = useApplicationContext();
   const { gameState } = useGameContext();
 
-  const selectedPlayer = gameState?.selectedPlayer;
+  const selectedPlayer = getTurnOwner(gameState);
 
   if (!selectedPlayer) {
     return null;
   }
 
   const handleAvatarClick = () => {
-    if (!gameState) return;
+    if (!gameState || !selectedPlayer) return;
     // Find all lands controlled by the selected player
     setTimeout(() => {
-      getLands(gameState.battlefield.lands, [gameState.selectedPlayer]).forEach((land) => {
+      getLands(gameState.battlefield.lands, [selectedPlayer]).forEach((land) => {
         addGlowingTile(battlefieldLandId(land.mapPos));
       });
     }, 0);

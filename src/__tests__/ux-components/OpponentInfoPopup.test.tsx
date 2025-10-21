@@ -1,10 +1,12 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import OpponentInfoPopup from '../../ux-components/popups/OpponentInfoPopup';
-import { PREDEFINED_PLAYERS, DiplomacyStatus, GamePlayer } from '../../types/GamePlayer';
+import { PREDEFINED_PLAYERS, DiplomacyStatus, PlayerInfo } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameState } from '../../types/GameState';
+import { toGamePlayer } from '../utils/toGamePlayer';
+import { ManaType } from '../../types/Mana';
 
 jest.mock('../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
   popupContent: 'mocked-popup-content',
@@ -51,23 +53,36 @@ describe('OpponentInfoPopup', () => {
   const mockPosition = { x: 100, y: 100 };
   const mockOnClose = jest.fn();
 
-  const createMockOpponent = (alignment: Alignment = Alignment.NEUTRAL): GamePlayer => ({
+  const createMockOpponent = (alignment: Alignment = Alignment.NEUTRAL): PlayerInfo => ({
     ...PREDEFINED_PLAYERS[0],
     alignment,
   });
 
   const createMockGameState = (
-    opponent: GamePlayer,
+    opponent: PlayerInfo,
     diplomacyStatus: DiplomacyStatus
-  ): Partial<GameState> => ({
-    selectedPlayer: {
+  ): Partial<GameState> => {
+    const selectedPlayer = {
       ...PREDEFINED_PLAYERS[1],
       diplomacy: {
         [opponent.id]: diplomacyStatus,
       },
-    },
-    opponents: [opponent],
-  });
+      mana: {
+        [ManaType.WHITE]: 0,
+        [ManaType.BLACK]: 0,
+        [ManaType.GREEN]: 0,
+        [ManaType.BLUE]: 0,
+        [ManaType.RED]: 0,
+      },
+      money: 0,
+      income: 0,
+      playerType: 'human' as const,
+    };
+    return {
+      turnOwner: selectedPlayer.id,
+      players: [selectedPlayer, toGamePlayer(opponent)],
+    };
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -78,11 +93,23 @@ describe('OpponentInfoPopup', () => {
       gameState: {
         tiles: {},
         turn: 1,
-        selectedPlayer: {
-          ...PREDEFINED_PLAYERS[1],
-          diplomacy: {},
-        },
-        opponents: [],
+        activePlayerId: PREDEFINED_PLAYERS[1].id,
+        players: [
+          {
+            ...PREDEFINED_PLAYERS[1],
+            diplomacy: {},
+            mana: {
+              [ManaType.WHITE]: 0,
+              [ManaType.BLACK]: 0,
+              [ManaType.GREEN]: 0,
+              [ManaType.BLUE]: 0,
+              [ManaType.RED]: 0,
+            },
+            money: 0,
+            income: 0,
+            playerType: 'human' as const,
+          },
+        ],
       },
       updateTile: jest.fn(),
       setTileController: jest.fn(),
@@ -538,7 +565,7 @@ describe('OpponentInfoPopup', () => {
 
   it('works with different predefined players', () => {
     // Test with different predefined player (Morgana)
-    const mockOpponent: GamePlayer = {
+    const mockOpponent: PlayerInfo = {
       ...PREDEFINED_PLAYERS[1], // Morgana Shadowweaver
     };
     const gameState = createMockGameState(mockOpponent, DiplomacyStatus.WAR);
@@ -576,12 +603,23 @@ describe('OpponentInfoPopup', () => {
   it('defaults to "No Treaty" when diplomacy status is not found', () => {
     const mockOpponent = createMockOpponent();
     // Create game state without diplomacy info for this opponent
-    const gameState: Partial<GameState> = {
-      selectedPlayer: {
-        ...PREDEFINED_PLAYERS[1],
-        diplomacy: {},
+    const selectedPlayer = {
+      ...PREDEFINED_PLAYERS[1],
+      diplomacy: {},
+      mana: {
+        [ManaType.WHITE]: 0,
+        [ManaType.BLACK]: 0,
+        [ManaType.GREEN]: 0,
+        [ManaType.BLUE]: 0,
+        [ManaType.RED]: 0,
       },
-      opponents: [mockOpponent],
+      money: 0,
+      income: 0,
+      playerType: 'human' as const,
+    };
+    const gameState: Partial<GameState> = {
+      turnOwner: selectedPlayer.id,
+      players: [selectedPlayer, toGamePlayer(mockOpponent)],
     };
 
     const { useGameContext } = require('../../contexts/GameContext');

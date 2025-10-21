@@ -7,7 +7,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import Avatar from '../avatars/Avatar';
 
 import { GamePlayer } from '../../types/GamePlayer';
-import { battlefieldLandId } from '../../types/GameState';
+import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../../map/utils/mapLands';
 
 const OpponentsPanel: React.FC = () => {
@@ -27,8 +27,9 @@ const OpponentsPanel: React.FC = () => {
     [showOpponentInfo, addGlowingTile, gameState]
   );
 
-  // Simply use opponents directly from gameState - they are set during game initialization
-  const opponents = gameState?.opponents || [];
+  // Get all players except the selected player (opponents)
+  const selectedPlayer = getTurnOwner(gameState);
+  const opponents = gameState?.players?.filter((player) => player.id !== selectedPlayer?.id) || [];
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {

@@ -1,5 +1,5 @@
 import { LandState, BattlefieldLands } from '../../types/GameState';
-import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER, PlayerInfo } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 import { LAND_TYPE } from '../../types/Land';
 import { BuildingType } from '../../types/Building';
@@ -8,7 +8,7 @@ export type LandPosition = { row: number; col: number };
 
 export const getLands = (
   tiles: BattlefieldLands,
-  player?: GamePlayer[],
+  player?: PlayerInfo[],
   landType?: LAND_TYPE,
   landAlignment?: Alignment,
   buildings?: BuildingType[],

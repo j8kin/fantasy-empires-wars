@@ -1,20 +1,22 @@
 import { calculateIncome } from '../map/gold/calculateIncome';
-import { battlefieldLandId, GameState } from '../types/GameState';
+import { battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { generateMockMap } from './utils/generateMockMap';
 import { BuildingType, getBuilding } from '../types/Building';
 import { getLandById, LAND_TYPE } from '../types/Land';
+import { toGamePlayer } from './utils/toGamePlayer';
 
 describe('Calculate Income', () => {
-  const lawfulPlayer = PREDEFINED_PLAYERS[0];
-  const chaoticPlayer = PREDEFINED_PLAYERS[1];
-  const neutralPlayer = PREDEFINED_PLAYERS[2];
+  const lawfulPlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+  const chaoticPlayer = toGamePlayer(PREDEFINED_PLAYERS[1]);
+  const neutralPlayer = toGamePlayer(PREDEFINED_PLAYERS[2]);
 
   const mockGameState: GameState = {
     battlefield: generateMockMap(10, 10),
-    selectedPlayer: lawfulPlayer,
-    opponents: [chaoticPlayer, neutralPlayer],
+    turnOwner: lawfulPlayer.id,
+    players: [lawfulPlayer, chaoticPlayer, neutralPlayer],
     turn: 0,
+    turnPhase: TurnPhase.START,
   };
 
   beforeEach(() => {
@@ -23,7 +25,7 @@ describe('Calculate Income', () => {
   });
 
   it('No land owned', () => {
-    const income = calculateIncome(mockGameState, lawfulPlayer);
+    const income = calculateIncome(mockGameState);
     expect(income).toBe(0);
   });
 
@@ -31,7 +33,7 @@ describe('Calculate Income', () => {
     mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
       lawfulPlayer.id;
 
-    const income = calculateIncome(mockGameState, lawfulPlayer);
+    const income = calculateIncome(mockGameState);
     expect(income).toBe(0);
   });
 
@@ -57,7 +59,7 @@ describe('Calculate Income', () => {
       mockGameState.battlefield.lands[battlefieldLandId({ row: 5, col: landCol })].goldPerTurn =
         100;
 
-      const income = calculateIncome(mockGameState, lawfulPlayer);
+      const income = calculateIncome(mockGameState);
 
       expect(income).toBe(expected);
     }
@@ -80,7 +82,7 @@ describe('Calculate Income', () => {
       getBuilding(BuildingType.STRONGHOLD),
     ];
 
-    const income = calculateIncome(mockGameState, lawfulPlayer);
+    const income = calculateIncome(mockGameState);
     expect(income).toBe(200);
   });
 
@@ -106,7 +108,7 @@ describe('Calculate Income', () => {
       getBuilding(BuildingType.STRONGHOLD),
     ];
 
-    const income = calculateIncome(mockGameState, lawfulPlayer);
+    const income = calculateIncome(mockGameState);
     expect(income).toBe(290);
   });
 
@@ -123,6 +125,8 @@ describe('Calculate Income', () => {
   ])(
     `Calculate income with land alignment penalty based on player's alignment`,
     (player, land, expected) => {
+      mockGameState.turnOwner = player.id;
+
       // add different type land in the stronghold radius to demonstrate different income calculations
       mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].land =
         getLandById(land);
@@ -133,7 +137,7 @@ describe('Calculate Income', () => {
         getBuilding(BuildingType.STRONGHOLD),
       ];
 
-      const income = calculateIncome(mockGameState, player);
+      const income = calculateIncome(mockGameState);
       expect(income).toBe(expected);
     }
   );
@@ -150,6 +154,8 @@ describe('Calculate Income', () => {
     [neutralPlayer, LAND_TYPE.VOLCANO, 190],
     [neutralPlayer, LAND_TYPE.MOUNTAINS, 190],
   ])(`Both penalties are taking in acount`, (player, land, expected) => {
+    mockGameState.turnOwner = player.id;
+
     // add different type land in the stronghold radius to demonstrate different income calculations
     mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].controlledBy = player.id;
     mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].goldPerTurn = 100;
@@ -161,7 +167,7 @@ describe('Calculate Income', () => {
     mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 5 })].goldPerTurn = 100;
     mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 5 })].controlledBy = player.id;
 
-    const income = calculateIncome(mockGameState, player);
+    const income = calculateIncome(mockGameState);
     expect(income).toBe(expected);
   });
 });

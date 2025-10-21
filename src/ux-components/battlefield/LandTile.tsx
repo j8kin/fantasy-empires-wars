@@ -5,7 +5,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
-import { battlefieldLandId, getPlayerById } from '../../types/GameState';
+import { battlefieldLandId, getPlayerById, getTurnOwner } from '../../types/GameState';
 import { LandPosition } from '../../map/utils/mapLands';
 
 import { BuildingType, getBuilding } from '../../types/Building';
@@ -30,7 +30,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     selectedLandAction,
     setSelectedLandAction,
   } = useApplicationContext();
-  const { gameState, updateGameState, recalculateAllPlayersIncome } = useGameContext();
+  const { gameState, updateGameState, recalculateActivePlayerIncome } = useGameContext();
 
   const showPopup =
     landPopupPosition?.row === battlefieldPosition.row &&
@@ -66,25 +66,24 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
       if (selectedLandAction?.startsWith('Spell: ')) {
         const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
-        gameState!.selectedPlayer.mana![spellToCast.school] -= spellToCast.manaCost;
-        // todo add animation for casting spell
-        castSpell(spellToCast, battlefieldPosition, gameState!);
+        const selectedPlayer = getTurnOwner(gameState);
+        if (selectedPlayer) {
+          selectedPlayer.mana![spellToCast.school] -= spellToCast.manaCost;
+          // todo add animation for casting spell
+          castSpell(spellToCast, battlefieldPosition, gameState!);
 
-        updateGameState(gameState!);
-        alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
+          updateGameState(gameState!);
+          alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
+        }
       } else if (selectedLandAction?.startsWith('Building: ')) {
         const buildingToConstruct = selectedLandAction?.substring(10) as BuildingType;
-        if (gameState!.selectedPlayer.money! >= getBuilding(buildingToConstruct).buildCost) {
+        const selectedPlayer = getTurnOwner(gameState);
+        if (selectedPlayer && selectedPlayer.money! >= getBuilding(buildingToConstruct).buildCost) {
           // todo add animation for building
-          construct(
-            gameState!.selectedPlayer,
-            buildingToConstruct,
-            battlefieldPosition,
-            gameState!
-          );
-          gameState!.selectedPlayer.money! -= getBuilding(buildingToConstruct).buildCost;
+          construct(selectedPlayer, buildingToConstruct, battlefieldPosition, gameState!);
+          selectedPlayer.money! -= getBuilding(buildingToConstruct).buildCost;
           updateGameState(gameState!);
-          recalculateAllPlayersIncome();
+          recalculateActivePlayerIncome();
         }
       } else {
         alert(

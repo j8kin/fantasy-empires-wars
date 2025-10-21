@@ -2,12 +2,13 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
-import { GameState, LandState } from '../../types/GameState';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { GameState, LandState, TurnPhase } from '../../types/GameState';
+import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { LAND_TYPE } from '../../types/Land';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { Army, UnitType, getUnit } from '../../types/Army';
+import { toGamePlayer } from '../utils/toGamePlayer';
 
 const renderWithProviders = (ui: React.ReactElement, gameState?: GameState) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -69,12 +70,13 @@ jest.mock('../../ux-components/popups/css/LandCharacteristicsPopup.module.css', 
 }));
 
 describe('LandCharacteristicsPopup', () => {
-  const mockPlayer: GamePlayer = PREDEFINED_PLAYERS[1]; // Morgana
+  const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
   const mockGameState: GameState = {
     battlefield: generateMap({ rows: 9, cols: 18 }),
     turn: 0,
-    selectedPlayer: mockPlayer,
-    opponents: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]],
+    turnOwner: testPlayers[1].id,
+    players: [testPlayers[1], testPlayers[0], testPlayers[2]], // Morgana is active player
+    turnPhase: TurnPhase.START,
   };
   addPlayerToMap(mockGameState);
 
@@ -128,7 +130,7 @@ describe('LandCharacteristicsPopup', () => {
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
     expect(mockTileState.land.id).toBe(LAND_TYPE.VOLCANO);
-    expect(mockTileState.controlledBy).toBe(mockPlayer.id);
+    expect(mockTileState.controlledBy).toBe(testPlayers[1].id);
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
 
@@ -183,8 +185,8 @@ describe('LandCharacteristicsPopup', () => {
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.FIGHTER), quantity: 1 },
-        { unit: getUnit(UnitType.PYROMANCER), quantity: 1 },
+        { unit: getUnit(UnitType.FIGHTER), quantity: 1, moveInTurn: 0 },
+        { unit: getUnit(UnitType.PYROMANCER), quantity: 1, moveInTurn: 0 },
       ];
 
       const tileWithHeroes = {
@@ -219,8 +221,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays units when tile has non-hero units', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.WARRIOR), quantity: 5 },
-        { unit: getUnit(UnitType.DWARF), quantity: 3 },
+        { unit: getUnit(UnitType.WARRIOR), quantity: 5, moveInTurn: 0 },
+        { unit: getUnit(UnitType.DWARF), quantity: 3, moveInTurn: 0 },
       ];
 
       const tileWithUnits = {
@@ -255,10 +257,10 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays both heroes and units when tile has mixed army', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.FIGHTER), quantity: 1 }, // Hero
-        { unit: getUnit(UnitType.WARRIOR), quantity: 5 }, // Unit
-        { unit: getUnit(UnitType.CLERIC), quantity: 1 }, // Hero
-        { unit: getUnit(UnitType.ELF), quantity: 2 }, // Unit
+        { unit: getUnit(UnitType.FIGHTER), quantity: 1, moveInTurn: 0 }, // Hero
+        { unit: getUnit(UnitType.WARRIOR), quantity: 5, moveInTurn: 0 }, // Unit
+        { unit: getUnit(UnitType.CLERIC), quantity: 1, moveInTurn: 0 }, // Hero
+        { unit: getUnit(UnitType.ELF), quantity: 2, moveInTurn: 0 }, // Unit
       ];
 
       const tileWithMixedArmy = {
@@ -329,8 +331,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only heroes section when tile has only heroes', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.RANGER), quantity: 1 },
-        { unit: getUnit(UnitType.NECROMANCER), quantity: 1 },
+        { unit: getUnit(UnitType.RANGER), quantity: 1, moveInTurn: 0 },
+        { unit: getUnit(UnitType.NECROMANCER), quantity: 1, moveInTurn: 0 },
       ];
 
       const tileWithHeroesOnly = {
@@ -366,8 +368,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only units section when tile has only non-hero units', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.ORC), quantity: 4 },
-        { unit: getUnit(UnitType.BALISTA), quantity: 1 },
+        { unit: getUnit(UnitType.ORC), quantity: 4, moveInTurn: 0 },
+        { unit: getUnit(UnitType.BALISTA), quantity: 1, moveInTurn: 0 },
       ];
 
       const tileWithUnitsOnly = {

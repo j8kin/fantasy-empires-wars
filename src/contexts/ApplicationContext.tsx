@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { GamePlayer, PlayerInfo } from '../types/GamePlayer';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { LandPosition } from '../map/utils/mapLands';
 
@@ -16,10 +16,10 @@ interface ApplicationContextType {
   showProgressPopup: boolean;
 
   // Dialog data
-  selectedOpponent: GamePlayer | undefined;
+  selectedOpponent: PlayerInfo | undefined;
   opponentScreenPosition: ScreenPosition;
   selectOpponentExcludedIds: string[];
-  selectOpponentCallback: ((player: GamePlayer) => void) | null;
+  selectOpponentCallback: ((player: PlayerInfo) => void) | null;
   allowEmptyPlayer: boolean;
   progressMessage: string;
 
@@ -33,9 +33,6 @@ interface ApplicationContextType {
   // HexTile popup states
   landPopupPosition: LandPosition | undefined;
   landPopupScreenPosition: ScreenPosition;
-
-  // Select Opponent Dialog states
-  selectOpponentSelectedPlayer: GamePlayer;
 
   // Save Game Dialog states
   saveGameName: string;
@@ -54,7 +51,7 @@ interface ApplicationContextType {
   setSelectedOpponent: (opponent: GamePlayer | undefined) => void;
   setOpponentScreenPosition: (position: ScreenPosition) => void;
   setSelectOpponentExcludedIds: (ids: string[]) => void;
-  setSelectOpponentCallback: (callback: ((player: GamePlayer) => void) | null) => void;
+  setSelectOpponentCallback: (callback: ((player: PlayerInfo) => void) | null) => void;
   setAllowEmptyPlayer: (allow: boolean) => void;
   setProgressMessage: (message: string) => void;
 
@@ -63,10 +60,6 @@ interface ApplicationContextType {
   setLandPopupScreenPosition: (position: ScreenPosition) => void;
   showLandPopup: (battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => void;
   hideLandPopup: () => void;
-
-  // Select Opponent Dialog actions
-  setSelectOpponentSelectedPlayer: (player: GamePlayer) => void;
-  resetSelectOpponentDialog: (availablePlayers: GamePlayer[]) => void;
 
   // Save Game Dialog actions
   setSaveGameName: (name: string) => void;
@@ -86,7 +79,7 @@ interface ApplicationContextType {
   hideOpponentInfo: () => void;
   showSelectOpponentDialogWithConfig: (
     excludedPlayerIds: string[],
-    onSelect: (player: GamePlayer) => void,
+    onSelect: (player: PlayerInfo) => void,
     allowEmptyPlayer?: boolean
   ) => void;
   hideSelectOpponentDialog: () => void;
@@ -113,7 +106,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   });
   const [selectOpponentExcludedIds, setSelectOpponentExcludedIds] = useState<string[]>([]);
   const [selectOpponentCallback, setSelectOpponentCallback] = useState<
-    ((player: GamePlayer) => void) | null
+    ((player: PlayerInfo) => void) | null
   >(null);
   const [allowEmptyPlayer, setAllowEmptyPlayer] = useState<boolean>(true);
   const [progressMessage, setProgressMessage] = useState<string>('');
@@ -128,11 +121,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     x: 0,
     y: 0,
   });
-
-  // Select Opponent Dialog states
-  const [selectOpponentSelectedPlayer, setSelectOpponentSelectedPlayer] = useState<GamePlayer>(
-    PREDEFINED_PLAYERS[0]
-  );
 
   // Save Game Dialog states
   const [saveGameName, setSaveGameName] = useState<string>('');
@@ -156,11 +144,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     setLandPopupPosition(undefined);
   }, []);
 
-  // Select Opponent Dialog actions
-  const resetSelectOpponentDialog = useCallback((availablePlayers: GamePlayer[]) => {
-    setSelectOpponentSelectedPlayer(availablePlayers[0] || PREDEFINED_PLAYERS[0]);
-  }, []);
-
   // Save Game Dialog actions
   const resetSaveGameDialog = useCallback(() => {
     setSaveGameName('');
@@ -182,7 +165,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const showSelectOpponentDialogWithConfig = useCallback(
     (
       excludedPlayerIds: string[],
-      onSelect: (player: GamePlayer) => void,
+      onSelect: (player: PlayerInfo) => void,
       allowEmptyPlayer: boolean = true
     ) => {
       setSelectOpponentExcludedIds(excludedPlayerIds);
@@ -247,9 +230,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         landPopupPosition,
         landPopupScreenPosition,
 
-        // Select Opponent Dialog states
-        selectOpponentSelectedPlayer,
-
         // Save Game Dialog states
         saveGameName,
 
@@ -278,10 +258,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setLandPopupScreenPosition,
         showLandPopup,
         hideLandPopup,
-
-        // Select Opponent Dialog actions
-        setSelectOpponentSelectedPlayer,
-        resetSelectOpponentDialog,
 
         // Save Game Dialog actions
         setSaveGameName,

@@ -25,19 +25,26 @@ export type BattlefieldMap = {
   lands: Record<string, LandState>;
 };
 
+export enum TurnPhase {
+  START = 'START',
+  MAIN = 'MAIN',
+  END = 'END',
+}
+
 export interface GameState {
   battlefield: BattlefieldMap;
   turn: number;
-  selectedPlayer: GamePlayer;
-  opponents: GamePlayer[];
+  turnOwner: string;
+  turnPhase: TurnPhase;
+  players: GamePlayer[];
 }
 
-// Helper function to get player by ID from GameState
 export const getPlayerById = (gameState?: GameState, playerId?: string): GamePlayer | undefined => {
-  if (playerId != null && gameState?.selectedPlayer.id === playerId) {
-    return gameState.selectedPlayer;
-  }
-  return gameState?.opponents.find((player) => player.id === playerId);
+  return gameState?.players.find((player) => player.id === playerId);
+};
+
+export const getTurnOwner = (gameState?: GameState): GamePlayer | undefined => {
+  return getPlayerById(gameState, gameState?.turnOwner);
 };
 
 export const battlefieldLandId = (landPosition: LandPosition): string =>
