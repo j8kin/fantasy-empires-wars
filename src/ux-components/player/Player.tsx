@@ -6,7 +6,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { battlefieldLandId, getSelectedPlayer } from '../../types/GameState';
+import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../../map/utils/mapLands';
 
 export interface PlayerProps {
@@ -17,7 +17,7 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
   const { addGlowingTile } = useApplicationContext();
   const { gameState } = useGameContext();
 
-  const selectedPlayer = getSelectedPlayer(gameState);
+  const selectedPlayer = getTurnOwner(gameState);
 
   if (!selectedPlayer) {
     return null;

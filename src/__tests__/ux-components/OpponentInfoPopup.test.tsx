@@ -79,7 +79,7 @@ describe('OpponentInfoPopup', () => {
       playerType: 'human' as const,
     };
     return {
-      activePlayerId: selectedPlayer.id,
+      turnOwner: selectedPlayer.id,
       players: [selectedPlayer, toGamePlayer(opponent)],
     };
   };
@@ -618,7 +618,7 @@ describe('OpponentInfoPopup', () => {
       playerType: 'human' as const,
     };
     const gameState: Partial<GameState> = {
-      activePlayerId: selectedPlayer.id,
+      turnOwner: selectedPlayer.id,
       players: [selectedPlayer, toGamePlayer(mockOpponent)],
     };
 

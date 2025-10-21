@@ -9,7 +9,7 @@ import { BuildingType } from '../../types/Building';
 import { toRoman } from '../../map/utils/romanNumerals';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
-import { GameState, getSelectedPlayer } from '../../types/GameState';
+import { GameState, getTurnOwner } from '../../types/GameState';
 
 interface FlipBookPageProps {
   pageNum: number;
@@ -32,7 +32,7 @@ const getAvailableLands = (
 ): string[] => {
   if (gameState == null) return [];
 
-  const selectedPlayer = getSelectedPlayer(gameState);
+  const selectedPlayer = getTurnOwner(gameState);
   if (!selectedPlayer) return [];
 
   if (actionType === 'building') {

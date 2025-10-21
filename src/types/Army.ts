@@ -31,7 +31,13 @@ export interface Unit {
   hero: boolean;
 }
 
-export type Army = { unit: Unit; quantity: number }[];
+export type ArmyUnit = {
+  unit: Unit;
+  quantity: number;
+  moveInTurn: number; // e.g., 0 = army movement complete, 1+ how many movements need to reach destination
+};
+
+export type Army = ArmyUnit[];
 
 export const getUnit = (unitType: UnitType): Unit => {
   switch (unitType) {

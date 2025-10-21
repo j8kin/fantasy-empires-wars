@@ -8,7 +8,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getAllBuildings } from '../../types/Building';
 import { ButtonName } from '../../types/ButtonName';
 import { AllSpells, SpellName } from '../../types/Spell';
-import { getSelectedPlayer } from '../../types/GameState';
+import { getTurnOwner } from '../../types/GameState';
 
 const PlayActionsControl: React.FC = () => {
   const {
@@ -21,7 +21,7 @@ const PlayActionsControl: React.FC = () => {
 
   const handleShowCastSpellDialog = useCallback(() => {
     if (gameState == null) return;
-    const selectedPlayer = getSelectedPlayer(gameState);
+    const selectedPlayer = getTurnOwner(gameState);
     if (!selectedPlayer) return;
     const playerMana = selectedPlayer.mana!;
     if (
@@ -45,7 +45,7 @@ const PlayActionsControl: React.FC = () => {
 
   const handleShowConstructBuildingDialog = useCallback(() => {
     if (gameState == null) return;
-    const selectedPlayer = getSelectedPlayer(gameState);
+    const selectedPlayer = getTurnOwner(gameState);
     if (!selectedPlayer) return;
     if (
       getAllBuildings(selectedPlayer).some(

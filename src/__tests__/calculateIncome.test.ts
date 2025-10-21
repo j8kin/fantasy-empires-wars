@@ -13,7 +13,7 @@ describe('Calculate Income', () => {
 
   const mockGameState: GameState = {
     battlefield: generateMockMap(10, 10),
-    activePlayerId: lawfulPlayer.id,
+    turnOwner: lawfulPlayer.id,
     players: [lawfulPlayer, chaoticPlayer, neutralPlayer],
     turn: 0,
   };
@@ -124,7 +124,7 @@ describe('Calculate Income', () => {
   ])(
     `Calculate income with land alignment penalty based on player's alignment`,
     (player, land, expected) => {
-      mockGameState.activePlayerId = player.id;
+      mockGameState.turnOwner = player.id;
 
       // add different type land in the stronghold radius to demonstrate different income calculations
       mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].land =
@@ -153,7 +153,7 @@ describe('Calculate Income', () => {
     [neutralPlayer, LAND_TYPE.VOLCANO, 190],
     [neutralPlayer, LAND_TYPE.MOUNTAINS, 190],
   ])(`Both penalties are taking in acount`, (player, land, expected) => {
-    mockGameState.activePlayerId = player.id;
+    mockGameState.turnOwner = player.id;
 
     // add different type land in the stronghold radius to demonstrate different income calculations
     mockGameState.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].controlledBy = player.id;

@@ -74,7 +74,7 @@ describe('LandCharacteristicsPopup', () => {
   const mockGameState: GameState = {
     battlefield: generateMap({ rows: 9, cols: 18 }),
     turn: 0,
-    activePlayerId: testPlayers[1].id,
+    turnOwner: testPlayers[1].id,
     players: [testPlayers[1], testPlayers[0], testPlayers[2]], // Morgana is active player
   };
   addPlayerToMap(mockGameState);
@@ -184,8 +184,8 @@ describe('LandCharacteristicsPopup', () => {
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.FIGHTER), quantity: 1 },
-        { unit: getUnit(UnitType.PYROMANCER), quantity: 1 },
+        { unit: getUnit(UnitType.FIGHTER), quantity: 1, moveInTurn: 0 },
+        { unit: getUnit(UnitType.PYROMANCER), quantity: 1, moveInTurn: 0 },
       ];
 
       const tileWithHeroes = {
@@ -220,8 +220,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays units when tile has non-hero units', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.WARRIOR), quantity: 5 },
-        { unit: getUnit(UnitType.DWARF), quantity: 3 },
+        { unit: getUnit(UnitType.WARRIOR), quantity: 5, moveInTurn: 0 },
+        { unit: getUnit(UnitType.DWARF), quantity: 3, moveInTurn: 0 },
       ];
 
       const tileWithUnits = {
@@ -256,10 +256,10 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays both heroes and units when tile has mixed army', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.FIGHTER), quantity: 1 }, // Hero
-        { unit: getUnit(UnitType.WARRIOR), quantity: 5 }, // Unit
-        { unit: getUnit(UnitType.CLERIC), quantity: 1 }, // Hero
-        { unit: getUnit(UnitType.ELF), quantity: 2 }, // Unit
+        { unit: getUnit(UnitType.FIGHTER), quantity: 1, moveInTurn: 0 }, // Hero
+        { unit: getUnit(UnitType.WARRIOR), quantity: 5, moveInTurn: 0 }, // Unit
+        { unit: getUnit(UnitType.CLERIC), quantity: 1, moveInTurn: 0 }, // Hero
+        { unit: getUnit(UnitType.ELF), quantity: 2, moveInTurn: 0 }, // Unit
       ];
 
       const tileWithMixedArmy = {
@@ -330,8 +330,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only heroes section when tile has only heroes', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.RANGER), quantity: 1 },
-        { unit: getUnit(UnitType.NECROMANCER), quantity: 1 },
+        { unit: getUnit(UnitType.RANGER), quantity: 1, moveInTurn: 0 },
+        { unit: getUnit(UnitType.NECROMANCER), quantity: 1, moveInTurn: 0 },
       ];
 
       const tileWithHeroesOnly = {
@@ -367,8 +367,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only units section when tile has only non-hero units', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.ORC), quantity: 4 },
-        { unit: getUnit(UnitType.BALISTA), quantity: 1 },
+        { unit: getUnit(UnitType.ORC), quantity: 4, moveInTurn: 0 },
+        { unit: getUnit(UnitType.BALISTA), quantity: 1, moveInTurn: 0 },
       ];
 
       const tileWithUnitsOnly = {

@@ -1,4 +1,4 @@
-import { GameState, getSelectedPlayer } from '../../types/GameState';
+import { GameState, getTurnOwner } from '../../types/GameState';
 
 import { getLands } from '../utils/mapLands';
 import { calculateHexDistance } from '../utils/mapAlgorithms';
@@ -8,7 +8,7 @@ import { Alignment } from '../../types/Alignment';
 
 export const calculateIncome = (gameState: GameState): number => {
   const { battlefield } = gameState;
-  const player = getSelectedPlayer(gameState);
+  const player = getTurnOwner(gameState);
 
   if (player == null) return 0;
 

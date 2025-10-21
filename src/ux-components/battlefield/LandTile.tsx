@@ -5,7 +5,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
-import { battlefieldLandId, getPlayerById, getSelectedPlayer } from '../../types/GameState';
+import { battlefieldLandId, getPlayerById, getTurnOwner } from '../../types/GameState';
 import { LandPosition } from '../../map/utils/mapLands';
 
 import { BuildingType, getBuilding } from '../../types/Building';
@@ -66,7 +66,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
       if (selectedLandAction?.startsWith('Spell: ')) {
         const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
-        const selectedPlayer = getSelectedPlayer(gameState);
+        const selectedPlayer = getTurnOwner(gameState);
         if (selectedPlayer) {
           selectedPlayer.mana![spellToCast.school] -= spellToCast.manaCost;
           // todo add animation for casting spell
@@ -77,7 +77,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         }
       } else if (selectedLandAction?.startsWith('Building: ')) {
         const buildingToConstruct = selectedLandAction?.substring(10) as BuildingType;
-        const selectedPlayer = getSelectedPlayer(gameState);
+        const selectedPlayer = getTurnOwner(gameState);
         if (selectedPlayer && selectedPlayer.money! >= getBuilding(buildingToConstruct).buildCost) {
           // todo add animation for building
           construct(selectedPlayer, buildingToConstruct, battlefieldPosition, gameState!);

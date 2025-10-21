@@ -293,7 +293,7 @@ const NewGameDialog: React.FC = () => {
       const gameState: GameState = {
         battlefield: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 0,
-        activePlayerId: createdPlayer.id,
+        turnOwner: createdPlayer.id,
         players: [createdPlayer, ...createdOpponents],
       };
 

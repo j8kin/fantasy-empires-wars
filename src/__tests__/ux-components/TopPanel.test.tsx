@@ -40,7 +40,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
             lands: {},
           },
           turn: 0,
-          activePlayerId: selectedPlayer.id,
+          turnOwner: selectedPlayer.id,
           players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer)],
         });
       }
@@ -197,7 +197,7 @@ describe('TopPanel Component', () => {
                 lands: {},
               },
               turn: 0,
-              activePlayerId: PREDEFINED_PLAYERS[0].id,
+              turnOwner: PREDEFINED_PLAYERS[0].id,
               players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
             });
           }

@@ -3,7 +3,7 @@ import { addPlayerToMap } from '../map/generation/addPlayerToMap';
 import { LAND_TYPE } from '../types/Land';
 import { BuildingType, getBuilding } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { battlefieldLandId, GameState, getSelectedPlayer } from '../types/GameState';
+import { battlefieldLandId, GameState, getTurnOwner } from '../types/GameState';
 import { calculateHexDistance } from '../map/utils/mapAlgorithms';
 import { Alignment } from '../types/Alignment';
 import { toGamePlayer } from './utils/toGamePlayer';
@@ -41,7 +41,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
-        activePlayerId: necromancerPlayer.id,
+        turnOwner: necromancerPlayer.id,
         players: [necromancerPlayer],
       };
       addPlayerToMap(mockGameState);
@@ -62,7 +62,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
-        activePlayerId: testPlayers[0].id,
+        turnOwner: testPlayers[0].id,
         players: [testPlayers[0], testPlayers[1], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);
@@ -103,7 +103,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
-        activePlayerId: testPlayers[0].id,
+        turnOwner: testPlayers[0].id,
         players: [testPlayers[0], testPlayers[1], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);
@@ -138,7 +138,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap(dimensions),
         turn: 0,
-        activePlayerId: testPlayers[0].id,
+        turnOwner: testPlayers[0].id,
         players: [testPlayers[0], testPlayers[1], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);
@@ -166,7 +166,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap(dimensions),
         turn: 0,
-        activePlayerId: singlePlayer[0].id,
+        turnOwner: singlePlayer[0].id,
         players: [singlePlayer[0]],
       };
       addPlayerToMap(mockGameState);
@@ -196,7 +196,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
-        activePlayerId: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
+        turnOwner: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
         players: [toGamePlayer(PREDEFINED_PLAYERS[0]), toGamePlayer(PREDEFINED_PLAYERS[1])],
       };
       addPlayerToMap(mockGameState);
@@ -224,7 +224,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 11, cols: 23 }),
         turn: 0,
-        activePlayerId: somePredefinedPlayers[0].id,
+        turnOwner: somePredefinedPlayers[0].id,
         players: somePredefinedPlayers,
       };
       addPlayerToMap(mockGameState);
@@ -258,7 +258,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
-        activePlayerId: necromancers[0].id,
+        turnOwner: necromancers[0].id,
         players: necromancers,
       };
       addPlayerToMap(mockGameState);
@@ -289,7 +289,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }), // test verifies only initializeMap
         turn: 0,
-        activePlayerId: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
+        turnOwner: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
         players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
       };
 
@@ -304,7 +304,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
-        activePlayerId: singlePlayer.id,
+        turnOwner: singlePlayer.id,
         players: [singlePlayer],
       };
       addPlayerToMap(mockGameState);
@@ -328,7 +328,7 @@ describe('Map Generation with Players', () => {
       const mockGameState: GameState = {
         battlefield: generateMap(dimensions),
         turn: 0,
-        activePlayerId: testPlayers[0].id,
+        turnOwner: testPlayers[0].id,
         players: [testPlayers[0], testPlayers[1], testPlayers[2]],
       };
       addPlayerToMap(mockGameState);

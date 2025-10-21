@@ -59,7 +59,7 @@ describe('MapLands', () => {
         const mockMap: BattlefieldMap = generateMockMap(5, 5);
         const mockGameState: GameState = {
           battlefield: mockMap,
-          activePlayerId: player.id,
+          turnOwner: player.id,
           players: [player],
           turn: 1,
         };
@@ -76,7 +76,7 @@ describe('MapLands', () => {
         const mockMap: BattlefieldMap = generateMockMap(5, 5);
         const mockGameState: GameState = {
           battlefield: mockMap,
-          activePlayerId: player.id,
+          turnOwner: player.id,
           players: [player],
           turn: 1,
         };
@@ -96,7 +96,7 @@ describe('MapLands', () => {
         mockMap = generateMockMap(5, 5);
         mockGameState = {
           battlefield: mockMap,
-          activePlayerId: player.id,
+          turnOwner: player.id,
           players: [player],
           turn: 1,
         };

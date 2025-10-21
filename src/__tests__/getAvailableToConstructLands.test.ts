@@ -1,4 +1,4 @@
-import { GameState, getSelectedPlayer } from '../types/GameState';
+import { GameState, getTurnOwner } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
@@ -9,7 +9,7 @@ import { toGamePlayer } from './utils/toGamePlayer';
 describe('getAvailableLands', () => {
   const gameState: GameState = {
     battlefield: generateMockMap(1, 1),
-    activePlayerId: PREDEFINED_PLAYERS[0].id,
+    turnOwner: PREDEFINED_PLAYERS[0].id,
     players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
     turn: 1,
   };
@@ -21,23 +21,18 @@ describe('getAvailableLands', () => {
   it('should return no available lands for non-stronghold building when player has no lands under control', () => {
     const availableLands = getAvailableToConstructLands(
       BuildingType.BARRACKS,
-      getSelectedPlayer(gameState)!,
+      getTurnOwner(gameState)!,
       gameState
     );
     expect(availableLands.length).toBe(0);
   });
 
   it('should return all available lands for non-stronghold building where there are no buildings', () => {
-    construct(
-      getSelectedPlayer(gameState)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState
-    );
+    construct(getTurnOwner(gameState)!, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.BARRACKS,
-      getSelectedPlayer(gameState)!,
+      getTurnOwner(gameState)!,
       gameState
     );
 
@@ -69,16 +64,11 @@ describe('getAvailableLands', () => {
   });
 
   it('should return all available lands for stronghold building where there are no buildings', () => {
-    construct(
-      getSelectedPlayer(gameState)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState
-    );
+    construct(getTurnOwner(gameState)!, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.STRONGHOLD,
-      getSelectedPlayer(gameState)!,
+      getTurnOwner(gameState)!,
       gameState
     );
 
@@ -106,16 +96,11 @@ describe('getAvailableLands', () => {
   });
 
   it('should return only border lands if user wants to construct the wall', () => {
-    construct(
-      getSelectedPlayer(gameState)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState
-    );
+    construct(getTurnOwner(gameState)!, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
-      getSelectedPlayer(gameState)!,
+      getTurnOwner(gameState)!,
       gameState
     );
 
@@ -143,18 +128,13 @@ describe('getAvailableLands', () => {
   });
 
   it('should return only border lands even with building if user wants to construct the wall', () => {
-    construct(
-      getSelectedPlayer(gameState)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState
-    );
+    construct(getTurnOwner(gameState)!, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
-    construct(getSelectedPlayer(gameState)!, BuildingType.BARRACKS, { row: 1, col: 2 }, gameState);
+    construct(getTurnOwner(gameState)!, BuildingType.BARRACKS, { row: 1, col: 2 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
-      getSelectedPlayer(gameState)!,
+      getTurnOwner(gameState)!,
       gameState
     );
 
@@ -183,20 +163,15 @@ describe('getAvailableLands', () => {
   });
 
   it('should return only border lands land with wall should be excluded if user wants to construct the wall', () => {
-    construct(
-      getSelectedPlayer(gameState)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState
-    );
+    construct(getTurnOwner(gameState)!, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
-    construct(getSelectedPlayer(gameState)!, BuildingType.BARRACKS, { row: 1, col: 2 }, gameState);
+    construct(getTurnOwner(gameState)!, BuildingType.BARRACKS, { row: 1, col: 2 }, gameState);
 
-    construct(getSelectedPlayer(gameState)!, BuildingType.WALL, { row: 1, col: 2 }, gameState);
+    construct(getTurnOwner(gameState)!, BuildingType.WALL, { row: 1, col: 2 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
-      getSelectedPlayer(gameState)!,
+      getTurnOwner(gameState)!,
       gameState
     );
 
@@ -226,12 +201,7 @@ describe('getAvailableLands', () => {
   });
 
   it('should return all barder lands when have a border with other plyer', () => {
-    construct(
-      getSelectedPlayer(gameState)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState
-    );
+    construct(getTurnOwner(gameState)!, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
     construct(
       toGamePlayer(PREDEFINED_PLAYERS[1]), // other player
       BuildingType.STRONGHOLD,
@@ -241,7 +211,7 @@ describe('getAvailableLands', () => {
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.WALL,
-      getSelectedPlayer(gameState)!,
+      getTurnOwner(gameState)!,
       gameState
     );
 
@@ -270,18 +240,13 @@ describe('getAvailableLands', () => {
   });
 
   it('should return land with WALL for non-wall build request', () => {
-    construct(
-      getSelectedPlayer(gameState)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState
-    );
+    construct(getTurnOwner(gameState)!, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
-    construct(getSelectedPlayer(gameState)!, BuildingType.WALL, { row: 1, col: 2 }, gameState);
+    construct(getTurnOwner(gameState)!, BuildingType.WALL, { row: 1, col: 2 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.BARRACKS,
-      getSelectedPlayer(gameState)!,
+      getTurnOwner(gameState)!,
       gameState
     );
 
@@ -315,18 +280,13 @@ describe('getAvailableLands', () => {
   });
 
   it('should return land with WALL for stronghold build request', () => {
-    construct(
-      getSelectedPlayer(gameState)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameState
-    );
+    construct(getTurnOwner(gameState)!, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameState);
 
-    construct(getSelectedPlayer(gameState)!, BuildingType.WALL, { row: 1, col: 2 }, gameState);
+    construct(getTurnOwner(gameState)!, BuildingType.WALL, { row: 1, col: 2 }, gameState);
 
     const availableLands = getAvailableToConstructLands(
       BuildingType.STRONGHOLD,
-      getSelectedPlayer(gameState)!,
+      getTurnOwner(gameState)!,
       gameState
     );
 

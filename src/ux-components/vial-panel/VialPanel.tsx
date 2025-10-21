@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './css/VialPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
-import { getSelectedPlayer } from '../../types/GameState';
+import { getTurnOwner } from '../../types/GameState';
 
 import ManaVial from './ManaVial';
 
@@ -10,7 +10,7 @@ import { ManaType } from '../../types/Mana';
 
 const VialPanel: React.FC = () => {
   const { gameState } = useGameContext();
-  const selectedPlayer = getSelectedPlayer(gameState);
+  const selectedPlayer = getTurnOwner(gameState);
 
   return (
     <div className={styles.vialPanel}>

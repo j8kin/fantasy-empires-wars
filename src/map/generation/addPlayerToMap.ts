@@ -1,7 +1,6 @@
 import { BattlefieldMap, GameState, LandState } from '../../types/GameState';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { getUnit } from '../../types/Army';
-import { recruitHero } from '../army/recruit';
 import { getLands, LandPosition } from '../utils/mapLands';
 import { construct } from '../building/construct';
 import { BuildingType } from '../../types/Building';
@@ -96,7 +95,8 @@ const assignPlayerHero = (homeland: LandState, player: GamePlayer) => {
   hero.name = player.name;
   hero.level = player.level;
   // todo increment characteristics (attack, defence etc based on Player Level)
-  recruitHero(hero, homeland);
+  // initial Hero immediately available in normal game it turn 3 turn to recruit
+  homeland.army.push({ unit: hero, quantity: 1, moveInTurn: 0 });
 };
 
 const addPlayer = (

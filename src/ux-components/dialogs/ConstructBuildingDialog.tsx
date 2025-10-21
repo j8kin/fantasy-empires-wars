@@ -8,7 +8,7 @@ import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 import { getAllBuildings } from '../../types/Building';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
-import { getSelectedPlayer } from '../../types/GameState';
+import { getTurnOwner } from '../../types/GameState';
 
 const ConstructBuildingDialog: React.FC = () => {
   const { showConstructBuildingDialog, setShowConstructBuildingDialog, selectedLandAction } =
@@ -21,7 +21,7 @@ const ConstructBuildingDialog: React.FC = () => {
 
   useEffect(() => {
     if (selectedLandAction && showConstructBuildingDialog) {
-      const selectedPlayer = getSelectedPlayer(gameState);
+      const selectedPlayer = getTurnOwner(gameState);
       if (selectedPlayer) {
         const building = getAllBuildings(selectedPlayer).find((s) => s.id === selectedLandAction);
         if (building) {
@@ -38,7 +38,7 @@ const ConstructBuildingDialog: React.FC = () => {
 
   if (!showConstructBuildingDialog) return null;
 
-  const selectedPlayer = getSelectedPlayer(gameState);
+  const selectedPlayer = getTurnOwner(gameState);
   const availableBuildings = selectedPlayer
     ? getAllBuildings(selectedPlayer).filter(
         (building) => building.buildCost <= selectedPlayer.money!

@@ -28,18 +28,16 @@ export type BattlefieldMap = {
 export interface GameState {
   battlefield: BattlefieldMap;
   turn: number;
-  activePlayerId: string;
+  turnOwner: string;
   players: GamePlayer[];
 }
 
-// Helper function to get player by ID from GameState
 export const getPlayerById = (gameState?: GameState, playerId?: string): GamePlayer | undefined => {
   return gameState?.players.find((player) => player.id === playerId);
 };
 
-// Helper function to get the selected player (active player) from GameState
-export const getSelectedPlayer = (gameState?: GameState): GamePlayer | undefined => {
-  return getPlayerById(gameState, gameState?.activePlayerId);
+export const getTurnOwner = (gameState?: GameState): GamePlayer | undefined => {
+  return getPlayerById(gameState, gameState?.turnOwner);
 };
 
 export const battlefieldLandId = (landPosition: LandPosition): string =>

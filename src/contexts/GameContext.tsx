@@ -40,11 +40,11 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
 
   const recalculateActivePlayerIncome = useCallback(() => {
     setGameState((prev) => {
-      if (!prev || !prev.activePlayerId) return prev;
+      if (!prev || !prev.turnOwner) return prev;
 
       // Calculate income only for the active player
       const updatedPlayers = prev.players.map((player) => {
-        if (player.id === prev.activePlayerId) {
+        if (player.id === prev.turnOwner) {
           const playerIncome = calculateIncome(prev) - calculateMaintenance(prev);
           return {
             ...player,
