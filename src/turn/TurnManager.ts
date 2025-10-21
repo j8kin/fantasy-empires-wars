@@ -13,9 +13,16 @@ export interface TurnManagerCallbacks {
 
 export class TurnManager {
   private callbacks: TurnManagerCallbacks;
+  private activeTimers: Set<NodeJS.Timeout> = new Set();
 
   constructor(callbacks: TurnManagerCallbacks) {
     this.callbacks = callbacks;
+  }
+
+  public cleanup(): void {
+    // Clear all active timers
+    this.activeTimers.forEach((timer) => clearTimeout(timer));
+    this.activeTimers.clear();
   }
 
   public startNewTurn(gameState: GameState): void {
@@ -34,10 +41,12 @@ export class TurnManager {
     this.callbacks.onStartProgress(message);
 
     // Execute start turn logic
-    setTimeout(() => {
+    const timer = setTimeout(() => {
+      this.activeTimers.delete(timer);
       startTurn(gameState);
       this.startMainPhase(gameState);
     }, 1000); // Show progress for 1 second
+    this.activeTimers.add(timer);
   }
 
   private startMainPhase(gameState: GameState): void {
@@ -59,9 +68,11 @@ export class TurnManager {
       this.callbacks.onComputerMainTurn(gameState);
       mainAiTurn(gameState);
       // For now, immediately end the computer turn
-      setTimeout(() => {
+      const computerTimer = setTimeout(() => {
+        this.activeTimers.delete(computerTimer);
         this.endCurrentTurn(gameState);
       }, 2000); // 2 second delay for computer turn
+      this.activeTimers.add(computerTimer);
     }
   }
 
@@ -88,9 +99,11 @@ export class TurnManager {
     }
 
     // Start the next turn
-    setTimeout(() => {
+    const nextTurnTimer = setTimeout(() => {
+      this.activeTimers.delete(nextTurnTimer);
       this.startNewTurn(gameState);
     }, 500); // Brief delay before starting next turn
+    this.activeTimers.add(nextTurnTimer);
   }
 
   public canEndTurn(gameState: GameState): boolean {

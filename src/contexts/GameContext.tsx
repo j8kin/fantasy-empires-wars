@@ -15,6 +15,7 @@ interface GameContextType {
 
   // Game Flow
   updateGameState: (gameState: GameState) => void;
+  startNewGame: (gameState: GameState) => void;
 
   // Turn Management
   startNewTurn: () => void;
@@ -36,35 +37,57 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const [turnManager, setTurnManager] = useState<TurnManager | undefined>(undefined);
   const turnManagerCallbacksRef = useRef<Partial<TurnManagerCallbacks>>({});
 
+  const createDefaultCallbacks = useCallback((): TurnManagerCallbacks => {
+    return {
+      onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
+        setGameState({ ...gameState });
+      },
+      onGameOver: (message: string) => {
+        turnManagerCallbacksRef.current.onGameOver?.(message);
+      },
+      onStartProgress: (message: string) => {
+        turnManagerCallbacksRef.current.onStartProgress?.(message);
+      },
+      onHideProgress: () => {
+        turnManagerCallbacksRef.current.onHideProgress?.();
+      },
+      onComputerMainTurn: (gameState: GameState) => {
+        turnManagerCallbacksRef.current.onComputerMainTurn?.(gameState);
+      },
+    };
+  }, []);
+
   const updateGameConfig = useCallback(
     (config: GameState) => {
       setGameState(config);
 
-      // Initialize TurnManager when gameState is set
+      // Initialize TurnManager when gameState is set (only if not already exists)
       if (!turnManager && config) {
-        const defaultCallbacks: TurnManagerCallbacks = {
-          onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
-            setGameState({ ...gameState });
-          },
-          onGameOver: (message: string) => {
-            turnManagerCallbacksRef.current.onGameOver?.(message);
-          },
-          onStartProgress: (message: string) => {
-            turnManagerCallbacksRef.current.onStartProgress?.(message);
-          },
-          onHideProgress: () => {
-            turnManagerCallbacksRef.current.onHideProgress?.();
-          },
-          onComputerMainTurn: (gameState: GameState) => {
-            turnManagerCallbacksRef.current.onComputerMainTurn?.(gameState);
-          },
-        };
-
+        const defaultCallbacks = createDefaultCallbacks();
         const newTurnManager = new TurnManager(defaultCallbacks);
         setTurnManager(newTurnManager);
       }
     },
-    [turnManager]
+    [turnManager, createDefaultCallbacks]
+  );
+
+  const startNewGameConfig = useCallback(
+    (config: GameState) => {
+      // Clean up existing TurnManager if starting a new game
+      if (turnManager && typeof turnManager.cleanup === 'function') {
+        turnManager.cleanup();
+      }
+
+      setGameState(config);
+
+      // Always create a new TurnManager for a new game
+      if (config) {
+        const defaultCallbacks = createDefaultCallbacks();
+        const newTurnManager = new TurnManager(defaultCallbacks);
+        setTurnManager(newTurnManager);
+      }
+    },
+    [turnManager, createDefaultCallbacks]
   );
 
   const getTotalPlayerGold = useCallback(
@@ -126,6 +149,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const contextValue: GameContextType = {
     gameState,
     updateGameState: updateGameConfig,
+    startNewGame: startNewGameConfig,
     getTotalPlayerGold,
     recalculateActivePlayerIncome,
     startNewTurn,

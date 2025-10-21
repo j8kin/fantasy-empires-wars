@@ -65,7 +65,7 @@ const NewGameDialog: React.FC = () => {
     showSelectOpponentDialogWithConfig,
   } = useApplicationContext();
 
-  const { updateGameState, recalculateActivePlayerIncome } = useGameContext();
+  const { startNewGame, recalculateActivePlayerIncome } = useGameContext();
 
   // Local state for dialog-specific values
   const [mapSize, setMapSize] = useState<DialogMapSize>('medium');
@@ -300,7 +300,7 @@ const NewGameDialog: React.FC = () => {
 
       addPlayerToMap(gameState);
 
-      updateGameState(gameState);
+      startNewGame(gameState);
       recalculateActivePlayerIncome();
       setGameStarted(true);
       setShowProgressPopup(false);
@@ -313,7 +313,7 @@ const NewGameDialog: React.FC = () => {
     setShowStartWindow,
     setProgressMessage,
     setShowProgressPopup,
-    updateGameState,
+    startNewGame,
     recalculateActivePlayerIncome,
     setGameStarted,
   ]);

@@ -45,6 +45,7 @@ const MainViewContent: React.FC = () => {
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
   const gameInitializedRef = useRef(false);
+  const lastGameStateRef = useRef<string | null>(null);
 
   // Initialize turn manager callbacks
   useEffect(() => {
@@ -73,14 +74,27 @@ const MainViewContent: React.FC = () => {
     setTurnManagerCallbacks,
   ]);
 
-  // Start the first turn when game begins (only once)
+  // Start the first turn when game begins (only once per game)
   useEffect(() => {
-    if (gameStarted && gameState && gameState.turn === 1 && !gameInitializedRef.current) {
-      gameInitializedRef.current = true;
-      startNewTurn();
+    if (gameStarted && gameState && gameState.turn === 1) {
+      // Create a unique identifier for this game state to detect new games
+      const currentGameId = `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.id}`;
+
+      // Check if this is a different game than the last one
+      if (lastGameStateRef.current !== currentGameId) {
+        lastGameStateRef.current = currentGameId;
+        gameInitializedRef.current = false; // Reset for new game
+      }
+
+      // Start turn only once per game
+      if (!gameInitializedRef.current) {
+        gameInitializedRef.current = true;
+        startNewTurn();
+      }
     } else if (!gameStarted) {
-      // Reset the flag when game is not started
+      // Reset the flags when game is not started
       gameInitializedRef.current = false;
+      lastGameStateRef.current = null;
     }
   }, [gameStarted, gameState, startNewTurn]);
 
