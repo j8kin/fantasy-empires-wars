@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from './css/Background.module.css';
 
 import {
@@ -44,6 +44,7 @@ const MainViewContent: React.FC = () => {
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
+  const gameInitializedRef = useRef(false);
 
   // Initialize turn manager callbacks
   useEffect(() => {
@@ -72,10 +73,14 @@ const MainViewContent: React.FC = () => {
     setTurnManagerCallbacks,
   ]);
 
-  // Start the first turn when game begins
+  // Start the first turn when game begins (only once)
   useEffect(() => {
-    if (gameStarted && gameState && gameState.turn === 1) {
+    if (gameStarted && gameState && gameState.turn === 1 && !gameInitializedRef.current) {
+      gameInitializedRef.current = true;
       startNewTurn();
+    } else if (!gameStarted) {
+      // Reset the flag when game is not started
+      gameInitializedRef.current = false;
     }
   }, [gameStarted, gameState, startNewTurn]);
 

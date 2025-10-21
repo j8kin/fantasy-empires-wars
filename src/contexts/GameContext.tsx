@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useRef } from 'react';
 import { GameState, TurnPhase } from '../types/GameState';
 import { GamePlayer } from '../types/GamePlayer';
 import { calculateIncome } from '../map/gold/calculateIncome';
@@ -34,9 +34,7 @@ interface GameProviderProps {
 export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const [gameState, setGameState] = useState<GameState | undefined>(undefined);
   const [turnManager, setTurnManager] = useState<TurnManager | undefined>(undefined);
-  const [turnManagerCallbacks, setTurnManagerCallbacksState] = useState<
-    Partial<TurnManagerCallbacks>
-  >({});
+  const turnManagerCallbacksRef = useRef<Partial<TurnManagerCallbacks>>({});
 
   const updateGameConfig = useCallback(
     (config: GameState) => {
@@ -49,16 +47,16 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
             setGameState({ ...gameState });
           },
           onGameOver: (message: string) => {
-            turnManagerCallbacks.onGameOver?.(message);
+            turnManagerCallbacksRef.current.onGameOver?.(message);
           },
           onStartProgress: (message: string) => {
-            turnManagerCallbacks.onStartProgress?.(message);
+            turnManagerCallbacksRef.current.onStartProgress?.(message);
           },
           onHideProgress: () => {
-            turnManagerCallbacks.onHideProgress?.();
+            turnManagerCallbacksRef.current.onHideProgress?.();
           },
           onComputerMainTurn: (gameState: GameState) => {
-            turnManagerCallbacks.onComputerMainTurn?.(gameState);
+            turnManagerCallbacksRef.current.onComputerMainTurn?.(gameState);
           },
         };
 
@@ -66,7 +64,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         setTurnManager(newTurnManager);
       }
     },
-    [turnManager, turnManagerCallbacks]
+    [turnManager]
   );
 
   const getTotalPlayerGold = useCallback(
@@ -122,7 +120,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   }, [turnManager, gameState]);
 
   const setTurnManagerCallbacks = useCallback((callbacks: Partial<TurnManagerCallbacks>) => {
-    setTurnManagerCallbacksState((prev) => ({ ...prev, ...callbacks }));
+    turnManagerCallbacksRef.current = { ...turnManagerCallbacksRef.current, ...callbacks };
   }, []);
 
   const contextValue: GameContextType = {
