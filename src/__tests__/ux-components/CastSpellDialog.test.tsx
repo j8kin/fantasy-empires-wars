@@ -10,6 +10,7 @@ import { AllSpells } from '../../types/Spell';
 import { ManaType } from '../../types/Mana';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { toGamePlayer } from '../utils/toGamePlayer';
+import { TurnPhase } from '../../types/GameState';
 
 // Mock CSS modules
 jest.mock('../../ux-components/fantasy-book-dialog-template/css/FlipBook.css', () => ({}));
@@ -122,6 +123,7 @@ const renderWithApplicationContext = () => {
             toGamePlayer(PREDEFINED_PLAYERS[1]),
             toGamePlayer(PREDEFINED_PLAYERS[2]),
           ],
+          turnPhase: TurnPhase.START,
         });
       }
     }, []);

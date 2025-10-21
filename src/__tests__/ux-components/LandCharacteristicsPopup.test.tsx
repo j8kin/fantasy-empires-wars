@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
-import { GameState, LandState } from '../../types/GameState';
+import { GameState, LandState, TurnPhase } from '../../types/GameState';
 import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { LAND_TYPE } from '../../types/Land';
 import { generateMap } from '../../map/generation/generateMap';
@@ -70,12 +70,13 @@ jest.mock('../../ux-components/popups/css/LandCharacteristicsPopup.module.css', 
 }));
 
 describe('LandCharacteristicsPopup', () => {
-  const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer);
+  const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
   const mockGameState: GameState = {
     battlefield: generateMap({ rows: 9, cols: 18 }),
     turn: 0,
     turnOwner: testPlayers[1].id,
     players: [testPlayers[1], testPlayers[0], testPlayers[2]], // Morgana is active player
+    turnPhase: TurnPhase.START,
   };
   addPlayerToMap(mockGameState);
 

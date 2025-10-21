@@ -1,4 +1,4 @@
-import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
+import { battlefieldLandId, GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
 import { startTurn } from '../../turn/startTurn';
 import { generateMockMap } from '../utils/generateMockMap';
 import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
@@ -18,7 +18,8 @@ describe('Start Turn phase', () => {
       battlefield: generateMockMap(10, 10),
       turnOwner: PREDEFINED_PLAYERS[0].id,
       turn: 1,
-      players: [...PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer)],
+      players: [...PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p))],
+      turnPhase: TurnPhase.START,
     };
     construct(
       getTurnOwner(mockGameState)!,

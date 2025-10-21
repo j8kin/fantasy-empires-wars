@@ -3,7 +3,7 @@ import { addPlayerToMap } from '../map/generation/addPlayerToMap';
 import { LAND_TYPE } from '../types/Land';
 import { BuildingType, getBuilding } from '../types/Building';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { battlefieldLandId, GameState, getTurnOwner } from '../types/GameState';
+import { battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { calculateHexDistance } from '../map/utils/mapAlgorithms';
 import { Alignment } from '../types/Alignment';
 import { toGamePlayer } from './utils/toGamePlayer';
@@ -43,6 +43,7 @@ describe('Map Generation with Players', () => {
         turn: 0,
         turnOwner: necromancerPlayer.id,
         players: [necromancerPlayer],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 
@@ -57,13 +58,14 @@ describe('Map Generation with Players', () => {
     });
 
     it('should assign stronghold building to player homelands and add Players Hero', () => {
-      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer);
+      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
 
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         turnOwner: testPlayers[0].id,
         players: [testPlayers[0], testPlayers[1], testPlayers[2]],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 
@@ -99,12 +101,13 @@ describe('Map Generation with Players', () => {
     });
 
     it('should assign lands based on player alignment', () => {
-      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer);
+      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 6, cols: 13 }),
         turn: 0,
         turnOwner: testPlayers[0].id,
         players: [testPlayers[0], testPlayers[1], testPlayers[2]],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 
@@ -134,12 +137,13 @@ describe('Map Generation with Players', () => {
 
     it('should maintain player distance constraints', () => {
       const dimensions = { rows: 11, cols: 23 };
-      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer);
+      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
       const mockGameState: GameState = {
         battlefield: generateMap(dimensions),
         turn: 0,
         turnOwner: testPlayers[0].id,
         players: [testPlayers[0], testPlayers[1], testPlayers[2]],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 
@@ -168,6 +172,7 @@ describe('Map Generation with Players', () => {
         turn: 0,
         turnOwner: singlePlayer[0].id,
         players: [singlePlayer[0]],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 
@@ -198,6 +203,7 @@ describe('Map Generation with Players', () => {
         turn: 0,
         turnOwner: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
         players: [toGamePlayer(PREDEFINED_PLAYERS[0]), toGamePlayer(PREDEFINED_PLAYERS[1])],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 
@@ -220,12 +226,13 @@ describe('Map Generation with Players', () => {
 
   describe('Integration with Predefined Players', () => {
     it('should work with predefined players from GamePlayer', () => {
-      const somePredefinedPlayers = PREDEFINED_PLAYERS.slice(0, 4).map(toGamePlayer);
+      const somePredefinedPlayers = PREDEFINED_PLAYERS.slice(0, 4).map((p) => toGamePlayer(p));
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 11, cols: 23 }),
         turn: 0,
         turnOwner: somePredefinedPlayers[0].id,
         players: somePredefinedPlayers,
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 
@@ -253,13 +260,14 @@ describe('Map Generation with Players', () => {
     it('should handle multiple necromancers competing for volcano', () => {
       const necromancers = PREDEFINED_PLAYERS.filter((p) => p.race === 'Undead')
         .slice(0, 2)
-        .map(toGamePlayer);
+        .map((p) => toGamePlayer(p));
 
       const mockGameState: GameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         turnOwner: necromancers[0].id,
         players: necromancers,
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 
@@ -291,6 +299,7 @@ describe('Map Generation with Players', () => {
         turn: 0,
         turnOwner: toGamePlayer(PREDEFINED_PLAYERS[0]).id,
         players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
+        turnPhase: TurnPhase.START,
       };
 
       Object.values(mockGameState.battlefield.lands).forEach((tile) => {
@@ -306,6 +315,7 @@ describe('Map Generation with Players', () => {
         turn: 0,
         turnOwner: singlePlayer.id,
         players: [singlePlayer],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 
@@ -324,12 +334,13 @@ describe('Map Generation with Players', () => {
 
     it('should maintain map integrity after player assignment', () => {
       const dimensions = { rows: 9, cols: 18 };
-      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer);
+      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
       const mockGameState: GameState = {
         battlefield: generateMap(dimensions),
         turn: 0,
         turnOwner: testPlayers[0].id,
         players: [testPlayers[0], testPlayers[1], testPlayers[2]],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 

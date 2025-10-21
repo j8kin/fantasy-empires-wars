@@ -1,5 +1,5 @@
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
-import { battlefieldLandId, GameState } from '../types/GameState';
+import { battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { getUnit, UnitType } from '../types/Army';
@@ -15,8 +15,9 @@ describe('Calculate Maintenance', () => {
   const mockGameState: GameState = {
     battlefield: generateMockMap(10, 10),
     turnOwner: player.id,
-    players: [player, ...PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer)],
+    players: [player, ...PREDEFINED_PLAYERS.slice(1, 3).map((p) => toGamePlayer(p, 'computer'))],
     turn: 0,
+    turnPhase: TurnPhase.START,
   };
   beforeEach(() => {
     mockGameState.battlefield = generateMockMap(10, 10);
@@ -42,7 +43,11 @@ describe('Calculate Maintenance', () => {
       heroUnit.level = level;
 
       mockGameState.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
-        { unit: heroUnit, quantity: 1 },
+        {
+          unit: heroUnit,
+          quantity: 1,
+          moveInTurn: 0,
+        },
       ];
       const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(expected);
@@ -70,7 +75,11 @@ describe('Calculate Maintenance', () => {
       heroUnit.level = level;
 
       mockGameState.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
-        { unit: heroUnit, quantity: quantity },
+        {
+          unit: heroUnit,
+          quantity: quantity,
+          moveInTurn: 0,
+        },
       ];
       const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(expected);
@@ -83,10 +92,26 @@ describe('Calculate Maintenance', () => {
       mockGameState.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
         player.id;
       mockGameState.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
-        { unit: getUnit(UnitType.NECROMANCER), quantity: 1 },
-        { unit: getUnit(UnitType.DWARF), quantity: 20 },
-        { unit: getUnit(UnitType.BALISTA), quantity: 1 },
-        { unit: elitDwarf, quantity: 17 },
+        {
+          unit: getUnit(UnitType.NECROMANCER),
+          quantity: 1,
+          moveInTurn: 0,
+        },
+        {
+          unit: getUnit(UnitType.DWARF),
+          quantity: 20,
+          moveInTurn: 0,
+        },
+        {
+          unit: getUnit(UnitType.BALISTA),
+          quantity: 1,
+          moveInTurn: 0,
+        },
+        {
+          unit: elitDwarf,
+          quantity: 17,
+          moveInTurn: 0,
+        },
       ];
       const maintenance = calculateMaintenance(mockGameState);
       expect(maintenance).toBe(520);

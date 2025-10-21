@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from './css/Background.module.css';
 
 import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../contexts/ApplicationContext';
-import { GameProvider } from '../../contexts/GameContext';
+import { GameProvider, useGameContext } from '../../contexts/GameContext';
 
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
@@ -34,10 +34,69 @@ const MainViewContent: React.FC = () => {
     gameStarted,
     clearAllGlow,
     setSelectedLandAction,
+    setProgressMessage,
+    setShowProgressPopup,
+    setErrorMessagePopupMessage,
+    setShowErrorMessagePopup,
   } = useApplicationContext();
+
+  const { gameState, startNewTurn, setTurnManagerCallbacks } = useGameContext();
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
+  const gameInitializedRef = useRef(false);
+  const lastGameStateRef = useRef<string | null>(null);
+
+  // Initialize turn manager callbacks
+  useEffect(() => {
+    setTurnManagerCallbacks({
+      onStartProgress: (message: string) => {
+        setProgressMessage(message);
+        setShowProgressPopup(true);
+      },
+      onHideProgress: () => {
+        setShowProgressPopup(false);
+      },
+      onGameOver: (message: string) => {
+        setErrorMessagePopupMessage(message);
+        setShowErrorMessagePopup(true);
+      },
+      onComputerMainTurn: (gameState) => {
+        // Stub for computer AI turn
+        console.log('Computer player turn - AI not implemented yet');
+      },
+    });
+  }, [
+    setProgressMessage,
+    setShowProgressPopup,
+    setErrorMessagePopupMessage,
+    setShowErrorMessagePopup,
+    setTurnManagerCallbacks,
+  ]);
+
+  // Start the first turn when game begins (only once per game)
+  useEffect(() => {
+    if (gameStarted && gameState && gameState.turn === 1) {
+      // Create a unique identifier for this game state to detect new games
+      const currentGameId = `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.id}`;
+
+      // Check if this is a different game than the last one
+      if (lastGameStateRef.current !== currentGameId) {
+        lastGameStateRef.current = currentGameId;
+        gameInitializedRef.current = false; // Reset for new game
+      }
+
+      // Start turn only once per game
+      if (!gameInitializedRef.current) {
+        gameInitializedRef.current = true;
+        startNewTurn();
+      }
+    } else if (!gameStarted) {
+      // Reset the flags when game is not started
+      gameInitializedRef.current = false;
+      lastGameStateRef.current = null;
+    }
+  }, [gameStarted, gameState, startNewTurn]);
 
   const handleMainViewClick = () => {
     // Clear glow and selected item when clicking on the main background

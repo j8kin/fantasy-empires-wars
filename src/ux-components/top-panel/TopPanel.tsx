@@ -19,11 +19,18 @@ export interface TopPanelProps {
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
-  const { gameState } = useGameContext();
+  const { gameState, endCurrentTurn, canEndTurn } = useGameContext();
   const selectedPlayer = getTurnOwner(gameState);
 
   const avatarSize = height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10;
-  const endTurnButton = <GameButton buttonName={ButtonName.TURN} />;
+
+  const handleEndTurn = () => {
+    if (canEndTurn()) {
+      endCurrentTurn();
+    }
+  };
+
+  const endTurnButton = <GameButton buttonName={ButtonName.TURN} onClick={handleEndTurn} />;
 
   return (
     <FantasyBorderFrame

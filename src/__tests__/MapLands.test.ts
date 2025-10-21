@@ -4,7 +4,7 @@ import { construct } from '../map/building/construct';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { LandPosition } from '../map/utils/mapLands';
 import { BuildingType } from '../types/Building';
-import { BattlefieldMap, battlefieldLandId, GameState } from '../types/GameState';
+import { BattlefieldMap, battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { getLandById, LAND_TYPE } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { recruitHero } from '../map/army/recruit';
@@ -62,6 +62,7 @@ describe('MapLands', () => {
           turnOwner: player.id,
           players: [player],
           turn: 1,
+          turnPhase: TurnPhase.START,
         };
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
@@ -79,6 +80,7 @@ describe('MapLands', () => {
           turnOwner: player.id,
           players: [player],
           turn: 1,
+          turnPhase: TurnPhase.START,
         };
 
         construct(player, BuildingType.STRONGHOLD, homeland, mockGameState);
@@ -99,6 +101,7 @@ describe('MapLands', () => {
           turnOwner: player.id,
           players: [player],
           turn: 1,
+          turnPhase: TurnPhase.START,
         };
       });
 

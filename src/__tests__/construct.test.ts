@@ -1,5 +1,5 @@
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
-import { battlefieldLandId, GameState } from '../types/GameState';
+import { battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
 import { BuildingType } from '../types/Building';
@@ -19,6 +19,7 @@ describe('Construct Buildings', () => {
       turn: 1,
       turnOwner: player1.id,
       players: [player1, player2],
+      turnPhase: TurnPhase.START,
     };
   });
 
