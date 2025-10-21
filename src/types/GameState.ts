@@ -25,10 +25,17 @@ export type BattlefieldMap = {
   lands: Record<string, LandState>;
 };
 
+export enum TurnPhase {
+  START = 'START',
+  MAIN = 'MAIN',
+  END = 'END',
+}
+
 export interface GameState {
   battlefield: BattlefieldMap;
   turn: number;
   turnOwner: string;
+  turnPhase: TurnPhase;
   players: GamePlayer[];
 }
 

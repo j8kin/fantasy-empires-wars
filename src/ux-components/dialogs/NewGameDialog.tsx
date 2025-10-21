@@ -20,7 +20,7 @@ import {
   PREDEFINED_PLAYERS,
 } from '../../types/GamePlayer';
 import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
-import { BattlefieldDimensions, GameState } from '../../types/GameState';
+import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
 import { Mana, ManaType } from '../../types/Mana';
 
 // Local map size type for this dialog only
@@ -292,8 +292,9 @@ const NewGameDialog: React.FC = () => {
     setTimeout(() => {
       const gameState: GameState = {
         battlefield: generateMap(getBattlefieldDimensions(mapSize)),
-        turn: 0,
+        turn: 1,
         turnOwner: createdPlayer.id,
+        turnPhase: TurnPhase.START,
         players: [createdPlayer, ...createdOpponents],
       };
 

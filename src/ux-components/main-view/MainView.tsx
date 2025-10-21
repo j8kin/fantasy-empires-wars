@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './css/Background.module.css';
 
 import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../contexts/ApplicationContext';
-import { GameProvider } from '../../contexts/GameContext';
+import { GameProvider, useGameContext } from '../../contexts/GameContext';
 
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
@@ -34,10 +34,50 @@ const MainViewContent: React.FC = () => {
     gameStarted,
     clearAllGlow,
     setSelectedLandAction,
+    setProgressMessage,
+    setShowProgressPopup,
+    setErrorMessagePopupMessage,
+    setShowErrorMessagePopup,
   } = useApplicationContext();
+
+  const { gameState, startNewTurn, setTurnManagerCallbacks } = useGameContext();
 
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
+
+  // Initialize turn manager callbacks
+  useEffect(() => {
+    setTurnManagerCallbacks({
+      onStartProgress: (message: string) => {
+        setProgressMessage(message);
+        setShowProgressPopup(true);
+      },
+      onHideProgress: () => {
+        setShowProgressPopup(false);
+      },
+      onGameOver: (message: string) => {
+        setErrorMessagePopupMessage(message);
+        setShowErrorMessagePopup(true);
+      },
+      onComputerMainTurn: (gameState) => {
+        // Stub for computer AI turn
+        console.log('Computer player turn - AI not implemented yet');
+      },
+    });
+  }, [
+    setProgressMessage,
+    setShowProgressPopup,
+    setErrorMessagePopupMessage,
+    setShowErrorMessagePopup,
+    setTurnManagerCallbacks,
+  ]);
+
+  // Start the first turn when game begins
+  useEffect(() => {
+    if (gameStarted && gameState && gameState.turn === 1) {
+      startNewTurn();
+    }
+  }, [gameStarted, gameState, startNewTurn]);
 
   const handleMainViewClick = () => {
     // Clear glow and selected item when clicking on the main background
