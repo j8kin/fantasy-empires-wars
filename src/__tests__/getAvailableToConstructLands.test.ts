@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../types/GameState';
+import { GameState, getTurnOwner, TurnPhase } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
@@ -12,6 +12,7 @@ describe('getAvailableLands', () => {
     turnOwner: PREDEFINED_PLAYERS[0].id,
     players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
     turn: 1,
+    turnPhase: TurnPhase.START,
   };
 
   beforeEach(() => {

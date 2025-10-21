@@ -1,5 +1,5 @@
 import { calculateIncome } from '../map/gold/calculateIncome';
-import { battlefieldLandId, GameState } from '../types/GameState';
+import { battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { generateMockMap } from './utils/generateMockMap';
 import { BuildingType, getBuilding } from '../types/Building';
@@ -16,6 +16,7 @@ describe('Calculate Income', () => {
     turnOwner: lawfulPlayer.id,
     players: [lawfulPlayer, chaoticPlayer, neutralPlayer],
     turn: 0,
+    turnPhase: TurnPhase.START,
   };
 
   beforeEach(() => {

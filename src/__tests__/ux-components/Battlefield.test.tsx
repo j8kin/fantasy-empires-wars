@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Battlefield from '../../ux-components/battlefield/Battlefield';
-import { GameState, BattlefieldMap, BattlefieldDimensions } from '../../types/GameState';
+import { GameState, BattlefieldMap, BattlefieldDimensions, TurnPhase } from '../../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { Land, LAND_TYPE } from '../../types/Land';
 import { generateMap } from '../../map/generation/generateMap';
@@ -105,6 +105,7 @@ const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState =>
     turn: 0,
     turnOwner: mockPlayer.id,
     players: [mockPlayer],
+    turnPhase: TurnPhase.START,
   };
 };
 
@@ -418,12 +419,13 @@ describe('Battlefield Component', () => {
 
   describe('Create Battlefield which generated Map', () => {
     it('renders all required child components', () => {
-      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer);
+      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
       mockGameState = {
         battlefield: generateMap({ rows: 9, cols: 18 }),
         turn: 0,
         turnOwner: testPlayers[1].id,
         players: [testPlayers[1], testPlayers[0], testPlayers[2]],
+        turnPhase: TurnPhase.START,
       };
       addPlayerToMap(mockGameState);
 

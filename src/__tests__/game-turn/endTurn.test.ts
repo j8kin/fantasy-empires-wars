@@ -1,4 +1,4 @@
-import { GameState } from '../../types/GameState';
+import { GameState, TurnPhase } from '../../types/GameState';
 import { generateMockMap } from '../utils/generateMockMap';
 import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { toGamePlayer } from '../utils/toGamePlayer';
@@ -12,7 +12,8 @@ describe('End of Turn Phase', () => {
       battlefield: generateMockMap(10, 10),
       turnOwner: PREDEFINED_PLAYERS[0].id,
       turn: 1,
-      players: [...PREDEFINED_PLAYERS.slice(0, 3).map(toGamePlayer)],
+      players: [...PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p))],
+      turnPhase: TurnPhase.START,
     };
   });
   it('Active player id should be changed to a next one', () => {

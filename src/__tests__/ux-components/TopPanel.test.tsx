@@ -32,7 +32,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
       if (gameState) {
         updateGameState({
           ...gameState,
-          players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer)],
+          players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map((p) => toGamePlayer(p))],
         });
       } else {
         updateGameState({
@@ -43,7 +43,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
           turn: 0,
           turnPhase: TurnPhase.MAIN,
           turnOwner: selectedPlayer.id,
-          players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map(toGamePlayer)],
+          players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map((p) => toGamePlayer(p))],
         });
       }
     }, []);
