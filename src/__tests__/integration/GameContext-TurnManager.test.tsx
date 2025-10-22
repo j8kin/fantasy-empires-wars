@@ -1,14 +1,10 @@
 import { act, renderHook } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GameState, TurnPhase } from '../../types/GameState';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { TurnManager } from '../../turn/TurnManager';
 import { calculateIncome } from '../../map/gold/calculateIncome';
 import { calculateMaintenance } from '../../map/gold/calculateMaintenance';
-import { toGamePlayer } from '../utils/toGamePlayer';
-import { generateMockMap } from '../utils/generateMockMap';
-import { construct } from '../../map/building/construct';
-import { BuildingType } from '../../types/Building';
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 // Mock TurnManager
 jest.mock('../../turn/TurnManager');
@@ -40,24 +36,15 @@ MockedTurnManager.mockImplementation(() => mockTurnManager as any);
 jest.useFakeTimers();
 
 describe('GameContext-TurnManager Integration', () => {
-  const humanPlayer = toGamePlayer(PREDEFINED_PLAYERS[0], 'human');
-  const computerPlayer = toGamePlayer(PREDEFINED_PLAYERS[1], 'computer');
-
   const createMockGameState = (
-    turnOwner: string = humanPlayer.id,
+    turnOwner: number = 0,
     turnPhase: TurnPhase = TurnPhase.MAIN
   ): GameState => {
-    const mockGameState: GameState = {
-      battlefield: generateMockMap(10, 10),
-      turn: 1,
-      turnOwner,
-      turnPhase,
-      players: [humanPlayer, computerPlayer],
-    };
-    construct(humanPlayer, BuildingType.STRONGHOLD, { row: 3, col: 3 }, mockGameState);
-    construct(computerPlayer, BuildingType.STRONGHOLD, { row: 5, col: 5 }, mockGameState);
+    const gameStateStub = createDefaultGameStateStub();
+    gameStateStub.turnOwner = gameStateStub.players[turnOwner].id;
+    gameStateStub.turnPhase = turnPhase;
 
-    return mockGameState;
+    return gameStateStub;
   };
 
   beforeEach(() => {
@@ -210,12 +197,15 @@ describe('GameContext-TurnManager Integration', () => {
 
       const player1 = result.current.gameState!.players[0];
       const player2 = result.current.gameState!.players[1];
+      const player3 = result.current.gameState!.players[2];
 
       const player1Gold = result.current.getTotalPlayerGold(player1);
       const player2Gold = result.current.getTotalPlayerGold(player2);
+      const player3Gold = result.current.getTotalPlayerGold(player3);
 
-      expect(player1Gold).toBe(443); // Land controlled by human player
-      expect(player2Gold).toBe(949); // Land controlled by computer player
+      expect(player1Gold).toBe(1197);
+      expect(player2Gold).toBe(1653);
+      expect(player3Gold).toBe(1387);
     });
   });
 
@@ -225,7 +215,7 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState('player1', TurnPhase.MAIN);
+      const mockGameState = createMockGameState(0, TurnPhase.MAIN);
 
       act(() => {
         result.current.updateGameState(mockGameState);
@@ -254,7 +244,7 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState('player2', TurnPhase.MAIN); // Computer player
+      const mockGameState = createMockGameState(1, TurnPhase.MAIN); // Computer player
 
       act(() => {
         result.current.updateGameState(mockGameState);
@@ -286,7 +276,7 @@ describe('GameContext-TurnManager Integration', () => {
       // Basic state should remain consistent
       expect(result.current.gameState?.turn).toBe(originalTurn);
       expect(result.current.gameState?.turnOwner).toBe(originalTurnOwner);
-      expect(result.current.gameState?.players).toHaveLength(2);
+      expect(result.current.gameState?.players).toHaveLength(3);
     });
   });
 
@@ -348,7 +338,7 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      // Don't initialize game state, so TurnManager won't be created
+      // Don't initialize the game state, so TurnManager won't be created
       expect(() => {
         act(() => {
           result.current.startNewTurn();

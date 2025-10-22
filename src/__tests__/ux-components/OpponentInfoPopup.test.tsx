@@ -1,12 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import OpponentInfoPopup from '../../ux-components/popups/OpponentInfoPopup';
-import { PREDEFINED_PLAYERS, DiplomacyStatus, PlayerInfo } from '../../types/GamePlayer';
-import { Alignment } from '../../types/Alignment';
+import { DiplomacyStatus } from '../../types/GamePlayer';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
-import { GameState } from '../../types/GameState';
-import { toGamePlayer } from '../utils/toGamePlayer';
-import { ManaType } from '../../types/Mana';
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 jest.mock('../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
   popupContent: 'mocked-popup-content',
@@ -53,36 +50,7 @@ describe('OpponentInfoPopup', () => {
   const mockPosition = { x: 100, y: 100 };
   const mockOnClose = jest.fn();
 
-  const createMockOpponent = (alignment: Alignment = Alignment.NEUTRAL): PlayerInfo => ({
-    ...PREDEFINED_PLAYERS[0],
-    alignment,
-  });
-
-  const createMockGameState = (
-    opponent: PlayerInfo,
-    diplomacyStatus: DiplomacyStatus
-  ): Partial<GameState> => {
-    const selectedPlayer = {
-      ...PREDEFINED_PLAYERS[1],
-      diplomacy: {
-        [opponent.id]: diplomacyStatus,
-      },
-      mana: {
-        [ManaType.WHITE]: 0,
-        [ManaType.BLACK]: 0,
-        [ManaType.GREEN]: 0,
-        [ManaType.BLUE]: 0,
-        [ManaType.RED]: 0,
-      },
-      money: 0,
-      income: 0,
-      playerType: 'human' as const,
-    };
-    return {
-      turnOwner: selectedPlayer.id,
-      players: [selectedPlayer, toGamePlayer(opponent)],
-    };
-  };
+  const gameStateStub = createDefaultGameStateStub();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -90,27 +58,7 @@ describe('OpponentInfoPopup', () => {
     // Set up the default mock for useGameContext
     const { useGameContext } = require('../../contexts/GameContext');
     useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        activePlayerId: PREDEFINED_PLAYERS[1].id,
-        players: [
-          {
-            ...PREDEFINED_PLAYERS[1],
-            diplomacy: {},
-            mana: {
-              [ManaType.WHITE]: 0,
-              [ManaType.BLACK]: 0,
-              [ManaType.GREEN]: 0,
-              [ManaType.BLUE]: 0,
-              [ManaType.RED]: 0,
-            },
-            money: 0,
-            income: 0,
-            playerType: 'human' as const,
-          },
-        ],
-      },
+      gameState: gameStateStub,
       updateTile: jest.fn(),
       setTileController: jest.fn(),
       addBuildingToTile: jest.fn(),
@@ -122,31 +70,14 @@ describe('OpponentInfoPopup', () => {
       getPlayerTiles: jest.fn(),
       getTotalPlayerGold: jest.fn(),
     });
+
+    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id] = DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[2].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[2].id] = DiplomacyStatus.NO_TREATY;
   });
 
   it('returns null when opponent is null or undefined', () => {
-    const mockOpponent = createMockOpponent();
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-
     const { container } = render(
       <ApplicationContextProvider>
         <OpponentInfoPopup opponent={undefined} screenPosition={mockPosition} />
@@ -157,199 +88,67 @@ describe('OpponentInfoPopup', () => {
   });
 
   it('displays opponent name in header', () => {
-    const mockOpponent = createMockOpponent();
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 
-    expect(screen.getByText(mockOpponent.name)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].name)).toBeInTheDocument();
   });
 
   it('renders player avatar with correct properties', () => {
-    const mockOpponent = createMockOpponent();
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 
     const avatar = screen.getByTestId('player-avatar');
-    expect(avatar).toHaveAttribute('data-player-name', mockOpponent.name);
+    expect(avatar).toHaveAttribute('data-player-name', gameStateStub.players[1].name);
     expect(avatar).toHaveAttribute('data-size', '55');
     expect(avatar).toHaveAttribute('data-shape', 'rectangle');
-    expect(avatar).toHaveAttribute('data-border-color', mockOpponent.color);
+    expect(avatar).toHaveAttribute('data-border-color', gameStateStub.players[1].color);
   });
 
   it('displays race information', () => {
-    const mockOpponent = createMockOpponent();
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 
     expect(screen.getByText('Race:')).toBeInTheDocument();
-    expect(screen.getByText(mockOpponent.race)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].race)).toBeInTheDocument();
   });
 
   it('displays alignment information with correct color', () => {
-    const mockOpponent = createMockOpponent(Alignment.CHAOTIC);
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[2]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 
     expect(screen.getByText('Alignment:')).toBeInTheDocument();
-    expect(screen.getByText(mockOpponent.alignment)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[2].alignment)).toBeInTheDocument();
   });
 
   it('displays level information', () => {
-    const mockOpponent = createMockOpponent();
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 
     expect(screen.getByText('Level:')).toBeInTheDocument();
-    expect(screen.getByText(mockOpponent.level.toString())).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].level.toString())).toBeInTheDocument();
   });
 
   describe('diplomacy status display', () => {
     it('displays "No Treaty" status correctly', () => {
-      const mockOpponent = createMockOpponent();
-      const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-      const { useGameContext } = require('../../contexts/GameContext');
-      useGameContext.mockReturnValue({
-        gameState: {
-          tiles: {},
-          turn: 1,
-          ...gameState,
-        },
-        updateTile: jest.fn(),
-        setTileController: jest.fn(),
-        addBuildingToTile: jest.fn(),
-        updateTileArmy: jest.fn(),
-        changeBattlefieldSize: jest.fn(),
-        nextTurn: jest.fn(),
-        updateGameState: jest.fn(),
-        getTile: jest.fn(),
-        getPlayerTiles: jest.fn(),
-        getTotalPlayerGold: jest.fn(),
-      });
-
       render(
         <ApplicationContextProvider>
-          <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+          <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
         </ApplicationContextProvider>
       );
 
@@ -358,31 +157,12 @@ describe('OpponentInfoPopup', () => {
     });
 
     it('displays "Peace" status correctly', () => {
-      const mockOpponent = createMockOpponent();
-      const gameState = createMockGameState(mockOpponent, DiplomacyStatus.PEACE);
-
-      const { useGameContext } = require('../../contexts/GameContext');
-      useGameContext.mockReturnValue({
-        gameState: {
-          tiles: {},
-          turn: 1,
-          ...gameState,
-        },
-        updateTile: jest.fn(),
-        setTileController: jest.fn(),
-        addBuildingToTile: jest.fn(),
-        updateTileArmy: jest.fn(),
-        changeBattlefieldSize: jest.fn(),
-        nextTurn: jest.fn(),
-        updateGameState: jest.fn(),
-        getTile: jest.fn(),
-        getPlayerTiles: jest.fn(),
-        getTotalPlayerGold: jest.fn(),
-      });
+      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.PEACE;
+      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id] = DiplomacyStatus.PEACE;
 
       render(
         <ApplicationContextProvider>
-          <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+          <OpponentInfoPopup opponent={gameStateStub.players[2]} screenPosition={mockPosition} />
         </ApplicationContextProvider>
       );
 
@@ -391,31 +171,12 @@ describe('OpponentInfoPopup', () => {
     });
 
     it('displays "War" status correctly', () => {
-      const mockOpponent = createMockOpponent();
-      const gameState = createMockGameState(mockOpponent, DiplomacyStatus.WAR);
-
-      const { useGameContext } = require('../../contexts/GameContext');
-      useGameContext.mockReturnValue({
-        gameState: {
-          tiles: {},
-          turn: 1,
-          ...gameState,
-        },
-        updateTile: jest.fn(),
-        setTileController: jest.fn(),
-        addBuildingToTile: jest.fn(),
-        updateTileArmy: jest.fn(),
-        changeBattlefieldSize: jest.fn(),
-        nextTurn: jest.fn(),
-        updateGameState: jest.fn(),
-        getTile: jest.fn(),
-        getPlayerTiles: jest.fn(),
-        getTotalPlayerGold: jest.fn(),
-      });
+      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.WAR;
+      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id] = DiplomacyStatus.WAR;
 
       render(
         <ApplicationContextProvider>
-          <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+          <OpponentInfoPopup opponent={gameStateStub.players[2]} screenPosition={mockPosition} />
         </ApplicationContextProvider>
       );
 
@@ -425,100 +186,35 @@ describe('OpponentInfoPopup', () => {
   });
 
   it('positions popup correctly relative to screen position', () => {
-    const mockOpponent = createMockOpponent();
     const customPosition = { x: 200, y: 150 };
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
 
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={customPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={customPosition} />
       </ApplicationContextProvider>
     );
 
     // The popup should be offset by -50 in x and +10 in y
     // This would be tested through the PopupWrapper component
-    expect(screen.getByText(mockOpponent.name)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].name)).toBeInTheDocument();
   });
 
   it('has appropriate dimensions', () => {
-    const mockOpponent = createMockOpponent();
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 
     // Component should render with fixed width of 310px
     // Height is calculated dynamically but capped at 400px
-    expect(screen.getByText(mockOpponent.name)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].name)).toBeInTheDocument();
   });
 
   it('calls onClose when close action is triggered', () => {
-    const mockOpponent = createMockOpponent();
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 
@@ -528,31 +224,9 @@ describe('OpponentInfoPopup', () => {
   });
 
   it('displays all required information sections', () => {
-    const mockOpponent = createMockOpponent();
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.NO_TREATY);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 
@@ -564,34 +238,12 @@ describe('OpponentInfoPopup', () => {
   });
 
   it('works with different predefined players', () => {
-    // Test with different predefined player (Morgana)
-    const mockOpponent: PlayerInfo = {
-      ...PREDEFINED_PLAYERS[1], // Morgana Shadowweaver
-    };
-    const gameState = createMockGameState(mockOpponent, DiplomacyStatus.WAR);
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
+    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.WAR;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id] = DiplomacyStatus.WAR;
 
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 
@@ -601,49 +253,11 @@ describe('OpponentInfoPopup', () => {
   });
 
   it('defaults to "No Treaty" when diplomacy status is not found', () => {
-    const mockOpponent = createMockOpponent();
-    // Create game state without diplomacy info for this opponent
-    const selectedPlayer = {
-      ...PREDEFINED_PLAYERS[1],
-      diplomacy: {},
-      mana: {
-        [ManaType.WHITE]: 0,
-        [ManaType.BLACK]: 0,
-        [ManaType.GREEN]: 0,
-        [ManaType.BLUE]: 0,
-        [ManaType.RED]: 0,
-      },
-      money: 0,
-      income: 0,
-      playerType: 'human' as const,
-    };
-    const gameState: Partial<GameState> = {
-      turnOwner: selectedPlayer.id,
-      players: [selectedPlayer, toGamePlayer(mockOpponent)],
-    };
-
-    const { useGameContext } = require('../../contexts/GameContext');
-    useGameContext.mockReturnValue({
-      gameState: {
-        tiles: {},
-        turn: 1,
-        ...gameState,
-      },
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameState: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
+    gameStateStub.players[1].diplomacy = {};
 
     render(
       <ApplicationContextProvider>
-        <OpponentInfoPopup opponent={mockOpponent} screenPosition={mockPosition} />
+        <OpponentInfoPopup opponent={gameStateStub.players[1]} screenPosition={mockPosition} />
       </ApplicationContextProvider>
     );
 

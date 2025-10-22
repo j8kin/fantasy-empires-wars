@@ -1,44 +1,20 @@
-import { battlefieldLandId, GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
+import { GameState } from '../../types/GameState';
 import { startTurn } from '../../turn/startTurn';
-import { generateMockMap } from '../utils/generateMockMap';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { toGamePlayer } from '../utils/toGamePlayer';
-import { construct } from '../../map/building/construct';
-import { BuildingType } from '../../types/Building';
-import { recruitHero } from '../../map/army/recruit';
-import { getUnit, UnitType } from '../../types/Army';
-import { LandPosition } from '../../map/utils/mapLands';
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('Start Turn phase', () => {
-  let mockGameState: GameState;
-  const player1StrongholdPosition: LandPosition = { row: 3, col: 3 };
+  let gameStateStub: GameState;
 
   beforeEach(() => {
-    mockGameState = {
-      battlefield: generateMockMap(10, 10),
-      turnOwner: PREDEFINED_PLAYERS[0].id,
-      turn: 1,
-      players: [...PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p))],
-      turnPhase: TurnPhase.START,
-    };
-    construct(
-      getTurnOwner(mockGameState)!,
-      BuildingType.STRONGHOLD,
-      player1StrongholdPosition,
-      mockGameState
-    );
-    const hero = getUnit(UnitType.HAMMERLORD);
-    hero.id = 'abarvalg';
-    hero.name = 'Abarvalg Burgrondus';
-    recruitHero(
-      hero,
-      mockGameState.battlefield.lands[battlefieldLandId(player1StrongholdPosition)]
-    );
+    gameStateStub = createDefaultGameStateStub();
   });
 
   it('Income and Money should be calculated during Start Game phase', () => {
-    startTurn(mockGameState);
-    expect(mockGameState.players[0].money).toBe(434);
-    expect(mockGameState.players[0].income).toBe(434);
+    expect(gameStateStub.players[0].money).toBe(0);
+    expect(gameStateStub.players[0].income).toBe(0);
+
+    startTurn(gameStateStub);
+    expect(gameStateStub.players[0].money).toBe(714);
+    expect(gameStateStub.players[0].income).toBe(714);
   });
 });
