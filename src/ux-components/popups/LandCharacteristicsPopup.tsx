@@ -23,9 +23,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   const { hideLandPopup } = useApplicationContext();
   const { gameState } = useGameContext();
   const battlefieldTile = gameState!.battlefield.lands[battlefieldLandId(battlefieldPosition)];
-  if (!battlefieldTile) return null;
   const displayLandType = battlefieldTile.land;
-  if (!displayLandType) return null;
 
   // Calculate dynamic size based on content type
   // MANUAL ADJUSTMENT POINT 1: Base heights and row spacing
@@ -42,14 +40,14 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   totalContentHeight += 4 * standardRowHeight;
 
   // Buildings row - accounts for building chips and their styling
-  if (battlefieldTile?.buildings && battlefieldTile.buildings.length > 0) {
+  if (battlefieldTile.buildings && battlefieldTile.buildings.length > 0) {
     const buildingChipHeight = 16; // 10px font + 2px padding * 2 + 2px gap
     const buildingRows = Math.ceil(battlefieldTile.buildings.length / 3); // Estimate wrapping
     totalContentHeight += buildingRowHeight + (buildingRows - 1) * buildingChipHeight;
   }
 
   // Army rows - separate heroes and units
-  if (battlefieldTile?.army && battlefieldTile.army.length > 0) {
+  if (battlefieldTile.army && battlefieldTile.army.length > 0) {
     const heroes = battlefieldTile.army.filter(({ unit }) => unit.hero);
     const units = battlefieldTile.army.filter(({ unit }) => !unit.hero);
 
