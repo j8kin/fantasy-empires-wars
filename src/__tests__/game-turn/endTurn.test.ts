@@ -1,23 +1,26 @@
-import { GameState, TurnPhase } from '../../types/GameState';
-import { generateMockMap } from '../utils/generateMockMap';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { toGamePlayer } from '../utils/toGamePlayer';
+import { GameState } from '../../types/GameState';
 import { endTurn } from '../../turn/endTurn';
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('End of Turn Phase', () => {
-  let mockGameState: GameState;
+  let gameStateStub: GameState;
 
   beforeEach(() => {
-    mockGameState = {
-      battlefield: generateMockMap(10, 10),
-      turnOwner: PREDEFINED_PLAYERS[0].id,
-      turn: 1,
-      players: [...PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p))],
-      turnPhase: TurnPhase.START,
-    };
+    gameStateStub = createDefaultGameStateStub();
   });
+
   it('Active player id should be changed to a next one', () => {
-    endTurn(mockGameState);
-    expect(mockGameState.turnOwner).toBe(PREDEFINED_PLAYERS[1].id);
+    expect(gameStateStub.turnOwner).toBe(gameStateStub.players[0].id);
+
+    endTurn(gameStateStub);
+    expect(gameStateStub.turnOwner).toBe(gameStateStub.players[1].id);
+  });
+  it('Active player id should be changed to the first one when all player and increas turn number', () => {
+    gameStateStub.turnOwner = gameStateStub.players[gameStateStub.players.length - 1].id;
+    expect(gameStateStub.turn).toBe(1);
+
+    endTurn(gameStateStub);
+    expect(gameStateStub.turnOwner).toBe(gameStateStub.players[0].id);
+    expect(gameStateStub.turn).toBe(2);
   });
 });

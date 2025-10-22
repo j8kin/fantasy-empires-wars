@@ -1,11 +1,9 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { GameState, TurnPhase } from '../../types/GameState';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { generateMap } from '../../map/generation/generateMap';
+import { GameState } from '../../types/GameState';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
-import { toGamePlayer } from '../utils/toGamePlayer';
+import { createGameStateStub } from '../utils/createGameStateStub';
 
 describe('NewGame TurnManager Cleanup Integration', () => {
   beforeEach(() => {
@@ -25,16 +23,12 @@ describe('NewGame TurnManager Cleanup Integration', () => {
       huge: { rows: 15, cols: 31 },
     };
 
-    const player1 = toGamePlayer(PREDEFINED_PLAYERS[0], 'human');
-    const player2 = toGamePlayer(PREDEFINED_PLAYERS[0], 'computer');
-
-    const gameState: GameState = {
-      battlefield: generateMap(dimensions[mapSize]),
-      turn: 1,
-      turnOwner: player1.id,
-      turnPhase: TurnPhase.START,
-      players: [player1, player2],
-    };
+    const gameState: GameState = createGameStateStub({
+      nPlayers: 2,
+      battlefieldSize: dimensions[mapSize],
+      realBattlefield: true,
+      addPlayersHomeland: false,
+    });
 
     addPlayerToMap(gameState);
     return gameState;

@@ -2,106 +2,69 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
-import { GameState, LandState, TurnPhase } from '../../types/GameState';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { LAND_TYPE } from '../../types/Land';
-import { generateMap } from '../../map/generation/generateMap';
-import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
-import { Army, UnitType, getUnit } from '../../types/Army';
-import { toGamePlayer } from '../utils/toGamePlayer';
+import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
+import { Army, getUnit, UnitType } from '../../types/Army';
+import { createGameStateStub } from '../utils/createGameStateStub';
+import { getLands } from '../../map/utils/mapLands';
+import { BuildingType } from '../../types/Building';
 
-const renderWithProviders = (ui: React.ReactElement, gameState?: GameState) => {
+// Mock the useGameContext hook
+const mockUseGameContext = jest.fn();
+jest.mock('../../contexts/GameContext', () => ({
+  useGameContext: () => mockUseGameContext(),
+}));
+
+const renderWithProviders = (ui: React.ReactElement, gameState: GameState) => {
+  mockUseGameContext.mockReturnValue({ gameState });
+
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <ApplicationContextProvider>
-      <TestGameProvider gameState={gameState}>{children}</TestGameProvider>
-    </ApplicationContextProvider>
+    <ApplicationContextProvider>{children}</ApplicationContextProvider>
   );
   return render(ui, { wrapper: Wrapper });
 };
 
-// Mock the useGameContext hook
-let mockUseGameContext: jest.Mock;
-jest.mock('../../contexts/GameContext', () => ({
-  useGameContext: jest.fn(),
-}));
-
-// Get the mocked function after module mocking
-const { useGameContext } = require('../../contexts/GameContext');
-mockUseGameContext = useGameContext as jest.Mock;
-
-// Custom GameProvider for testing that accepts a specific gameState
-const TestGameProvider: React.FC<{ children: React.ReactNode; gameState?: GameState }> = ({
-  children,
-  gameState,
-}) => {
-  // Update the mock if a specific gameState is provided
-  if (gameState) {
-    mockUseGameContext.mockReturnValue({
-      gameState,
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameConfig: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
-    });
-  }
-
-  return <>{children}</>;
-};
-
 // Mock CSS modules
 jest.mock('../../ux-components/popups/css/LandCharacteristicsPopup.module.css', () => ({
-  popup: 'mocked-popup',
-  popupContent: 'mocked-popup-content',
   header: 'mocked-header',
   title: 'mocked-title',
-  closeButton: 'mocked-close-button',
-  characteristics: 'mocked-characteristics',
   row: 'mocked-row',
   label: 'mocked-label',
-  value: 'mocked-value',
   buildingsList: 'mocked-buildings-list',
   building: 'mocked-building',
 }));
 
+jest.mock('../../ux-components/popups/css/Popup.module.css', () => ({
+  popupContent: 'mocked-popup-content',
+  header: 'mocked-header',
+  title: 'mocked-title',
+  characteristics: 'mocked-characteristics',
+  row: 'mocked-row',
+  label: 'mocked-label',
+  value: 'mocked-value',
+}));
+
 describe('LandCharacteristicsPopup', () => {
-  const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
-  const mockGameState: GameState = {
-    battlefield: generateMap({ rows: 9, cols: 18 }),
-    turn: 0,
-    turnOwner: testPlayers[1].id,
-    players: [testPlayers[1], testPlayers[0], testPlayers[2]], // Morgana is active player
-    turnPhase: TurnPhase.START,
-  };
-  addPlayerToMap(mockGameState);
-
-  const mockTileState: LandState = Object.values(mockGameState.battlefield.lands).find(
-    (tile) => tile.land.id === LAND_TYPE.VOLCANO
-  )!;
-
+  let gameStateStub: GameState;
+  let mockTileState: LandState;
   const mockPosition = { x: 100, y: 100 };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    // Set up default mock return for useGameContext
-    mockUseGameContext.mockReturnValue({
-      gameState: mockGameState,
-      updateTile: jest.fn(),
-      setTileController: jest.fn(),
-      addBuildingToTile: jest.fn(),
-      updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
-      nextTurn: jest.fn(),
-      updateGameConfig: jest.fn(),
-      getTile: jest.fn(),
-      getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
+    // Create fresh game state with real battlefield for each test
+    gameStateStub = createGameStateStub({
+      turnOwner: 1,
+      realBattlefield: true,
     });
+
+    // Find a tile that's controlled by player 1 (Morgana Shadowweaver) AND has buildings
+    mockTileState = getLands(
+      gameStateStub.battlefield.lands,
+      [gameStateStub.players[1]],
+      undefined,
+      undefined,
+      [BuildingType.STRONGHOLD]
+    )[0];
+
+    jest.clearAllMocks();
   });
 
   it('displays building information when tile has buildings', () => {
@@ -110,7 +73,7 @@ describe('LandCharacteristicsPopup', () => {
         battlefieldPosition={mockTileState.mapPos}
         screenPosition={mockPosition}
       />,
-      mockGameState
+      gameStateStub
     );
 
     // Check if building information is displayed
@@ -124,13 +87,12 @@ describe('LandCharacteristicsPopup', () => {
         battlefieldPosition={mockTileState.mapPos}
         screenPosition={mockPosition}
       />,
-      mockGameState
+      gameStateStub
     );
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(mockTileState.land.id).toBe(LAND_TYPE.VOLCANO);
-    expect(mockTileState.controlledBy).toBe(testPlayers[1].id);
+    expect(mockTileState.controlledBy).toBe(gameStateStub.players[1].id);
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
 
@@ -140,7 +102,7 @@ describe('LandCharacteristicsPopup', () => {
         battlefieldPosition={mockTileState.mapPos}
         screenPosition={mockPosition}
       />,
-      mockGameState
+      gameStateStub
     );
 
     // Verify both sections are present at the same time
@@ -156,12 +118,12 @@ describe('LandCharacteristicsPopup', () => {
         battlefieldPosition={mockTileState.mapPos}
         screenPosition={mockPosition}
       />,
-      mockGameState
+      gameStateStub
     );
 
-    // Check land type information
-    expect(screen.getByText('Volcano')).toBeInTheDocument();
-    expect(screen.getByText('chaotic')).toBeInTheDocument();
+    // Check land type information - should display the actual land type name
+    expect(screen.getByText(mockTileState.land.id)).toBeInTheDocument();
+    expect(screen.getByText(mockTileState.land.alignment)).toBeInTheDocument();
   });
 
   it('displays position and gold information', () => {
@@ -170,7 +132,7 @@ describe('LandCharacteristicsPopup', () => {
         battlefieldPosition={mockTileState.mapPos}
         screenPosition={mockPosition}
       />,
-      mockGameState
+      gameStateStub
     );
 
     // Check position and gold information
@@ -179,7 +141,7 @@ describe('LandCharacteristicsPopup', () => {
       screen.getByText(mockTileState.mapPos.row + ', ' + mockTileState.mapPos.col)
     ).toBeInTheDocument();
     expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();
-    expect(screen.getByText(mockTileState.goldPerTurn)).toBeInTheDocument();
+    expect(screen.getByText(mockTileState.goldPerTurn.toString())).toBeInTheDocument();
   });
 
   describe('Army display functionality', () => {
@@ -194,13 +156,13 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
+      const tileId = battlefieldLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
-        ...mockGameState,
+        ...gameStateStub,
         battlefield: {
-          ...mockGameState.battlefield,
+          ...gameStateStub.battlefield,
           lands: {
-            ...mockGameState.battlefield.lands,
+            ...gameStateStub.battlefield.lands,
             [tileId]: tileWithHeroes,
           },
         },
@@ -230,13 +192,13 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
+      const tileId = battlefieldLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
-        ...mockGameState,
+        ...gameStateStub,
         battlefield: {
-          ...mockGameState.battlefield,
+          ...gameStateStub.battlefield,
           lands: {
-            ...mockGameState.battlefield.lands,
+            ...gameStateStub.battlefield.lands,
             [tileId]: tileWithUnits,
           },
         },
@@ -268,13 +230,13 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
+      const tileId = battlefieldLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
-        ...mockGameState,
+        ...gameStateStub,
         battlefield: {
-          ...mockGameState.battlefield,
+          ...gameStateStub.battlefield,
           lands: {
-            ...mockGameState.battlefield.lands,
+            ...gameStateStub.battlefield.lands,
             [tileId]: tileWithMixedArmy,
           },
         },
@@ -305,13 +267,13 @@ describe('LandCharacteristicsPopup', () => {
         army: [],
       };
 
-      const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
+      const tileId = battlefieldLandId(mockTileState.mapPos);
       const gameStateWithoutArmy = {
-        ...mockGameState,
+        ...gameStateStub,
         battlefield: {
-          ...mockGameState.battlefield,
+          ...gameStateStub.battlefield,
           lands: {
-            ...mockGameState.battlefield.lands,
+            ...gameStateStub.battlefield.lands,
             [tileId]: tileWithoutArmy,
           },
         },
@@ -340,13 +302,13 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
+      const tileId = battlefieldLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
-        ...mockGameState,
+        ...gameStateStub,
         battlefield: {
-          ...mockGameState.battlefield,
+          ...gameStateStub.battlefield,
           lands: {
-            ...mockGameState.battlefield.lands,
+            ...gameStateStub.battlefield.lands,
             [tileId]: tileWithHeroesOnly,
           },
         },
@@ -377,13 +339,13 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = `${mockTileState.mapPos.row}-${mockTileState.mapPos.col}`;
+      const tileId = battlefieldLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
-        ...mockGameState,
+        ...gameStateStub,
         battlefield: {
-          ...mockGameState.battlefield,
+          ...gameStateStub.battlefield,
           lands: {
-            ...mockGameState.battlefield.lands,
+            ...gameStateStub.battlefield.lands,
             [tileId]: tileWithUnitsOnly,
           },
         },

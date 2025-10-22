@@ -1,9 +1,6 @@
 import { GameState, TurnPhase } from '../../types/GameState';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { generateMap } from '../../map/generation/generateMap';
-import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { TurnManager } from '../../turn/TurnManager';
-import { toGamePlayer } from '../utils/toGamePlayer';
+import { createGameStateStub } from '../utils/createGameStateStub';
 
 describe('Turn Mechanics with Different Map Sizes', () => {
   const createGameState = (mapSize: 'small' | 'medium' | 'large' | 'huge'): GameState => {
@@ -14,19 +11,11 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       huge: { rows: 15, cols: 31 },
     };
 
-    const player1 = toGamePlayer(PREDEFINED_PLAYERS[0], 'human');
-    const player2 = toGamePlayer(PREDEFINED_PLAYERS[0], 'computer');
-
-    const gameState: GameState = {
-      battlefield: generateMap(dimensions[mapSize]),
-      turn: 1,
-      turnOwner: player1.id,
+    return createGameStateStub({
+      nPlayers: 2,
+      battlefieldSize: dimensions[mapSize],
       turnPhase: TurnPhase.START,
-      players: [player1, player2],
-    };
-
-    addPlayerToMap(gameState);
-    return gameState;
+    });
   };
 
   test.each(['small', 'medium', 'large', 'huge'])(
@@ -104,7 +93,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       expect(gameOverCalled).toBe(false);
 
       // Turn should advance to next player
-      expect(gameState.turnOwner).toBe('alaric');
+      expect(gameState.turnOwner).toBe('morgana');
     }
   );
 

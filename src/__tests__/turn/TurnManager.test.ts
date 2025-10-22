@@ -1,11 +1,9 @@
-import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
-import { GameState, TurnPhase } from '../../types/GameState';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import * as startTurnModule from '../../turn/startTurn';
 import * as endTurnModule from '../../turn/endTurn';
 import * as mainAiTurnModule from '../../turn/mainAiTurn';
-import { toGamePlayer } from '../utils/toGamePlayer';
-import { generateMockMap } from '../utils/generateMockMap';
+import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
+import { GameState, TurnPhase } from '../../types/GameState';
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 // Mock the turn modules
 jest.mock('../../turn/startTurn');
@@ -28,19 +26,12 @@ describe('TurnManager', () => {
   let mockCallbacks: jest.Mocked<TurnManagerCallbacks>;
   let mockGameState: GameState;
 
-  const humanPlayer = toGamePlayer(PREDEFINED_PLAYERS[0], 'human');
-  const computerPlayer = toGamePlayer(PREDEFINED_PLAYERS[1], 'computer');
+  const createMockGameState = (turnOwner: number = 0): GameState => {
+    const gameStateStub = createDefaultGameStateStub();
+    gameStateStub.turnOwner = gameStateStub.players[turnOwner].id;
 
-  const createMockGameState = (
-    turnOwner: string = humanPlayer.id,
-    turnPhase: TurnPhase = TurnPhase.MAIN
-  ): GameState => ({
-    battlefield: generateMockMap(5, 5),
-    turn: 1,
-    turnOwner,
-    turnPhase,
-    players: [humanPlayer, computerPlayer],
-  });
+    return gameStateStub;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -125,7 +116,7 @@ describe('TurnManager', () => {
     });
 
     it('should handle computer player main phase', () => {
-      const aiGameState = createMockGameState(computerPlayer.id);
+      const aiGameState = createMockGameState(1);
       turnManager.startNewTurn(aiGameState);
 
       jest.advanceTimersByTime(1000);
@@ -136,7 +127,7 @@ describe('TurnManager', () => {
     });
 
     it('should auto-end computer turn after delay', () => {
-      const aiGameState = createMockGameState(computerPlayer.id);
+      const aiGameState = createMockGameState(1);
       const endCurrentTurnSpy = jest.spyOn(turnManager, 'endCurrentTurn');
 
       turnManager.startNewTurn(aiGameState);
@@ -232,7 +223,7 @@ describe('TurnManager', () => {
   describe('canEndTurn', () => {
     it('should return true for human player in main phase', () => {
       mockGameState.turnPhase = TurnPhase.MAIN;
-      mockGameState.turnOwner = humanPlayer.id; // Human player
+      mockGameState.turnOwner = mockGameState.players[0].id; // Human player
 
       const result = turnManager.canEndTurn(mockGameState);
 
@@ -299,7 +290,7 @@ describe('TurnManager', () => {
     });
 
     it('should handle complete turn cycle for computer player', () => {
-      const aiGameState = createMockGameState(computerPlayer.id);
+      const aiGameState = createMockGameState(1);
       const endCurrentTurnSpy = jest.spyOn(turnManager, 'endCurrentTurn');
 
       // Start turn
