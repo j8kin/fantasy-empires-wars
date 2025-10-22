@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './css/Avatar.module.css';
 
 import { NO_PLAYER, PlayerInfo } from '../../types/GamePlayer';
+import { getAvatarImg } from '../../assets/getAvatarImg';
 
 type AvatarShape = 'circle' | 'rectangle';
 
@@ -40,14 +41,14 @@ const Avatar: React.FC<AvatarProps> = ({
     );
   }
 
-  if (!player.avatar) {
+  if (!getAvatarImg(player.id)) {
     return null;
   }
 
   return (
     <div style={dynamicStyles} className={containerClassName}>
       <img
-        src={player.avatar}
+        src={getAvatarImg(player.id)}
         alt={player.name}
         className={styles.image}
         onError={(e) => {
