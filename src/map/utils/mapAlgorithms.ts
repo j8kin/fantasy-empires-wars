@@ -1,4 +1,4 @@
-import { getLands, LandPosition } from './mapLands';
+import { getLands, LandPosition } from './getLands';
 import {
   BattlefieldDimensions,
   battlefieldLandId,
@@ -85,13 +85,10 @@ export const getNearestStrongholdLand = (
   gameState: GameState,
   radius: number = 2
 ): LandState | undefined => {
-  const allStrongholdsInRadius2 = getLands(
-    gameState.battlefield.lands,
-    undefined,
-    undefined,
-    undefined,
-    [BuildingType.STRONGHOLD]
-  )
+  const allStrongholdsInRadius2 = getLands({
+    lands: gameState.battlefield.lands,
+    buildings: [BuildingType.STRONGHOLD],
+  })
     .filter(
       (stronghold) => stronghold.mapPos.row !== landPos.row || stronghold.mapPos.col !== landPos.col
     )

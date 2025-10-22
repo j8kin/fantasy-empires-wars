@@ -7,7 +7,7 @@ import {
 } from '../../types/GameState';
 import { getLandById, Land, LAND_TYPE } from '../../types/Land';
 import { NO_PLAYER } from '../../types/GamePlayer';
-import { LandPosition } from '../utils/mapLands';
+import { LandPosition } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 
 const positionsToTiles = (pos: LandPosition[], tiles: BattlefieldLands): LandState[] => {

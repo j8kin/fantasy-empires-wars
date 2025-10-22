@@ -5,7 +5,7 @@ import { getUnit, UnitType } from '../types/Army';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
 import { recruitWarriors } from '../map/army/recruit';
-import { LandPosition } from '../map/utils/mapLands';
+import { LandPosition } from '../map/utils/getLands';
 import {
   createDefaultGameStateStub,
   defaultBattlefieldSizeStub,

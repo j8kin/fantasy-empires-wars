@@ -6,19 +6,26 @@ import { BuildingType } from '../../types/Building';
 
 export type LandPosition = { row: number; col: number };
 
-export const getLands = (
-  tiles: BattlefieldLands,
-  player?: PlayerInfo[],
-  landType?: LAND_TYPE,
-  landAlignment?: Alignment,
-  buildings?: BuildingType[],
-  noArmy?: boolean
-): LandState[] => {
-  return Object.values(tiles).filter(
+export const getLands = ({
+  lands,
+  players,
+  landType,
+  landAlignment,
+  buildings,
+  noArmy,
+}: {
+  lands: BattlefieldLands;
+  players?: PlayerInfo[];
+  landType?: LAND_TYPE;
+  landAlignment?: Alignment;
+  buildings?: BuildingType[];
+  noArmy?: boolean;
+}): LandState[] => {
+  return Object.values(lands).filter(
     (tile) =>
-      (player == null ||
-        (player.length === 0 && tile.controlledBy === NO_PLAYER.id) ||
-        (player.length > 0 && player.some((gp) => gp.id === tile.controlledBy))) &&
+      (players == null ||
+        (players.length === 0 && tile.controlledBy === NO_PLAYER.id) ||
+        (players.length > 0 && players.some((gp) => gp.id === tile.controlledBy))) &&
       (landType == null || tile.land.id === landType) &&
       (landAlignment == null || tile.land.alignment === landAlignment) &&
       // ignore buildings

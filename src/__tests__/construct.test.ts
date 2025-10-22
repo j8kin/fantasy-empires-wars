@@ -2,18 +2,26 @@ import { battlefieldLandId } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
 import { BuildingType } from '../types/Building';
-import { getLands, LandPosition } from '../map/utils/mapLands';
+import { getLands, LandPosition } from '../map/utils/getLands';
 import { recruitWarriors } from '../map/army/recruit';
 import { getUnit, UnitType } from '../types/Army';
 import {
   createDefaultGameStateStub,
   defaultBattlefieldSizeStub,
 } from './utils/createGameStateStub';
+import { GamePlayer } from '../types/GamePlayer';
 
 describe('Construct Buildings', () => {
   let gameStateStub = createDefaultGameStateStub();
+
   const player1 = gameStateStub.players[0];
   const player2 = gameStateStub.players[1];
+
+  const getPlayerLands = (player: GamePlayer) =>
+    getLands({
+      lands: gameStateStub.battlefield.lands,
+      players: [player],
+    }).map((land) => battlefieldLandId(land.mapPos));
 
   beforeEach(() => {
     // clear map to remove all armies and buildings
@@ -23,9 +31,7 @@ describe('Construct Buildings', () => {
   describe('Constructing a building', () => {
     it('Build one Stronghold', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
-      const player1Lands = getLands(gameStateStub.battlefield.lands, [player1]).map((land) =>
-        battlefieldLandId(land.mapPos)
-      );
+      const player1Lands = getPlayerLands(player1);
 
       // row 1
       expect(player1Lands).toContain('1-2');
@@ -60,9 +66,10 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 8 }, gameStateStub);
 
-      const player1Lands = getLands(gameStateStub.battlefield.lands, [player1]).map((land) =>
-        battlefieldLandId(land.mapPos)
-      );
+      const player1Lands = getLands({
+        lands: gameStateStub.battlefield.lands,
+        players: [player1],
+      }).map((land) => battlefieldLandId(land.mapPos));
       // row 1
       expect(player1Lands).toContain('1-2');
       expect(player1Lands).toContain('1-3');
@@ -91,9 +98,7 @@ describe('Construct Buildings', () => {
 
       expect(player1Lands.length).toBe(19);
 
-      const player2Lands = getLands(gameStateStub.battlefield.lands, [player2]).map((land) =>
-        battlefieldLandId(land.mapPos)
-      );
+      const player2Lands = getPlayerLands(player2);
       // row 1
       expect(player2Lands).toContain('1-7');
       expect(player2Lands).toContain('1-8');
@@ -127,9 +132,7 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 7 }, gameStateStub);
 
-      const player1Lands = getLands(gameStateStub.battlefield.lands, [player1]).map((land) =>
-        battlefieldLandId(land.mapPos)
-      );
+      const player1Lands = getPlayerLands(player1);
       // row 1
       expect(player1Lands).toContain('1-2');
       expect(player1Lands).toContain('1-3');
@@ -158,9 +161,7 @@ describe('Construct Buildings', () => {
       //no other lands should be in the player's land's
       expect(player1Lands.length).toBe(18);
 
-      const player2Lands = getLands(gameStateStub.battlefield.lands, [player2]).map((land) =>
-        battlefieldLandId(land.mapPos)
-      );
+      const player2Lands = getPlayerLands(player2);
       // row 1
       expect(player2Lands).toContain('1-6');
       expect(player2Lands).toContain('1-7');
@@ -194,9 +195,7 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, gameStateStub);
 
-      const player1Lands = getLands(gameStateStub.battlefield.lands, [player1]).map((land) =>
-        battlefieldLandId(land.mapPos)
-      );
+      const player1Lands = getPlayerLands(player1);
       // row 1
       expect(player1Lands).toContain('1-2');
       expect(player1Lands).toContain('1-3');
@@ -225,9 +224,7 @@ describe('Construct Buildings', () => {
       //no other lands should be in the player's land's
       expect(player1Lands.length).toBe(16);
 
-      const player2Lands = getLands(gameStateStub.battlefield.lands, [player2]).map((land) =>
-        battlefieldLandId(land.mapPos)
-      );
+      const player2Lands = getPlayerLands(player2);
       // row 1
       expect(player2Lands).toContain('1-5');
       expect(player2Lands).toContain('1-6');
@@ -262,9 +259,7 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.BARRACKS, { row: 3, col: 5 }, gameStateStub);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, gameStateStub);
 
-      const player1Lands = getLands(gameStateStub.battlefield.lands, [player1]).map((land) =>
-        battlefieldLandId(land.mapPos)
-      );
+      const player1Lands = getPlayerLands(player1);
       // row 1
       expect(player1Lands).toContain('1-2');
       expect(player1Lands).toContain('1-3');
@@ -293,9 +288,7 @@ describe('Construct Buildings', () => {
       //no other lands should be in the player's land's
       expect(player1Lands.length).toBe(17);
 
-      const player2Lands = getLands(gameStateStub.battlefield.lands, [player2]).map((land) =>
-        battlefieldLandId(land.mapPos)
-      );
+      const player2Lands = getPlayerLands(player2);
       // row 1
       expect(player2Lands).toContain('1-5');
       expect(player2Lands).toContain('1-6');
@@ -338,7 +331,7 @@ describe('Construct Buildings', () => {
         gameStateStub.battlefield.lands[battlefieldLandId(strongholdPos)].buildings.length
       ).toBe(0);
 
-      const player1Lands = getLands(gameStateStub.battlefield.lands, [player1]);
+      const player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(0);
     });
 
@@ -358,7 +351,7 @@ describe('Construct Buildings', () => {
       );
 
       // no player lands destroyed
-      const player1Lands = getLands(gameStateStub.battlefield.lands, [player1]);
+      const player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(19);
     });
 
@@ -378,7 +371,7 @@ describe('Construct Buildings', () => {
       );
 
       // no player lands exist
-      const player1Lands = getLands(gameStateStub.battlefield.lands, [player1]);
+      const player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(0);
     });
 
@@ -404,18 +397,18 @@ describe('Construct Buildings', () => {
       expect(gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].army.length).toBe(1);
 
       // no player lands exist
-      const player1Lands = getLands(gameStateStub.battlefield.lands, [player1]);
+      const player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(1);
-      expect(battlefieldLandId(player1Lands[0].mapPos)).toBe(battlefieldLandId(buildingPos));
+      expect(player1Lands[0]).toBe(battlefieldLandId(buildingPos));
     });
 
     it('When stronghold destroyed land could change owner', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, gameStateStub);
 
-      let player1Lands = getLands(gameStateStub.battlefield.lands, [player1]);
+      let player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(16);
-      let player2Lands = getLands(gameStateStub.battlefield.lands, [player2]);
+      let player2Lands = getPlayerLands(player2);
       expect(player2Lands.length).toBe(18);
       expect(gameStateStub.battlefield.lands['3-4'].controlledBy).toBe(player1.id);
 
@@ -423,10 +416,10 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.DEMOLITION, strongholdPos, gameStateStub);
 
       // no player lands exist
-      player1Lands = getLands(gameStateStub.battlefield.lands, [player1]);
+      player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(0);
       // player2 lands increased
-      player2Lands = getLands(gameStateStub.battlefield.lands, [player2]);
+      player2Lands = getPlayerLands(player2);
       expect(player2Lands.length).toBe(19);
 
       expect(gameStateStub.battlefield.lands['3-4'].controlledBy).toBe(player2.id); // now controlled by player 2
@@ -437,9 +430,9 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.STRONGHOLD, { row: 1, col: 5 }, gameStateStub); // stronghold of player 1 near destroyed land
       construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, gameStateStub);
 
-      let player1Lands = getLands(gameStateStub.battlefield.lands, [player1]);
+      let player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(24);
-      let player2Lands = getLands(gameStateStub.battlefield.lands, [player2]);
+      let player2Lands = getPlayerLands(player2);
       expect(player2Lands.length).toBe(14);
 
       expect(gameStateStub.battlefield.lands['3-4'].controlledBy).toBe(player1.id); // under player 1 control before destruction
@@ -448,12 +441,12 @@ describe('Construct Buildings', () => {
       construct(player1, BuildingType.DEMOLITION, strongholdPos, gameStateStub);
 
       // no player lands exist
-      player1Lands = getLands(gameStateStub.battlefield.lands, [player1]);
+      player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(12);
       expect(gameStateStub.battlefield.lands['3-4'].controlledBy).toBe(player1.id); // still owned by player 1
 
       // player2 lands increased
-      player2Lands = getLands(gameStateStub.battlefield.lands, [player2]);
+      player2Lands = getPlayerLands(player2);
       expect(player2Lands.length).toBe(14); // not changed
     });
   });

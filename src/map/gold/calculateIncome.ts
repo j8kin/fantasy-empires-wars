@@ -1,6 +1,6 @@
 import { GameState, getTurnOwner } from '../../types/GameState';
 
-import { getLands } from '../utils/mapLands';
+import { getLands } from '../utils/getLands';
 import { calculateHexDistance } from '../utils/mapAlgorithms';
 
 import { BuildingType } from '../../types/Building';
@@ -12,10 +12,12 @@ export const calculateIncome = (gameState: GameState): number => {
 
   if (player == null) return 0;
 
-  const playerLands = getLands(battlefield.lands, [player]);
-  const playerStrongholds = getLands(battlefield.lands, [player], undefined, undefined, [
-    BuildingType.STRONGHOLD,
-  ]).map((land) => land.mapPos);
+  const playerLands = getLands({ lands: battlefield.lands, players: [player] });
+  const playerStrongholds = getLands({
+    lands: battlefield.lands,
+    players: [player],
+    buildings: [BuildingType.STRONGHOLD],
+  }).map((land) => land.mapPos);
 
   return playerLands.reduce((acc, land) => {
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands

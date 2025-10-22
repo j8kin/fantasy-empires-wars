@@ -1,5 +1,5 @@
 import { Spell } from '../../types/Spell';
-import { LandPosition } from '../utils/mapLands';
+import { LandPosition } from '../utils/getLands';
 import { battlefieldLandId, GameState } from '../../types/GameState';
 
 // todo implement spells

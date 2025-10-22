@@ -1,7 +1,7 @@
 import { GameState, getTurnOwner } from '../types/GameState';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
-import { getLands } from '../map/utils/mapLands';
+import { getLands } from '../map/utils/getLands';
 import { ArmyUnit, getUnit } from '../types/Army';
 import { BuildingType } from '../types/Building';
 
@@ -11,14 +11,18 @@ export const startTurn = (gameState: GameState) => {
   const player = getTurnOwner(gameState)!;
 
   // recruit units
-  getLands(gameState.battlefield.lands, [player], undefined, undefined, [
-    BuildingType.BARRACKS,
-    BuildingType.WHITE_MAGE_TOWER,
-    BuildingType.BLACK_MAGE_TOWER,
-    BuildingType.GREEN_MAGE_TOWER,
-    BuildingType.BLUE_MAGE_TOWER,
-    BuildingType.RED_MAGE_TOWER,
-  ]).forEach((l) =>
+  getLands({
+    lands: gameState.battlefield.lands,
+    players: [player],
+    buildings: [
+      BuildingType.BARRACKS,
+      BuildingType.WHITE_MAGE_TOWER,
+      BuildingType.BLACK_MAGE_TOWER,
+      BuildingType.GREEN_MAGE_TOWER,
+      BuildingType.BLUE_MAGE_TOWER,
+      BuildingType.RED_MAGE_TOWER,
+    ],
+  }).forEach((l) =>
     l.buildings.forEach((b) => {
       if (b.slots) {
         b.slots.forEach((s) => {
@@ -33,7 +37,7 @@ export const startTurn = (gameState: GameState) => {
   );
 
   // complete army movement and merge ready armies
-  getLands(gameState.battlefield.lands, [player], undefined, undefined, undefined, false).forEach(
+  getLands({ lands: gameState.battlefield.lands, players: [player], noArmy: false }).forEach(
     (land) => {
       land.army.filter((a) => a.moveInTurn > 0).forEach((a) => a.moveInTurn--);
 

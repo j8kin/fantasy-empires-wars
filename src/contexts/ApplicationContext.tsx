@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { GamePlayer, PlayerInfo } from '../types/GamePlayer';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
-import { LandPosition } from '../map/utils/mapLands';
+import { LandPosition } from '../map/utils/getLands';
 
 interface ApplicationContextType {
   selectedLandAction: string | null;

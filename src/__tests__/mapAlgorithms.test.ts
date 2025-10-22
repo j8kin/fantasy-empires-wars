@@ -1,5 +1,5 @@
 import { calculateHexDistance, getTilesInRadius } from '../map/utils/mapAlgorithms';
-import { LandPosition } from '../map/utils/mapLands';
+import { LandPosition } from '../map/utils/getLands';
 
 describe('Map Algorithms', () => {
   const comparePositions = (expected: LandPosition, actual: LandPosition) => {

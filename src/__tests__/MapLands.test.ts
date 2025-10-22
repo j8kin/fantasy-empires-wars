@@ -1,5 +1,5 @@
 import { generateMockMap } from './utils/generateMockMap';
-import { getLands } from '../map/utils/mapLands';
+import { getLands } from '../map/utils/getLands';
 import { construct } from '../map/building/construct';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BuildingType } from '../types/Building';
@@ -21,7 +21,14 @@ describe('MapLands', () => {
       const mockMap: BattlefieldMap = generateMockMap(battlefieldSize);
 
       expect(
-        getLands(mockMap.lands, undefined, undefined, undefined, undefined, undefined).length
+        getLands({
+          lands: mockMap.lands,
+          players: undefined,
+          landType: undefined,
+          landAlignment: undefined,
+          buildings: undefined,
+          noArmy: undefined,
+        }).length
       ).toEqual(nTiles5x5);
     });
 
@@ -32,10 +39,16 @@ describe('MapLands', () => {
         mockMap.lands['0-0'].land = getLandById(LAND_TYPE.VOLCANO);
         mockMap.lands['0-1'].land = getLandById(LAND_TYPE.LAVA);
         mockMap.lands['0-1'].controlledBy = player.id;
-        expect(getLands(mockMap.lands, undefined, LAND_TYPE.VOLCANO).length).toEqual(1);
-        expect(getLands(mockMap.lands, [player], LAND_TYPE.LAVA).length).toEqual(1);
-        expect(getLands(mockMap.lands, undefined, LAND_TYPE.PLAINS).length).toEqual(nTiles5x5 - 2);
-        expect(getLands(mockMap.lands, [player], LAND_TYPE.PLAINS).length).toEqual(0);
+        expect(getLands({ lands: mockMap.lands, landType: LAND_TYPE.VOLCANO }).length).toEqual(1);
+        expect(
+          getLands({ lands: mockMap.lands, players: [player], landType: LAND_TYPE.LAVA }).length
+        ).toEqual(1);
+        expect(getLands({ lands: mockMap.lands, landType: LAND_TYPE.PLAINS }).length).toEqual(
+          nTiles5x5 - 2
+        );
+        expect(
+          getLands({ lands: mockMap.lands, players: [player], landType: LAND_TYPE.PLAINS }).length
+        ).toEqual(0);
       });
     });
 
@@ -46,9 +59,13 @@ describe('MapLands', () => {
         mockMap.lands['0-0'].land = getLandById(LAND_TYPE.VOLCANO);
         mockMap.lands['0-1'].land = getLandById(LAND_TYPE.LAVA);
 
-        expect(getLands(mockMap.lands, undefined, undefined, Alignment.CHAOTIC).length).toEqual(2);
-        expect(getLands(mockMap.lands, undefined, undefined, Alignment.LAWFUL).length).toEqual(0); // Plants have NEUTRAL alignment
-        expect(getLands(mockMap.lands, undefined, undefined, Alignment.NEUTRAL).length).toEqual(
+        expect(getLands({ lands: mockMap.lands, landAlignment: Alignment.CHAOTIC }).length).toEqual(
+          2
+        );
+        expect(getLands({ lands: mockMap.lands, landAlignment: Alignment.LAWFUL }).length).toEqual(
+          0
+        ); // Plants have NEUTRAL alignment
+        expect(getLands({ lands: mockMap.lands, landAlignment: Alignment.NEUTRAL }).length).toEqual(
           nTiles5x5 - 2
         );
       });
@@ -57,9 +74,11 @@ describe('MapLands', () => {
         const gameStateStub = createDefaultGameStateStub();
 
         expect(
-          getLands(gameStateStub.battlefield.lands, undefined, undefined, Alignment.NEUTRAL, [
-            BuildingType.STRONGHOLD,
-          ]).length
+          getLands({
+            lands: gameStateStub.battlefield.lands,
+            landAlignment: Alignment.NEUTRAL,
+            buildings: [BuildingType.STRONGHOLD],
+          }).length
         ).toEqual(3); // in createDefaultStubGameState there are 3 players are placed on the map
       });
 
@@ -67,8 +86,11 @@ describe('MapLands', () => {
         const stubGameState = createGameStateStub({ nPlayers: 1 });
 
         expect(
-          getLands(stubGameState.battlefield.lands, undefined, undefined, Alignment.NEUTRAL, [])
-            .length
+          getLands({
+            lands: stubGameState.battlefield.lands,
+            landAlignment: Alignment.NEUTRAL,
+            buildings: [],
+          }).length
         ).toEqual(nTiles10x20 - 1);
       });
     });
@@ -81,40 +103,37 @@ describe('MapLands', () => {
       });
 
       it('should return the lands of the owner', () => {
-        const playerLands = getLands(stubGameState.battlefield.lands, [player]);
+        const playerLands = getLands({ lands: stubGameState.battlefield.lands, players: [player] });
         expect(playerLands.length).toEqual(nTilesInRadius2);
       });
 
       it('should return the lands without owner', () => {
-        const playerLands = getLands(stubGameState.battlefield.lands, []);
+        const playerLands = getLands({ lands: stubGameState.battlefield.lands, players: [] });
         expect(playerLands.length).toEqual(nTiles10x20 - nTilesInRadius2 * 3); // 3 players are placed on the map in createDefaultStubGameState
       });
 
       it('should return the lands of the owner without stronghold', () => {
-        const playerLands = getLands(
-          stubGameState.battlefield.lands,
-          [player],
-          undefined,
-          undefined,
-          []
-        );
+        const playerLands = getLands({
+          lands: stubGameState.battlefield.lands,
+          players: [player],
+          buildings: [],
+        });
         expect(playerLands.length).toEqual(nTilesInRadius2 - 1);
       });
 
       it('should return the lands of the owner with stronghold', () => {
         construct(player, BuildingType.BARRACKS, { row: 1, col: 2 }, stubGameState);
-        let playerLands = getLands(
-          stubGameState.battlefield.lands,
-          [player],
-          undefined,
-          undefined,
-          [BuildingType.STRONGHOLD]
-        );
+        let playerLands = getLands({
+          lands: stubGameState.battlefield.lands,
+          players: [player],
+          buildings: [BuildingType.STRONGHOLD],
+        });
         expect(playerLands.length).toEqual(1);
-        playerLands = getLands(stubGameState.battlefield.lands, [player], undefined, undefined, [
-          BuildingType.STRONGHOLD,
-          BuildingType.BARRACKS,
-        ]);
+        playerLands = getLands({
+          lands: stubGameState.battlefield.lands,
+          players: [player],
+          buildings: [BuildingType.STRONGHOLD, BuildingType.BARRACKS],
+        });
         expect(playerLands.length).toEqual(2);
       });
     });
@@ -123,61 +142,27 @@ describe('MapLands', () => {
       it('should return the lands with heroes and without (1 player on map)', () => {
         const stubGameState = createGameStateStub({ nPlayers: 1 });
 
-        expect(
-          getLands(
-            stubGameState.battlefield.lands,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            false
-          ).length
-        ).toEqual(1);
-        expect(
-          getLands(
-            stubGameState.battlefield.lands,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            true
-          ).length
-        ).toEqual(nTiles10x20 - 1);
+        expect(getLands({ lands: stubGameState.battlefield.lands, noArmy: false }).length).toEqual(
+          1
+        );
+        expect(getLands({ lands: stubGameState.battlefield.lands, noArmy: true }).length).toEqual(
+          nTiles10x20 - 1
+        );
       });
 
       it('should return the lands with heroes and without (3 player on map)', () => {
         const stubGameState = createDefaultGameStateStub();
 
+        expect(getLands({ lands: stubGameState.battlefield.lands, noArmy: false }).length).toEqual(
+          3
+        );
         expect(
-          getLands(
-            stubGameState.battlefield.lands,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            false
-          ).length
-        ).toEqual(3);
-        expect(
-          getLands(
-            stubGameState.battlefield.lands,
-            [player],
-            undefined,
-            undefined,
-            undefined,
-            false
-          ).length
+          getLands({ lands: stubGameState.battlefield.lands, players: [player], noArmy: false })
+            .length
         ).toEqual(1);
-        expect(
-          getLands(
-            stubGameState.battlefield.lands,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            true
-          ).length
-        ).toEqual(nTiles10x20 - 3);
+        expect(getLands({ lands: stubGameState.battlefield.lands, noArmy: true }).length).toEqual(
+          nTiles10x20 - 3
+        );
       });
     });
   });

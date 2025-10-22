@@ -5,7 +5,7 @@ import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteris
 import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
 import { Army, getUnit, UnitType } from '../../types/Army';
 import { createGameStateStub } from '../utils/createGameStateStub';
-import { getLands } from '../../map/utils/mapLands';
+import { getLands } from '../../map/utils/getLands';
 import { BuildingType } from '../../types/Building';
 
 // Mock the useGameContext hook
@@ -56,13 +56,11 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     // Find a tile that's controlled by player 1 (Morgana Shadowweaver) AND has buildings
-    mockTileState = getLands(
-      gameStateStub.battlefield.lands,
-      [gameStateStub.players[1]],
-      undefined,
-      undefined,
-      [BuildingType.STRONGHOLD]
-    )[0];
+    mockTileState = getLands({
+      lands: gameStateStub.battlefield.lands,
+      players: [gameStateStub.players[1]],
+      buildings: [BuildingType.STRONGHOLD],
+    })[0];
 
     jest.clearAllMocks();
   });

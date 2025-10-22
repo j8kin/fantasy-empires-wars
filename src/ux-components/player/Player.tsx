@@ -7,7 +7,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import Avatar from '../avatars/Avatar';
 
 import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
-import { getLands } from '../../map/utils/mapLands';
+import { getLands } from '../../map/utils/getLands';
 
 export interface PlayerProps {
   avatarSize: number;
@@ -17,17 +17,17 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
   const { addGlowingTile } = useApplicationContext();
   const { gameState } = useGameContext();
 
-  const selectedPlayer = getTurnOwner(gameState);
+  const turnOwner = getTurnOwner(gameState);
 
-  if (!selectedPlayer) {
+  if (!turnOwner) {
     return null;
   }
 
   const handleAvatarClick = () => {
-    if (!gameState || !selectedPlayer) return;
+    if (!gameState || !turnOwner) return;
     // Find all lands controlled by the selected player
     setTimeout(() => {
-      getLands(gameState.battlefield.lands, [selectedPlayer]).forEach((land) => {
+      getLands({ lands: gameState.battlefield.lands, players: [turnOwner] }).forEach((land) => {
         addGlowingTile(battlefieldLandId(land.mapPos));
       });
     }, 0);
@@ -37,17 +37,17 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
     <div className={styles.playerContainer}>
       <div onClick={handleAvatarClick} style={{ cursor: 'pointer' }}>
         <Avatar
-          player={selectedPlayer}
+          player={turnOwner}
           size={avatarSize}
           shape="rectangle"
-          borderColor={selectedPlayer.color}
+          borderColor={turnOwner.color}
         />
       </div>
       <div className={styles.playerDetails}>
-        <div className={styles.playerName}>{selectedPlayer.name}</div>
+        <div className={styles.playerName}>{turnOwner.name}</div>
         <div className={styles.moneyInfo}>
-          <div className={styles.moneyItem}>Gold: {selectedPlayer.money}</div>
-          <div className={styles.moneyItem}>+{selectedPlayer.income}/turn</div>
+          <div className={styles.moneyItem}>Gold: {turnOwner.money}</div>
+          <div className={styles.moneyItem}>+{turnOwner.income}/turn</div>
         </div>
       </div>
     </div>

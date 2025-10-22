@@ -1,7 +1,7 @@
 import { BattlefieldMap, GameState, LandState } from '../../types/GameState';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { getUnit } from '../../types/Army';
-import { getLands, LandPosition } from '../utils/mapLands';
+import { getLands, LandPosition } from '../utils/getLands';
 import { construct } from '../building/construct';
 import { BuildingType } from '../../types/Building';
 import { LAND_TYPE } from '../../types/Land';
@@ -111,19 +111,24 @@ const addPlayer = (
   construct(player, BuildingType.STRONGHOLD, homeland.mapPos, gameState);
 
   // construct one barrack on the same alignment land except homeland
-  let playerLands = getLands(
-    gameState.battlefield.lands,
-    [player],
-    homeland.land.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
-    player.alignment,
-    []
-  );
+  let playerLands = getLands({
+    lands: gameState.battlefield.lands,
+    players: [player],
+    landType: homeland.land.id === LAND_TYPE.VOLCANO ? LAND_TYPE.LAVA : undefined,
+    landAlignment: player.alignment,
+    buildings: [],
+  });
   const barrackLand = playerLands[Math.floor(Math.random() * playerLands.length)];
   if (barrackLand != null) {
     construct(player, BuildingType.BARRACKS, barrackLand.mapPos, gameState);
   } else {
-    // if no lands with the same alignment try to build on neutral land
-    playerLands = getLands(gameState.battlefield.lands, [player], undefined, Alignment.NEUTRAL, []);
+    // if no lands with the same alignment, try to build on neutral land
+    playerLands = getLands({
+      lands: gameState.battlefield.lands,
+      players: [player],
+      landAlignment: Alignment.NEUTRAL,
+      buildings: [],
+    });
     construct(
       player,
       BuildingType.BARRACKS,

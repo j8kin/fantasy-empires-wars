@@ -6,7 +6,7 @@ import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { Land, LAND_TYPE } from '../../types/Land';
 import { generateMap } from '../../map/generation/generateMap';
 import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
-import { LandPosition } from '../../map/utils/mapLands';
+import { LandPosition } from '../../map/utils/getLands';
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { Alignment } from '../../types/Alignment';
 import { toGamePlayer } from '../utils/toGamePlayer';

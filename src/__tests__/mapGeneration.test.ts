@@ -8,7 +8,7 @@ import { calculateHexDistance } from '../map/utils/mapAlgorithms';
 import { Alignment } from '../types/Alignment';
 import { toGamePlayer } from './utils/toGamePlayer';
 import { createGameStateStub } from './utils/createGameStateStub';
-import { getLands } from '../map/utils/mapLands';
+import { getLands } from '../map/utils/getLands';
 
 describe('Map Generation with Players', () => {
   describe('Basic Map Generation Without Players', () => {
@@ -48,7 +48,10 @@ describe('Map Generation with Players', () => {
       addPlayerToMap(gameStateStub);
 
       // Find volcano tile
-      const volcanoTiles = getLands(gameStateStub.battlefield.lands, undefined, LAND_TYPE.VOLCANO);
+      const volcanoTiles = getLands({
+        lands: gameStateStub.battlefield.lands,
+        landType: LAND_TYPE.VOLCANO,
+      });
       expect(volcanoTiles.length).toBe(1);
 
       const volcanoTile = volcanoTiles[0];

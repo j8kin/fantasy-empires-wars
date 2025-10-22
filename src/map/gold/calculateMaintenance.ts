@@ -1,7 +1,7 @@
 import { GameState, getTurnOwner } from '../../types/GameState';
 import { PlayerInfo } from '../../types/GamePlayer';
 
-import { getLands } from '../utils/mapLands';
+import { getLands } from '../utils/getLands';
 
 import { BuildingType } from '../../types/Building';
 import { Unit } from '../../types/Army';
@@ -26,25 +26,20 @@ export const calculateMaintenance = (gameState: GameState): number => {
   if (player == null) return 0;
 
   // building maintenance
-  const buildingMaintenance = getLands(
-    gameState.battlefield.lands,
-    [player],
-    undefined,
-    undefined,
-    Object.values(BuildingType)
-  ).reduce((acc, land) => {
+  const buildingMaintenance = getLands({
+    lands: gameState.battlefield.lands,
+    players: [player],
+    buildings: Object.values(BuildingType),
+  }).reduce((acc, land) => {
     return acc + land.buildings.reduce((acc, building) => acc + building.maintainCost, 0);
   }, 0);
 
   // army maintenance
-  const armyMaintenance = getLands(
-    gameState.battlefield.lands,
-    [player],
-    undefined,
-    undefined,
-    undefined,
-    false
-  ).reduce((acc, army) => {
+  const armyMaintenance = getLands({
+    lands: gameState.battlefield.lands,
+    players: [player],
+    noArmy: false,
+  }).reduce((acc, army) => {
     return (
       acc +
       army.army.reduce((acc, units) => {

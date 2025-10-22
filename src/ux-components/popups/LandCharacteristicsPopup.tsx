@@ -9,7 +9,7 @@ import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
 import { NO_PLAYER } from '../../types/GamePlayer';
-import { LandPosition } from '../../map/utils/mapLands';
+import { LandPosition } from '../../map/utils/getLands';
 import { useGameContext } from '../../contexts/GameContext';
 
 interface LandCharacteristicsPopupProps extends PopupProps {

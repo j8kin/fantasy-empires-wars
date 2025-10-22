@@ -8,7 +8,7 @@ import Avatar from '../avatars/Avatar';
 
 import { GamePlayer } from '../../types/GamePlayer';
 import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
-import { getLands } from '../../map/utils/mapLands';
+import { getLands } from '../../map/utils/getLands';
 
 const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameContext();
@@ -19,7 +19,7 @@ const OpponentsPanel: React.FC = () => {
       showOpponentInfo(opponent, screenPosition);
 
       setTimeout(() => {
-        getLands(gameState!.battlefield.lands, [opponent]).forEach((land) => {
+        getLands({ lands: gameState!.battlefield.lands, players: [opponent] }).forEach((land) => {
           addGlowingTile(battlefieldLandId(land.mapPos));
         });
       }, 0);

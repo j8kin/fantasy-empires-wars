@@ -6,7 +6,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
 import { battlefieldLandId, getPlayerById, getTurnOwner } from '../../types/GameState';
-import { LandPosition } from '../../map/utils/mapLands';
+import { LandPosition } from '../../map/utils/getLands';
 
 import { BuildingType, getBuilding } from '../../types/Building';
 import { construct } from '../../map/building/construct';

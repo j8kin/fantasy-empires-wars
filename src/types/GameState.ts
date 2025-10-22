@@ -2,7 +2,7 @@ import { Land } from './Land';
 import { Building } from './Building';
 import { Army } from './Army';
 import { GamePlayer } from './GamePlayer';
-import { LandPosition } from '../map/utils/mapLands';
+import { LandPosition } from '../map/utils/getLands';
 
 export interface BattlefieldDimensions {
   rows: number;

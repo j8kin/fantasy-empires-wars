@@ -9,7 +9,7 @@ import { toGamePlayer } from './toGamePlayer';
 import { generateMockMap } from './generateMockMap';
 import { construct } from '../../map/building/construct';
 import { BuildingType } from '../../types/Building';
-import { LandPosition } from '../../map/utils/mapLands';
+import { LandPosition } from '../../map/utils/getLands';
 import { recruitHero } from '../../map/army/recruit';
 import { getUnit } from '../../types/Army';
 import { generateMap } from '../../map/generation/generateMap';

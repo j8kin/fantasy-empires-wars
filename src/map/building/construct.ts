@@ -1,5 +1,5 @@
 import { BuildingType, getBuilding } from '../../types/Building';
-import { LandPosition } from '../utils/mapLands';
+import { LandPosition } from '../utils/getLands';
 import { battlefieldLandId, GameState } from '../../types/GameState';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
