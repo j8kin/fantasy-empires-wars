@@ -5,7 +5,7 @@ import {
   BattlefieldMap,
   BattlefieldDimensions,
 } from '../../types/GameState';
-import { getLandById, Land, LAND_TYPE } from '../../types/Land';
+import { getLandById, getRegularLandTypes, Land, LAND_TYPE } from '../../types/Land';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { LandPosition } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
@@ -80,6 +80,7 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap =
     }
   }
 
+  // todo place special lands
   // 1. Place exactly one volcano
   const volcanoRow = Math.floor(Math.random() * (rows - 4)) + 2;
   const volcanoColsInRow = volcanoRow % 2 === 0 ? cols : cols - 1;
@@ -128,9 +129,7 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap =
   }
 
   // 4. Get remaining land types (excluding volcano and lava)
-  const remainingLandTypes = Object.values(LAND_TYPE).filter(
-    (lt) => lt !== LAND_TYPE.VOLCANO && lt !== LAND_TYPE.LAVA && lt !== LAND_TYPE.NONE
-  );
+  const remainingLandTypes = getRegularLandTypes();
 
   const maxTilesPerType = Math.floor(totalTiles / remainingLandTypes.length);
 
