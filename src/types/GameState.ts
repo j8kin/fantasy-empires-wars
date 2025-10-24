@@ -22,7 +22,7 @@ export interface LandState {
 }
 export type BattlefieldMap = {
   dimensions: BattlefieldDimensions;
-  lands: Record<string, LandState>;
+  lands: BattlefieldLands;
 };
 
 export enum TurnPhase {
