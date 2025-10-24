@@ -6,6 +6,7 @@ import { construct } from '../building/construct';
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { getRandomElement } from './getRandomElement';
 
 const assignPlayerHero = (homeland: LandState, player: GamePlayer) => {
   const hero = getUnit(player.type);
@@ -14,10 +15,6 @@ const assignPlayerHero = (homeland: LandState, player: GamePlayer) => {
   // todo increment characteristics (attack, defence etc based on Player Level)
   // initial Hero immediately available in normal game it turn 3 turn to recruit
   homeland.army.push({ unit: hero, quantity: 1, moveInTurn: 0 });
-};
-
-const randomElement = <T>(array: T[]): T => {
-  return array[Math.floor(Math.random() * array.length)];
 };
 
 export const placeHomeland = (gameState: GameState) => {
@@ -31,7 +28,7 @@ export const placeHomeland = (gameState: GameState) => {
   });
 
   // get all lands which are not in radius 4 from any player's homeland'
-  const freeToBuildLands = Object.keys(gameState.battlefield.lands).filter(
+  let freeToBuildLands = Object.keys(gameState.battlefield.lands).filter(
     (landId) =>
       // exclude border lands
       !landId.startsWith('0-') &&
@@ -44,6 +41,21 @@ export const placeHomeland = (gameState: GameState) => {
         .includes(landId)
   );
 
+  if (freeToBuildLands.length === 0) {
+    freeToBuildLands = Object.keys(gameState.battlefield.lands).filter(
+      (landId) =>
+        // exclude border lands
+        !landId.startsWith('0-') &&
+        !landId.startsWith('1-') &&
+        !landId.startsWith(`${gameState.battlefield.dimensions.rows - 1}-`) &&
+        !landId.startsWith(`${gameState.battlefield.dimensions.rows - 2}-`) &&
+        !existingPlayersHomelands
+          .flatMap((h) => getTilesInRadius(gameState.battlefield.dimensions, h.mapPos, 3, false))
+          .map((tola) => battlefieldLandId(tola))
+          .includes(landId)
+    );
+  }
+
   let possibleHomelands = freeToBuildLands
     .map((key) => gameState.battlefield.lands[key])
     .filter((land) => land.land.alignment === owner.alignment);
@@ -54,11 +66,11 @@ export const placeHomeland = (gameState: GameState) => {
       .filter((land) => land.land.alignment === Alignment.NEUTRAL);
   }
 
-  if (possibleHomelands.length === 0) {
+  if (possibleHomelands == null || possibleHomelands.length === 0) {
     // fallback to any land if no alignment match
-    homeland = gameState.battlefield.lands[randomElement(freeToBuildLands)];
+    homeland = gameState.battlefield.lands[getRandomElement(freeToBuildLands)];
   } else {
-    homeland = randomElement(possibleHomelands);
+    homeland = getRandomElement(possibleHomelands);
   }
 
   // Place Strong into homeland first
@@ -79,7 +91,7 @@ export const placeHomeland = (gameState: GameState) => {
       buildings: [],
     });
   }
-  construct(gameState, BuildingType.BARRACKS, randomElement(possibleBarracksLands).mapPos);
+  construct(gameState, BuildingType.BARRACKS, getRandomElement(possibleBarracksLands).mapPos);
 
   assignPlayerHero(homeland, getTurnOwner(gameState)!);
 };

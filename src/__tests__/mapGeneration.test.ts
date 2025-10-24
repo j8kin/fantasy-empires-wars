@@ -1,5 +1,5 @@
 import { generateMap } from '../map/generation/generateMap';
-import { LAND_TYPE } from '../types/Land';
+import { getMainSpecialLandTypes, getNearSpecialLandTypes, LAND_TYPE } from '../types/Land';
 import { NO_PLAYER } from '../types/GamePlayer';
 import { BattlefieldDimensions } from '../types/GameState';
 import { defaultBattlefieldSizeStub } from './utils/createGameStateStub';
@@ -20,15 +20,29 @@ describe('Map Generation', () => {
     // All tiles should be controlled by a neutral player
     Object.values(lands.lands).forEach((land) => {
       expect(land.controlledBy).toBe(NO_PLAYER.id);
+      expect(land.land.id).not.toBe(LAND_TYPE.NONE);
+      expect(land.goldPerTurn).toBeGreaterThan(0);
     });
 
-    // Should have volcano and lava tiles
-    const volcanoTiles = Object.values(lands.lands).filter(
-      (land) => land.land.id === LAND_TYPE.VOLCANO
-    );
-    const lavaTiles = Object.values(lands.lands).filter((land) => land.land.id === LAND_TYPE.LAVA);
-
-    expect(volcanoTiles.length).toBe(1);
-    expect(lavaTiles.length).toBeGreaterThan(0);
+    // Special lands should be generated
+    getMainSpecialLandTypes().forEach((landType) => {
+      expect(Object.values(lands.lands).some((land) => land.land.id === landType)).toBeTruthy();
+      expect(Object.values(lands.lands).filter((land) => land.land.id === landType).length).toBe(1);
+      expect(
+        Object.values(lands.lands).some(
+          (land) => land.land.id === getNearSpecialLandTypes(landType)
+        )
+      ).toBeTruthy();
+      expect(
+        Object.values(lands.lands).filter(
+          (land) => land.land.id === getNearSpecialLandTypes(landType)
+        ).length
+      ).toBeGreaterThan(1);
+      expect(
+        Object.values(lands.lands).filter(
+          (land) => land.land.id === getNearSpecialLandTypes(landType)
+        ).length
+      ).toBeLessThan(6);
+    });
   });
 });

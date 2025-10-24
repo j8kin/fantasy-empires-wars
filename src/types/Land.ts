@@ -4,6 +4,7 @@ import { Alignment } from './Alignment';
 
 export enum LAND_TYPE {
   NONE = 'None',
+  // Regular lands
   PLAINS = 'Plains',
   MOUNTAINS = 'Mountains',
   GREEN_FOREST = 'Green Forest',
@@ -12,8 +13,8 @@ export enum LAND_TYPE {
   SWAMP = 'Swamp',
   DESERT = 'Desert',
   // special lands
-  LAVA = 'Lava',
   VOLCANO = 'Volcano',
+  LAVA = 'Lava',
   SUN_SPIRE_PEAKS = 'Sunspire Peaks',
   GOLDEN_PLAINS = 'Golden Plains',
   HEARTWOOD_COVE = 'Heartwood Grove',
@@ -30,6 +31,23 @@ export interface Land {
   goldPerTurn: { min: number; max: number };
 }
 
+export const getSurroundingLands = (landType: LAND_TYPE): LAND_TYPE[] => {
+  switch (landType) {
+    case LAND_TYPE.VOLCANO:
+      return [LAND_TYPE.MOUNTAINS, LAND_TYPE.DARK_FOREST];
+    case LAND_TYPE.SUN_SPIRE_PEAKS:
+      return [LAND_TYPE.DARK_FOREST, LAND_TYPE.HILLS];
+    case LAND_TYPE.HEARTWOOD_COVE:
+      return [LAND_TYPE.SWAMP, LAND_TYPE.GREEN_FOREST];
+    case LAND_TYPE.CRISTAL_BASIN:
+      return [LAND_TYPE.DESERT, LAND_TYPE.HILLS];
+    case LAND_TYPE.SHADOW_MIRE:
+      return [LAND_TYPE.PLAINS, LAND_TYPE.SWAMP];
+    default:
+      return [];
+  }
+};
+
 export const getRegularLandTypes = (): LAND_TYPE[] => {
   return [
     LAND_TYPE.PLAINS,
@@ -42,17 +60,31 @@ export const getRegularLandTypes = (): LAND_TYPE[] => {
   ];
 };
 
-export const getSpecialLandTypes = (): LAND_TYPE[] => {
+export const getMainSpecialLandTypes = (): LAND_TYPE[] => {
   return [
-    LAND_TYPE.LAVA,
     LAND_TYPE.VOLCANO,
     LAND_TYPE.SUN_SPIRE_PEAKS,
-    LAND_TYPE.GOLDEN_PLAINS,
     LAND_TYPE.HEARTWOOD_COVE,
-    LAND_TYPE.VERDANT_GLADE,
     LAND_TYPE.CRISTAL_BASIN,
-    LAND_TYPE.MISTY_GLADES,
+    LAND_TYPE.SHADOW_MIRE,
   ];
+};
+
+export const getNearSpecialLandTypes = (id: LAND_TYPE): LAND_TYPE => {
+  switch (id) {
+    case LAND_TYPE.VOLCANO:
+      return LAND_TYPE.LAVA;
+    case LAND_TYPE.SUN_SPIRE_PEAKS:
+      return LAND_TYPE.GOLDEN_PLAINS;
+    case LAND_TYPE.HEARTWOOD_COVE:
+      return LAND_TYPE.VERDANT_GLADE;
+    case LAND_TYPE.CRISTAL_BASIN:
+      return LAND_TYPE.MISTY_GLADES;
+    case LAND_TYPE.SHADOW_MIRE:
+      return LAND_TYPE.BLIGHTED_FEN;
+    default:
+      return LAND_TYPE.NONE;
+  }
 };
 
 export const getLandById = (id: LAND_TYPE): Land => {
@@ -120,7 +152,7 @@ export const getLandById = (id: LAND_TYPE): Land => {
       };
     case LAND_TYPE.GOLDEN_PLAINS:
       return {
-        id: LAND_TYPE.SUN_SPIRE_PEAKS,
+        id: LAND_TYPE.GOLDEN_PLAINS,
         alignment: Alignment.LAWFUL,
         goldPerTurn: { min: 500, max: 600 },
       };
