@@ -2,7 +2,6 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GameState } from '../../types/GameState';
-import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { createGameStateStub } from '../utils/createGameStateStub';
 
 describe('NewGame TurnManager Cleanup Integration', () => {
@@ -23,15 +22,12 @@ describe('NewGame TurnManager Cleanup Integration', () => {
       huge: { rows: 15, cols: 31 },
     };
 
-    const gameState: GameState = createGameStateStub({
+    return createGameStateStub({
       nPlayers: 2,
-      battlefieldSize: dimensions[mapSize],
       realBattlefield: true,
-      addPlayersHomeland: false,
+      addPlayersHomeland: true,
+      battlefieldSize: dimensions[mapSize],
     });
-
-    addPlayerToMap(gameState);
-    return gameState;
   };
 
   it('should properly cleanup old TurnManager when starting new games with different map sizes', () => {

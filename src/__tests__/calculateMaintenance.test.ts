@@ -130,7 +130,7 @@ describe('Calculate Maintenance', () => {
     ])('Building %s maintenance cost', (building, expected) => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
       gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy = player.id;
-      construct(player, building, buildingPos, gameStateStub);
+      construct(gameStateStub, building, buildingPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -139,9 +139,9 @@ describe('Calculate Maintenance', () => {
     it('Multiple buildings', () => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
       gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy = player.id;
-      construct(player, BuildingType.BARRACKS, buildingPos, gameStateStub);
-      construct(player, BuildingType.WALL, buildingPos, gameStateStub);
-      construct(player, BuildingType.WALL, buildingPos, gameStateStub);
+      construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
+      construct(gameStateStub, BuildingType.WALL, buildingPos);
+      construct(gameStateStub, BuildingType.WALL, buildingPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(1200);
@@ -157,8 +157,8 @@ describe('Calculate Maintenance', () => {
     it('Army and Buildings', () => {
       const barracksPos: LandPosition = { row: 5, col: 6 };
 
-      construct(player, BuildingType.STRONGHOLD, { row: 5, col: 5 }, gameStateStub);
-      construct(player, BuildingType.BARRACKS, barracksPos, gameStateStub);
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 5, col: 5 });
+      construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
       recruitWarriors(
         getUnit(UnitType.DWARF),
         gameStateStub.battlefield.lands[battlefieldLandId(barracksPos)]

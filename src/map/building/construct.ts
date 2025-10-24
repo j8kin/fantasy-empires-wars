@@ -1,17 +1,13 @@
 import { BuildingType, getBuilding } from '../../types/Building';
 import { LandPosition } from '../utils/getLands';
-import { battlefieldLandId, GameState } from '../../types/GameState';
+import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/GamePlayer';
 import { destroyBuilding } from '../utils/destroyBuilding';
 
-export const construct = (
-  owner: GamePlayer,
-  building: BuildingType,
-  position: LandPosition,
-  gameState: GameState
-) => {
+export const construct = (gameState: GameState, building: BuildingType, position: LandPosition) => {
   const { battlefield } = gameState;
+  const owner = getTurnOwner(gameState)!;
   const mapPosition = battlefieldLandId(position);
   switch (building) {
     case BuildingType.DEMOLITION:

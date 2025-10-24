@@ -1,15 +1,14 @@
 import { BuildingType } from '../../types/Building';
-import { battlefieldLandId, GameState } from '../../types/GameState';
+import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../utils/getLands';
-import { GamePlayer } from '../../types/GamePlayer';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 
 export const getAvailableToConstructLands = (
-  buildingType: BuildingType,
-  player: GamePlayer,
-  gameState: GameState
+  gameState: GameState,
+  buildingType: BuildingType
 ): string[] => {
-  const playerLands = getLands({ lands: gameState.battlefield.lands, players: [player] });
+  const owner = getTurnOwner(gameState)!;
+  const playerLands = getLands({ lands: gameState.battlefield.lands, players: [owner] });
 
   switch (buildingType) {
     case BuildingType.WALL:
@@ -21,7 +20,7 @@ export const getAvailableToConstructLands = (
               !land.buildings?.some((b) => b.id === BuildingType.WALL)) &&
             getTilesInRadius(gameState.battlefield.dimensions, land.mapPos, 1, true).some(
               (tile) =>
-                gameState.battlefield.lands[battlefieldLandId(tile)].controlledBy !== player.id
+                gameState.battlefield.lands[battlefieldLandId(tile)].controlledBy !== owner.id
             )
         )
         .map((l) => battlefieldLandId(l.mapPos));

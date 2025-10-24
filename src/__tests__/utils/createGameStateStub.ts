@@ -48,7 +48,7 @@ export const createGameStateStub = ({
     players.forEach((player, idx) => {
       stubGameState.turnOwner = player.id;
       const homeland: LandPosition = { row: 3 + (idx % 2), col: 3 + idx * 5 };
-      construct(player, BuildingType.STRONGHOLD, homeland, stubGameState);
+      construct(stubGameState, BuildingType.STRONGHOLD, homeland);
 
       const hero = getUnit(player.type);
       hero.name = player.name;

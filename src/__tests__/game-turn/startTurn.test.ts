@@ -9,12 +9,26 @@ describe('Start Turn phase', () => {
     gameStateStub = createDefaultGameStateStub();
   });
 
-  it('Income and Money should be calculated during Start Game phase', () => {
-    expect(gameStateStub.players[0].money).toBe(0);
-    expect(gameStateStub.players[0].income).toBe(0);
+  /** Test income and money calculation
+   * 1. No income and money should be calculated on turn 1
+   * 2. Income and money should be calculated on turn 2
+   * 3. Income and money should be calculated on turn 3 and above
+   **/
+  it.each([
+    [1, 0, 0],
+    [2, 0, 714],
+    [3, 714, 714],
+  ])(
+    'Income and Money calculation based on current turn %s',
+    (turn: number, money: number, income: number) => {
+      expect(gameStateStub.players[0].money).toBe(0);
+      expect(gameStateStub.players[0].income).toBe(0);
 
-    startTurn(gameStateStub);
-    expect(gameStateStub.players[0].money).toBe(714);
-    expect(gameStateStub.players[0].income).toBe(714);
-  });
+      gameStateStub.turn = turn;
+      startTurn(gameStateStub);
+
+      expect(gameStateStub.players[0].money).toBe(money);
+      expect(gameStateStub.players[0].income).toBe(income);
+    }
+  );
 });
