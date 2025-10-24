@@ -3,12 +3,14 @@ import { LAND_TYPE } from '../types/Land';
 import darkForestImg from './lands/darkforest.png';
 import greenForestImg from './lands/greenforest.png';
 import hillsImg from './lands/hills.png';
-import lavaImg from './lands/lava.png';
 import mountainsImg from './lands/mountains.png';
 import plainsImg from './lands/plains.png';
 import swampImg from './lands/swamp.png';
 import desertImg from './lands/desert.png';
+import lavaImg from './lands/lava.png';
 import volcanoImg from './lands/volcano.png';
+import sunSpirePeaks from './lands/sunspire-peaks.png';
+import goldenPlains from './lands/golden-plains.png';
 
 export const getLandImg = (landType: LAND_TYPE): string | undefined => {
   switch (landType) {
@@ -26,10 +28,15 @@ export const getLandImg = (landType: LAND_TYPE): string | undefined => {
       return greenForestImg;
     case LAND_TYPE.DARK_FOREST:
       return darkForestImg;
-    case LAND_TYPE.LAVA:
-      return lavaImg;
+    // special lands
     case LAND_TYPE.VOLCANO:
       return volcanoImg;
+    case LAND_TYPE.LAVA:
+      return lavaImg;
+    case LAND_TYPE.SUN_SPIRE_PEAKS:
+      return sunSpirePeaks;
+    case LAND_TYPE.GOLDEN_PLAINS:
+      return goldenPlains;
     default:
       return undefined;
   }
