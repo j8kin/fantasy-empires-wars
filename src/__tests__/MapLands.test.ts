@@ -122,7 +122,7 @@ describe('MapLands', () => {
       });
 
       it('should return the lands of the owner with stronghold', () => {
-        construct(player, BuildingType.BARRACKS, { row: 1, col: 2 }, stubGameState);
+        construct(stubGameState, BuildingType.BARRACKS, { row: 1, col: 2 });
         let playerLands = getLands({
           lands: stubGameState.battlefield.lands,
           players: [player],

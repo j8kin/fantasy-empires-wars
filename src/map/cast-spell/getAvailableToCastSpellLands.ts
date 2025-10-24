@@ -1,19 +1,15 @@
 import { getSpellById, SpellName } from '../../types/Spell';
-import { battlefieldLandId, GameState } from '../../types/GameState';
+import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../utils/getLands';
-import { GamePlayer } from '../../types/GamePlayer';
 
-export const getAvailableToCastSpellLands = (
-  spellName: SpellName,
-  player: GamePlayer,
-  gameState: GameState
-) => {
+export const getAvailableToCastSpellLands = (gameState: GameState, spellName: SpellName) => {
   const spell = getSpellById(spellName);
+  const owner = getTurnOwner(gameState)!;
   const playerFiltered =
     spell.apply === 'player'
-      ? [player]
+      ? [owner]
       : spell.apply === 'opponent'
-        ? gameState.players.filter((p) => p !== player)
+        ? gameState.players.filter((p) => p !== owner)
         : gameState.players;
 
   return getLands({ lands: gameState.battlefield.lands, players: playerFiltered }).map((land) =>

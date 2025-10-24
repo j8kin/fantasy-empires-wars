@@ -26,11 +26,12 @@ describe('Construct Buildings', () => {
   beforeEach(() => {
     // clear map to remove all armies and buildings
     gameStateStub.battlefield = generateMockMap(defaultBattlefieldSizeStub);
+    gameStateStub.turnOwner = gameStateStub.players[0].id;
   });
 
   describe('Constructing a building', () => {
     it('Build one Stronghold', () => {
-      construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
       const player1Lands = getPlayerLands(player1);
 
       // row 1
@@ -63,8 +64,10 @@ describe('Construct Buildings', () => {
     });
 
     it('Build two Strongholds for two players, no intersection', () => {
-      construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
-      construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 8 }, gameStateStub);
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 8 });
 
       const player1Lands = getLands({
         lands: gameStateStub.battlefield.lands,
@@ -129,8 +132,10 @@ describe('Construct Buildings', () => {
     });
 
     it('Build two Strongholds for two players, has intersection radius 1 no building on intersection', () => {
-      construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
-      construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 7 }, gameStateStub);
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 7 });
 
       const player1Lands = getPlayerLands(player1);
       // row 1
@@ -192,8 +197,10 @@ describe('Construct Buildings', () => {
     });
 
     it('Build two Strongholds for two players, has intersection radius 2 no building on intersection', () => {
-      construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
-      construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, gameStateStub);
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 6 });
 
       const player1Lands = getPlayerLands(player1);
       // row 1
@@ -255,9 +262,11 @@ describe('Construct Buildings', () => {
     });
 
     it('Build two Strongholds for two players, has intersection radius 2 with building on intersection', () => {
-      construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
-      construct(player1, BuildingType.BARRACKS, { row: 3, col: 5 }, gameStateStub);
-      construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, gameStateStub);
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+      construct(gameStateStub, BuildingType.BARRACKS, { row: 3, col: 5 });
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 6 });
 
       const player1Lands = getPlayerLands(player1);
       // row 1
@@ -324,8 +333,8 @@ describe('Construct Buildings', () => {
     const buildingPos: LandPosition = { row: 3, col: 4 };
 
     it('Build one Stronghold and one Demolition', () => {
-      construct(player1, BuildingType.STRONGHOLD, strongholdPos, gameStateStub);
-      construct(player1, BuildingType.DEMOLITION, strongholdPos, gameStateStub);
+      construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos);
+      construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       expect(
         gameStateStub.battlefield.lands[battlefieldLandId(strongholdPos)].buildings.length
@@ -336,9 +345,9 @@ describe('Construct Buildings', () => {
     });
 
     it('Demolition non-stronghold', () => {
-      construct(player1, BuildingType.STRONGHOLD, strongholdPos, gameStateStub);
-      construct(player1, BuildingType.BARRACKS, buildingPos, gameStateStub);
-      construct(player1, BuildingType.DEMOLITION, buildingPos, gameStateStub);
+      construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos);
+      construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
+      construct(gameStateStub, BuildingType.DEMOLITION, buildingPos);
 
       // stronghold is not destroyed
       expect(
@@ -356,9 +365,9 @@ describe('Construct Buildings', () => {
     });
 
     it('Demolition not destroy buildings on other lands', () => {
-      construct(player1, BuildingType.STRONGHOLD, strongholdPos, gameStateStub);
-      construct(player1, BuildingType.BARRACKS, buildingPos, gameStateStub);
-      construct(player1, BuildingType.DEMOLITION, strongholdPos, gameStateStub);
+      construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos);
+      construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
+      construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       // stronghold is destroyed
       expect(
@@ -376,13 +385,14 @@ describe('Construct Buildings', () => {
     });
 
     it('When stronghold destroyed lands with army not lost players control', () => {
-      construct(player1, BuildingType.STRONGHOLD, strongholdPos, gameStateStub);
-      construct(player1, BuildingType.BARRACKS, buildingPos, gameStateStub);
+      construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos);
+      construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
+
       recruitWarriors(
         getUnit(UnitType.FIGHTER),
         gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)]
       );
-      construct(player1, BuildingType.DEMOLITION, strongholdPos, gameStateStub);
+      construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       // stronghold is destroyed
       expect(
@@ -403,8 +413,10 @@ describe('Construct Buildings', () => {
     });
 
     it('When stronghold destroyed land could change owner', () => {
-      construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
-      construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, gameStateStub);
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 6 });
 
       let player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(16);
@@ -413,7 +425,8 @@ describe('Construct Buildings', () => {
       expect(gameStateStub.battlefield.lands['3-4'].controlledBy).toBe(player1.id);
 
       // DEMOLITION
-      construct(player1, BuildingType.DEMOLITION, strongholdPos, gameStateStub);
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       // no player lands exist
       player1Lands = getPlayerLands(player1);
@@ -426,9 +439,11 @@ describe('Construct Buildings', () => {
     });
 
     it('When stronghold destroyed land not change owner if another stronghold of the same owner is near', () => {
-      construct(player1, BuildingType.STRONGHOLD, { row: 3, col: 3 }, gameStateStub);
-      construct(player1, BuildingType.STRONGHOLD, { row: 1, col: 5 }, gameStateStub); // stronghold of player 1 near destroyed land
-      construct(player2, BuildingType.STRONGHOLD, { row: 3, col: 6 }, gameStateStub);
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 1, col: 5 }); // stronghold of player 1 near destroyed land
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 6 });
 
       let player1Lands = getPlayerLands(player1);
       expect(player1Lands.length).toBe(24);
@@ -438,7 +453,8 @@ describe('Construct Buildings', () => {
       expect(gameStateStub.battlefield.lands['3-4'].controlledBy).toBe(player1.id); // under player 1 control before destruction
 
       // DEMOLITION
-      construct(player1, BuildingType.DEMOLITION, strongholdPos, gameStateStub);
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       // no player lands exist
       player1Lands = getPlayerLands(player1);

@@ -80,7 +80,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         const selectedPlayer = getTurnOwner(gameState);
         if (selectedPlayer && selectedPlayer.money! >= getBuilding(buildingToConstruct).buildCost) {
           // todo add animation for building
-          construct(selectedPlayer, buildingToConstruct, battlefieldPosition, gameState!);
+          construct(gameState!, buildingToConstruct, battlefieldPosition);
           selectedPlayer.money! -= getBuilding(buildingToConstruct).buildCost;
           updateGameState(gameState!);
           recalculateActivePlayerIncome();

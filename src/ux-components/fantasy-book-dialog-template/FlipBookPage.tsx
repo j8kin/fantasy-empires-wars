@@ -3,13 +3,13 @@ import './css/FlipBook.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
+import { GameState } from '../../types/GameState';
 
 import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType } from '../../types/Building';
 import { toRoman } from '../../map/utils/romanNumerals';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
-import { GameState, getTurnOwner } from '../../types/GameState';
 
 interface FlipBookPageProps {
   pageNum: number;
@@ -32,13 +32,10 @@ const getAvailableLands = (
 ): string[] => {
   if (gameState == null) return [];
 
-  const selectedPlayer = getTurnOwner(gameState);
-  if (!selectedPlayer) return [];
-
   if (actionType === 'building') {
-    return getAvailableToConstructLands(name as BuildingType, selectedPlayer, gameState);
+    return getAvailableToConstructLands(gameState, name as BuildingType);
   } else {
-    return getAvailableToCastSpellLands(name as SpellName, selectedPlayer, gameState);
+    return getAvailableToCastSpellLands(gameState, name as SpellName);
   }
 };
 

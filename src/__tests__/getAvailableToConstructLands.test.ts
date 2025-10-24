@@ -1,10 +1,8 @@
-import { GameState, getTurnOwner } from '../types/GameState';
+import { GameState } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
-import { PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
-import { toGamePlayer } from './utils/toGamePlayer';
 import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
 
 describe('getAvailableLands', () => {
@@ -12,30 +10,18 @@ describe('getAvailableLands', () => {
 
   beforeEach(() => {
     gameStateStub.battlefield = generateMockMap(defaultBattlefieldSizeStub);
+    gameStateStub.turnOwner = gameStateStub.players[0].id;
   });
 
   it('should return no available lands for non-stronghold building when player has no lands under control', () => {
-    const availableLands = getAvailableToConstructLands(
-      BuildingType.BARRACKS,
-      getTurnOwner(gameStateStub)!,
-      gameStateStub
-    );
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.BARRACKS);
     expect(availableLands.length).toBe(0);
   });
 
   it('should return all available lands for non-stronghold building where there are no buildings', () => {
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameStateStub
-    );
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
 
-    const availableLands = getAvailableToConstructLands(
-      BuildingType.BARRACKS,
-      getTurnOwner(gameStateStub)!,
-      gameStateStub
-    );
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.BARRACKS);
 
     expect(availableLands.length).toBe(18); // number of lands without stronghold
     // row 1
@@ -65,18 +51,9 @@ describe('getAvailableLands', () => {
   });
 
   it('should return all available lands for stronghold building where there are no buildings', () => {
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameStateStub
-    );
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
 
-    const availableLands = getAvailableToConstructLands(
-      BuildingType.STRONGHOLD,
-      getTurnOwner(gameStateStub)!,
-      gameStateStub
-    );
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.STRONGHOLD);
 
     expect(availableLands.length).toBe(12); // number of lands outside radius 1 from stronghold
     // row 1
@@ -102,18 +79,9 @@ describe('getAvailableLands', () => {
   });
 
   it('should return only border lands if user wants to construct the wall', () => {
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameStateStub
-    );
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
 
-    const availableLands = getAvailableToConstructLands(
-      BuildingType.WALL,
-      getTurnOwner(gameStateStub)!,
-      gameStateStub
-    );
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.WALL);
 
     expect(availableLands.length).toBe(12); // number of lands outside radius 1 from stronghold
     // row 1
@@ -139,25 +107,10 @@ describe('getAvailableLands', () => {
   });
 
   it('should return only border lands even with building if user wants to construct the wall', () => {
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameStateStub
-    );
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+    construct(gameStateStub, BuildingType.BARRACKS, { row: 1, col: 2 });
 
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.BARRACKS,
-      { row: 1, col: 2 },
-      gameStateStub
-    );
-
-    const availableLands = getAvailableToConstructLands(
-      BuildingType.WALL,
-      getTurnOwner(gameStateStub)!,
-      gameStateStub
-    );
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.WALL);
 
     expect(availableLands.length).toBe(12); // number of lands outside radius 1 from stronghold
     // row 1
@@ -184,27 +137,11 @@ describe('getAvailableLands', () => {
   });
 
   it('should return only border lands land with wall should be excluded if user wants to construct the wall', () => {
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameStateStub
-    );
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+    construct(gameStateStub, BuildingType.BARRACKS, { row: 1, col: 2 });
+    construct(gameStateStub, BuildingType.WALL, { row: 1, col: 2 });
 
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.BARRACKS,
-      { row: 1, col: 2 },
-      gameStateStub
-    );
-
-    construct(getTurnOwner(gameStateStub)!, BuildingType.WALL, { row: 1, col: 2 }, gameStateStub);
-
-    const availableLands = getAvailableToConstructLands(
-      BuildingType.WALL,
-      getTurnOwner(gameStateStub)!,
-      gameStateStub
-    );
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.WALL);
 
     expect(availableLands.length).toBe(11); // number of lands outside radius 1 from stronghold
     // row 1
@@ -232,24 +169,12 @@ describe('getAvailableLands', () => {
   });
 
   it('should return all barder lands when have a border with other plyer', () => {
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameStateStub
-    );
-    construct(
-      toGamePlayer(PREDEFINED_PLAYERS[1]), // other player
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 6 },
-      gameStateStub
-    );
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+    gameStateStub.turnOwner = gameStateStub.players[1].id;
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 6 }); // other player
 
-    const availableLands = getAvailableToConstructLands(
-      BuildingType.WALL,
-      getTurnOwner(gameStateStub)!,
-      gameStateStub
-    );
+    gameStateStub.turnOwner = gameStateStub.players[0].id;
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.WALL);
 
     expect(availableLands.length).toBe(12); // number of lands outside radius 1 from stronghold
     // row 1
@@ -276,20 +201,10 @@ describe('getAvailableLands', () => {
   });
 
   it('should return land with WALL for non-wall build request', () => {
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameStateStub
-    );
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+    construct(gameStateStub, BuildingType.WALL, { row: 1, col: 2 });
 
-    construct(getTurnOwner(gameStateStub)!, BuildingType.WALL, { row: 1, col: 2 }, gameStateStub);
-
-    const availableLands = getAvailableToConstructLands(
-      BuildingType.BARRACKS,
-      getTurnOwner(gameStateStub)!,
-      gameStateStub
-    );
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.BARRACKS);
 
     expect(availableLands.length).toBe(18); // number of lands without stronghold
     // row 1
@@ -321,20 +236,10 @@ describe('getAvailableLands', () => {
   });
 
   it('should return land with WALL for stronghold build request', () => {
-    construct(
-      getTurnOwner(gameStateStub)!,
-      BuildingType.STRONGHOLD,
-      { row: 3, col: 3 },
-      gameStateStub
-    );
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+    construct(gameStateStub, BuildingType.WALL, { row: 1, col: 2 });
 
-    construct(getTurnOwner(gameStateStub)!, BuildingType.WALL, { row: 1, col: 2 }, gameStateStub);
-
-    const availableLands = getAvailableToConstructLands(
-      BuildingType.STRONGHOLD,
-      getTurnOwner(gameStateStub)!,
-      gameStateStub
-    );
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.STRONGHOLD);
 
     expect(availableLands.length).toBe(12); // number of lands outside radius 1 from stronghold
     // row 1

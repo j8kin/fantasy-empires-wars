@@ -62,7 +62,7 @@ export const placeHomeland = (gameState: GameState) => {
   }
 
   // Place Strong into homeland first
-  construct(owner, BuildingType.STRONGHOLD, homeland.mapPos, gameState);
+  construct(gameState, BuildingType.STRONGHOLD, homeland.mapPos);
 
   // Place Barracks on the same alignment land except homeland
   let possibleBarracksLands = getLands({
@@ -79,7 +79,7 @@ export const placeHomeland = (gameState: GameState) => {
       buildings: [],
     });
   }
-  construct(owner, BuildingType.BARRACKS, randomElement(possibleBarracksLands).mapPos, gameState);
+  construct(gameState, BuildingType.BARRACKS, randomElement(possibleBarracksLands).mapPos);
 
   assignPlayerHero(homeland, getTurnOwner(gameState)!);
 };
