@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.90b38682.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.31a0666c.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.7958d9cd.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
@@ -45,8 +45,10 @@
     "static/media/stronghold.png": "/fantasy-empires-wars/static/media/stronghold.8cb171bb15d7feea8144.png",
     "static/media/view.png": "/fantasy-empires-wars/static/media/view.87c989d47f940607d4b4.png",
     "static/media/magic-tower-black.png": "/fantasy-empires-wars/static/media/magic-tower-black.503edc29f75306db50d8.png",
+    "static/media/golden-plains.png": "/fantasy-empires-wars/static/media/golden-plains.2ff096b5b96f9b7ebe57.png",
     "static/media/watchtower.png": "/fantasy-empires-wars/static/media/watchtower.01657d8069800b12ece9.png",
     "static/media/magic-tower-blue.png": "/fantasy-empires-wars/static/media/magic-tower-blue.86682f941d28a16712a7.png",
+    "static/media/sunspire-peaks.png": "/fantasy-empires-wars/static/media/sunspire-peaks.69c07769d5731c35d40f.png",
     "static/media/barracks.png": "/fantasy-empires-wars/static/media/barracks.f86079d41f568bd610a5.png",
     "static/media/CelticBackground.png": "/fantasy-empires-wars/static/media/CelticBackground.1303f01751ba46f7a77b.png",
     "static/media/mountains.png": "/fantasy-empires-wars/static/media/mountains.8e830c9ecad809d2deba.png",
@@ -66,11 +68,11 @@
     "static/media/PageEven.png": "/fantasy-empires-wars/static/media/PageEven.8a6a120c45b62dd81d2c.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.90b38682.css.map": "/fantasy-empires-wars/static/css/main.90b38682.css.map",
-    "main.31a0666c.js.map": "/fantasy-empires-wars/static/js/main.31a0666c.js.map",
+    "main.7958d9cd.js.map": "/fantasy-empires-wars/static/js/main.7958d9cd.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.90b38682.css",
-    "static/js/main.31a0666c.js"
+    "static/js/main.7958d9cd.js"
   ]
 }
