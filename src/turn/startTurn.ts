@@ -4,12 +4,18 @@ import { calculateMaintenance } from '../map/gold/calculateMaintenance';
 import { getLands } from '../map/utils/getLands';
 import { ArmyUnit, getUnit } from '../types/Army';
 import { BuildingType } from '../types/Building';
+import { placeHomeland } from '../map/generation/placeHomeland';
 
 export const startTurn = (gameState: GameState) => {
   if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
 
-  const player = getTurnOwner(gameState)!;
+  if (gameState.turn === 1) {
+    // on first turn place players randomly on a map
+    placeHomeland(gameState);
+    return;
+  }
 
+  const player = getTurnOwner(gameState)!;
   // recruit units
   getLands({
     lands: gameState.battlefield.lands,
@@ -61,7 +67,9 @@ export const startTurn = (gameState: GameState) => {
 
   // Calculate income based on current player's lands and army's
   const income = calculateIncome(gameState) - calculateMaintenance(gameState);
-  // calculate income and update player#s money and income
-  gameState.players.find((p) => p.id === player.id)!.money += income;
+  // calculate income and update player#s money and income after turn 2
+  if (gameState.turn > 2) {
+    gameState.players.find((p) => p.id === player.id)!.money += income;
+  }
   gameState.players.find((p) => p.id === player.id)!.income = income;
 };

@@ -4,12 +4,11 @@ import Battlefield from '../../ux-components/battlefield/Battlefield';
 import { GameState, BattlefieldMap, BattlefieldDimensions, TurnPhase } from '../../types/GameState';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { Land, LAND_TYPE } from '../../types/Land';
-import { generateMap } from '../../map/generation/generateMap';
-import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { LandPosition } from '../../map/utils/getLands';
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { Alignment } from '../../types/Alignment';
 import { toGamePlayer } from '../utils/toGamePlayer';
+import { createGameStateStub } from '../utils/createGameStateStub';
 
 // Mock CSS modules
 jest.mock('../../ux-components/battlefield/css/Battlefield.module.css', () => ({
@@ -419,15 +418,11 @@ describe('Battlefield Component', () => {
 
   describe('Create Battlefield which generated Map', () => {
     it('renders all required child components', () => {
-      const testPlayers = PREDEFINED_PLAYERS.slice(0, 3).map((p) => toGamePlayer(p));
-      mockGameState = {
-        battlefield: generateMap({ rows: 9, cols: 18 }),
-        turn: 0,
-        turnOwner: testPlayers[1].id,
-        players: [testPlayers[1], testPlayers[0], testPlayers[2]],
-        turnPhase: TurnPhase.START,
-      };
-      addPlayerToMap(mockGameState);
+      mockGameState = createGameStateStub({
+        battlefieldSize: { rows: 9, cols: 18 },
+        realBattlefield: true,
+        addPlayersHomeland: true,
+      });
 
       render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
@@ -443,8 +438,6 @@ describe('Battlefield Component', () => {
         (tile) => tile.getAttribute('data-land-type') === 'Volcano'
       );
       expect(volcanoTiles.length).toBe(1);
-      expect(volcanoTiles[0].getAttribute('data-controlled-by')).toBe(PREDEFINED_PLAYERS[1].id);
-      // todo verify surrounding hex tiles that are controlled by morgana (PREDEFINED_PLAYERS[1].id)
     });
   });
 });

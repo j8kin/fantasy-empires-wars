@@ -10,7 +10,6 @@ import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 
 import { generateMap } from '../../map/generation/generateMap';
-import { addPlayerToMap } from '../../map/generation/addPlayerToMap';
 import { ButtonName } from '../../types/ButtonName';
 import {
   DiplomacyStatus,
@@ -65,7 +64,7 @@ const NewGameDialog: React.FC = () => {
     showSelectOpponentDialogWithConfig,
   } = useApplicationContext();
 
-  const { startNewGame, recalculateActivePlayerIncome } = useGameContext();
+  const { startNewGame } = useGameContext();
 
   // Local state for dialog-specific values
   const [mapSize, setMapSize] = useState<DialogMapSize>('medium');
@@ -298,10 +297,7 @@ const NewGameDialog: React.FC = () => {
         players: [createdPlayer, ...createdOpponents],
       };
 
-      addPlayerToMap(gameState);
-
       startNewGame(gameState);
-      recalculateActivePlayerIncome();
       setGameStarted(true);
       setShowProgressPopup(false);
     }, 100);
@@ -314,7 +310,6 @@ const NewGameDialog: React.FC = () => {
     setProgressMessage,
     setShowProgressPopup,
     startNewGame,
-    recalculateActivePlayerIncome,
     setGameStarted,
   ]);
 

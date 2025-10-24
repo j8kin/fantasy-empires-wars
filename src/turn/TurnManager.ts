@@ -37,14 +37,22 @@ export class TurnManager {
     }
 
     // Show progress popup with turn message
-    const message = `Player ${player.name} turn`;
+    const message =
+      gameState.turn === 1
+        ? `The banners of ${player.name} rise over a new realm!`
+        : `Player ${player.name} turn`;
     this.callbacks.onStartProgress(message);
 
     // Execute start turn logic
     const timer = setTimeout(() => {
       this.activeTimers.delete(timer);
       startTurn(gameState);
-      this.startMainPhase(gameState);
+      if (gameState.turn === 1) {
+        // on first turn place players randomly on a map
+        this.endCurrentTurn(gameState);
+      } else {
+        this.startMainPhase(gameState);
+      }
     }, 1000); // Show progress for 1 second
     this.activeTimers.add(timer);
   }
@@ -85,17 +93,19 @@ export class TurnManager {
     endTurn(gameState);
 
     // Check for game over conditions
-    const humanPlayers = gameState.players.filter((p) => p.playerType === 'human');
-    const computerPlayers = gameState.players.filter((p) => p.playerType === 'computer');
+    if (gameState.turn > 1) {
+      const humanPlayers = gameState.players.filter((p) => p.playerType === 'human');
+      const computerPlayers = gameState.players.filter((p) => p.playerType === 'computer');
 
-    if (humanPlayers.length === 0) {
-      this.callbacks.onGameOver('Game Over: No human players remaining');
-      return;
-    }
+      if (humanPlayers.length === 0) {
+        this.callbacks.onGameOver('Game Over: No human players remaining');
+        return;
+      }
 
-    if (computerPlayers.length === 0) {
-      this.callbacks.onGameOver('Game Over: No computer players remaining');
-      return;
+      if (computerPlayers.length === 0) {
+        this.callbacks.onGameOver('Game Over: No computer players remaining');
+        return;
+      }
     }
 
     // Start the next turn
