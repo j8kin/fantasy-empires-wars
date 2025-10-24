@@ -40,7 +40,7 @@ export const getRegularLandTypes = (): LAND_TYPE[] => {
     LAND_TYPE.SWAMP,
     LAND_TYPE.DESERT,
   ];
-}
+};
 
 export const getSpecialLandTypes = (): LAND_TYPE[] => {
   return [
@@ -52,8 +52,8 @@ export const getSpecialLandTypes = (): LAND_TYPE[] => {
     LAND_TYPE.VERDANT_GLADE,
     LAND_TYPE.CRISTAL_BASIN,
     LAND_TYPE.MISTY_GLADES,
-  ]
-}
+  ];
+};
 
 export const getLandById = (id: LAND_TYPE): Land => {
   switch (id) {
