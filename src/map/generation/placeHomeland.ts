@@ -1,5 +1,5 @@
 import { battlefieldLandId, GameState, getTurnOwner, LandState } from '../../types/GameState';
-import { GamePlayer } from '../../types/GamePlayer';
+import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
 import { getUnit } from '../../types/Army';
 import { getLands } from '../utils/getLands';
 import { construct } from '../building/construct';
@@ -67,8 +67,18 @@ export const placeHomeland = (gameState: GameState) => {
   }
 
   if (possibleHomelands == null || possibleHomelands.length === 0) {
-    // fallback to any land if no alignment match
-    homeland = gameState.battlefield.lands[getRandomElement(freeToBuildLands)];
+    // fallback to any land if no alignment match in radius 3 and 4
+    if (freeToBuildLands.length === 0) {
+      homeland = getRandomElement(
+        getLands({
+          lands: gameState.battlefield.lands,
+          players: [NO_PLAYER],
+          landAlignment: owner.alignment,
+        })
+      );
+    } else {
+      homeland = gameState.battlefield.lands[getRandomElement(freeToBuildLands)];
+    }
   } else {
     homeland = getRandomElement(possibleHomelands);
   }
