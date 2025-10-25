@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import PlayerSelection from '../../ux-components/player-selection/PlayerSelection';
@@ -215,9 +215,7 @@ describe('PlayerSelection', () => {
       name: PREDEFINED_PLAYERS[1].name,
     });
 
-    await act(async () => {
-      await userEvent.hover(secondPlayerItem);
-    });
+    await userEvent.hover(secondPlayerItem);
 
     // Should now show hovered player details
     expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
@@ -237,15 +235,11 @@ describe('PlayerSelection', () => {
       name: PREDEFINED_PLAYERS[1].name,
     });
 
-    await act(async () => {
-      await userEvent.hover(secondPlayerItem);
-    });
+    await userEvent.hover(secondPlayerItem);
     expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
 
     // Unhover should revert to selected player
-    await act(async () => {
-      await userEvent.unhover(secondPlayerItem);
-    });
+    await userEvent.unhover(secondPlayerItem);
     expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
     expect(screen.queryByText(PREDEFINED_PLAYERS[1].description)).not.toBeInTheDocument();
   });

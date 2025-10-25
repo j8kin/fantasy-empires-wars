@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TopPanel from '../../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
@@ -116,9 +116,8 @@ describe('TopPanel Component', () => {
     it('handles Build button click', async () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const buildButton = screen.getByAltText('Construct Buildings');
-      await act(async () => {
-        userEvent.click(buildButton);
-      });
+      const user = userEvent.setup();
+      await user.click(buildButton);
       // Component should handle the click without errors
       expect(buildButton).toBeInTheDocument();
     });
@@ -126,9 +125,8 @@ describe('TopPanel Component', () => {
     it('handles Cast button click', async () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const castButton = screen.getByAltText('Cast spell');
-      await act(async () => {
-        userEvent.click(castButton);
-      });
+      const user = userEvent.setup();
+      await user.click(castButton);
       // Component should handle the click without errors
       expect(castButton).toBeInTheDocument();
     });
@@ -140,17 +138,14 @@ describe('TopPanel Component', () => {
       expect(endTurnButton).toBeInTheDocument();
 
       // Click the end turn button
-      await act(async () => {
-        await userEvent.click(endTurnButton);
-      });
+      const user = userEvent.setup();
+      await user.click(endTurnButton);
 
       // The button should still be in the document after processing
       expect(endTurnButton).toBeInTheDocument();
 
-      // Wait for any turn processing to complete
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      });
+      // Wait for any turn processing to complete (if any asynchronous updates occur)
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
   });
 
@@ -164,9 +159,8 @@ describe('TopPanel Component', () => {
     it('handles New Game button click', async () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const newGameButton = screen.getByAltText('New game');
-      await act(async () => {
-        userEvent.click(newGameButton);
-      });
+      const user = userEvent.setup();
+      await user.click(newGameButton);
       // Component should handle the click without errors
       expect(newGameButton).toBeInTheDocument();
     });
@@ -174,9 +168,8 @@ describe('TopPanel Component', () => {
     it('handles Save Game button click', async () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const saveButton = screen.getByAltText('Save game');
-      await act(async () => {
-        userEvent.click(saveButton);
-      });
+      const user = userEvent.setup();
+      await user.click(saveButton);
       // Component should handle the click without errors
       expect(saveButton).toBeInTheDocument();
     });

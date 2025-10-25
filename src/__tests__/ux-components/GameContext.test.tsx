@@ -1,4 +1,4 @@
-import { render, renderHook, act } from '@testing-library/react';
+import { render, renderHook, act, screen } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GameState, TurnPhase } from '../../types/GameState';
 import { GamePlayer } from '../../types/GamePlayer';
@@ -115,13 +115,13 @@ describe('GameContext', () => {
     it('should render provider without errors', () => {
       const TestComponent = () => <div>Test Content</div>;
 
-      const { getByText } = render(
+      render(
         <GameProvider>
           <TestComponent />
         </GameProvider>
       );
 
-      expect(getByText('Test Content')).toBeInTheDocument();
+      expect(screen.getByText('Test Content')).toBeInTheDocument();
     });
 
     it('should initialize with undefined game state', () => {

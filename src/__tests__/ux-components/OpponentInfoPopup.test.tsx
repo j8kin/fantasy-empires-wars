@@ -84,7 +84,7 @@ describe('OpponentInfoPopup', () => {
       </ApplicationContextProvider>
     );
 
-    expect(container.firstChild).toBeNull();
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('displays opponent name in header', () => {

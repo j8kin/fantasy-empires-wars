@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import SelectOpponentDialog from '../../ux-components/dialogs/SelectOpponentDialog';
 import { PREDEFINED_PLAYERS, NO_PLAYER } from '../../types/GamePlayer';
-import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
+import type { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 
 const renderWithProvider = (ui: React.ReactElement) =>
@@ -25,7 +25,7 @@ jest.mock('../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
 describe('SelectOpponentDialog', () => {
   const mockOnSelect = jest.fn();
   const mockOnCancel = jest.fn();
-  const excludedPlayerIds = ['player-1'];
+  const excludedPlayerIds = [PREDEFINED_PLAYERS[0].id];
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -82,8 +82,8 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('filters out excluded players from available options', () => {
-    const excludedPlayer = PREDEFINED_PLAYERS.find((p) => p.id === 'player-1');
-    const excludedIds = excludedPlayer ? [excludedPlayer.id] : ['player-1'];
+    const excludedPlayer = PREDEFINED_PLAYERS[0];
+    const excludedIds = [excludedPlayer.id];
 
     renderWithProvider(
       <SelectOpponentDialog
@@ -94,9 +94,7 @@ describe('SelectOpponentDialog', () => {
     );
 
     // Should not show excluded player
-    if (excludedPlayer) {
-      expect(screen.queryByText(excludedPlayer.name)).not.toBeInTheDocument();
-    }
+    expect(screen.queryByText(excludedPlayer.name)).not.toBeInTheDocument();
 
     // Should show other players
     const nonExcludedPlayers = PREDEFINED_PLAYERS.filter((p) => !excludedIds.includes(p.id));
@@ -106,6 +104,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('calls onSelect when a player is selected', async () => {
+    const user = userEvent.setup();
     renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
@@ -115,13 +114,10 @@ describe('SelectOpponentDialog', () => {
     );
 
     const availablePlayer = PREDEFINED_PLAYERS.find((p) => !excludedPlayerIds.includes(p.id));
-    if (availablePlayer) {
-      const btn = screen.getByRole('button', { name: availablePlayer.name });
-      await act(async () => {
-        await userEvent.click(btn);
-      });
-      expect(mockOnSelect).toHaveBeenCalledWith(availablePlayer);
-    }
+    expect(availablePlayer).toBeDefined();
+    const btn = screen.getByRole('button', { name: availablePlayer!.name });
+    await user.click(btn);
+    expect(mockOnSelect).toHaveBeenCalledWith(availablePlayer);
   });
 
   it('calls onSelect when EmptyPlayer is selected', async () => {
@@ -135,13 +131,13 @@ describe('SelectOpponentDialog', () => {
     );
 
     const emptyButton = screen.getByRole('button', { name: NO_PLAYER.name });
-    await act(async () => {
-      await userEvent.click(emptyButton);
-    });
+    const user = userEvent.setup();
+    await user.click(emptyButton);
     expect(mockOnSelect).toHaveBeenCalledWith(NO_PLAYER);
   });
 
   it('renders cancel button and calls onCancel when clicked', async () => {
+    const user = userEvent.setup();
     renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
@@ -151,9 +147,7 @@ describe('SelectOpponentDialog', () => {
     );
 
     const cancelButton = screen.getByAltText('Cancel');
-    await act(async () => {
-      await userEvent.click(cancelButton);
-    });
+    await user.click(cancelButton);
     expect(mockOnCancel).toHaveBeenCalled();
   });
 
@@ -204,6 +198,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('updates selected player when a different player is clicked', async () => {
+    const user = userEvent.setup();
     renderWithProvider(
       <SelectOpponentDialog
         excludedPlayerIds={excludedPlayerIds}
@@ -213,21 +208,17 @@ describe('SelectOpponentDialog', () => {
     );
 
     const availablePlayers = PREDEFINED_PLAYERS.filter((p) => !excludedPlayerIds.includes(p.id));
-    if (availablePlayers.length >= 2) {
-      // Click first available player
-      const firstBtn = screen.getByRole('button', { name: availablePlayers[0].name });
-      await act(async () => {
-        await userEvent.click(firstBtn);
-      });
-      expect(mockOnSelect).toHaveBeenCalledWith(availablePlayers[0]);
+    expect(availablePlayers.length).toBeGreaterThanOrEqual(2);
 
-      // Click second available player
-      const secondBtn = screen.getByRole('button', { name: availablePlayers[1].name });
-      await act(async () => {
-        await userEvent.click(secondBtn);
-      });
-      expect(mockOnSelect).toHaveBeenCalledWith(availablePlayers[1]);
-    }
+    // Click first available player
+    const firstBtn = screen.getByRole('button', { name: availablePlayers[0].name });
+    await user.click(firstBtn);
+    expect(mockOnSelect).toHaveBeenCalledWith(availablePlayers[0]);
+
+    // Click second available player
+    const secondBtn = screen.getByRole('button', { name: availablePlayers[1].name });
+    await user.click(secondBtn);
+    expect(mockOnSelect).toHaveBeenCalledWith(availablePlayers[1]);
   });
 
   it('handles window undefined scenario for SSR compatibility', () => {
