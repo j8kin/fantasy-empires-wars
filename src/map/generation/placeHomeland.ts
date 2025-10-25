@@ -7,7 +7,6 @@ import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getRandomElement } from './getRandomElement';
-import player from '../../ux-components/player/Player';
 
 const assignPlayerHero = (homeland: LandState, player: GamePlayer) => {
   const hero = getUnit(player.type);
