@@ -5,7 +5,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner } from '../../types/GameState';
 
 import GameControl from '../game-controls/GameControl';
-import PlayActionsControl from '../game-controls/PlayActionsControl';
+import MapActionsControl from '../game-controls/MapActionsControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import GameButton from '../buttons/GameButton';
@@ -49,7 +49,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
       >
         <div className={styles.panelContainer}>
           {/* Left Side - Action Controls */}
-          <PlayActionsControl />
+          <MapActionsControl />
 
           {/* Display Player Info only if Game Started */}
           {selectedPlayer && <Player avatarSize={avatarSize} />}

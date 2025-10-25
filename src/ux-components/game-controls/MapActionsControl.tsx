@@ -10,7 +10,7 @@ import { ButtonName } from '../../types/ButtonName';
 import { AllSpells, SpellName } from '../../types/Spell';
 import { getTurnOwner } from '../../types/GameState';
 
-const PlayActionsControl: React.FC = () => {
+const MapActionsControl: React.FC = () => {
   const {
     setShowCastSpellDialog,
     setShowConstructBuildingDialog,
@@ -70,9 +70,9 @@ const PlayActionsControl: React.FC = () => {
     <div className={styles.gameControlContainer}>
       <GameButton buttonName={ButtonName.BUILD} onClick={handleShowConstructBuildingDialog} />
       <GameButton buttonName={ButtonName.CAST} onClick={handleShowCastSpellDialog} />
-      <GameButton buttonName={ButtonName.MOVE} />
+      <GameButton buttonName={ButtonName.USE} />
     </div>
   );
 };
 
-export default PlayActionsControl;
+export default MapActionsControl;
