@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.81ab9798.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.db441fd3.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.6f4e3ef3.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
@@ -26,6 +26,9 @@
     "static/media/morgana.png": "/fantasy-empires-wars/static/media/morgana.4de6575e279e16030476.png",
     "static/media/ignatius.png": "/fantasy-empires-wars/static/media/ignatius.9af98ba2f3c44fcc189a.png",
     "static/media/ember.png": "/fantasy-empires-wars/static/media/ember.6e4123565bd294ae4beb.png",
+    "static/media/shadow-mire.png": "/fantasy-empires-wars/static/media/shadow-mire.3d900ad990baba5285b0.png",
+    "static/media/misty-glades.png": "/fantasy-empires-wars/static/media/misty-glades.3be6f47f3872678d777b.png",
+    "static/media/crystal-basin.png": "/fantasy-empires-wars/static/media/crystal-basin.fc96f3a8c9c050de6abd.png",
     "static/media/Ok.png": "/fantasy-empires-wars/static/media/Ok.425997d708d1a3b1966f.png",
     "static/media/valdris.png": "/fantasy-empires-wars/static/media/valdris.c9c11d9da8fafab700ef.png",
     "static/media/Cancel.png": "/fantasy-empires-wars/static/media/Cancel.639dcdbffc5081d17ae3.png",
@@ -68,11 +71,11 @@
     "static/media/PageEven.png": "/fantasy-empires-wars/static/media/PageEven.8a6a120c45b62dd81d2c.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.81ab9798.css.map": "/fantasy-empires-wars/static/css/main.81ab9798.css.map",
-    "main.db441fd3.js.map": "/fantasy-empires-wars/static/js/main.db441fd3.js.map",
+    "main.6f4e3ef3.js.map": "/fantasy-empires-wars/static/js/main.6f4e3ef3.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.81ab9798.css",
-    "static/js/main.db441fd3.js"
+    "static/js/main.6f4e3ef3.js"
   ]
 }
