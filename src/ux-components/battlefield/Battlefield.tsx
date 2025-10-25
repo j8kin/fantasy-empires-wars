@@ -6,38 +6,34 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandTile from './LandTile';
 import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
-import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
+import { BattlefieldDimensions, battlefieldLandId, getTurnOwner } from '../../types/GameState';
 
 export interface BattlefieldProps {
   topPanelHeight: number;
   tileSize: FrameSize;
 }
 
-// todo refactor and remove the same size should be used + scroll map
-const getHexTileSize = (battlefieldCols: number): FrameSize => {
-  // Base size for small map, decrease as map size increases
-  const baseWidth = 100;
-  let scaleFactor: number;
+const getHexTileSize = (
+  battlefieldDimensions: BattlefieldDimensions,
+  availableArea: FrameSize
+): FrameSize => {
+  const defaultWidth = 100;
+  const hexRatio = 1.1547; // sqrt(3) for pointy-topped hexagon
 
-  switch (battlefieldCols) {
-    case 13:
-      scaleFactor = 1.4; // Largest tiles for smallest map
-      break;
-    case 18:
-      scaleFactor = 1.0; // Smallest tiles for medium map (has most tiles)
-      break;
-    case 23:
-      scaleFactor = 0.8; // Medium size tiles
-      break;
-    case 31:
-      scaleFactor = 0.6; // Smaller tiles for huge map
-      break;
-    default:
-      scaleFactor = 1.0;
-  }
+  // Calculate width based on available horizontal space
+  // Account for hex row offset (even rows are offset by 0.5 tile width) and some padding
+  const effectiveCols = battlefieldDimensions.cols + 0.5; // Add 0.5 for the offset
+  const calculatedWidthFromArea = (availableArea.width - 100) / effectiveCols; // 40px for padding
 
-  const width = baseWidth * scaleFactor;
-  const height = width * 1.1547; // Height = width * sqrt(3) for pointy-topped hexagon
+  // Calculate width based on available vertical space
+  // Account for row overlap (rows overlap by 25% of tile height)
+  const effectiveRows = battlefieldDimensions.rows + 0.25; // Overlap calculation
+  const availableHeightPerRow = (availableArea.height - 100) / effectiveRows; // 40px for padding
+  const calculatedWidthFromHeight = availableHeightPerRow / hexRatio;
+
+  // Use the maximum of default width and calculated widths for better scaling
+  const width = Math.max(defaultWidth, calculatedWidthFromArea, calculatedWidthFromHeight);
+  const height = width * hexRatio;
 
   return { width, height };
 };
@@ -45,10 +41,15 @@ const getHexTileSize = (battlefieldCols: number): FrameSize => {
 const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) => {
   const { gameState } = useGameContext();
 
-  // Battlefield generated at application startup, but gameState is not initialized yet - use dummy map size todo: refactor
+  // Battlefield generated at application startup, but gameState is not initialized yet - use dummy map size
   const { rows, cols } = gameState?.battlefield.dimensions || { rows: 1, cols: 1 };
-  const { width: tileWidth, height: tileHeight } = getHexTileSize(cols);
+  const availableArea = {
+    width: window.innerWidth,
+    height: window.innerHeight - topPanelHeight,
+  };
+
   const hexGrid = [];
+  const { width: tileWidth, height: tileHeight } = getHexTileSize({ rows, cols }, availableArea);
 
   // Loop to generate rows and columns of hex tiles using map state
   for (let row = 0; row < rows; row++) {
@@ -84,10 +85,6 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
         className={styles.mapContainer}
         style={
           {
-            width: '100%',
-            height: '100%',
-            overflow: 'hidden', // Prevent content from spilling out
-            boxSizing: 'border-box',
             // CSS custom properties for dynamic tile sizing
             '--hex-tile-width': `${tileWidth}px`,
             '--hex-tile-height': `${tileHeight}px`,
@@ -97,7 +94,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
         }
       >
         {/* Draw map if game started */}
-        {getTurnOwner(gameState) && <div>{hexGrid}</div>}
+        {getTurnOwner(gameState) && <div className={styles.battlefieldContent}>{hexGrid}</div>}
       </div>
     </FantasyBorderFrame>
   );
