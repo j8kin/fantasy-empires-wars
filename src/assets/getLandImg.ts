@@ -11,6 +11,9 @@ import lavaImg from './lands/lava.png';
 import volcanoImg from './lands/volcano.png';
 import sunSpirePeaks from './lands/sunspire-peaks.png';
 import goldenPlains from './lands/golden-plains.png';
+import crystalBasinImg from './lands/crystal-basin.png';
+import mistyGladesImg from './lands/misty-glades.png';
+import shadowMireImg from './lands/shadow-mire.png';
 
 export const getLandImg = (landType: LAND_TYPE): string | undefined => {
   switch (landType) {
@@ -37,6 +40,12 @@ export const getLandImg = (landType: LAND_TYPE): string | undefined => {
       return sunSpirePeaks;
     case LAND_TYPE.GOLDEN_PLAINS:
       return goldenPlains;
+    case LAND_TYPE.CRISTAL_BASIN:
+      return crystalBasinImg;
+    case LAND_TYPE.MISTY_GLADES:
+      return mistyGladesImg;
+    case LAND_TYPE.SHADOW_MIRE:
+      return shadowMireImg;
     default:
       return undefined;
   }
