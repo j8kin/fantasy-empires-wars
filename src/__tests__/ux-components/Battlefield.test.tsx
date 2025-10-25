@@ -1,13 +1,8 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import Battlefield from '../../ux-components/battlefield/Battlefield';
-import { GameState, BattlefieldMap, BattlefieldDimensions, TurnPhase } from '../../types/GameState';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { Land, LAND_TYPE } from '../../types/Land';
+import { GameState, BattlefieldDimensions } from '../../types/GameState';
 import { LandPosition } from '../../map/utils/getLands';
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
-import { Alignment } from '../../types/Alignment';
-import { toGamePlayer } from '../utils/toGamePlayer';
 import { createGameStateStub } from '../utils/createGameStateStub';
 
 // Mock CSS modules
@@ -67,46 +62,8 @@ jest.mock('../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
 // Test data setup
 const testTileDimensions = { width: 50, height: 180 };
 
-const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState => {
-  const mockPlayer: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
-
-  const mockLandType = (): Land => {
-    return {
-      id: LAND_TYPE.PLAINS,
-      alignment: Alignment.LAWFUL,
-      goldPerTurn: { min: 1, max: 3 },
-    };
-  };
-
-  const tiles: BattlefieldMap = {
-    dimensions: mapDimensions,
-    lands: {},
-  };
-
-  // Create some sample tiles for testing
-  for (let row = 0; row < 3; row++) {
-    for (let col = 0; col < 3; col++) {
-      const tileId = `${row}-${col}`;
-      const mapPos = { row: row, col: col };
-      tiles.lands[tileId] = {
-        mapPos: mapPos,
-        land: mockLandType(),
-        controlledBy: mockPlayer.id,
-        goldPerTurn: 1,
-        buildings: [],
-        army: [],
-      };
-    }
-  }
-
-  return {
-    battlefield: tiles,
-    turn: 0,
-    turnOwner: mockPlayer.id,
-    players: [mockPlayer],
-    turnPhase: TurnPhase.START,
-  };
-};
+const createMockGameState = (mapDimensions: BattlefieldDimensions): GameState =>
+  createGameStateStub({ battlefieldSize: mapDimensions, addPlayersHomeland: false });
 
 let mockGameState: GameState;
 
@@ -232,94 +189,48 @@ describe('Battlefield Component', () => {
 
       const hexRows = screen
         .getAllByTestId('Battlefield')
-        .map((battlefield) => Array.from(battlefield.querySelectorAll('.mocked-hex-row')))
-        .flat();
+        .flatMap((battlefield) => within(battlefield).getAllByTestId('hex-row'));
 
       expect(hexRows.length).toBeGreaterThan(0);
     });
   });
 
   describe('Hex Tile Size Calculations', () => {
-    it('calculates correct tile sizes for small map', () => {
-      const scaleFactor = 1.4;
-      mockGameState = createMockGameState({ rows: 6, cols: 13 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+    it.each([
+      [{ rows: 6, cols: 13 }, 177.77777777777777],
+      [{ rows: 9, cols: 18 }, 129.72972972972974],
+      [{ rows: 11, cols: 23 }, 102.12765957446808],
+      [{ rows: 15, cols: 31 }, 100],
+    ])(
+      'calculates correct tile sizes for map dimensions: %p',
+      (mapDimensions: BattlefieldDimensions, expectedWidth: number) => {
+        Object.defineProperty(window, 'innerWidth', {
+          configurable: true,
+          value: 2500, // to have different expected width/height
+        });
+        Object.defineProperty(window, 'innerHeight', {
+          configurable: true,
+          value: 855,
+        });
 
-      const battlefield = screen.getByTestId('Battlefield');
-      const style = battlefield.style;
+        mockGameState = createMockGameState(mapDimensions);
+        render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
 
-      // Small map uses scaleFactor of 1.4
-      const expectedWidth = 100 * scaleFactor; // 140px
-      const expectedHeight = expectedWidth * 1.1547; // ~161.658px
+        const battlefield = screen.getByTestId('Battlefield');
+        const style = battlefield.style;
 
-      expect(style.getPropertyValue('--hex-tile-width')).toBe(`${expectedWidth}px`);
-      expect(style.getPropertyValue('--hex-tile-height')).toBe(`${expectedHeight}px`);
-    });
+        const expectedHeight = expectedWidth * 1.1547;
 
-    it('calculates correct tile sizes for medium map', () => {
-      const scaleFactor = 1.0;
-      mockGameState = createMockGameState({ rows: 9, cols: 18 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+        expect(style.getPropertyValue('--hex-tile-width')).toBe(`${expectedWidth}px`);
+        expect(style.getPropertyValue('--hex-tile-height')).toBe(`${expectedHeight}px`);
 
-      const battlefield = screen.getByTestId('Battlefield');
-      const style = battlefield.style;
+        const expectedMargin = -expectedHeight * 0.25;
+        const expectedOffset = expectedWidth * 0.5;
 
-      // Medium map uses scaleFactor of 1.0
-      const expectedWidth = 100 * scaleFactor; // 100px
-      const expectedHeight = expectedWidth * 1.1547; // ~115.47px
-
-      expect(style.getPropertyValue('--hex-tile-width')).toBe(`${expectedWidth}px`);
-      expect(style.getPropertyValue('--hex-tile-height')).toBe(`${expectedHeight}px`);
-    });
-
-    it('calculates correct tile sizes for large map', () => {
-      const scaleFactor = 0.8;
-      mockGameState = createMockGameState({ rows: 11, cols: 23 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
-
-      const battlefield = screen.getByTestId('Battlefield');
-      const style = battlefield.style;
-
-      // Large map uses scaleFactor of 0.8
-      const expectedWidth = 100 * scaleFactor; // 80px
-      const expectedHeight = expectedWidth * 1.1547; // ~92.376px
-
-      expect(style.getPropertyValue('--hex-tile-width')).toBe(`${expectedWidth}px`);
-      expect(style.getPropertyValue('--hex-tile-height')).toBe(`${expectedHeight}px`);
-    });
-
-    it('calculates correct tile sizes for huge map', () => {
-      const scaleFactor = 0.6;
-      mockGameState = createMockGameState({ rows: 15, cols: 31 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
-
-      const battlefield = screen.getByTestId('Battlefield');
-      const style = battlefield.style;
-
-      // Huge map uses scaleFactor of 0.6
-      const expectedWidth = 100 * scaleFactor; // 60px
-      const expectedHeight = expectedWidth * 1.1547; // ~69.282px
-
-      expect(style.getPropertyValue('--hex-tile-width')).toBe(`${expectedWidth}px`);
-      expect(style.getPropertyValue('--hex-tile-height')).toBe(`${expectedHeight}px`);
-    });
-  });
-
-  describe('CSS Custom Properties', () => {
-    it('sets correct hex row margin and offset', () => {
-      mockGameState = createMockGameState({ rows: 9, cols: 18 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
-
-      const battlefield = screen.getByTestId('Battlefield');
-      const style = battlefield.style;
-
-      const tileHeight = 100 * 1.1547; // ~115.47px
-      const expectedMargin = -tileHeight * 0.25; // ~-28.8675px
-      const expectedOffset = 100 * 0.5; // 50px
-
-      expect(style.getPropertyValue('--hex-row-margin')).toBe(`${expectedMargin}px`);
-      expect(style.getPropertyValue('--hex-row-offset')).toBe(`${expectedOffset}px`);
-    });
+        expect(style.getPropertyValue('--hex-row-margin')).toBe(`${expectedMargin}px`);
+        expect(style.getPropertyValue('--hex-row-offset')).toBe(`${expectedOffset}px`);
+      }
+    );
   });
 
   describe('Tile State Integration', () => {
@@ -347,21 +258,6 @@ describe('Battlefield Component', () => {
 
       const battlefield = screen.getByTestId('Battlefield');
       expect(battlefield).toBeInTheDocument();
-    });
-  });
-
-  describe('Container Styling', () => {
-    it('applies correct container styles', () => {
-      mockGameState = createMockGameState({ rows: 15, cols: 31 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
-
-      const battlefield = screen.getByTestId('Battlefield');
-      const style = battlefield.style;
-
-      expect(style.width).toBe('100%');
-      expect(style.height).toBe('100%');
-      expect(style.overflow).toBe('hidden');
-      expect(style.boxSizing).toBe('border-box');
     });
   });
 

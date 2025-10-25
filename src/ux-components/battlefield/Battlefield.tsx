@@ -65,7 +65,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
     }
 
     hexGrid.push(
-      <div className={hexStyles['hex-row']} key={`row-${row}`}>
+      <div className={hexStyles['hex-row']} data-testid="hex-row" key={`row-${row}`}>
         {hexRow}
       </div>
     );
