@@ -14,6 +14,9 @@ import goldenPlains from './lands/golden-plains.png';
 import crystalBasinImg from './lands/crystal-basin.png';
 import mistyGladesImg from './lands/misty-glades.png';
 import shadowMireImg from './lands/shadow-mire.png';
+import blightedFenImg from './lands/blighted-fen.png';
+import heartwoodGroveImg from './lands/heartwood-grove.png';
+import verdantGladeImg from './lands/verdant-glade.png';
 
 export const getLandImg = (landType: LAND_TYPE): string | undefined => {
   switch (landType) {
@@ -46,6 +49,12 @@ export const getLandImg = (landType: LAND_TYPE): string | undefined => {
       return mistyGladesImg;
     case LAND_TYPE.SHADOW_MIRE:
       return shadowMireImg;
+    case LAND_TYPE.BLIGHTED_FEN:
+      return blightedFenImg;
+    case LAND_TYPE.HEARTWOOD_COVE:
+      return heartwoodGroveImg;
+    case LAND_TYPE.VERDANT_GLADE:
+      return verdantGladeImg;
     default:
       return undefined;
   }

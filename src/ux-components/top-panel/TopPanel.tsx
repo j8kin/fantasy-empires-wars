@@ -49,9 +49,9 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
         style={{ height: '100%', width: '100%' }}
       >
         <div className={styles.panelContainer}>
-          {/* Left Side - Action Controls */}
-          <MapActionsControl />
-          <UnitActionControl />
+          {/* Left Side - Action Controls only if the game is started*/}
+          {selectedPlayer && <MapActionsControl />}
+          {selectedPlayer && <UnitActionControl />}
 
           {/* Display Player Info only if Game Started */}
           {selectedPlayer && <Player avatarSize={avatarSize} />}
