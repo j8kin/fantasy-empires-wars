@@ -12,6 +12,7 @@ import GameButton from '../buttons/GameButton';
 import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
 import Player from '../player/Player';
 import { ButtonName } from '../../types/ButtonName';
+import UnitActionControl from '../game-controls/UnitActionControl';
 
 export interface TopPanelProps {
   height: number;
@@ -50,6 +51,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
         <div className={styles.panelContainer}>
           {/* Left Side - Action Controls */}
           <MapActionsControl />
+          <UnitActionControl />
 
           {/* Display Player Info only if Game Started */}
           {selectedPlayer && <Player avatarSize={avatarSize} />}
