@@ -12,6 +12,7 @@ import elderoak from '../assets/avatars/elderoak.png';
 import valdris from '../assets/avatars/valdris.png';
 import ignatius from '../assets/avatars/ignatius.png';
 import ember from '../assets/avatars/ember.png';
+import selene from '../assets/avatars/selene.png';
 
 export const getAvatarImg = (name: string) => {
   switch (name) {
@@ -35,6 +36,8 @@ export const getAvatarImg = (name: string) => {
       return marcus;
     case 'lydia':
       return lydia;
+    case 'selene':
+      return selene;
     case 'elderoak':
       return elderoak;
     case 'valdris':

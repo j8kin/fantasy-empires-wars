@@ -149,6 +149,17 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     color: 'purple',
   },
   {
+    id: 'selene',
+    name: 'Selene Moonwhisper',
+    alignment: Alignment.CHAOTIC,
+    race: 'Human',
+    type: UnitType.ENCHANTER,
+    level: 9,
+    description:
+      'A manipulator of perception and dreams, weaving illusions that blur truth and deceit.',
+    color: 'darkSlateGray',
+  },
+  {
     id: 'elderoak',
     name: 'Elderoak the Wise',
     alignment: Alignment.NEUTRAL,
