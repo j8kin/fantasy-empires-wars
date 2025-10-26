@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.81ab9798.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.d4089762.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.7f3a5ed7.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
@@ -20,6 +20,7 @@
     "static/media/EndOfTurn.png": "/fantasy-empires-wars/static/media/EndOfTurn.0508056e44ffffd0b2a4.png",
     "static/media/lydia.png": "/fantasy-empires-wars/static/media/lydia.306a7220b17918557110.png",
     "static/media/elderoak.png": "/fantasy-empires-wars/static/media/elderoak.ef1f14b56b35c1d66e9d.png",
+    "static/media/selene.png": "/fantasy-empires-wars/static/media/selene.d2650941895f96c00440.png",
     "static/media/elara.png": "/fantasy-empires-wars/static/media/elara.7ef7537ca9be90c6af4d.png",
     "static/media/LoadGame.png": "/fantasy-empires-wars/static/media/LoadGame.91731fd35afbe91965ce.png",
     "static/media/thorin.png": "/fantasy-empires-wars/static/media/thorin.dfd1fa7dc4df5926bb53.png",
@@ -74,11 +75,11 @@
     "static/media/PageEven.png": "/fantasy-empires-wars/static/media/PageEven.8a6a120c45b62dd81d2c.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.81ab9798.css.map": "/fantasy-empires-wars/static/css/main.81ab9798.css.map",
-    "main.d4089762.js.map": "/fantasy-empires-wars/static/js/main.d4089762.js.map",
+    "main.7f3a5ed7.js.map": "/fantasy-empires-wars/static/js/main.7f3a5ed7.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.81ab9798.css",
-    "static/js/main.d4089762.js"
+    "static/js/main.7f3a5ed7.js"
   ]
 }
