@@ -5,13 +5,14 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner } from '../../types/GameState';
 
 import GameControl from '../game-controls/GameControl';
-import PlayActionsControl from '../game-controls/PlayActionsControl';
+import MapActionsControl from '../game-controls/MapActionsControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import GameButton from '../buttons/GameButton';
 import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
 import Player from '../player/Player';
 import { ButtonName } from '../../types/ButtonName';
+import UnitActionControl from '../game-controls/UnitActionControl';
 
 export interface TopPanelProps {
   height: number;
@@ -49,7 +50,8 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
       >
         <div className={styles.panelContainer}>
           {/* Left Side - Action Controls */}
-          <PlayActionsControl />
+          <MapActionsControl />
+          <UnitActionControl />
 
           {/* Display Player Info only if Game Started */}
           {selectedPlayer && <Player avatarSize={avatarSize} />}

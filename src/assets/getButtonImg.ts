@@ -38,6 +38,8 @@ export const getButtonImg = (name: ButtonName): string => {
       return SaveGameImg;
     case ButtonName.START:
       return StartGameImg;
+    case ButtonName.USE:
+      return OkImg; // todo replace with new image
     default:
       return OkImg;
   }

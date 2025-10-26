@@ -110,7 +110,7 @@ describe('TopPanel Component', () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       expect(screen.getByAltText('Construct Buildings')).toBeInTheDocument();
       expect(screen.getByAltText('Cast spell')).toBeInTheDocument();
-      expect(screen.getByAltText('Move army')).toBeInTheDocument();
+      expect(screen.getByAltText('Use Item')).toBeInTheDocument();
     });
 
     it('handles Build button click', async () => {
@@ -266,10 +266,10 @@ describe('TopPanel Component', () => {
       const incomeElements = await screen.findAllByText(incomePattern);
       expect(incomeElements.length).toBeGreaterThan(0);
 
-      // Verify action buttons
+      // Verify map action buttons
       expect(screen.getByAltText('Construct Buildings')).toBeInTheDocument();
       expect(screen.getByAltText('Cast spell')).toBeInTheDocument();
-      expect(screen.getByAltText('Move army')).toBeInTheDocument();
+      expect(screen.getByAltText('Use Item')).toBeInTheDocument();
 
       // Verify game controls
       expect(screen.getByAltText('New game')).toBeInTheDocument();
@@ -281,7 +281,7 @@ describe('TopPanel Component', () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const topPanel = screen.getByTestId('TopPanel');
       expect(topPanel).toBeInTheDocument();
-      // VialPanel, OpponentsPanel, PlayActionsControl, and GameControl should all render
+      // VialPanel, OpponentsPanel, MapActionsControl, and GameControl should all render
     });
   });
 });
