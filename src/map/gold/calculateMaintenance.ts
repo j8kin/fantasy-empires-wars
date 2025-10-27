@@ -4,20 +4,20 @@ import { PlayerInfo } from '../../types/GamePlayer';
 import { getLands } from '../utils/getLands';
 
 import { BuildingType } from '../../types/Building';
-import { Unit } from '../../types/Army';
+import { Unit, UnitRank } from '../../types/Army';
 
 const unitMaintenanceCost = (unit: Unit): number => {
-  if (unit.hero) {
+  if (typeof unit.level === 'number') {
     return unit.maintainCost * (Math.floor(unit.level / 4) + 1);
   }
 
   switch (unit.level) {
-    case 2: // veteran unit
-      return unit.maintainCost * 1.5;
-    case 3: // elite unit
-      return unit.maintainCost * 2;
+    case UnitRank.VETERAN:
+      return unit.maintainCost * (unit.count ?? 0) * 1.5;
+    case UnitRank.ELITE:
+      return unit.maintainCost * (unit.count ?? 0) * 2;
     default:
-      return unit.maintainCost;
+      return unit.maintainCost * (unit.count ?? 0);
   }
 };
 
@@ -43,7 +43,7 @@ export const calculateMaintenance = (gameState: GameState): number => {
     return (
       acc +
       army.army.reduce((acc, units) => {
-        return acc + units.quantity * unitMaintenanceCost(units.unit);
+        return acc + unitMaintenanceCost(units.unit);
       }, 0)
     );
   }, 0);

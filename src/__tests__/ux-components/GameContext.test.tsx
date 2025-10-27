@@ -3,7 +3,7 @@ import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GameState, TurnPhase } from '../../types/GameState';
 import { GamePlayer } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
-import { UnitType } from '../../types/Army';
+import { HeroUnitType } from '../../types/Army';
 import { DiplomacyStatus } from '../../types/GamePlayer';
 import { TurnManager } from '../../turn/TurnManager';
 import { calculateIncome } from '../../map/gold/calculateIncome';
@@ -67,7 +67,7 @@ describe('GameContext', () => {
         name: 'Test Player 1',
         alignment: Alignment.NEUTRAL,
         race: 'Human',
-        type: UnitType.WARRIOR,
+        type: HeroUnitType.FIGHTER,
         level: 1,
         description: 'Test player 1',
         color: 'blue',
@@ -82,7 +82,7 @@ describe('GameContext', () => {
         name: 'Test Player 2',
         alignment: Alignment.NEUTRAL,
         race: 'Elf',
-        type: UnitType.RANGER,
+        type: HeroUnitType.RANGER,
         level: 1,
         description: 'Test player 2',
         color: 'red',

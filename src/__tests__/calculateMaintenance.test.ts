@@ -1,10 +1,17 @@
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
 import { battlefieldLandId, GameState } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
-import { getUnit, UnitType } from '../types/Army';
+import {
+  getDefaultUnit,
+  HeroUnit,
+  HeroUnitType,
+  RegularUnit,
+  RegularUnitType,
+  UnitRank,
+} from '../types/Army';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
-import { recruitWarriors } from '../map/army/recruit';
+import { recruitRegulars } from '../map/army/recruit';
 import { LandPosition } from '../map/utils/getLands';
 import {
   createDefaultGameStateStub,
@@ -22,28 +29,27 @@ describe('Calculate Maintenance', () => {
 
   describe('Army Maintenance cost', () => {
     it.each([
-      [UnitType.FIGHTER, 1, 100],
-      [UnitType.FIGHTER, 3, 100],
-      [UnitType.FIGHTER, 4, 200],
-      [UnitType.FIGHTER, 20, 600],
-      [UnitType.HAMMERLORD, 1, 100],
-      [UnitType.RANGER, 1, 100],
-      [UnitType.PYROMANCER, 1, 100],
-      [UnitType.CLERIC, 1, 100],
-      [UnitType.DRUID, 1, 100],
-      [UnitType.ENCHANTER, 1, 100],
-      [UnitType.NECROMANCER, 1, 100],
+      [HeroUnitType.FIGHTER, 1, 100],
+      [HeroUnitType.FIGHTER, 3, 100],
+      [HeroUnitType.FIGHTER, 4, 200],
+      [HeroUnitType.FIGHTER, 20, 600],
+      [HeroUnitType.HAMMER_LORD, 1, 100],
+      [HeroUnitType.RANGER, 1, 100],
+      [HeroUnitType.PYROMANCER, 1, 100],
+      [HeroUnitType.CLERIC, 1, 100],
+      [HeroUnitType.DRUID, 1, 100],
+      [HeroUnitType.ENCHANTER, 1, 100],
+      [HeroUnitType.NECROMANCER, 1, 100],
     ])('Hero %s maintenance level %s', (hero, level, expected) => {
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
         player.id;
-      const heroUnit = getUnit(hero);
+      const heroUnit = getDefaultUnit(hero) as HeroUnit;
       heroUnit.level = level;
 
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
         {
           unit: heroUnit,
-          quantity: 1,
-          moveInTurn: 0,
+          isMoving: false,
         },
       ];
       const maintenance = calculateMaintenance(gameStateStub);
@@ -51,31 +57,31 @@ describe('Calculate Maintenance', () => {
     });
 
     it.each([
-      [UnitType.WARRIOR, 1, 1, 4],
-      [UnitType.WARRIOR, 2, 1, 6],
-      [UnitType.WARRIOR, 3, 1, 8],
-      [UnitType.WARRIOR, 1, 20, 80],
-      [UnitType.WARRIOR, 1, 753, 3012],
-      [UnitType.WARRIOR, 2, 20, 120],
-      [UnitType.WARRIOR, 3, 20, 160],
-      [UnitType.DWARF, 1, 1, 5],
-      [UnitType.ORC, 1, 1, 5],
-      [UnitType.ORC, 1, 20, 90], // orc maintenance is not an integer number
-      [UnitType.ELF, 1, 1, 5],
-      [UnitType.DARKELF, 1, 1, 5],
-      [UnitType.BALISTA, 1, 1, 150],
-      [UnitType.CATAPULT, 1, 1, 50],
-    ])('Unit %s maintenance level %s quantity %s', (hero, level, quantity, expected) => {
+      [RegularUnitType.WARRIOR, UnitRank.REGULAR, 1, 4],
+      [RegularUnitType.WARRIOR, UnitRank.VETERAN, 1, 6],
+      [RegularUnitType.WARRIOR, UnitRank.ELITE, 1, 8],
+      [RegularUnitType.WARRIOR, UnitRank.REGULAR, 20, 80],
+      [RegularUnitType.WARRIOR, UnitRank.REGULAR, 753, 3012],
+      [RegularUnitType.WARRIOR, UnitRank.VETERAN, 20, 120],
+      [RegularUnitType.WARRIOR, UnitRank.ELITE, 20, 160],
+      [RegularUnitType.DWARF, UnitRank.REGULAR, 1, 5],
+      [RegularUnitType.ORC, UnitRank.REGULAR, 1, 5],
+      [RegularUnitType.ORC, UnitRank.REGULAR, 20, 90], // orc maintenance is not an integer number
+      [RegularUnitType.ELF, UnitRank.REGULAR, 1, 5],
+      [RegularUnitType.DARK_ELF, UnitRank.REGULAR, 1, 5],
+      [RegularUnitType.BALLISTA, UnitRank.REGULAR, 1, 150],
+      [RegularUnitType.CATAPULT, UnitRank.REGULAR, 1, 50],
+    ])('Unit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
         player.id;
-      const heroUnit = getUnit(hero);
-      heroUnit.level = level;
+      const regularUnit = getDefaultUnit(regular) as RegularUnit;
+      regularUnit.level = level;
+      regularUnit.count = quantity;
 
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
         {
-          unit: heroUnit,
-          quantity: quantity,
-          moveInTurn: 0,
+          unit: regularUnit,
+          isMoving: false,
         },
       ];
       const maintenance = calculateMaintenance(gameStateStub);
@@ -83,31 +89,28 @@ describe('Calculate Maintenance', () => {
     });
 
     it('Multiple units in one army', () => {
-      const elitDwarf = getUnit(UnitType.DWARF);
-      elitDwarf.level = 3;
+      const elitDwarf = getDefaultUnit(RegularUnitType.DWARF) as RegularUnit;
+      elitDwarf.level = UnitRank.ELITE;
+      elitDwarf.count = 17;
 
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
         player.id;
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
         {
-          unit: getUnit(UnitType.NECROMANCER),
-          quantity: 1,
-          moveInTurn: 0,
+          unit: getDefaultUnit(HeroUnitType.NECROMANCER),
+          isMoving: false,
         },
         {
-          unit: getUnit(UnitType.DWARF),
-          quantity: 20,
-          moveInTurn: 0,
+          unit: getDefaultUnit(RegularUnitType.DWARF),
+          isMoving: false,
         },
         {
-          unit: getUnit(UnitType.BALISTA),
-          quantity: 1,
-          moveInTurn: 0,
+          unit: getDefaultUnit(RegularUnitType.BALLISTA),
+          isMoving: false,
         },
         {
           unit: elitDwarf,
-          quantity: 17,
-          moveInTurn: 0,
+          isMoving: false,
         },
       ];
       const maintenance = calculateMaintenance(gameStateStub);
@@ -159,8 +162,8 @@ describe('Calculate Maintenance', () => {
 
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 5, col: 5 });
       construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
-      recruitWarriors(
-        getUnit(UnitType.DWARF),
+      recruitRegulars(
+        getDefaultUnit(RegularUnitType.DWARF),
         gameStateStub.battlefield.lands[battlefieldLandId(barracksPos)]
       );
 

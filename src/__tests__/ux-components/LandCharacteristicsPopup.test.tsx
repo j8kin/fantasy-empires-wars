@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
 import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
-import { Army, getUnit, UnitType } from '../../types/Army';
+import { Army, getDefaultUnit, HeroUnitType, RegularUnit, RegularUnitType } from '../../types/Army';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { getLands } from '../../map/utils/getLands';
 import { BuildingType } from '../../types/Building';
@@ -145,8 +145,8 @@ describe('LandCharacteristicsPopup', () => {
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.FIGHTER), quantity: 1, moveInTurn: 0 },
-        { unit: getUnit(UnitType.PYROMANCER), quantity: 1, moveInTurn: 0 },
+        { unit: getDefaultUnit(HeroUnitType.FIGHTER), isMoving: false },
+        { unit: getDefaultUnit(HeroUnitType.PYROMANCER), isMoving: false },
       ];
 
       const tileWithHeroes = {
@@ -181,8 +181,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays units when tile has non-hero units', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.WARRIOR), quantity: 5, moveInTurn: 0 },
-        { unit: getUnit(UnitType.DWARF), quantity: 3, moveInTurn: 0 },
+        { unit: getDefaultUnit(RegularUnitType.WARRIOR), isMoving: false },
+        { unit: getDefaultUnit(RegularUnitType.DWARF), isMoving: false },
       ];
 
       const tileWithUnits = {
@@ -211,16 +211,20 @@ describe('LandCharacteristicsPopup', () => {
       );
 
       expect(screen.getByText('Units:')).toBeInTheDocument();
-      expect(screen.getByText('Warrior (5)')).toBeInTheDocument();
-      expect(screen.getByText('Dwarf (3)')).toBeInTheDocument();
+      expect(screen.getByText('Warrior (20)')).toBeInTheDocument();
+      expect(screen.getByText('Dwarf (20)')).toBeInTheDocument();
     });
 
     it('displays both heroes and units when tile has mixed army', () => {
+      const regularWarriors = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
+      regularWarriors.count = 5;
+
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.FIGHTER), quantity: 1, moveInTurn: 0 }, // Hero
-        { unit: getUnit(UnitType.WARRIOR), quantity: 5, moveInTurn: 0 }, // Unit
-        { unit: getUnit(UnitType.CLERIC), quantity: 1, moveInTurn: 0 }, // Hero
-        { unit: getUnit(UnitType.ELF), quantity: 2, moveInTurn: 0 }, // Unit
+        { unit: getDefaultUnit(HeroUnitType.FIGHTER), isMoving: false },
+        { unit: regularWarriors, isMoving: false },
+        { unit: getDefaultUnit(RegularUnitType.DWARF), isMoving: true }, // moving army should also be displayed
+        { unit: getDefaultUnit(HeroUnitType.CLERIC), isMoving: false },
+        { unit: getDefaultUnit(RegularUnitType.ELF), isMoving: false },
       ];
 
       const tileWithMixedArmy = {
@@ -256,7 +260,8 @@ describe('LandCharacteristicsPopup', () => {
       // Check units section
       expect(screen.getByText('Units:')).toBeInTheDocument();
       expect(screen.getByText('Warrior (5)')).toBeInTheDocument();
-      expect(screen.getByText('Elf (2)')).toBeInTheDocument();
+      expect(screen.getByText('Dwarf (20)')).toBeInTheDocument(); // moving army should also be displayed
+      expect(screen.getByText('Elf (20)')).toBeInTheDocument();
     });
 
     it('does not display army sections when tile has no army', () => {
@@ -291,8 +296,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only heroes section when tile has only heroes', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.RANGER), quantity: 1, moveInTurn: 0 },
-        { unit: getUnit(UnitType.NECROMANCER), quantity: 1, moveInTurn: 0 },
+        { unit: getDefaultUnit(HeroUnitType.RANGER), isMoving: false },
+        { unit: getDefaultUnit(HeroUnitType.NECROMANCER), isMoving: false },
       ];
 
       const tileWithHeroesOnly = {
@@ -328,8 +333,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only units section when tile has only non-hero units', () => {
       const mockArmy: Army = [
-        { unit: getUnit(UnitType.ORC), quantity: 4, moveInTurn: 0 },
-        { unit: getUnit(UnitType.BALISTA), quantity: 1, moveInTurn: 0 },
+        { unit: getDefaultUnit(RegularUnitType.ORC), isMoving: false },
+        { unit: getDefaultUnit(RegularUnitType.BALLISTA), isMoving: false },
       ];
 
       const tileWithUnitsOnly = {
@@ -358,8 +363,8 @@ describe('LandCharacteristicsPopup', () => {
       );
 
       expect(screen.getByText('Units:')).toBeInTheDocument();
-      expect(screen.getByText('Orc (4)')).toBeInTheDocument();
-      expect(screen.getByText('Balista (1)')).toBeInTheDocument();
+      expect(screen.getByText('Orc (20)')).toBeInTheDocument();
+      expect(screen.getByText('Ballista (1)')).toBeInTheDocument();
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
     });
   });
