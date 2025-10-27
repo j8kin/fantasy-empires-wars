@@ -295,6 +295,7 @@ const NewGameDialog: React.FC = () => {
         turnOwner: createdPlayer.id,
         turnPhase: TurnPhase.START,
         players: [createdPlayer, ...createdOpponents],
+        empireTreasures: [], // no treasures at game start
       };
 
       startNewGame(gameState);

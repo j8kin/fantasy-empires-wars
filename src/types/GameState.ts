@@ -3,6 +3,7 @@ import { Building } from './Building';
 import { Army } from './Army';
 import { GamePlayer } from './GamePlayer';
 import { LandPosition } from '../map/utils/getLands';
+import { EmpireTreasure } from './Treasures';
 
 export interface BattlefieldDimensions {
   rows: number;
@@ -37,6 +38,7 @@ export interface GameState {
   turnOwner: string;
   turnPhase: TurnPhase;
   players: GamePlayer[];
+  empireTreasures: EmpireTreasure[];
 }
 
 export const getPlayerById = (gameState?: GameState, playerId?: string): GamePlayer | undefined => {
