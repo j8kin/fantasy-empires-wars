@@ -11,7 +11,7 @@ import { construct } from '../../map/building/construct';
 import { BuildingType } from '../../types/Building';
 import { LandPosition } from '../../map/utils/getLands';
 import { recruitHero } from '../../map/army/recruit';
-import { getUnit } from '../../types/Army';
+import { getDefaultUnit, HeroUnit } from '../../types/Army';
 import { generateMap } from '../../map/generation/generateMap';
 
 export const defaultBattlefieldSizeStub = { rows: 10, cols: 20 };
@@ -51,7 +51,7 @@ export const createGameStateStub = ({
       const homeland: LandPosition = { row: 3 + (idx % 2), col: 3 + idx * 5 };
       construct(stubGameState, BuildingType.STRONGHOLD, homeland);
 
-      const hero = getUnit(player.type);
+      const hero = getDefaultUnit(player.type) as HeroUnit;
       hero.name = player.name;
       hero.level = player.level;
 

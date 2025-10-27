@@ -1,144 +1,158 @@
-export enum UnitType {
-  WARRIOR = 'warrior',
-  DWARF = 'dwarf',
-  ORC = 'orc',
-  ELF = 'elf',
-  DARKELF = 'darkelf',
-  BALISTA = 'balista',
-  CATAPULT = 'catapult',
-  FIGHTER = 'fighter',
-  HAMMERLORD = 'hammerlord',
-  RANGER = 'ranger',
-  PYROMANCER = 'pyromancer',
-  CLERIC = 'cleric',
-  DRUID = 'druid',
+export enum RegularUnitType {
+  WARRIOR = 'Warrior',
+  DWARF = 'Dwarf',
+  ORC = 'Orc',
+  ELF = 'Elf',
+  DARK_ELF = 'Dark-Elf',
+  BALLISTA = 'Ballista',
+  CATAPULT = 'Catapult',
+}
+
+export enum HeroUnitType {
+  FIGHTER = 'Fighter',
+  HAMMER_LORD = 'Hammer-lord',
+  RANGER = 'Ranger',
+  PYROMANCER = 'Pyromancer',
+  CLERIC = 'Cleric',
+  DRUID = 'Druid',
   ENCHANTER = 'Enchanter',
   NECROMANCER = 'Necromancer',
 }
+export type UnitType = RegularUnitType | HeroUnitType;
 
-export interface Unit {
-  id: string;
-  name: string;
+export interface HeroUnit extends BaseUnit {
+  id: HeroUnitType;
+  name: string; // only heroes has uniq names
+  level: number; // for non-hero units 1-regular, 2-veteran, 3-elite
+  mana?: number; // how many mana produced per turn (only for heroes)
+}
+
+export enum UnitRank {
+  REGULAR = 'regular',
+  VETERAN = 'veteran',
+  ELITE = 'elite',
+}
+
+export const isHero = (unit: Unit): boolean => typeof unit.level === 'number';
+
+export interface RegularUnit extends BaseUnit {
+  id: RegularUnitType;
+  level: UnitRank;
+  count: number;
+}
+
+export type Unit = HeroUnit | RegularUnit;
+
+export interface BaseUnit {
   attack: number;
   defense: number;
   range?: number;
   rangeDamage?: number;
   health: number;
   maintainCost: number;
-  movement: number;
-  level: number; // for non-hero units 1-regular, 2-veteran, 3-elite
-  mana?: number; // how many mana produced per turn (only for heroes)
-  hero: boolean;
+  speed: number;
 }
 
 export type ArmyUnit = {
   unit: Unit;
-  quantity: number;
-  moveInTurn: number; // e.g., 0 = army movement complete, 1+ how many movements need to reach destination
+  isMoving: boolean; // true: units are moving and will be in "destination" land at the beginning of the next turn
 };
 
 export type Army = ArmyUnit[];
 
-export const getUnit = (unitType: UnitType): Unit => {
+export const getDefaultUnit = (unitType: UnitType): Unit => {
   switch (unitType) {
-    case UnitType.WARRIOR:
+    case RegularUnitType.WARRIOR:
       return {
-        id: 'warrior',
-        name: 'Warrior',
+        id: RegularUnitType.WARRIOR,
         attack: 8,
         defense: 6,
         health: 25,
         maintainCost: 4,
-        movement: 2,
-        level: 1,
-        hero: false,
+        speed: 2,
+        level: UnitRank.REGULAR,
+        count: 20,
       };
-    case UnitType.DWARF:
+    case RegularUnitType.DWARF:
       return {
-        id: 'dwarf',
-        name: 'Dwarf',
+        id: RegularUnitType.DWARF,
         attack: 12,
         defense: 20,
         health: 40,
         maintainCost: 5,
-        movement: 1,
-        level: 1,
-        hero: false,
+        speed: 1,
+        level: UnitRank.REGULAR,
+        count: 20,
       };
-    case UnitType.ORC:
+    case RegularUnitType.ORC:
       return {
-        id: 'orc',
-        name: 'Orc',
+        id: RegularUnitType.ORC,
         attack: 10,
         defense: 15,
         health: 30,
         maintainCost: 4.5,
-        movement: 2,
-        level: 1,
-        hero: false,
+        speed: 2,
+        level: UnitRank.REGULAR,
+        count: 20,
       };
-    case UnitType.ELF:
+    case RegularUnitType.ELF:
       return {
-        id: 'elf',
-        name: 'Elf',
+        id: RegularUnitType.ELF,
         attack: 15,
         defense: 4,
         range: 20,
         rangeDamage: 15,
         health: 20,
         maintainCost: 5,
-        movement: 3,
-        level: 1,
-        hero: false,
+        speed: 3,
+        level: UnitRank.REGULAR,
+        count: 20,
       };
-    case UnitType.DARKELF:
+    case RegularUnitType.DARK_ELF:
       return {
-        id: 'darkelf',
-        name: 'DarkElf',
+        id: RegularUnitType.DARK_ELF,
         attack: 15,
         defense: 4,
         range: 25,
         rangeDamage: 25,
         health: 20,
         maintainCost: 5,
-        movement: 3,
-        level: 1,
-        hero: false,
+        speed: 3,
+        level: UnitRank.REGULAR,
+        count: 20,
       };
     // War Machines
     // Catapult do not damage anything only destroy buildings/walls
-    case UnitType.BALISTA:
+    case RegularUnitType.BALLISTA:
       return {
-        id: 'balista',
-        name: 'Balista',
+        id: RegularUnitType.BALLISTA,
         attack: 0,
         defense: 0,
         range: 35,
         rangeDamage: 25,
         health: 15,
         maintainCost: 150,
-        movement: 0,
-        level: 1,
-        hero: false,
+        speed: 0,
+        level: UnitRank.REGULAR,
+        count: 1,
       };
-    case UnitType.CATAPULT:
+    case RegularUnitType.CATAPULT:
       return {
-        id: 'catapult',
-        name: 'Catapult',
+        id: RegularUnitType.CATAPULT,
         attack: 0,
         defense: 0,
         health: 30,
         maintainCost: 50,
-        movement: 0,
-        level: 1,
-        hero: false,
+        speed: 0,
+        level: UnitRank.REGULAR,
+        count: 1,
       };
     // HEROES
     // Human warrior hero
 
-    case UnitType.FIGHTER:
+    case HeroUnitType.FIGHTER:
       return {
-        id: 'fighter',
+        id: HeroUnitType.FIGHTER,
         name: 'Fighter',
         attack: 30,
         defense: 3,
@@ -146,14 +160,13 @@ export const getUnit = (unitType: UnitType): Unit => {
         rangeDamage: 30,
         health: 18,
         maintainCost: 100,
-        movement: 4,
+        speed: 4,
         level: 1,
-        hero: true,
       };
     // Dwarf hero
-    case UnitType.HAMMERLORD:
+    case HeroUnitType.HAMMER_LORD:
       return {
-        id: 'hammerlord',
+        id: HeroUnitType.HAMMER_LORD,
         name: 'Hammerlord',
         attack: 40,
         defense: 3,
@@ -161,14 +174,13 @@ export const getUnit = (unitType: UnitType): Unit => {
         rangeDamage: 40,
         health: 25,
         maintainCost: 100,
-        movement: 4,
+        speed: 4,
         level: 1,
-        hero: true,
       };
     // Elf hero
-    case UnitType.RANGER:
+    case HeroUnitType.RANGER:
       return {
-        id: 'ranger',
+        id: HeroUnitType.RANGER,
         name: 'Ranger',
         attack: 30,
         defense: 3,
@@ -176,15 +188,14 @@ export const getUnit = (unitType: UnitType): Unit => {
         rangeDamage: 30,
         health: 18,
         maintainCost: 100,
-        movement: 5,
+        speed: 5,
         level: 1,
-        hero: true,
       };
     // Mage Heroes
     // Pyromancer - produce red mana
-    case UnitType.PYROMANCER:
+    case HeroUnitType.PYROMANCER:
       return {
-        id: 'pyromancer',
+        id: HeroUnitType.PYROMANCER,
         name: 'Pyromancer',
         attack: 30,
         defense: 3,
@@ -192,15 +203,14 @@ export const getUnit = (unitType: UnitType): Unit => {
         rangeDamage: 30,
         health: 18,
         maintainCost: 100,
-        movement: 2,
+        speed: 2,
         level: 1,
         mana: 1,
-        hero: true,
       };
     // Cleric - produce white mana
-    case UnitType.CLERIC:
+    case HeroUnitType.CLERIC:
       return {
-        id: 'cleric',
+        id: HeroUnitType.CLERIC,
         name: 'Cleric',
         attack: 25,
         defense: 5,
@@ -208,15 +218,14 @@ export const getUnit = (unitType: UnitType): Unit => {
         rangeDamage: 25,
         health: 20,
         maintainCost: 100,
-        movement: 2,
+        speed: 2,
         level: 1,
         mana: 1,
-        hero: true,
       };
     // Druid - produce green mana
-    case UnitType.DRUID:
+    case HeroUnitType.DRUID:
       return {
-        id: 'druid',
+        id: HeroUnitType.DRUID,
         name: 'Druid',
         attack: 20,
         defense: 4,
@@ -224,15 +233,14 @@ export const getUnit = (unitType: UnitType): Unit => {
         rangeDamage: 20,
         health: 22,
         maintainCost: 100,
-        movement: 3,
+        speed: 3,
         level: 1,
         mana: 1,
-        hero: true,
       };
     // Enchanter - produce blue mana
-    case UnitType.ENCHANTER:
+    case HeroUnitType.ENCHANTER:
       return {
-        id: 'enchanter',
+        id: HeroUnitType.ENCHANTER,
         name: 'Enchanter',
         attack: 15,
         defense: 3,
@@ -240,15 +248,14 @@ export const getUnit = (unitType: UnitType): Unit => {
         rangeDamage: 15,
         health: 16,
         maintainCost: 100,
-        movement: 2,
+        speed: 2,
         level: 1,
         mana: 1,
-        hero: true,
       };
     // Necromancer - produce black mana
-    case UnitType.NECROMANCER:
+    case HeroUnitType.NECROMANCER:
       return {
-        id: 'necromancer',
+        id: HeroUnitType.NECROMANCER,
         name: 'Necromancer',
         attack: 35,
         defense: 2,
@@ -256,10 +263,9 @@ export const getUnit = (unitType: UnitType): Unit => {
         rangeDamage: 35,
         health: 15,
         maintainCost: 100,
-        movement: 2,
+        speed: 2,
         level: 1,
         mana: 1,
-        hero: true,
       };
   }
 };

@@ -1,6 +1,6 @@
 import { PlayerColorName } from './PlayerColors';
 import { Alignment } from './Alignment';
-import { UnitType } from './Army';
+import { HeroUnitType } from './Army';
 import { Mana } from './Mana';
 
 export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
@@ -19,7 +19,7 @@ export interface PlayerInfo {
   name: string;
   alignment: Alignment;
   race: PlayerRace;
-  type: UnitType;
+  type: HeroUnitType;
   level: number; // 1-32
   description: string;
   color: PlayerColorName; // base player color when game starts continues current color
@@ -38,7 +38,7 @@ export const NO_PLAYER: PlayerInfo = {
   name: 'None',
   alignment: Alignment.NEUTRAL,
   race: 'Human',
-  type: UnitType.WARRIOR,
+  type: HeroUnitType.FIGHTER,
   level: 1,
   description: 'None',
   color: 'white',
@@ -50,7 +50,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Alaric the Bold',
     alignment: Alignment.LAWFUL,
     race: 'Human',
-    type: UnitType.FIGHTER,
+    type: HeroUnitType.FIGHTER,
     level: 8,
     description:
       'A noble paladin who has sworn to protect the innocent and uphold justice across the realm.',
@@ -61,7 +61,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Morgana Shadowweaver',
     alignment: Alignment.CHAOTIC,
     race: 'Undead',
-    type: UnitType.NECROMANCER,
+    type: HeroUnitType.NECROMANCER,
     level: 12,
     description: 'A powerful sorceress who seeks forbidden knowledge and commands dark magic.',
     color: 'purple',
@@ -71,7 +71,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Thorin Ironforge',
     alignment: Alignment.NEUTRAL,
     race: 'Dwarf',
-    type: UnitType.HAMMERLORD,
+    type: HeroUnitType.HAMMER_LORD,
     level: 10,
     description: 'A dwarven smith-warrior who values craftsmanship and honor above all else.',
     color: 'orange',
@@ -81,7 +81,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Vex the Cunning',
     alignment: Alignment.LAWFUL,
     race: 'Elf',
-    type: UnitType.RANGER,
+    type: HeroUnitType.RANGER,
     level: 7,
     description: 'An elven ranger dedicated to protecting the ancient forests and their secrets.',
     color: 'green',
@@ -91,7 +91,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Grimjaw the Destroyer',
     alignment: Alignment.CHAOTIC,
     race: 'Orc',
-    type: UnitType.FIGHTER, // todo add Unit for ORC HERO
+    type: HeroUnitType.FIGHTER, // todo add Unit for ORC HERO
     level: 15,
     description: 'A brutal orc warlord who leads through fear and seeks to conquer all lands.',
     color: 'red',
@@ -101,7 +101,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Serena Lightbringer',
     alignment: Alignment.LAWFUL,
     race: 'Human',
-    type: UnitType.CLERIC,
+    type: HeroUnitType.CLERIC,
     level: 11,
     description: 'A devout cleric who channels divine power to heal allies and smite evil.',
     color: 'yellow',
@@ -111,7 +111,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Kael Stormwind',
     alignment: Alignment.NEUTRAL,
     race: 'Human',
-    type: UnitType.ENCHANTER,
+    type: HeroUnitType.ENCHANTER,
     level: 9,
     description:
       'A wandering mage who seeks to master all schools of magic through experimentation.',
@@ -122,7 +122,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Elara Starshot',
     alignment: Alignment.CHAOTIC,
     race: 'Dark-elf',
-    type: UnitType.RANGER,
+    type: HeroUnitType.RANGER,
     level: 6,
     description:
       'A sly rogue who uses wit and stealth to achieve goals through any means necessary.',
@@ -133,7 +133,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Marcus the Divine',
     alignment: Alignment.LAWFUL,
     race: 'Human',
-    type: UnitType.CLERIC,
+    type: HeroUnitType.CLERIC,
     level: 13,
     description: 'A devoted priest who spreads hope and healing throughout the lands.',
     color: 'yellow',
@@ -143,7 +143,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Lydia Moonwhisper',
     alignment: Alignment.NEUTRAL,
     race: 'Human',
-    type: UnitType.CLERIC,
+    type: HeroUnitType.CLERIC,
     level: 9,
     description: 'A compassionate healer who tends to the wounded with divine grace.',
     color: 'purple',
@@ -153,7 +153,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Selene Moonwhisper',
     alignment: Alignment.CHAOTIC,
     race: 'Human',
-    type: UnitType.ENCHANTER,
+    type: HeroUnitType.ENCHANTER,
     level: 9,
     description:
       'A manipulator of perception and dreams, weaving illusions that blur truth and deceit.',
@@ -164,7 +164,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Elderoak the Wise',
     alignment: Alignment.NEUTRAL,
     race: 'Elf',
-    type: UnitType.DRUID,
+    type: HeroUnitType.DRUID,
     level: 14,
     description: 'An ancient druid who maintains the balance between civilization and nature.',
     color: 'green',
@@ -174,7 +174,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Valdris Bonecaller',
     alignment: Alignment.CHAOTIC,
     race: 'Undead',
-    type: UnitType.NECROMANCER,
+    type: HeroUnitType.NECROMANCER,
     level: 16,
     description: 'A sinister necromancer who commands the undead and delves into forbidden arts.',
     color: 'purple',
@@ -184,7 +184,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Ignatius Flameforge',
     alignment: Alignment.NEUTRAL,
     race: 'Orc',
-    type: UnitType.PYROMANCER,
+    type: HeroUnitType.PYROMANCER,
     level: 11,
     description: 'A master of fire magic who forges spells as skillfully as weapons.',
     color: 'orange',
@@ -194,7 +194,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Ember Fireheart',
     alignment: Alignment.CHAOTIC,
     race: 'Orc',
-    type: UnitType.PYROMANCER,
+    type: HeroUnitType.PYROMANCER,
     level: 10,
     description: 'A fierce sorceress whose burning passion fuels her destructive fire magic.',
     color: 'red',
