@@ -32,7 +32,8 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
       .filter(
         (l) =>
           gameState.battlefield.lands[l].controlledBy === player &&
-          gameState.battlefield.lands[l].army.length === 0
+          gameState.battlefield.lands[l].army.length === 0 &&
+          !gameState.battlefield.lands[l].buildings.some((b) => b.id === BuildingType.STRONGHOLD)
       )
       .forEach(
         (land) =>

@@ -384,6 +384,31 @@ describe('Construct Buildings', () => {
       expect(player1Lands.length).toBe(0);
     });
 
+    it('Demolition not change owner of the stronghold which is in radius 2 from destroyed stronghold', () => {
+      const strongholdPos2: LandPosition = { row: 3, col: 5 };
+      construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos);
+      construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos2);
+      construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
+
+      construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
+
+      // stronghold is destroyed
+      expect(
+        gameStateStub.battlefield.lands[battlefieldLandId(strongholdPos)].buildings.length
+      ).toBe(0);
+
+      // barracks and stronghold are not destroyed
+      expect(gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].buildings[0].id).toBe(
+        BuildingType.BARRACKS
+      );
+      const stronghold2Land = gameStateStub.battlefield.lands[battlefieldLandId(strongholdPos2)];
+      expect(stronghold2Land.controlledBy).toBe(player1.id);
+
+      // no player lands exist
+      const player1Lands = getPlayerLands(player1);
+      expect(player1Lands.length).toBe(19); // all lands related to player 1
+    });
+
     it('When stronghold destroyed lands with army not lost players control', () => {
       construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos);
       construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
