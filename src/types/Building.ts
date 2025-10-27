@@ -1,5 +1,5 @@
 import { Alignment } from './Alignment';
-import { UnitType } from './Army';
+import { HeroUnitType, UnitType } from './Army';
 import { GamePlayer } from './GamePlayer';
 
 export enum BuildingType {
@@ -106,9 +106,10 @@ export const getAllBuildings = (player: GamePlayer): Building[] => {
       (building) =>
         !building.id.toString().includes('Mage Tower') ||
         building.id === BuildingType.BLUE_MAGE_TOWER ||
-        (building.id === BuildingType.WHITE_MAGE_TOWER && player.type === UnitType.CLERIC) ||
+        (building.id === BuildingType.WHITE_MAGE_TOWER && player.type === HeroUnitType.CLERIC) ||
         (building.id === BuildingType.WHITE_MAGE_TOWER && player.alignment === Alignment.LAWFUL) ||
-        (building.id === BuildingType.BLACK_MAGE_TOWER && player.type === UnitType.NECROMANCER) ||
+        (building.id === BuildingType.BLACK_MAGE_TOWER &&
+          player.type === HeroUnitType.NECROMANCER) ||
         (building.id === BuildingType.BLACK_MAGE_TOWER && player.alignment === Alignment.CHAOTIC) ||
         (building.id === BuildingType.GREEN_MAGE_TOWER && player.alignment !== Alignment.CHAOTIC) ||
         (building.id === BuildingType.RED_MAGE_TOWER && player.alignment !== Alignment.LAWFUL)

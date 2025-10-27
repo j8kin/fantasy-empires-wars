@@ -3,8 +3,8 @@ import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
 import { BuildingType } from '../types/Building';
 import { getLands, LandPosition } from '../map/utils/getLands';
-import { recruitWarriors } from '../map/army/recruit';
-import { getUnit, UnitType } from '../types/Army';
+import { recruitRegulars } from '../map/army/recruit';
+import { getDefaultUnit, RegularUnitType } from '../types/Army';
 import {
   createDefaultGameStateStub,
   defaultBattlefieldSizeStub,
@@ -388,8 +388,8 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos);
       construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
 
-      recruitWarriors(
-        getUnit(UnitType.FIGHTER),
+      recruitRegulars(
+        getDefaultUnit(RegularUnitType.WARRIOR),
         gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)]
       );
       construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
