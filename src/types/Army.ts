@@ -27,9 +27,9 @@ export type UnitType = RegularUnitType | HeroUnitType;
 export interface HeroUnit extends BaseUnit {
   id: HeroUnitType;
   name: string; // uniq names
-  level: number; // for non-hero units 1-regular, 2-veteran, 3-elite
+  level: number;
   artifacts: Artifact[]; // for now, it is planned to have only one artifact per hero
-  mana?: number; // how many mana produced per turn
+  mana?: number; // how many mana produced per turn, undefined for non-magic heroes
 }
 
 export enum UnitRank {

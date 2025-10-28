@@ -272,6 +272,7 @@ const NewGameDialog: React.FC = () => {
         money: initialMoney,
         income: 0, // will calculate on game start on the first turn
         playerType: 'computer', // all opponents for now are computer players
+        quests: [], // no heroes are send to quests at game start
       } as GamePlayer;
     });
 
@@ -282,6 +283,7 @@ const NewGameDialog: React.FC = () => {
       money: initialMoney,
       income: 0, // will calculate on game start on first turn
       playerType: 'human',
+      quests: [], // no heroes are send to quests at game start
     };
 
     setShowStartWindow(false);
