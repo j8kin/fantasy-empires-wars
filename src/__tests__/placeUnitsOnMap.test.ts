@@ -1,13 +1,7 @@
 import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
 import { battlefieldLandId, getTurnOwner, TurnPhase } from '../types/GameState';
 import { placeUnitsOnMap } from '../map/army/recruit';
-import {
-  getDefaultUnit,
-  HeroUnit,
-  HeroUnitType,
-  RegularUnit,
-  RegularUnitType,
-} from '../types/Army';
+import { getDefaultUnit, HeroUnit, HeroUnitType, RegularUnitType } from '../types/Army';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
 import { generateMockMap } from './utils/generateMockMap';
@@ -19,14 +13,45 @@ describe('placeUnitsOnMap', () => {
 
   const gameStateStub = createGameStateStub({
     nPlayers: 1,
-    turnPhase: TurnPhase.START,
     addPlayersHomeland: false,
   });
 
   const player = getTurnOwner(gameStateStub)!;
 
   beforeEach(() => {
+    gameStateStub.turnPhase = TurnPhase.START;
     gameStateStub.battlefield = generateMockMap(defaultBattlefieldSizeStub);
+  });
+
+  describe('Place units on Map on turn phase', () => {
+    beforeEach(() => {
+      gameStateStub.turn = 2;
+    });
+
+    it.each([[TurnPhase.START], [TurnPhase.MAIN], [TurnPhase.END]])(
+      "should work only on 'START' phase",
+      (turnPhase) => {
+        gameStateStub.turnPhase = turnPhase;
+
+        const hero = getDefaultUnit(HeroUnitType.FIGHTER);
+        construct(gameStateStub, BuildingType.BARRACKS, barracks);
+
+        placeUnitsOnMap(hero, gameStateStub, barracks); // SUT
+
+        expect(gameStateStub.battlefield.lands[battlefieldLandId(barracks)].army.length).toBe(
+          turnPhase === TurnPhase.START ? 1 : 0
+        );
+
+        const regular = getDefaultUnit(RegularUnitType.WARRIOR);
+        construct(gameStateStub, BuildingType.BARRACKS, barracks);
+
+        placeUnitsOnMap(regular, gameStateStub, barracks); // SUT
+
+        expect(gameStateStub.battlefield.lands[battlefieldLandId(barracks)].army.length).toBe(
+          turnPhase === TurnPhase.START ? 2 : 0
+        );
+      }
+    );
   });
 
   describe('Place Hero on Map', () => {
@@ -154,7 +179,7 @@ describe('placeUnitsOnMap', () => {
   });
 
   describe('Place Regular Unit on Map', () => {
-    const regularUnit = getDefaultUnit(RegularUnitType.BALLISTA) as RegularUnit;
+    const regularUnit = getDefaultUnit(RegularUnitType.BALLISTA);
     it('Turn 1 no units should be placed', () => {
       gameStateStub.turn = 1;
       construct(gameStateStub, BuildingType.BARRACKS, barracks);

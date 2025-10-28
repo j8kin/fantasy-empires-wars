@@ -9,7 +9,11 @@ import { LandPosition } from '../utils/getLands';
  * The only one exception is Turn 1 when heroes are placed on Homeland
  */
 export const placeUnitsOnMap = (unit: Unit, gameState: GameState, landPos: LandPosition): void => {
-  if (gameState.turn === 1 && gameState.turnPhase === TurnPhase.START) {
+  // only on START phase this function should be called
+  // todo think about case when player cast spell FORGE_OF_WAR
+  if (gameState.turnPhase !== TurnPhase.START) return;
+
+  if (gameState.turn === 1) {
     // on turn 1 heroes are placed on Homeland only
     const heroUnit = unit as HeroUnit;
     if (
