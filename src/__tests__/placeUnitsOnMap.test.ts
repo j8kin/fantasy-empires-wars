@@ -70,7 +70,7 @@ describe('placeUnitsOnMap', () => {
 
       const army = gameStateStub.battlefield.lands[battlefieldLandId(homeland)].army;
       expect(army.length).toBe(1);
-      expect(army[0].unit as HeroUnit).toEqual(hero);
+      expect(army[0].unit).toEqual(hero);
       expect(army[0].isMoving).not.toBeTruthy();
     });
 
@@ -95,7 +95,7 @@ describe('placeUnitsOnMap', () => {
       'Heroes (%s) should not place if no buildings on land',
       (heroType) => {
         gameStateStub.turn = 2;
-        const newHero = getDefaultUnit(heroType as HeroUnitType) as HeroUnit;
+        const newHero = getDefaultUnit(heroType);
 
         placeUnitsOnMap(newHero, gameStateStub, barracks); // SUT
 
@@ -107,14 +107,14 @@ describe('placeUnitsOnMap', () => {
       'Turn 2 only non-mage Heroes (%s) could be placed on BARRACKS',
       (heroType: HeroUnitType) => {
         gameStateStub.turn = 2;
-        const nonMageHero = getDefaultUnit(heroType) as HeroUnit;
+        const nonMageHero = getDefaultUnit(heroType);
         construct(gameStateStub, BuildingType.BARRACKS, barracks);
 
         placeUnitsOnMap(nonMageHero, gameStateStub, barracks); // SUT
 
         const army = gameStateStub.battlefield.lands[battlefieldLandId(barracks)].army;
         expect(army.length).toBe(1);
-        expect(army[0].unit as HeroUnit).toEqual(nonMageHero);
+        expect(army[0].unit).toEqual(nonMageHero);
       }
     );
 
@@ -126,7 +126,7 @@ describe('placeUnitsOnMap', () => {
       [BuildingType.BLACK_MAGE_TOWER],
     ])('Non-Mage heroes could not be placed on Map with %s', (mageTower: BuildingType) => {
       gameStateStub.turn = 2;
-      const nonMageHero = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
+      const nonMageHero = getDefaultUnit(HeroUnitType.FIGHTER);
       construct(gameStateStub, mageTower, mageTowerPos);
 
       placeUnitsOnMap(nonMageHero, gameStateStub, mageTowerPos); // SUT
@@ -156,7 +156,7 @@ describe('placeUnitsOnMap', () => {
           (heroType === HeroUnitType.NECROMANCER && mageTower === BuildingType.BLACK_MAGE_TOWER);
 
         gameStateStub.turn = 2;
-        const mageHero = getDefaultUnit(heroType) as HeroUnit;
+        const mageHero = getDefaultUnit(heroType);
         construct(gameStateStub, mageTower, mageTowerPos);
 
         placeUnitsOnMap(mageHero, gameStateStub, mageTowerPos); // SUT
@@ -168,7 +168,7 @@ describe('placeUnitsOnMap', () => {
 
       it('only with mage-tower', () => {
         gameStateStub.turn = 2;
-        const mageHero = getDefaultUnit(heroType) as HeroUnit;
+        const mageHero = getDefaultUnit(heroType);
         construct(gameStateStub, BuildingType.BARRACKS, barracks);
 
         placeUnitsOnMap(mageHero, gameStateStub, barracks); // SUT
