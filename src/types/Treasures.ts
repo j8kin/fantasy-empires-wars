@@ -5,7 +5,7 @@ interface TreasureType {
 }
 
 // Hero items
-interface Artifact extends TreasureType {
+export interface Artifact extends TreasureType {
   level: number; // +1 - +5 todo ???
 }
 

@@ -3,7 +3,7 @@ import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
 import { BuildingType } from '../types/Building';
 import { getLands, LandPosition } from '../map/utils/getLands';
-import { recruitRegulars } from '../map/army/recruit';
+import { placeUnitsOnMap } from '../map/army/recruit';
 import { getDefaultUnit, RegularUnitType } from '../types/Army';
 import {
   createDefaultGameStateStub,
@@ -413,10 +413,8 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos);
       construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
 
-      recruitRegulars(
-        getDefaultUnit(RegularUnitType.WARRIOR),
-        gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)]
-      );
+      gameStateStub.turn = 2; // only on turn 2 and after units could be recruited in BARRACK and placed on map
+      placeUnitsOnMap(getDefaultUnit(RegularUnitType.WARRIOR), gameStateStub, buildingPos);
       construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       // stronghold is destroyed

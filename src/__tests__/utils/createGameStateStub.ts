@@ -1,16 +1,11 @@
-import {
-  BattlefieldDimensions,
-  battlefieldLandId,
-  GameState,
-  TurnPhase,
-} from '../../types/GameState';
+import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
 import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { toGamePlayer } from './toGamePlayer';
 import { generateMockMap } from './generateMockMap';
 import { construct } from '../../map/building/construct';
 import { BuildingType } from '../../types/Building';
 import { LandPosition } from '../../map/utils/getLands';
-import { recruitHero } from '../../map/army/recruit';
+import { placeUnitsOnMap } from '../../map/army/recruit';
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
 import { generateMap } from '../../map/generation/generateMap';
 
@@ -20,7 +15,7 @@ export const createDefaultGameStateStub = (): GameState => createGameStateStub({
 export const createGameStateStub = ({
   nPlayers = 3,
   turnOwner = 0,
-  turnPhase = TurnPhase.MAIN,
+  turnPhase = TurnPhase.START,
   battlefieldSize = defaultBattlefieldSizeStub,
   realBattlefield = false,
   addPlayersHomeland = true,
@@ -55,7 +50,7 @@ export const createGameStateStub = ({
       hero.name = player.name;
       hero.level = player.level;
 
-      recruitHero(hero, stubGameState.battlefield.lands[battlefieldLandId(homeland)]);
+      placeUnitsOnMap(hero, stubGameState, homeland);
     });
     stubGameState.turnOwner = players[0].id;
   }

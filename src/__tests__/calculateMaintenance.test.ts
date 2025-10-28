@@ -11,7 +11,7 @@ import {
 } from '../types/Army';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
-import { recruitRegulars } from '../map/army/recruit';
+import { placeUnitsOnMap } from '../map/army/recruit';
 import { LandPosition } from '../map/utils/getLands';
 import {
   createDefaultGameStateStub,
@@ -162,10 +162,8 @@ describe('Calculate Maintenance', () => {
 
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 5, col: 5 });
       construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
-      recruitRegulars(
-        getDefaultUnit(RegularUnitType.DWARF),
-        gameStateStub.battlefield.lands[battlefieldLandId(barracksPos)]
-      );
+      gameStateStub.turn = 2; // only on turn 2 and after units could be recruited in BARRACK and placed on map
+      placeUnitsOnMap(getDefaultUnit(RegularUnitType.DWARF), gameStateStub, barracksPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(1000 + 20 * 5);
