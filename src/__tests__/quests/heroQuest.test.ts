@@ -1,7 +1,7 @@
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameState';
 import { getLands, LandPosition } from '../../map/utils/getLands';
-import { sendToQuest } from '../../map/quest/sendToQuest';
+import { startQuest } from '../../map/quest/startQuest';
 import { HeroUnit } from '../../types/Army';
 import { QuestType } from '../../map/quest/Quest';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
@@ -128,7 +128,7 @@ describe('Hero Quest', () => {
     // all action could be done only on main phase on other phases all actions are performed automatically
     waitStartPhaseComplete();
 
-    sendToQuest(hero, easyQuest, gameStateStub);
+    startQuest(hero, easyQuest, gameStateStub);
 
     checkQuest(easyQuest, hero, heroLand.mapPos, 4);
 
@@ -139,7 +139,7 @@ describe('Hero Quest', () => {
     expect(gameStateStub.turn).toBe(2);
     waitStartPhaseComplete();
 
-    sendToQuest(hero, easyQuest, gameStateStub);
+    startQuest(hero, easyQuest, gameStateStub);
     checkQuest(easyQuest, hero, heroLand.mapPos, 4);
 
     makeNTurns(1);
@@ -154,7 +154,7 @@ describe('Hero Quest', () => {
     expect(gameStateStub.turn).toBe(2);
     waitStartPhaseComplete();
 
-    sendToQuest(hero, easyQuest, gameStateStub);
+    startQuest(hero, easyQuest, gameStateStub);
     checkQuest(easyQuest, hero, heroLand.mapPos, 4);
 
     makeNTurns(4);
@@ -166,12 +166,12 @@ describe('Hero Quest', () => {
   });
 
   it('When hero Quest is complete and hero die it should not be placed back on the map', () => {
-    randomSpy.mockReturnValue(0.99); // always survive
+    randomSpy.mockReturnValue(0.99); // always die
 
     expect(gameStateStub.turn).toBe(2);
     waitStartPhaseComplete();
 
-    sendToQuest(hero, mediumQuest, gameStateStub);
+    startQuest(hero, mediumQuest, gameStateStub);
     checkQuest(mediumQuest, hero, heroLand.mapPos, 5);
 
     makeNTurns(5);
@@ -194,7 +194,7 @@ describe('Hero Quest', () => {
     expect(gameStateStub.turn).toBe(2);
     waitStartPhaseComplete();
 
-    sendToQuest(hero, mediumQuest, gameStateStub);
+    startQuest(hero, mediumQuest, gameStateStub);
     checkQuest(mediumQuest, hero, heroLand.mapPos, 5);
 
     makeNTurns(5);

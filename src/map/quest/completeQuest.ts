@@ -27,7 +27,7 @@ const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (questLevel(quest.id) - 1) * 5) * 0.05;
 };
 
-const questComplete = (quest: HeroQuest, gameState: GameState): string => {
+const questResults = (quest: HeroQuest, gameState: GameState): string => {
   // check that hero is still alive
   const survived = surviveInQuest(quest);
   if (survived) {
@@ -57,7 +57,7 @@ const questComplete = (quest: HeroQuest, gameState: GameState): string => {
   }
 };
 
-export const returnFromQuest = (gameState: GameState): string[] => {
+export const completeQuest = (gameState: GameState): string[] => {
   if (gameState.turnPhase !== TurnPhase.START) return [];
 
   // decrease turnsByQuest counter
@@ -68,7 +68,7 @@ export const returnFromQuest = (gameState: GameState): string[] => {
   // complete quests
   const status = getTurnOwner(gameState)!
     .quests.filter((quest) => quest.remainTurnsInQuest === 0)
-    .map((q) => questComplete(q, gameState));
+    .map((q) => questResults(q, gameState));
 
   // remove completed quests from quests array
   getTurnOwner(gameState)!.quests = getTurnOwner(gameState)!.quests.filter(

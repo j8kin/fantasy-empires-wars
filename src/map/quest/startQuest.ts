@@ -3,7 +3,7 @@ import { HeroUnit } from '../../types/Army';
 import { getQuestLength, QuestType } from './Quest';
 import { getLands } from '../utils/getLands';
 
-export const sendToQuest = (hero: HeroUnit, quest: QuestType, gameState: GameState) => {
+export const startQuest = (hero: HeroUnit, quest: QuestType, gameState: GameState) => {
   if (gameState.turnPhase !== TurnPhase.MAIN) return;
 
   const heroLand = getLands({
