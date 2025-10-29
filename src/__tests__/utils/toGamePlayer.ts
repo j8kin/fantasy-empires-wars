@@ -19,5 +19,6 @@ export const toGamePlayer = (
     diplomacy: {},
     playerType: playerType,
     quests: [], // no heroes are send to quests
+    empireTreasures: [],
   };
 };

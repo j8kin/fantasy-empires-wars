@@ -1,60 +1,112 @@
 import { battlefieldLandId, GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
-import { HeroQuest, questLevel } from './Quest';
-
-const heroDieMessage = (name: string): string => {
-  const messageId = Math.floor(Math.random() * 8);
-  switch (messageId) {
-    case 0:
-      return `Hero ${name} ventured beyond the known paths of Orrivane and did not return.`;
-    case 1:
-      return `Hero ${name} was lost to the mists of fate — their story ends where legends begin.`;
-    case 2:
-      return `Hero ${name} vanished upon the quest, their fate whispered only by the winds.`;
-    case 3:
-      return `Hero ${name} did not return from the quest; Orrivane itself has claimed their spirit.`;
-    case 4:
-      return `Hero ${name} walked into the unknown and became one with the tales of old.`;
-    case 5:
-      return `Hero ${name} has not returned. Some say the land remembers their name in silence.`;
-    case 6:
-      return `Hero ${name} was swallowed by destiny’s shadow — only echoes remain.`;
-    default:
-      return `Hero ${name} set forth seeking glory, but the realm offered only silence in return.`;
-  }
-};
+import { HeroQuest, questLevel, QuestType } from './Quest';
+import { getRandomElement } from '../generation/getRandomElement';
+import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
+import {
+  emptyHanded,
+  heroDieMessage,
+  heroGainArtifact,
+  heroGainItem,
+  heroGainRelic,
+} from './questCompleteMessages';
+import { HeroUnit } from '../../types/Army';
+import { GamePlayer } from '../../types/GamePlayer';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (questLevel(quest.id) - 1) * 5) * 0.05;
 };
 
-const questResults = (quest: HeroQuest, gameState: GameState): string => {
-  // check that hero is still alive
-  const survived = surviveInQuest(quest);
-  if (survived) {
-    // if player does not control land, then hero DIES
-    if (
-      gameState.battlefield.lands[battlefieldLandId(quest.land)].controlledBy ===
-      gameState.turnOwner
-    ) {
-      const hero = quest.hero;
-      if (hero.level < questLevel(quest.id) * 5) {
-        hero.level++;
-      }
-
-      // todo GAIN REWARD for completing quest
-
-      // return hero to quest land
-      gameState.battlefield.lands[battlefieldLandId(quest.land)].army.push({
-        unit: hero,
-        isMoving: false,
-      });
-      return `Hero ${quest.hero.name} returned with the glory of ${quest.id}.`;
-    } else {
-      return heroDieMessage(quest.hero.name);
-    }
-  } else {
-    return heroDieMessage(quest.hero.name);
+const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState): string => {
+  if (Math.random() > 0.6 - 0.1 * (questLevel(quest.id) - 1)) {
+    return emptyHanded(quest.hero.name);
   }
+  const treasureType = Math.random();
+  const player = getTurnOwner(gameState)!;
+
+  switch (quest.id) {
+    case 'The Echoing Ruins':
+      return gainArtifact(hero, quest.id);
+
+    case 'The Whispering Grove':
+      return treasureType <= 0.4 ? gainItem(player, hero) : gainArtifact(hero, quest.id);
+
+    case 'The Abyssal Crypt':
+      if (treasureType <= 0.2) {
+        return gainRelic(gameState, hero);
+      } else if (treasureType <= 0.55) {
+        return gainItem(player, hero);
+      } else {
+        return gainArtifact(hero, quest.id);
+      }
+    case 'The Shattered Sky':
+      return treasureType <= 0.4
+        ? gainRelic(gameState, hero)
+        : gainItem(getTurnOwner(gameState)!, hero);
+  }
+};
+
+const gainArtifact = (hero: HeroUnit, questType: QuestType): string => {
+  const baseArtifactLevel = questLevel(questType);
+  const heroArtifact: Artifact = {
+    ...getRandomElement(artifacts),
+    level: getRandomElement([baseArtifactLevel, baseArtifactLevel + 1, baseArtifactLevel + 2]),
+  };
+  // todo if hero already has artifact, then allow user to choose between two artifacts
+  hero.artifacts.push(heroArtifact);
+  return heroGainArtifact(hero.name, heroArtifact);
+};
+
+const gainItem = (player: GamePlayer, hero: HeroUnit): string => {
+  const item = getRandomElement(items);
+  if (item.charge == null) {
+    item.charge = getRandomElement([7, 10, 15]);
+  }
+  player.empireTreasures.push(item);
+  return heroGainItem(hero.name, item);
+};
+
+const gainRelic = (gameState: GameState, hero: HeroUnit): string => {
+  const relicInPlay = gameState.players.flatMap((p) => p.empireTreasures);
+  const availableRelics = relicts
+    .filter((a) => a.alignment == null || a.alignment === getTurnOwner(gameState)?.alignment)
+    .filter((a) => !relicInPlay.some((r) => r.id === a.id));
+
+  if (availableRelics.length > 0) {
+    const relic = getRandomElement(availableRelics);
+    getTurnOwner(gameState)?.empireTreasures.push(relic);
+    return heroGainRelic(hero.name, relic);
+  } else {
+    return gainItem(getTurnOwner(gameState)!, hero);
+  }
+};
+
+const questResults = (quest: HeroQuest, gameState: GameState): string => {
+  let questMessage: string;
+
+  if (
+    // player survived quest
+    surviveInQuest(quest) &&
+    // and player still controls the land where quest is
+    gameState.battlefield.lands[battlefieldLandId(quest.land)].controlledBy === gameState.turnOwner
+  ) {
+    const hero = quest.hero;
+
+    if (hero.level < questLevel(quest.id) * 5) {
+      hero.level++;
+    }
+
+    questMessage = calculateReward(hero, quest, gameState);
+
+    // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
+    gameState.battlefield.lands[battlefieldLandId(quest.land)].army.push({
+      unit: hero,
+      isMoving: false,
+    });
+  } else {
+    questMessage = heroDieMessage(quest.hero.name);
+  }
+
+  return questMessage;
 };
 
 export const completeQuest = (gameState: GameState): string[] => {

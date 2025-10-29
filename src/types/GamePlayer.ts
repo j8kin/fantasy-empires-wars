@@ -3,6 +3,7 @@ import { Alignment } from './Alignment';
 import { HeroUnitType } from './Army';
 import { Mana } from './Mana';
 import { HeroQuest } from '../map/quest/Quest';
+import { EmpireTreasure } from './Treasures';
 
 export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
 
@@ -32,6 +33,7 @@ export interface GamePlayer extends PlayerInfo {
   income: number;
   diplomacy: Diplomacy;
   playerType: 'human' | 'computer';
+  empireTreasures: EmpireTreasure[];
   quests: HeroQuest[];
 }
 

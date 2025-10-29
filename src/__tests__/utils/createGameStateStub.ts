@@ -37,7 +37,6 @@ export const createGameStateStub = ({
     turn: 1,
     turnOwner: players[turnOwner].id,
     turnPhase: turnPhase,
-    empireTreasures: [],
   };
 
   if (addPlayersHomeland) {
