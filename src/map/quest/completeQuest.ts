@@ -1,6 +1,6 @@
 import { battlefieldLandId, GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
 import { HeroQuest, questLevel, QuestType } from './Quest';
-import { getRandomElement } from '../generation/getRandomElement';
+import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
 import {
   emptyHanded,

@@ -6,7 +6,7 @@ import { construct } from '../building/construct';
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getRandomElement } from './getRandomElement';
+import { getRandomElement } from '../../types/getRandomElement';
 import { placeUnitsOnMap } from '../army/recruit';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {

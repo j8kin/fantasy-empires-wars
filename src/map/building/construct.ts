@@ -3,7 +3,7 @@ import { LandPosition } from '../utils/getLands';
 import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { NO_PLAYER } from '../../types/GamePlayer';
-import { destroyBuilding } from '../utils/destroyBuilding';
+import { destroyBuilding } from './destroyBuilding';
 
 export const construct = (gameState: GameState, building: BuildingType, position: LandPosition) => {
   const { battlefield } = gameState;

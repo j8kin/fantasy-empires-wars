@@ -17,7 +17,7 @@ import {
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { getLands, LandPosition } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getRandomElement } from './getRandomElement';
+import { getRandomElement } from '../../types/getRandomElement';
 
 const calculateBaseLandGold = (land: Land): number => {
   const { min, max } = land?.goldPerTurn;

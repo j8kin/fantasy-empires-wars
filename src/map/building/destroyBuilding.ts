@@ -1,8 +1,8 @@
 import { battlefieldLandId, GameState } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
-import { getNearestStrongholdLand, getTilesInRadius } from './mapAlgorithms';
+import { getNearestStrongholdLand, getTilesInRadius } from '../utils/mapAlgorithms';
 import { NO_PLAYER } from '../../types/GamePlayer';
-import { LandPosition } from './getLands';
+import { LandPosition } from '../utils/getLands';
 
 /**
  * The building could be destroyed by player as Demolition before construction of a new one
