@@ -17,7 +17,7 @@ const surviveInQuest = (quest: HeroQuest): boolean => {
 };
 
 const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState): string => {
-  if (Math.random() > 0.6 - 0.1 * (questLevel(quest.id) - 1)) {
+  if (Math.random() > 0.55 - 0.05 * (questLevel(quest.id) - 1)) {
     return emptyHanded(quest.hero.name);
   }
   const treasureType = Math.random();
@@ -28,7 +28,7 @@ const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState)
       return gainArtifact(hero, quest.id);
 
     case 'The Whispering Grove':
-      return treasureType <= 0.4 ? gainItem(player, hero) : gainArtifact(hero, quest.id);
+      return treasureType <= 0.3 ? gainItem(player, hero) : gainArtifact(hero, quest.id);
 
     case 'The Abyssal Crypt':
       if (treasureType <= 0.2) {
