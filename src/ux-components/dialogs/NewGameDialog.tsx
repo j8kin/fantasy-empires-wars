@@ -21,6 +21,7 @@ import {
 import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
 import { Mana, ManaType } from '../../types/Mana';
+import { toGamePlayer } from '../../__tests__/utils/toGamePlayer';
 
 // Local map size type for this dialog only
 type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';
@@ -241,10 +242,11 @@ const NewGameDialog: React.FC = () => {
   const handleStartGame = useCallback(() => {
     const opponents =
       opponentSelectionMode === 'random'
-        ? (selectedOpponents as GamePlayer[])
-        : (selectedOpponents.filter(
-            (opponent) => opponent !== null && opponent.id !== NO_PLAYER.id
-          ) as GamePlayer[]);
+        ? selectedOpponents.filter((o) => o != null).map((o) => toGamePlayer(o, 'computer'))
+        : selectedOpponents
+            .filter((o) => o != null)
+            .filter((o) => o.id !== NO_PLAYER.id)
+            .map((opponent) => toGamePlayer(opponent, 'computer'));
 
     // Initialize starting mana values todo: set to 0 when mana is implemented
     const initialMana: Mana = {
@@ -272,16 +274,20 @@ const NewGameDialog: React.FC = () => {
         money: initialMoney,
         income: 0, // will calculate on game start on the first turn
         playerType: 'computer', // all opponents for now are computer players
+        quests: [], // no heroes are send to quests at game start
+        empireTreasures: [], // no treasures at game start
       } as GamePlayer;
     });
 
     const createdPlayer: GamePlayer = {
       ...selectedPlayer,
       diplomacy: Object.fromEntries(opponents.map((op) => [op.id, DiplomacyStatus.NO_TREATY])),
-      mana: { ...initialMana },
+      mana: initialMana,
       money: initialMoney,
       income: 0, // will calculate on game start on first turn
       playerType: 'human',
+      quests: [], // no heroes are send to quests at game start
+      empireTreasures: [], // no treasures at game start
     };
 
     setShowStartWindow(false);

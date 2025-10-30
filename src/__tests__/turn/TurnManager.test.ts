@@ -423,6 +423,7 @@ describe('TurnManager', () => {
     });
 
     it('should handle mixed human and computer players correctly', () => {
+      mockGameState.turnPhase = TurnPhase.MAIN;
       // Test human turn first
       expect(turnManager.canEndTurn(mockGameState)).toBe(true);
 

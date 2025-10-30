@@ -1,3 +1,5 @@
+import { Artifact } from './Treasures';
+
 export enum RegularUnitType {
   WARRIOR = 'Warrior',
   DWARF = 'Dwarf',
@@ -9,9 +11,11 @@ export enum RegularUnitType {
 }
 
 export enum HeroUnitType {
+  // non-mage heroes units
   FIGHTER = 'Fighter',
   HAMMER_LORD = 'Hammer-lord',
   RANGER = 'Ranger',
+  // mage heroes units
   PYROMANCER = 'Pyromancer',
   CLERIC = 'Cleric',
   DRUID = 'Druid',
@@ -22,9 +26,10 @@ export type UnitType = RegularUnitType | HeroUnitType;
 
 export interface HeroUnit extends BaseUnit {
   id: HeroUnitType;
-  name: string; // only heroes has uniq names
-  level: number; // for non-hero units 1-regular, 2-veteran, 3-elite
-  mana?: number; // how many mana produced per turn (only for heroes)
+  name: string; // uniq names
+  level: number;
+  artifacts: Artifact[]; // for now, it is planned to have only one artifact per hero
+  mana?: number; // how many mana produced per turn, undefined for non-magic heroes
 }
 
 export enum UnitRank {
@@ -162,6 +167,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         maintainCost: 100,
         speed: 4,
         level: 1,
+        artifacts: [],
       };
     // Dwarf hero
     case HeroUnitType.HAMMER_LORD:
@@ -176,6 +182,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         maintainCost: 100,
         speed: 4,
         level: 1,
+        artifacts: [],
       };
     // Elf hero
     case HeroUnitType.RANGER:
@@ -190,6 +197,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         maintainCost: 100,
         speed: 5,
         level: 1,
+        artifacts: [],
       };
     // Mage Heroes
     // Pyromancer - produce red mana
@@ -206,6 +214,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         speed: 2,
         level: 1,
         mana: 1,
+        artifacts: [],
       };
     // Cleric - produce white mana
     case HeroUnitType.CLERIC:
@@ -221,6 +230,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         speed: 2,
         level: 1,
         mana: 1,
+        artifacts: [],
       };
     // Druid - produce green mana
     case HeroUnitType.DRUID:
@@ -236,6 +246,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         speed: 3,
         level: 1,
         mana: 1,
+        artifacts: [],
       };
     // Enchanter - produce blue mana
     case HeroUnitType.ENCHANTER:
@@ -251,6 +262,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         speed: 2,
         level: 1,
         mana: 1,
+        artifacts: [],
       };
     // Necromancer - produce black mana
     case HeroUnitType.NECROMANCER:
@@ -266,6 +278,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         speed: 2,
         level: 1,
         mana: 1,
+        artifacts: [],
       };
   }
 };

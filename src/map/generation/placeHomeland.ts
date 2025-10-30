@@ -1,5 +1,5 @@
 import { battlefieldLandId, GameState, getTurnOwner, LandState } from '../../types/GameState';
-import { GamePlayer, NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/GamePlayer';
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
 import { getLands } from '../utils/getLands';
 import { construct } from '../building/construct';
@@ -7,14 +7,16 @@ import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getRandomElement } from './getRandomElement';
+import { placeUnitsOnMap } from '../army/recruit';
 
-const assignPlayerHero = (homeland: LandState, player: GamePlayer) => {
+const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
+  const player = getTurnOwner(gameState)!;
   const hero = getDefaultUnit(player.type) as HeroUnit;
   hero.name = player.name;
   hero.level = player.level;
   // todo increment characteristics (attack, defence etc based on Player Level)
   // initial Hero immediately available in normal game it turn 3 turn to recruit
-  homeland.army.push({ unit: hero, isMoving: false });
+  placeUnitsOnMap(hero, gameState, homeland.mapPos);
 };
 
 export const placeHomeland = (gameState: GameState) => {
@@ -103,5 +105,5 @@ export const placeHomeland = (gameState: GameState) => {
   }
   construct(gameState, BuildingType.BARRACKS, getRandomElement(possibleBarracksLands).mapPos);
 
-  assignPlayerHero(homeland, getTurnOwner(gameState)!);
+  assignPlayerHero(homeland, gameState!);
 };

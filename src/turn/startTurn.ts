@@ -5,6 +5,7 @@ import { getLands } from '../map/utils/getLands';
 import { ArmyUnit, getDefaultUnit, RegularUnit } from '../types/Army';
 import { BuildingType } from '../types/Building';
 import { placeHomeland } from '../map/generation/placeHomeland';
+import { completeQuest } from '../map/quest/completeQuest';
 
 export const startTurn = (gameState: GameState) => {
   if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
@@ -67,6 +68,11 @@ export const startTurn = (gameState: GameState) => {
       land.army = [...mergedArmies, ...notReadyArmies];
     }
   );
+
+  const questStatus = completeQuest(gameState);
+  if (questStatus.length > 0 && getTurnOwner(gameState)?.playerType === 'human') {
+    // todo notify about Quests results via popup
+  }
 
   // Calculate income based on current player's lands and army's
   const income = calculateIncome(gameState) - calculateMaintenance(gameState);
