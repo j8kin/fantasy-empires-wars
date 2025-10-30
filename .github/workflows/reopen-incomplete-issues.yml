@@ -1,0 +1,70 @@
+name: Reopen issues with incomplete checklists
+
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  reopen-if-incomplete:
+    # Extra guard, though this job only runs for issues.closed
+    if: ${{ github.event.issue.state == 'closed' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reopen if unchecked checklist items remain
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            if (!issue) {
+              core.info('No issue in payload.');
+              return;
+            }
+
+            // Skip PRs (issues event normally doesn't include PRs, but guard anyway)
+            if (issue.pull_request) {
+              core.info('Event is for a Pull Request; skipping.');
+              return;
+            }
+
+            const body = issue.body || '';
+
+            // Detect unchecked and checked markdown task items in the issue body
+            // Examples matched as unchecked: "- [ ] todo", "* [ ] task"
+            // Examples matched as checked:   "- [x] done", "* [X] done"
+            const uncheckedMatches = body.match(/(^|\n)\s*[-*]\s*\[ \]/g) || [];
+            const checkedMatches = body.match(/(^|\n)\s*[-*]\s*\[x\]/gi) || [];
+
+            if (uncheckedMatches.length > 0) {
+              core.notice(`Found ${uncheckedMatches.length} unchecked checklist item(s). Reopening issue #${issue.number}.`);
+
+              // Re-open the issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'open',
+              });
+
+              // Leave a helpful comment
+              const message = [
+                'This issue was auto-closed (likely by a merged PR), but it still contains unchecked checklist item(s).',
+                '',
+                `Unchecked items: ${uncheckedMatches.length}`,
+                `Checked items: ${checkedMatches.length}`,
+                '',
+                'Reopening to indicate remaining work. Close the issue again when all checklist items are completed.',
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: message,
+              });
+            } else {
+              core.info('No unchecked checklist items found. Nothing to do.');
+            }
