@@ -1,16 +1,10 @@
 import { HeroUnit, HeroUnitType, isHero, Unit } from '../../types/Army';
-import { battlefieldLandId, GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
+import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
-import { LandPosition } from '../utils/getLands';
+import { getLand, LandPosition } from '../../map/utils/getLands';
 
-/**
- * Place units on Map should be called only when recruit count is 0 for related slot in Building
- * This function must be call on START Phase of the turn
- * The only one exception is Turn 1 when heroes are placed on Homeland
- */
 export const placeUnitsOnMap = (unit: Unit, gameState: GameState, landPos: LandPosition): void => {
   // only on START phase this function should be called
-  // todo think about case when player cast spell FORGE_OF_WAR
   if (gameState.turnPhase !== TurnPhase.START) return;
 
   if (gameState.turn === 1) {
@@ -19,17 +13,15 @@ export const placeUnitsOnMap = (unit: Unit, gameState: GameState, landPos: LandP
     if (
       heroUnit &&
       heroUnit.name === getTurnOwner(gameState)?.name &&
-      gameState.battlefield.lands[battlefieldLandId(landPos)].buildings.some(
-        (b) => b.id === BuildingType.STRONGHOLD
-      )
+      getLand(gameState, landPos).buildings.some((b) => b.id === BuildingType.STRONGHOLD)
     ) {
-      gameState.battlefield.lands[battlefieldLandId(landPos)].army.push({
+      getLand(gameState, landPos).army.push({
         unit: unit,
         isMoving: false,
       });
     }
   } else {
-    const land = gameState.battlefield.lands[battlefieldLandId(landPos)];
+    const land = getLand(gameState, landPos);
     if (!isHero(unit)) {
       // regular units could be placed only on land with BARRACKS
       if (land.buildings.some((b) => b.id === BuildingType.BARRACKS)) {

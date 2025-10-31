@@ -5,7 +5,7 @@ import { generateMockMap } from './generateMockMap';
 import { construct } from '../../map/building/construct';
 import { BuildingType } from '../../types/Building';
 import { LandPosition } from '../../map/utils/getLands';
-import { placeUnitsOnMap } from '../../map/army/recruit';
+import { placeUnitsOnMap } from './placeUnitsOnMap';
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
 import { generateMap } from '../../map/generation/generateMap';
 

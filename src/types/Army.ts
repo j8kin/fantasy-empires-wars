@@ -15,6 +15,7 @@ export enum HeroUnitType {
   FIGHTER = 'Fighter',
   HAMMER_LORD = 'Hammer-lord',
   RANGER = 'Ranger',
+  OGR = 'Ogr',
   // mage heroes units
   PYROMANCER = 'Pyromancer',
   CLERIC = 'Cleric',
@@ -38,6 +39,7 @@ export enum UnitRank {
   ELITE = 'elite',
 }
 
+export const isHeroType = (unitType: UnitType): boolean => isHero(getDefaultUnit(unitType));
 export const isHero = (unit: Unit): boolean => typeof unit.level === 'number';
 
 export interface RegularUnit extends BaseUnit {
@@ -181,6 +183,21 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         health: 25,
         maintainCost: 100,
         speed: 4,
+        level: 1,
+        artifacts: [],
+      };
+    // Orc hero
+    case HeroUnitType.OGR:
+      return {
+        id: HeroUnitType.OGR,
+        name: 'Ogr',
+        attack: 40,
+        defense: 4,
+        range: 2,
+        rangeDamage: 45,
+        health: 30,
+        maintainCost: 100,
+        speed: 3,
         level: 1,
         artifacts: [],
       };

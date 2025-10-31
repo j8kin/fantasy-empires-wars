@@ -1,4 +1,4 @@
-import { LandState, BattlefieldLands } from '../../types/GameState';
+import { LandState, BattlefieldLands, GameState, battlefieldLandId } from '../../types/GameState';
 import { NO_PLAYER, PlayerInfo } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 import { LAND_TYPE } from '../../types/Land';
@@ -39,3 +39,6 @@ export const getLands = ({
       (noArmy == null || (noArmy ? landState.army.length === 0 : landState.army.length > 0))
   );
 };
+
+export const getLand = (gameState: GameState, landPos: LandPosition): LandState =>
+  gameState.battlefield.lands[battlefieldLandId(landPos)];

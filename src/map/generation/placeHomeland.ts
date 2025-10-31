@@ -1,13 +1,12 @@
 import { battlefieldLandId, GameState, getTurnOwner, LandState } from '../../types/GameState';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
-import { getLands } from '../utils/getLands';
+import { getLand, getLands } from '../utils/getLands';
 import { construct } from '../building/construct';
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getRandomElement } from '../../types/getRandomElement';
-import { placeUnitsOnMap } from '../army/recruit';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   const player = getTurnOwner(gameState)!;
@@ -15,8 +14,8 @@ const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   hero.name = player.name;
   hero.level = player.level;
   // todo increment characteristics (attack, defence etc based on Player Level)
-  // initial Hero immediately available in normal game it turn 3 turn to recruit
-  placeUnitsOnMap(hero, gameState, homeland.mapPos);
+  // initial Hero immediately available in normal game it turn 3 turn to recruit#
+  getLand(gameState, homeland.mapPos).army.push({ unit: hero, isMoving: false });
 };
 
 export const placeHomeland = (gameState: GameState) => {

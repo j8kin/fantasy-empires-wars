@@ -3,7 +3,7 @@ import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
 import { BuildingType } from '../types/Building';
 import { getLands, LandPosition } from '../map/utils/getLands';
-import { placeUnitsOnMap } from '../map/army/recruit';
+import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { getDefaultUnit, RegularUnitType } from '../types/Army';
 import {
   createDefaultGameStateStub,

@@ -11,7 +11,7 @@ import {
 } from '../types/Army';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
-import { placeUnitsOnMap } from '../map/army/recruit';
+import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { LandPosition } from '../map/utils/getLands';
 import {
   createDefaultGameStateStub,

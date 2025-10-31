@@ -1,10 +1,5 @@
-import { getLands, LandPosition } from './getLands';
-import {
-  BattlefieldDimensions,
-  battlefieldLandId,
-  GameState,
-  LandState,
-} from '../../types/GameState';
+import { getLand, getLands, LandPosition } from './getLands';
+import { BattlefieldDimensions, GameState, LandState } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 
 export const calculateHexDistance = (
@@ -102,7 +97,7 @@ export const getNearestStrongholdLand = (
 
   // if there is a stronghold in radius 2 with the same owner as the land, return it
   const sameOwnerStronghold = allStrongholdsInRadius2.find(
-    (s) => s.controlledBy === gameState.battlefield.lands[battlefieldLandId(landPos)].controlledBy
+    (s) => s.controlledBy === getLand(gameState, landPos).controlledBy
   );
   if (sameOwnerStronghold) {
     return sameOwnerStronghold;

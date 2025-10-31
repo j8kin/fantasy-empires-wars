@@ -95,7 +95,7 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     name: 'Grimjaw the Destroyer',
     alignment: Alignment.CHAOTIC,
     race: 'Orc',
-    type: HeroUnitType.FIGHTER, // todo add Unit for ORC HERO
+    type: HeroUnitType.OGR,
     level: 15,
     description: 'A brutal orc warlord who leads through fear and seeks to conquer all lands.',
     color: 'red',
