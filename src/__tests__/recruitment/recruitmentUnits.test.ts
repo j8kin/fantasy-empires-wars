@@ -2,7 +2,7 @@ import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
 import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameState';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { BuildingType } from '../../types/Building';
-import { startRecruiting } from '../../map/army/startRecruiting';
+import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { HeroUnit, HeroUnitType, RegularUnit, RegularUnitType, UnitType } from '../../types/Army';
 import { construct } from '../../map/building/construct';
 import { getLand, getLands, LandPosition } from '../../map/utils/getLands';

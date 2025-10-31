@@ -5,7 +5,7 @@ import { getLands } from '../map/utils/getLands';
 import { ArmyUnit, RegularUnit } from '../types/Army';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
-import { completeRecruiting } from '../map/army/completeRecruiting';
+import { completeRecruiting } from '../map/recruiting/completeRecruiting';
 
 export const startTurn = (gameState: GameState) => {
   if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
