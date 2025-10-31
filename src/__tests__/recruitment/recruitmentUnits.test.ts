@@ -253,6 +253,14 @@ describe('Recruitment', () => {
         makeNTurns(1); //wait 1 turn to make sure unit will not appear on the map
         expect(emptyLand.army.length).toBe(0);
       });
+
+      it('regular units could not be recruited when not enough gold in vault', () => {
+        getTurnOwner(gameStateStub)!.money = 100;
+
+        startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
+        expect(barracksLand.buildings[0].slots?.length).toBe(0);
+        expect(barracksLand.army.length).toBe(0);
+      });
     });
   });
 
@@ -380,6 +388,19 @@ describe('Recruitment', () => {
 
         makeNTurns(1); //wait 1 turn to make sure unit will not appear on the map
         expect(emptyLand.army.length).toBe(0);
+      });
+
+      it('regular units could not be recruited when not enough gold in vault', () => {
+        const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+        constructBuilding(BuildingType.BARRACKS, barracksPos);
+
+        getTurnOwner(gameStateStub)!.money = 100;
+
+        const barracksLand = getLand(gameStateStub, barracksPos);
+
+        startRecruiting(HeroUnitType.FIGHTER, barracksPos, gameStateStub);
+        expect(barracksLand.army.length).toBe(0);
+        expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero is not recruited
       });
     });
   });

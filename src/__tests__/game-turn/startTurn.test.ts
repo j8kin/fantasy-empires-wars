@@ -7,6 +7,10 @@ describe('Start Turn phase', () => {
 
   beforeEach(() => {
     gameStateStub = createDefaultGameStateStub();
+    gameStateStub.players.forEach((player) => {
+      player.money = 0;
+      player.income = 0;
+    });
   });
 
   /** Test income and money calculation

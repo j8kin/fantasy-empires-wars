@@ -7,7 +7,7 @@ import {
   UnitType,
 } from '../../types/Army';
 import { getLand, LandPosition } from '../utils/getLands';
-import { GameState, TurnPhase } from '../../types/GameState';
+import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 
 const recruitmentDuration = (unitType: UnitType) => {
@@ -80,9 +80,13 @@ export const startRecruiting = (
       return; // fallback: wrong building type for regular units
     }
 
-    building[0].slots!.push({
-      unit: unitType,
-      turnsRemaining: recruitmentDuration(unitType),
-    });
+    const availableGold = getTurnOwner(gameState)!.money;
+    if (availableGold != null && availableGold > getDefaultUnit(unitType)!.recruitCost) {
+      getTurnOwner(gameState)!.money -= getDefaultUnit(unitType).recruitCost;
+      building[0].slots!.push({
+        unit: unitType,
+        turnsRemaining: recruitmentDuration(unitType),
+      });
+    }
   }
 };
