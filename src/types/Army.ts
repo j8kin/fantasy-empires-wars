@@ -22,6 +22,8 @@ export enum HeroUnitType {
   DRUID = 'Druid',
   ENCHANTER = 'Enchanter',
   NECROMANCER = 'Necromancer',
+  // non-magic heroes (heroes who reject magic at all)
+  WARSMITH = 'Warsmith',
 }
 export type UnitType = RegularUnitType | HeroUnitType;
 
@@ -71,7 +73,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
   switch (unitType) {
     case RegularUnitType.WARRIOR:
       return {
-        id: RegularUnitType.WARRIOR,
+        id: unitType,
         attack: 8,
         defense: 6,
         health: 25,
@@ -82,7 +84,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
       };
     case RegularUnitType.DWARF:
       return {
-        id: RegularUnitType.DWARF,
+        id: unitType,
         attack: 12,
         defense: 20,
         health: 40,
@@ -93,7 +95,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
       };
     case RegularUnitType.ORC:
       return {
-        id: RegularUnitType.ORC,
+        id: unitType,
         attack: 10,
         defense: 15,
         health: 30,
@@ -103,8 +105,9 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 20,
       };
     case RegularUnitType.ELF:
+    case RegularUnitType.DARK_ELF:
       return {
-        id: RegularUnitType.ELF,
+        id: unitType,
         attack: 15,
         defense: 4,
         range: 20,
@@ -115,24 +118,11 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         level: UnitRank.REGULAR,
         count: 20,
       };
-    case RegularUnitType.DARK_ELF:
-      return {
-        id: RegularUnitType.DARK_ELF,
-        attack: 15,
-        defense: 4,
-        range: 25,
-        rangeDamage: 25,
-        health: 20,
-        maintainCost: 5,
-        speed: 3,
-        level: UnitRank.REGULAR,
-        count: 20,
-      };
     // War Machines
     // Catapult do not damage anything only destroy buildings/walls
     case RegularUnitType.BALLISTA:
       return {
-        id: RegularUnitType.BALLISTA,
+        id: unitType,
         attack: 0,
         defense: 0,
         range: 35,
@@ -145,7 +135,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
       };
     case RegularUnitType.CATAPULT:
       return {
-        id: RegularUnitType.CATAPULT,
+        id: unitType,
         attack: 0,
         defense: 0,
         health: 30,
@@ -157,9 +147,10 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
     // HEROES
     // Human warrior hero
 
+    case HeroUnitType.WARSMITH:
     case HeroUnitType.FIGHTER:
       return {
-        id: HeroUnitType.FIGHTER,
+        id: unitType,
         name: 'Fighter',
         attack: 30,
         defense: 3,
@@ -174,7 +165,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
     // Dwarf hero
     case HeroUnitType.HAMMER_LORD:
       return {
-        id: HeroUnitType.HAMMER_LORD,
+        id: unitType,
         name: 'Hammerlord',
         attack: 40,
         defense: 3,
@@ -204,7 +195,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
     // Elf hero
     case HeroUnitType.RANGER:
       return {
-        id: HeroUnitType.RANGER,
+        id: unitType,
         name: 'Ranger',
         attack: 30,
         defense: 3,
@@ -220,7 +211,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
     // Pyromancer - produce red mana
     case HeroUnitType.PYROMANCER:
       return {
-        id: HeroUnitType.PYROMANCER,
+        id: unitType,
         name: 'Pyromancer',
         attack: 30,
         defense: 3,
@@ -236,7 +227,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
     // Cleric - produce white mana
     case HeroUnitType.CLERIC:
       return {
-        id: HeroUnitType.CLERIC,
+        id: unitType,
         name: 'Cleric',
         attack: 25,
         defense: 5,
@@ -252,7 +243,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
     // Druid - produce green mana
     case HeroUnitType.DRUID:
       return {
-        id: HeroUnitType.DRUID,
+        id: unitType,
         name: 'Druid',
         attack: 20,
         defense: 4,
@@ -268,7 +259,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
     // Enchanter - produce blue mana
     case HeroUnitType.ENCHANTER:
       return {
-        id: HeroUnitType.ENCHANTER,
+        id: unitType,
         name: 'Enchanter',
         attack: 15,
         defense: 3,
@@ -284,7 +275,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
     // Necromancer - produce black mana
     case HeroUnitType.NECROMANCER:
       return {
-        id: HeroUnitType.NECROMANCER,
+        id: unitType,
         name: 'Necromancer',
         attack: 35,
         defense: 2,

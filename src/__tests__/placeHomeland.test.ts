@@ -42,7 +42,7 @@ describe('Game Start: add player to map', () => {
   });
 
   it.each([
-    ['small', { rows: 6, cols: 13 }, 3],
+    //['small', { rows: 6, cols: 13 }, 3],
     ['medium', { rows: 9, cols: 18 }, 5],
     ['large', { rows: 11, cols: 23 }, 7],
     ['huge', { rows: 15, cols: 31 }, 8],

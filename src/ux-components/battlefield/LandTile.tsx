@@ -15,6 +15,7 @@ import { getSpellById, SpellName } from '../../types/Spell';
 import { castSpell } from '../../map/cast-spell/castSpell';
 
 import { getLandImg } from '../../assets/getLandImg';
+import { getPlayerColorValue } from '../../types/PlayerColors';
 
 interface HexTileProps {
   battlefieldPosition: LandPosition;
@@ -48,7 +49,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
   // Get the controlling player's color or default to white if not controlled
   const getBackgroundColor = (): string => {
     const controllingPlayer = getPlayerById(gameState, battlefieldTile.controlledBy);
-    return controllingPlayer?.color ?? 'white';
+    return getPlayerColorValue(controllingPlayer?.color ?? 'white');
   };
 
   const handleRightClick = (event: React.MouseEvent) => {

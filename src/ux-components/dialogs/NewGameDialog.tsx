@@ -18,7 +18,7 @@ import {
   PlayerInfo,
   PREDEFINED_PLAYERS,
 } from '../../types/GamePlayer';
-import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
+import { getPlayerColorValue, PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
 import { Mana, ManaType } from '../../types/Mana';
 import { toGamePlayer } from '../../__tests__/utils/toGamePlayer';
@@ -482,7 +482,7 @@ const NewGameDialog: React.FC = () => {
                         player={opponent}
                         size={avatarSize}
                         shape="circle"
-                        borderColor={opponent.color}
+                        borderColor={getPlayerColorValue(opponent.color)}
                       />
                     )
                   ) : (

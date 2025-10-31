@@ -81,6 +81,16 @@ export const PREDEFINED_PLAYERS: PlayerInfo[] = [
     color: 'orange',
   },
   {
+    id: 'kaer',
+    name: 'Kaer Dravane',
+    alignment: Alignment.NEUTRAL,
+    race: 'Undead',
+    type: HeroUnitType.WARSMITH,
+    level: 28,
+    description: 'A tired soul of bone and will, seeking silence at the edge of eterni',
+    color: 'burgundy',
+  },
+  {
     id: 'vex',
     name: 'Vex the Cunning',
     alignment: Alignment.LAWFUL,

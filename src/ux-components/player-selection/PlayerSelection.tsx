@@ -5,6 +5,7 @@ import Avatar from '../avatars/Avatar';
 
 import { PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { getAlignmentColor } from '../../types/Alignment';
+import { getPlayerColorValue } from '../../types/PlayerColors';
 
 interface PlayerSelectionProps {
   label?: string;
@@ -75,7 +76,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
                 player={displayPlayer}
                 size={120}
                 shape="circle"
-                borderColor={displayPlayer.color}
+                borderColor={getPlayerColorValue(displayPlayer.color)}
                 className={styles.selectedAvatarContainer}
               />
 
