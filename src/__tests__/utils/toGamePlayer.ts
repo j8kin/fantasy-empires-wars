@@ -14,8 +14,8 @@ export const toGamePlayer = (
       [ManaType.BLUE]: 0,
       [ManaType.RED]: 0,
     },
-    money: 0,
-    income: 0,
+    money: 20000, // default for testing to be able to buy buildings and units in tests by default
+    income: 0, // recalculated at the START phase of the turn
     diplomacy: {},
     playerType: playerType,
     quests: [], // no heroes are send to quests

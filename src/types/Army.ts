@@ -15,6 +15,7 @@ export enum HeroUnitType {
   FIGHTER = 'Fighter',
   HAMMER_LORD = 'Hammer-lord',
   RANGER = 'Ranger',
+  OGR = 'Ogr',
   // mage heroes units
   PYROMANCER = 'Pyromancer',
   CLERIC = 'Cleric',
@@ -40,6 +41,7 @@ export enum UnitRank {
   ELITE = 'elite',
 }
 
+export const isHeroType = (unitType: UnitType): boolean => isHero(getDefaultUnit(unitType));
 export const isHero = (unit: Unit): boolean => typeof unit.level === 'number';
 
 export interface RegularUnit extends BaseUnit {
@@ -56,6 +58,7 @@ export interface BaseUnit {
   range?: number;
   rangeDamage?: number;
   health: number;
+  recruitCost: number;
   maintainCost: number;
   speed: number;
 }
@@ -75,6 +78,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         attack: 8,
         defense: 6,
         health: 25,
+        recruitCost: 500,
         maintainCost: 4,
         speed: 2,
         level: UnitRank.REGULAR,
@@ -86,6 +90,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         attack: 12,
         defense: 20,
         health: 40,
+        recruitCost: 800,
         maintainCost: 5,
         speed: 1,
         level: UnitRank.REGULAR,
@@ -97,6 +102,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         attack: 10,
         defense: 15,
         health: 30,
+        recruitCost: 600,
         maintainCost: 4.5,
         speed: 2,
         level: UnitRank.REGULAR,
@@ -111,6 +117,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 20,
         rangeDamage: 15,
         health: 20,
+        recruitCost: 2500,
         maintainCost: 5,
         speed: 3,
         level: UnitRank.REGULAR,
@@ -126,6 +133,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 35,
         rangeDamage: 25,
         health: 15,
+        recruitCost: 1500,
         maintainCost: 150,
         speed: 0,
         level: UnitRank.REGULAR,
@@ -137,6 +145,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         attack: 0,
         defense: 0,
         health: 30,
+        recruitCost: 1000,
         maintainCost: 50,
         speed: 0,
         level: UnitRank.REGULAR,
@@ -155,6 +164,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 2,
         rangeDamage: 30,
         health: 18,
+        recruitCost: 1500,
         maintainCost: 100,
         speed: 4,
         level: 1,
@@ -170,8 +180,25 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 2,
         rangeDamage: 40,
         health: 25,
+        recruitCost: 1500,
         maintainCost: 100,
         speed: 4,
+        level: 1,
+        artifacts: [],
+      };
+    // Orc hero
+    case HeroUnitType.OGR:
+      return {
+        id: HeroUnitType.OGR,
+        name: 'Ogr',
+        attack: 40,
+        defense: 4,
+        range: 2,
+        rangeDamage: 45,
+        health: 30,
+        recruitCost: 1500,
+        maintainCost: 100,
+        speed: 3,
         level: 1,
         artifacts: [],
       };
@@ -185,6 +212,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 30,
         rangeDamage: 30,
         health: 18,
+        recruitCost: 1500,
         maintainCost: 100,
         speed: 5,
         level: 1,
@@ -201,6 +229,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 30,
         rangeDamage: 30,
         health: 18,
+        recruitCost: 2500,
         maintainCost: 100,
         speed: 2,
         level: 1,
@@ -217,6 +246,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 25,
         rangeDamage: 25,
         health: 20,
+        recruitCost: 2500,
         maintainCost: 100,
         speed: 2,
         level: 1,
@@ -233,6 +263,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 20,
         rangeDamage: 20,
         health: 22,
+        recruitCost: 2500,
         maintainCost: 100,
         speed: 3,
         level: 1,
@@ -249,6 +280,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 35,
         rangeDamage: 15,
         health: 16,
+        recruitCost: 2500,
         maintainCost: 100,
         speed: 2,
         level: 1,
@@ -265,6 +297,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 25,
         rangeDamage: 35,
         health: 15,
+        recruitCost: 2500,
         maintainCost: 100,
         speed: 2,
         level: 1,

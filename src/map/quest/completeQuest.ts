@@ -1,4 +1,4 @@
-import { battlefieldLandId, GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
+import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
 import { HeroQuest, questLevel, QuestType } from './Quest';
 import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
@@ -11,6 +11,7 @@ import {
 } from './questCompleteMessages';
 import { HeroUnit } from '../../types/Army';
 import { GamePlayer } from '../../types/GamePlayer';
+import { getLand } from '../utils/getLands';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (questLevel(quest.id) - 1) * 5) * 0.05;
@@ -87,7 +88,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): string => {
     // player survived quest
     surviveInQuest(quest) &&
     // and player still controls the land where quest is
-    gameState.battlefield.lands[battlefieldLandId(quest.land)].controlledBy === gameState.turnOwner
+    getLand(gameState, quest.land).controlledBy === gameState.turnOwner
   ) {
     const hero = quest.hero;
 
@@ -98,7 +99,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): string => {
     questMessage = calculateReward(hero, quest, gameState);
 
     // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
-    gameState.battlefield.lands[battlefieldLandId(quest.land)].army.push({
+    getLand(gameState, quest.land).army.push({
       unit: hero,
       isMoving: false,
     });

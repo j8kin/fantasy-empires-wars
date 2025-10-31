@@ -1,6 +1,6 @@
 import { BuildingType } from '../../types/Building';
 import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
-import { getLands } from '../utils/getLands';
+import { getLand, getLands } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 
 export const getAvailableToConstructLands = (
@@ -19,8 +19,7 @@ export const getAvailableToConstructLands = (
             (land.buildings.length === 0 ||
               !land.buildings?.some((b) => b.id === BuildingType.WALL)) &&
             getTilesInRadius(gameState.battlefield.dimensions, land.mapPos, 1, true).some(
-              (tile) =>
-                gameState.battlefield.lands[battlefieldLandId(tile)].controlledBy !== owner.id
+              (tile) => getLand(gameState, tile).controlledBy !== owner.id
             )
         )
         .map((l) => battlefieldLandId(l.mapPos));

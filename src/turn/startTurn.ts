@@ -2,10 +2,10 @@ import { GameState, getTurnOwner } from '../types/GameState';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
 import { getLands } from '../map/utils/getLands';
-import { ArmyUnit, getDefaultUnit, RegularUnit } from '../types/Army';
-import { BuildingType } from '../types/Building';
+import { ArmyUnit, RegularUnit } from '../types/Army';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
+import { completeRecruiting } from '../map/recruiting/completeRecruiting';
 
 export const startTurn = (gameState: GameState) => {
   if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
@@ -18,30 +18,7 @@ export const startTurn = (gameState: GameState) => {
 
   const player = getTurnOwner(gameState)!;
   // recruit units
-  getLands({
-    lands: gameState.battlefield.lands,
-    players: [player],
-    buildings: [
-      BuildingType.BARRACKS,
-      BuildingType.WHITE_MAGE_TOWER,
-      BuildingType.BLACK_MAGE_TOWER,
-      BuildingType.GREEN_MAGE_TOWER,
-      BuildingType.BLUE_MAGE_TOWER,
-      BuildingType.RED_MAGE_TOWER,
-    ],
-  }).forEach((l) =>
-    l.buildings.forEach((b) => {
-      if (b.slots) {
-        b.slots.forEach((s) => {
-          s.turnsRemaining--;
-          if (s.turnsRemaining === 0) {
-            l.army.push({ unit: getDefaultUnit(s.unit), isMoving: false });
-          }
-        });
-        b.slots = b.slots.filter((s) => s.turnsRemaining > 0);
-      }
-    })
-  );
+  completeRecruiting(gameState);
 
   // complete army movement and merge ready armies
   getLands({ lands: gameState.battlefield.lands, players: [player], noArmy: false }).forEach(

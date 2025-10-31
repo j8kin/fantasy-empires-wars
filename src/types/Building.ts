@@ -18,7 +18,6 @@ export enum BuildingType {
 
 interface BuildingSlot {
   unit: UnitType;
-  count: number;
   turnsRemaining: number;
 }
 
@@ -115,3 +114,6 @@ export const getAllBuildings = (player: GamePlayer): Building[] => {
         (building.id === BuildingType.RED_MAGE_TOWER && player.alignment !== Alignment.LAWFUL)
     );
 };
+
+export const isMageTower = (building: BuildingType): boolean =>
+  building.toString().includes('Mage Tower');
