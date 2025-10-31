@@ -3,7 +3,7 @@ import { NO_PLAYER } from '../../types/GamePlayer';
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
 import { getLand, getLands } from '../utils/getLands';
 import { construct } from '../building/construct';
-import { BuildingType } from '../../types/Building';
+import { BuildingType, getBuilding } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getRandomElement } from '../../types/getRandomElement';
@@ -84,6 +84,9 @@ export const placeHomeland = (gameState: GameState) => {
     homeland = getRandomElement(possibleHomelands);
   }
 
+  // add money to able construct base STRONGHOLD and BARRACKS
+  getTurnOwner(gameState)!.money +=
+    getBuilding(BuildingType.STRONGHOLD).buildCost + getBuilding(BuildingType.BARRACKS).buildCost;
   // Place Strong into homeland first
   construct(gameState, BuildingType.STRONGHOLD, homeland.mapPos);
 

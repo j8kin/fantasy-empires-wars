@@ -9,6 +9,9 @@ export const construct = (gameState: GameState, building: BuildingType, position
   const { battlefield } = gameState;
   const owner = getTurnOwner(gameState)!;
   const mapPosition = battlefieldLandId(position);
+  if (owner.money < getBuilding(building).buildCost) {
+    return;
+  }
   switch (building) {
     case BuildingType.DEMOLITION:
       destroyBuilding(position, gameState);
@@ -44,4 +47,6 @@ export const construct = (gameState: GameState, building: BuildingType, position
       battlefield.lands[mapPosition].buildings.push(getBuilding(building));
       break;
   }
+
+  owner.money -= getBuilding(building).buildCost;
 };

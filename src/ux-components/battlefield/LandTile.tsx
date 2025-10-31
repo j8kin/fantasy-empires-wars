@@ -82,7 +82,6 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         if (selectedPlayer && selectedPlayer.money! >= getBuilding(buildingToConstruct).buildCost) {
           // todo add animation for building
           construct(gameState!, buildingToConstruct, battlefieldPosition);
-          selectedPlayer.money! -= getBuilding(buildingToConstruct).buildCost;
           updateGameState(gameState!);
           recalculateActivePlayerIncome();
         }
