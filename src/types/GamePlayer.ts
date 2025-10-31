@@ -29,7 +29,7 @@ export interface PlayerInfo {
 
 export interface GamePlayer extends PlayerInfo {
   mana: Mana;
-  money: number;
+  vault: number;
   income: number;
   diplomacy: Diplomacy;
   playerType: 'human' | 'computer';

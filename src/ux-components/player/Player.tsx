@@ -41,7 +41,7 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
       <div className={styles.playerDetails}>
         <div className={styles.playerName}>{turnOwner.name}</div>
         <div className={styles.moneyInfo}>
-          <div className={styles.moneyItem}>Gold: {turnOwner.money}</div>
+          <div className={styles.moneyItem}>Gold: {turnOwner.vault}</div>
           <div className={styles.moneyItem}>+{turnOwner.income}/turn</div>
         </div>
       </div>

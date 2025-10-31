@@ -49,7 +49,7 @@ const MapActionsControl: React.FC = () => {
     if (!selectedPlayer) return;
     if (
       getAllBuildings(selectedPlayer).some(
-        (building) => building.buildCost <= selectedPlayer.money!
+        (building) => building.buildCost <= selectedPlayer.vault!
       )
     ) {
       setShowConstructBuildingDialog(true);

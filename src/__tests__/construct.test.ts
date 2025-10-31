@@ -2,7 +2,7 @@ import { battlefieldLandId, getTurnOwner } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
 import { BuildingType } from '../types/Building';
-import { getLand, getLands, LandPosition } from '../map/utils/getLands';
+import { getLands, LandPosition } from '../map/utils/getLands';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { getDefaultUnit, RegularUnitType } from '../types/Army';
 import {
@@ -27,7 +27,7 @@ describe('Construct Buildings', () => {
     // clear map to remove all armies and buildings
     gameStateStub.battlefield = generateMockMap(defaultBattlefieldSizeStub);
     gameStateStub.turnOwner = gameStateStub.players[0].id;
-    gameStateStub.players.forEach((player) => (player.money = 200000));
+    gameStateStub.players.forEach((player) => (player.vault = 200000));
   });
 
   describe('Constructing a building', () => {
@@ -500,7 +500,7 @@ describe('Construct Buildings', () => {
         players: [getTurnOwner(gameStateStub)!],
         buildings: [],
       })[0];
-      getTurnOwner(gameStateStub)!.money = 0; // vault is empty
+      getTurnOwner(gameStateStub)!.vault = 0; // vault is empty
 
       expect(emptyLand).toBeDefined();
       expect(emptyLand.buildings.length).toBe(0);

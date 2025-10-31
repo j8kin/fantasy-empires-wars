@@ -271,7 +271,7 @@ const NewGameDialog: React.FC = () => {
           [selectedPlayer.id]: DiplomacyStatus.NO_TREATY,
         },
         mana: initialMana,
-        money: initialMoney,
+        vault: initialMoney,
         income: 0, // will calculate on game start on the first turn
         playerType: 'computer', // all opponents for now are computer players
         quests: [], // no heroes are send to quests at game start
@@ -283,7 +283,7 @@ const NewGameDialog: React.FC = () => {
       ...selectedPlayer,
       diplomacy: Object.fromEntries(opponents.map((op) => [op.id, DiplomacyStatus.NO_TREATY])),
       mana: initialMana,
-      money: initialMoney,
+      vault: initialMoney,
       income: 0, // will calculate on game start on first turn
       playerType: 'human',
       quests: [], // no heroes are send to quests at game start

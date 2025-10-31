@@ -55,7 +55,7 @@ export const startTurn = (gameState: GameState) => {
   const income = calculateIncome(gameState) - calculateMaintenance(gameState);
   // calculate income and update player#s money and income after turn 2
   if (gameState.turn > 2) {
-    gameState.players.find((p) => p.id === player.id)!.money += income;
+    gameState.players.find((p) => p.id === player.id)!.vault += income;
   }
   gameState.players.find((p) => p.id === player.id)!.income = income;
 };

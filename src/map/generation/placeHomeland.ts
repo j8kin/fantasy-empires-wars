@@ -85,7 +85,7 @@ export const placeHomeland = (gameState: GameState) => {
   }
 
   // add money to able construct base STRONGHOLD and BARRACKS
-  getTurnOwner(gameState)!.money +=
+  getTurnOwner(gameState)!.vault +=
     getBuilding(BuildingType.STRONGHOLD).buildCost + getBuilding(BuildingType.BARRACKS).buildCost;
   // Place Strong into homeland first
   construct(gameState, BuildingType.STRONGHOLD, homeland.mapPos);

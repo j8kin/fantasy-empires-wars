@@ -41,7 +41,7 @@ const ConstructBuildingDialog: React.FC = () => {
   const selectedPlayer = getTurnOwner(gameState);
   const availableBuildings = selectedPlayer
     ? getAllBuildings(selectedPlayer).filter(
-        (building) => building.buildCost <= selectedPlayer.money!
+        (building) => building.buildCost <= selectedPlayer.vault!
       )
     : [];
 

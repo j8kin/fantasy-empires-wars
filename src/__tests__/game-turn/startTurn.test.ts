@@ -8,7 +8,7 @@ describe('Start Turn phase', () => {
   beforeEach(() => {
     gameStateStub = createDefaultGameStateStub();
     gameStateStub.players.forEach((player) => {
-      player.money = 0;
+      player.vault = 0;
       player.income = 0;
     });
   });
@@ -25,13 +25,13 @@ describe('Start Turn phase', () => {
   ])(
     'Income and Money calculation based on current turn %s',
     (turn: number, money: number, income: number) => {
-      expect(gameStateStub.players[0].money).toBe(0);
+      expect(gameStateStub.players[0].vault).toBe(0);
       expect(gameStateStub.players[0].income).toBe(0);
 
       gameStateStub.turn = turn;
       startTurn(gameStateStub);
 
-      expect(gameStateStub.players[0].money).toBe(money);
+      expect(gameStateStub.players[0].vault).toBe(money);
       expect(gameStateStub.players[0].income).toBe(income);
     }
   );

@@ -14,7 +14,7 @@ export const toGamePlayer = (
       [ManaType.BLUE]: 0,
       [ManaType.RED]: 0,
     },
-    money: 200000, // default for testing to be able to buy buildings and units in tests by default
+    vault: 200000, // default for testing to be able to buy buildings and units in tests by default
     income: 0, // recalculated at the START phase of the turn
     diplomacy: {},
     playerType: playerType,

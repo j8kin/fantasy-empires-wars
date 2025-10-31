@@ -9,7 +9,7 @@ export const construct = (gameState: GameState, building: BuildingType, position
   const { battlefield } = gameState;
   const owner = getTurnOwner(gameState)!;
   const mapPosition = battlefieldLandId(position);
-  if (owner.money < getBuilding(building).buildCost) {
+  if (owner.vault < getBuilding(building).buildCost) {
     return;
   }
   switch (building) {
@@ -48,5 +48,5 @@ export const construct = (gameState: GameState, building: BuildingType, position
       break;
   }
 
-  owner.money -= getBuilding(building).buildCost;
+  owner.vault -= getBuilding(building).buildCost;
 };

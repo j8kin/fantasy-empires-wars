@@ -80,9 +80,9 @@ export const startRecruiting = (
       return; // fallback: wrong building type for regular units
     }
 
-    const availableGold = getTurnOwner(gameState)!.money;
+    const availableGold = getTurnOwner(gameState)!.vault;
     if (availableGold != null && availableGold > getDefaultUnit(unitType)!.recruitCost) {
-      getTurnOwner(gameState)!.money -= getDefaultUnit(unitType).recruitCost;
+      getTurnOwner(gameState)!.vault -= getDefaultUnit(unitType).recruitCost;
       building[0].slots!.push({
         unit: unitType,
         turnsRemaining: recruitmentDuration(unitType),

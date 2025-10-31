@@ -16,7 +16,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
     React.useEffect(() => {
       const selectedPlayer: GamePlayer = {
         ...PREDEFINED_PLAYERS[0],
-        money: 1500,
+        vault: 1500,
         income: 0, // Will be calculated by recalculateActivePlayerIncome
         mana: {
           [ManaType.WHITE]: 100,
