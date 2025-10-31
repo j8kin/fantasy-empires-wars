@@ -72,7 +72,7 @@ export const startRecruiting = (
           default:
             break; // fallback should never reach here
         }
-        if (expectedMageTower == null) {
+        if (expectedMageTower == null || building[0].id !== expectedMageTower) {
           return;
         }
       }
