@@ -5,6 +5,7 @@ import { startQuest } from '../../map/quest/startQuest';
 import { HeroUnit } from '../../types/Army';
 import { QuestType } from '../../map/quest/Quest';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
+import { TreasureItem } from '../../types/Treasures';
 
 describe('Hero Quest', () => {
   const easyQuest: QuestType = 'The Echoing Ruins';
@@ -189,6 +190,7 @@ describe('Hero Quest', () => {
 
   it('When hero Quest is complete and hero survive if his level is related to quest level', () => {
     randomSpy.mockReturnValue(0.01); // always survive
+    const heroStatsBefore = { ...hero };
 
     const heroLevel = hero.level;
     expect(gameStateStub.turn).toBe(2);
@@ -202,7 +204,20 @@ describe('Hero Quest', () => {
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
     expect(heroLand.army[0].unit).toBe(hero);
+    expect((heroLand.army[0].unit as HeroUnit).artifacts.length).toBe(0);
+    expect(getTurnOwner(gameStateStub)?.empireTreasures.length).toBe(1);
+    expect(getTurnOwner(gameStateStub)?.empireTreasures[0].id).toBe(TreasureItem.WAND_TURN_UNDEAD); // quest reward
     expect(hero.level).toBe(heroLevel + 1);
+
+    // verify that hero stats are incremented exact new stats calculation verified separately
+    expect(hero.attack).toBeGreaterThan(heroStatsBefore.attack);
+    expect(hero.defense).toBeGreaterThan(heroStatsBefore.defense);
+    expect(hero.health).toBeGreaterThan(heroStatsBefore.health);
+    expect(hero.rangeDamage).toBeGreaterThan(heroStatsBefore.rangeDamage!);
+    // not changed parameters
+    expect(hero.speed).toBe(heroStatsBefore.speed);
+    expect(hero.range).toBe(heroStatsBefore.range);
+    expect(hero.mana).not.toBeDefined();
   });
 
   //todo add test when hero returns from quest into territory which now controlled by another player and die

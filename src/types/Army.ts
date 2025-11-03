@@ -1,4 +1,5 @@
 import { Artifact } from './Treasures';
+import { Alignment } from './Alignment';
 
 export enum RegularUnitType {
   WARRIOR = 'Warrior',
@@ -58,9 +59,10 @@ export interface BaseUnit {
   range?: number;
   rangeDamage?: number;
   health: number;
+  speed: number;
+  alignment: Alignment;
   recruitCost: number;
   maintainCost: number;
-  speed: number;
 }
 
 export type ArmyUnit = {
@@ -78,11 +80,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         attack: 8,
         defense: 6,
         health: 25,
-        recruitCost: 500,
-        maintainCost: 4,
         speed: 2,
+        alignment: Alignment.NEUTRAL,
         level: UnitRank.REGULAR,
         count: 20,
+        recruitCost: 500,
+        maintainCost: 4,
       };
     case RegularUnitType.DWARF:
       return {
@@ -90,11 +93,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         attack: 12,
         defense: 20,
         health: 40,
-        recruitCost: 800,
-        maintainCost: 5,
         speed: 1,
+        alignment: Alignment.LAWFUL,
         level: UnitRank.REGULAR,
         count: 20,
+        recruitCost: 800,
+        maintainCost: 5,
       };
     case RegularUnitType.ORC:
       return {
@@ -102,11 +106,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         attack: 10,
         defense: 15,
         health: 30,
-        recruitCost: 600,
-        maintainCost: 4.5,
         speed: 2,
+        alignment: Alignment.CHAOTIC,
         level: UnitRank.REGULAR,
         count: 20,
+        recruitCost: 600,
+        maintainCost: 4.5,
       };
     case RegularUnitType.ELF:
     case RegularUnitType.DARK_ELF:
@@ -117,11 +122,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 20,
         rangeDamage: 15,
         health: 20,
-        recruitCost: 2500,
-        maintainCost: 5,
         speed: 3,
+        alignment: unitType === RegularUnitType.ELF ? Alignment.LAWFUL : Alignment.CHAOTIC,
         level: UnitRank.REGULAR,
         count: 20,
+        recruitCost: 2500,
+        maintainCost: 5,
       };
     // War Machines
     // Catapult do not damage anything only destroy buildings/walls
@@ -133,11 +139,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 35,
         rangeDamage: 25,
         health: 15,
-        recruitCost: 1500,
-        maintainCost: 150,
         speed: 0,
+        alignment: Alignment.NEUTRAL,
         level: UnitRank.REGULAR,
         count: 1,
+        recruitCost: 1500,
+        maintainCost: 150,
       };
     case RegularUnitType.CATAPULT:
       return {
@@ -145,11 +152,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         attack: 0,
         defense: 0,
         health: 30,
-        recruitCost: 1000,
-        maintainCost: 50,
         speed: 0,
+        alignment: Alignment.NEUTRAL,
         level: UnitRank.REGULAR,
         count: 1,
+        recruitCost: 1000,
+        maintainCost: 50,
       };
     // HEROES
     // Human warrior hero
@@ -164,11 +172,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 2,
         rangeDamage: 30,
         health: 18,
-        recruitCost: 1500,
-        maintainCost: 100,
         speed: 4,
         level: 1,
+        alignment: unitType === HeroUnitType.WARSMITH ? Alignment.CHAOTIC : Alignment.LAWFUL,
         artifacts: [],
+        recruitCost: 1500,
+        maintainCost: 100,
       };
     // Dwarf hero
     case HeroUnitType.HAMMER_LORD:
@@ -180,11 +189,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 2,
         rangeDamage: 40,
         health: 25,
-        recruitCost: 1500,
-        maintainCost: 100,
         speed: 4,
         level: 1,
+        alignment: Alignment.LAWFUL,
         artifacts: [],
+        recruitCost: 1500,
+        maintainCost: 100,
       };
     // Orc hero
     case HeroUnitType.OGR:
@@ -196,11 +206,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 2,
         rangeDamage: 45,
         health: 30,
-        recruitCost: 1500,
-        maintainCost: 100,
         speed: 3,
         level: 1,
+        alignment: Alignment.CHAOTIC,
         artifacts: [],
+        recruitCost: 1500,
+        maintainCost: 100,
       };
     // Elf hero
     case HeroUnitType.RANGER:
@@ -212,11 +223,12 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 30,
         rangeDamage: 30,
         health: 18,
-        recruitCost: 1500,
-        maintainCost: 100,
         speed: 5,
         level: 1,
+        alignment: Alignment.LAWFUL,
         artifacts: [],
+        recruitCost: 1500,
+        maintainCost: 100,
       };
     // Mage Heroes
     // Pyromancer - produce red mana
@@ -229,12 +241,13 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 30,
         rangeDamage: 30,
         health: 18,
-        recruitCost: 2500,
-        maintainCost: 100,
         speed: 2,
         level: 1,
         mana: 1,
+        alignment: Alignment.CHAOTIC,
         artifacts: [],
+        recruitCost: 2500,
+        maintainCost: 100,
       };
     // Cleric - produce white mana
     case HeroUnitType.CLERIC:
@@ -246,12 +259,13 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 25,
         rangeDamage: 25,
         health: 20,
-        recruitCost: 2500,
-        maintainCost: 100,
         speed: 2,
         level: 1,
         mana: 1,
+        alignment: Alignment.LAWFUL,
         artifacts: [],
+        recruitCost: 2500,
+        maintainCost: 100,
       };
     // Druid - produce green mana
     case HeroUnitType.DRUID:
@@ -263,12 +277,13 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 20,
         rangeDamage: 20,
         health: 22,
-        recruitCost: 2500,
-        maintainCost: 100,
         speed: 3,
         level: 1,
         mana: 1,
+        alignment: Alignment.LAWFUL,
         artifacts: [],
+        recruitCost: 2500,
+        maintainCost: 100,
       };
     // Enchanter - produce blue mana
     case HeroUnitType.ENCHANTER:
@@ -280,12 +295,13 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 35,
         rangeDamage: 15,
         health: 16,
-        recruitCost: 2500,
-        maintainCost: 100,
         speed: 2,
         level: 1,
         mana: 1,
+        alignment: Alignment.NEUTRAL,
         artifacts: [],
+        recruitCost: 2500,
+        maintainCost: 100,
       };
     // Necromancer - produce black mana
     case HeroUnitType.NECROMANCER:
@@ -297,12 +313,13 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         range: 25,
         rangeDamage: 35,
         health: 15,
-        recruitCost: 2500,
-        maintainCost: 100,
         speed: 2,
         level: 1,
         mana: 1,
+        alignment: Alignment.CHAOTIC,
         artifacts: [],
+        recruitCost: 2500,
+        maintainCost: 100,
       };
   }
 };

@@ -7,13 +7,15 @@ import { BuildingType, getBuilding } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getRandomElement } from '../../types/getRandomElement';
+import { levelUpHero } from '../recruiting/levelUpHero';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   const player = getTurnOwner(gameState)!;
   const hero = getDefaultUnit(player.type) as HeroUnit;
   hero.name = player.name;
-  hero.level = player.level;
-  // todo increment characteristics (attack, defence etc based on Player Level)
+  hero.level = player.level - 1; // levelUpHero will increment level
+  // increment characteristics
+  levelUpHero(hero, player);
   // initial Hero immediately available in normal game it turn 3 turn to recruit#
   getLand(gameState, homeland.mapPos).army.push({ unit: hero, isMoving: false });
 };

@@ -12,6 +12,7 @@ import {
 import { HeroUnit } from '../../types/Army';
 import { GamePlayer } from '../../types/GamePlayer';
 import { getLand } from '../utils/getLands';
+import { levelUpHero } from '../recruiting/levelUpHero';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (questLevel(quest.id) - 1) * 5) * 0.05;
@@ -93,7 +94,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): string => {
     const hero = quest.hero;
 
     if (hero.level < questLevel(quest.id) * 5) {
-      hero.level++;
+      levelUpHero(hero, getTurnOwner(gameState)!);
     }
 
     questMessage = calculateReward(hero, quest, gameState);
