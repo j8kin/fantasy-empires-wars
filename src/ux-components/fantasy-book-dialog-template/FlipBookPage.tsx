@@ -1,5 +1,6 @@
 import React from 'react';
 import './css/FlipBook.css';
+import styles from './css/FlipBookPage.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
@@ -10,6 +11,13 @@ import { BuildingType } from '../../types/Building';
 import { toRoman } from '../../map/utils/romanNumerals';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
+
+interface Slot {
+  id: string;
+  name: string;
+  iconPath?: string;
+  landId?: string;
+}
 
 interface FlipBookPageProps {
   pageNum: number;
@@ -23,6 +31,7 @@ interface FlipBookPageProps {
   className?: string;
   style?: React.CSSProperties;
   onClose?: () => void;
+  slots?: Slot[];
 }
 
 const getAvailableLands = (
@@ -53,6 +62,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       className,
       style,
       onClose,
+      slots,
     },
     ref
   ) => {
@@ -83,78 +93,73 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       }
     };
 
+    const handleSlotClick = (slot: Slot) => {
+      alert(`Selected slot: ${slot.name}${slot.landId ? `, Land ID: ${slot.landId}` : ''}`);
+    };
+
     return (
       <div className={`pageStyle ${finalClassName}`} ref={ref} style={style}>
         {children || (
           <>
-            <div className="caption" style={{ textAlign: 'center' }}>
-              {header}
-            </div>
-            <img
-              src={iconPath}
-              alt={header}
-              className="icon clickable-icon"
-              style={{
-                alignSelf: isEvenPage ? 'flex-end' : 'flex-start',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                filter: 'brightness(1)',
-              }}
-              onClick={handleIconClick}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.filter =
-                  'brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
-                e.currentTarget.style.transform = 'scale(1.05)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.filter = 'brightness(1)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-              onError={(e) => {
-                // Fallback to a placeholder or hide an image on error
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-            <div className="description">
-              <h4 style={{ margin: '0 0 4px 0', color: '#2c1810', fontSize: '1rem' }}>
-                Description:
-              </h4>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '0.9rem',
-                  lineHeight: '1.4',
-                  height: '1.7rem',
-                  display: 'flex',
-                  alignItems: 'center',
+            <div className={styles.caption}>{header}</div>
+            <div className={styles.imageSlotContainer}>
+              <img
+                src={iconPath}
+                alt={header}
+                className={`icon clickable-icon ${styles.icon}`}
+                onClick={handleIconClick}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.filter =
+                    'brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
+                  e.currentTarget.style.transform = 'scale(1.05)';
                 }}
-              >
-                {description}
-              </p>
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.filter = 'brightness(1)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                onError={(e) => {
+                  // Fallback to a placeholder or hide an image on error
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+              {slots && slots.length > 0 && (
+                <div
+                  className={`${styles.slotsContainer} ${slots.length > 3 ? styles.slotsScrollable : styles.slotsVisible}`}
+                >
+                  {slots.map((slot) => (
+                    <div
+                      key={slot.id}
+                      onClick={() => handleSlotClick(slot)}
+                      className={styles.slot}
+                    >
+                      {slot.iconPath ? (
+                        <img src={slot.iconPath} alt={slot.name} className={styles.slotIcon} />
+                      ) : (
+                        <span className={styles.slotText}>{slot.name.slice(0, 3)}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="description">
+              <h4 className={styles.descriptionTitle}>Description:</h4>
+              <p className={styles.descriptionText}>{description}</p>
               <br />
               <div className="costSection">
-                <h4 style={{ margin: '0 0 1px 0', color: '#5d4037', fontSize: '1rem' }}>
+                <h4 className={styles.costTitle}>
                   {costLabel}: <span className="costValue">{cost}</span>
                 </h4>
               </div>
               {!isSpellBook && maintainCost! >= 0 && (
                 <div className="costSection">
-                  <h4 style={{ margin: '0 0 1px 0', color: '#5d4037', fontSize: '1rem' }}>
+                  <h4 className={styles.costTitle}>
                     Maintain Cost: <span className="costValue">{maintainCost}</span>
                   </h4>
                 </div>
               )}
             </div>
-            <h4
-              style={{
-                margin: '0 0 2px 0',
-                color: '#5d4037',
-                fontSize: '1rem',
-                textAlign: 'center',
-              }}
-            >
-              - {romanPageNum} -
-            </h4>
+            <h4 className={styles.pageNumber}>- {romanPageNum} -</h4>
           </>
         )}
       </div>
