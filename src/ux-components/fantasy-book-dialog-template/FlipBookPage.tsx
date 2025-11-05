@@ -6,20 +6,32 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { GameState } from '../../types/GameState';
 
+import { toRoman } from '../../map/utils/romanNumerals';
+
 import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType } from '../../types/Building';
-import { toRoman } from '../../map/utils/romanNumerals';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
+import { startRecruiting } from '../../map/recruiting/startRecruiting';
+import { getDefaultUnit, HeroUnit, HeroUnitType, UnitType } from '../../types/Army';
+import { LandPosition } from '../../map/utils/getLands';
+import { startQuest } from '../../map/quest/startQuest';
+import { getQuestType } from '../../map/quest/Quest';
 
-interface Slot {
+export interface Slot {
   id: string;
   name: string;
-  iconPath?: string;
-  landId?: string;
+}
+
+export enum FlipBookPageType {
+  SPELL = 'Spell',
+  BUILDING = 'Building',
+  RECRUIT = 'Recruit',
+  QUEST = 'Quest',
 }
 
 interface FlipBookPageProps {
+  dialogType: FlipBookPageType;
   pageNum: number;
   header?: string;
   iconPath?: string;
@@ -32,16 +44,17 @@ interface FlipBookPageProps {
   style?: React.CSSProperties;
   onClose?: () => void;
   slots?: Slot[];
+  landId?: LandPosition;
 }
 
 const getAvailableLands = (
   gameState: GameState,
-  actionType: 'spell' | 'building',
+  actionType: FlipBookPageType,
   name: SpellName | BuildingType
 ): string[] => {
   if (gameState == null) return [];
 
-  if (actionType === 'building') {
+  if (actionType === FlipBookPageType.BUILDING) {
     return getAvailableToConstructLands(gameState, name as BuildingType);
   } else {
     return getAvailableToCastSpellLands(gameState, name as SpellName);
@@ -51,6 +64,7 @@ const getAvailableLands = (
 const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
   (
     {
+      dialogType,
       pageNum,
       header,
       iconPath,
@@ -63,6 +77,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       style,
       onClose,
       slots,
+      landId,
     },
     ref
   ) => {
@@ -72,29 +87,73 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     const isEvenPage = pageNum % 2 === 1;
     const defaultClassName = isEvenPage ? 'evenPage' : 'oddPage';
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
-    const isSpellBook = costLabel === 'Mana Cost';
 
-    const romanPageNum = toRoman(isSpellBook ? 1027 : 2351 + pageNum);
+    const romanPageNum = (): string => {
+      switch (dialogType) {
+        case FlipBookPageType.SPELL:
+          return toRoman(1027 + pageNum);
+        case FlipBookPageType.BUILDING:
+          return toRoman(2351 + pageNum);
+        case FlipBookPageType.RECRUIT:
+          return toRoman(3685 + pageNum);
+        case FlipBookPageType.QUEST:
+          return toRoman(5019 + pageNum);
+        default:
+          return toRoman(pageNum);
+      }
+    };
 
     const handleIconClick = () => {
       if (header) {
-        setSelectedLandAction((isSpellBook ? 'Spell: ' : 'Building: ') + header);
-        const actionType = isSpellBook ? 'spell' : 'building';
-        const name = isSpellBook ? getSpellById(header as SpellName).id : (header as BuildingType);
+        switch (dialogType) {
+          case FlipBookPageType.SPELL:
+          case FlipBookPageType.BUILDING:
+            setSelectedLandAction(`${dialogType}: ` + header);
+            const name =
+              dialogType === FlipBookPageType.SPELL
+                ? getSpellById(header as SpellName).id
+                : (header as BuildingType);
 
-        if (onClose) {
-          onClose(); // close dialog to apply spell or construction
+            if (onClose) {
+              onClose(); // close dialog to apply spell or construction
+            }
+
+            // Add tiles to the glowing tiles set for visual highlighting
+            getAvailableLands(gameState!, dialogType, name).forEach((tileId) => {
+              addGlowingTile(tileId);
+            });
+            break;
+          case FlipBookPageType.RECRUIT:
+            startRecruiting(header as UnitType, landId!, gameState!);
+            break;
+          case FlipBookPageType.QUEST:
+            startQuest(
+              getDefaultUnit(HeroUnitType.DRUID) as HeroUnit, // todo select hero from slot or all heroes
+              getQuestType(pageNum + 1),
+              gameState!
+            );
+            break;
         }
-
-        // Add tiles to the glowing tiles set for visual highlighting
-        getAvailableLands(gameState!, actionType, name).forEach((tileId) => {
-          addGlowingTile(tileId);
-        });
       }
     };
 
     const handleSlotClick = (slot: Slot) => {
-      alert(`Selected slot: ${slot.name}${slot.landId ? `, Land ID: ${slot.landId}` : ''}`);
+      switch (dialogType) {
+        case FlipBookPageType.RECRUIT:
+          startRecruiting(header as UnitType, landId!, gameState!);
+          break;
+        case FlipBookPageType.QUEST:
+          startQuest(
+            getDefaultUnit(HeroUnitType.DRUID) as HeroUnit, // todo select hero from slot or all heroes
+            getQuestType(pageNum + 1),
+            gameState!
+          );
+          break;
+        default:
+          // should not be reached since other dialogs don't have slots
+          break;
+      }
+      alert(`Selected slot: ${slot.name}${landId ? `, Land ID: ${landId}` : ''}`);
     };
 
     return (
@@ -131,13 +190,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                       key={slot.id}
                       onClick={() => handleSlotClick(slot)}
                       className={styles.slot}
-                    >
-                      {slot.iconPath ? (
-                        <img src={slot.iconPath} alt={slot.name} className={styles.slotIcon} />
-                      ) : (
-                        <span className={styles.slotText}>{slot.name.slice(0, 3)}</span>
-                      )}
-                    </div>
+                    ></div>
                   ))}
                 </div>
               )}
@@ -151,7 +204,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                   {costLabel}: <span className="costValue">{cost}</span>
                 </h4>
               </div>
-              {!isSpellBook && maintainCost! >= 0 && (
+              {dialogType !== FlipBookPageType.SPELL && maintainCost! >= 0 && (
                 <div className="costSection">
                   <h4 className={styles.costTitle}>
                     Maintain Cost: <span className="costValue">{maintainCost}</span>
@@ -159,7 +212,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 </div>
               )}
             </div>
-            <h4 className={styles.pageNumber}>- {romanPageNum} -</h4>
+            <h4 className={styles.pageNumber}>- {romanPageNum()} -</h4>
           </>
         )}
       </div>

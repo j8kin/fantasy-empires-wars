@@ -12,6 +12,7 @@ interface ApplicationContextType {
   showSaveDialog: boolean;
   showCastSpellDialog: boolean;
   showConstructBuildingDialog: boolean;
+  showRecruitArmyDialog: boolean;
   showSelectOpponentDialog: boolean;
   showProgressPopup: boolean;
 
@@ -46,6 +47,7 @@ interface ApplicationContextType {
   setShowSaveDialog: (show: boolean) => void;
   setShowCastSpellDialog: (show: boolean) => void;
   setShowConstructBuildingDialog: (show: boolean) => void;
+  setShowRecruitArmyDialog: (show: boolean) => void;
   setShowSelectOpponentDialog: (show: boolean) => void;
   setShowProgressPopup: (show: boolean) => void;
   setSelectedOpponent: (opponent: GamePlayer | undefined) => void;
@@ -95,6 +97,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
   const [showCastSpellDialog, setShowCastSpellDialog] = useState<boolean>(false);
   const [showConstructBuildingDialog, setShowConstructBuildingDialog] = useState<boolean>(false);
+  const [showRecruitArmyDialog, setShowRecruitArmyDialog] = useState<boolean>(false);
   const [showSelectOpponentDialog, setShowSelectOpponentDialog] = useState<boolean>(false);
   const [showProgressPopup, setShowProgressPopup] = useState<boolean>(false);
 
@@ -209,6 +212,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         showSaveDialog,
         showCastSpellDialog,
         showConstructBuildingDialog,
+        showRecruitArmyDialog,
         showSelectOpponentDialog,
         showProgressPopup,
 
@@ -244,6 +248,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setShowSaveDialog,
         setShowCastSpellDialog,
         setShowConstructBuildingDialog,
+        setShowRecruitArmyDialog,
         setShowSelectOpponentDialog,
         setShowProgressPopup,
         setSelectedOpponent,

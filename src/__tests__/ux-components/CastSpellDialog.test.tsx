@@ -28,7 +28,7 @@ jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
 const mockFlipBookPageClick = jest.fn();
 
 jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
-  return ({ header, description, cost, costLabel, onClose }: any) => (
+  const MockFlipBookPage = ({ header, description, cost, costLabel, onClose }: any) => (
     <div data-testid={`FlipBookPage-${header}`}>
       <h3>{header}</h3>
       <p>{description}</p>
@@ -47,6 +47,17 @@ jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBookPage', () =>
       </button>
     </div>
   );
+
+  return {
+    __esModule: true,
+    default: MockFlipBookPage,
+    FlipBookPageType: {
+      SPELL: 'Spell',
+      BUILDING: 'Building',
+      RECRUIT: 'Recruit',
+      QUEST: 'Quest',
+    },
+  };
 });
 
 // Mock spell images
@@ -86,19 +97,13 @@ const renderWithApplicationContext = () => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState, gameState } = useGameContext();
     React.useEffect(() => {
-      const selectedPlayer: GamePlayer = {
-        ...PREDEFINED_PLAYERS[0],
-        vault: 1500,
-        income: 0,
-        diplomacy: {},
-        mana: {
-          [ManaType.WHITE]: 1000,
-          [ManaType.BLACK]: 1000,
-          [ManaType.RED]: 1000,
-          [ManaType.GREEN]: 1000,
-          [ManaType.BLUE]: 1000,
-        },
-        playerType: 'human',
+      const selectedPlayer: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+      selectedPlayer.mana = {
+        [ManaType.WHITE]: 1000,
+        [ManaType.BLACK]: 1000,
+        [ManaType.RED]: 1000,
+        [ManaType.GREEN]: 1000,
+        [ManaType.BLUE]: 1000,
       };
 
       if (gameState) {

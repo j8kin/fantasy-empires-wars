@@ -13,6 +13,7 @@ import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import CastSpellDialog from '../dialogs/CastSpellDialog';
 import ConstructBuildingDialog from '../dialogs/ConstructBuildingDialog';
+import RecruitArmyDialog from '../dialogs/RecruitArmyDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
@@ -135,6 +136,9 @@ const MainViewContent: React.FC = () => {
 
       {/* Construct Building Dialog - shown as overlay */}
       <ConstructBuildingDialog />
+
+      {/* Recruit Army Dialog - shown as overlay */}
+      <RecruitArmyDialog />
 
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />

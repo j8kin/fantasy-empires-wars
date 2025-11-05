@@ -3,12 +3,12 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
+import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { getAllBuildings } from '../../types/Building';
+import { getTurnOwner } from '../../types/GameState';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
-import { getTurnOwner } from '../../types/GameState';
 
 const ConstructBuildingDialog: React.FC = () => {
   const { showConstructBuildingDialog, setShowConstructBuildingDialog, selectedLandAction } =
@@ -49,6 +49,7 @@ const ConstructBuildingDialog: React.FC = () => {
     <FlipBook onClickOutside={handleClose}>
       {availableBuildings.map((building, index) => (
         <FlipBookPage
+          dialogType={FlipBookPageType.BUILDING}
           key={building.id}
           pageNum={index}
           header={building.id}

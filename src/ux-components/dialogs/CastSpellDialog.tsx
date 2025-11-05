@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
+import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
+
 import { AllSpells } from '../../types/Spell';
-import { getSpellImg } from '../../assets/getSpellImg';
-import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner } from '../../types/GameState';
+
+import { getSpellImg } from '../../assets/getSpellImg';
 
 const CastSpellDialog: React.FC = () => {
   const { showCastSpellDialog, setShowCastSpellDialog, selectedLandAction } =
@@ -45,6 +47,7 @@ const CastSpellDialog: React.FC = () => {
     <FlipBook onClickOutside={handleClose}>
       {availableSpells.map((spell, index) => (
         <FlipBookPage
+          dialogType={FlipBookPageType.SPELL}
           key={spell.id}
           pageNum={index}
           header={spell.id}
