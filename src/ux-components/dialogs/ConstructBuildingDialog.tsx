@@ -5,19 +5,41 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { getAllBuildings } from '../../types/Building';
+import { getAllBuildings, BuildingType } from '../../types/Building';
 import { getTurnOwner } from '../../types/GameState';
+import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
 
 const ConstructBuildingDialog: React.FC = () => {
-  const { showConstructBuildingDialog, setShowConstructBuildingDialog, selectedLandAction } =
-    useApplicationContext();
+  const {
+    showConstructBuildingDialog,
+    setShowConstructBuildingDialog,
+    selectedLandAction,
+    setSelectedLandAction,
+    addGlowingTile,
+  } = useApplicationContext();
   const { gameState } = useGameContext();
 
   const handleClose = useCallback(() => {
     setShowConstructBuildingDialog(false);
   }, [setShowConstructBuildingDialog]);
+
+  const createBuildingClickHandler = useCallback(
+    (buildingType: BuildingType) => {
+      return () => {
+        setSelectedLandAction(`${FlipBookPageType.BUILDING}: ${buildingType}`);
+
+        // Add tiles to the glowing tiles set for visual highlighting
+        getAvailableToConstructLands(gameState!, buildingType).forEach((tileId) => {
+          addGlowingTile(tileId);
+        });
+
+        handleClose();
+      };
+    },
+    [gameState, setSelectedLandAction, addGlowingTile, handleClose]
+  );
 
   useEffect(() => {
     if (selectedLandAction && showConstructBuildingDialog) {
@@ -59,6 +81,7 @@ const ConstructBuildingDialog: React.FC = () => {
           costLabel="Build Cost"
           maintainCost={building.maintainCost}
           onClose={handleClose}
+          onIconClick={createBuildingClickHandler(building.id as BuildingType)}
         />
       ))}
     </FlipBook>

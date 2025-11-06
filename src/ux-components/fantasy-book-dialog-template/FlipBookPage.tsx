@@ -1,21 +1,7 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import styles from './css/FlipBookPage.module.css';
 
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameContext } from '../../contexts/GameContext';
-import { GameState } from '../../types/GameState';
-
 import { toRoman } from '../../map/utils/romanNumerals';
-
-import { getSpellById, SpellName } from '../../types/Spell';
-import { BuildingType } from '../../types/Building';
-import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
-import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
-import { getDefaultUnit, HeroUnit, HeroUnitType, UnitType } from '../../types/Army';
-import { LandPosition } from '../../map/utils/getLands';
-import { startQuest } from '../../map/quest/startQuest';
-import { getQuestType } from '../../map/quest/Quest';
-import { startRecruiting } from '../../map/recruiting/startRecruiting';
 
 export interface Slot {
   id: string;
@@ -43,23 +29,9 @@ interface FlipBookPageProps {
   style?: React.CSSProperties;
   onClose?: () => void;
   slots?: Slot[];
-  landId?: LandPosition;
   onSlotClick?: (slot: Slot) => void;
+  onIconClick?: () => void;
 }
-
-const getAvailableLands = (
-  gameState: GameState,
-  actionType: FlipBookPageType,
-  name: SpellName | BuildingType
-): string[] => {
-  if (gameState == null) return [];
-
-  if (actionType === FlipBookPageType.BUILDING) {
-    return getAvailableToConstructLands(gameState, name as BuildingType);
-  } else {
-    return getAvailableToCastSpellLands(gameState, name as SpellName);
-  }
-};
 
 const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
   (
@@ -77,14 +49,35 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       style,
       onClose,
       slots,
-      landId,
       onSlotClick,
+      onIconClick,
     },
     ref
   ) => {
-    const { setSelectedLandAction, addGlowingTile } = useApplicationContext();
-    const { gameState } = useGameContext();
+    // State to track used slots
+    const [usedSlots, setUsedSlots] = useState<Set<string>>(new Set());
 
+    // Filter out used slots from the available slots
+    const availableSlots = slots?.filter((slot) => !usedSlots.has(slot.id)) || [];
+
+    // Effect to check if all slots are used and trigger callback
+    useEffect(() => {
+      if (slots && slots.length > 0 && availableSlots.length === 0 && onClose) {
+        onClose();
+      }
+    }, [slots, availableSlots.length, onClose]);
+
+    // Enhanced slot click handler that marks slot as used
+    const handleSlotClick = useCallback(
+      (slot: Slot) => {
+        if (onSlotClick) {
+          onSlotClick(slot);
+          // Mark this slot as used
+          setUsedSlots((prev) => new Set(prev).add(slot.id));
+        }
+      },
+      [onSlotClick]
+    );
     const isEvenPage = pageNum % 2 === 1;
     const defaultClassName = isEvenPage ? styles.evenPage : styles.oddPage;
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
@@ -105,36 +98,8 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     };
 
     const handleIconClick = () => {
-      if (header) {
-        switch (dialogType) {
-          case FlipBookPageType.SPELL:
-          case FlipBookPageType.BUILDING:
-            setSelectedLandAction(`${dialogType}: ` + header);
-            const name =
-              dialogType === FlipBookPageType.SPELL
-                ? getSpellById(header as SpellName).id
-                : (header as BuildingType);
-
-            // Add tiles to the glowing tiles set for visual highlighting
-            getAvailableLands(gameState!, dialogType, name).forEach((tileId) => {
-              addGlowingTile(tileId);
-            });
-            break;
-          case FlipBookPageType.RECRUIT:
-            startRecruiting(header as UnitType, landId!, gameState!);
-            break;
-          case FlipBookPageType.QUEST:
-            startQuest(
-              getDefaultUnit(HeroUnitType.DRUID) as HeroUnit, // todo select hero from slot or all heroes
-              getQuestType(pageNum + 1),
-              gameState!
-            );
-            break;
-        }
-
-        if (onClose) {
-          onClose();
-        }
+      if (onIconClick) {
+        onIconClick();
       }
     };
 
@@ -163,14 +128,14 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                   e.currentTarget.style.display = 'none';
                 }}
               />
-              {onSlotClick && slots && slots.length > 0 && (
+              {onSlotClick && availableSlots && availableSlots.length > 0 && (
                 <div
-                  className={`${styles.slotsContainer} ${slots.length > 3 ? styles.slotsScrollable : styles.slotsVisible}`}
+                  className={`${styles.slotsContainer} ${availableSlots.length > 3 ? styles.slotsScrollable : styles.slotsVisible}`}
                 >
-                  {slots.map((slot) => (
+                  {availableSlots.map((slot) => (
                     <div
                       key={slot.id}
-                      onClick={() => onSlotClick(slot)}
+                      onClick={() => handleSlotClick(slot)}
                       className={styles.slot}
                     ></div>
                   ))}

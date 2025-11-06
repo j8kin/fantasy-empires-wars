@@ -25,11 +25,20 @@ const RecruitArmyDialog: React.FC = () => {
     (unitType: UnitType, landId: LandPosition) => {
       return (slot: Slot) => {
         startRecruiting(unitType, landId, gameState!);
-        // TODO: Remove this alert once proper recruitment feedback is implemented
-        alert(`Recruiting ${unitType} at slot: ${slot.name}, Land ID: ${landId}`);
+        // Note: slot removal and dialog closing is now handled by FlipBookPage
       };
     },
     [gameState]
+  );
+
+  const createRecruitClickHandler = useCallback(
+    (unitType: UnitType, landId: LandPosition) => {
+      return () => {
+        startRecruiting(unitType, landId, gameState!);
+        handleClose();
+      };
+    },
+    [gameState, handleClose]
   );
 
   if (!gameState || !showRecruitArmyDialog) return undefined;
@@ -89,8 +98,8 @@ const RecruitArmyDialog: React.FC = () => {
           cost={unit.recruitCost}
           onClose={handleClose}
           slots={slots}
-          landId={land.mapPos}
           onSlotClick={createSlotClickHandler(unit.id, land.mapPos)}
+          onIconClick={createRecruitClickHandler(unit.id, land.mapPos)}
         />
       ))}
     </FlipBook>

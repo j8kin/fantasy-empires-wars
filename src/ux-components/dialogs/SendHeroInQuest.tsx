@@ -25,10 +25,21 @@ const SendHeroInQuest: React.FC = () => {
         const hero = findHeroByName(slot.name, gameState!);
         if (hero) {
           startQuest(hero, getQuestType(questLvl), gameState!);
+          // Note: slot removal and dialog closing is now handled by FlipBookPage
         }
       };
     },
     [gameState]
+  );
+
+  const createQuestClickHandler = useCallback(
+    (questLvl: number, units: HeroUnit[]) => {
+      return () => {
+        units.forEach((hero) => startQuest(hero, getQuestType(questLvl + 1), gameState!));
+        handleClose();
+      };
+    },
+    [gameState, handleClose]
   );
 
   if (!gameState || !showSendHeroInQuestDialog) return undefined;
@@ -59,8 +70,8 @@ const SendHeroInQuest: React.FC = () => {
           cost={unit.recruitCost}
           onClose={handleClose}
           slots={slots}
-          landId={land.mapPos}
           onSlotClick={createSlotClickHandler(index)}
+          onIconClick={createQuestClickHandler(index, availableUnits)}
         />
       ))}
     </FlipBook>

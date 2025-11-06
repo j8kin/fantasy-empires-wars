@@ -5,19 +5,42 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { AllSpells } from '../../types/Spell';
+import { AllSpells, getSpellById, SpellName } from '../../types/Spell';
 import { getTurnOwner } from '../../types/GameState';
+import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
 
 import { getSpellImg } from '../../assets/getSpellImg';
 
 const CastSpellDialog: React.FC = () => {
-  const { showCastSpellDialog, setShowCastSpellDialog, selectedLandAction } =
-    useApplicationContext();
+  const {
+    showCastSpellDialog,
+    setShowCastSpellDialog,
+    selectedLandAction,
+    setSelectedLandAction,
+    addGlowingTile,
+  } = useApplicationContext();
   const { gameState } = useGameContext();
 
   const handleClose = useCallback(() => {
     setShowCastSpellDialog(false);
   }, [setShowCastSpellDialog]);
+
+  const createSpellClickHandler = useCallback(
+    (spellId: SpellName) => {
+      return () => {
+        setSelectedLandAction(`${FlipBookPageType.SPELL}: ${spellId}`);
+        const spell = getSpellById(spellId);
+
+        // Add tiles to the glowing tiles set for visual highlighting
+        getAvailableToCastSpellLands(gameState!, spell.id).forEach((tileId) => {
+          addGlowingTile(tileId);
+        });
+
+        handleClose();
+      };
+    },
+    [gameState, setSelectedLandAction, addGlowingTile, handleClose]
+  );
 
   useEffect(() => {
     if (selectedLandAction && showCastSpellDialog) {
@@ -56,6 +79,7 @@ const CastSpellDialog: React.FC = () => {
           cost={spell.manaCost}
           costLabel="Mana Cost"
           onClose={handleClose}
+          onIconClick={createSpellClickHandler(spell.id as SpellName)}
         />
       ))}
     </FlipBook>
