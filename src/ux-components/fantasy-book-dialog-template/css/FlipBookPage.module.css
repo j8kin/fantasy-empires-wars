@@ -1,4 +1,9 @@
 .caption {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #2c1810;
+  margin-bottom: 5px;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
   text-align: center;
 }
 
@@ -9,6 +14,15 @@
 }
 
 .icon {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border: 3px solid #8b7355;
+  border-radius: 8px;
+  background: rgba(244, 228, 188, 0.1);
+  padding: 8px;
+  margin-bottom: 5px;
+  margin-top: 0;
   cursor: pointer;
   transition: all 0.3s ease;
   filter: brightness(1);
@@ -65,7 +79,17 @@
 }
 
 .description {
-  /* Keep existing description styles from FlipBook.css */
+  font-size: 0.9rem;
+  color: #5d4037;
+  line-height: 1.2;
+  text-align: left;
+  background: rgba(244, 228, 188, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  margin: 7px 0;
+  width: 100%;
+  max-width: 280px;
 }
 
 .descriptionTitle {
@@ -89,7 +113,11 @@
 }
 
 .costSection {
-  /* Keep existing costSection styles from FlipBook.css */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+  width: 100%;
 }
 
 .costTitle {
@@ -102,5 +130,42 @@
   margin: 0 0 2px 0;
   color: #5d4037;
   font-size: 1rem;
+  font-weight: bold;
   text-align: center;
+}
+
+.costValue {
+  color: #2c1810;
+  font-weight: bold;
+}
+
+.pageStyle {
+  color: yellow;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  min-height: 370px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.evenPage {
+  background-image: url('../../../assets/book/PageEven.png');
+  padding-left: 10px;
+  padding-right: 35px;
+}
+
+.oddPage {
+  background-image: url('../../../assets/book/PageOdd.png');
+  padding-left: 35px;
+  padding-right: 10px;
 }

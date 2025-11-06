@@ -13,7 +13,7 @@ import { toGamePlayer } from '../utils/toGamePlayer';
 import { TurnPhase } from '../../types/GameState';
 
 // Mock CSS modules
-jest.mock('../../ux-components/fantasy-book-dialog-template/css/FlipBook.css', () => ({}));
+jest.mock('../../ux-components/fantasy-book-dialog-template/css/FlipBook.module.css', () => ({}));
 
 // Mock child components
 jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBook', () => {

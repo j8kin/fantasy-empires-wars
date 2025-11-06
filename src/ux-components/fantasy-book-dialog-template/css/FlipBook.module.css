@@ -1,0 +1,17 @@
+.flipbookContainer {
+  width: 780px;
+  height: 600px;
+  background-image: url('../../../assets/book/opened-book.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1000;
+}
+
+.flipbook {
+  margin-bottom: 135px;
+}

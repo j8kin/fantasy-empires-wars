@@ -1,5 +1,4 @@
 import React from 'react';
-import './css/FlipBook.css';
 import styles from './css/FlipBookPage.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
@@ -85,7 +84,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     const { gameState } = useGameContext();
 
     const isEvenPage = pageNum % 2 === 1;
-    const defaultClassName = isEvenPage ? 'evenPage' : 'oddPage';
+    const defaultClassName = isEvenPage ? styles.evenPage : styles.oddPage;
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
 
     const romanPageNum = (): string => {
@@ -157,7 +156,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     };
 
     return (
-      <div className={`pageStyle ${finalClassName}`} ref={ref} style={style}>
+      <div className={`${styles.pageStyle} ${finalClassName}`} ref={ref} style={style}>
         {children || (
           <>
             <div className={styles.caption}>{header}</div>
@@ -165,7 +164,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
               <img
                 src={iconPath}
                 alt={header}
-                className={`icon clickable-icon ${styles.icon}`}
+                className={`${styles.icon} clickable-icon`}
                 onClick={handleIconClick}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.filter =
@@ -195,7 +194,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 </div>
               )}
             </div>
-            <div className="description">
+            <div className={styles.description}>
               <h4 className={styles.descriptionTitle}>Description:</h4>
               <p
                 className={
@@ -205,15 +204,15 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 {description}
               </p>
               <br />
-              <div className="costSection">
+              <div className={styles.costSection}>
                 <h4 className={styles.costTitle}>
-                  {costLabel}: <span className="costValue">{cost}</span>
+                  {costLabel}: <span className={styles.costValue}>{cost}</span>
                 </h4>
               </div>
               {maintainCost != null && maintainCost >= 0 && (
-                <div className="costSection">
+                <div className={styles.costSection}>
                   <h4 className={styles.costTitle}>
-                    Maintain Cost: <span className="costValue">{maintainCost}</span>
+                    Maintain Cost: <span className={styles.costValue}>{maintainCost}</span>
                   </h4>
                 </div>
               )}

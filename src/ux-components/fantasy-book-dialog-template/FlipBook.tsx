@@ -1,6 +1,6 @@
 import React from 'react';
 import HTMLFlipBook from 'react-pageflip';
-import './css/FlipBook.css';
+import styles from './css/FlipBook.module.css';
 
 interface FlipBookProps {
   width?: number;
@@ -35,7 +35,7 @@ const FlipBook: React.FC<FlipBookProps> = ({
   width = 333,
   height = 429,
   children,
-  className = 'flipbook',
+  className = styles.flipbook,
   style = {},
   minWidth,
   minHeight,
@@ -84,7 +84,7 @@ const FlipBook: React.FC<FlipBookProps> = ({
           }}
           onClick={handleBackdropClick}
         >
-          <div className="flipbook-container" onClick={(e) => e.stopPropagation()}>
+          <div className={styles.flipbookContainer} onClick={(e) => e.stopPropagation()}>
             <HTMLFlipBook
               width={width}
               height={height}
@@ -117,7 +117,7 @@ const FlipBook: React.FC<FlipBookProps> = ({
       )}
       {/* Original layout for when backdrop is disabled */}
       {!showBackdrop && (
-        <div className="flipbook-container">
+        <div className={styles.flipbookContainer}>
           <HTMLFlipBook
             width={width}
             height={height}
