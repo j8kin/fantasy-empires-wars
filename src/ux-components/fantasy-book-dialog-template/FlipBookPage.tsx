@@ -137,7 +137,9 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                       key={slot.id}
                       onClick={() => handleSlotClick(slot)}
                       className={styles.slot}
-                    ></div>
+                    >
+                      <span className={styles.descriptionText}>{slot.name}</span>
+                    </div>
                   ))}
                 </div>
               )}

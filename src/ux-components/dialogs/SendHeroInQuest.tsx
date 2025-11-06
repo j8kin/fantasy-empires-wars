@@ -58,7 +58,10 @@ const SendHeroInQuest: React.FC = () => {
     .filter((armyUnit) => isHero(armyUnit.unit))
     .map((armyUnit) => armyUnit.unit as HeroUnit);
 
-  const slots: Slot[] = availableUnits.map((hero) => ({ id: hero.id, name: hero.name }));
+  const slots: Slot[] = availableUnits.map((hero) => ({
+    id: hero.id,
+    name: `${hero.name.split(' ')[0]} Lvl: ${hero.level}`,
+  }));
 
   return (
     <FlipBook onClickOutside={handleClose}>
