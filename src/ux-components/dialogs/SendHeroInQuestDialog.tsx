@@ -14,7 +14,7 @@ import { getAllQuests, getQuestType } from '../../types/Quest';
 
 import { getQuestImg } from '../../assets/getQuestImg';
 
-const SendHeroInQuest: React.FC = () => {
+const SendHeroInQuestDialog: React.FC = () => {
   const { showSendHeroInQuestDialog, setShowSendHeroInQuestDialog } = useApplicationContext();
   const { gameState } = useGameContext();
 
@@ -122,4 +122,4 @@ const SendHeroInQuest: React.FC = () => {
   );
 };
 
-export default SendHeroInQuest;
+export default SendHeroInQuestDialog;
