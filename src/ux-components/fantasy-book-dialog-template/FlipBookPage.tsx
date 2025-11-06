@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import styles from './css/FlipBookPage.module.css';
 
 import { toRoman } from '../../map/utils/romanNumerals';
@@ -31,6 +31,7 @@ interface FlipBookPageProps {
   slots?: Slot[];
   onSlotClick?: (slot: Slot) => void;
   onIconClick?: () => void;
+  usedSlots?: Set<string>;
 }
 
 const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
@@ -51,29 +52,28 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       slots,
       onSlotClick,
       onIconClick,
+      usedSlots,
     },
     ref
   ) => {
-    // State to track used slots
-    const [usedSlots, setUsedSlots] = useState<Set<string>>(new Set());
+    // Use provided usedSlots or default to empty set
+    const effectiveUsedSlots = usedSlots || new Set<string>();
 
     // Filter out used slots from the available slots
-    const availableSlots = slots?.filter((slot) => !usedSlots.has(slot.id)) || [];
+    const availableSlots = slots?.filter((slot) => !effectiveUsedSlots.has(slot.id)) || [];
 
     // Effect to check if all slots are used and trigger callback
     useEffect(() => {
-      if (slots && slots.length > 0 && availableSlots.length === 0 && onClose) {
+      if (slots && slots.length > 0 && effectiveUsedSlots.size === slots.length && onClose) {
         onClose();
       }
-    }, [slots, availableSlots.length, onClose]);
+    }, [slots, effectiveUsedSlots.size, onClose]);
 
-    // Enhanced slot click handler that marks slot as used
+    // Slot click handler - slot marking as used is now handled by parent
     const handleSlotClick = useCallback(
       (slot: Slot) => {
         if (onSlotClick) {
           onSlotClick(slot);
-          // Mark this slot as used
-          setUsedSlots((prev) => new Set(prev).add(slot.id));
         }
       },
       [onSlotClick]

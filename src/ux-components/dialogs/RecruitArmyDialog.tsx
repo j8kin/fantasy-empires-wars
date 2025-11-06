@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
@@ -17,15 +17,62 @@ const RecruitArmyDialog: React.FC = () => {
   const { showRecruitArmyDialog, setShowRecruitArmyDialog } = useApplicationContext();
   const { gameState } = useGameContext();
 
+  // Shared state to track used slots across all pages
+  const [usedSlots, setUsedSlots] = useState<Set<string>>(new Set());
+
+  // Memoize the initial slot count so it doesn't change during the dialog session
+  const initialSlotCount = useMemo(() => {
+    if (!gameState) return 0;
+
+    const land = getLands({
+      lands: gameState.battlefield.lands,
+      players: [getTurnOwner(gameState)!],
+      buildings: [BuildingType.BARRACKS],
+    })[0];
+
+    if (!land) return 0;
+
+    const recruitBuilding = land.buildings.filter(
+      (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots
+    )[0];
+
+    return (recruitBuilding?.numberOfSlots ?? 0) - (recruitBuilding?.slots?.length ?? 0);
+  }, [gameState]); // Only recalculate when dialog opens
+
   const handleClose = useCallback(() => {
     setShowRecruitArmyDialog(false);
+    // Reset used slots when dialog closes
+    setUsedSlots(new Set());
   }, [setShowRecruitArmyDialog]);
+
+  // Use effect to close dialog when no slots are available (moved from render to avoid state update during render)
+  useEffect(() => {
+    if (!gameState || !showRecruitArmyDialog) return;
+
+    const land = getLands({
+      lands: gameState.battlefield.lands,
+      players: [getTurnOwner(gameState)!],
+      buildings: [BuildingType.BARRACKS],
+    })[0];
+
+    if (!land) return;
+
+    const recruitBuilding = land.buildings.filter(
+      (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots
+    )[0];
+
+    if (!recruitBuilding && showRecruitArmyDialog) {
+      console.log('No recruit building available, closing dialog');
+      handleClose();
+    }
+  }, [gameState, showRecruitArmyDialog, handleClose]);
 
   const createSlotClickHandler = useCallback(
     (unitType: UnitType, landId: LandPosition) => {
       return (slot: Slot) => {
         startRecruiting(unitType, landId, gameState!);
-        // Note: slot removal and dialog closing is now handled by FlipBookPage
+        // Mark the slot as used across all pages
+        setUsedSlots((prev) => new Set(prev).add(slot.id));
       };
     },
     [gameState]
@@ -43,6 +90,12 @@ const RecruitArmyDialog: React.FC = () => {
 
   if (!gameState || !showRecruitArmyDialog) return undefined;
 
+  // Use the fixed initial slot count instead of recalculating
+  if (initialSlotCount === 0) {
+    setShowRecruitArmyDialog(false);
+    return undefined;
+  }
+
   const land = getLands({
     lands: gameState.battlefield.lands,
     players: [getTurnOwner(gameState)!],
@@ -53,12 +106,9 @@ const RecruitArmyDialog: React.FC = () => {
     (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots
   )[0];
 
-  const recruitSlots =
-    (recruitBuilding?.numberOfSlots ?? 0) - (recruitBuilding?.slots?.length ?? 0);
-
-  if (recruitSlots === 0) {
-    setShowRecruitArmyDialog(false);
-    return undefined;
+  // If no recruit building is available (all slots filled), don't render content
+  if (!recruitBuilding) {
+    return null;
   }
 
   const availableUnits = getLand(gameState!, land.mapPos)
@@ -81,7 +131,7 @@ const RecruitArmyDialog: React.FC = () => {
     .sort((a, b) => Number(isHero(a)) - Number(isHero(b)));
 
   const slots: Slot[] = [];
-  for (let i = 0; i < recruitSlots; i++) {
+  for (let i = 0; i < initialSlotCount; i++) {
     slots.push({ id: `buildSlot${i + 1}`, name: `Available ${i + 1}` });
   }
 
@@ -100,6 +150,7 @@ const RecruitArmyDialog: React.FC = () => {
           slots={slots}
           onSlotClick={createSlotClickHandler(unit.id, land.mapPos)}
           onIconClick={createRecruitClickHandler(unit.id, land.mapPos)}
+          usedSlots={usedSlots}
         />
       ))}
     </FlipBook>
