@@ -1,15 +1,18 @@
 import React, { useCallback } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
+
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageType, Slot } from '../fantasy-book-dialog-template/FlipBookPage';
-import { getUnitImg } from '../../assets/getUnitImg';
+
 import { getLands } from '../../map/utils/getLands';
 import { getTurnOwner } from '../../types/GameState';
 import { HeroUnit, isHero } from '../../types/Army';
 import { findHeroByName } from '../../map/utils/findHeroByName';
 import { startQuest } from '../../map/quest/startQuest';
-import { getQuestType } from '../../map/quest/Quest';
+import { getAllQuests, getQuestType } from '../../types/Quest';
+
+import { getQuestImg } from '../../assets/getQuestImg';
 
 const SendHeroInQuest: React.FC = () => {
   const { showSendHeroInQuestDialog, setShowSendHeroInQuestDialog } = useApplicationContext();
@@ -59,15 +62,14 @@ const SendHeroInQuest: React.FC = () => {
 
   return (
     <FlipBook onClickOutside={handleClose}>
-      {availableUnits.map((unit, index) => (
+      {getAllQuests().map((quest, index) => (
         <FlipBookPage
           dialogType={FlipBookPageType.RECRUIT}
-          key={unit.id}
+          key={quest.id}
           pageNum={index}
-          header={unit.id}
-          iconPath={getUnitImg(unit.id)}
-          description={unit.description}
-          cost={unit.recruitCost}
+          header={quest.id}
+          iconPath={getQuestImg(quest.id)}
+          description={quest.description}
           onClose={handleClose}
           slots={slots}
           onSlotClick={createSlotClickHandler(index)}

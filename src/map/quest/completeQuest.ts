@@ -1,5 +1,5 @@
 import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
-import { HeroQuest, questLevel, QuestType } from './Quest';
+import { getQuest, HeroQuest, QuestType } from '../../types/Quest';
 import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
 import {
@@ -15,22 +15,22 @@ import { getLand } from '../utils/getLands';
 import { levelUpHero } from '../recruiting/levelUpHero';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
-  return Math.random() <= 0.8 + (quest.hero.level - 1 - (questLevel(quest.id) - 1) * 5) * 0.05;
+  return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
 };
 
 const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState): string => {
-  if (Math.random() > 0.55 - 0.05 * (questLevel(quest.id) - 1)) {
+  if (Math.random() > 0.55 - 0.05 * (quest.quest.level - 1)) {
     return emptyHanded(quest.hero.name);
   }
   const treasureType = Math.random();
   const player = getTurnOwner(gameState)!;
 
-  switch (quest.id) {
+  switch (quest.quest.id) {
     case 'The Echoing Ruins':
-      return gainArtifact(hero, quest.id);
+      return gainArtifact(hero, quest.quest.id);
 
     case 'The Whispering Grove':
-      return treasureType <= 0.3 ? gainItem(player, hero) : gainArtifact(hero, quest.id);
+      return treasureType <= 0.3 ? gainItem(player, hero) : gainArtifact(hero, quest.quest.id);
 
     case 'The Abyssal Crypt':
       if (treasureType <= 0.2) {
@@ -38,7 +38,7 @@ const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState)
       } else if (treasureType <= 0.55) {
         return gainItem(player, hero);
       } else {
-        return gainArtifact(hero, quest.id);
+        return gainArtifact(hero, quest.quest.id);
       }
     case 'The Shattered Sky':
       return treasureType <= 0.4
@@ -48,7 +48,7 @@ const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState)
 };
 
 const gainArtifact = (hero: HeroUnit, questType: QuestType): string => {
-  const baseArtifactLevel = questLevel(questType);
+  const baseArtifactLevel = getQuest(questType).level;
   const heroArtifact: Artifact = {
     ...getRandomElement(artifacts),
     level: getRandomElement([baseArtifactLevel, baseArtifactLevel + 1, baseArtifactLevel + 2]),
@@ -93,7 +93,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): string => {
   ) {
     const hero = quest.hero;
 
-    if (hero.level < questLevel(quest.id) * 5) {
+    if (hero.level < quest.quest.level * 5) {
       levelUpHero(hero, getTurnOwner(gameState)!);
     }
 

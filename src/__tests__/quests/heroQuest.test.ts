@@ -3,7 +3,7 @@ import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameS
 import { getLands, LandPosition } from '../../map/utils/getLands';
 import { startQuest } from '../../map/quest/startQuest';
 import { HeroUnit } from '../../types/Army';
-import { QuestType } from '../../map/quest/Quest';
+import { QuestType } from '../../types/Quest';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
 import { TreasureItem } from '../../types/Treasures';
 
@@ -116,7 +116,7 @@ describe('Hero Quest', () => {
     expectedRemainTurns: number
   ): void => {
     expect(getTurnOwner(gameStateStub)?.quests.length).toBe(1);
-    expect(getTurnOwner(gameStateStub)?.quests[0].id).toBe(questId);
+    expect(getTurnOwner(gameStateStub)?.quests[0].quest.id).toBe(questId);
     expect(getTurnOwner(gameStateStub)?.quests[0].hero).toBe(expectedHero);
     expect(getTurnOwner(gameStateStub)?.quests[0].land).toBe(expectedLand);
     expect(getTurnOwner(gameStateStub)?.quests[0].remainTurnsInQuest).toBe(expectedRemainTurns); // counter should be decreased during start phase

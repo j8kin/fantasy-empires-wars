@@ -14,19 +14,14 @@ const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState, gameState } = useGameContext();
     React.useEffect(() => {
-      const selectedPlayer: GamePlayer = {
-        ...PREDEFINED_PLAYERS[0],
-        vault: 1500,
-        income: 0, // Will be calculated by recalculateActivePlayerIncome
-        mana: {
-          [ManaType.WHITE]: 100,
-          [ManaType.BLACK]: 100,
-          [ManaType.RED]: 100,
-          [ManaType.GREEN]: 100,
-          [ManaType.BLUE]: 100,
-        },
-        diplomacy: {},
-        playerType: 'human',
+      const selectedPlayer: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+      selectedPlayer.vault = 1500;
+      selectedPlayer.mana = {
+        [ManaType.WHITE]: 100,
+        [ManaType.BLACK]: 100,
+        [ManaType.RED]: 100,
+        [ManaType.GREEN]: 100,
+        [ManaType.BLUE]: 100,
       };
 
       if (gameState) {

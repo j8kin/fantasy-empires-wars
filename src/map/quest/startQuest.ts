@@ -1,9 +1,9 @@
 import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
 import { HeroUnit } from '../../types/Army';
-import { getQuestLength, QuestType } from './Quest';
+import { getQuest, QuestType } from '../../types/Quest';
 import { getLands } from '../utils/getLands';
 
-export const startQuest = (hero: HeroUnit, quest: QuestType, gameState: GameState) => {
+export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: GameState) => {
   if (gameState.turnPhase !== TurnPhase.MAIN) return;
 
   const heroLand = getLands({
@@ -18,10 +18,10 @@ export const startQuest = (hero: HeroUnit, quest: QuestType, gameState: GameStat
 
     // send hero to quest
     getTurnOwner(gameState)?.quests.push({
-      id: quest,
+      quest: getQuest(questType),
       land: heroLand.mapPos, // hero Start Quest land position (it will return at the same position if survive)
       hero: hero,
-      remainTurnsInQuest: getQuestLength(quest),
+      remainTurnsInQuest: getQuest(questType).length,
     });
   }
 };

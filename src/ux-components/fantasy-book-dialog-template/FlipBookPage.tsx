@@ -152,11 +152,13 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 {description}
               </p>
               <br />
-              <div className={styles.costSection}>
-                <h4 className={styles.costTitle}>
-                  {costLabel}: <span className={styles.costValue}>{cost}</span>
-                </h4>
-              </div>
+              {costLabel && cost != null && cost >= 0 && (
+                <div className={styles.costSection}>
+                  <h4 className={styles.costTitle}>
+                    {costLabel}: <span className={styles.costValue}>{cost}</span>
+                  </h4>
+                </div>
+              )}
               {maintainCost != null && maintainCost >= 0 && (
                 <div className={styles.costSection}>
                   <h4 className={styles.costTitle}>

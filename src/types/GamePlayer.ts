@@ -2,7 +2,7 @@ import { PlayerColorName } from './PlayerColors';
 import { Alignment } from './Alignment';
 import { HeroUnitType } from './Army';
 import { Mana } from './Mana';
-import { HeroQuest } from '../map/quest/Quest';
+import { HeroQuest } from './Quest';
 import { EmpireTreasure } from './Treasures';
 
 export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
