@@ -114,10 +114,6 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 ? getSpellById(header as SpellName).id
                 : (header as BuildingType);
 
-            if (onClose) {
-              onClose(); // close dialog to apply spell or construction
-            }
-
             // Add tiles to the glowing tiles set for visual highlighting
             getAvailableLands(gameState!, dialogType, name).forEach((tileId) => {
               addGlowingTile(tileId);
@@ -133,6 +129,10 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
               gameState!
             );
             break;
+        }
+
+        if (onClose) {
+          onClose();
         }
       }
     };
