@@ -98,7 +98,9 @@ jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
 
 // Mock FlipBookPage component
 jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
-  const { FlipBookPageType } = jest.requireActual('../../ux-components/fantasy-book-dialog-template/FlipBookPage');
+  const { FlipBookPageType } = jest.requireActual(
+    '../../ux-components/fantasy-book-dialog-template/FlipBookPage'
+  );
 
   return {
     FlipBookPageType,
@@ -114,7 +116,7 @@ jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBookPage', () =>
       onClose,
       usedSlots,
       dialogType,
-      pageNum
+      pageNum,
     }: any) => (
       <div data-testid={`flip-book-page-${header}`}>
         <h3 data-testid="page-header">{header}</h3>
@@ -158,10 +160,7 @@ describe('RecruitArmyDialog', () => {
 
   const renderWithProviders = (
     ui: React.ReactElement,
-    {
-      gameState = mockGameState,
-      showRecruitArmyDialog = true
-    } = {}
+    { gameState = mockGameState, showRecruitArmyDialog = true } = {}
   ) => {
     // Update the mock values for this test
     mockApplicationContext.showRecruitArmyDialog = showRecruitArmyDialog;
@@ -187,7 +186,7 @@ describe('RecruitArmyDialog', () => {
 
     // Ensure the barracks has available slots (2 total, 0 used)
     const land = getLand(mockGameState, landPos);
-    const barracks = land.buildings.find(b => b.id === BuildingType.BARRACKS);
+    const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
     if (barracks) {
       barracks.numberOfSlots = 2;
       barracks.slots = [];
@@ -232,7 +231,7 @@ describe('RecruitArmyDialog', () => {
       // Fill all barracks slots
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(mockGameState, landPos);
-      const barracks = land.buildings.find(b => b.id === BuildingType.BARRACKS);
+      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
         barracks.slots = [
           { unit: RegularUnitType.WARRIOR, turnsRemaining: 1 },
@@ -272,22 +271,22 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       const pages = screen.getAllByTestId(/flip-book-page-/);
-      const pageHeaders = pages.map(page =>
-        page.querySelector('[data-testid="page-header"]')?.textContent
+      const pageHeaders = pages.map(
+        (page) => page.querySelector('[data-testid="page-header"]')?.textContent
       );
 
       // Regular units should come before heroes
-      const warriorIndex = pageHeaders.findIndex(header => header === 'Warrior');
-      const ballistaIndex = pageHeaders.findIndex(header => header === 'Ballista');
-      const fighterIndex = pageHeaders.findIndex(header => header === 'Fighter');
-      const warsmithIndex = pageHeaders.findIndex(header => header === 'Warsmith');
+      const warriorIndex = pageHeaders.findIndex((header) => header === 'Warrior');
+      const ballistaIndex = pageHeaders.findIndex((header) => header === 'Ballista');
+      const fighterIndex = pageHeaders.findIndex((header) => header === 'Fighter');
+      const warsmithIndex = pageHeaders.findIndex((header) => header === 'Warsmith');
 
       // Based on the test output, Warsmith is not appearing in the result
       // So we expect regular units (Warrior, Ballista) to come before heroes (Fighter)
       expect(warriorIndex).toBeGreaterThanOrEqual(0);
       expect(ballistaIndex).toBeGreaterThanOrEqual(0);
       expect(fighterIndex).toBeGreaterThanOrEqual(0);
-      
+
       // Warrior and Ballista should come before Fighter (hero)
       expect(warriorIndex).toBeLessThan(fighterIndex);
       expect(ballistaIndex).toBeLessThan(fighterIndex);
@@ -363,7 +362,7 @@ describe('RecruitArmyDialog', () => {
 
       // After clicking, at least one recruitment should have been called
       expect(mockStartRecruiting).toHaveBeenCalledTimes(1);
-      
+
       // Note: The mock component doesn't implement the full slot tracking behavior
       // so we can't test the disabled state reliably in this test setup
     });
@@ -467,7 +466,7 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       construct(mockGameState, BuildingType.WHITE_MAGE_TOWER, landPos);
-      const whiteTower = land.buildings.find(b => b.id === BuildingType.WHITE_MAGE_TOWER);
+      const whiteTower = land.buildings.find((b) => b.id === BuildingType.WHITE_MAGE_TOWER);
       if (whiteTower) {
         whiteTower.numberOfSlots = 1;
         whiteTower.slots = [];
@@ -493,7 +492,7 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       construct(mockGameState, BuildingType.RED_MAGE_TOWER, landPos);
-      const redTower = land.buildings.find(b => b.id === BuildingType.RED_MAGE_TOWER);
+      const redTower = land.buildings.find((b) => b.id === BuildingType.RED_MAGE_TOWER);
       if (redTower) {
         redTower.numberOfSlots = 1;
         redTower.slots = [];
@@ -513,7 +512,7 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       construct(mockGameState, BuildingType.BLUE_MAGE_TOWER, landPos);
-      const blueTower = land.buildings.find(b => b.id === BuildingType.BLUE_MAGE_TOWER);
+      const blueTower = land.buildings.find((b) => b.id === BuildingType.BLUE_MAGE_TOWER);
       if (blueTower) {
         blueTower.numberOfSlots = 1;
         blueTower.slots = [];
@@ -533,7 +532,7 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       construct(mockGameState, BuildingType.GREEN_MAGE_TOWER, landPos);
-      const greenTower = land.buildings.find(b => b.id === BuildingType.GREEN_MAGE_TOWER);
+      const greenTower = land.buildings.find((b) => b.id === BuildingType.GREEN_MAGE_TOWER);
       if (greenTower) {
         greenTower.numberOfSlots = 1;
         greenTower.slots = [];
@@ -553,7 +552,7 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       construct(mockGameState, BuildingType.BLACK_MAGE_TOWER, landPos);
-      const blackTower = land.buildings.find(b => b.id === BuildingType.BLACK_MAGE_TOWER);
+      const blackTower = land.buildings.find((b) => b.id === BuildingType.BLACK_MAGE_TOWER);
       if (blackTower) {
         blackTower.numberOfSlots = 1;
         blackTower.slots = [];
@@ -571,7 +570,7 @@ describe('RecruitArmyDialog', () => {
   describe('Player Type Restrictions', () => {
     it('should allow WARSMITH recruitment for WARSMITH players', () => {
       // Set turn owner to WARSMITH player
-      const warsmithPlayer = mockGameState.players.find(p => p.type === HeroUnitType.WARSMITH);
+      const warsmithPlayer = mockGameState.players.find((p) => p.type === HeroUnitType.WARSMITH);
       if (warsmithPlayer) {
         mockGameState.turnOwner = warsmithPlayer.id;
       }
@@ -585,7 +584,7 @@ describe('RecruitArmyDialog', () => {
 
     it('should not allow WARSMITH recruitment for non-WARSMITH players', () => {
       // Set turn owner to a different type
-      const nonWarsmithPlayer = mockGameState.players.find(p => p.type !== HeroUnitType.WARSMITH);
+      const nonWarsmithPlayer = mockGameState.players.find((p) => p.type !== HeroUnitType.WARSMITH);
       if (nonWarsmithPlayer) {
         mockGameState.turnOwner = nonWarsmithPlayer.id;
       }
@@ -620,7 +619,7 @@ describe('RecruitArmyDialog', () => {
       // Set numberOfSlots to 0
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(mockGameState, landPos);
-      const barracks = land.buildings.find(b => b.id === BuildingType.BARRACKS);
+      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
         barracks.numberOfSlots = 0;
       }
@@ -656,7 +655,7 @@ describe('RecruitArmyDialog', () => {
       // Create a game state with no available slots
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(mockGameState, landPos);
-      const barracks = land.buildings.find(b => b.id === BuildingType.BARRACKS);
+      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
         barracks.numberOfSlots = 0; // No slots
         barracks.slots = [];
@@ -686,7 +685,7 @@ describe('RecruitArmyDialog', () => {
       // Modify the game state after initial render (this should not affect slot count due to memoization)
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(mockGameState, landPos);
-      const barracks = land.buildings.find(b => b.id === BuildingType.BARRACKS);
+      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
         barracks.numberOfSlots = 5; // Increase slots
       }
