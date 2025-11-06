@@ -6,7 +6,8 @@ import FlipBookPage, { FlipBookPageType, Slot } from '../fantasy-book-dialog-tem
 import { getUnitImg } from '../../assets/getUnitImg';
 import { getLands } from '../../map/utils/getLands';
 import { getTurnOwner } from '../../types/GameState';
-import { findHeroByName, HeroUnit, isHero } from '../../types/Army';
+import { HeroUnit, isHero } from '../../types/Army';
+import { findHeroByName } from '../../map/utils/findHeroByName';
 import { startQuest } from '../../map/quest/startQuest';
 import { getQuestType } from '../../map/quest/Quest';
 
