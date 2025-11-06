@@ -7,7 +7,7 @@ import FlipBookPage, { FlipBookPageType, Slot } from '../fantasy-book-dialog-tem
 
 import { getTurnOwner } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
-import { getDefaultUnit, HeroUnitType, isMage } from '../../types/Army';
+import { getDefaultUnit, HeroUnitType, isHero, isMage } from '../../types/Army';
 import { getLand, getLands } from '../../map/utils/getLands';
 
 import { getUnitImg } from '../../assets/getUnitImg';
@@ -56,7 +56,8 @@ const RecruitArmyDialog: React.FC = () => {
         (u === HeroUnitType.PYROMANCER && recruitBuilding.id === BuildingType.RED_MAGE_TOWER) ||
         (u === HeroUnitType.NECROMANCER && recruitBuilding.id === BuildingType.BLACK_MAGE_TOWER)
     )
-    .map((unit) => getDefaultUnit(unit));
+    .map((unit) => getDefaultUnit(unit))
+    .sort((a, b) => Number(isHero(a)) - Number(isHero(b)));
 
   const slots: Slot[] = [];
   for (let i = 0; i < recruitSlots; i++) {

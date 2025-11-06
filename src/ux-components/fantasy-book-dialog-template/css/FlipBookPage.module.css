@@ -69,7 +69,7 @@
 }
 
 .descriptionTitle {
-  margin: 0 0 4px 0;
+  margin: 0 0 3px 0;
   color: #2c1810;
   font-size: 1rem;
 }
@@ -84,11 +84,7 @@
 }
 
 .descriptionTextExpanded {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  height: 3rem; /* One line more */
-  display: flex;
+  height: 2.5rem; /* One line more */
   align-items: flex-start;
 }
 

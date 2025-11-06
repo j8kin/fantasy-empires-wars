@@ -97,7 +97,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 20,
         recruitCost: 500,
         maintainCost: 4,
-        description: 'Steadfast soldiers fighting for gold, glory, and their homeland.',
+        description:
+          'Hardened veterans of countless skirmishes, these soldiers fight for gold, glory, or the fragile peace that follows both.',
       };
     case RegularUnitType.DWARF:
       return {
@@ -111,7 +112,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 20,
         recruitCost: 800,
         maintainCost: 5,
-        description: 'Defenders whose hammers echo through mountain halls.',
+        description:
+          'Clad in runed steel and bound by oath, Dwarves hold the line like mountains given form—unyielding, proud, and slow to fall.',
       };
     case RegularUnitType.ORC:
       return {
@@ -125,7 +127,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 20,
         recruitCost: 600,
         maintainCost: 4.5,
-        description: 'Savage raiders who live for battle and the thrill of conquest.',
+        description:
+          'Forged in chaos and fire, Orcs live for the clash of steel—each battle a hymn to their untamed hunger for conquest.',
       };
     case RegularUnitType.ELF:
     case RegularUnitType.DARK_ELF:
@@ -144,8 +147,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         maintainCost: 5,
         description:
           unitType === RegularUnitType.ELF
-            ? 'Swift archers guarding the ancient forests of Orrivane.'
-            : 'Shadowy marksmen striking unseen from cursed woods.',
+            ? 'Silent as moonlight and swift as wind through leaves, Elven archers strike before their foes even sense the bowstring’s whisper.'
+            : 'Born beneath shadowed groves, Dark Elves blend beauty with cruelty—their arrows carry both poison and pride.',
       };
     // War Machines
     // Catapult do not damage anything only destroy buildings/walls
@@ -163,7 +166,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 1,
         recruitCost: 1500,
         maintainCost: 150,
-        description: 'Ancient engines of precision death, built to pierce armor and shatter enemy.',
+        description:
+          'Ancient engines of precision death, Ballistae pierce armor and arrogance alike with thunderous finality.',
       };
     case RegularUnitType.CATAPULT:
       return {
@@ -178,7 +182,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         recruitCost: 1000,
         maintainCost: 50,
         description:
-          'Stone-flingers of ruin, Catapults reduce fortresses to dust and kings to memory.',
+          'Stone-flingers of ruin, Catapults reduce fortresses to dust and kings to memory—patient, implacable, and deaf to mercy.',
       };
     // HEROES
     // Human warrior hero
