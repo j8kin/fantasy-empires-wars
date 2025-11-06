@@ -20,6 +20,7 @@ import ProgressPopup from '../popups/ProgressPopup';
 import ErrorMessagePopup from '../popups/ErrorMessagePopup';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
+import SendHeroInQuest from '../dialogs/SendHeroInQuest';
 
 const MainViewContent: React.FC = () => {
   const {
@@ -139,6 +140,9 @@ const MainViewContent: React.FC = () => {
 
       {/* Recruit Army Dialog - shown as overlay */}
       <RecruitArmyDialog />
+
+      {/* Send Hero In Quest Dialog - shown as overlay */}
+      <SendHeroInQuest />
 
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />

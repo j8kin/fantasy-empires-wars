@@ -7,8 +7,9 @@ import FlipBookPage, { FlipBookPageType, Slot } from '../fantasy-book-dialog-tem
 
 import { getTurnOwner } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
-import { getDefaultUnit, HeroUnitType, isHero, isMage } from '../../types/Army';
-import { getLand, getLands } from '../../map/utils/getLands';
+import { getDefaultUnit, HeroUnitType, isHero, isMage, UnitType } from '../../types/Army';
+import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
+import { startRecruiting } from '../../map/recruiting/startRecruiting';
 
 import { getUnitImg } from '../../assets/getUnitImg';
 
@@ -19,6 +20,17 @@ const RecruitArmyDialog: React.FC = () => {
   const handleClose = useCallback(() => {
     setShowRecruitArmyDialog(false);
   }, [setShowRecruitArmyDialog]);
+
+  const createSlotClickHandler = useCallback(
+    (unitType: UnitType, landId: LandPosition) => {
+      return (slot: Slot) => {
+        startRecruiting(unitType, landId, gameState!);
+        // TODO: Remove this alert once proper recruitment feedback is implemented
+        alert(`Recruiting ${unitType} at slot: ${slot.name}, Land ID: ${landId}`);
+      };
+    },
+    [gameState]
+  );
 
   if (!gameState || !showRecruitArmyDialog) return undefined;
 
@@ -78,6 +90,7 @@ const RecruitArmyDialog: React.FC = () => {
           onClose={handleClose}
           slots={slots}
           landId={land.mapPos}
+          onSlotClick={createSlotClickHandler(unit.id, land.mapPos)}
         />
       ))}
     </FlipBook>

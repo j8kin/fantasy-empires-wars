@@ -11,11 +11,11 @@ import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType } from '../../types/Building';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
-import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { getDefaultUnit, HeroUnit, HeroUnitType, UnitType } from '../../types/Army';
 import { LandPosition } from '../../map/utils/getLands';
 import { startQuest } from '../../map/quest/startQuest';
 import { getQuestType } from '../../map/quest/Quest';
+import { startRecruiting } from '../../map/recruiting/startRecruiting';
 
 export interface Slot {
   id: string;
@@ -44,6 +44,7 @@ interface FlipBookPageProps {
   onClose?: () => void;
   slots?: Slot[];
   landId?: LandPosition;
+  onSlotClick?: (slot: Slot) => void;
 }
 
 const getAvailableLands = (
@@ -77,6 +78,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       onClose,
       slots,
       landId,
+      onSlotClick,
     },
     ref
   ) => {
@@ -136,25 +138,6 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       }
     };
 
-    const handleSlotClick = (slot: Slot) => {
-      switch (dialogType) {
-        case FlipBookPageType.RECRUIT:
-          startRecruiting(header as UnitType, landId!, gameState!);
-          break;
-        case FlipBookPageType.QUEST:
-          startQuest(
-            getDefaultUnit(HeroUnitType.DRUID) as HeroUnit, // todo select hero from slot or all heroes
-            getQuestType(pageNum + 1),
-            gameState!
-          );
-          break;
-        default:
-          // should not be reached since other dialogs don't have slots
-          break;
-      }
-      alert(`Selected slot: ${slot.name}${landId ? `, Land ID: ${landId}` : ''}`);
-    };
-
     return (
       <div className={`${styles.pageStyle} ${finalClassName}`} ref={ref} style={style}>
         {children || (
@@ -180,14 +163,14 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                   e.currentTarget.style.display = 'none';
                 }}
               />
-              {slots && slots.length > 0 && (
+              {onSlotClick && slots && slots.length > 0 && (
                 <div
                   className={`${styles.slotsContainer} ${slots.length > 3 ? styles.slotsScrollable : styles.slotsVisible}`}
                 >
                   {slots.map((slot) => (
                     <div
                       key={slot.id}
-                      onClick={() => handleSlotClick(slot)}
+                      onClick={() => onSlotClick(slot)}
                       className={styles.slot}
                     ></div>
                   ))}

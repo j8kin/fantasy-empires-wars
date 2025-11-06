@@ -1,3 +1,5 @@
+import { GameState, getTurnOwner } from './GameState';
+import { getLands } from '../map/utils/getLands';
 import { Artifact } from './Treasures';
 import { Alignment } from './Alignment';
 
@@ -26,6 +28,7 @@ export enum HeroUnitType {
   // non-magic heroes (heroes who reject magic at all)
   WARSMITH = 'Warsmith',
 }
+
 export type UnitType = RegularUnitType | HeroUnitType;
 
 export interface HeroUnit extends BaseUnit {
@@ -53,6 +56,18 @@ export const isMage = (unitType: UnitType): boolean => {
     unitType === HeroUnitType.CLERIC ||
     unitType === HeroUnitType.NECROMANCER
   );
+};
+
+export const findHeroByName = (name: string, gameState: GameState): HeroUnit | undefined => {
+  const heroUnit = getLands({
+    lands: gameState.battlefield.lands,
+    players: [getTurnOwner(gameState)!],
+    noArmy: false,
+  }).map(
+    (l) =>
+      l.army.find((u) => isHero(u.unit) && (u.unit as HeroUnit).name === name)?.unit as HeroUnit
+  );
+  return heroUnit?.length ? heroUnit[0] : undefined;
 };
 
 export interface RegularUnit extends BaseUnit {

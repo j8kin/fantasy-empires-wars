@@ -7,17 +7,21 @@ import { ButtonName } from '../../types/ButtonName';
 import GameButton from '../buttons/GameButton';
 
 const UnitActionControl: React.FC = () => {
-  const { setShowRecruitArmyDialog } = useApplicationContext();
+  const { setShowRecruitArmyDialog, setShowSendHeroInQuestDialog } = useApplicationContext();
 
   const handleShowRecruitArmyDialog = useCallback(() => {
     setShowRecruitArmyDialog(true);
   }, [setShowRecruitArmyDialog]);
 
+  const handleShowSendHeroInQuestDialog = useCallback(() => {
+    setShowSendHeroInQuestDialog(true);
+  }, [setShowSendHeroInQuestDialog]);
+
   return (
     <div className={styles.gameControlContainer}>
       <GameButton buttonName={ButtonName.RECRUIT} onClick={handleShowRecruitArmyDialog} />
       <GameButton buttonName={ButtonName.MOVE} />
-      <GameButton buttonName={ButtonName.QUEST} />
+      <GameButton buttonName={ButtonName.QUEST} onClick={handleShowSendHeroInQuestDialog} />
     </div>
   );
 };
