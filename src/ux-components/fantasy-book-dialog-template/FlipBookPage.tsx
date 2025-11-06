@@ -204,7 +204,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                   {costLabel}: <span className="costValue">{cost}</span>
                 </h4>
               </div>
-              {dialogType !== FlipBookPageType.SPELL && maintainCost! >= 0 && (
+              {maintainCost != null && maintainCost >= 0 && (
                 <div className="costSection">
                   <h4 className={styles.costTitle}>
                     Maintain Cost: <span className="costValue">{maintainCost}</span>

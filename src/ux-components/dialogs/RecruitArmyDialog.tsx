@@ -7,7 +7,7 @@ import FlipBookPage, { FlipBookPageType, Slot } from '../fantasy-book-dialog-tem
 
 import { getTurnOwner } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
-import { getDefaultUnit, HeroUnitType, RegularUnitType } from '../../types/Army';
+import { getDefaultUnit, HeroUnitType, isMage } from '../../types/Army';
 import { getLand, getLands } from '../../map/utils/getLands';
 
 import { getUnitImg } from '../../assets/getUnitImg';
@@ -20,25 +20,48 @@ const RecruitArmyDialog: React.FC = () => {
     setShowRecruitArmyDialog(false);
   }, [setShowRecruitArmyDialog]);
 
-  if (!gameState || !showRecruitArmyDialog) return null;
+  if (!gameState || !showRecruitArmyDialog) return undefined;
 
-  const landId = getLands({
+  const land = getLands({
     lands: gameState.battlefield.lands,
     players: [getTurnOwner(gameState)!],
     buildings: [BuildingType.BARRACKS],
   })[0];
 
-  const availableUnits = getLand(gameState!, landId.mapPos).buildings.some(
-    (b) => b.id === BuildingType.BARRACKS
-  )
-    ? Object.values(RegularUnitType).map((ut) => getDefaultUnit(ut))
-    : Object.values(HeroUnitType).map((h) => getDefaultUnit(h));
+  const recruitBuilding = land.buildings.filter(
+    (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots
+  )[0];
 
-  const slots: Slot[] = [
-    { id: 'buildSlot1', name: 'Available 1' },
-    { id: 'buildSlot2', name: 'Available 2' },
-    { id: 'buildSlot3', name: 'Available 3' },
-  ];
+  const recruitSlots =
+    (recruitBuilding?.numberOfSlots ?? 0) - (recruitBuilding?.slots?.length ?? 0);
+
+  if (recruitSlots === 0) {
+    setShowRecruitArmyDialog(false);
+    return undefined;
+  }
+
+  const availableUnits = getLand(gameState!, land.mapPos)
+    .land.unitsToRecruit.filter(
+      (u) =>
+        // non-mages should be recruited in BARRACKS only
+        (recruitBuilding.id === BuildingType.BARRACKS &&
+          !isMage(u) &&
+          // The players, who reject magic, should be able to recruit their owned special heroes
+          (u !== HeroUnitType.WARSMITH ||
+            getTurnOwner(gameState)?.type === HeroUnitType.WARSMITH)) ||
+        // mage Heroes should be recruited in related towers only
+        (u === HeroUnitType.CLERIC && recruitBuilding.id === BuildingType.WHITE_MAGE_TOWER) ||
+        (u === HeroUnitType.ENCHANTER && recruitBuilding.id === BuildingType.BLUE_MAGE_TOWER) ||
+        (u === HeroUnitType.DRUID && recruitBuilding.id === BuildingType.GREEN_MAGE_TOWER) ||
+        (u === HeroUnitType.PYROMANCER && recruitBuilding.id === BuildingType.RED_MAGE_TOWER) ||
+        (u === HeroUnitType.NECROMANCER && recruitBuilding.id === BuildingType.BLACK_MAGE_TOWER)
+    )
+    .map((unit) => getDefaultUnit(unit));
+
+  const slots: Slot[] = [];
+  for (let i = 0; i < recruitSlots; i++) {
+    slots.push({ id: `buildSlot${i + 1}`, name: `Available ${i + 1}` });
+  }
 
   return (
     <FlipBook onClickOutside={handleClose}>
@@ -49,13 +72,11 @@ const RecruitArmyDialog: React.FC = () => {
           pageNum={index}
           header={unit.id}
           iconPath={getUnitImg(unit.id)}
-          description={'temp description'}
+          description={unit.description}
           cost={unit.recruitCost}
-          costLabel="Recruit Cost"
-          maintainCost={unit.maintainCost}
           onClose={handleClose}
           slots={slots}
-          landId={landId.mapPos}
+          landId={land.mapPos}
         />
       ))}
     </FlipBook>

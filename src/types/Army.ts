@@ -45,6 +45,16 @@ export enum UnitRank {
 export const isHeroType = (unitType: UnitType): boolean => isHero(getDefaultUnit(unitType));
 export const isHero = (unit: Unit): boolean => typeof unit.level === 'number';
 
+export const isMage = (unitType: UnitType): boolean => {
+  return (
+    unitType === HeroUnitType.PYROMANCER ||
+    unitType === HeroUnitType.DRUID ||
+    unitType === HeroUnitType.ENCHANTER ||
+    unitType === HeroUnitType.CLERIC ||
+    unitType === HeroUnitType.NECROMANCER
+  );
+};
+
 export interface RegularUnit extends BaseUnit {
   id: RegularUnitType;
   level: UnitRank;
@@ -63,6 +73,7 @@ export interface BaseUnit {
   alignment: Alignment;
   recruitCost: number;
   maintainCost: number;
+  description: string;
 }
 
 export type ArmyUnit = {
@@ -86,6 +97,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 20,
         recruitCost: 500,
         maintainCost: 4,
+        description: 'Steadfast soldiers fighting for gold, glory, and their homeland.',
       };
     case RegularUnitType.DWARF:
       return {
@@ -99,6 +111,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 20,
         recruitCost: 800,
         maintainCost: 5,
+        description: 'Defenders whose hammers echo through mountain halls.',
       };
     case RegularUnitType.ORC:
       return {
@@ -112,6 +125,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 20,
         recruitCost: 600,
         maintainCost: 4.5,
+        description: 'Savage raiders who live for battle and the thrill of conquest.',
       };
     case RegularUnitType.ELF:
     case RegularUnitType.DARK_ELF:
@@ -128,6 +142,10 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 20,
         recruitCost: 2500,
         maintainCost: 5,
+        description:
+          unitType === RegularUnitType.ELF
+            ? 'Swift archers guarding the ancient forests of Orrivane.'
+            : 'Shadowy marksmen striking unseen from cursed woods.',
       };
     // War Machines
     // Catapult do not damage anything only destroy buildings/walls
@@ -145,6 +163,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 1,
         recruitCost: 1500,
         maintainCost: 150,
+        description: 'Ancient engines of precision death, built to pierce armor and shatter enemy.',
       };
     case RegularUnitType.CATAPULT:
       return {
@@ -158,10 +177,11 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         count: 1,
         recruitCost: 1000,
         maintainCost: 50,
+        description:
+          'Stone-flingers of ruin, Catapults reduce fortresses to dust and kings to memory.',
       };
     // HEROES
     // Human warrior hero
-
     case HeroUnitType.WARSMITH:
     case HeroUnitType.FIGHTER:
       return {
@@ -178,6 +198,10 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         artifacts: [],
         recruitCost: 1500,
         maintainCost: 100,
+        description:
+          unitType === HeroUnitType.FIGHTER
+            ? 'Champions of the common folk, Fighters carry the banners of law and honor into every battle, their courage as sharp as their blades.'
+            : 'Forged in the fires of rebellion, Warsmiths temper chaos into strategy—each strike a protest against tyranny and weakness.',
       };
     // Dwarf hero
     case HeroUnitType.HAMMER_LORD:
@@ -195,6 +219,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         artifacts: [],
         recruitCost: 1500,
         maintainCost: 100,
+        description:
+          'Bearing hammers that have shattered both stone and legend, Hammerlords are dwarven paragons of strength and unyielding resolve.',
       };
     // Orc hero
     case HeroUnitType.OGR:
@@ -212,6 +238,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         artifacts: [],
         recruitCost: 1500,
         maintainCost: 100,
+        description:
+          'Once feared as destroyers, the Ogr champions now fight with grim purpose—seeking to silence all who dare wield the arcane.',
       };
     // Elf hero
     case HeroUnitType.RANGER:
@@ -229,6 +257,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         artifacts: [],
         recruitCost: 1500,
         maintainCost: 100,
+        description:
+          'Keepers of forgotten groves, Rangers walk unseen between root and shadow, striking swiftly to preserve the wild balance of Orrivane.',
       };
     // Mage Heroes
     // Pyromancer - produce red mana
@@ -248,6 +278,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         artifacts: [],
         recruitCost: 2500,
         maintainCost: 100,
+        description:
+          'Born of embers and fury, Pyromancers command the flames of creation—each spell a hymn to passion and ruin.',
       };
     // Cleric - produce white mana
     case HeroUnitType.CLERIC:
@@ -266,6 +298,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         artifacts: [],
         recruitCost: 2500,
         maintainCost: 100,
+        description:
+          'Guided by celestial whispers, Clerics mend the wounds of body and spirit alike, their faith a shield against the growing dark.',
       };
     // Druid - produce green mana
     case HeroUnitType.DRUID:
@@ -284,6 +318,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         artifacts: [],
         recruitCost: 2500,
         maintainCost: 100,
+        description:
+          'Bound to the heartbeat of the wild, Druids channel Orrivane’s living breath—healing, nurturing, and unleashing nature’s wrath.',
       };
     // Enchanter - produce blue mana
     case HeroUnitType.ENCHANTER:
@@ -302,6 +338,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         artifacts: [],
         recruitCost: 2500,
         maintainCost: 100,
+        description:
+          'Masters of unseen threads, Enchanters weave illusions and insight from pure thought, bending truth like light through a prism.',
       };
     // Necromancer - produce black mana
     case HeroUnitType.NECROMANCER:
@@ -320,6 +358,8 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         artifacts: [],
         recruitCost: 2500,
         maintainCost: 100,
+        description:
+          'Whisperers of death’s secrets, Necromancers blur the line between decay and command, binding restless souls to their grim will.',
       };
   }
 };
