@@ -2,7 +2,7 @@ import { GameState, getTurnOwner } from '../types/GameState';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
 import { getLands } from '../map/utils/getLands';
-import { ArmyUnit, RegularUnit } from '../types/Army';
+import { ArmyUnit, isHero, RegularUnit } from '../types/Army';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
 import { completeRecruiting } from '../map/recruiting/completeRecruiting';
@@ -27,15 +27,15 @@ export const startTurn = (gameState: GameState, onQuestResults?: (results: strin
 
       // merge armies of the same type and turnsUntilReady === 0 in one unit with summary quantity
       // Heroes should never be merged since they are unique individuals
-      const readyRegularUnits = land.army.filter(
-        (a) => !a.isMoving && typeof a.unit.level !== 'number'
-      );
-      const heroUnits = land.army.filter((a) => !a.isMoving && typeof a.unit.level === 'number');
+      const readyRegularUnits = land.army.filter((a) => !a.isMoving && !isHero(a.unit));
+      const heroUnits = land.army.filter((a) => !a.isMoving && isHero(a.unit));
       const notReadyArmies = land.army.filter((a) => a.isMoving);
 
       const mergedRegularUnits = readyRegularUnits.reduce((acc: ArmyUnit[], army) => {
-        const existing: RegularUnit = acc.find((a) => a.unit.id === army.unit.id)
-          ?.unit as RegularUnit;
+        const existing: RegularUnit = acc.find(
+          // merge units the same type and level (regular/veteran and elite units should not merge with each other)
+          (a) => a.unit.id === army.unit.id && a.unit.level === army.unit.level
+        )?.unit as RegularUnit;
         if (existing) {
           existing.count += (army.unit as RegularUnit).count;
         } else {
