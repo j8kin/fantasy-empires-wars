@@ -4,14 +4,14 @@ import '@testing-library/jest-dom';
 
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
-import { GameState, getTurnOwner, TurnPhase } from '../../../types/GameState';
+import { GameState, TurnPhase } from '../../../types/GameState';
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
 import { getLands } from '../../../map/utils/getLands';
 import { Alignment } from '../../../types/Alignment';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 
 // Import the mocked function (will be the mocked version due to jest.mock above)
 import { startQuest as mockStartQuest } from '../../../map/quest/startQuest';
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 
 // Mock modules
 jest.mock('../../../map/quest/startQuest', () => ({
@@ -28,6 +28,8 @@ const mockApplicationContext = {
   setShowSendHeroInQuestDialog: jest.fn(),
   selectedLandAction: null,
   setSelectedLandAction: jest.fn(),
+  actionLandPosition: { row: 3, col: 3 } as any,
+  setActionLandPosition: jest.fn(),
   showStartWindow: false,
   showSaveDialog: false,
   showCastSpellDialog: false,
@@ -68,6 +70,17 @@ const mockApplicationContext = {
   setSaveGameName: jest.fn(),
   setGameStarted: jest.fn(),
   setGlowingTiles: jest.fn(),
+  addGlowingTile: jest.fn(),
+  removeGlowingTile: jest.fn(),
+  clearAllGlow: jest.fn(),
+  showLandPopup: jest.fn(),
+  hideLandPopup: jest.fn(),
+  resetSaveGameDialog: jest.fn(),
+  showOpponentInfo: jest.fn(),
+  hideOpponentInfo: jest.fn(),
+  showSelectOpponentDialogWithConfig: jest.fn(),
+  hideSelectOpponentDialog: jest.fn(),
+  recalculateActivePlayerIncome: jest.fn(),
   showQuestResultsPopup: false,
   setShowQuestResultsPopup: jest.fn(),
   questResults: [],
@@ -75,7 +88,7 @@ const mockApplicationContext = {
 };
 
 const mockGameContext = {
-  gameState: null as GameState | null,
+  gameState: createDefaultGameStateStub(),
   updateGameState: jest.fn(),
   getTotalPlayerGold: jest.fn(),
   getPlayerById: jest.fn(),
@@ -167,11 +180,26 @@ describe('SendHeroInQuestDialog', () => {
 
   const renderWithProviders = (
     ui: React.ReactElement,
-    { gameState = mockGameState, showSendHeroInQuestDialog = true } = {}
+    options?: {
+      gameState?: GameState;
+      showSendHeroInQuestDialog?: boolean;
+      actionLandPosition?: { row: number; col: number } | undefined;
+    }
   ) => {
+    // Handle defaults without destructuring to preserve undefined/null values
+    const gameState = options?.hasOwnProperty('gameState') ? options.gameState! : mockGameState;
+    const showSendHeroInQuestDialog = options?.showSendHeroInQuestDialog ?? true;
+    const actionLandPosition = options?.hasOwnProperty('actionLandPosition')
+      ? options.actionLandPosition
+      : { row: 3, col: 3 };
+
     // Update the mock values for this test
     mockApplicationContext.showSendHeroInQuestDialog = showSendHeroInQuestDialog;
     mockApplicationContext.setShowSendHeroInQuestDialog = jest.fn();
+
+    // Set actionLandPosition properly, including undefined
+    mockApplicationContext.actionLandPosition = actionLandPosition;
+
     mockGameContext.gameState = gameState;
 
     return render(ui);
@@ -179,6 +207,13 @@ describe('SendHeroInQuestDialog', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Reset mock functions
+    (mockStartQuest as jest.Mock).mockClear();
+
+    // Reset mock context to default values
+    mockApplicationContext.showSendHeroInQuestDialog = true;
+    mockApplicationContext.actionLandPosition = { row: 3, col: 3 };
 
     // Create a default game state with heroes
     mockGameState = createDefaultGameStateStub();
@@ -221,6 +256,14 @@ describe('SendHeroInQuestDialog', () => {
       });
 
       renderWithProviders(<SendHeroInQuestDialog />);
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+    });
+
+    it('should not render when actionLandPosition is undefined', () => {
+      renderWithProviders(<SendHeroInQuestDialog />, {
+        actionLandPosition: undefined,
+        showSendHeroInQuestDialog: true, // Ensure dialog would show if actionLandPosition was valid
+      });
       expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
     });
   });
@@ -716,26 +759,34 @@ describe('SendHeroInQuestDialog', () => {
     });
 
     it('should handle sending multiple different heroes to different quests', async () => {
-      const heroLand = getLands({
-        lands: mockGameState.battlefield.lands,
-        players: [getTurnOwner(mockGameState)!],
-        noArmy: false,
-      })[0];
+      // Create a fresh game state for this test to avoid interference from beforeEach
+      const testGameState = createDefaultGameStateStub();
+      testGameState.turnPhase = TurnPhase.MAIN;
 
-      placeUnitsOnMap(getDefaultUnit(HeroUnitType.FIGHTER), mockGameState, heroLand.mapPos);
+      // Add a second hero to the land that the dialog will look at (3, 3)
+      const actionLandPosition = { row: 3, col: 3 };
+      const landId = `${actionLandPosition.row}-${actionLandPosition.col}`;
+      const land = testGameState.battlefield.lands[landId];
+
+      // Add a second hero directly to the army array
+      placeUnitsOnMap(getDefaultUnit(HeroUnitType.FIGHTER), testGameState, land.mapPos);
 
       const user = userEvent.setup();
-      renderWithProviders(<SendHeroInQuestDialog />);
+      renderWithProviders(<SendHeroInQuestDialog />, { gameState: testGameState });
 
       // Get all hero slot buttons for the first quest
       const questPage = screen.getByTestId('flip-book-page-The-Echoing-Ruins');
       const heroSlots = within(questPage).getAllByTestId(/slot-/);
 
-      expect(heroSlots.length).toBeGreaterThan(1);
-      // Click different heroes
-      await user.click(heroSlots[0]);
-      await user.click(heroSlots[1]);
+      // Should now have 2 heroes * 1 quest = 2 slots
+      expect(heroSlots.length).toBe(2);
 
+      // Click different heroes - first hero
+      await user.click(heroSlots[0]);
+      expect(mockStartQuest).toHaveBeenCalledTimes(1);
+
+      // Click second hero (should succeed if our setup is correct)
+      await user.click(heroSlots[1]);
       expect(mockStartQuest).toHaveBeenCalledTimes(2);
     });
   });

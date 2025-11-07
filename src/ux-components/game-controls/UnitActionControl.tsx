@@ -9,10 +9,10 @@ import GameButton from '../buttons/GameButton';
 import { getLands } from '../../map/utils/getLands';
 import { getTurnOwner, battlefieldLandId } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
+import { isHero } from '../../types/Army';
 
 const UnitActionControl: React.FC = () => {
-  const { setShowSendHeroInQuestDialog, addGlowingTile, setSelectedLandAction } =
-    useApplicationContext();
+  const { addGlowingTile, setSelectedLandAction } = useApplicationContext();
   const { gameState } = useGameContext();
 
   const handleShowRecruitArmyDialog = useCallback(
@@ -59,11 +59,32 @@ const UnitActionControl: React.FC = () => {
 
   const handleShowSendHeroInQuestDialog = useCallback(
     (event: React.MouseEvent) => {
+      if (!gameState) return;
+
       // Prevent event bubbling to parent elements (MainView)
       event.stopPropagation();
-      setShowSendHeroInQuestDialog(true);
+
+      // Get all lands owned by current player that have heroes
+      const questLands = getLands({
+        lands: gameState.battlefield.lands,
+        players: [getTurnOwner(gameState)!],
+        noArmy: false,
+      }).filter((l) => l.army.some((u) => isHero(u.unit)));
+
+      console.log(
+        `Number of quest lands: ${questLands.length} positions: ${questLands.map((land) => battlefieldLandId(land.mapPos))}`
+      );
+
+      // Set selected land action to 'Quest'
+      setSelectedLandAction('Quest');
+      // Add glowing to all quest lands
+      questLands.forEach((land) => {
+        console.log(`Glowing tile: ${battlefieldLandId(land.mapPos)}`);
+        const tileId = battlefieldLandId(land.mapPos);
+        addGlowingTile(tileId);
+      });
     },
-    [setShowSendHeroInQuestDialog]
+    [gameState, addGlowingTile, setSelectedLandAction]
   );
 
   return (

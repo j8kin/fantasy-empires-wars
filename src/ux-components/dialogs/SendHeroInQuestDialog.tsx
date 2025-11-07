@@ -5,8 +5,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { getLands } from '../../map/utils/getLands';
-import { getTurnOwner } from '../../types/GameState';
+import { battlefieldLandId } from '../../types/GameState';
 import { HeroUnit, isHero } from '../../types/Army';
 import { findHeroByName } from '../../map/utils/findHeroByName';
 import { startQuest } from '../../map/quest/startQuest';
@@ -15,7 +14,12 @@ import { getAllQuests, getQuestType } from '../../types/Quest';
 import { getQuestImg } from '../../assets/getQuestImg';
 
 const SendHeroInQuestDialog: React.FC = () => {
-  const { showSendHeroInQuestDialog, setShowSendHeroInQuestDialog } = useApplicationContext();
+  const {
+    showSendHeroInQuestDialog,
+    setShowSendHeroInQuestDialog,
+    setActionLandPosition,
+    actionLandPosition,
+  } = useApplicationContext();
   const { gameState } = useGameContext();
 
   // Shared state to track used slots across all pages
@@ -25,28 +29,28 @@ const SendHeroInQuestDialog: React.FC = () => {
     setShowSendHeroInQuestDialog(false);
     // Reset used slots when dialog closes
     setUsedSlots(new Set());
-  }, [setShowSendHeroInQuestDialog]);
+    // Reset action land position when dialog closes
+    setActionLandPosition(undefined);
+  }, [setShowSendHeroInQuestDialog, setActionLandPosition]);
 
   // Use effect to close dialog when no heroes are available (moved from render to avoid state update during render)
   useEffect(() => {
-    if (!gameState || !showSendHeroInQuestDialog) return;
+    if (!gameState || !showSendHeroInQuestDialog || !actionLandPosition) return;
 
-    const land = getLands({
-      lands: gameState.battlefield.lands,
-      players: [getTurnOwner(gameState)!],
-      noArmy: false,
-    }).filter((l) => l.army.length > 0 && l.army.some((u) => isHero(u.unit)))[0];
-
-    if (!land) return;
+    const land = gameState.battlefield.lands[battlefieldLandId(actionLandPosition)];
+    if (!land || land.army.length === 0) {
+      handleClose();
+      return;
+    }
 
     const availableUnits = land.army
       .filter((armyUnit) => isHero(armyUnit.unit))
       .map((armyUnit) => armyUnit.unit as HeroUnit);
 
-    if (availableUnits.length === 0 && showSendHeroInQuestDialog) {
+    if (availableUnits.length === 0) {
       handleClose();
     }
-  }, [gameState, showSendHeroInQuestDialog, handleClose]);
+  }, [gameState, showSendHeroInQuestDialog, actionLandPosition, handleClose]);
 
   const createSlotClickHandler = useCallback(
     (questLvl: number) => {
@@ -73,17 +77,12 @@ const SendHeroInQuestDialog: React.FC = () => {
     [gameState, handleClose]
   );
 
-  if (!gameState || !showSendHeroInQuestDialog) return undefined;
+  if (!gameState || !showSendHeroInQuestDialog || !actionLandPosition) return undefined;
 
-  // todo should be an input parameter
-  const land = getLands({
-    lands: gameState!.battlefield.lands,
-    players: [getTurnOwner(gameState)!],
-    noArmy: false,
-  }).filter((l) => l.army.length > 0 && l.army.some((u) => isHero(u.unit)))[0];
+  const land = gameState.battlefield.lands[battlefieldLandId(actionLandPosition)];
 
   // If no land with heroes is available, don't render content
-  if (!land) {
+  if (!land || land.army.length === 0) {
     return null;
   }
 
