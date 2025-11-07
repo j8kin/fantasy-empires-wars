@@ -3,7 +3,7 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage, { FlipBookPageType, Slot } from '../fantasy-book-dialog-template/FlipBookPage';
+import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { getLands } from '../../map/utils/getLands';
 import { getTurnOwner } from '../../types/GameState';
@@ -105,9 +105,9 @@ const SendHeroInQuestDialog: React.FC = () => {
     <FlipBook onClickOutside={handleClose}>
       {getAllQuests().map((quest, index) => (
         <FlipBookPage
-          dialogType={FlipBookPageType.RECRUIT}
           key={quest.id}
           pageNum={index}
+          lorePage={1417}
           header={quest.id}
           iconPath={getQuestImg(quest.id)}
           description={quest.description}

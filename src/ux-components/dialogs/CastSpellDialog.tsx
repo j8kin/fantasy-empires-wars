@@ -70,9 +70,9 @@ const CastSpellDialog: React.FC = () => {
     <FlipBook onClickOutside={handleClose}>
       {availableSpells.map((spell, index) => (
         <FlipBookPage
-          dialogType={FlipBookPageType.SPELL}
           key={spell.id}
           pageNum={index}
+          lorePage={1027}
           header={spell.id}
           iconPath={getSpellImg(spell)}
           description={spell.description}

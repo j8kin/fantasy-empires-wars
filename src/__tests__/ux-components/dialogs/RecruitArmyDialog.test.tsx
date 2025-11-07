@@ -3,20 +3,20 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
-import RecruitArmyDialog from '../../ux-components/dialogs/RecruitArmyDialog';
-import { createGameStateStub } from '../utils/createGameStateStub';
-import { GameState, TurnPhase } from '../../types/GameState';
-import { BuildingType } from '../../types/Building';
-import { construct } from '../../map/building/construct';
-import { UnitType, RegularUnitType, HeroUnitType } from '../../types/Army';
-import { LandPosition, getLand } from '../../map/utils/getLands';
+import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
+import { createGameStateStub } from '../../utils/createGameStateStub';
+import { GameState, TurnPhase } from '../../../types/GameState';
+import { BuildingType } from '../../../types/Building';
+import { construct } from '../../../map/building/construct';
+import { UnitType, RegularUnitType, HeroUnitType } from '../../../types/Army';
+import { LandPosition, getLand } from '../../../map/utils/getLands';
 
 // Mock modules
-jest.mock('../../map/recruiting/startRecruiting', () => ({
+jest.mock('../../../map/recruiting/startRecruiting', () => ({
   startRecruiting: jest.fn(),
 }));
 
-jest.mock('../../assets/getUnitImg', () => ({
+jest.mock('../../../assets/getUnitImg', () => ({
   getUnitImg: jest.fn((unitType: UnitType) => `mock-image-${unitType}.png`),
 }));
 
@@ -77,18 +77,18 @@ const mockGameContext = {
   getOpponents: jest.fn(),
 };
 
-jest.mock('../../contexts/ApplicationContext', () => ({
+jest.mock('../../../contexts/ApplicationContext', () => ({
   useApplicationContext: () => mockApplicationContext,
   ApplicationContextProvider: ({ children }: any) => children,
 }));
 
-jest.mock('../../contexts/GameContext', () => ({
+jest.mock('../../../contexts/GameContext', () => ({
   useGameContext: () => mockGameContext,
   GameProvider: ({ children }: any) => children,
 }));
 
 // Mock the FlipBook component to simplify testing
-jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
+jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
   return ({ children, onClickOutside }: any) => (
     <div data-testid="flip-book" onClick={onClickOutside}>
       {children}
@@ -97,9 +97,9 @@ jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
 });
 
 // Mock FlipBookPage component
-jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
+jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
   const { FlipBookPageType } = jest.requireActual(
-    '../../ux-components/fantasy-book-dialog-template/FlipBookPage'
+    '../../../ux-components/fantasy-book-dialog-template/FlipBookPage'
   );
 
   return {
@@ -153,7 +153,7 @@ jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBookPage', () =>
 });
 
 // Import the mocked function
-const mockStartRecruiting = require('../../map/recruiting/startRecruiting').startRecruiting;
+const mockStartRecruiting = require('../../../map/recruiting/startRecruiting').startRecruiting;
 
 describe('RecruitArmyDialog', () => {
   let mockGameState: GameState;

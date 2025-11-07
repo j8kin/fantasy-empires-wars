@@ -3,7 +3,7 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage, { FlipBookPageType, Slot } from '../fantasy-book-dialog-template/FlipBookPage';
+import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { getTurnOwner } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
@@ -139,9 +139,9 @@ const RecruitArmyDialog: React.FC = () => {
     <FlipBook onClickOutside={handleClose}>
       {availableUnits.map((unit, index) => (
         <FlipBookPage
-          dialogType={FlipBookPageType.RECRUIT}
           key={unit.id}
           pageNum={index}
+          lorePage={517}
           header={unit.id}
           iconPath={getUnitImg(unit.id)}
           description={unit.description}

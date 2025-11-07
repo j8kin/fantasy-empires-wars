@@ -71,9 +71,9 @@ const ConstructBuildingDialog: React.FC = () => {
     <FlipBook onClickOutside={handleClose}>
       {availableBuildings.map((building, index) => (
         <FlipBookPage
-          dialogType={FlipBookPageType.BUILDING}
           key={building.id}
           pageNum={index}
+          lorePage={2351}
           header={building.id}
           iconPath={getBuildingImg(building.id)}
           description={building.description}

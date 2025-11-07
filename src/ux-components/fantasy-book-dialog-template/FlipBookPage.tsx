@@ -16,8 +16,8 @@ export enum FlipBookPageType {
 }
 
 interface FlipBookPageProps {
-  dialogType: FlipBookPageType;
   pageNum: number;
+  lorePage: number;
   header?: string;
   iconPath?: string;
   description?: string;
@@ -37,8 +37,8 @@ interface FlipBookPageProps {
 const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
   (
     {
-      dialogType,
       pageNum,
+      lorePage,
       header,
       iconPath,
       description,
@@ -81,21 +81,6 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     const isEvenPage = pageNum % 2 === 1;
     const defaultClassName = isEvenPage ? styles.evenPage : styles.oddPage;
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
-
-    const romanPageNum = (): string => {
-      switch (dialogType) {
-        case FlipBookPageType.SPELL:
-          return toRoman(1027 + pageNum);
-        case FlipBookPageType.BUILDING:
-          return toRoman(2351 + pageNum);
-        case FlipBookPageType.RECRUIT:
-          return toRoman(3685 + pageNum);
-        case FlipBookPageType.QUEST:
-          return toRoman(5019 + pageNum);
-        default:
-          return toRoman(pageNum);
-      }
-    };
 
     const handleIconClick = () => {
       if (onIconClick) {
@@ -169,7 +154,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 </div>
               )}
             </div>
-            <h4 className={styles.pageNumber}>- {romanPageNum()} -</h4>
+            <h4 className={styles.pageNumber}>- {toRoman(lorePage + pageNum)} -</h4>
           </>
         )}
       </div>
