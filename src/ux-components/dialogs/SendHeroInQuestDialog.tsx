@@ -52,9 +52,10 @@ const SendHeroInQuestDialog: React.FC = () => {
   const createSlotClickHandler = useCallback(
     (questLvl: number) => {
       return (slot: Slot) => {
-        const hero = findHeroByName(slot.name, gameState!);
+        // slot.id contain uniq Hero name, and slot name contains what is displayed in the dialog, e.g. "Alaric Lvl: 1"
+        const hero = findHeroByName(slot.id, gameState!);
         if (hero) {
-          startQuest(hero, getQuestType(questLvl), gameState!);
+          startQuest(hero, getQuestType(questLvl + 1), gameState!);
           // Mark the slot as used across all pages
           setUsedSlots((prev) => new Set(prev).add(slot.id));
         }
@@ -97,24 +98,24 @@ const SendHeroInQuestDialog: React.FC = () => {
   }
 
   const slots: Slot[] = availableUnits.map((hero) => ({
-    id: hero.id,
+    id: hero.name,
     name: `${hero.name.split(' ')[0]} Lvl: ${hero.level}`,
   }));
 
   return (
     <FlipBook onClickOutside={handleClose}>
-      {getAllQuests().map((quest, index) => (
+      {getAllQuests().map((quest, questLevel) => (
         <FlipBookPage
           key={quest.id}
-          pageNum={index}
+          pageNum={questLevel}
           lorePage={1417}
           header={quest.id}
           iconPath={getQuestImg(quest.id)}
           description={quest.description}
           onClose={handleClose}
           slots={slots}
-          onSlotClick={createSlotClickHandler(index)}
-          onIconClick={createQuestClickHandler(index, availableUnits)}
+          onSlotClick={createSlotClickHandler(questLevel)}
+          onIconClick={createQuestClickHandler(questLevel, availableUnits)}
           usedSlots={usedSlots}
         />
       ))}

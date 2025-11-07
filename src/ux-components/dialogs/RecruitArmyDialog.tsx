@@ -137,7 +137,7 @@ const RecruitArmyDialog: React.FC = () => {
 
   const slots: Slot[] = [];
   for (let i = 0; i < initialSlotCount; i++) {
-    slots.push({ id: `buildSlot${i + 1}`, name: `Available ${i + 1}` });
+    slots.push({ id: `buildSlot${i + 1}`, name: `Available` });
   }
 
   return (
@@ -146,7 +146,7 @@ const RecruitArmyDialog: React.FC = () => {
         <FlipBookPage
           key={unit.id}
           pageNum={index}
-          lorePage={517}
+          lorePage={617}
           header={unit.id}
           iconPath={getUnitImg(unit.id)}
           description={unit.description}
