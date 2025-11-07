@@ -54,6 +54,9 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       onComputerMainTurn: (gameState: GameState) => {
         turnManagerCallbacksRef.current.onComputerMainTurn?.(gameState);
       },
+      onQuestResults: (results: string[]) => {
+        turnManagerCallbacksRef.current.onQuestResults?.(results);
+      },
     };
   }, []);
 

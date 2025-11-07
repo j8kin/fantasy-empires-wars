@@ -42,6 +42,7 @@ describe('TurnManager', () => {
       onStartProgress: jest.fn(),
       onHideProgress: jest.fn(),
       onComputerMainTurn: jest.fn(),
+      onQuestResults: jest.fn(),
     };
 
     turnManager = new TurnManager(mockCallbacks);
@@ -101,7 +102,7 @@ describe('TurnManager', () => {
 
       jest.advanceTimersByTime(1000);
 
-      expect(mockStartTurn).toHaveBeenCalledWith(mockGameState);
+      expect(mockStartTurn).toHaveBeenCalledWith(mockGameState, expect.any(Function));
     });
 
     it('should transition to END phase after start turn execution on Turn 1', () => {

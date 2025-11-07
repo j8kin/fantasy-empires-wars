@@ -9,6 +9,7 @@ export interface TurnManagerCallbacks {
   onStartProgress: (message: string) => void;
   onHideProgress: () => void;
   onComputerMainTurn: (gameState: GameState) => void;
+  onQuestResults: (results: string[]) => void;
 }
 
 export class TurnManager {
@@ -46,7 +47,7 @@ export class TurnManager {
     // Execute start turn logic
     const timer = setTimeout(() => {
       this.activeTimers.delete(timer);
-      startTurn(gameState);
+      startTurn(gameState, this.callbacks.onQuestResults);
       if (gameState.turn === 1) {
         // on first turn place players randomly on a map
         this.endCurrentTurn(gameState);

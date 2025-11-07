@@ -18,6 +18,7 @@ import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
 import ErrorMessagePopup from '../popups/ErrorMessagePopup';
+import QuestResultsPopup from '../popups/QuestResultsPopup';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import SendHeroInQuestDialog from '../dialogs/SendHeroInQuestDialog';
@@ -33,6 +34,7 @@ const MainViewContent: React.FC = () => {
     showProgressPopup,
     progressMessage,
     showErrorMessagePopup,
+    showQuestResultsPopup,
     gameStarted,
     clearAllGlow,
     setSelectedLandAction,
@@ -40,6 +42,7 @@ const MainViewContent: React.FC = () => {
     setShowProgressPopup,
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
+    showQuestResults,
   } = useApplicationContext();
 
   const { gameState, startNewTurn, setTurnManagerCallbacks } = useGameContext();
@@ -67,6 +70,9 @@ const MainViewContent: React.FC = () => {
         // Stub for computer AI turn
         console.log('Computer player turn - AI not implemented yet');
       },
+      onQuestResults: (results: string[]) => {
+        showQuestResults(results);
+      },
     });
   }, [
     setProgressMessage,
@@ -74,6 +80,7 @@ const MainViewContent: React.FC = () => {
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
     setTurnManagerCallbacks,
+    showQuestResults,
   ]);
 
   // Start the first turn when game begins (only once per game)
@@ -164,6 +171,16 @@ const MainViewContent: React.FC = () => {
           screenPosition={{
             x: typeof window !== 'undefined' ? (window.innerWidth - 400) / 2 : 0,
             y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
+          }}
+        />
+      )}
+
+      {/* Quest Results Popup */}
+      {showQuestResultsPopup && (
+        <QuestResultsPopup
+          screenPosition={{
+            x: typeof window !== 'undefined' ? (window.innerWidth - 500) / 2 : 0,
+            y: typeof window !== 'undefined' ? (window.innerHeight - 400) / 2 : 0,
           }}
         />
       )}

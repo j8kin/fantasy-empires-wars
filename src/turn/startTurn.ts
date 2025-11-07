@@ -7,7 +7,7 @@ import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
 import { completeRecruiting } from '../map/recruiting/completeRecruiting';
 
-export const startTurn = (gameState: GameState) => {
+export const startTurn = (gameState: GameState, onQuestResults?: (results: string[]) => void) => {
   if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
 
   if (gameState.turn === 1) {
@@ -50,7 +50,7 @@ export const startTurn = (gameState: GameState) => {
 
   const questStatus = completeQuest(gameState);
   if (questStatus.length > 0 && getTurnOwner(gameState)?.playerType === 'human') {
-    // todo notify about Quests results via popup
+    onQuestResults?.(questStatus);
   }
 
   // Calculate income based on current player's lands and army's
