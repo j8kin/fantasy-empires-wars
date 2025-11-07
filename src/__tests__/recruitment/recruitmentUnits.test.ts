@@ -346,6 +346,28 @@ describe('Recruitment', () => {
           expect(recruitedUnit.artifacts.length).toBe(0);
         }
       );
+
+      it('Recruiting heroes 3 heroes in parallel', () => {
+        const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+        constructBuilding(BuildingType.BARRACKS, barracksPos);
+
+        const barracksLand = getLand(gameStateStub, barracksPos);
+        expect(barracksLand.army.length).toBe(0);
+
+        // Recruiting 3 heroes of the same type in barracks
+        startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
+        startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
+        startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
+        verifyRecruitSlot(barracksLand.mapPos, 0, 3, HeroUnitType.FIGHTER, 3);
+        verifyRecruitSlot(barracksLand.mapPos, 1, 3, HeroUnitType.FIGHTER, 3);
+        verifyRecruitSlot(barracksLand.mapPos, 2, 3, HeroUnitType.FIGHTER, 3);
+
+        makeNTurns(3);
+
+        expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
+
+        expect(barracksLand.army.length).toBe(3);
+      });
     });
 
     describe('Corner cases', () => {

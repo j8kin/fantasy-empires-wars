@@ -26,12 +26,14 @@ export const startTurn = (gameState: GameState) => {
       land.army.filter((a) => a.isMoving).forEach((a) => (a.isMoving = false));
 
       // merge armies of the same type and turnsUntilReady === 0 in one unit with summary quantity
-      const readyArmies = land.army.filter((a) => !a.isMoving && typeof a.unit.level === 'number');
-      const notReadyArmies = land.army.filter(
-        (a) => a.isMoving || typeof a.unit.level !== 'number'
+      // Heroes should never be merged since they are unique individuals
+      const readyRegularUnits = land.army.filter(
+        (a) => !a.isMoving && typeof a.unit.level !== 'number'
       );
+      const heroUnits = land.army.filter((a) => !a.isMoving && typeof a.unit.level === 'number');
+      const notReadyArmies = land.army.filter((a) => a.isMoving);
 
-      const mergedArmies = readyArmies.reduce((acc: ArmyUnit[], army) => {
+      const mergedRegularUnits = readyRegularUnits.reduce((acc: ArmyUnit[], army) => {
         const existing: RegularUnit = acc.find((a) => a.unit.id === army.unit.id)
           ?.unit as RegularUnit;
         if (existing) {
@@ -42,7 +44,7 @@ export const startTurn = (gameState: GameState) => {
         return acc;
       }, []);
 
-      land.army = [...mergedArmies, ...notReadyArmies];
+      land.army = [...mergedRegularUnits, ...heroUnits, ...notReadyArmies];
     }
   );
 
