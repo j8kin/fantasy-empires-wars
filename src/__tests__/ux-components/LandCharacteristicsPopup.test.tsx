@@ -179,6 +179,53 @@ describe('LandCharacteristicsPopup', () => {
       expect(screen.getByText('Pyromancer lvl: 1')).toBeInTheDocument();
     });
 
+    it('displays multiple heroes of same type with different names', () => {
+      const fighter1 = { ...getDefaultUnit(HeroUnitType.FIGHTER) } as any;
+      fighter1.name = 'Cedric Brightshield';
+
+      const fighter2 = { ...getDefaultUnit(HeroUnitType.FIGHTER) } as any;
+      fighter2.name = 'Rowan Ashborne';
+
+      const fighter3 = { ...getDefaultUnit(HeroUnitType.FIGHTER) } as any;
+      fighter3.name = 'Gareth Dawnhart';
+
+      const mockArmy: Army = [
+        { unit: fighter1, isMoving: false },
+        { unit: fighter2, isMoving: false },
+        { unit: fighter3, isMoving: false },
+      ];
+
+      const tileWithHeroes = {
+        ...mockTileState,
+        army: mockArmy,
+      };
+
+      const tileId = battlefieldLandId(mockTileState.mapPos);
+      const gameStateWithArmy = {
+        ...gameStateStub,
+        battlefield: {
+          ...gameStateStub.battlefield,
+          lands: {
+            ...gameStateStub.battlefield.lands,
+            [tileId]: tileWithHeroes,
+          },
+        },
+      };
+
+      renderWithProviders(
+        <LandCharacteristicsPopup
+          battlefieldPosition={mockTileState.mapPos}
+          screenPosition={mockPosition}
+        />,
+        gameStateWithArmy
+      );
+
+      expect(screen.getByText('Heroes:')).toBeInTheDocument();
+      expect(screen.getByText('Cedric Brightshield lvl: 1')).toBeInTheDocument();
+      expect(screen.getByText('Rowan Ashborne lvl: 1')).toBeInTheDocument();
+      expect(screen.getByText('Gareth Dawnhart lvl: 1')).toBeInTheDocument();
+    });
+
     it('displays units when tile has non-hero units', () => {
       const mockArmy: Army = [
         { unit: getDefaultUnit(RegularUnitType.WARRIOR), isMoving: false },
