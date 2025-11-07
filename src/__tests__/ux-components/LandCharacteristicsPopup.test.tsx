@@ -3,7 +3,14 @@ import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
 import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
-import { Army, getDefaultUnit, HeroUnitType, RegularUnit, RegularUnitType } from '../../types/Army';
+import {
+  Army,
+  getDefaultUnit,
+  HeroUnit,
+  HeroUnitType,
+  RegularUnit,
+  RegularUnitType,
+} from '../../types/Army';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { getLands } from '../../map/utils/getLands';
 import { BuildingType } from '../../types/Building';
@@ -180,13 +187,13 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays multiple heroes of same type with different names', () => {
-      const fighter1 = { ...getDefaultUnit(HeroUnitType.FIGHTER) } as any;
+      const fighter1 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
       fighter1.name = 'Cedric Brightshield';
 
-      const fighter2 = { ...getDefaultUnit(HeroUnitType.FIGHTER) } as any;
+      const fighter2 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
       fighter2.name = 'Rowan Ashborne';
 
-      const fighter3 = { ...getDefaultUnit(HeroUnitType.FIGHTER) } as any;
+      const fighter3 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
       fighter3.name = 'Gareth Dawnhart';
 
       const mockArmy: Army = [
