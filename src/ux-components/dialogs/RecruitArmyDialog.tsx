@@ -8,13 +8,18 @@ import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage
 import { getTurnOwner } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 import { getDefaultUnit, HeroUnitType, isHero, isMage, UnitType } from '../../types/Army';
-import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
+import { getLand, LandPosition } from '../../map/utils/getLands';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 
 import { getUnitImg } from '../../assets/getUnitImg';
 
 const RecruitArmyDialog: React.FC = () => {
-  const { showRecruitArmyDialog, setShowRecruitArmyDialog } = useApplicationContext();
+  const {
+    showRecruitArmyDialog,
+    setShowRecruitArmyDialog,
+    actionLandPosition,
+    setActionLandPosition,
+  } = useApplicationContext();
   const { gameState } = useGameContext();
 
   // Shared state to track used slots across all pages
@@ -22,14 +27,9 @@ const RecruitArmyDialog: React.FC = () => {
 
   // Memoize the initial slot count so it doesn't change during the dialog session
   const initialSlotCount = useMemo(() => {
-    if (!gameState) return 0;
+    if (!gameState || !actionLandPosition) return 0;
 
-    const land = getLands({
-      lands: gameState.battlefield.lands,
-      players: [getTurnOwner(gameState)!],
-      buildings: [BuildingType.BARRACKS],
-    })[0];
-
+    const land = getLand(gameState, actionLandPosition);
     if (!land) return 0;
 
     const recruitBuilding = land.buildings.filter(
@@ -37,24 +37,21 @@ const RecruitArmyDialog: React.FC = () => {
     )[0];
 
     return (recruitBuilding?.numberOfSlots ?? 0) - (recruitBuilding?.slots?.length ?? 0);
-  }, [gameState]); // Only recalculate when dialog opens
+  }, [gameState, actionLandPosition]); // Only recalculate when dialog opens or land changes
 
   const handleClose = useCallback(() => {
     setShowRecruitArmyDialog(false);
     // Reset used slots when dialog closes
     setUsedSlots(new Set());
-  }, [setShowRecruitArmyDialog]);
+    // Clear the recruitment land position
+    setActionLandPosition(undefined);
+  }, [setShowRecruitArmyDialog, setActionLandPosition]);
 
   // Use effect to close dialog when no slots are available (moved from render to avoid state update during render)
   useEffect(() => {
-    if (!gameState || !showRecruitArmyDialog) return;
+    if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return;
 
-    const land = getLands({
-      lands: gameState.battlefield.lands,
-      players: [getTurnOwner(gameState)!],
-      buildings: [BuildingType.BARRACKS],
-    })[0];
-
+    const land = getLand(gameState, actionLandPosition);
     if (!land) return;
 
     const recruitBuilding = land.buildings.filter(
@@ -64,7 +61,7 @@ const RecruitArmyDialog: React.FC = () => {
     if (!recruitBuilding && showRecruitArmyDialog) {
       handleClose();
     }
-  }, [gameState, showRecruitArmyDialog, handleClose]);
+  }, [gameState, showRecruitArmyDialog, actionLandPosition, handleClose]);
 
   const createSlotClickHandler = useCallback(
     (unitType: UnitType, landPos: LandPosition) => {
@@ -92,7 +89,7 @@ const RecruitArmyDialog: React.FC = () => {
     [gameState, handleClose]
   );
 
-  if (!gameState || !showRecruitArmyDialog) return undefined;
+  if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return undefined;
 
   // Use the fixed initial slot count instead of recalculating
   if (initialSlotCount === 0) {
@@ -100,11 +97,7 @@ const RecruitArmyDialog: React.FC = () => {
     return undefined;
   }
 
-  const land = getLands({
-    lands: gameState.battlefield.lands,
-    players: [getTurnOwner(gameState)!],
-    buildings: [BuildingType.BARRACKS],
-  })[0];
+  const land = getLand(gameState, actionLandPosition);
 
   const recruitBuilding = land.buildings.filter(
     (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots
@@ -115,8 +108,8 @@ const RecruitArmyDialog: React.FC = () => {
     return null;
   }
 
-  const availableUnits = getLand(gameState!, land.mapPos)
-    .land.unitsToRecruit.filter(
+  const availableUnits = land.land.unitsToRecruit
+    .filter(
       (u) =>
         // non-mages should be recruited in BARRACKS only
         (recruitBuilding.id === BuildingType.BARRACKS &&
@@ -152,8 +145,8 @@ const RecruitArmyDialog: React.FC = () => {
           cost={unit.recruitCost}
           onClose={handleClose}
           slots={slots}
-          onSlotClick={createSlotClickHandler(unit.id, land.mapPos)}
-          onIconClick={createRecruitClickHandler(unit.id, land.mapPos)}
+          onSlotClick={createSlotClickHandler(unit.id, actionLandPosition)}
+          onIconClick={createRecruitClickHandler(unit.id, actionLandPosition)}
           usedSlots={usedSlots}
         />
       ))}

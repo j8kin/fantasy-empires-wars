@@ -5,13 +5,14 @@ import { ButtonName } from '../../types/ButtonName';
 
 export interface GameButtonProps {
   buttonName: ButtonName;
-  onClick?: () => void;
+  // Use the standard React mouse event handler for an img element; callers may ignore the event
+  onClick?: React.MouseEventHandler<HTMLImageElement>;
 }
 
 const GameButton: React.FC<GameButtonProps> = ({ buttonName, onClick }) => {
-  const handleButton = () => {
+  const handleButton = (event: React.MouseEvent<HTMLImageElement>) => {
     if (onClick) {
-      onClick();
+      onClick(event);
     } else {
       console.log(`${buttonName} clicked! onClick handler: 'not provided'`);
       if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {

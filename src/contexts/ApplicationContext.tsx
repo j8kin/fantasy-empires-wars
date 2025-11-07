@@ -4,8 +4,11 @@ import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBor
 import { LandPosition } from '../map/utils/getLands';
 
 interface ApplicationContextType {
+  // Selected land position and action
   selectedLandAction: string | null;
   setSelectedLandAction: (item: string | null) => void;
+  actionLandPosition: LandPosition | undefined;
+  setActionLandPosition: (position: LandPosition | undefined) => void;
 
   // Dialog states
   showStartWindow: boolean;
@@ -102,7 +105,9 @@ interface ApplicationContextType {
 const ApplicationContext = createContext<ApplicationContextType | undefined>(undefined);
 
 export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Selected land position and action
   const [selectedLandAction, setSelectedLandAction] = useState<string | null>(null);
+  const [actionLandPosition, setActionLandPosition] = useState<LandPosition | undefined>(undefined);
 
   // Dialog states
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
@@ -232,8 +237,11 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   return (
     <ApplicationContext.Provider
       value={{
+        // Selected land position and action
         selectedLandAction,
         setSelectedLandAction,
+        actionLandPosition,
+        setActionLandPosition,
 
         // Dialog states
         showStartWindow,

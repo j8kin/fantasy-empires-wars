@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -26,6 +26,8 @@ const mockApplicationContext = {
   setShowRecruitArmyDialog: jest.fn(),
   selectedLandAction: null,
   setSelectedLandAction: jest.fn(),
+  actionLandPosition: { row: 3, col: 3 } as LandPosition,
+  setActionLandPosition: jest.fn(),
   showStartWindow: false,
   showSaveDialog: false,
   showCastSpellDialog: false,
@@ -66,6 +68,22 @@ const mockApplicationContext = {
   setSaveGameName: jest.fn(),
   setGameStarted: jest.fn(),
   setGlowingTiles: jest.fn(),
+  addGlowingTile: jest.fn(),
+  removeGlowingTile: jest.fn(),
+  clearAllGlow: jest.fn(),
+  showLandPopup: jest.fn(),
+  hideLandPopup: jest.fn(),
+  resetSaveGameDialog: jest.fn(),
+  showOpponentInfo: jest.fn(),
+  hideOpponentInfo: jest.fn(),
+  showSelectOpponentDialogWithConfig: jest.fn(),
+  hideSelectOpponentDialog: jest.fn(),
+  showQuestResultsPopup: false,
+  setShowQuestResultsPopup: jest.fn(),
+  questResults: [],
+  setQuestResults: jest.fn(),
+  showQuestResults: jest.fn(),
+  hideQuestResults: jest.fn(),
 };
 
 const mockGameContext = {
@@ -75,6 +93,7 @@ const mockGameContext = {
   getPlayerById: jest.fn(),
   getAllPlayersExcept: jest.fn(),
   getOpponents: jest.fn(),
+  recalculateActivePlayerIncome: jest.fn(),
 };
 
 jest.mock('../../../contexts/ApplicationContext', () => ({
@@ -152,8 +171,8 @@ jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', ()
   };
 });
 
-// Import the mocked function
-const mockStartRecruiting = require('../../../map/recruiting/startRecruiting').startRecruiting;
+// Import the mocked function (will be mocked by jest.mock above)
+import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';
 
 describe('RecruitArmyDialog', () => {
   let mockGameState: GameState;
@@ -272,7 +291,7 @@ describe('RecruitArmyDialog', () => {
 
       const pages = screen.getAllByTestId(/flip-book-page-/);
       const pageHeaders = pages.map(
-        (page) => page.querySelector('[data-testid="page-header"]')?.textContent
+        (page) => within(page).getByTestId('page-header').textContent || ''
       );
 
       // Regular units should come before heroes
@@ -481,9 +500,9 @@ describe('RecruitArmyDialog', () => {
 
       renderWithProviders(<RecruitArmyDialog />);
 
-      // The dialog may not render if no valid units are available for the tower
-      // This is expected behavior - component closes when no recruitable units exist
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      // The dialog should render showing the cleric which can be recruited in white mage tower
+      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book-page-Cleric')).toBeInTheDocument();
     });
 
     it('should show pyromancer in red mage tower', () => {
@@ -502,8 +521,9 @@ describe('RecruitArmyDialog', () => {
 
       renderWithProviders(<RecruitArmyDialog />);
 
-      // The dialog may not render if no valid units are available for the tower
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      // The dialog should render showing the pyromancer which can be recruited in red mage tower
+      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book-page-Pyromancer')).toBeInTheDocument();
     });
 
     it('should show enchanter in blue mage tower', () => {
@@ -522,8 +542,9 @@ describe('RecruitArmyDialog', () => {
 
       renderWithProviders(<RecruitArmyDialog />);
 
-      // The dialog may not render if no valid units are available for the tower
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      // The dialog should render showing the enchanter which can be recruited in blue mage tower
+      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book-page-Enchanter')).toBeInTheDocument();
     });
 
     it('should show druid in green mage tower', () => {
@@ -542,8 +563,9 @@ describe('RecruitArmyDialog', () => {
 
       renderWithProviders(<RecruitArmyDialog />);
 
-      // The dialog may not render if no valid units are available for the tower
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      // The dialog should render showing the druid which can be recruited in green mage tower
+      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book-page-Druid')).toBeInTheDocument();
     });
 
     it('should show necromancer in black mage tower', () => {
@@ -562,8 +584,9 @@ describe('RecruitArmyDialog', () => {
 
       renderWithProviders(<RecruitArmyDialog />);
 
-      // The dialog may not render if no valid units are available for the tower
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      // The dialog should render showing the necromancer which can be recruited in black mage tower
+      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book-page-Necromancer')).toBeInTheDocument();
     });
   });
 
