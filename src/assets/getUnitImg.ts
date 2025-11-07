@@ -5,6 +5,8 @@ import dwarfImg from './army/dwarf.png';
 import elfImg from './army/elf.png';
 import darkElfImg from './army/dark-elf.png';
 import orcImg from './army/orc.png';
+import ballistaImg from './army/ballista.png';
+import catapultImg from './army/catapult.png';
 
 export const getUnitImg = (unit: UnitType) => {
   switch (unit) {
@@ -18,6 +20,10 @@ export const getUnitImg = (unit: UnitType) => {
       return darkElfImg;
     case RegularUnitType.ORC:
       return orcImg;
+    case RegularUnitType.BALLISTA:
+      return ballistaImg;
+    case RegularUnitType.CATAPULT:
+      return catapultImg;
     default:
       return undefined;
   }
