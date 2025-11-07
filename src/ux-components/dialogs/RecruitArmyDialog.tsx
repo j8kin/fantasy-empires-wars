@@ -62,7 +62,6 @@ const RecruitArmyDialog: React.FC = () => {
     )[0];
 
     if (!recruitBuilding && showRecruitArmyDialog) {
-      console.log('No recruit building available, closing dialog');
       handleClose();
     }
   }, [gameState, showRecruitArmyDialog, handleClose]);

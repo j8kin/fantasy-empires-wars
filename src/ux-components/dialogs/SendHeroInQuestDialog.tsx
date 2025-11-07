@@ -44,7 +44,6 @@ const SendHeroInQuestDialog: React.FC = () => {
       .map((armyUnit) => armyUnit.unit as HeroUnit);
 
     if (availableUnits.length === 0 && showSendHeroInQuestDialog) {
-      console.log('No heroes available for quests, closing dialog');
       handleClose();
     }
   }, [gameState, showSendHeroInQuestDialog, handleClose]);
