@@ -3,6 +3,7 @@ import { getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../types/Army';
 import { generateHeroName } from './heroNameGeneration';
+import { heroRecruitingMessage } from './heroRecruitingMessage';
 
 export const completeRecruiting = (gameState: GameState): string[] => {
   const heroesRecruited: string[] = [];
@@ -27,6 +28,7 @@ export const completeRecruiting = (gameState: GameState): string[] => {
             if (isHero(unit)) {
               // generate uniq name for hero
               (unit as HeroUnit).name = generateHeroName(unit.id as HeroUnitType);
+              heroesRecruited.push(heroRecruitingMessage(unit as HeroUnit));
             }
             l.army.push({ unit: unit, isMoving: false });
           }

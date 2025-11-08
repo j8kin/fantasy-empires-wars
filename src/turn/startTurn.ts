@@ -18,7 +18,7 @@ export const startTurn = (gameState: GameState, onQuestResults?: (results: strin
 
   const player = getTurnOwner(gameState)!;
   // recruit units
-  completeRecruiting(gameState);
+  const heroRecruitingStatus = completeRecruiting(gameState);
 
   // complete army movement and merge ready armies
   getLands({ lands: gameState.battlefield.lands, players: [player], noArmy: false }).forEach(
@@ -49,8 +49,11 @@ export const startTurn = (gameState: GameState, onQuestResults?: (results: strin
   );
 
   const questStatus = completeQuest(gameState);
-  if (questStatus.length > 0 && getTurnOwner(gameState)?.playerType === 'human') {
-    onQuestResults?.(questStatus);
+  if (
+    getTurnOwner(gameState)?.playerType === 'human' &&
+    (questStatus.length > 0 || heroRecruitingStatus.length > 0)
+  ) {
+    onQuestResults?.([...questStatus, ...heroRecruitingStatus]);
   }
 
   // Calculate income based on current player's lands and army's

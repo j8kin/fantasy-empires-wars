@@ -3,6 +3,10 @@ import PopupWrapper, { PopupProps } from './PopupWrapper';
 import styles from './css/QuestResultsPopup.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
+const getMessageHeight = (messages: string) => {
+  // one text line contain ~ 65 characters and 30px height + 8px padding (see css)
+  return (Math.floor(messages.length / 65) + 1) * 30 + 8;
+};
 const HeroOutcomePopup: React.FC<PopupProps> = ({ screenPosition }) => {
   const { questResults, hideQuestResults } = useApplicationContext();
 
@@ -10,11 +14,7 @@ const HeroOutcomePopup: React.FC<PopupProps> = ({ screenPosition }) => {
     return null;
   }
   const headerHeight = 80;
-  const popupHeight = questResults.reduce(
-    // 54 + 8 for 2 lines of text, 79 + 8 for 3 lines of text
-    (acc, msg) => (msg.length < 125 ? acc + 54 + 8 : acc + 79 + 8),
-    0
-  );
+  const popupHeight = questResults.reduce((acc, msg) => acc + getMessageHeight(msg), 0);
 
   return (
     <PopupWrapper
