@@ -16,6 +16,7 @@ export enum HeroUnitType {
   FIGHTER = 'Fighter',
   HAMMER_LORD = 'Hammer-lord',
   RANGER = 'Ranger',
+  SHADOW_BLADE = 'Shadowblade',
   OGR = 'Ogr',
   // mage heroes units
   PYROMANCER = 'Pyromancer',
@@ -247,6 +248,7 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
           'Once feared as destroyers, the Ogr champions now fight with grim purpose—seeking to silence all who dare wield the arcane.',
       };
     // Elf hero
+    case HeroUnitType.SHADOW_BLADE:
     case HeroUnitType.RANGER:
       return {
         id: unitType,
@@ -258,12 +260,14 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         health: 18,
         speed: 5,
         level: 1,
-        alignment: Alignment.LAWFUL,
+        alignment: unitType === HeroUnitType.RANGER ? Alignment.LAWFUL : Alignment.CHAOTIC,
         artifacts: [],
         recruitCost: 1500,
         maintainCost: 100,
         description:
-          'Keepers of forgotten groves, Rangers walk unseen between root and shadow, striking swiftly to preserve the wild balance of Orrivane.',
+          unitType === HeroUnitType.RANGER
+            ? 'Keepers of forgotten groves, Rangers walk unseen between root and shadow, striking swiftly to preserve the wild balance of Orrivane.'
+            : 'A silent killer born of twilight, where loyalty is as thin as moonlight.',
       };
     // Mage Heroes
     // Pyromancer - produce red mana

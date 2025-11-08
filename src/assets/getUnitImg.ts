@@ -11,6 +11,7 @@ import catapultImg from './army/catapult.png';
 import fightableImg from './army/fighter.png';
 import hummerLordImg from './army/hummerlord.png';
 import rangerImg from './army/ranger.png';
+import shadowBladeImg from './army/shadowblade.png';
 
 export const getUnitImg = (unit: UnitType) => {
   switch (unit) {
@@ -35,6 +36,8 @@ export const getUnitImg = (unit: UnitType) => {
       return hummerLordImg;
     case HeroUnitType.RANGER:
       return rangerImg;
+    case HeroUnitType.SHADOW_BLADE:
+      return shadowBladeImg;
 
     default:
       return undefined;

@@ -132,7 +132,11 @@ export const getLandById = (id: LAND_TYPE): Land => {
       return {
         id: LAND_TYPE.DARK_FOREST,
         alignment: Alignment.CHAOTIC,
-        unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.DARK_ELF, HeroUnitType.RANGER],
+        unitsToRecruit: [
+          ...commonUnitsToRecruit,
+          RegularUnitType.DARK_ELF,
+          HeroUnitType.SHADOW_BLADE,
+        ],
         goldPerTurn: { min: 800, max: 950 },
       };
     case LAND_TYPE.HILLS:
