@@ -1,6 +1,6 @@
 import React from 'react';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
-import styles from './css/QuestResultsPopup.module.css';
+import styles from './css/HeroOutcomePopup.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 const getMessageHeight = (messages: string) => {
