@@ -9,11 +9,17 @@ const QuestResultsPopup: React.FC<PopupProps> = ({ screenPosition }) => {
   if (!questResults || questResults.length === 0) {
     return null;
   }
+  const headerHeight = 80;
+  const popupHeight = questResults.reduce(
+    // 54 + 8 for 2 lines of text, 79 + 8 for 3 lines of text
+    (acc, msg) => (msg.length < 125 ? acc + 54 + 8 : acc + 79 + 8),
+    0
+  );
 
   return (
     <PopupWrapper
       screenPosition={screenPosition}
-      dimensions={{ width: 500, height: Math.max(200, 80 + questResults.length * 60) }}
+      dimensions={{ width: 500, height: Math.max(150, headerHeight + popupHeight) }}
       accessible={true}
       onClose={hideQuestResults}
     >
