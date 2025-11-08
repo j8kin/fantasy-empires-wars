@@ -4,11 +4,11 @@ import { PlayerInfo } from '../../types/GamePlayer';
 import { getLands } from '../utils/getLands';
 
 import { BuildingType } from '../../types/Building';
-import { Unit, UnitRank } from '../../types/Army';
+import { HeroUnit, isHero, Unit, UnitRank } from '../../types/Army';
 
 const unitMaintenanceCost = (unit: Unit): number => {
-  if (typeof unit.level === 'number') {
-    return unit.maintainCost * (Math.floor(unit.level / 4) + 1);
+  if (isHero(unit)) {
+    return unit.maintainCost * (Math.floor((unit as HeroUnit).level / 4) + 1);
   }
 
   switch (unit.level) {
@@ -16,8 +16,10 @@ const unitMaintenanceCost = (unit: Unit): number => {
       return unit.maintainCost * (unit.count ?? 0) * 1.5;
     case UnitRank.ELITE:
       return unit.maintainCost * (unit.count ?? 0) * 2;
-    default:
+    case UnitRank.REGULAR:
       return unit.maintainCost * (unit.count ?? 0);
+    default:
+      return 0; // fallback should never happen
   }
 };
 
