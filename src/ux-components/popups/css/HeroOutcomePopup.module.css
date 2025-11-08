@@ -38,7 +38,7 @@
 .resultMessage {
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.05);
-  border-left: 3px solid #ffd700;
+  border-left: 3px solid; /* Color will be set via inline style */
   border-radius: 3px;
   color: #ffffff;
   font-size: 14px;

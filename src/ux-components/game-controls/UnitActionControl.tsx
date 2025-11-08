@@ -41,15 +41,11 @@ const UnitActionControl: React.FC = () => {
             building.numberOfSlots > 0 && building.slots!.length < building.numberOfSlots
         );
       });
-      console.log(
-        `Number of lands: ${recruitmentLands.length} positions: ${recruitmentLands.map((land) => battlefieldLandId(land.mapPos))}`
-      );
 
       // Set selected land action to 'Recruit'
       setSelectedLandAction('Recruit');
       // Add glowing to all recruitment lands
       recruitmentLands.forEach((land) => {
-        console.log(`Glowing tile: ${battlefieldLandId(land.mapPos)}`);
         const tileId = battlefieldLandId(land.mapPos);
         addGlowingTile(tileId);
       });
@@ -71,15 +67,10 @@ const UnitActionControl: React.FC = () => {
         noArmy: false,
       }).filter((l) => l.army.some((u) => isHero(u.unit)));
 
-      console.log(
-        `Number of quest lands: ${questLands.length} positions: ${questLands.map((land) => battlefieldLandId(land.mapPos))}`
-      );
-
       // Set selected land action to 'Quest'
       setSelectedLandAction('Quest');
       // Add glowing to all quest lands
       questLands.forEach((land) => {
-        console.log(`Glowing tile: ${battlefieldLandId(land.mapPos)}`);
         const tileId = battlefieldLandId(land.mapPos);
         addGlowingTile(tileId);
       });

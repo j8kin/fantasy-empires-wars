@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import { GamePlayer, PlayerInfo } from '../types/GamePlayer';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { LandPosition } from '../map/utils/getLands';
+import { HeroOutcome } from '../types/HeroOutcome';
 
 interface ApplicationContextType {
   // Selected land position and action
@@ -23,8 +24,8 @@ interface ApplicationContextType {
   // Quest Results Popup
   showHeroOutcomePopup: boolean;
   setShowHeroOutcomePopup: (show: boolean) => void;
-  questResults: string[];
-  setQuestResults: (results: string[]) => void;
+  heroOutcome: HeroOutcome[];
+  setHeroOutcome: (results: HeroOutcome[]) => void;
 
   // Dialog data
   selectedOpponent: PlayerInfo | undefined;
@@ -97,9 +98,9 @@ interface ApplicationContextType {
   ) => void;
   hideSelectOpponentDialog: () => void;
 
-  // Quest Results actions
-  showQuestResults: (results: string[]) => void;
-  hideQuestResults: () => void;
+  // Hero Outcome actions
+  showHeroOutcome: (results: HeroOutcome[]) => void;
+  hideHeroOutcome: () => void;
 }
 
 const ApplicationContext = createContext<ApplicationContextType | undefined>(undefined);
@@ -121,7 +122,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   // Quest Results Popup states
   const [showHeroOutcomePopup, setShowHeroOutcomePopup] = useState<boolean>(false);
-  const [heroOutcome, setHeroOutcome] = useState<string[]>([]);
+  const [heroOutcome, setHeroOutcome] = useState<HeroOutcome[]>([]);
 
   // Dialog data
   const [selectedOpponent, setSelectedOpponent] = useState<GamePlayer | undefined>(undefined);
@@ -223,13 +224,13 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     setGlowingTiles(new Set());
   }, []);
 
-  // Quest Results actions
-  const showHeroOutcome = useCallback((results: string[]) => {
+  // Hero Outcome actions
+  const showHeroOutcome = useCallback((results: HeroOutcome[]) => {
     setHeroOutcome(results);
     setShowHeroOutcomePopup(true);
   }, []);
 
-  const hideQuestResults = useCallback(() => {
+  const hideHeroOutcome = useCallback(() => {
     setShowHeroOutcomePopup(false);
     setHeroOutcome([]);
   }, []);
@@ -256,8 +257,8 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         // Quest Results Popup
         showHeroOutcomePopup,
         setShowHeroOutcomePopup,
-        questResults: heroOutcome,
-        setQuestResults: setHeroOutcome,
+        heroOutcome,
+        setHeroOutcome,
 
         // Dialog data
         selectedOpponent,
@@ -327,9 +328,9 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         showSelectOpponentDialogWithConfig,
         hideSelectOpponentDialog,
 
-        // Quest Results actions
-        showQuestResults: showHeroOutcome,
-        hideQuestResults,
+        // Hero Outcome actions
+        showHeroOutcome,
+        hideHeroOutcome,
       }}
     >
       {children}

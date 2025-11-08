@@ -13,14 +13,18 @@ import { HeroUnit } from '../../types/Army';
 import { GamePlayer } from '../../types/GamePlayer';
 import { getLand } from '../utils/getLands';
 import { levelUpHero } from '../recruiting/levelUpHero';
+import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
 };
 
-const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState): string => {
+const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState): HeroOutcome => {
   if (Math.random() > 0.55 - 0.05 * (quest.quest.level - 1)) {
-    return emptyHanded(quest.hero.name);
+    return {
+      status: HeroOutcomeType.Neutral,
+      message: emptyHanded(quest.hero.name),
+    };
   }
   const treasureType = Math.random();
   const player = getTurnOwner(gameState)!;
@@ -47,7 +51,7 @@ const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState)
   }
 };
 
-const gainArtifact = (hero: HeroUnit, questType: QuestType): string => {
+const gainArtifact = (hero: HeroUnit, questType: QuestType): HeroOutcome => {
   const baseArtifactLevel = getQuest(questType).level;
   const heroArtifact: Artifact = {
     ...getRandomElement(artifacts),
@@ -55,19 +59,27 @@ const gainArtifact = (hero: HeroUnit, questType: QuestType): string => {
   };
   // todo if hero already has artifact, then allow user to choose between two artifacts
   hero.artifacts.push(heroArtifact);
-  return heroGainArtifact(hero.name, heroArtifact);
+
+  return {
+    status: HeroOutcomeType.Minor,
+    message: heroGainArtifact(hero.name, heroArtifact),
+  };
 };
 
-const gainItem = (player: GamePlayer, hero: HeroUnit): string => {
+const gainItem = (player: GamePlayer, hero: HeroUnit): HeroOutcome => {
   const item = getRandomElement(items);
   if (item.charge == null) {
     item.charge = getRandomElement([7, 10, 15]);
   }
   player.empireTreasures.push(item);
-  return heroGainItem(hero.name, item);
+
+  return {
+    status: HeroOutcomeType.Positive,
+    message: heroGainItem(hero.name, item),
+  };
 };
 
-const gainRelic = (gameState: GameState, hero: HeroUnit): string => {
+const gainRelic = (gameState: GameState, hero: HeroUnit): HeroOutcome => {
   const relicInPlay = gameState.players.flatMap((p) => p.empireTreasures);
   const availableRelics = relicts
     .filter((a) => a.alignment == null || a.alignment === getTurnOwner(gameState)?.alignment)
@@ -76,14 +88,18 @@ const gainRelic = (gameState: GameState, hero: HeroUnit): string => {
   if (availableRelics.length > 0) {
     const relic = getRandomElement(availableRelics);
     getTurnOwner(gameState)?.empireTreasures.push(relic);
-    return heroGainRelic(hero.name, relic);
+
+    return {
+      status: HeroOutcomeType.Legendary,
+      message: heroGainRelic(hero.name, relic),
+    };
   } else {
     return gainItem(getTurnOwner(gameState)!, hero);
   }
 };
 
-const questResults = (quest: HeroQuest, gameState: GameState): string => {
-  let questMessage: string;
+const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
+  let questOutcome: HeroOutcome;
 
   if (
     // player survived quest
@@ -97,7 +113,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): string => {
       levelUpHero(hero, getTurnOwner(gameState)!);
     }
 
-    questMessage = calculateReward(hero, quest, gameState);
+    questOutcome = calculateReward(hero, quest, gameState);
 
     // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
     getLand(gameState, quest.land).army.push({
@@ -105,13 +121,16 @@ const questResults = (quest: HeroQuest, gameState: GameState): string => {
       isMoving: false,
     });
   } else {
-    questMessage = heroDieMessage(quest.hero.name);
+    questOutcome = {
+      status: HeroOutcomeType.Negative,
+      message: heroDieMessage(quest.hero.name),
+    };
   }
 
-  return questMessage;
+  return questOutcome;
 };
 
-export const completeQuest = (gameState: GameState): string[] => {
+export const completeQuest = (gameState: GameState): HeroOutcome[] => {
   if (gameState.turnPhase !== TurnPhase.START) return [];
 
   // decrease turnsByQuest counter

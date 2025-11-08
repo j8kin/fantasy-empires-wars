@@ -6,8 +6,12 @@ import { ArmyUnit, isHero, RegularUnit } from '../types/Army';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
 import { completeRecruiting } from '../map/recruiting/completeRecruiting';
+import { HeroOutcome } from '../types/HeroOutcome';
 
-export const startTurn = (gameState: GameState, onQuestResults?: (results: string[]) => void) => {
+export const startTurn = (
+  gameState: GameState,
+  onQuestResults?: (results: HeroOutcome[]) => void
+) => {
   if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
 
   if (gameState.turn === 1) {

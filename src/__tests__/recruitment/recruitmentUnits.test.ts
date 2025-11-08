@@ -26,7 +26,7 @@ describe('Recruitment', () => {
       onStartProgress: jest.fn(),
       onHideProgress: jest.fn(),
       onComputerMainTurn: jest.fn(),
-      onQuestResults: jest.fn(),
+      onHeroOutcomeResult: jest.fn(),
     };
 
     turnManager = new TurnManager(mockCallbacks);

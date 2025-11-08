@@ -22,6 +22,7 @@ import HeroOutcomePopup from '../popups/HeroOutcomePopup';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import SendHeroInQuestDialog from '../dialogs/SendHeroInQuestDialog';
+import { HeroOutcome } from '../../types/HeroOutcome';
 
 const MainViewContent: React.FC = () => {
   const {
@@ -42,7 +43,7 @@ const MainViewContent: React.FC = () => {
     setShowProgressPopup,
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
-    showQuestResults,
+    showHeroOutcome,
   } = useApplicationContext();
 
   const { gameState, startNewTurn, setTurnManagerCallbacks } = useGameContext();
@@ -70,8 +71,8 @@ const MainViewContent: React.FC = () => {
         // Stub for computer AI turn
         console.log('Computer player turn - AI not implemented yet');
       },
-      onQuestResults: (results: string[]) => {
-        showQuestResults(results);
+      onHeroOutcomeResult: (results: HeroOutcome[]) => {
+        showHeroOutcome(results);
       },
     });
   }, [
@@ -80,7 +81,7 @@ const MainViewContent: React.FC = () => {
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
     setTurnManagerCallbacks,
-    showQuestResults,
+    showHeroOutcome,
   ]);
 
   // Start the first turn when game begins (only once per game)

@@ -2,6 +2,7 @@ import { GameState, TurnPhase, getTurnOwner } from '../types/GameState';
 import { startTurn } from './startTurn';
 import { endTurn } from './endTurn';
 import { mainAiTurn } from './mainAiTurn';
+import { HeroOutcome } from '../types/HeroOutcome';
 
 export interface TurnManagerCallbacks {
   onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => void;
@@ -9,7 +10,7 @@ export interface TurnManagerCallbacks {
   onStartProgress: (message: string) => void;
   onHideProgress: () => void;
   onComputerMainTurn: (gameState: GameState) => void;
-  onQuestResults: (results: string[]) => void;
+  onHeroOutcomeResult: (results: HeroOutcome[]) => void;
 }
 
 export class TurnManager {
@@ -47,7 +48,7 @@ export class TurnManager {
     // Execute start turn logic
     const timer = setTimeout(() => {
       this.activeTimers.delete(timer);
-      startTurn(gameState, this.callbacks.onQuestResults);
+      startTurn(gameState, this.callbacks.onHeroOutcomeResult);
       if (gameState.turn === 1) {
         // on first turn place players randomly on a map
         this.endCurrentTurn(gameState);
