@@ -21,8 +21,8 @@ interface ApplicationContextType {
   showProgressPopup: boolean;
 
   // Quest Results Popup
-  showQuestResultsPopup: boolean;
-  setShowQuestResultsPopup: (show: boolean) => void;
+  showHeroOutcomePopup: boolean;
+  setShowHeroOutcomePopup: (show: boolean) => void;
   questResults: string[];
   setQuestResults: (results: string[]) => void;
 
@@ -120,8 +120,8 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [showProgressPopup, setShowProgressPopup] = useState<boolean>(false);
 
   // Quest Results Popup states
-  const [showQuestResultsPopup, setShowQuestResultsPopup] = useState<boolean>(false);
-  const [questResults, setQuestResults] = useState<string[]>([]);
+  const [showHeroOutcomePopup, setShowHeroOutcomePopup] = useState<boolean>(false);
+  const [heroOutcome, setHeroOutcome] = useState<string[]>([]);
 
   // Dialog data
   const [selectedOpponent, setSelectedOpponent] = useState<GamePlayer | undefined>(undefined);
@@ -224,14 +224,14 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   }, []);
 
   // Quest Results actions
-  const showQuestResults = useCallback((results: string[]) => {
-    setQuestResults(results);
-    setShowQuestResultsPopup(true);
+  const showHeroOutcome = useCallback((results: string[]) => {
+    setHeroOutcome(results);
+    setShowHeroOutcomePopup(true);
   }, []);
 
   const hideQuestResults = useCallback(() => {
-    setShowQuestResultsPopup(false);
-    setQuestResults([]);
+    setShowHeroOutcomePopup(false);
+    setHeroOutcome([]);
   }, []);
 
   return (
@@ -254,10 +254,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         showProgressPopup,
 
         // Quest Results Popup
-        showQuestResultsPopup,
-        setShowQuestResultsPopup,
-        questResults,
-        setQuestResults,
+        showHeroOutcomePopup,
+        setShowHeroOutcomePopup,
+        questResults: heroOutcome,
+        setQuestResults: setHeroOutcome,
 
         // Dialog data
         selectedOpponent,
@@ -328,7 +328,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         hideSelectOpponentDialog,
 
         // Quest Results actions
-        showQuestResults,
+        showQuestResults: showHeroOutcome,
         hideQuestResults,
       }}
     >

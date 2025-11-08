@@ -4,7 +4,8 @@ import { BuildingType } from '../../types/Building';
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../types/Army';
 import { generateHeroName } from './heroNameGeneration';
 
-export const completeRecruiting = (gameState: GameState): void => {
+export const completeRecruiting = (gameState: GameState): string [] => {
+  const heroesRecruited: string[] = [];
   getLands({
     lands: gameState.battlefield.lands,
     players: [getTurnOwner(gameState)!],
@@ -34,4 +35,6 @@ export const completeRecruiting = (gameState: GameState): void => {
       }
     })
   );
+
+  return heroesRecruited;
 };

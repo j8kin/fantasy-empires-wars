@@ -3,7 +3,7 @@ import PopupWrapper, { PopupProps } from './PopupWrapper';
 import styles from './css/QuestResultsPopup.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
-const QuestResultsPopup: React.FC<PopupProps> = ({ screenPosition }) => {
+const HeroOutcomePopup: React.FC<PopupProps> = ({ screenPosition }) => {
   const { questResults, hideQuestResults } = useApplicationContext();
 
   if (!questResults || questResults.length === 0) {
@@ -39,4 +39,4 @@ const QuestResultsPopup: React.FC<PopupProps> = ({ screenPosition }) => {
   );
 };
 
-export default QuestResultsPopup;
+export default HeroOutcomePopup;

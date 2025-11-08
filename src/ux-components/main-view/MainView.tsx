@@ -18,7 +18,7 @@ import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
 import ErrorMessagePopup from '../popups/ErrorMessagePopup';
-import QuestResultsPopup from '../popups/QuestResultsPopup';
+import HeroOutcomePopup from '../popups/HeroOutcomePopup';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import SendHeroInQuestDialog from '../dialogs/SendHeroInQuestDialog';
@@ -34,7 +34,7 @@ const MainViewContent: React.FC = () => {
     showProgressPopup,
     progressMessage,
     showErrorMessagePopup,
-    showQuestResultsPopup,
+    showHeroOutcomePopup,
     gameStarted,
     clearAllGlow,
     setSelectedLandAction,
@@ -176,8 +176,8 @@ const MainViewContent: React.FC = () => {
       )}
 
       {/* Quest Results Popup */}
-      {showQuestResultsPopup && (
-        <QuestResultsPopup
+      {showHeroOutcomePopup && (
+        <HeroOutcomePopup
           screenPosition={{
             x: typeof window !== 'undefined' ? (window.innerWidth - 500) / 2 : 0,
             y: typeof window !== 'undefined' ? (window.innerHeight - 400) / 2 : 0,
