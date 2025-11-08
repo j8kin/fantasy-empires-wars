@@ -1,22 +1,25 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import CastSpellDialog from '../../ux-components/dialogs/CastSpellDialog';
-import { GameProvider, useGameContext } from '../../contexts/GameContext';
+import CastSpellDialog from '../../../ux-components/dialogs/CastSpellDialog';
+import { GameProvider, useGameContext } from '../../../contexts/GameContext';
 import {
   ApplicationContextProvider,
   useApplicationContext,
-} from '../../contexts/ApplicationContext';
-import { AllSpells } from '../../types/Spell';
-import { ManaType } from '../../types/Mana';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { toGamePlayer } from '../utils/toGamePlayer';
-import { TurnPhase } from '../../types/GameState';
+} from '../../../contexts/ApplicationContext';
+import { AllSpells } from '../../../types/Spell';
+import { ManaType } from '../../../types/Mana';
+import { GamePlayer, PREDEFINED_PLAYERS } from '../../../types/GamePlayer';
+import { toGamePlayer } from '../../utils/toGamePlayer';
+import { TurnPhase } from '../../../types/GameState';
 
 // Mock CSS modules
-jest.mock('../../ux-components/fantasy-book-dialog-template/css/FlipBook.css', () => ({}));
+jest.mock(
+  '../../../ux-components/fantasy-book-dialog-template/css/FlipBook.module.css',
+  () => ({})
+);
 
 // Mock child components
-jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
+jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
   return ({ children, onClickOutside }: any) => (
     <div data-testid="FlipBook" onClick={onClickOutside}>
       {children}
@@ -27,8 +30,8 @@ jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
 // Mock FlipBookPage with minimal behavior simulation
 const mockFlipBookPageClick = jest.fn();
 
-jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
-  return ({ header, description, cost, costLabel, onClose }: any) => (
+jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
+  const MockFlipBookPage = ({ header, description, cost, costLabel, onClose }: any) => (
     <div data-testid={`FlipBookPage-${header}`}>
       <h3>{header}</h3>
       <p>{description}</p>
@@ -47,15 +50,26 @@ jest.mock('../../ux-components/fantasy-book-dialog-template/FlipBookPage', () =>
       </button>
     </div>
   );
+
+  return {
+    __esModule: true,
+    default: MockFlipBookPage,
+    FlipBookPageType: {
+      SPELL: 'Spell',
+      BUILDING: 'Building',
+      RECRUIT: 'Recruit',
+      QUEST: 'Quest',
+    },
+  };
 });
 
 // Mock spell images
-jest.mock('../../assets/spells/white/blessing.png', () => 'blessing.png');
-jest.mock('../../assets/spells/white/heal.png', () => 'heal.png');
-jest.mock('../../assets/spells/white/turn-undead.png', () => 'turn-undead.png');
-jest.mock('../../assets/spells/white/view.png', () => 'view.png');
-jest.mock('../../assets/spells/blue/illusion.png', () => 'illusion.png');
-jest.mock('../../assets/spells/blue/teleport.png', () => 'teleport.png');
+jest.mock('../../../assets/spells/white/blessing.png', () => 'blessing.png');
+jest.mock('../../../assets/spells/white/heal.png', () => 'heal.png');
+jest.mock('../../../assets/spells/white/turn-undead.png', () => 'turn-undead.png');
+jest.mock('../../../assets/spells/white/view.png', () => 'view.png');
+jest.mock('../../../assets/spells/blue/illusion.png', () => 'illusion.png');
+jest.mock('../../../assets/spells/blue/teleport.png', () => 'teleport.png');
 
 const CastSpellDialogWithContext: React.FC = () => (
   <ApplicationContextProvider>
@@ -86,19 +100,13 @@ const renderWithApplicationContext = () => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState, gameState } = useGameContext();
     React.useEffect(() => {
-      const selectedPlayer: GamePlayer = {
-        ...PREDEFINED_PLAYERS[0],
-        vault: 1500,
-        income: 0,
-        diplomacy: {},
-        mana: {
-          [ManaType.WHITE]: 1000,
-          [ManaType.BLACK]: 1000,
-          [ManaType.RED]: 1000,
-          [ManaType.GREEN]: 1000,
-          [ManaType.BLUE]: 1000,
-        },
-        playerType: 'human',
+      const selectedPlayer: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+      selectedPlayer.mana = {
+        [ManaType.WHITE]: 1000,
+        [ManaType.BLACK]: 1000,
+        [ManaType.RED]: 1000,
+        [ManaType.GREEN]: 1000,
+        [ManaType.BLUE]: 1000,
       };
 
       if (gameState) {

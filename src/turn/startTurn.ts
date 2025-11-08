@@ -2,12 +2,16 @@ import { GameState, getTurnOwner } from '../types/GameState';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
 import { getLands } from '../map/utils/getLands';
-import { ArmyUnit, RegularUnit } from '../types/Army';
+import { ArmyUnit, isHero, RegularUnit } from '../types/Army';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
 import { completeRecruiting } from '../map/recruiting/completeRecruiting';
+import { HeroOutcome } from '../types/HeroOutcome';
 
-export const startTurn = (gameState: GameState) => {
+export const startTurn = (
+  gameState: GameState,
+  onQuestResults?: (results: HeroOutcome[]) => void
+) => {
   if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
 
   if (gameState.turn === 1) {
@@ -18,7 +22,7 @@ export const startTurn = (gameState: GameState) => {
 
   const player = getTurnOwner(gameState)!;
   // recruit units
-  completeRecruiting(gameState);
+  const heroRecruitingStatus = completeRecruiting(gameState);
 
   // complete army movement and merge ready armies
   getLands({ lands: gameState.battlefield.lands, players: [player], noArmy: false }).forEach(
@@ -26,14 +30,16 @@ export const startTurn = (gameState: GameState) => {
       land.army.filter((a) => a.isMoving).forEach((a) => (a.isMoving = false));
 
       // merge armies of the same type and turnsUntilReady === 0 in one unit with summary quantity
-      const readyArmies = land.army.filter((a) => !a.isMoving && typeof a.unit.level === 'number');
-      const notReadyArmies = land.army.filter(
-        (a) => a.isMoving || typeof a.unit.level !== 'number'
-      );
+      // Heroes should never be merged since they are unique individuals
+      const readyRegularUnits = land.army.filter((a) => !a.isMoving && !isHero(a.unit));
+      const heroUnits = land.army.filter((a) => !a.isMoving && isHero(a.unit));
+      const notReadyArmies = land.army.filter((a) => a.isMoving);
 
-      const mergedArmies = readyArmies.reduce((acc: ArmyUnit[], army) => {
-        const existing: RegularUnit = acc.find((a) => a.unit.id === army.unit.id)
-          ?.unit as RegularUnit;
+      const mergedRegularUnits = readyRegularUnits.reduce((acc: ArmyUnit[], army) => {
+        const existing: RegularUnit = acc.find(
+          // merge units the same type and level (regular/veteran and elite units should not merge with each other)
+          (a) => a.unit.id === army.unit.id && a.unit.level === army.unit.level
+        )?.unit as RegularUnit;
         if (existing) {
           existing.count += (army.unit as RegularUnit).count;
         } else {
@@ -42,13 +48,16 @@ export const startTurn = (gameState: GameState) => {
         return acc;
       }, []);
 
-      land.army = [...mergedArmies, ...notReadyArmies];
+      land.army = [...mergedRegularUnits, ...heroUnits, ...notReadyArmies];
     }
   );
 
   const questStatus = completeQuest(gameState);
-  if (questStatus.length > 0 && getTurnOwner(gameState)?.playerType === 'human') {
-    // todo notify about Quests results via popup
+  if (
+    getTurnOwner(gameState)?.playerType === 'human' &&
+    (questStatus.length > 0 || heroRecruitingStatus.length > 0)
+  ) {
+    onQuestResults?.([...questStatus, ...heroRecruitingStatus]);
   }
 
   // Calculate income based on current player's lands and army's

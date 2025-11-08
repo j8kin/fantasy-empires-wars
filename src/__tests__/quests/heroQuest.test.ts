@@ -1,11 +1,14 @@
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameState';
-import { getLands, LandPosition } from '../../map/utils/getLands';
+import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
 import { startQuest } from '../../map/quest/startQuest';
-import { HeroUnit } from '../../types/Army';
-import { QuestType } from '../../map/quest/Quest';
+import { HeroUnit, HeroUnitType } from '../../types/Army';
+import { QuestType } from '../../types/Quest';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
 import { TreasureItem } from '../../types/Treasures';
+import { BuildingType } from '../../types/Building';
+import { startRecruiting } from '../../map/recruiting/startRecruiting';
+import { construct } from '../../map/building/construct';
 
 describe('Hero Quest', () => {
   const easyQuest: QuestType = 'The Echoing Ruins';
@@ -29,6 +32,7 @@ describe('Hero Quest', () => {
       onStartProgress: jest.fn(),
       onHideProgress: jest.fn(),
       onComputerMainTurn: jest.fn(),
+      onHeroOutcomeResult: jest.fn(),
     };
 
     turnManager = new TurnManager(mockCallbacks);
@@ -116,7 +120,7 @@ describe('Hero Quest', () => {
     expectedRemainTurns: number
   ): void => {
     expect(getTurnOwner(gameStateStub)?.quests.length).toBe(1);
-    expect(getTurnOwner(gameStateStub)?.quests[0].id).toBe(questId);
+    expect(getTurnOwner(gameStateStub)?.quests[0].quest.id).toBe(questId);
     expect(getTurnOwner(gameStateStub)?.quests[0].hero).toBe(expectedHero);
     expect(getTurnOwner(gameStateStub)?.quests[0].land).toBe(expectedLand);
     expect(getTurnOwner(gameStateStub)?.quests[0].remainTurnsInQuest).toBe(expectedRemainTurns); // counter should be decreased during start phase
@@ -218,6 +222,77 @@ describe('Hero Quest', () => {
     expect(hero.speed).toBe(heroStatsBefore.speed);
     expect(hero.range).toBe(heroStatsBefore.range);
     expect(hero.mana).not.toBeDefined();
+  });
+
+  const constructBuilding = (buildingType: BuildingType, pos: LandPosition): void => {
+    construct(gameStateStub, buildingType, pos);
+    const barracksLand = getLand(gameStateStub, pos);
+
+    expect(gameStateStub.turn).toBe(2);
+    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
+
+    expect(barracksLand).toBeDefined();
+    expect(barracksLand.army.length).toBe(0);
+    expect(barracksLand.buildings[0].numberOfSlots).toBe(
+      buildingType === BuildingType.BARRACKS ? 3 : 1
+    );
+    expect(barracksLand.buildings[0].slots?.length).toBe(0);
+  };
+
+  it('Couple heroes returned from quest at the same time should be placed on the same land', () => {
+    waitStartPhaseComplete();
+    // Initial condition: Recruiting 3 heroes of the same type in barracks
+    const homeLand = getLands({
+      lands: gameStateStub.battlefield.lands,
+      players: [getTurnOwner(gameStateStub)!],
+      buildings: [BuildingType.STRONGHOLD],
+    })[0];
+
+    const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+    constructBuilding(BuildingType.BARRACKS, barracksPos);
+
+    const barracksLand = getLand(gameStateStub, barracksPos);
+    expect(barracksLand.army.length).toBe(0);
+
+    // Recruiting 3 heroes of the same type in barracks
+    startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
+    startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
+    startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
+    expect(barracksLand.buildings[0].slots![0].unit).toBe(HeroUnitType.FIGHTER);
+    expect(barracksLand.buildings[0].slots![1].unit).toBe(HeroUnitType.FIGHTER);
+    expect(barracksLand.buildings[0].slots![2].unit).toBe(HeroUnitType.FIGHTER);
+
+    makeNTurns(3);
+
+    expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
+
+    expect(barracksLand.army.length).toBe(3); // heroes recruited and available for quests
+
+    /* ********************** SEND TO QUEST ******************* */
+    randomSpy.mockReturnValue(0.01); // always survive (to successfully return all 3 heroes to the same land)
+    barracksLand.army.forEach((armyUnit) => {
+      startQuest(armyUnit.unit as HeroUnit, easyQuest, gameStateStub);
+    });
+    expect(getTurnOwner(gameStateStub)!.quests.length).toBe(3);
+    getTurnOwner(gameStateStub)!.quests.forEach((quest) => {
+      expect(quest.land).toBe(barracksLand.mapPos);
+      expect(quest.remainTurnsInQuest).toBe(4);
+      expect(quest.hero).toBeDefined();
+      expect(quest.hero!.level).toBe(1);
+      expect(quest.quest.id).toBe(easyQuest);
+    });
+
+    expect(barracksLand.army.length).toBe(0);
+
+    makeNTurns(4);
+    expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
+    expect(barracksLand.army.length).toBe(3);
+
+    barracksLand.army.forEach((heroUnit) => {
+      expect(heroUnit.unit.level).toBe(2);
+      expect((heroUnit.unit as HeroUnit).artifacts.length).toBe(1);
+      expect((heroUnit.unit as HeroUnit).artifacts[0].id).toBe(TreasureItem.BOOTS_OF_SPEED);
+    });
   });
 
   //todo add test when hero returns from quest into territory which now controlled by another player and die

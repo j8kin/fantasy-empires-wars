@@ -76,6 +76,8 @@ describe('GameContext', () => {
         income: 50,
         diplomacy: { player2: DiplomacyStatus.NO_TREATY },
         playerType: 'human',
+        empireTreasures: [],
+        quests: [],
       } as GamePlayer,
       {
         id: 'player2',
@@ -91,6 +93,8 @@ describe('GameContext', () => {
         income: 30,
         diplomacy: { player1: DiplomacyStatus.NO_TREATY },
         playerType: 'computer',
+        empireTreasures: [],
+        quests: [],
       } as GamePlayer,
     ],
   });

@@ -3,7 +3,14 @@ import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
 import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
-import { Army, getDefaultUnit, HeroUnitType, RegularUnit, RegularUnitType } from '../../types/Army';
+import {
+  Army,
+  getDefaultUnit,
+  HeroUnit,
+  HeroUnitType,
+  RegularUnit,
+  RegularUnitType,
+} from '../../types/Army';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { getLands } from '../../map/utils/getLands';
 import { BuildingType } from '../../types/Building';
@@ -177,6 +184,53 @@ describe('LandCharacteristicsPopup', () => {
       expect(screen.getByText('Heroes:')).toBeInTheDocument();
       expect(screen.getByText('Fighter lvl: 1')).toBeInTheDocument();
       expect(screen.getByText('Pyromancer lvl: 1')).toBeInTheDocument();
+    });
+
+    it('displays multiple heroes of same type with different names', () => {
+      const fighter1 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
+      fighter1.name = 'Cedric Brightshield';
+
+      const fighter2 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
+      fighter2.name = 'Rowan Ashborne';
+
+      const fighter3 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
+      fighter3.name = 'Gareth Dawnhart';
+
+      const mockArmy: Army = [
+        { unit: fighter1, isMoving: false },
+        { unit: fighter2, isMoving: false },
+        { unit: fighter3, isMoving: false },
+      ];
+
+      const tileWithHeroes = {
+        ...mockTileState,
+        army: mockArmy,
+      };
+
+      const tileId = battlefieldLandId(mockTileState.mapPos);
+      const gameStateWithArmy = {
+        ...gameStateStub,
+        battlefield: {
+          ...gameStateStub.battlefield,
+          lands: {
+            ...gameStateStub.battlefield.lands,
+            [tileId]: tileWithHeroes,
+          },
+        },
+      };
+
+      renderWithProviders(
+        <LandCharacteristicsPopup
+          battlefieldPosition={mockTileState.mapPos}
+          screenPosition={mockPosition}
+        />,
+        gameStateWithArmy
+      );
+
+      expect(screen.getByText('Heroes:')).toBeInTheDocument();
+      expect(screen.getByText('Cedric Brightshield lvl: 1')).toBeInTheDocument();
+      expect(screen.getByText('Rowan Ashborne lvl: 1')).toBeInTheDocument();
+      expect(screen.getByText('Gareth Dawnhart lvl: 1')).toBeInTheDocument();
     });
 
     it('displays units when tile has non-hero units', () => {

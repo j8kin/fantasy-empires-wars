@@ -3,8 +3,11 @@ import { getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../types/Army';
 import { generateHeroName } from './heroNameGeneration';
+import { heroRecruitingMessage } from './heroRecruitingMessage';
+import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 
-export const completeRecruiting = (gameState: GameState): void => {
+export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
+  const heroesRecruited: HeroOutcome[] = [];
   getLands({
     lands: gameState.battlefield.lands,
     players: [getTurnOwner(gameState)!],
@@ -26,6 +29,10 @@ export const completeRecruiting = (gameState: GameState): void => {
             if (isHero(unit)) {
               // generate uniq name for hero
               (unit as HeroUnit).name = generateHeroName(unit.id as HeroUnitType);
+              heroesRecruited.push({
+                status: HeroOutcomeType.Success,
+                message: heroRecruitingMessage(unit as HeroUnit),
+              });
             }
             l.army.push({ unit: unit, isMoving: false });
           }
@@ -34,4 +41,6 @@ export const completeRecruiting = (gameState: GameState): void => {
       }
     })
   );
+
+  return heroesRecruited;
 };

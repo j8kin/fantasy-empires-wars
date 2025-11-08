@@ -4,6 +4,7 @@ import { GamePlayer } from '../types/GamePlayer';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
 import { TurnManager, TurnManagerCallbacks } from '../turn/TurnManager';
+import { HeroOutcome } from '../types/HeroOutcome';
 
 interface GameContextType {
   // Game State
@@ -53,6 +54,9 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       },
       onComputerMainTurn: (gameState: GameState) => {
         turnManagerCallbacksRef.current.onComputerMainTurn?.(gameState);
+      },
+      onHeroOutcomeResult: (results: HeroOutcome[]) => {
+        turnManagerCallbacksRef.current.onHeroOutcomeResult?.(results);
       },
     };
   }, []);

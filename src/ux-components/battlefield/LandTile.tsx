@@ -30,6 +30,9 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     clearAllGlow,
     selectedLandAction,
     setSelectedLandAction,
+    setShowRecruitArmyDialog,
+    setShowSendHeroInQuestDialog,
+    setActionLandPosition,
   } = useApplicationContext();
   const { gameState, updateGameState, recalculateActivePlayerIncome } = useGameContext();
 
@@ -85,6 +88,14 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
           updateGameState(gameState!);
           recalculateActivePlayerIncome();
         }
+      } else if (selectedLandAction === 'Recruit') {
+        // Handle recruit action - store the selected land position and show dialog
+        setActionLandPosition(battlefieldPosition);
+        setShowRecruitArmyDialog(true);
+      } else if (selectedLandAction === 'Quest') {
+        // Handle quest action - store the selected land position and show dialog
+        setActionLandPosition(battlefieldPosition);
+        setShowSendHeroInQuestDialog(true);
       } else {
         alert(
           `Unknown action for Land ${tileId}. Action item: ${JSON.stringify(selectedLandAction)}`

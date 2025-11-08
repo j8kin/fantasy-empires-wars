@@ -1,18 +1,23 @@
-import React from 'react';
-import './css/FlipBook.css';
+import React, { useCallback, useEffect } from 'react';
+import styles from './css/FlipBookPage.module.css';
 
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameContext } from '../../contexts/GameContext';
-import { GameState } from '../../types/GameState';
-
-import { getSpellById, SpellName } from '../../types/Spell';
-import { BuildingType } from '../../types/Building';
 import { toRoman } from '../../map/utils/romanNumerals';
-import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
-import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
+
+export interface Slot {
+  id: string;
+  name: string;
+}
+
+export enum FlipBookPageType {
+  SPELL = 'Spell',
+  BUILDING = 'Building',
+  RECRUIT = 'Recruit',
+  QUEST = 'Quest',
+}
 
 interface FlipBookPageProps {
   pageNum: number;
+  lorePage: number;
   header?: string;
   iconPath?: string;
   description?: string;
@@ -23,26 +28,17 @@ interface FlipBookPageProps {
   className?: string;
   style?: React.CSSProperties;
   onClose?: () => void;
+  slots?: Slot[];
+  onSlotClick?: (slot: Slot) => void;
+  onIconClick?: () => void;
+  usedSlots?: Set<string>;
 }
-
-const getAvailableLands = (
-  gameState: GameState,
-  actionType: 'spell' | 'building',
-  name: SpellName | BuildingType
-): string[] => {
-  if (gameState == null) return [];
-
-  if (actionType === 'building') {
-    return getAvailableToConstructLands(gameState, name as BuildingType);
-  } else {
-    return getAvailableToCastSpellLands(gameState, name as SpellName);
-  }
-};
 
 const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
   (
     {
       pageNum,
+      lorePage,
       header,
       iconPath,
       description,
@@ -53,108 +49,112 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
       className,
       style,
       onClose,
+      slots,
+      onSlotClick,
+      onIconClick,
+      usedSlots,
     },
     ref
   ) => {
-    const { setSelectedLandAction, addGlowingTile } = useApplicationContext();
-    const { gameState } = useGameContext();
+    // Use provided usedSlots or default to empty set
+    const effectiveUsedSlots = usedSlots || new Set<string>();
 
+    // Filter out used slots from the available slots
+    const availableSlots = slots?.filter((slot) => !effectiveUsedSlots.has(slot.id)) || [];
+
+    // Effect to check if all slots are used and trigger callback
+    useEffect(() => {
+      if (slots && slots.length > 0 && effectiveUsedSlots.size === slots.length && onClose) {
+        onClose();
+      }
+    }, [slots, effectiveUsedSlots.size, onClose]);
+
+    // Slot click handler - slot marking as used is now handled by parent
+    const handleSlotClick = useCallback(
+      (slot: Slot) => {
+        if (onSlotClick) {
+          onSlotClick(slot);
+        }
+      },
+      [onSlotClick]
+    );
     const isEvenPage = pageNum % 2 === 1;
-    const defaultClassName = isEvenPage ? 'evenPage' : 'oddPage';
+    const defaultClassName = isEvenPage ? styles.evenPage : styles.oddPage;
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
-    const isSpellBook = costLabel === 'Mana Cost';
-
-    const romanPageNum = toRoman(isSpellBook ? 1027 : 2351 + pageNum);
 
     const handleIconClick = () => {
-      if (header) {
-        setSelectedLandAction((isSpellBook ? 'Spell: ' : 'Building: ') + header);
-        const actionType = isSpellBook ? 'spell' : 'building';
-        const name = isSpellBook ? getSpellById(header as SpellName).id : (header as BuildingType);
-
-        if (onClose) {
-          onClose(); // close dialog to apply spell or construction
-        }
-
-        // Add tiles to the glowing tiles set for visual highlighting
-        getAvailableLands(gameState!, actionType, name).forEach((tileId) => {
-          addGlowingTile(tileId);
-        });
+      if (onIconClick) {
+        onIconClick();
       }
     };
 
     return (
-      <div className={`pageStyle ${finalClassName}`} ref={ref} style={style}>
+      <div className={`${styles.pageStyle} ${finalClassName}`} ref={ref} style={style}>
         {children || (
           <>
-            <div className="caption" style={{ textAlign: 'center' }}>
-              {header}
-            </div>
-            <img
-              src={iconPath}
-              alt={header}
-              className="icon clickable-icon"
-              style={{
-                alignSelf: isEvenPage ? 'flex-end' : 'flex-start',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                filter: 'brightness(1)',
-              }}
-              onClick={handleIconClick}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.filter =
-                  'brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
-                e.currentTarget.style.transform = 'scale(1.05)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.filter = 'brightness(1)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-              onError={(e) => {
-                // Fallback to a placeholder or hide an image on error
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-            <div className="description">
-              <h4 style={{ margin: '0 0 4px 0', color: '#2c1810', fontSize: '1rem' }}>
-                Description:
-              </h4>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '0.9rem',
-                  lineHeight: '1.4',
-                  height: '1.7rem',
-                  display: 'flex',
-                  alignItems: 'center',
+            <div className={styles.caption}>{header}</div>
+            <div className={styles.imageSlotContainer}>
+              <img
+                src={iconPath}
+                alt={header}
+                className={`${styles.icon} clickable-icon`}
+                onClick={handleIconClick}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.filter =
+                    'brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
+                  e.currentTarget.style.transform = 'scale(1.05)';
                 }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.filter = 'brightness(1)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                onError={(e) => {
+                  // Fallback to a placeholder or hide an image on error
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+              {onSlotClick && availableSlots && availableSlots.length > 0 && (
+                <div
+                  className={`${styles.slotsContainer} ${availableSlots.length > 3 ? styles.slotsScrollable : styles.slotsVisible}`}
+                >
+                  {availableSlots.map((slot) => (
+                    <div
+                      key={slot.id}
+                      onClick={() => handleSlotClick(slot)}
+                      className={styles.slot}
+                    >
+                      <span className={styles.descriptionText}>{slot.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className={styles.description}>
+              <h4 className={styles.descriptionTitle}>Description:</h4>
+              <p
+                className={
+                  maintainCost == null ? styles.descriptionTextExpanded : styles.descriptionText
+                }
               >
                 {description}
               </p>
               <br />
-              <div className="costSection">
-                <h4 style={{ margin: '0 0 1px 0', color: '#5d4037', fontSize: '1rem' }}>
-                  {costLabel}: <span className="costValue">{cost}</span>
-                </h4>
-              </div>
-              {!isSpellBook && maintainCost! >= 0 && (
-                <div className="costSection">
-                  <h4 style={{ margin: '0 0 1px 0', color: '#5d4037', fontSize: '1rem' }}>
-                    Maintain Cost: <span className="costValue">{maintainCost}</span>
+              {costLabel && cost != null && cost >= 0 && (
+                <div className={styles.costSection}>
+                  <h4 className={styles.costTitle}>
+                    {costLabel}: <span className={styles.costValue}>{cost}</span>
+                  </h4>
+                </div>
+              )}
+              {maintainCost != null && maintainCost >= 0 && (
+                <div className={styles.costSection}>
+                  <h4 className={styles.costTitle}>
+                    Maintain Cost: <span className={styles.costValue}>{maintainCost}</span>
                   </h4>
                 </div>
               )}
             </div>
-            <h4
-              style={{
-                margin: '0 0 2px 0',
-                color: '#5d4037',
-                fontSize: '1rem',
-                textAlign: 'center',
-              }}
-            >
-              - {romanPageNum} -
-            </h4>
+            <h4 className={styles.pageNumber}>- {toRoman(lorePage + pageNum)} -</h4>
           </>
         )}
       </div>

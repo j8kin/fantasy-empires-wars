@@ -2,18 +2,30 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import { GamePlayer, PlayerInfo } from '../types/GamePlayer';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { LandPosition } from '../map/utils/getLands';
+import { HeroOutcome } from '../types/HeroOutcome';
 
 interface ApplicationContextType {
+  // Selected land position and action
   selectedLandAction: string | null;
   setSelectedLandAction: (item: string | null) => void;
+  actionLandPosition: LandPosition | undefined;
+  setActionLandPosition: (position: LandPosition | undefined) => void;
 
   // Dialog states
   showStartWindow: boolean;
   showSaveDialog: boolean;
   showCastSpellDialog: boolean;
   showConstructBuildingDialog: boolean;
+  showRecruitArmyDialog: boolean;
+  showSendHeroInQuestDialog: boolean;
   showSelectOpponentDialog: boolean;
   showProgressPopup: boolean;
+
+  // Quest Results Popup
+  showHeroOutcomePopup: boolean;
+  setShowHeroOutcomePopup: (show: boolean) => void;
+  heroOutcome: HeroOutcome[];
+  setHeroOutcome: (results: HeroOutcome[]) => void;
 
   // Dialog data
   selectedOpponent: PlayerInfo | undefined;
@@ -46,6 +58,8 @@ interface ApplicationContextType {
   setShowSaveDialog: (show: boolean) => void;
   setShowCastSpellDialog: (show: boolean) => void;
   setShowConstructBuildingDialog: (show: boolean) => void;
+  setShowRecruitArmyDialog: (show: boolean) => void;
+  setShowSendHeroInQuestDialog: (show: boolean) => void;
   setShowSelectOpponentDialog: (show: boolean) => void;
   setShowProgressPopup: (show: boolean) => void;
   setSelectedOpponent: (opponent: GamePlayer | undefined) => void;
@@ -83,20 +97,32 @@ interface ApplicationContextType {
     allowEmptyPlayer?: boolean
   ) => void;
   hideSelectOpponentDialog: () => void;
+
+  // Hero Outcome actions
+  showHeroOutcome: (results: HeroOutcome[]) => void;
+  hideHeroOutcome: () => void;
 }
 
 const ApplicationContext = createContext<ApplicationContextType | undefined>(undefined);
 
 export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Selected land position and action
   const [selectedLandAction, setSelectedLandAction] = useState<string | null>(null);
+  const [actionLandPosition, setActionLandPosition] = useState<LandPosition | undefined>(undefined);
 
   // Dialog states
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
   const [showCastSpellDialog, setShowCastSpellDialog] = useState<boolean>(false);
   const [showConstructBuildingDialog, setShowConstructBuildingDialog] = useState<boolean>(false);
+  const [showRecruitArmyDialog, setShowRecruitArmyDialog] = useState<boolean>(false);
+  const [showSendHeroInQuestDialog, setShowSendHeroInQuestDialog] = useState<boolean>(false);
   const [showSelectOpponentDialog, setShowSelectOpponentDialog] = useState<boolean>(false);
   const [showProgressPopup, setShowProgressPopup] = useState<boolean>(false);
+
+  // Quest Results Popup states
+  const [showHeroOutcomePopup, setShowHeroOutcomePopup] = useState<boolean>(false);
+  const [heroOutcome, setHeroOutcome] = useState<HeroOutcome[]>([]);
 
   // Dialog data
   const [selectedOpponent, setSelectedOpponent] = useState<GamePlayer | undefined>(undefined);
@@ -198,19 +224,41 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     setGlowingTiles(new Set());
   }, []);
 
+  // Hero Outcome actions
+  const showHeroOutcome = useCallback((results: HeroOutcome[]) => {
+    setHeroOutcome(results);
+    setShowHeroOutcomePopup(true);
+  }, []);
+
+  const hideHeroOutcome = useCallback(() => {
+    setShowHeroOutcomePopup(false);
+    setHeroOutcome([]);
+  }, []);
+
   return (
     <ApplicationContext.Provider
       value={{
+        // Selected land position and action
         selectedLandAction,
         setSelectedLandAction,
+        actionLandPosition,
+        setActionLandPosition,
 
         // Dialog states
         showStartWindow,
         showSaveDialog,
         showCastSpellDialog,
         showConstructBuildingDialog,
+        showRecruitArmyDialog,
+        showSendHeroInQuestDialog,
         showSelectOpponentDialog,
         showProgressPopup,
+
+        // Quest Results Popup
+        showHeroOutcomePopup,
+        setShowHeroOutcomePopup,
+        heroOutcome,
+        setHeroOutcome,
 
         // Dialog data
         selectedOpponent,
@@ -244,6 +292,8 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setShowSaveDialog,
         setShowCastSpellDialog,
         setShowConstructBuildingDialog,
+        setShowRecruitArmyDialog,
+        setShowSendHeroInQuestDialog,
         setShowSelectOpponentDialog,
         setShowProgressPopup,
         setSelectedOpponent,
@@ -277,6 +327,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         hideOpponentInfo,
         showSelectOpponentDialogWithConfig,
         hideSelectOpponentDialog,
+
+        // Hero Outcome actions
+        showHeroOutcome,
+        hideHeroOutcome,
       }}
     >
       {children}

@@ -13,12 +13,16 @@ import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import CastSpellDialog from '../dialogs/CastSpellDialog';
 import ConstructBuildingDialog from '../dialogs/ConstructBuildingDialog';
+import RecruitArmyDialog from '../dialogs/RecruitArmyDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
 import ErrorMessagePopup from '../popups/ErrorMessagePopup';
+import HeroOutcomePopup from '../popups/HeroOutcomePopup';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
+import SendHeroInQuestDialog from '../dialogs/SendHeroInQuestDialog';
+import { HeroOutcome } from '../../types/HeroOutcome';
 
 const MainViewContent: React.FC = () => {
   const {
@@ -31,6 +35,7 @@ const MainViewContent: React.FC = () => {
     showProgressPopup,
     progressMessage,
     showErrorMessagePopup,
+    showHeroOutcomePopup,
     gameStarted,
     clearAllGlow,
     setSelectedLandAction,
@@ -38,6 +43,7 @@ const MainViewContent: React.FC = () => {
     setShowProgressPopup,
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
+    showHeroOutcome,
   } = useApplicationContext();
 
   const { gameState, startNewTurn, setTurnManagerCallbacks } = useGameContext();
@@ -65,6 +71,9 @@ const MainViewContent: React.FC = () => {
         // Stub for computer AI turn
         console.log('Computer player turn - AI not implemented yet');
       },
+      onHeroOutcomeResult: (results: HeroOutcome[]) => {
+        showHeroOutcome(results);
+      },
     });
   }, [
     setProgressMessage,
@@ -72,6 +81,7 @@ const MainViewContent: React.FC = () => {
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
     setTurnManagerCallbacks,
+    showHeroOutcome,
   ]);
 
   // Start the first turn when game begins (only once per game)
@@ -136,6 +146,12 @@ const MainViewContent: React.FC = () => {
       {/* Construct Building Dialog - shown as overlay */}
       <ConstructBuildingDialog />
 
+      {/* Recruit Army Dialog - shown as overlay */}
+      <RecruitArmyDialog />
+
+      {/* Send Hero In Quest Dialog - shown as overlay */}
+      <SendHeroInQuestDialog />
+
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />
 
@@ -156,6 +172,16 @@ const MainViewContent: React.FC = () => {
           screenPosition={{
             x: typeof window !== 'undefined' ? (window.innerWidth - 400) / 2 : 0,
             y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
+          }}
+        />
+      )}
+
+      {/* Quest Results Popup */}
+      {showHeroOutcomePopup && (
+        <HeroOutcomePopup
+          screenPosition={{
+            x: typeof window !== 'undefined' ? (window.innerWidth - 500) / 2 : 0,
+            y: typeof window !== 'undefined' ? (window.innerHeight - 400) / 2 : 0,
           }}
         />
       )}
