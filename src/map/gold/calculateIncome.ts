@@ -1,10 +1,10 @@
 import { GameState, getTurnOwner } from '../../types/GameState';
 
 import { getLands } from '../utils/getLands';
-import { calculateHexDistance } from '../utils/mapAlgorithms';
 
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
+import { calculateHexDistance } from '../utils/mapAlgorithms';
 
 export const calculateIncome = (gameState: GameState): number => {
   const { battlefield } = gameState;
@@ -13,39 +13,35 @@ export const calculateIncome = (gameState: GameState): number => {
   if (player == null) return 0;
 
   const playerLands = getLands({ lands: battlefield.lands, players: [player] });
-  const playerStrongholds = getLands({
-    lands: battlefield.lands,
-    players: [player],
-    buildings: [BuildingType.STRONGHOLD],
-  }).map((land) => land.mapPos);
 
   return playerLands.reduce((acc, land) => {
-    // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
-    if (player.alignment === Alignment.CHAOTIC && land.land.alignment === Alignment.LAWFUL)
-      return acc;
+    const playerStrongholds = getLands({
+      lands: battlefield.lands,
+      players: [player],
+      buildings: [BuildingType.STRONGHOLD],
+    }).map((land) => land.mapPos);
 
-    const landPos = land.mapPos;
     const distanceToStronghold = Math.min(
       ...playerStrongholds.map((stronghold) =>
-        calculateHexDistance(battlefield.dimensions, landPos, stronghold)
+        calculateHexDistance(battlefield.dimensions, land.mapPos, stronghold)
       )
     );
 
+    if (distanceToStronghold > 1) {
+      // lands outside the stronghold control area are not increase income
+      // for example this could be land just invaded by the army
+      return acc;
+    }
+
+    // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
     let landIncome = land.goldPerTurn;
 
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Buildings#stronghold
-    switch (distanceToStronghold) {
-      case 0:
-        landIncome = land.goldPerTurn;
-        break;
-      case 1:
-        landIncome = land.goldPerTurn * 0.9;
-        break;
-      case 2:
-        landIncome = land.goldPerTurn * 0.8;
-        break;
-      default:
-        return acc;
+    if (
+      !land.buildings.some((b) => b.id === BuildingType.STRONGHOLD) &&
+      player.alignment === Alignment.CHAOTIC
+    ) {
+      landIncome = land.goldPerTurn * 0.8;
     }
 
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
@@ -54,12 +50,15 @@ export const calculateIncome = (gameState: GameState): number => {
         landIncome = landIncome * 1.3;
       }
       if (land.land.alignment === Alignment.CHAOTIC) {
-        landIncome = landIncome * 0.9;
+        landIncome = landIncome * 0.8;
       }
     }
     if (player.alignment === Alignment.CHAOTIC) {
       if (land.land.alignment === Alignment.CHAOTIC) {
         landIncome = landIncome * 2;
+      }
+      if (land.land.alignment === Alignment.LAWFUL) {
+        landIncome = landIncome * 0.5;
       }
     }
 

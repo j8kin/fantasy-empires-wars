@@ -78,7 +78,7 @@ export const getTilesInRadius = (
 export const getNearestStrongholdLand = (
   landPos: LandPosition,
   gameState: GameState,
-  radius: number = 2
+  radius: number = 1
 ): LandState | undefined => {
   const allStrongholdsInRadius2 = getLands({
     lands: gameState.battlefield.lands,

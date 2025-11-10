@@ -5,7 +5,7 @@ import { NO_PLAYER } from '../../types/GamePlayer';
 import { LandPosition } from '../utils/getLands';
 
 /**
- * The building could be destroyed by player as Demolition before construction of a new one
+ * Player could destroy the building as Demolition before construction of a new one
  * it could be destroyed in the battle or by spell from the player opponent
  * @param landPos - identify the land where building should be destroyed
  * @param gameState - Game State (income and player lands could be updated)
@@ -25,7 +25,7 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
     getTilesInRadius(
       gameState.battlefield.dimensions,
       gameState.battlefield.lands[landId].mapPos,
-      2,
+      1,
       false
     )
       .map(battlefieldLandId)

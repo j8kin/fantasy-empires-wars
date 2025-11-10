@@ -203,9 +203,9 @@ describe('GameContext-TurnManager Integration', () => {
       const player2Gold = result.current.getTotalPlayerGold(player2);
       const player3Gold = result.current.getTotalPlayerGold(player3);
 
-      expect(player1Gold).toBe(1197);
-      expect(player2Gold).toBe(1653);
-      expect(player3Gold).toBe(1387);
+      expect(player1Gold).toBe(441);
+      expect(player2Gold).toBe(609);
+      expect(player3Gold).toBe(511);
     });
   });
 

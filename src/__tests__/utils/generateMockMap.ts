@@ -2,8 +2,25 @@ import { BattlefieldMap, battlefieldLandId, BattlefieldDimensions } from '../../
 import { LandPosition } from '../../map/utils/getLands';
 import { getLandById, LAND_TYPE } from '../../types/Land';
 import { NO_PLAYER } from '../../types/GamePlayer';
+import { Alignment } from '../../types/Alignment';
 
-export const generateMockMap = (dimensions: BattlefieldDimensions): BattlefieldMap => {
+const genLand = (alignment: Alignment | undefined): Land => {
+  switch (alignment) {
+    case Alignment.LAWFUL:
+      return getLandById(LAND_TYPE.MOUNTAINS);
+    case Alignment.NEUTRAL:
+      return getLandById(LAND_TYPE.HILLS);
+    case Alignment.CHAOTIC:
+      return getLandById(LAND_TYPE.SWAMP);
+    default:
+      return getLandById(LAND_TYPE.PLAINS);
+  }
+};
+export const generateMockMap = (
+  dimensions: BattlefieldDimensions,
+  alignment: Alignment | undefined = undefined,
+  income: number | undefined = undefined
+): BattlefieldMap => {
   const result: BattlefieldMap = {
     dimensions: dimensions,
     lands: {},
@@ -16,10 +33,10 @@ export const generateMockMap = (dimensions: BattlefieldDimensions): BattlefieldM
       const key = battlefieldLandId(position);
       result.lands[key] = {
         mapPos: position,
-        land: getLandById(LAND_TYPE.PLAINS),
+        land: genLand(alignment),
         controlledBy: NO_PLAYER.id,
         buildings: [],
-        goldPerTurn: landNumber,
+        goldPerTurn: income != null ? income : landNumber,
         army: [],
       };
       landNumber++;
