@@ -12,7 +12,7 @@ import { createDefaultGameStateStub, createGameStateStub } from './utils/createG
 describe('MapLands', () => {
   const nTiles10x20 = 5 * 20 + 5 * 19;
   const nTiles5x5 = 5 * 3 + 4 * 2;
-  const nTilesInRadius2 = 3 * 2 + 4 * 2 + 5;
+  const nTilesInRadius1 = 2 * 2 + 3;
   const player: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
   const battlefieldSize: BattlefieldDimensions = { rows: 5, cols: 5 };
 
@@ -101,12 +101,12 @@ describe('MapLands', () => {
 
       it('should return the lands of the owner', () => {
         const playerLands = getLands({ lands: stubGameState.battlefield.lands, players: [player] });
-        expect(playerLands.length).toBe(nTilesInRadius2);
+        expect(playerLands.length).toBe(nTilesInRadius1);
       });
 
       it('should return the lands without owner', () => {
         const playerLands = getLands({ lands: stubGameState.battlefield.lands, players: [] });
-        expect(playerLands.length).toBe(nTiles10x20 - nTilesInRadius2 * 3); // 3 players are placed on the map in createDefaultStubGameState
+        expect(playerLands.length).toBe(nTiles10x20 - nTilesInRadius1 * 3); // 3 players are placed on the map in createDefaultStubGameState
       });
 
       it('should return the lands of the owner without stronghold', () => {
@@ -115,11 +115,11 @@ describe('MapLands', () => {
           players: [player],
           buildings: [],
         });
-        expect(playerLands.length).toBe(nTilesInRadius2 - 1);
+        expect(playerLands.length).toBe(nTilesInRadius1 - 1);
       });
 
       it('should return the lands of the owner with stronghold', () => {
-        construct(stubGameState, BuildingType.BARRACKS, { row: 1, col: 2 });
+        construct(stubGameState, BuildingType.BARRACKS, { row: 3, col: 4 });
         let playerLands = getLands({
           lands: stubGameState.battlefield.lands,
           players: [player],

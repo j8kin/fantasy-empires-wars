@@ -20,8 +20,8 @@ describe('Start Turn phase', () => {
    **/
   it.each([
     [1, 0, 0],
-    [2, 0, 714],
-    [3, 714, 714],
+    [2, 0, 141],
+    [3, 141, 141],
   ])(
     'Income and Money calculation based on current turn %s',
     (turn: number, money: number, income: number) => {

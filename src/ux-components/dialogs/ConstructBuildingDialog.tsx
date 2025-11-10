@@ -5,11 +5,12 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { getAllBuildings, BuildingType } from '../../types/Building';
+import { BuildingType, getAllBuildings } from '../../types/Building';
 import { getTurnOwner } from '../../types/GameState';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
+import { getLands } from '../../map/utils/getLands';
 
 const ConstructBuildingDialog: React.FC = () => {
   const {
@@ -60,10 +61,30 @@ const ConstructBuildingDialog: React.FC = () => {
 
   if (!showConstructBuildingDialog) return null;
 
-  const selectedPlayer = getTurnOwner(gameState);
+  const selectedPlayer = getTurnOwner(gameState)!;
+  const landsWithoutBuildings = getLands({
+    lands: gameState!.battlefield.lands,
+    players: [selectedPlayer],
+    buildings: [],
+  });
+  if (landsWithoutBuildings.length === 0) {
+    // trying to allocate lands where only WALLS are constructed (if barracks allowed then other buildings are allowed)
+    if (getAvailableToConstructLands(gameState!, BuildingType.BARRACKS).length === 0) {
+      // probably only WALLS are allowed to be constructed
+      if (getAvailableToConstructLands(gameState!, BuildingType.WALL).length === 0) {
+        return null;
+      }
+    }
+  }
+
+  const isStrongholdAllowed =
+    getAvailableToConstructLands(gameState!, BuildingType.STRONGHOLD).length > 0;
+
   const availableBuildings = selectedPlayer
     ? getAllBuildings(selectedPlayer).filter(
-        (building) => building.buildCost <= selectedPlayer.vault!
+        (building) =>
+          building.buildCost <= selectedPlayer.vault! &&
+          (building.id !== BuildingType.STRONGHOLD || isStrongholdAllowed)
       )
     : [];
 
