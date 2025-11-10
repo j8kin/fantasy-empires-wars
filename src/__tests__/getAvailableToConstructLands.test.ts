@@ -1,9 +1,11 @@
-import { GameState } from '../types/GameState';
+import { GameState, getTurnOwner } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
 import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
+import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
+import { getDefaultUnit, HeroUnitType } from '../types/Army';
 
 describe('getAvailableLands', () => {
   const gameStateStub: GameState = createGameStateStub({ addPlayersHomeland: false });
@@ -42,6 +44,17 @@ describe('getAvailableLands', () => {
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.STRONGHOLD);
 
     expect(availableLands.length).toBe(0); // No lands available for construction
+  });
+
+  it('should return all available lands for stronghold building which controlled by army', () => {
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+    placeUnitsOnMap(getDefaultUnit(HeroUnitType.FIGHTER), gameStateStub, { row: 3, col: 5 });
+    gameStateStub.battlefield.lands['3-5'].controlledBy = getTurnOwner(gameStateStub)!.id;
+
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.STRONGHOLD);
+
+    expect(availableLands.length).toBe(1); // one land available for construction
+    expect(availableLands).toContain('3-5');
   });
 
   it('should return only border lands if user wants to construct the wall', () => {
@@ -144,5 +157,14 @@ describe('getAvailableLands', () => {
     // row 3
     expect(availableLands).toContain('4-3');
     expect(availableLands).toContain('4-4');
+  });
+
+  it('should return land with Any Buildings for DEMOLITION request', () => {
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+    construct(gameStateStub, BuildingType.WALL, { row: 2, col: 3 });
+
+    const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.DEMOLITION);
+
+    expect(availableLands.length).toBe(2); // number of lands buildings
   });
 });
