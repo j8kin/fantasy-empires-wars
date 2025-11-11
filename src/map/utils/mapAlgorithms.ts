@@ -1,5 +1,10 @@
 import { getLand, getLands, LandPosition } from './getLands';
-import { BattlefieldDimensions, GameState, LandState } from '../../types/GameState';
+import {
+  BattlefieldDimensions,
+  battlefieldLandId,
+  GameState,
+  LandState,
+} from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 
 export const calculateHexDistance = (
@@ -30,6 +35,52 @@ export const calculateHexDistance = (
     }
   }
   return -1; // should never reach here
+};
+
+export const findShortestPath = (
+  dimensions: BattlefieldDimensions,
+  startPosition: LandPosition,
+  endPosition: LandPosition
+): LandPosition[] => {
+  if (!isValidPosition(dimensions, startPosition) || !isValidPosition(dimensions, endPosition)) {
+    return [];
+  }
+
+  // If start and end are the same position
+  if (startPosition.row === endPosition.row && startPosition.col === endPosition.col) {
+    return [startPosition];
+  }
+
+  const visited = new Set<string>();
+  const queue: { pos: LandPosition; path: LandPosition[] }[] = [];
+
+  visited.add(battlefieldLandId(startPosition));
+  queue.push({ pos: startPosition, path: [startPosition] });
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+
+    // Check if we reached the destination
+    if (current.pos.row === endPosition.row && current.pos.col === endPosition.col) {
+      return current.path;
+    }
+
+    const neighbors = getValidNeighbors(dimensions, current.pos);
+
+    for (const neighbor of neighbors) {
+      const neighborKey = battlefieldLandId(neighbor);
+
+      if (!visited.has(neighborKey)) {
+        //const weight = 1; // Can be modified later for different terrain costs
+        const newPath = [...current.path, neighbor];
+
+        queue.push({ pos: neighbor, path: newPath });
+        visited.add(neighborKey);
+      }
+    }
+  }
+  // No path found
+  return [];
 };
 
 const excludePosition = (arr: LandPosition[], exclude: LandPosition): LandPosition[] => {
