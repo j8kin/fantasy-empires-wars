@@ -5,8 +5,7 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { HeroOutcomeType } from '../../types/HeroOutcome';
 
 const getMessageHeight = (messages: string) => {
-  // one text line contain ~ 65 characters and 26px height + 8px padding (see css)
-  return (Math.floor(messages.length / 65) + 1) * 25 + 13;
+  return (Math.floor(messages.length / 64) + 1) * 17 + 31;
 };
 
 const getEventBorderColor = (status: HeroOutcomeType): string => {
@@ -39,11 +38,12 @@ const HeroOutcomePopup: React.FC<PopupProps> = ({ screenPosition }) => {
     (acc, heroOutcome) => acc + getMessageHeight(heroOutcome.message),
     0
   );
+  const heights = Math.max(150, headerHeight + popupHeight);
 
   return (
     <PopupWrapper
       screenPosition={screenPosition}
-      dimensions={{ width: 500, height: Math.max(150, headerHeight + popupHeight) }}
+      dimensions={{ width: 500, height: heights > 498 ? 498 : heights }}
       accessible={true}
       onClose={hideHeroOutcome}
     >
