@@ -34,7 +34,14 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
                 message: heroRecruitingMessage(unit as HeroUnit),
               });
             }
-            l.army.push({ units: [unit] });
+            const stationedArmy = l.army.find(
+              (a) => a.movements == null && a.controlledBy === gameState.turnOwner
+            );
+            if (stationedArmy) {
+              stationedArmy.units.push(unit);
+            } else {
+              l.army.push({ units: [unit], controlledBy: gameState.turnOwner });
+            }
           }
         });
         b.slots = b.slots.filter((s) => s.turnsRemaining > 0);

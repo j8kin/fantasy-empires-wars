@@ -81,6 +81,7 @@ export interface BaseUnit {
 
 export type Army = {
   units: Unit[];
+  controlledBy: string;
   movements?: Movements;
 };
 

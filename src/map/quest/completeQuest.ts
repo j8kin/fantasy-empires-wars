@@ -116,9 +116,17 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
     questOutcome = calculateReward(hero, quest, gameState);
 
     // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
-    getLand(gameState, quest.land).army.push({
-      units: [hero],
-    });
+    const stationedArmy = getLand(gameState, quest.land).army.find((a) => a.movements == null);
+    if (stationedArmy) {
+      // add into the existing stationed Army
+      stationedArmy.units.push(hero);
+    } else {
+      // no valid army found, create new one
+      getLand(gameState, quest.land).army.push({
+        units: [hero],
+        controlledBy: gameState.turnOwner,
+      });
+    }
   } else {
     questOutcome = {
       status: HeroOutcomeType.Negative,

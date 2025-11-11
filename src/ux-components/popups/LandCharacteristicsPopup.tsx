@@ -44,10 +44,10 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   // Army rows - separate heroes and units
   const heroes = land.army
     .filter(({ units }) => units.some((unit) => isHero(unit)))
-    .flatMap((a) => a.units.map((u) => u as HeroUnit));
+    .flatMap((a) => a.units.filter((unit) => isHero(unit)).map((u) => u as HeroUnit));
   const units = land.army
     .filter(({ units }) => units.some((unit) => !isHero(unit)))
-    .flatMap((a) => a.units.map((u) => u as RegularUnit));
+    .flatMap((a) => a.units.filter((unit) => !isHero(unit)).map((u) => u as RegularUnit));
 
   if (heroes.length > 0) {
     calculatedHeight += heroes.length * armyRowHeight;
@@ -123,7 +123,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                       <span className={`${commonStyles.label} ${styles.label}`}>Heroes:</span>
                       <div className={styles.buildingsList}>
                         {heroes.map((hero) => (
-                          <span key={hero.name} className={styles.building}>
+                          <span key={hero.name} className={styles.hero}>
                             {hero.name} lvl: {hero.level}
                           </span>
                         ))}

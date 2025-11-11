@@ -27,41 +27,48 @@ export const startTurn = (
   // complete army movement and merge ready armies
   getLands({ lands: gameState.battlefield.lands, players: [player], noArmy: false }).forEach(
     (land) => {
-      land.army.filter((a) => a.movements != null).forEach((a) => (a.movements = undefined));
+      land.army
+        .filter((a) => a.movements != null && a.controlledBy === gameState.turnOwner)
+        .forEach((a) => {
+          // if units are reach the destination, remove the movement
+          if (a.movements?.to === land.mapPos) {
+            a.movements = undefined;
+          }
+        });
 
       // merge armies of the same type and turnsUntilReady === 0 in one unit with summary quantity
       // Heroes should never be merged since they are unique individuals
-      const readyRegularUnits = land.army.filter(
-        (a) => a.movements == null && a.units.some((unit) => !isHero(unit))
+      const stationedArmy = land.army.filter(
+        (a) => a.movements == null && a.controlledBy === gameState.turnOwner
       );
-      const heroUnits = land.army.filter(
-        (a) => a.movements == null && a.units.some((unit) => isHero(unit))
+      const movingArmy = land.army.filter(
+        (a) => a.movements != null && a.controlledBy === gameState.turnOwner
       );
-      const notReadyArmies = land.army.filter((a) => a.movements != null);
+      const otherPlayersArmies = land.army.filter((a) => a.controlledBy !== gameState.turnOwner);
 
-      const mergedRegularUnits = readyRegularUnits.reduce((acc: Army[], army) => {
-        for (const unit of army.units) {
-          if (!isHero(unit)) {
-            const existing = acc.find(
-              // merge units the same type and level (regular/veteran and elite units should not merge with each other)
-              (a) => a.units.some((u) => !isHero(u) && u.id === unit.id && u.level === unit.level)
-            );
-            if (existing) {
-              const existingUnit = existing.units.find(
-                (u) => !isHero(u) && u.id === unit.id && u.level === unit.level
-              ) as RegularUnit;
-              if (existingUnit) {
-                existingUnit.count += (unit as RegularUnit).count;
+      const mergedRegularUnits = stationedArmy.reduce(
+        (acc: Army, army) => {
+          for (const unit of army.units) {
+            if (!isHero(unit)) {
+              const existing = acc.units.find(
+                // merge units the same type and level (regular/veteran and elite units should not merge with each other)
+                (a) => !isHero(a) && a.id === unit.id && a.level === unit.level
+              );
+              if (existing) {
+                (existing as RegularUnit).count += (unit as RegularUnit).count;
+              } else {
+                acc.units.push(unit);
               }
             } else {
-              acc.push({ ...army, units: [unit] });
+              acc.units.push(unit);
             }
           }
-        }
-        return acc;
-      }, []);
+          return acc;
+        },
+        { units: [], controlledBy: gameState.turnOwner }
+      );
 
-      land.army = [...mergedRegularUnits, ...heroUnits, ...notReadyArmies];
+      land.army = [mergedRegularUnits, ...movingArmy, ...otherPlayersArmies];
     }
   );
 
