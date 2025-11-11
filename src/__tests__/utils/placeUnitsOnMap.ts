@@ -9,5 +9,5 @@ import { getLand, LandPosition } from '../../map/utils/getLands';
  * @param landPos
  */
 export const placeUnitsOnMap = (unit: Unit, gameState: GameState, landPos: LandPosition): void => {
-  getLand(gameState, landPos).army.push({ unit: unit, isMoving: false });
+  getLand(gameState, landPos).army.push({ units: [unit] });
 };

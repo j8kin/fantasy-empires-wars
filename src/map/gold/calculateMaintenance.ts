@@ -41,11 +41,11 @@ export const calculateMaintenance = (gameState: GameState): number => {
     lands: gameState.battlefield.lands,
     players: [player],
     noArmy: false,
-  }).reduce((acc, army) => {
+  }).reduce((acc, land) => {
     return (
       acc +
-      army.army.reduce((acc, units) => {
-        return acc + unitMaintenanceCost(units.unit);
+      land.army.reduce((acc, army) => {
+        return acc + army.units.reduce((acc, unit) => acc + unitMaintenanceCost(unit), 0);
       }, 0)
     );
   }, 0);

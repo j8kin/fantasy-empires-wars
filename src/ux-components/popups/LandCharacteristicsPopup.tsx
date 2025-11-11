@@ -23,48 +23,41 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 }) => {
   const { hideLandPopup } = useApplicationContext();
   const { gameState } = useGameContext();
-  const battlefieldTile = gameState!.battlefield.lands[battlefieldLandId(battlefieldPosition)];
-  const displayLandType = battlefieldTile.land;
+  const land = gameState!.battlefield.lands[battlefieldLandId(battlefieldPosition)];
 
   // Calculate dynamic size based on content type
   // MANUAL ADJUSTMENT POINT 1: Base heights and row spacing
-  const headerHeight = 33; // Header with title (6px padding * 2 + 20px content)
-  const baseContentPadding = 15; // Top and bottom padding for characteristics (8px * 2)
-  const standardRowHeight = 21; // Height per standard data row (12px font + 6px margin)
+  const headerHeight = 34; // Header with title (6px padding * 2 + 20px content)
+  const standardRowHeight = 21; // Height per standard data row (Alignment, ControlledBy etc) (12px font + 6px margin)
   const buildingRowHeight = 24; // Height for building rows (includes building chip padding + gaps)
-  const armyRowHeight = 18; // Height for army row (standard)
+  const armyRowHeight = 21; // Height for army row (standard)
 
   // Calculate height for each content type separately
-  let totalContentHeight = 0;
-
   // Standard rows: Alignment, Position, Gold per Turn, Controlled By
-  totalContentHeight += 4 * standardRowHeight;
+  let calculatedHeight = headerHeight + 4 * standardRowHeight + 15;
 
   // Buildings row - accounts for building chips and their styling
-  if (battlefieldTile.buildings && battlefieldTile.buildings.length > 0) {
-    const buildingChipHeight = 16; // 10px font + 2px padding * 2 + 2px gap
-    const buildingRows = Math.ceil(battlefieldTile.buildings.length / 3); // Estimate wrapping
-    totalContentHeight += buildingRowHeight + (buildingRows - 1) * buildingChipHeight;
+  if (land.buildings && land.buildings.length > 0) {
+    calculatedHeight += land.buildings.length * buildingRowHeight;
   }
 
   // Army rows - separate heroes and units
-  if (battlefieldTile.army && battlefieldTile.army.length > 0) {
-    const heroes = battlefieldTile.army.filter(({ unit }) => isHero(unit));
-    const units = battlefieldTile.army.filter(({ unit }) => !isHero(unit));
+  const heroes = land.army
+    .filter(({ units }) => units.some((unit) => isHero(unit)))
+    .flatMap((a) => a.units.filter((unit) => isHero(unit)).map((u) => u as HeroUnit));
+  const units = land.army
+    .filter(({ units }) => units.some((unit) => !isHero(unit)))
+    .flatMap((a) => a.units.filter((unit) => !isHero(unit)).map((u) => u as RegularUnit));
 
-    if (heroes.length > 0) {
-      const heroRows = Math.ceil(heroes.length / 3); // Estimate wrapping
-      totalContentHeight += buildingRowHeight + (heroRows - 1) * armyRowHeight;
-    }
+  if (heroes.length > 0) {
+    calculatedHeight += heroes.length * armyRowHeight;
+  }
 
-    if (units.length > 0) {
-      const unitRows = Math.ceil(units.length / 2); // Units might wrap less efficiently
-      totalContentHeight += buildingRowHeight + (unitRows - 1) * armyRowHeight;
-    }
+  if (units.length > 0) {
+    calculatedHeight += units.length * armyRowHeight;
   }
 
   // MANUAL ADJUSTMENT POINT 2: Final height calculation
-  const calculatedHeight = headerHeight + baseContentPadding + totalContentHeight;
   const dynamicHeight = Math.min(calculatedHeight, 270); // MANUAL ADJUSTMENT POINT 3: Max height limit
   const dynamicWidth = 320;
 
@@ -76,7 +69,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
     >
       <div className={commonStyles.popupContent}>
         <div className={`${commonStyles.header} ${styles.header}`}>
-          <h3 className={`${commonStyles.title} ${styles.title}`}>{displayLandType.id}</h3>
+          <h3 className={`${commonStyles.title} ${styles.title}`}>{land.land.id}</h3>
         </div>
 
         <div className={commonStyles.characteristics}>
@@ -84,13 +77,13 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
             <span className={`${commonStyles.label} ${styles.label}`}>Alignment:</span>
             <span
               className={commonStyles.value}
-              style={{ color: getAlignmentColor(displayLandType.alignment) }}
+              style={{ color: getAlignmentColor(land.land.alignment) }}
             >
-              {displayLandType.alignment}
+              {land.land.alignment}
             </span>
           </div>
 
-          {battlefieldTile && (
+          {land && (
             <>
               <div className={`${commonStyles.row} ${styles.row}`}>
                 <span className={`${commonStyles.label} ${styles.label}`}>Position:</span>
@@ -98,27 +91,24 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                   {battlefieldPosition.row}, {battlefieldPosition.col}
                 </span>
               </div>
-
               <div className={`${commonStyles.row} ${styles.row}`}>
                 <span className={`${commonStyles.label} ${styles.label}`}>Gold per Turn:</span>
-                <span className={commonStyles.value}>{battlefieldTile.goldPerTurn}</span>
+                <span className={commonStyles.value}>{land.goldPerTurn}</span>
               </div>
-
               <div className={`${commonStyles.row} ${styles.row}`}>
                 <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
                 <span className={commonStyles.value}>
                   {(() => {
-                    const player = getPlayerById(gameState, battlefieldTile.controlledBy);
+                    const player = getPlayerById(gameState, land.controlledBy);
                     return player ? player.name : NO_PLAYER.name;
                   })()}
                 </span>
               </div>
-
-              {battlefieldTile.buildings && battlefieldTile.buildings.length > 0 && (
+              {land.buildings && land.buildings.length > 0 && (
                 <div className={`${commonStyles.row} ${styles.row}`}>
                   <span className={`${commonStyles.label} ${styles.label}`}>Buildings:</span>
                   <div className={styles.buildingsList}>
-                    {battlefieldTile.buildings.map((building, index) => (
+                    {land.buildings.map((building, index) => (
                       <span key={index} className={styles.building}>
                         {building.id}
                       </span>
@@ -126,34 +116,29 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                   </div>
                 </div>
               )}
-
-              {battlefieldTile.army && battlefieldTile.army.length > 0 && (
+              {(heroes.length > 0 || units.length > 0) && (
                 <>
-                  {battlefieldTile.army.some(({ unit }) => isHero(unit)) && (
+                  {heroes.length > 0 && (
                     <div className={`${commonStyles.row} ${styles.row}`}>
                       <span className={`${commonStyles.label} ${styles.label}`}>Heroes:</span>
                       <div className={styles.buildingsList}>
-                        {battlefieldTile.army
-                          .filter(({ unit }) => isHero(unit))
-                          .map(({ unit }) => (
-                            <span key={(unit as HeroUnit).name} className={styles.building}>
-                              {(unit as HeroUnit).name} lvl: {unit.level}
-                            </span>
-                          ))}
+                        {heroes.map((hero) => (
+                          <span key={hero.name} className={styles.hero}>
+                            {hero.name} lvl: {hero.level}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   )}
-                  {battlefieldTile.army.some(({ unit }) => !isHero(unit)) && (
+                  {units.length > 0 && (
                     <div className={`${commonStyles.row} ${styles.row}`}>
                       <span className={`${commonStyles.label} ${styles.label}`}>Units:</span>
                       <div className={styles.buildingsList}>
-                        {battlefieldTile.army
-                          .filter(({ unit }) => !isHero(unit))
-                          .map(({ unit }, index) => (
-                            <span key={index} className={commonStyles.value}>
-                              {unit.id} ({(unit as RegularUnit).count})
-                            </span>
-                          ))}
+                        {units.map((unit) => (
+                          <span key={unit.id} className={commonStyles.value}>
+                            {unit.id} ({unit.count})
+                          </span>
+                        ))}
                       </div>
                     </div>
                   )}

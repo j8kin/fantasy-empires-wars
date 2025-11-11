@@ -2,7 +2,7 @@ import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameState';
 import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
 import { startQuest } from '../../map/quest/startQuest';
-import { HeroUnit, HeroUnitType } from '../../types/Army';
+import { HeroUnit, HeroUnitType, isHero, RegularUnitType } from '../../types/Army';
 import { QuestType } from '../../types/Quest';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
 import { TreasureItem } from '../../types/Treasures';
@@ -49,7 +49,7 @@ describe('Hero Quest', () => {
       noArmy: false,
     })[0];
 
-    hero = heroLand.army[0].unit as HeroUnit;
+    hero = heroLand.army[0].units[0] as HeroUnit;
   });
 
   afterEach(() => {
@@ -166,7 +166,7 @@ describe('Hero Quest', () => {
 
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
-    expect(heroLand.army[0].unit).toBe(hero);
+    expect(heroLand.army[0].units[0]).toBe(hero);
     expect(hero.level).toBe(heroLevel); // hero level not incremented since his level is 8 and he goes into easy quest for level 1-5 heroes
   });
 
@@ -207,8 +207,10 @@ describe('Hero Quest', () => {
 
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
-    expect(heroLand.army[0].unit).toBe(hero);
-    expect((heroLand.army[0].unit as HeroUnit).artifacts.length).toBe(0);
+    expect(heroLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+    expect(heroLand.army[0].movements).toBeUndefined();
+    expect(heroLand.army[0].units[0]).toBe(hero);
+    expect((heroLand.army[0].units[0] as HeroUnit).artifacts.length).toBe(0);
     expect(getTurnOwner(gameStateStub)?.empireTreasures.length).toBe(1);
     expect(getTurnOwner(gameStateStub)?.empireTreasures[0].id).toBe(TreasureItem.WAND_TURN_UNDEAD); // quest reward
     expect(hero.level).toBe(heroLevel + 1);
@@ -266,12 +268,18 @@ describe('Hero Quest', () => {
 
     expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
-    expect(barracksLand.army.length).toBe(3); // heroes recruited and available for quests
+    // heroes recruited and available for quests
+    expect(barracksLand.army.length).toBe(1);
+    expect(barracksLand.army[0].units.length).toBe(3);
 
     /* ********************** SEND TO QUEST ******************* */
     randomSpy.mockReturnValue(0.01); // always survive (to successfully return all 3 heroes to the same land)
     barracksLand.army.forEach((armyUnit) => {
-      startQuest(armyUnit.unit as HeroUnit, easyQuest, gameStateStub);
+      armyUnit.units
+        .filter((unit) => isHero(unit))
+        .forEach((unit) => {
+          startQuest(unit as HeroUnit, easyQuest, gameStateStub);
+        });
     });
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(3);
     getTurnOwner(gameStateStub)!.quests.forEach((quest) => {
@@ -286,13 +294,68 @@ describe('Hero Quest', () => {
 
     makeNTurns(4);
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
-    expect(barracksLand.army.length).toBe(3);
+    expect(barracksLand.army.length).toBe(1);
+    expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+    expect(barracksLand.army[0].movements).toBeUndefined();
+    expect(barracksLand.army[0].units.length).toBe(3);
 
-    barracksLand.army.forEach((heroUnit) => {
-      expect(heroUnit.unit.level).toBe(2);
-      expect((heroUnit.unit as HeroUnit).artifacts.length).toBe(1);
-      expect((heroUnit.unit as HeroUnit).artifacts[0].id).toBe(TreasureItem.BOOTS_OF_SPEED);
+    barracksLand.army[0].units.forEach((armyUnit) => {
+      expect((armyUnit as HeroUnit).level).toBe(2);
+      expect((armyUnit as HeroUnit).artifacts.length).toBe(1);
+      expect((armyUnit as HeroUnit).artifacts[0].id).toBe(TreasureItem.BOOTS_OF_SPEED);
     });
+  });
+
+  it('hero returned from quest correctly merge into existing stationed Army', () => {
+    waitStartPhaseComplete();
+    // Initial condition: Recruiting 3 heroes of the same type in barracks
+    const homeLand = getLands({
+      lands: gameStateStub.battlefield.lands,
+      players: [getTurnOwner(gameStateStub)!],
+      buildings: [BuildingType.STRONGHOLD],
+    })[0];
+
+    const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+    constructBuilding(BuildingType.BARRACKS, barracksPos);
+
+    const barracksLand = getLand(gameStateStub, barracksPos);
+    expect(barracksLand.army.length).toBe(0);
+
+    // Recruit one regular and one hero unit
+    startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
+    startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
+
+    makeNTurns(3);
+
+    expect(barracksLand.buildings[0].slots?.length).toBe(0);
+    expect(barracksLand.army.length).toBe(1);
+    expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+    expect(barracksLand.army[0].movements).toBeUndefined();
+    expect(barracksLand.army[0].units.length).toBe(2);
+
+    /* ********************** SEND TO QUEST ******************* */
+    randomSpy.mockReturnValue(0.01); // always survive (to successfully return all 3 heroes to the same land)
+    const hero = barracksLand.army[0].units.find((unit) => isHero(unit)) as HeroUnit;
+    startQuest(hero, easyQuest, gameStateStub);
+
+    expect(barracksLand.army.length).toBe(1);
+    expect(barracksLand.army[0].units.length).toBe(1);
+
+    makeNTurns(4);
+
+    expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
+    expect(barracksLand.army.length).toBe(1);
+    expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+    expect(barracksLand.army[0].movements).toBeUndefined();
+    expect(barracksLand.army[0].units.length).toBe(2);
+
+    expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+    expect(barracksLand.army[0].units[1].id).toBe(HeroUnitType.FIGHTER);
+    expect((barracksLand.army[0].units[1] as HeroUnit).level).toBe(2);
+    expect((barracksLand.army[0].units[1] as HeroUnit).artifacts.length).toBe(1);
+    expect((barracksLand.army[0].units[1] as HeroUnit).artifacts[0].id).toBe(
+      TreasureItem.BOOTS_OF_SPEED
+    );
   });
 
   //todo add test when hero returns from quest into territory which now controlled by another player and die

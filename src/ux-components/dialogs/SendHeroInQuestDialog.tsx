@@ -44,8 +44,8 @@ const SendHeroInQuestDialog: React.FC = () => {
     }
 
     const availableUnits = land.army
-      .filter((armyUnit) => isHero(armyUnit.unit))
-      .map((armyUnit) => armyUnit.unit as HeroUnit);
+      .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHero(unit)))
+      .map((unit) => unit as HeroUnit);
 
     if (availableUnits.length === 0) {
       handleClose();
@@ -87,8 +87,8 @@ const SendHeroInQuestDialog: React.FC = () => {
   }
 
   const availableUnits = land.army
-    .filter((armyUnit) => isHero(armyUnit.unit))
-    .map((armyUnit) => armyUnit.unit as HeroUnit);
+    .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHero(unit)))
+    .map((unit) => unit as HeroUnit);
 
   // If no heroes are available, don't render content
   if (availableUnits.length === 0) {

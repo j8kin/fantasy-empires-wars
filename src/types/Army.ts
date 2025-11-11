@@ -1,5 +1,6 @@
 import { Artifact } from './Treasures';
 import { Alignment } from './Alignment';
+import { Movements } from './Movements';
 
 export enum RegularUnitType {
   WARRIOR = 'Warrior',
@@ -78,12 +79,13 @@ export interface BaseUnit {
   description: string;
 }
 
-export type ArmyUnit = {
-  unit: Unit;
-  isMoving: boolean; // true: units are moving and will be in "destination" land at the beginning of the next turn
+export type Army = {
+  units: Unit[];
+  controlledBy: string;
+  movements?: Movements;
 };
 
-export type Army = ArmyUnit[];
+export type Armies = Army[];
 
 export const getDefaultUnit = (unitType: UnitType): Unit => {
   switch (unitType) {
