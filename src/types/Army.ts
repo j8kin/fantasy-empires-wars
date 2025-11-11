@@ -82,7 +82,6 @@ export interface BaseUnit {
 export type Army = {
   units: Unit[];
   movements?: Movements;
-  isMoving: boolean; // true: units are moving and will be in "destination" land at the beginning of the next turn
 };
 
 export type Armies = Army[];

@@ -152,8 +152,8 @@ describe('LandCharacteristicsPopup', () => {
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(HeroUnitType.FIGHTER)], isMoving: false },
-        { units: [getDefaultUnit(HeroUnitType.PYROMANCER)], isMoving: false },
+        { units: [getDefaultUnit(HeroUnitType.FIGHTER)] },
+        { units: [getDefaultUnit(HeroUnitType.PYROMANCER)] },
       ];
 
       const tileWithHeroes = {
@@ -197,9 +197,9 @@ describe('LandCharacteristicsPopup', () => {
       fighter3.name = 'Gareth Dawnhart';
 
       const mockArmy: Armies = [
-        { units: [fighter1], isMoving: false },
-        { units: [fighter2], isMoving: false },
-        { units: [fighter3], isMoving: false },
+        { units: [fighter1] },
+        { units: [fighter2] },
+        { units: [fighter3] },
       ];
 
       const tileWithHeroes = {
@@ -235,8 +235,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays units when tile has non-hero units', () => {
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(RegularUnitType.WARRIOR)], isMoving: false },
-        { units: [getDefaultUnit(RegularUnitType.DWARF)], isMoving: false },
+        { units: [getDefaultUnit(RegularUnitType.WARRIOR)] },
+        { units: [getDefaultUnit(RegularUnitType.DWARF)] },
       ];
 
       const tileWithUnits = {
@@ -274,11 +274,14 @@ describe('LandCharacteristicsPopup', () => {
       regularWarriors.count = 5;
 
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(HeroUnitType.FIGHTER)], isMoving: false },
-        { units: [regularWarriors], isMoving: false },
-        { units: [getDefaultUnit(RegularUnitType.DWARF)], isMoving: true }, // moving army should also be displayed
-        { units: [getDefaultUnit(HeroUnitType.CLERIC)], isMoving: false },
-        { units: [getDefaultUnit(RegularUnitType.ELF)], isMoving: false },
+        { units: [getDefaultUnit(HeroUnitType.FIGHTER)] },
+        { units: [regularWarriors] },
+        {
+          units: [getDefaultUnit(RegularUnitType.DWARF)],
+          movements: { from: { row: 0, col: 0 }, to: { row: 1, col: 1 } },
+        }, // moving army should also be displayed
+        { units: [getDefaultUnit(HeroUnitType.CLERIC)] },
+        { units: [getDefaultUnit(RegularUnitType.ELF)] },
       ];
 
       const tileWithMixedArmy = {
@@ -350,8 +353,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only heroes section when tile has only heroes', () => {
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(HeroUnitType.RANGER)], isMoving: false },
-        { units: [getDefaultUnit(HeroUnitType.NECROMANCER)], isMoving: false },
+        { units: [getDefaultUnit(HeroUnitType.RANGER)] },
+        { units: [getDefaultUnit(HeroUnitType.NECROMANCER)] },
       ];
 
       const tileWithHeroesOnly = {
@@ -387,8 +390,8 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only units section when tile has only non-hero units', () => {
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(RegularUnitType.ORC)], isMoving: false },
-        { units: [getDefaultUnit(RegularUnitType.BALLISTA)], isMoving: false },
+        { units: [getDefaultUnit(RegularUnitType.ORC)] },
+        { units: [getDefaultUnit(RegularUnitType.BALLISTA)] },
       ];
 
       const tileWithUnitsOnly = {
