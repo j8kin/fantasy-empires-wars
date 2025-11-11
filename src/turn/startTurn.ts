@@ -31,19 +31,32 @@ export const startTurn = (
 
       // merge armies of the same type and turnsUntilReady === 0 in one unit with summary quantity
       // Heroes should never be merged since they are unique individuals
-      const readyRegularUnits = land.army.filter((a) => !a.isMoving && !isHero(a.units));
-      const heroUnits = land.army.filter((a) => !a.isMoving && isHero(a.units));
+      const readyRegularUnits = land.army.filter(
+        (a) => !a.isMoving && a.units.some((unit) => !isHero(unit))
+      );
+      const heroUnits = land.army.filter(
+        (a) => !a.isMoving && a.units.some((unit) => isHero(unit))
+      );
       const notReadyArmies = land.army.filter((a) => a.isMoving);
 
       const mergedRegularUnits = readyRegularUnits.reduce((acc: Army[], army) => {
-        const existing: RegularUnit = acc.find(
-          // merge units the same type and level (regular/veteran and elite units should not merge with each other)
-          (a) => a.units.id === army.units.id && a.units.level === army.units.level
-        )?.units as RegularUnit;
-        if (existing) {
-          existing.count += (army.units as RegularUnit).count;
-        } else {
-          acc.push({ ...army });
+        for (const unit of army.units) {
+          if (!isHero(unit)) {
+            const existing = acc.find(
+              // merge units the same type and level (regular/veteran and elite units should not merge with each other)
+              (a) => a.units.some((u) => !isHero(u) && u.id === unit.id && u.level === unit.level)
+            );
+            if (existing) {
+              const existingUnit = existing.units.find(
+                (u) => !isHero(u) && u.id === unit.id && u.level === unit.level
+              ) as RegularUnit;
+              if (existingUnit) {
+                existingUnit.count += (unit as RegularUnit).count;
+              }
+            } else {
+              acc.push({ ...army, units: [unit] });
+            }
+          }
         }
         return acc;
       }, []);

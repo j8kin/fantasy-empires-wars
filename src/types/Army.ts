@@ -80,7 +80,7 @@ export interface BaseUnit {
 }
 
 export type Army = {
-  units: Unit;
+  units: Unit[];
   movements?: Movements;
   isMoving: boolean; // true: units are moving and will be in "destination" land at the beginning of the next turn
 };

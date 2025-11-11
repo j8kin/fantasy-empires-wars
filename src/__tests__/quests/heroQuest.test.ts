@@ -2,7 +2,7 @@ import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameState';
 import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
 import { startQuest } from '../../map/quest/startQuest';
-import { HeroUnit, HeroUnitType } from '../../types/Army';
+import { HeroUnit, HeroUnitType, isHero } from '../../types/Army';
 import { QuestType } from '../../types/Quest';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
 import { TreasureItem } from '../../types/Treasures';
@@ -49,7 +49,7 @@ describe('Hero Quest', () => {
       noArmy: false,
     })[0];
 
-    hero = heroLand.army[0].units as HeroUnit;
+    hero = heroLand.army[0].units[0] as HeroUnit;
   });
 
   afterEach(() => {
@@ -166,7 +166,7 @@ describe('Hero Quest', () => {
 
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
-    expect(heroLand.army[0].units).toBe(hero);
+    expect(heroLand.army[0].units[0]).toBe(hero);
     expect(hero.level).toBe(heroLevel); // hero level not incremented since his level is 8 and he goes into easy quest for level 1-5 heroes
   });
 
@@ -207,8 +207,8 @@ describe('Hero Quest', () => {
 
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
-    expect(heroLand.army[0].units).toBe(hero);
-    expect((heroLand.army[0].units as HeroUnit).artifacts.length).toBe(0);
+    expect(heroLand.army[0].units[0]).toBe(hero);
+    expect((heroLand.army[0].units[0] as HeroUnit).artifacts.length).toBe(0);
     expect(getTurnOwner(gameStateStub)?.empireTreasures.length).toBe(1);
     expect(getTurnOwner(gameStateStub)?.empireTreasures[0].id).toBe(TreasureItem.WAND_TURN_UNDEAD); // quest reward
     expect(hero.level).toBe(heroLevel + 1);
@@ -271,7 +271,11 @@ describe('Hero Quest', () => {
     /* ********************** SEND TO QUEST ******************* */
     randomSpy.mockReturnValue(0.01); // always survive (to successfully return all 3 heroes to the same land)
     barracksLand.army.forEach((armyUnit) => {
-      startQuest(armyUnit.units as HeroUnit, easyQuest, gameStateStub);
+      armyUnit.units
+        .filter((unit) => isHero(unit))
+        .forEach((unit) => {
+          startQuest(unit as HeroUnit, easyQuest, gameStateStub);
+        });
     });
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(3);
     getTurnOwner(gameStateStub)!.quests.forEach((quest) => {
@@ -288,10 +292,11 @@ describe('Hero Quest', () => {
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(barracksLand.army.length).toBe(3);
 
-    barracksLand.army.forEach((heroUnit) => {
-      expect(heroUnit.units.level).toBe(2);
-      expect((heroUnit.units as HeroUnit).artifacts.length).toBe(1);
-      expect((heroUnit.units as HeroUnit).artifacts[0].id).toBe(TreasureItem.BOOTS_OF_SPEED);
+    barracksLand.army.forEach((armyUnit) => {
+      const heroUnit = armyUnit.units.find((unit) => isHero(unit)) as HeroUnit;
+      expect(heroUnit.level).toBe(2);
+      expect(heroUnit.artifacts.length).toBe(1);
+      expect(heroUnit.artifacts[0].id).toBe(TreasureItem.BOOTS_OF_SPEED);
     });
   });
 

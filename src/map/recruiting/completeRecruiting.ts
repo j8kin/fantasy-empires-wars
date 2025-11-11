@@ -34,7 +34,7 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
                 message: heroRecruitingMessage(unit as HeroUnit),
               });
             }
-            l.army.push({ units: unit, isMoving: false });
+            l.army.push({ units: [unit], isMoving: false });
           }
         });
         b.slots = b.slots.filter((s) => s.turnsRemaining > 0);

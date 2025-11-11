@@ -117,7 +117,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
 
     // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
     getLand(gameState, quest.land).army.push({
-      units: hero,
+      units: [hero],
       isMoving: false,
     });
   } else {

@@ -11,14 +11,21 @@ export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: Game
     players: [getTurnOwner(gameState)!],
     noArmy: false,
   }).find((land) =>
-    land.army.find((army) => isHero(army.units) && (army.units as HeroUnit).name === hero.name)
+    land.army.find((army) =>
+      army.units.some((unit) => isHero(unit) && (unit as HeroUnit).name === hero.name)
+    )
   );
 
   if (heroLand != null) {
     // remove hero from the battlefield
-    heroLand.army = [...heroLand.army].filter(
-      (army) => isHero(army.units) && (army.units as HeroUnit).name !== hero.name
-    );
+    heroLand.army = [...heroLand.army]
+      .map((army) => ({
+        ...army,
+        units: army.units.filter(
+          (unit) => !(isHero(unit) && (unit as HeroUnit).name === hero.name)
+        ),
+      }))
+      .filter((army) => army.units.length > 0);
 
     // send hero to quest
     getTurnOwner(gameState)?.quests.push({
