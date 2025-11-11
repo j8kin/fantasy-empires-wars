@@ -61,9 +61,40 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   const dynamicHeight = Math.min(calculatedHeight, 270); // MANUAL ADJUSTMENT POINT 3: Max height limit
   const dynamicWidth = 320;
 
+  // Calculate adjusted screen position to keep popup within window bounds
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  const popupWidth = dynamicWidth;
+  const popupHeight = dynamicHeight + 30; // Adding the 30 from dimensions prop
+
+  let adjustedX = screenPosition.x + 10;
+  let adjustedY = screenPosition.y + 10;
+
+  // Check if popup would overflow on the right edge
+  if (adjustedX + popupWidth > windowWidth) {
+    adjustedX = screenPosition.x - popupWidth - 10; // Position to the left of cursor
+    // If still overflows, position at window edge
+    if (adjustedX < 0) {
+      adjustedX = windowWidth - popupWidth - 10;
+    }
+  }
+
+  // Check if popup would overflow on the bottom edge
+  if (adjustedY + popupHeight > windowHeight) {
+    adjustedY = screenPosition.y - popupHeight - 10; // Position above cursor
+    // If still overflows, position at window edge
+    if (adjustedY < 0) {
+      adjustedY = windowHeight - popupHeight - 10;
+    }
+  }
+
+  // Ensure popup doesn't go beyond left or top edges
+  adjustedX = Math.max(10, adjustedX);
+  adjustedY = Math.max(10, adjustedY);
+
   return (
     <PopupWrapper
-      screenPosition={{ x: screenPosition.x + 10, y: screenPosition.y + 10 }}
+      screenPosition={{ x: adjustedX, y: adjustedY }}
       dimensions={{ width: dynamicWidth, height: dynamicHeight + 30 }}
       onClose={hideLandPopup}
     >
