@@ -16,7 +16,7 @@ import ogrImg from './army/ogr.png';
 import clericImg from './army/cleric.png';
 import druidImg from './army/druid.png';
 import enchanterImg from './army/enchanter.png';
-import pyromancerImg from './army/pyromancer.png'
+import pyromancerImg from './army/pyromancer.png';
 
 export const getUnitImg = (unit: UnitType) => {
   switch (unit) {
