@@ -49,8 +49,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 
   // Army rows - separate heroes and units
   if (battlefieldTile.army && battlefieldTile.army.length > 0) {
-    const heroes = battlefieldTile.army.filter(({ unit }) => isHero(unit));
-    const units = battlefieldTile.army.filter(({ unit }) => !isHero(unit));
+    const heroes = battlefieldTile.army.filter(({ units }) => isHero(units));
+    const units = battlefieldTile.army.filter(({ units }) => !isHero(units));
 
     if (heroes.length > 0) {
       const heroRows = Math.ceil(heroes.length / 3); // Estimate wrapping
@@ -129,29 +129,29 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 
               {battlefieldTile.army && battlefieldTile.army.length > 0 && (
                 <>
-                  {battlefieldTile.army.some(({ unit }) => isHero(unit)) && (
+                  {battlefieldTile.army.some(({ units }) => isHero(units)) && (
                     <div className={`${commonStyles.row} ${styles.row}`}>
                       <span className={`${commonStyles.label} ${styles.label}`}>Heroes:</span>
                       <div className={styles.buildingsList}>
                         {battlefieldTile.army
-                          .filter(({ unit }) => isHero(unit))
-                          .map(({ unit }) => (
-                            <span key={(unit as HeroUnit).name} className={styles.building}>
-                              {(unit as HeroUnit).name} lvl: {unit.level}
+                          .filter(({ units }) => isHero(units))
+                          .map(({ units }) => (
+                            <span key={(units as HeroUnit).name} className={styles.building}>
+                              {(units as HeroUnit).name} lvl: {units.level}
                             </span>
                           ))}
                       </div>
                     </div>
                   )}
-                  {battlefieldTile.army.some(({ unit }) => !isHero(unit)) && (
+                  {battlefieldTile.army.some(({ units }) => !isHero(units)) && (
                     <div className={`${commonStyles.row} ${styles.row}`}>
                       <span className={`${commonStyles.label} ${styles.label}`}>Units:</span>
                       <div className={styles.buildingsList}>
                         {battlefieldTile.army
-                          .filter(({ unit }) => !isHero(unit))
-                          .map(({ unit }, index) => (
+                          .filter(({ units }) => !isHero(units))
+                          .map(({ units }, index) => (
                             <span key={index} className={commonStyles.value}>
-                              {unit.id} ({(unit as RegularUnit).count})
+                              {units.id} ({(units as RegularUnit).count})
                             </span>
                           ))}
                       </div>

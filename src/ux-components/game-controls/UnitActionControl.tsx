@@ -65,7 +65,7 @@ const UnitActionControl: React.FC = () => {
         lands: gameState.battlefield.lands,
         players: [getTurnOwner(gameState)!],
         noArmy: false,
-      }).filter((l) => l.army.some((u) => isHero(u.unit)));
+      }).filter((l) => l.army.some((u) => isHero(u.units)));
 
       // Set selected land action to 'Quest'
       setSelectedLandAction('Quest');

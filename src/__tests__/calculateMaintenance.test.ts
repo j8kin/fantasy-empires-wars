@@ -48,7 +48,7 @@ describe('Calculate Maintenance', () => {
 
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
         {
-          unit: heroUnit,
+          units: heroUnit,
           isMoving: false,
         },
       ];
@@ -80,7 +80,7 @@ describe('Calculate Maintenance', () => {
 
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
         {
-          unit: regularUnit,
+          units: regularUnit,
           isMoving: false,
         },
       ];
@@ -97,19 +97,19 @@ describe('Calculate Maintenance', () => {
         player.id;
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
         {
-          unit: getDefaultUnit(HeroUnitType.NECROMANCER),
+          units: getDefaultUnit(HeroUnitType.NECROMANCER),
           isMoving: false,
         },
         {
-          unit: getDefaultUnit(RegularUnitType.DWARF),
+          units: getDefaultUnit(RegularUnitType.DWARF),
           isMoving: false,
         },
         {
-          unit: getDefaultUnit(RegularUnitType.BALLISTA),
+          units: getDefaultUnit(RegularUnitType.BALLISTA),
           isMoving: false,
         },
         {
-          unit: elitDwarf,
+          units: elitDwarf,
           isMoving: false,
         },
       ];

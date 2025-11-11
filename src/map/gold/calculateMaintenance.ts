@@ -45,7 +45,7 @@ export const calculateMaintenance = (gameState: GameState): number => {
     return (
       acc +
       army.army.reduce((acc, units) => {
-        return acc + unitMaintenanceCost(units.unit);
+        return acc + unitMaintenanceCost(units.units);
       }, 0)
     );
   }, 0);

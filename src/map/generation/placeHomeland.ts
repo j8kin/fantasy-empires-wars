@@ -17,7 +17,7 @@ const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   // increment characteristics
   levelUpHero(hero, player);
   // initial Hero immediately available in normal game it turn 3 turn to recruit#
-  getLand(gameState, homeland.mapPos).army.push({ unit: hero, isMoving: false });
+  getLand(gameState, homeland.mapPos).army.push({ units: hero, isMoving: false });
 };
 
 export const placeHomeland = (gameState: GameState) => {

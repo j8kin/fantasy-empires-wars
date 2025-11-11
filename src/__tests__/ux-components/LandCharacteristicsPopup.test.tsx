@@ -4,7 +4,7 @@ import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
 import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
 import {
-  Army,
+  Armies,
   getDefaultUnit,
   HeroUnit,
   HeroUnitType,
@@ -151,9 +151,9 @@ describe('LandCharacteristicsPopup', () => {
 
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
-      const mockArmy: Army = [
-        { unit: getDefaultUnit(HeroUnitType.FIGHTER), isMoving: false },
-        { unit: getDefaultUnit(HeroUnitType.PYROMANCER), isMoving: false },
+      const mockArmy: Armies = [
+        { units: getDefaultUnit(HeroUnitType.FIGHTER), isMoving: false },
+        { units: getDefaultUnit(HeroUnitType.PYROMANCER), isMoving: false },
       ];
 
       const tileWithHeroes = {
@@ -196,10 +196,10 @@ describe('LandCharacteristicsPopup', () => {
       const fighter3 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
       fighter3.name = 'Gareth Dawnhart';
 
-      const mockArmy: Army = [
-        { unit: fighter1, isMoving: false },
-        { unit: fighter2, isMoving: false },
-        { unit: fighter3, isMoving: false },
+      const mockArmy: Armies = [
+        { units: fighter1, isMoving: false },
+        { units: fighter2, isMoving: false },
+        { units: fighter3, isMoving: false },
       ];
 
       const tileWithHeroes = {
@@ -234,9 +234,9 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays units when tile has non-hero units', () => {
-      const mockArmy: Army = [
-        { unit: getDefaultUnit(RegularUnitType.WARRIOR), isMoving: false },
-        { unit: getDefaultUnit(RegularUnitType.DWARF), isMoving: false },
+      const mockArmy: Armies = [
+        { units: getDefaultUnit(RegularUnitType.WARRIOR), isMoving: false },
+        { units: getDefaultUnit(RegularUnitType.DWARF), isMoving: false },
       ];
 
       const tileWithUnits = {
@@ -273,12 +273,12 @@ describe('LandCharacteristicsPopup', () => {
       const regularWarriors = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
       regularWarriors.count = 5;
 
-      const mockArmy: Army = [
-        { unit: getDefaultUnit(HeroUnitType.FIGHTER), isMoving: false },
-        { unit: regularWarriors, isMoving: false },
-        { unit: getDefaultUnit(RegularUnitType.DWARF), isMoving: true }, // moving army should also be displayed
-        { unit: getDefaultUnit(HeroUnitType.CLERIC), isMoving: false },
-        { unit: getDefaultUnit(RegularUnitType.ELF), isMoving: false },
+      const mockArmy: Armies = [
+        { units: getDefaultUnit(HeroUnitType.FIGHTER), isMoving: false },
+        { units: regularWarriors, isMoving: false },
+        { units: getDefaultUnit(RegularUnitType.DWARF), isMoving: true }, // moving army should also be displayed
+        { units: getDefaultUnit(HeroUnitType.CLERIC), isMoving: false },
+        { units: getDefaultUnit(RegularUnitType.ELF), isMoving: false },
       ];
 
       const tileWithMixedArmy = {
@@ -349,9 +349,9 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays only heroes section when tile has only heroes', () => {
-      const mockArmy: Army = [
-        { unit: getDefaultUnit(HeroUnitType.RANGER), isMoving: false },
-        { unit: getDefaultUnit(HeroUnitType.NECROMANCER), isMoving: false },
+      const mockArmy: Armies = [
+        { units: getDefaultUnit(HeroUnitType.RANGER), isMoving: false },
+        { units: getDefaultUnit(HeroUnitType.NECROMANCER), isMoving: false },
       ];
 
       const tileWithHeroesOnly = {
@@ -386,9 +386,9 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays only units section when tile has only non-hero units', () => {
-      const mockArmy: Army = [
-        { unit: getDefaultUnit(RegularUnitType.ORC), isMoving: false },
-        { unit: getDefaultUnit(RegularUnitType.BALLISTA), isMoving: false },
+      const mockArmy: Armies = [
+        { units: getDefaultUnit(RegularUnitType.ORC), isMoving: false },
+        { units: getDefaultUnit(RegularUnitType.BALLISTA), isMoving: false },
       ];
 
       const tileWithUnitsOnly = {

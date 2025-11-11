@@ -49,7 +49,7 @@ describe('Hero Quest', () => {
       noArmy: false,
     })[0];
 
-    hero = heroLand.army[0].unit as HeroUnit;
+    hero = heroLand.army[0].units as HeroUnit;
   });
 
   afterEach(() => {
@@ -166,7 +166,7 @@ describe('Hero Quest', () => {
 
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
-    expect(heroLand.army[0].unit).toBe(hero);
+    expect(heroLand.army[0].units).toBe(hero);
     expect(hero.level).toBe(heroLevel); // hero level not incremented since his level is 8 and he goes into easy quest for level 1-5 heroes
   });
 
@@ -207,8 +207,8 @@ describe('Hero Quest', () => {
 
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
-    expect(heroLand.army[0].unit).toBe(hero);
-    expect((heroLand.army[0].unit as HeroUnit).artifacts.length).toBe(0);
+    expect(heroLand.army[0].units).toBe(hero);
+    expect((heroLand.army[0].units as HeroUnit).artifacts.length).toBe(0);
     expect(getTurnOwner(gameStateStub)?.empireTreasures.length).toBe(1);
     expect(getTurnOwner(gameStateStub)?.empireTreasures[0].id).toBe(TreasureItem.WAND_TURN_UNDEAD); // quest reward
     expect(hero.level).toBe(heroLevel + 1);
@@ -271,7 +271,7 @@ describe('Hero Quest', () => {
     /* ********************** SEND TO QUEST ******************* */
     randomSpy.mockReturnValue(0.01); // always survive (to successfully return all 3 heroes to the same land)
     barracksLand.army.forEach((armyUnit) => {
-      startQuest(armyUnit.unit as HeroUnit, easyQuest, gameStateStub);
+      startQuest(armyUnit.units as HeroUnit, easyQuest, gameStateStub);
     });
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(3);
     getTurnOwner(gameStateStub)!.quests.forEach((quest) => {
@@ -289,9 +289,9 @@ describe('Hero Quest', () => {
     expect(barracksLand.army.length).toBe(3);
 
     barracksLand.army.forEach((heroUnit) => {
-      expect(heroUnit.unit.level).toBe(2);
-      expect((heroUnit.unit as HeroUnit).artifacts.length).toBe(1);
-      expect((heroUnit.unit as HeroUnit).artifacts[0].id).toBe(TreasureItem.BOOTS_OF_SPEED);
+      expect(heroUnit.units.level).toBe(2);
+      expect((heroUnit.units as HeroUnit).artifacts.length).toBe(1);
+      expect((heroUnit.units as HeroUnit).artifacts[0].id).toBe(TreasureItem.BOOTS_OF_SPEED);
     });
   });
 

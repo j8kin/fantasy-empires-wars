@@ -1,6 +1,6 @@
 import { Land } from './Land';
 import { Building } from './Building';
-import { Army } from './Army';
+import { Armies } from './Army';
 import { GamePlayer } from './GamePlayer';
 import { LandPosition } from '../map/utils/getLands';
 
@@ -17,7 +17,7 @@ export interface LandState {
   controlledBy: string;
   goldPerTurn: number;
   buildings: Building[];
-  army: Army;
+  army: Armies;
   glow?: boolean;
 }
 export type BattlefieldMap = {
