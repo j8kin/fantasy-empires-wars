@@ -11,6 +11,9 @@ import { construct } from '../../../map/building/construct';
 import { UnitType, RegularUnitType, HeroUnitType } from '../../../types/Army';
 import { LandPosition, getLand } from '../../../map/utils/getLands';
 
+// Import the mocked function (will be mocked by jest.mock above)
+import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';
+
 // Mock modules
 jest.mock('../../../map/recruiting/startRecruiting', () => ({
   startRecruiting: jest.fn(),
@@ -170,9 +173,6 @@ jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', ()
     ),
   };
 });
-
-// Import the mocked function (will be mocked by jest.mock above)
-import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';
 
 describe('RecruitArmyDialog', () => {
   let mockGameState: GameState;

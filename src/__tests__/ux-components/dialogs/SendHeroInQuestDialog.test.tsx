@@ -765,6 +765,7 @@ describe('SendHeroInQuestDialog', () => {
 
         currentPlayerLands[1].army.push({
           units: [secondHero],
+          controlledBy: mockGameState.turnOwner,
         });
       }
     });

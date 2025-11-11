@@ -31,14 +31,15 @@ describe('Turn Mechanics with Different Map Sizes', () => {
         onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
           turnPhaseChanges.push({ gameState, phase });
         },
-        onGameOver: () => {
+        onGameOver: (_message: string) => {
           gameOverCalled = true;
         },
-        onStartProgress: () => {
+        onStartProgress: (_message: string) => {
           progressCalled = true;
         },
         onHideProgress: () => {},
-        onComputerMainTurn: () => {},
+        onComputerMainTurn: (_gameState: GameState) => {},
+        onHeroOutcomeResult: (_results) => {},
       });
 
       // Start a new turn
@@ -73,12 +74,13 @@ describe('Turn Mechanics with Different Map Sizes', () => {
         onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
           turnPhaseChanges.push({ gameState, phase });
         },
-        onGameOver: () => {
+        onGameOver: (_message: string) => {
           gameOverCalled = true;
         },
-        onStartProgress: () => {},
+        onStartProgress: (_message: string) => {},
         onHideProgress: () => {},
-        onComputerMainTurn: () => {},
+        onComputerMainTurn: (_gameState: GameState) => {},
+        onHeroOutcomeResult: (_results) => {},
       });
 
       // Set to MAIN phase first
