@@ -5,7 +5,7 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { HeroOutcomeType } from '../../types/HeroOutcome';
 
 const getMessageHeight = (messages: string) => {
-  return (Math.floor(messages.length / 64) + 1) * 17 + 31;
+  return (Math.floor(messages.length / 64) + 1) * 17 + 30.5;
 };
 
 const getEventBorderColor = (status: HeroOutcomeType): string => {
@@ -38,7 +38,7 @@ const HeroOutcomePopup: React.FC<PopupProps> = ({ screenPosition }) => {
     (acc, heroOutcome) => acc + getMessageHeight(heroOutcome.message),
     0
   );
-  const heights = Math.max(150, headerHeight + popupHeight);
+  const heights = Math.max(150, headerHeight + Math.floor(popupHeight));
 
   return (
     <PopupWrapper
