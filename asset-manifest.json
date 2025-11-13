@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.bfb9c126.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.92755f8b.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.d66b6788.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
@@ -59,6 +59,7 @@
     "static/media/stronghold.png": "/fantasy-empires-wars/static/media/stronghold.8cb171bb15d7feea8144.png",
     "static/media/orc.png": "/fantasy-empires-wars/static/media/orc.7f76999ad74f2605f6ac.png",
     "static/media/view.png": "/fantasy-empires-wars/static/media/view.87c989d47f940607d4b4.png",
+    "static/media/necromancer.png": "/fantasy-empires-wars/static/media/necromancer.39763fd46c5821f176ff.png",
     "static/media/dark-elf.png": "/fantasy-empires-wars/static/media/dark-elf.0b12a9ab5ba4d675d7a5.png",
     "static/media/magic-tower-black.png": "/fantasy-empires-wars/static/media/magic-tower-black.503edc29f75306db50d8.png",
     "static/media/golden-plains.png": "/fantasy-empires-wars/static/media/golden-plains.2ff096b5b96f9b7ebe57.png",
@@ -92,11 +93,11 @@
     "static/media/PageEven.png": "/fantasy-empires-wars/static/media/PageEven.8a6a120c45b62dd81d2c.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.bfb9c126.css.map": "/fantasy-empires-wars/static/css/main.bfb9c126.css.map",
-    "main.92755f8b.js.map": "/fantasy-empires-wars/static/js/main.92755f8b.js.map",
+    "main.d66b6788.js.map": "/fantasy-empires-wars/static/js/main.d66b6788.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.bfb9c126.css",
-    "static/js/main.92755f8b.js"
+    "static/js/main.d66b6788.js"
   ]
 }
