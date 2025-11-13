@@ -17,6 +17,7 @@ import clericImg from './army/cleric.png';
 import druidImg from './army/druid.png';
 import enchanterImg from './army/enchanter.png';
 import pyromancerImg from './army/pyromancer.png';
+import necromancerImg from './army/necromancer.png';
 
 export const getUnitImg = (unit: UnitType) => {
   switch (unit) {
@@ -54,6 +55,8 @@ export const getUnitImg = (unit: UnitType) => {
       return enchanterImg;
     case HeroUnitType.PYROMANCER:
       return pyromancerImg;
+    case HeroUnitType.NECROMANCER:
+      return necromancerImg;
 
     default:
       return undefined;
