@@ -1,13 +1,11 @@
 import { GameState, getTurnOwner } from '../types/GameState';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
-import { getLands } from '../map/utils/getLands';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
 import { completeRecruiting } from '../map/recruiting/completeRecruiting';
 import { HeroOutcome } from '../types/HeroOutcome';
 import { mergeArmies } from '../map/move-army/mergeArmies';
-import { completeMovements } from '../map/move-army/completeMovements';
 
 export const startTurn = (
   gameState: GameState,
@@ -25,8 +23,7 @@ export const startTurn = (
   // recruit units
   const heroRecruitingStatus = completeRecruiting(gameState);
 
-  // complete army movement and merge ready armies
-  completeMovements(gameState);
+  // merge armies after recruiting since after recruiting the army it could be on the same land as just arrived army
   mergeArmies(gameState);
 
   const questStatus = completeQuest(gameState);
