@@ -2,7 +2,6 @@ import { GameState } from '../types/GameState';
 import { performMovements } from '../map/move-army/performMovements';
 
 export const endTurn = (gameState: GameState) => {
-
   // complete movements
   performMovements(gameState);
 
