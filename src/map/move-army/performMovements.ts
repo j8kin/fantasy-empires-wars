@@ -2,7 +2,7 @@ import { battlefieldLandId, GameState, getTurnOwner, TurnPhase } from '../../typ
 import { mergeArmies } from './mergeArmies';
 import { getLands, LandPosition } from '../utils/getLands';
 import { Army } from '../../types/Army';
-import { DiplomacyStatus } from '../../types/GamePlayer';
+import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
 
 export const performMovements = (gameState: GameState): void => {
   if (gameState == null || gameState.turnPhase !== TurnPhase.END) return;
@@ -16,9 +16,7 @@ export const performMovements = (gameState: GameState): void => {
   }> = [];
 
   const player = getTurnOwner(gameState)!;
-  const allies = gameState.players.filter(
-    (p) => p.id !== player.id && player.diplomacy[p.id] === DiplomacyStatus.ALLIANCE
-  );
+  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]);
 
   getLands({
     lands: gameState.battlefield.lands,
