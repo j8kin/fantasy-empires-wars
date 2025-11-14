@@ -1,9 +1,6 @@
-import { getLands } from '../utils/getLands';
-import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
-import { BuildingType } from '../../types/Building';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
+import { GameState } from '../../types/GameState';
 import { isHero, RegularUnit, RegularUnitType, Unit, UnitRank } from '../../types/Army';
+import { getHostileLands } from '../utils/getHostileLands';
 
 // The equivalent number of units per war machine to calculate the attrition penalty.
 const WAR_MACHINE_PER_UNIT = 20;
@@ -32,30 +29,7 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
   if (gameState == null) return; // fallback should never happen
   if (gameState.turnPhase !== 'START') return; // apply only at the start of the turn
 
-  const turnOwner = getTurnOwner(gameState)!;
-
-  const allStrongholds = getLands({
-    lands: gameState.battlefield.lands,
-    players: [turnOwner],
-    buildings: [BuildingType.STRONGHOLD],
-  });
-  const controlledLands = allStrongholds
-    .flatMap((s) => getTilesInRadius(gameState.battlefield.dimensions, s.mapPos, 1))
-    .map((l) => battlefieldLandId(l));
-
-  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map((p) => p.id);
-  const armiesOnHostileLand = getLands({
-    lands: gameState.battlefield.lands,
-    noArmy: false,
-  }).filter(
-    (land) =>
-      !(
-        controlledLands.includes(battlefieldLandId(land.mapPos)) ||
-        allies.includes(land.controlledBy)
-      ) && land.army.some((a) => a.controlledBy === turnOwner.id)
-  );
-
-  armiesOnHostileLand.forEach((land) => {
+  getHostileLands(gameState).forEach((land) => {
     // get all units from the land
     const units = land.army.flatMap((a) => a.units);
     const loss = rollAttritionLoss(units);

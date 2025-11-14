@@ -6,6 +6,7 @@ import { completeQuest } from '../map/quest/completeQuest';
 import { completeRecruiting } from '../map/recruiting/completeRecruiting';
 import { HeroOutcome } from '../types/HeroOutcome';
 import { mergeArmies } from '../map/move-army/mergeArmies';
+import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPenalty';
 
 export const startTurn = (
   gameState: GameState,
@@ -25,6 +26,9 @@ export const startTurn = (
 
   // merge armies after recruiting since after recruiting the army it could be on the same land as just arrived army
   mergeArmies(gameState);
+
+  // calculate attrition penalty after merge armies and player receive turn and all battles are ower and all movements are done
+  calculateAttritionPenalty(gameState);
 
   const questStatus = completeQuest(gameState);
   if (

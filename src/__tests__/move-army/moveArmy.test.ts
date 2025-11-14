@@ -20,6 +20,7 @@ import { BuildingType } from '../../types/Building';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
+import { NO_PLAYER } from '../../types/GamePlayer';
 
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -47,7 +48,7 @@ describe('Move Army', () => {
     turnManager = new TurnManager(mockCallbacks);
     randomSpy = jest.spyOn(Math, 'random');
 
-    randomSpy.mockReturnValue(0.01); // return hero with the same name
+    randomSpy.mockReturnValue(0.01); // to return the same value on any random function call
 
     gameStateStub = createDefaultGameStateStub();
     gameStateStub.turn = 2;
@@ -318,6 +319,35 @@ describe('Move Army', () => {
       expect(getLand(gameStateStub, to).army[0].movements).toBeUndefined();
       expect(getLand(gameStateStub, to).army[0].units.length).toBe(1);
       expect(getLand(gameStateStub, to).army[0].units[0]).toBe(unitsToMove[0]);
+    });
+
+    it('move on neutral territory perform Attrition Penalty and change ownership', () => {
+      const from = barracksLand.mapPos;
+      expect(getLand(gameStateStub, from).army.length).toBe(1);
+      expect(getLand(gameStateStub, from).army[0].units.length).toBe(2);
+      expect(getLand(gameStateStub, from).army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((getLand(gameStateStub, from).army[0].units[0] as RegularUnit).count).toBe(120);
+
+      const to = { row: 3, col: 5 };
+      expect(getLand(gameStateStub, to).controlledBy).toBe(NO_PLAYER.id);
+
+      const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
+      (unitsToMove[0] as RegularUnit).count = 120;
+
+      startMovement(from, to, unitsToMove, gameStateStub);
+      expect(getLand(gameStateStub, from).army.length).toBe(2);
+
+      makeNTurns(1);
+
+      expect(getLand(gameStateStub, from).army.length).toBe(1); // hero stay in barracks land
+
+      const newLand = getLand(gameStateStub, to);
+      expect(newLand.army.length).toBe(1);
+      expect(newLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+      expect(newLand.army[0].movements).toBeUndefined();
+      expect(newLand.army[0].units.length).toBe(1);
+      expect(newLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((newLand.army[0].units[0] as RegularUnit).count).toBe(79); // attrition penalty (the same due to randomSpy)
     });
   });
 });
