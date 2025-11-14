@@ -340,6 +340,26 @@ describe('Move Army', () => {
       expect(getLand(gameStateStub, to).army[0].units[0]).toBe(unitsToMove[0]);
     });
 
+    it('Army which complete the movements merged with Stationed Army', () => {
+      const unitsToMove = getLand(gameStateStub, homeLand.mapPos).army[0].units; // initial hero in homeland
+      expect(getLand(gameStateStub, homeLand.mapPos).army.length).toBe(1);
+      expect(getLand(gameStateStub, barracksLand.mapPos).army.length).toBe(1);
+
+      startMovement(homeLand.mapPos, barracksLand.mapPos, unitsToMove, gameStateStub);
+
+      makeNTurns(1);
+      expect(getLand(gameStateStub, homeLand.mapPos).army.length).toBe(0);
+      expect(getLand(gameStateStub, barracksLand.mapPos).army.length).toBe(1); // Stationed Army
+
+      const stationedArmy = getLand(gameStateStub, barracksLand.mapPos).army[0];
+      expect(stationedArmy.units.length).toBe(3);
+      expect(stationedArmy.units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((stationedArmy.units[0] as RegularUnit).count).toBe(120);
+      expect((stationedArmy.units[1] as HeroUnit).name).toBe('Cedric Brightshield');
+      expect((stationedArmy.units[2] as HeroUnit).name).toBe('Alaric the Bold'); // new hero comes from homeland
+      expect(stationedArmy.controlledBy).toBe(gameStateStub.turnOwner);
+    });
+
     it('move on neutral territory perform Attrition Penalty and change ownership', () => {
       const from = barracksLand.mapPos;
       expect(getLand(gameStateStub, from).army.length).toBe(1);
@@ -367,6 +387,67 @@ describe('Move Army', () => {
       expect(newLand.army[0].units.length).toBe(1);
       expect(newLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
       expect((newLand.army[0].units[0] as RegularUnit).count).toBe(79); // attrition penalty (the same due to randomSpy)
+    });
+
+    it('All army die on new territory', () => {
+      const from = barracksLand.mapPos;
+      expect(getLand(gameStateStub, from).army.length).toBe(1);
+      expect(getLand(gameStateStub, from).army[0].units.length).toBe(2);
+      expect(getLand(gameStateStub, from).army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((getLand(gameStateStub, from).army[0].units[0] as RegularUnit).count).toBe(120);
+
+      const to = { row: 3, col: 5 };
+      expect(getLand(gameStateStub, to).controlledBy).toBe(NO_PLAYER.id);
+
+      const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
+      (unitsToMove[0] as RegularUnit).count = 20; // 20 regular units is not enough to conquer the new territory
+
+      startMovement(from, to, unitsToMove, gameStateStub);
+      expect(getLand(gameStateStub, from).army.length).toBe(2);
+
+      makeNTurns(1);
+
+      expect(getLand(gameStateStub, from).army.length).toBe(1); // hero and the rest of the warriors
+
+      const newLand = getLand(gameStateStub, to);
+      expect(newLand.controlledBy).toBe(NO_PLAYER.id); // new territory owner is not changed
+      expect(newLand.army.length).toBe(0);
+    });
+
+    it('when 2 armies are reach uncontroled land they merge in one and then attrition penalty calculated', () => {
+      const from = barracksLand.mapPos;
+      expect(getLand(gameStateStub, from).army.length).toBe(1);
+      expect(getLand(gameStateStub, from).army[0].units.length).toBe(2);
+      expect(getLand(gameStateStub, from).army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((getLand(gameStateStub, from).army[0].units[0] as RegularUnit).count).toBe(120);
+
+      const to = { row: 3, col: 5 };
+      expect(getLand(gameStateStub, to).controlledBy).toBe(NO_PLAYER.id);
+
+      // first army is moved to new territory
+      const unitsToMove1: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
+      (unitsToMove1[0] as RegularUnit).count = 35; // 35 regular units is not enough to conquer the new territory
+
+      startMovement(from, to, unitsToMove1, gameStateStub);
+      expect(getLand(gameStateStub, from).army.length).toBe(2);
+
+      // second army is moved to the same territory
+      const unitsToMove2: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
+      (unitsToMove1[0] as RegularUnit).count = 35; // 35 regular units is not enough to conquer the new territory
+
+      startMovement(from, to, unitsToMove2, gameStateStub);
+      expect(getLand(gameStateStub, from).army.length).toBe(3);
+
+      makeNTurns(1);
+
+      expect(getLand(gameStateStub, from).army.length).toBe(1); // hero and the rest of the warriors
+
+      const newLand = getLand(gameStateStub, to);
+      expect(newLand.controlledBy).toBe(gameStateStub.turnOwner); // new territory owner is not changed
+      expect(newLand.army.length).toBe(1);
+      expect(newLand.army[0].units.length).toBe(1);
+      expect(newLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((newLand.army[0].units[0] as RegularUnit).count).toBe(14);
     });
   });
 });

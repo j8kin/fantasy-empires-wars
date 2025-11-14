@@ -7,6 +7,7 @@ import { completeRecruiting } from '../map/recruiting/completeRecruiting';
 import { HeroOutcome } from '../types/HeroOutcome';
 import { mergeArmies } from '../map/move-army/mergeArmies';
 import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPenalty';
+import { changeOwner } from '../map/move-army/changeOwner';
 
 export const startTurn = (
   gameState: GameState,
@@ -29,6 +30,9 @@ export const startTurn = (
 
   // calculate attrition penalty after merge armies and player receive turn and all battles are ower and all movements are done
   calculateAttritionPenalty(gameState);
+
+  // due to Attrition penalty the whole army could die it means that territory should return to previous owner or became a neutral
+  changeOwner(gameState);
 
   const questStatus = completeQuest(gameState);
   if (
