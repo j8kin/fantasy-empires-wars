@@ -324,7 +324,7 @@ describe('Move Army', () => {
   });
 
   describe('Perform movements', () => {
-    it('move on 1 land', () => {
+    it('Hero allowed to move without regular units only on owned territories', () => {
       const to = { row: homeLand.mapPos.row + 1, col: homeLand.mapPos.col };
       const unitsToMove = getLand(gameStateStub, homeLand.mapPos).army[0].units; // initial hero in homeland
 
