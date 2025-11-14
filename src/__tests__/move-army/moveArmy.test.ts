@@ -209,10 +209,25 @@ describe('Move Army', () => {
       expect(barracksLand.army[1].movements?.path.length).toBe(2);
     });
 
-    it('move all heroes', () => {
+    it('Heroes are not able to move on hostile territory only without regular units', () => {
       const from = barracksLand.mapPos;
       const to = { row: 3, col: 5 };
       const unitsToMove: Unit[] = [barracksLand.army[0].units[1]];
+
+      startMovement(from, to, unitsToMove, gameStateStub);
+
+      // All army stays the same
+      expect(barracksLand.army.length).toBe(1);
+      expect(barracksLand.army[0].movements).toBeUndefined();
+    });
+
+    it('Heroes are able to move on hostile territory only with regular units.', () => {
+      const from = barracksLand.mapPos;
+      const to = { row: 3, col: 5 };
+      const unitsToMove: Unit[] = [
+        barracksLand.army[0].units[1],
+        getDefaultUnit(RegularUnitType.WARRIOR),
+      ];
 
       startMovement(from, to, unitsToMove, gameStateStub);
 
@@ -220,15 +235,19 @@ describe('Move Army', () => {
       expect(barracksLand.army.length).toBe(2);
       expect(barracksLand.army[0].units.length).toBe(1);
       expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
-      expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(120);
+      expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(100);
       expect(barracksLand.army[0].movements).toBeUndefined();
 
-      expect(barracksLand.army[1].units[0].id).toBe(HeroUnitType.FIGHTER);
-      expect((barracksLand.army[1].units[0] as HeroUnit).name).toBe('Cedric Brightshield');
+      expect(barracksLand.army[1].units.length).toBe(2);
       expect(barracksLand.army[1].movements).toBeDefined();
       expect(barracksLand.army[1].movements?.from).toBe(from);
       expect(barracksLand.army[1].movements?.to).toBe(to);
       expect(barracksLand.army[1].movements?.path.length).toBe(2);
+
+      expect(barracksLand.army[1].units[0].id).toBe(HeroUnitType.FIGHTER);
+      expect((barracksLand.army[1].units[0] as HeroUnit).name).toBe('Cedric Brightshield');
+      expect(barracksLand.army[1].units[1].id).toBe(RegularUnitType.WARRIOR);
+      expect((barracksLand.army[1].units[1] as RegularUnit).count).toBe(20);
     });
 
     it('move all units', () => {

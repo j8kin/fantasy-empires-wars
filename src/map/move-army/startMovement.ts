@@ -3,6 +3,8 @@ import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Army';
 import { GameState, TurnPhase } from '../../types/GameState';
 import { findShortestPath } from '../utils/mapAlgorithms';
 
+const MIN_HERO_PACKS = 10;
+
 export const startMovement = (
   from: LandPosition,
   to: LandPosition,
@@ -10,6 +12,15 @@ export const startMovement = (
   gameState: GameState
 ) => {
   if (gameState == null || gameState.turnPhase !== TurnPhase.MAIN) return;
+
+  // Hero units could move on hostile territories only with Regular units or if there are move then 10 heroes are moved
+  if (
+    getLand(gameState, to).controlledBy !== gameState.turnOwner &&
+    units.every(isHero) &&
+    units.length < MIN_HERO_PACKS
+  ) {
+    return;
+  }
 
   // expect that there is a stationed army in from land
   const stationedArmy = getLand(gameState, from).army.filter((a) => a.movements == null);
