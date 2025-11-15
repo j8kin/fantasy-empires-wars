@@ -1,5 +1,5 @@
 import { GameState } from '../../types/GameState';
-import { isHero, RegularUnit, RegularUnitType, Unit, UnitRank } from '../../types/Army';
+import { isHero, isWarMachine, RegularUnit, RegularUnitType, UnitRank } from '../../types/Army';
 import { getHostileLands } from '../utils/getHostileLands';
 
 // The equivalent number of units per war machine to calculate the attrition penalty.
@@ -32,20 +32,20 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
   getHostileLands(gameState).forEach((land) => {
     // get all units from the land
     const units = land.army.flatMap((a) => a.units);
-    const loss = rollAttritionLoss(units);
+    const loss = rollAttritionLoss(units.filter((u) => !isHero(u)) as RegularUnit[]);
 
     land.army.forEach((army) => {
       Object.values(UnitRank).forEach((rank) => {
-        const nUnits = calculateNumberOfRegularUnits(army.units, rank);
+        const nUnits = calculateNumberOfRegularUnits(
+          army.units.filter((u) => !isHero(u)) as RegularUnit[],
+          rank
+        );
         // Apply deaths to units
         let remainingToDie = Math.ceil((nUnits / loss[rank].total) * loss[rank].loss);
 
         // First, handle war machines (ballista and catapult)
         const warMachines = army.units.filter(
-          (unit) =>
-            !isHero(unit) &&
-            unit.level === rank &&
-            (unit.id === RegularUnitType.BALLISTA || unit.id === RegularUnitType.CATAPULT)
+          (unit) => !isHero(unit) && unit.level === rank && isWarMachine(unit.id)
         );
 
         remainingToDie = warMachines.reduce((remaining, warMachine) => {
@@ -87,18 +87,18 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
   });
 };
 
-const calculateNumberOfRegularUnits = (units: Unit[], unitRank: UnitRank) => {
+const calculateNumberOfRegularUnits = (units: RegularUnit[], unitRank: UnitRank) => {
   return units
-    .filter((u) => !isHero(u) && u.level === unitRank)
-    .reduce((acc, unit) => {
-      if (unit.id === RegularUnitType.BALLISTA || unit.id === RegularUnitType.CATAPULT) {
-        return acc + unit.count * WAR_MACHINE_PER_UNIT;
-      }
-      return acc + (unit as RegularUnit).count;
-    }, 0);
+    .filter((u) => u.level === unitRank)
+    .reduce(
+      (acc, unit) => acc + (isWarMachine(unit.id) ? unit.count * WAR_MACHINE_PER_UNIT : unit.count),
+      0
+    );
 };
 
-const rollAttritionLoss = (units: Unit[]): Record<UnitRank, { total: number; loss: number }> => {
+const rollAttritionLoss = (
+  units: RegularUnit[]
+): Record<UnitRank, { total: number; loss: number }> => {
   // calculate the number of units based on unit type (regular, veteran, elite)
   const regularUnits = calculateNumberOfRegularUnits(units, UnitRank.REGULAR);
   const veteranUnits = calculateNumberOfRegularUnits(units, UnitRank.VETERAN);
