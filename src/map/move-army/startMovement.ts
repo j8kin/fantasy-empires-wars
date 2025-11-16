@@ -3,7 +3,7 @@ import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Army';
 import { GameState, TurnPhase } from '../../types/GameState';
 import { findShortestPath } from '../utils/mapAlgorithms';
 
-const MIN_HERO_PACKS = 10;
+export const MIN_HERO_PACKS = 10;
 
 export const startMovement = (
   from: LandPosition,
