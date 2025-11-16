@@ -273,6 +273,7 @@ const MoveArmyDialog: React.FC = () => {
 
     return (
       <div
+        data-testid={`${isHeroUnit ? heroUnit.name : regularUnit.id}-${index}`}
         key={`${isHeroUnit ? heroUnit.name : regularUnit.id}-${index}`}
         className={`${styles.unitItem} ${colorClass}`}
         onMouseDown={() => handleMouseDown(fromArray, toArray, index, direction)}
