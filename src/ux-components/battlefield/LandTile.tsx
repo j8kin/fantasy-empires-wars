@@ -40,6 +40,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     setActionLandPosition,
     actionLandPosition,
     addGlowingTile,
+    setMoveArmyPath,
   } = useApplicationContext();
   const { gameState, updateGameState, recalculateActivePlayerIncome } = useGameContext();
 
@@ -137,12 +138,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
         return;
       } else if (selectedLandAction === 'MoveArmyTo') {
-        const fromPosition = actionLandPosition;
-        const toPosition = battlefieldPosition;
-
-        alert(
-          `Move Army from ${battlefieldLandId(fromPosition!)} to ${battlefieldLandId(toPosition)}`
-        );
+        setMoveArmyPath({ from: actionLandPosition!, to: battlefieldPosition });
       } else {
         alert(
           `Unknown action for Land ${tileId}. Action item: ${JSON.stringify(selectedLandAction)}`

@@ -4,12 +4,19 @@ import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBor
 import { LandPosition } from '../map/utils/getLands';
 import { HeroOutcome } from '../types/HeroOutcome';
 
+interface MoveArmyPath {
+  from: LandPosition;
+  to: LandPosition;
+}
+
 interface ApplicationContextType {
   // Selected land position and action
   selectedLandAction: string | null;
   setSelectedLandAction: (item: string | null) => void;
   actionLandPosition: LandPosition | undefined;
   setActionLandPosition: (position: LandPosition | undefined) => void;
+  moveArmyPath: MoveArmyPath | undefined;
+  setMoveArmyPath: (position: MoveArmyPath | undefined) => void;
 
   // Dialog states
   showStartWindow: boolean;
@@ -109,6 +116,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   // Selected land position and action
   const [selectedLandAction, setSelectedLandAction] = useState<string | null>(null);
   const [actionLandPosition, setActionLandPosition] = useState<LandPosition | undefined>(undefined);
+  const [moveArmyPath, setMoveArmyPath] = useState<MoveArmyPath | undefined>(undefined);
 
   // Dialog states
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
@@ -243,6 +251,8 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setSelectedLandAction,
         actionLandPosition,
         setActionLandPosition,
+        moveArmyPath,
+        setMoveArmyPath,
 
         // Dialog states
         showStartWindow,

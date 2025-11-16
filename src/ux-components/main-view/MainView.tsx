@@ -152,6 +152,9 @@ const MainViewContent: React.FC = () => {
       {/* Send Hero In Quest Dialog - shown as overlay */}
       <SendHeroInQuestDialog />
 
+      {/* Send Hero In Quest Dialog - shown as overlay */}
+      {/*<MoveArmyDialog />*/}
+
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />
 
