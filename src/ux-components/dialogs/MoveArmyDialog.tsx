@@ -14,8 +14,12 @@ const MoveArmyDialog: React.FC = () => {
 
   if (!moveArmyPath || !gameState) return null;
 
-  const units = getLand(gameState, moveArmyPath.from).army.filter((a) => a.movements == null)[0]
-    .units;
+  const stationedArmy = getLand(gameState, moveArmyPath.from).army.filter(
+    (a) => a.movements == null
+  );
+
+  if (stationedArmy == null || stationedArmy.length === 0) return null;
+  const units = stationedArmy[0].units;
 
   const handleMove = () => {
     setMoveArmyPath(undefined);
