@@ -64,7 +64,9 @@ const UnitActionControl: React.FC = () => {
         lands: gameState.battlefield.lands,
         players: [getTurnOwner(gameState)!],
         noArmy: false,
-      }).filter((l) => l.army.some((u) => u.units.some((unit) => isHero(unit))));
+      }).filter((l) =>
+        l.army.some((u) => u.movements == null && u.units.some((unit) => isHero(unit)))
+      );
 
       setSelectedLandAction('Quest');
       // Add glowing to all quest lands
@@ -89,7 +91,7 @@ const UnitActionControl: React.FC = () => {
         lands: gameState.battlefield.lands,
         players: [getTurnOwner(gameState)!],
         noArmy: false,
-      });
+      }).filter((l) => l.army.some((a) => a.movements != null));
 
       setSelectedLandAction('MoveArmyFrom');
       // Add glowing to all army lands
