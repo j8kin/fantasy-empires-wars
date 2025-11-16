@@ -1,0 +1,112 @@
+/* MoveArmyDialog CSS Module */
+
+.container {
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  gap: 16px;
+}
+
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.panelTitle {
+  color: white;
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.panelContent {
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 8px;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.emptyMessage {
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  font-size: 12px;
+}
+
+.transferButtons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.transferButton {
+  padding: 8px 12px;
+  background-color: rgba(50, 50, 50, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.transferButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.unitItem {
+  padding: 8px;
+  margin: 4px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+}
+
+.unitName {
+  font-weight: bold;
+}
+
+.unitDetails {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Unit color classes for different unit types */
+.heroUnit {
+  color: #ffd700;
+}
+
+.regularUnit {
+  color: #989898;
+}
+
+.veteranUnit {
+  color: #434343;
+}
+
+.eliteUnit {
+  color: #d0d0d0;
+}
