@@ -9,8 +9,9 @@ import Avatar from '../avatars/Avatar';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { DiplomacyStatus, PlayerInfo } from '../../types/GamePlayer';
+import { PlayerInfo } from '../../types/GamePlayer';
 import { getTurnOwner } from '../../types/GameState';
+import { DiplomacyStatus } from '../../types/Diplomacy';
 
 export interface OpponentInfoProps extends PopupProps {
   opponent?: PlayerInfo;

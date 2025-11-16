@@ -4,17 +4,9 @@ import { HeroUnitType } from './Army';
 import { Mana } from './Mana';
 import { HeroQuest } from './Quest';
 import { EmpireTreasure } from './Treasures';
+import { Diplomacy } from './Diplomacy';
 
 export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
-
-export enum DiplomacyStatus {
-  NO_TREATY = 'No Treaty',
-  PEACE = 'Peace',
-  WAR = 'War',
-  ALLIANCE = 'Alliance',
-}
-
-export type Diplomacy = Record<string, DiplomacyStatus>;
 
 export interface PlayerInfo {
   id: string;

@@ -47,6 +47,8 @@ export enum UnitRank {
 
 export const isHeroType = (unitType: UnitType): boolean => isHero(getDefaultUnit(unitType));
 export const isHero = (unit: Unit): boolean => typeof unit.level === 'number';
+export const isWarMachine = (unitType: UnitType): boolean =>
+  unitType === RegularUnitType.BALLISTA || unitType === RegularUnitType.CATAPULT;
 
 export const isMage = (unitType: UnitType): boolean => {
   return (

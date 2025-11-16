@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import OpponentInfoPopup from '../../ux-components/popups/OpponentInfoPopup';
-import { DiplomacyStatus } from '../../types/GamePlayer';
+import { DiplomacyStatus } from '../../types/Diplomacy';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 

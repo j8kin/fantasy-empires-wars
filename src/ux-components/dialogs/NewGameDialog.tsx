@@ -11,13 +11,8 @@ import PlayerSelection from '../player-selection/PlayerSelection';
 
 import { generateMap } from '../../map/generation/generateMap';
 import { ButtonName } from '../../types/ButtonName';
-import {
-  DiplomacyStatus,
-  GamePlayer,
-  NO_PLAYER,
-  PlayerInfo,
-  PREDEFINED_PLAYERS,
-} from '../../types/GamePlayer';
+import { GamePlayer, NO_PLAYER, PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { DiplomacyStatus } from '../../types/Diplomacy';
 import { getPlayerColorValue, PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
 import { Mana, ManaType } from '../../types/Mana';

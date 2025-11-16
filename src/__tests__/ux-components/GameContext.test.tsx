@@ -4,7 +4,7 @@ import { GameState, TurnPhase } from '../../types/GameState';
 import { GamePlayer } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 import { HeroUnitType } from '../../types/Army';
-import { DiplomacyStatus } from '../../types/GamePlayer';
+import { DiplomacyStatus } from '../../types/Diplomacy';
 import { TurnManager } from '../../turn/TurnManager';
 import { calculateIncome } from '../../map/gold/calculateIncome';
 import { calculateMaintenance } from '../../map/gold/calculateMaintenance';

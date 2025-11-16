@@ -1,12 +1,13 @@
 import { GameState, getTurnOwner } from '../types/GameState';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
-import { getLands } from '../map/utils/getLands';
-import { Army, isHero, RegularUnit } from '../types/Army';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
 import { completeRecruiting } from '../map/recruiting/completeRecruiting';
 import { HeroOutcome } from '../types/HeroOutcome';
+import { mergeArmies } from '../map/move-army/mergeArmies';
+import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPenalty';
+import { changeOwner } from '../map/move-army/changeOwner';
 
 export const startTurn = (
   gameState: GameState,
@@ -24,53 +25,14 @@ export const startTurn = (
   // recruit units
   const heroRecruitingStatus = completeRecruiting(gameState);
 
-  // complete army movement and merge ready armies
-  getLands({ lands: gameState.battlefield.lands, players: [player], noArmy: false }).forEach(
-    (land) => {
-      land.army
-        .filter((a) => a.movements != null && a.controlledBy === gameState.turnOwner)
-        .forEach((a) => {
-          // if units are reach the destination, remove the movement
-          if (a.movements?.to === land.mapPos) {
-            a.movements = undefined;
-          }
-        });
+  // merge armies after recruiting since after recruiting the army it could be on the same land as just arrived army
+  mergeArmies(gameState);
 
-      // merge armies of the same type and turnsUntilReady === 0 in one unit with summary quantity
-      // Heroes should never be merged since they are unique individuals
-      const stationedArmy = land.army.filter(
-        (a) => a.movements == null && a.controlledBy === gameState.turnOwner
-      );
-      const movingArmy = land.army.filter(
-        (a) => a.movements != null && a.controlledBy === gameState.turnOwner
-      );
-      const otherPlayersArmies = land.army.filter((a) => a.controlledBy !== gameState.turnOwner);
+  // calculate attrition penalty after merge armies and player receive turn and all battles are ower and all movements are done
+  calculateAttritionPenalty(gameState);
 
-      const mergedRegularUnits = stationedArmy.reduce(
-        (acc: Army, army) => {
-          for (const unit of army.units) {
-            if (!isHero(unit)) {
-              const existing = acc.units.find(
-                // merge units the same type and level (regular/veteran and elite units should not merge with each other)
-                (a) => !isHero(a) && a.id === unit.id && a.level === unit.level
-              );
-              if (existing) {
-                (existing as RegularUnit).count += (unit as RegularUnit).count;
-              } else {
-                acc.units.push(unit);
-              }
-            } else {
-              acc.units.push(unit);
-            }
-          }
-          return acc;
-        },
-        { units: [], controlledBy: gameState.turnOwner }
-      );
-
-      land.army = [mergedRegularUnits, ...movingArmy, ...otherPlayersArmies];
-    }
-  );
+  // due to Attrition penalty the whole army could die it means that territory should return to previous owner or became a neutral
+  changeOwner(gameState);
 
   const questStatus = completeQuest(gameState);
   if (
