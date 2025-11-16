@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.bfb9c126.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.d66b6788.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.c61a0d62.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
@@ -50,10 +50,14 @@
     "static/media/ranger.png": "/fantasy-empires-wars/static/media/ranger.de2064e008d5f616bd08.png",
     "static/media/enchanter.png": "/fantasy-empires-wars/static/media/enchanter.371e47bd348b9fd0b04f.png",
     "static/media/magic-tower-white.png": "/fantasy-empires-wars/static/media/magic-tower-white.40bb3ff7e2e70d07f862.png",
+    "static/media/the-shattered-sky.png": "/fantasy-empires-wars/static/media/the-shattered-sky.5380e3609a0e4a812ba0.png",
     "static/media/fertile-lands.png": "/fantasy-empires-wars/static/media/fertile-lands.17d9c5cb892b6cf4c929.png",
     "static/media/blessing.png": "/fantasy-empires-wars/static/media/blessing.fa33dd9719ac65d20285.png",
+    "static/media/the-abyssal-crypt.png": "/fantasy-empires-wars/static/media/the-abyssal-crypt.9bd0812aef13b9554d83.png",
+    "static/media/the-whispering-grove.png": "/fantasy-empires-wars/static/media/the-whispering-grove.34264c637674a069fed7.png",
     "static/media/ogr.png": "/fantasy-empires-wars/static/media/ogr.e169617b5e8c19569f8a.png",
     "static/media/opened-book.png": "/fantasy-empires-wars/static/media/opened-book.69a30a1acdfb7f12eed7.png",
+    "static/media/magic-tower-black.png": "/fantasy-empires-wars/static/media/magic-tower-black.562dabbe616fa5aaa86a.png",
     "static/media/roots.png": "/fantasy-empires-wars/static/media/roots.6716ba2fdff7e0f85bcd.png",
     "static/media/heal.png": "/fantasy-empires-wars/static/media/heal.98c05b2155127ce2dda7.png",
     "static/media/stronghold.png": "/fantasy-empires-wars/static/media/stronghold.8cb171bb15d7feea8144.png",
@@ -61,7 +65,6 @@
     "static/media/view.png": "/fantasy-empires-wars/static/media/view.87c989d47f940607d4b4.png",
     "static/media/necromancer.png": "/fantasy-empires-wars/static/media/necromancer.39763fd46c5821f176ff.png",
     "static/media/dark-elf.png": "/fantasy-empires-wars/static/media/dark-elf.0b12a9ab5ba4d675d7a5.png",
-    "static/media/magic-tower-black.png": "/fantasy-empires-wars/static/media/magic-tower-black.503edc29f75306db50d8.png",
     "static/media/golden-plains.png": "/fantasy-empires-wars/static/media/golden-plains.2ff096b5b96f9b7ebe57.png",
     "static/media/watchtower.png": "/fantasy-empires-wars/static/media/watchtower.01657d8069800b12ece9.png",
     "static/media/magic-tower-blue.png": "/fantasy-empires-wars/static/media/magic-tower-blue.86682f941d28a16712a7.png",
@@ -88,16 +91,17 @@
     "static/media/darkforest.png": "/fantasy-empires-wars/static/media/darkforest.769c5f60d2d7fe472995.png",
     "static/media/lava.png": "/fantasy-empires-wars/static/media/lava.c01031c21cb85214e71a.png",
     "static/media/plains.png": "/fantasy-empires-wars/static/media/plains.3822373e507b0835d67e.png",
+    "static/media/the-echoing-ruins.png": "/fantasy-empires-wars/static/media/the-echoing-ruins.79c252214931562a6a67.png",
     "static/media/teleport.png": "/fantasy-empires-wars/static/media/teleport.e20b2087231f30cf81a6.png",
     "static/media/PageOdd.png": "/fantasy-empires-wars/static/media/PageOdd.692b562e83a17ebf3638.png",
     "static/media/PageEven.png": "/fantasy-empires-wars/static/media/PageEven.8a6a120c45b62dd81d2c.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.bfb9c126.css.map": "/fantasy-empires-wars/static/css/main.bfb9c126.css.map",
-    "main.d66b6788.js.map": "/fantasy-empires-wars/static/js/main.d66b6788.js.map",
+    "main.c61a0d62.js.map": "/fantasy-empires-wars/static/js/main.c61a0d62.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.bfb9c126.css",
-    "static/js/main.d66b6788.js"
+    "static/js/main.c61a0d62.js"
   ]
 }
