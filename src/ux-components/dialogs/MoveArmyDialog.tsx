@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import styles from './css/MoveArmyDialog.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
@@ -8,7 +8,7 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 
 import { ButtonName } from '../../types/ButtonName';
-import { Unit, RegularUnit, HeroUnit, UnitRank, isHero } from '../../types/Army';
+import { HeroUnit, isHero, RegularUnit, Unit, UnitRank } from '../../types/Army';
 import { getLand } from '../../map/utils/getLands';
 import { startMovement } from '../../map/move-army/startMovement';
 
@@ -16,35 +16,55 @@ const MoveArmyDialog: React.FC = () => {
   const { setMoveArmyPath, moveArmyPath } = useApplicationContext();
   const { gameState } = useGameContext();
 
-  // Initialize state with empty arrays - will be set correctly in useEffect
-  const [fromUnits, setFromUnits] = useState<Unit[]>([]);
-  const [toUnits, setToUnits] = useState<Unit[]>([]);
+  const fromUnitsRef = useRef<Unit[]>([]);
+  const toUnitsRef = useRef<Unit[]>([]);
+  const [, forceUpdate] = useState({});
+
+  // Force component re-render
+  const triggerUpdate = () => forceUpdate({});
 
   // Refs for click-and-hold functionality
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Initialize units when moveArmyPath or gameState changes
   React.useEffect(() => {
     if (!moveArmyPath || !gameState) {
-      setFromUnits([]);
-      setToUnits([]);
+      fromUnitsRef.current = [];
+      toUnitsRef.current = [];
+      triggerUpdate();
       return;
     }
 
-    const stationedArmy = getLand(gameState, moveArmyPath.from).army.filter(
-      (a) => a.movements == null
-    );
+    const fromLand = getLand(gameState, moveArmyPath.from);
+    const stationedArmy = fromLand.army.filter((a) => a.movements == null);
 
     if (stationedArmy == null || stationedArmy.length === 0) {
-      setFromUnits([]);
-      setToUnits([]);
+      fromUnitsRef.current = [];
+      toUnitsRef.current = [];
+      triggerUpdate();
       return;
     }
 
-    const initialUnits = stationedArmy[0].units;
-    setFromUnits(initialUnits);
-    setToUnits([]);
+    // Initialize using refs - completely bypass React state
+    // Combine all units from all stationed armies on the land
+    fromUnitsRef.current = stationedArmy.flatMap((a) => a.units);
+    toUnitsRef.current = [];
+    triggerUpdate();
   }, [moveArmyPath, gameState]);
+
+  // Create stable references for the current values
+  const fromUnits = fromUnitsRef.current;
+  const toUnits = toUnitsRef.current;
+
+  // Helper functions to update refs and trigger re-render
+  const updateFromUnits = (units: Unit[]) => {
+    fromUnitsRef.current = units;
+    triggerUpdate();
+  };
+
+  const updateToUnits = (units: Unit[]) => {
+    toUnitsRef.current = units;
+    triggerUpdate();
+  };
 
   // Clean up interval on unmount
   React.useEffect(() => {
@@ -66,11 +86,8 @@ const MoveArmyDialog: React.FC = () => {
   const handleMove = () => {
     if (!moveArmyPath) return;
 
-    const from = moveArmyPath.from;
-    const to = moveArmyPath.to;
-
+    startMovement(moveArmyPath.from, moveArmyPath.to, toUnits, gameState);
     setMoveArmyPath(undefined);
-    startMovement(from, to, toUnits, gameState);
   };
 
   const handleClose = () => {
@@ -95,13 +112,13 @@ const MoveArmyDialog: React.FC = () => {
 
   // Transfer functions
   const moveAllToRight = () => {
-    setToUnits([...toUnits, ...fromUnits]);
-    setFromUnits([]);
+    updateToUnits([...toUnits, ...fromUnits]);
+    updateFromUnits([]);
   };
 
   const moveAllToLeft = () => {
-    setFromUnits([...fromUnits, ...toUnits]);
-    setToUnits([]);
+    updateFromUnits([...fromUnits, ...toUnits]);
+    updateToUnits([]);
   };
 
   const moveHalfToRight = () => {
@@ -123,8 +140,8 @@ const MoveArmyDialog: React.FC = () => {
       }
     });
 
-    setToUnits([...toUnits, ...unitsToMove]);
-    setFromUnits(remainingUnits);
+    updateToUnits([...toUnits, ...unitsToMove]);
+    updateFromUnits(remainingUnits);
   };
 
   const moveHalfToLeft = () => {
@@ -146,8 +163,8 @@ const MoveArmyDialog: React.FC = () => {
       }
     });
 
-    setFromUnits([...fromUnits, ...unitsToMove]);
-    setToUnits(remainingUnits);
+    updateFromUnits([...fromUnits, ...unitsToMove]);
+    updateToUnits(remainingUnits);
   };
 
   const moveOneUnit = (
@@ -165,11 +182,11 @@ const MoveArmyDialog: React.FC = () => {
       const newToArray = [...toArray, unit];
 
       if (direction === 'right') {
-        setFromUnits(newFromArray);
-        setToUnits(newToArray);
+        updateFromUnits(newFromArray);
+        updateToUnits(newToArray);
       } else {
-        setToUnits(newFromArray);
-        setFromUnits(newToArray);
+        updateToUnits(newFromArray);
+        updateFromUnits(newToArray);
       }
     } else {
       const regularUnit = unit as RegularUnit;
@@ -179,11 +196,11 @@ const MoveArmyDialog: React.FC = () => {
         const newToArray = [...toArray, unit];
 
         if (direction === 'right') {
-          setFromUnits(newFromArray);
-          setToUnits(newToArray);
+          updateFromUnits(newFromArray);
+          updateToUnits(newToArray);
         } else {
-          setToUnits(newFromArray);
-          setFromUnits(newToArray);
+          updateToUnits(newFromArray);
+          updateFromUnits(newToArray);
         }
       } else {
         // Move one unit, reduce count
@@ -211,11 +228,11 @@ const MoveArmyDialog: React.FC = () => {
         }
 
         if (direction === 'right') {
-          setFromUnits(newFromArray);
-          setToUnits(newToArray);
+          updateFromUnits(newFromArray);
+          updateToUnits(newToArray);
         } else {
-          setToUnits(newFromArray);
-          setFromUnits(newToArray);
+          updateToUnits(newFromArray);
+          updateFromUnits(newToArray);
         }
       }
     }
@@ -232,12 +249,50 @@ const MoveArmyDialog: React.FC = () => {
       clearInterval(intervalRef.current);
     }
 
-    // Move one unit immediately
-    moveOneUnit(fromArray, toArray, unitIndex, direction);
+    // Snapshot the selected unit identity to handle dynamic arrays
+    const selectedUnit = fromArray[unitIndex];
+    // Move one unit immediately using current refs
+    const currentFrom = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
+    const currentTo = direction === 'right' ? toUnitsRef.current : fromUnitsRef.current;
+
+    const findCurrentIndex = (): number => {
+      const arr = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
+      if (!selectedUnit) return -1;
+      if (isHero(selectedUnit)) {
+        const hero = selectedUnit as HeroUnit;
+        return arr.findIndex(
+          (u) => isHero(u) && (u as HeroUnit).name === hero.name && (u as HeroUnit).id === hero.id
+        );
+      } else {
+        const reg = selectedUnit as RegularUnit;
+        return arr.findIndex(
+          (u) =>
+            !isHero(u) &&
+            (u as RegularUnit).id === reg.id &&
+            (u as RegularUnit).level === reg.level
+        );
+      }
+    };
+
+    const initialIndex = findCurrentIndex();
+    if (initialIndex >= 0) {
+      moveOneUnit(currentFrom, currentTo, initialIndex, direction);
+    }
 
     // Start interval for continuous movement
     intervalRef.current = setInterval(() => {
-      moveOneUnit(fromArray, toArray, unitIndex, direction);
+      const idx = findCurrentIndex();
+      if (idx < 0) {
+        // Nothing more to move; stop interval
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+        return;
+      }
+      const liveFrom = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
+      const liveTo = direction === 'right' ? toUnitsRef.current : fromUnitsRef.current;
+      moveOneUnit(liveFrom, liveTo, idx, direction);
     }, 200); // Move one unit every 200ms
   };
 
@@ -300,7 +355,10 @@ const MoveArmyDialog: React.FC = () => {
   };
 
   return (
-    <div data-testid="MoveArmyDialog">
+    <div
+      data-testid="MoveArmyDialog"
+      key={`${moveArmyPath?.from.row}-${moveArmyPath?.from.col}-${moveArmyPath?.to.row}-${moveArmyPath?.to.col}`}
+    >
       <FantasyBorderFrame
         screenPosition={{ x, y }}
         frameSize={{ width: dialogWidth, height: dialogHeight }}
