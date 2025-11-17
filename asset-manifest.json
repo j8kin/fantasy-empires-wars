@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.e57adbe2.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.a4156098.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.2dcae06c.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
@@ -40,6 +40,7 @@
     "static/media/hummerlord.png": "/fantasy-empires-wars/static/media/hummerlord.e4a2f875f35c50c27acb.png",
     "static/media/cleric.png": "/fantasy-empires-wars/static/media/cleric.a2d54ef753af52a87e34.png",
     "static/media/alaric.png": "/fantasy-empires-wars/static/media/alaric.7890a445d08a78626caa.png",
+    "static/media/ward-hands.png": "/fantasy-empires-wars/static/media/ward-hands.2b224a9b90f7405555d9.png",
     "static/media/outpost.png": "/fantasy-empires-wars/static/media/outpost.0366fa6ade6238faf9de.png",
     "static/media/catapult.png": "/fantasy-empires-wars/static/media/catapult.f1549e4076bbbcfcbbbe.png",
     "static/media/druid.png": "/fantasy-empires-wars/static/media/druid.286013edc794808fcdd3.png",
@@ -97,11 +98,11 @@
     "static/media/PageEven.png": "/fantasy-empires-wars/static/media/PageEven.8a6a120c45b62dd81d2c.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.e57adbe2.css.map": "/fantasy-empires-wars/static/css/main.e57adbe2.css.map",
-    "main.a4156098.js.map": "/fantasy-empires-wars/static/js/main.a4156098.js.map",
+    "main.2dcae06c.js.map": "/fantasy-empires-wars/static/js/main.2dcae06c.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e57adbe2.css",
-    "static/js/main.a4156098.js"
+    "static/js/main.2dcae06c.js"
   ]
 }
