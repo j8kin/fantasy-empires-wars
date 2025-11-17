@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
-import LandCharacteristicsPopup from '../../ux-components/popups/LandCharacteristicsPopup';
-import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
+import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
+import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
+import { battlefieldLandId, GameState, LandState } from '../../../types/GameState';
 import {
   Armies,
   getDefaultUnit,
@@ -10,14 +10,14 @@ import {
   HeroUnitType,
   RegularUnit,
   RegularUnitType,
-} from '../../types/Army';
-import { createGameStateStub } from '../utils/createGameStateStub';
-import { getLands } from '../../map/utils/getLands';
-import { BuildingType } from '../../types/Building';
+} from '../../../types/Army';
+import { createGameStateStub } from '../../utils/createGameStateStub';
+import { getLands } from '../../../map/utils/getLands';
+import { BuildingType } from '../../../types/Building';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
-jest.mock('../../contexts/GameContext', () => ({
+jest.mock('../../../contexts/GameContext', () => ({
   useGameContext: () => mockUseGameContext(),
 }));
 
@@ -31,7 +31,7 @@ const renderWithProviders = (ui: React.ReactElement, gameState: GameState) => {
 };
 
 // Mock CSS modules
-jest.mock('../../ux-components/popups/css/LandCharacteristicsPopup.module.css', () => ({
+jest.mock('../../../ux-components/popups/css/LandCharacteristicsPopup.module.css', () => ({
   header: 'mocked-header',
   title: 'mocked-title',
   row: 'mocked-row',
@@ -40,7 +40,7 @@ jest.mock('../../ux-components/popups/css/LandCharacteristicsPopup.module.css', 
   building: 'mocked-building',
 }));
 
-jest.mock('../../ux-components/popups/css/Popup.module.css', () => ({
+jest.mock('../../../ux-components/popups/css/Popup.module.css', () => ({
   popupContent: 'mocked-popup-content',
   header: 'mocked-header',
   title: 'mocked-title',

@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import OpponentInfoPopup from '../../ux-components/popups/OpponentInfoPopup';
-import { DiplomacyStatus } from '../../types/Diplomacy';
-import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import OpponentInfoPopup from '../../../ux-components/popups/OpponentInfoPopup';
+import { DiplomacyStatus } from '../../../types/Diplomacy';
+import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
+import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 
-jest.mock('../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
+jest.mock('../../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
   popupContent: 'mocked-popup-content',
   header: 'mocked-header',
   title: 'mocked-title',
@@ -22,7 +22,7 @@ jest.mock('../../ux-components/popups/css/OpponentInfoPopup.module.css', () => (
   notreaty: 'mocked-no-treaty',
 }));
 
-jest.mock('../../ux-components/avatars/Avatar', () => {
+jest.mock('../../../ux-components/avatars/Avatar', () => {
   return ({ player, size, shape, borderColor, className }: any) => {
     return (
       <div
@@ -38,8 +38,8 @@ jest.mock('../../ux-components/avatars/Avatar', () => {
 });
 
 // Mock the GameContext hook
-jest.mock('../../contexts/GameContext', () => {
-  const originalModule = jest.requireActual('../../contexts/GameContext');
+jest.mock('../../../contexts/GameContext', () => {
+  const originalModule = jest.requireActual('../../../contexts/GameContext');
   return {
     ...originalModule,
     useGameContext: jest.fn(),
@@ -56,7 +56,7 @@ describe('OpponentInfoPopup', () => {
     jest.clearAllMocks();
 
     // Set up the default mock for useGameContext
-    const { useGameContext } = require('../../contexts/GameContext');
+    const { useGameContext } = require('../../../contexts/GameContext');
     useGameContext.mockReturnValue({
       gameState: gameStateStub,
       updateTile: jest.fn(),
