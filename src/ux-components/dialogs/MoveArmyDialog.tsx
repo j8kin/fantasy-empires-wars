@@ -240,7 +240,6 @@ const MoveArmyDialog: React.FC = () => {
 
   const handleMouseDown = (
     fromArray: Unit[],
-    toArray: Unit[],
     unitIndex: number,
     direction: 'right' | 'left'
   ) => {
@@ -329,7 +328,7 @@ const MoveArmyDialog: React.FC = () => {
         data-testid={`${isHeroUnit ? heroUnit.name : regularUnit.id}-${index}`}
         key={`${isHeroUnit ? heroUnit.name : regularUnit.id}-${index}`}
         className={`${styles.unitItem} ${colorClass}`}
-        onMouseDown={() => handleMouseDown(fromArray, toArray, index, direction)}
+        onMouseDown={() => handleMouseDown(fromArray, index, direction)}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
       >
