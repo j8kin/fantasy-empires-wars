@@ -12,12 +12,14 @@ import { BuildingType } from '../../types/Building';
 import { isHero } from '../../types/Army';
 
 const UnitActionControl: React.FC = () => {
-  const { addGlowingTile, setSelectedLandAction } = useApplicationContext();
+  const { addGlowingTile, clearAllGlow, setSelectedLandAction } = useApplicationContext();
   const { gameState } = useGameContext();
 
   const handleShowRecruitArmyDialog = useCallback(
     (event: React.MouseEvent) => {
       if (!gameState) return;
+
+      clearAllGlow();
 
       // Prevent event bubbling to parent elements (MainView)
       event.stopPropagation();
@@ -49,12 +51,14 @@ const UnitActionControl: React.FC = () => {
         addGlowingTile(tileId);
       });
     },
-    [gameState, addGlowingTile, setSelectedLandAction]
+    [gameState, clearAllGlow, setSelectedLandAction, addGlowingTile]
   );
 
   const handleShowSendHeroInQuestDialog = useCallback(
     (event: React.MouseEvent) => {
       if (!gameState) return;
+
+      clearAllGlow();
 
       // Prevent event bubbling to parent elements (MainView)
       event.stopPropagation();
@@ -75,13 +79,14 @@ const UnitActionControl: React.FC = () => {
         addGlowingTile(tileId);
       });
     },
-    [gameState, addGlowingTile, setSelectedLandAction]
+    [gameState, clearAllGlow, setSelectedLandAction, addGlowingTile]
   );
 
   const handleShowMoveAmyDialog = useCallback(
     (event: React.MouseEvent) => {
       if (!gameState) return;
 
+      clearAllGlow();
       // Prevent event bubbling to parent elements (MainView)
       event.stopPropagation();
 
@@ -100,7 +105,7 @@ const UnitActionControl: React.FC = () => {
         addGlowingTile(tileId);
       });
     },
-    [addGlowingTile, gameState, setSelectedLandAction]
+    [addGlowingTile, clearAllGlow, gameState, setSelectedLandAction]
   );
 
   return (
