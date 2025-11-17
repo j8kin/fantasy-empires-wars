@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -7,8 +8,8 @@ import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 import { GameState, TurnPhase } from '../../../types/GameState';
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
 import { getLands } from '../../../map/utils/getLands';
-import { Alignment } from '../../../types/Alignment';
 
+import { Alignment } from '../../../types/Alignment';
 // Import the mocked function (will be the mocked version due to jest.mock above)
 import { startQuest as mockStartQuest } from '../../../map/quest/startQuest';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
@@ -722,20 +723,6 @@ describe('SendHeroInQuestDialog', () => {
       expect(heroSlot).toHaveTextContent(expectedDisplayName);
     });
   });
-
-  // Helper function to work with specific quest pages (imported from testing-library)
-  const within = (container: HTMLElement) => {
-    return {
-      getAllByTestId: (testId: string | RegExp) => {
-        if (typeof testId === 'string') {
-          return Array.from(container.querySelectorAll(`[data-testid="${testId}"]`));
-        }
-        return Array.from(container.querySelectorAll('[data-testid]')).filter((el) =>
-          testId.test(el.getAttribute('data-testid') || '')
-        );
-      },
-    };
-  };
 
   describe('Multiple Heroes Scenario', () => {
     beforeEach(() => {
