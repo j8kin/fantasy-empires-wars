@@ -311,7 +311,6 @@ const MoveArmyDialog: React.FC = () => {
     unit: Unit,
     index: number,
     fromArray: Unit[],
-    toArray: Unit[],
     direction: 'right' | 'left'
   ) => {
     const colorClass = getUnitColorClass(unit);
@@ -371,9 +370,7 @@ const MoveArmyDialog: React.FC = () => {
                 {fromUnits.length === 0 ? (
                   <div className={styles.emptyMessage}>No units available</div>
                 ) : (
-                  fromUnits.map((unit, index) =>
-                    renderUnit(unit, index, fromUnits, toUnits, 'right')
-                  )
+                  fromUnits.map((unit, index) => renderUnit(unit, index, fromUnits, 'right'))
                 )}
               </div>
             </div>
@@ -420,7 +417,7 @@ const MoveArmyDialog: React.FC = () => {
                 {toUnits.length === 0 ? (
                   <div className={styles.emptyMessage}>No units selected</div>
                 ) : (
-                  toUnits.map((unit, index) => renderUnit(unit, index, toUnits, fromUnits, 'left'))
+                  toUnits.map((unit, index) => renderUnit(unit, index, toUnits, 'left'))
                 )}
               </div>
             </div>
