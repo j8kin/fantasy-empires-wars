@@ -92,6 +92,8 @@ export const getNearSpecialLandTypes = (id: LAND_TYPE): LAND_TYPE => {
 // common units which would be able to recruit on any land type
 // some additional restriction could apply based on building and players alignment and type
 const commonUnitsToRecruit: UnitType[] = [
+  // common regular unit available on all lands
+  RegularUnitType.WARD_HANDS,
   // war machines
   RegularUnitType.BALLISTA,
   RegularUnitType.CATAPULT,

@@ -1,5 +1,6 @@
 import { HeroUnitType, RegularUnitType, UnitType } from '../types/Army';
 
+import wardHandsImg from './army/ward-hands.png';
 import warriorImg from './army/warrior.png';
 import dwarfImg from './army/dwarf.png';
 import elfImg from './army/elf.png';
@@ -21,6 +22,8 @@ import necromancerImg from './army/necromancer.png';
 
 export const getUnitImg = (unit: UnitType) => {
   switch (unit) {
+    case RegularUnitType.WARD_HANDS:
+      return wardHandsImg;
     case RegularUnitType.WARRIOR:
       return warriorImg;
     case RegularUnitType.DWARF:

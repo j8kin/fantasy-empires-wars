@@ -3,6 +3,7 @@ import { Alignment } from './Alignment';
 import { Movements } from './Movements';
 
 export enum RegularUnitType {
+  WARD_HANDS = 'Ward-hands',
   WARRIOR = 'Warrior',
   DWARF = 'Dwarf',
   ORC = 'Orc',
@@ -91,6 +92,21 @@ export type Armies = Army[];
 
 export const getDefaultUnit = (unitType: UnitType): Unit => {
   switch (unitType) {
+    case RegularUnitType.WARD_HANDS:
+      return {
+        id: unitType,
+        attack: 5,
+        defense: 3,
+        health: 20,
+        speed: 2,
+        alignment: Alignment.NEUTRAL,
+        level: UnitRank.REGULAR,
+        count: 30,
+        recruitCost: 300,
+        maintainCost: 2,
+        description:
+          'Local hands risen in necessity, their resolve rough but unbroken against Orrivane’s growing dread.',
+      };
     case RegularUnitType.WARRIOR:
       return {
         id: unitType,

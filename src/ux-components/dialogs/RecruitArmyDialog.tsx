@@ -7,7 +7,16 @@ import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage
 
 import { getTurnOwner } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
-import { getDefaultUnit, HeroUnitType, isHero, isMage, UnitType } from '../../types/Army';
+import {
+  getDefaultUnit,
+  HeroUnitType,
+  isHero,
+  isMage,
+  isWarMachine,
+  RegularUnitType,
+  Unit,
+  UnitType,
+} from '../../types/Army';
 import { getLand, LandPosition } from '../../map/utils/getLands';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 
@@ -108,6 +117,13 @@ const RecruitArmyDialog: React.FC = () => {
     return null;
   }
 
+  const sortArmyUnits = (unit: Unit): number => {
+    if (unit.id === RegularUnitType.WARD_HANDS) return 0;
+    if (isWarMachine(unit.id)) return 2;
+    if (isHero(unit)) return 3;
+    return 1;
+  };
+
   const availableUnits = land.land.unitsToRecruit
     .filter(
       (u) =>
@@ -125,7 +141,7 @@ const RecruitArmyDialog: React.FC = () => {
         (u === HeroUnitType.NECROMANCER && recruitBuilding.id === BuildingType.BLACK_MAGE_TOWER)
     )
     .map((unit) => getDefaultUnit(unit))
-    .sort((a, b) => Number(isHero(a)) - Number(isHero(b)));
+    .sort((a, b) => sortArmyUnits(a) - sortArmyUnits(b));
 
   const slots: Slot[] = [];
   for (let i = 0; i < initialSlotCount; i++) {
