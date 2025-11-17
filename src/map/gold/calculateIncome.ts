@@ -12,12 +12,12 @@ export const calculateIncome = (gameState: GameState): number => {
 
   if (player == null) return 0;
 
-  const playerLands = getLands({ lands: battlefield.lands, players: [player] });
+  const playerLands = getLands({ lands: battlefield.lands, players: [gameState.turnOwner] });
 
   return playerLands.reduce((acc, land) => {
     const playerStrongholds = getLands({
       lands: battlefield.lands,
-      players: [player],
+      players: [gameState.turnOwner],
       buildings: [BuildingType.STRONGHOLD],
     }).map((land) => land.mapPos);
 

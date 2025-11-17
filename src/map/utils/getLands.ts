@@ -1,5 +1,5 @@
 import { LandState, BattlefieldLands, GameState, battlefieldLandId } from '../../types/GameState';
-import { NO_PLAYER, PlayerInfo } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 import { LAND_TYPE } from '../../types/Land';
 import { BuildingType } from '../../types/Building';
@@ -15,7 +15,7 @@ export const getLands = ({
   noArmy,
 }: {
   lands: BattlefieldLands;
-  players?: PlayerInfo[];
+  players?: string[];
   landTypes?: LAND_TYPE[];
   landAlignment?: Alignment;
   buildings?: BuildingType[];
@@ -25,7 +25,7 @@ export const getLands = ({
     (landState) =>
       (players == null ||
         (players.length === 0 && landState.controlledBy === NO_PLAYER.id) ||
-        (players.length > 0 && players.some((gp) => gp.id === landState.controlledBy))) &&
+        (players.length > 0 && players.some((gp) => gp === landState.controlledBy))) &&
       (landTypes == null || landTypes.includes(landState.land.id)) &&
       (landAlignment == null || landState.land.alignment === landAlignment) &&
       // ignore buildings

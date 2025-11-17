@@ -8,7 +8,10 @@ export const getAvailableToConstructLands = (
   buildingType: BuildingType
 ): string[] => {
   const owner = getTurnOwner(gameState)!;
-  const playerLands = getLands({ lands: gameState.battlefield.lands, players: [owner] });
+  const playerLands = getLands({
+    lands: gameState.battlefield.lands,
+    players: [gameState.turnOwner],
+  });
 
   switch (buildingType) {
     case BuildingType.WALL:

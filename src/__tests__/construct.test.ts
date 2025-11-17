@@ -20,7 +20,7 @@ describe('Construct Buildings', () => {
   const getPlayerLands = (player: GamePlayer) =>
     getLands({
       lands: gameStateStub.battlefield.lands,
-      players: [player],
+      players: [player.id],
     }).map((land) => battlefieldLandId(land.mapPos));
 
   beforeEach(() => {
@@ -58,7 +58,7 @@ describe('Construct Buildings', () => {
 
       const player1Lands = getLands({
         lands: gameStateStub.battlefield.lands,
-        players: [player1],
+        players: [player1.id],
       }).map((land) => battlefieldLandId(land.mapPos));
       // row 1
       expect(player1Lands).toContain('2-3');
@@ -321,7 +321,7 @@ describe('Construct Buildings', () => {
 
       const emptyLand = getLands({
         lands: gameStateStub.battlefield.lands,
-        players: [getTurnOwner(gameStateStub)!],
+        players: [gameStateStub.turnOwner],
         buildings: [],
       })[0];
       getTurnOwner(gameStateStub)!.vault = 0; // vault is empty

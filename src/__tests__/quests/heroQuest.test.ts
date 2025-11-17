@@ -45,7 +45,7 @@ describe('Hero Quest', () => {
     // the game always starts with 1 hero on the first turn on homeland
     heroLand = getLands({
       lands: gameStateStub.battlefield.lands,
-      players: [getTurnOwner(gameStateStub)!],
+      players: [gameStateStub.turnOwner],
       noArmy: false,
     })[0];
 
@@ -186,7 +186,7 @@ describe('Hero Quest', () => {
     expect(
       getLands({
         lands: gameStateStub.battlefield.lands,
-        players: [getTurnOwner(gameStateStub)!],
+        players: [gameStateStub.turnOwner],
         noArmy: false,
       }).length
     ).toBe(0); // not returned to map at all
@@ -246,7 +246,7 @@ describe('Hero Quest', () => {
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getLands({
       lands: gameStateStub.battlefield.lands,
-      players: [getTurnOwner(gameStateStub)!],
+      players: [gameStateStub.turnOwner],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 
@@ -311,7 +311,7 @@ describe('Hero Quest', () => {
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getLands({
       lands: gameStateStub.battlefield.lands,
-      players: [getTurnOwner(gameStateStub)!],
+      players: [gameStateStub.turnOwner],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 

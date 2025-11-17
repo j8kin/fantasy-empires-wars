@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../../types/GameState';
+import { GameState } from '../../types/GameState';
 import { getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero, RegularUnit } from '../../types/Army';
@@ -10,7 +10,7 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
   const heroesRecruited: HeroOutcome[] = [];
   getLands({
     lands: gameState.battlefield.lands,
-    players: [getTurnOwner(gameState)!],
+    players: [gameState.turnOwner],
     buildings: [
       BuildingType.BARRACKS,
       BuildingType.WHITE_MAGE_TOWER,

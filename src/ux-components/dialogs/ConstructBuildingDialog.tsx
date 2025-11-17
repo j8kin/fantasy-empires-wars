@@ -59,12 +59,11 @@ const ConstructBuildingDialog: React.FC = () => {
     }
   }, [gameState, handleClose, selectedLandAction, showConstructBuildingDialog]);
 
-  if (!showConstructBuildingDialog) return null;
+  if (!gameState && !showConstructBuildingDialog) return null;
 
-  const selectedPlayer = getTurnOwner(gameState)!;
   const landsWithoutBuildings = getLands({
     lands: gameState!.battlefield.lands,
-    players: [selectedPlayer],
+    players: [gameState!.turnOwner],
     buildings: [],
   });
   if (landsWithoutBuildings.length === 0) {
@@ -76,10 +75,10 @@ const ConstructBuildingDialog: React.FC = () => {
       }
     }
   }
-
   const isStrongholdAllowed =
     getAvailableToConstructLands(gameState!, BuildingType.STRONGHOLD).length > 0;
 
+  const selectedPlayer = getTurnOwner(gameState)!;
   const availableBuildings = selectedPlayer
     ? getAllBuildings(selectedPlayer).filter(
         (building) =>

@@ -58,7 +58,7 @@ describe('Move Army', () => {
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getLands({
       lands: gameStateStub.battlefield.lands,
-      players: [getTurnOwner(gameStateStub)!],
+      players: [gameStateStub.turnOwner],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 

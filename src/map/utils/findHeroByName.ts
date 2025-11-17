@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../../types/GameState';
+import { GameState } from '../../types/GameState';
 import { getLands } from './getLands';
 import { HeroUnit } from '../../types/Army';
 import { isHero } from '../../types/Army';
@@ -6,7 +6,7 @@ import { isHero } from '../../types/Army';
 export const findHeroByName = (name: string, gameState: GameState): HeroUnit | undefined => {
   const lands = getLands({
     lands: gameState.battlefield.lands,
-    players: [getTurnOwner(gameState)!],
+    players: [gameState.turnOwner],
     noArmy: false,
   });
 

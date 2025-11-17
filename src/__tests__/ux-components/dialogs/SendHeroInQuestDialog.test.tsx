@@ -171,7 +171,7 @@ describe('SendHeroInQuestDialog', () => {
   const getHeroLands = (gameState: GameState) => {
     return getLands({
       lands: gameState.battlefield.lands,
-      players: [gameState.players.find((p) => p.id === gameState.turnOwner)!],
+      players: [gameState.turnOwner],
       noArmy: false,
     }).filter(
       (land) =>
@@ -603,7 +603,7 @@ describe('SendHeroInQuestDialog', () => {
       // findHeroByName will find the correct hero
       const expectedHeroInGameState = getLands({
         lands: mockGameState.battlefield.lands,
-        players: [mockGameState.players.find((p) => p.id === mockGameState.turnOwner)!],
+        players: [mockGameState.turnOwner],
         noArmy: false,
       })
         .flatMap((land) => land.army)
@@ -646,7 +646,7 @@ describe('SendHeroInQuestDialog', () => {
       // Modify hero to have empty name (edge case)
       const lands = getLands({
         lands: mockGameState.battlefield.lands,
-        players: [mockGameState.players.find((p) => p.id === mockGameState.turnOwner)!],
+        players: [mockGameState.turnOwner],
         noArmy: false,
       });
 
@@ -667,7 +667,7 @@ describe('SendHeroInQuestDialog', () => {
       // Modify hero to have very long name
       const lands = getLands({
         lands: mockGameState.battlefield.lands,
-        players: [mockGameState.players.find((p) => p.id === mockGameState.turnOwner)!],
+        players: [mockGameState.turnOwner],
         noArmy: false,
       });
 
@@ -697,7 +697,7 @@ describe('SendHeroInQuestDialog', () => {
       // Modify hero to have single word name
       const lands = getLands({
         lands: mockGameState.battlefield.lands,
-        players: [mockGameState.players.find((p) => p.id === mockGameState.turnOwner)!],
+        players: [mockGameState.turnOwner],
         noArmy: false,
       });
 
@@ -742,7 +742,7 @@ describe('SendHeroInQuestDialog', () => {
       // Add additional heroes to test multiple hero scenarios
       const currentPlayerLands = getLands({
         lands: mockGameState.battlefield.lands,
-        players: [mockGameState.players.find((p) => p.id === mockGameState.turnOwner)!],
+        players: [mockGameState.turnOwner],
       });
 
       if (currentPlayerLands.length > 1) {

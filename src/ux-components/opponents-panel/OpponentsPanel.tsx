@@ -19,9 +19,11 @@ const OpponentsPanel: React.FC = () => {
       showOpponentInfo(opponent, screenPosition);
 
       setTimeout(() => {
-        getLands({ lands: gameState!.battlefield.lands, players: [opponent] }).forEach((land) => {
-          addGlowingTile(battlefieldLandId(land.mapPos));
-        });
+        getLands({ lands: gameState!.battlefield.lands, players: [opponent.id] }).forEach(
+          (land) => {
+            addGlowingTile(battlefieldLandId(land.mapPos));
+          }
+        );
       }, 0);
     },
     [showOpponentInfo, addGlowingTile, gameState]

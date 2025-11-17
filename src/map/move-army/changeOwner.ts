@@ -1,4 +1,4 @@
-import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
+import { battlefieldLandId, GameState } from '../../types/GameState';
 import { getHostileLands } from '../utils/getHostileLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getLand, getLands } from '../utils/getLands';
@@ -15,7 +15,7 @@ export const changeOwner = (gameState: GameState): void => {
 
   getLands({
     lands: gameState.battlefield.lands,
-    players: [getTurnOwner(gameState)!],
+    players: [gameState.turnOwner],
     noArmy: true,
   })
     .filter(

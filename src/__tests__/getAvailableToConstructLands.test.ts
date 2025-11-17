@@ -49,7 +49,7 @@ describe('getAvailableLands', () => {
   it('should return all available lands for stronghold building which controlled by army', () => {
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
     placeUnitsOnMap(getDefaultUnit(HeroUnitType.FIGHTER), gameStateStub, { row: 3, col: 5 });
-    gameStateStub.battlefield.lands['3-5'].controlledBy = getTurnOwner(gameStateStub)!.id;
+    gameStateStub.battlefield.lands['3-5'].controlledBy = gameStateStub.turnOwner;
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.STRONGHOLD);
 

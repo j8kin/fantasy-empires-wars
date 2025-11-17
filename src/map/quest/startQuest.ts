@@ -8,7 +8,7 @@ export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: Game
 
   const heroLand = getLands({
     lands: gameState.battlefield.lands,
-    players: [getTurnOwner(gameState)!],
+    players: [gameState.turnOwner],
     noArmy: false,
   }).find((land) =>
     land.army.find((army) =>

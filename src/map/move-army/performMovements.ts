@@ -1,4 +1,4 @@
-import { battlefieldLandId, GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
+import { battlefieldLandId, GameState, TurnPhase } from '../../types/GameState';
 import { mergeArmies } from './mergeArmies';
 import { getLands, LandPosition } from '../utils/getLands';
 import { Army } from '../../types/Army';
@@ -15,15 +15,16 @@ export const performMovements = (gameState: GameState): void => {
     isAtDestination: boolean;
   }> = [];
 
-  const player = getTurnOwner(gameState)!;
-  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]);
+  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map((p) => p.id);
 
   getLands({
     lands: gameState.battlefield.lands,
-    players: [player, ...allies],
+    players: [gameState.turnOwner, ...allies],
     noArmy: false,
   })
-    .filter((land) => land.army.some((a) => a.controlledBy === player.id && a.movements != null))
+    .filter((land) =>
+      land.army.some((a) => a.controlledBy === gameState.turnOwner && a.movements != null)
+    )
     .forEach((landState) => {
       landState.army.forEach((army) => {
         if (army.controlledBy === gameState.turnOwner && army.movements) {

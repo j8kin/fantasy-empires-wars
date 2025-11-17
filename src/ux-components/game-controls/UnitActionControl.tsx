@@ -7,7 +7,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { ButtonName } from '../../types/ButtonName';
 import GameButton from '../buttons/GameButton';
 import { getLands } from '../../map/utils/getLands';
-import { getTurnOwner, battlefieldLandId } from '../../types/GameState';
+import { battlefieldLandId } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 import { isHero } from '../../types/Army';
 
@@ -28,7 +28,7 @@ const UnitActionControl: React.FC = () => {
       const recruitmentLands = (
         getLands({
           lands: gameState.battlefield.lands,
-          players: [getTurnOwner(gameState)!],
+          players: [gameState.turnOwner],
           buildings: [
             BuildingType.BARRACKS,
             BuildingType.WHITE_MAGE_TOWER,
@@ -69,7 +69,7 @@ const UnitActionControl: React.FC = () => {
       const questLands = (
         getLands({
           lands: gameState.battlefield.lands,
-          players: [getTurnOwner(gameState)!],
+          players: [gameState.turnOwner],
           noArmy: false,
         }) || []
       ).filter((l) =>
@@ -99,7 +99,7 @@ const UnitActionControl: React.FC = () => {
       const armyLands = (
         getLands({
           lands: gameState.battlefield.lands,
-          players: [getTurnOwner(gameState)!],
+          players: [gameState.turnOwner],
           noArmy: false,
         }) || []
       ).filter((l) => l.army.some((a) => a.movements == null));
