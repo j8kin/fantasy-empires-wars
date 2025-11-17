@@ -15,7 +15,7 @@ import {
   LAND_TYPE,
 } from '../../types/Land';
 import { NO_PLAYER } from '../../types/GamePlayer';
-import { getLands, LandPosition } from '../utils/getLands';
+import { LandPosition } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getRandomElement } from '../../types/getRandomElement';
 
@@ -69,10 +69,9 @@ const createEmptyBattlefield = (dimensions: BattlefieldDimensions): BattlefieldL
 };
 
 const placeSpecialLand = (battlefield: BattlefieldMap, landType: LAND_TYPE) => {
-  const placedSpecialLands = getLands({
-    lands: battlefield.lands,
-    landTypes: getMainSpecialLandTypes(),
-  });
+  const placedSpecialLands = Object.values(battlefield.lands).filter((land) =>
+    getMainSpecialLandTypes().includes(land.land.id)
+  );
 
   let freeToPlaceLands = Object.keys(battlefield.lands).filter(
     (landId) =>
@@ -105,10 +104,9 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LAND_TYPE) => {
     );
   }
 
-  const specialLandNeighbors = getLands({
-    lands: battlefield.lands,
-    landTypes: [landType, getNearSpecialLandTypes(landType)],
-  }).flatMap((l) => getEmptyNeighbors(battlefield, l.mapPos));
+  const specialLandNeighbors = Object.values(battlefield.lands)
+    .filter((l) => [landType, getNearSpecialLandTypes(landType)].includes(l.land.id))
+    .flatMap((l) => getEmptyNeighbors(battlefield, l.mapPos));
 
   // set all Neighbors for just placed special lands
   const landType1 = Math.max(specialLandNeighbors.length / 2, 6);
@@ -136,7 +134,10 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap =
   );
 
   remainingLandTypes.forEach((landType) => {
-    while (getLands({ lands: battlefield.lands, landTypes: [landType] }).length < maxTilesPerType) {
+    while (
+      Object.values(battlefield.lands).filter((l) => l.land.id === landType).length <
+      maxTilesPerType
+    ) {
       let startLand = getRandomEmptyLand(battlefield.lands);
       if (startLand == null) break;
       battlefield.lands[battlefieldLandId(startLand.mapPos)].land = getLandById(landType);
@@ -145,7 +146,8 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap =
       for (
         let i = 0;
         i < 5 &&
-        getLands({ lands: battlefield.lands, landTypes: [landType] }).length < maxTilesPerType;
+        Object.values(battlefield.lands).filter((l) => l.land.id === landType).length <
+          maxTilesPerType;
         i++
       ) {
         const emptyNeighbor = getRandomNoneNeighbor(battlefield, startLand.mapPos);

@@ -7,7 +7,7 @@ export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: Game
   if (gameState.turnPhase !== TurnPhase.MAIN) return;
 
   const heroLand = getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     players: [gameState.turnOwner],
     noArmy: false,
   }).find((land) =>

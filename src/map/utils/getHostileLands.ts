@@ -10,7 +10,7 @@ export const getHostileLands = (gameState: GameState): LandState[] => {
   const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map((p) => p.id);
 
   return getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     noArmy: false,
   }).filter(
     (land) =>

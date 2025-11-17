@@ -22,7 +22,7 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
   const handleAvatarClick = () => {
     // Find all lands controlled by the selected player
     setTimeout(() => {
-      getLands({ lands: gameState!.battlefield.lands, players: [turnOwner.id] }).forEach((land) => {
+      getLands({ gameState: gameState!, players: [turnOwner.id] }).forEach((land) => {
         addGlowingTile(battlefieldLandId(land.mapPos));
       });
     }, 0);

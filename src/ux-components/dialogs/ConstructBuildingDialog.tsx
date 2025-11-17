@@ -59,11 +59,11 @@ const ConstructBuildingDialog: React.FC = () => {
     }
   }, [gameState, handleClose, selectedLandAction, showConstructBuildingDialog]);
 
-  if (!gameState && !showConstructBuildingDialog) return null;
+  if (!gameState || !showConstructBuildingDialog) return null;
 
   const landsWithoutBuildings = getLands({
-    lands: gameState!.battlefield.lands,
-    players: [gameState!.turnOwner],
+    gameState: gameState,
+    players: [gameState.turnOwner],
     buildings: [],
   });
   if (landsWithoutBuildings.length === 0) {

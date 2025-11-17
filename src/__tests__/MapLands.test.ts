@@ -1,4 +1,3 @@
-import { generateMockMap } from './utils/generateMockMap';
 import { getLands } from '../map/utils/getLands';
 import { construct } from '../map/building/construct';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
@@ -18,11 +17,11 @@ describe('MapLands', () => {
 
   describe('Get lands', () => {
     it('should return all lands', () => {
-      const mockMap: BattlefieldMap = generateMockMap(battlefieldSize);
+      const gameStateStub = createGameStateStub({ battlefieldSize: battlefieldSize, nPlayers: 1 });
 
       expect(
         getLands({
-          lands: mockMap.lands,
+          gameState: gameStateStub,
           players: undefined,
           landTypes: undefined,
           landAlignment: undefined,
@@ -34,38 +33,56 @@ describe('MapLands', () => {
 
     describe('Get lands with LandType', () => {
       it('should return only related lands based on LandType', () => {
-        const mockMap: BattlefieldMap = generateMockMap(battlefieldSize);
+        const gameStateStub = createGameStateStub({
+          battlefieldSize: battlefieldSize,
+          nPlayers: 1,
+          addPlayersHomeland: false,
+        });
+        const mockMap: BattlefieldMap = gameStateStub.battlefield;
 
         mockMap.lands['0-0'].land = getLandById(LAND_TYPE.VOLCANO);
         mockMap.lands['0-1'].land = getLandById(LAND_TYPE.LAVA);
-        mockMap.lands['0-1'].controlledBy = player.id;
-        expect(getLands({ lands: mockMap.lands, landTypes: [LAND_TYPE.VOLCANO] }).length).toBe(1);
+        mockMap.lands['0-1'].controlledBy = gameStateStub.turnOwner;
+        expect(getLands({ gameState: gameStateStub, landTypes: [LAND_TYPE.VOLCANO] }).length).toBe(
+          1
+        );
         expect(
-          getLands({ lands: mockMap.lands, players: [player.id], landTypes: [LAND_TYPE.LAVA] })
+          getLands({ gameState: gameStateStub, players: [player.id], landTypes: [LAND_TYPE.LAVA] })
             .length
         ).toBe(1);
-        expect(getLands({ lands: mockMap.lands, landTypes: [LAND_TYPE.PLAINS] }).length).toBe(
+        expect(getLands({ gameState: gameStateStub, landTypes: [LAND_TYPE.PLAINS] }).length).toBe(
           nTiles5x5 - 2
         );
         expect(
-          getLands({ lands: mockMap.lands, players: [player.id], landTypes: [LAND_TYPE.PLAINS] })
-            .length
+          getLands({
+            gameState: gameStateStub,
+            players: [gameStateStub.turnOwner],
+            landTypes: [LAND_TYPE.PLAINS],
+          }).length
         ).toBe(0);
       });
     });
 
     describe('Get lands with Land Alignment', () => {
       it('should return only related lands based on Land Alignment', () => {
-        const mockMap: BattlefieldMap = generateMockMap(battlefieldSize);
+        const gameStateStub = createGameStateStub({
+          battlefieldSize: battlefieldSize,
+          nPlayers: 1,
+        });
+        const mockMap: BattlefieldMap = gameStateStub.battlefield;
 
         mockMap.lands['0-0'].land = getLandById(LAND_TYPE.VOLCANO);
         mockMap.lands['0-1'].land = getLandById(LAND_TYPE.LAVA);
 
-        expect(getLands({ lands: mockMap.lands, landAlignment: Alignment.CHAOTIC }).length).toBe(2);
-        expect(getLands({ lands: mockMap.lands, landAlignment: Alignment.LAWFUL }).length).toBe(0); // Plants have NEUTRAL alignment
-        expect(getLands({ lands: mockMap.lands, landAlignment: Alignment.NEUTRAL }).length).toBe(
-          nTiles5x5 - 2
-        );
+        expect(
+          getLands({ gameState: gameStateStub, landAlignment: Alignment.CHAOTIC }).length
+        ).toBe(2);
+        expect(getLands({ gameState: gameStateStub, landAlignment: Alignment.LAWFUL }).length).toBe(
+          0
+        ); // Plants have NEUTRAL alignment
+        expect(
+          getLands({ gameState: gameStateStub, landAlignment: Alignment.NEUTRAL }).length
+        ).toBe(nTiles5x5 - 2);
       });
 
       it('should return only related lands based on Land Alignment & Building', () => {
@@ -73,7 +90,7 @@ describe('MapLands', () => {
 
         expect(
           getLands({
-            lands: gameStateStub.battlefield.lands,
+            gameState: gameStateStub,
             landAlignment: Alignment.NEUTRAL,
             buildings: [BuildingType.STRONGHOLD],
           }).length
@@ -85,7 +102,7 @@ describe('MapLands', () => {
 
         expect(
           getLands({
-            lands: stubGameState.battlefield.lands,
+            gameState: stubGameState,
             landAlignment: Alignment.NEUTRAL,
             buildings: [],
           }).length
@@ -102,20 +119,20 @@ describe('MapLands', () => {
 
       it('should return the lands of the owner', () => {
         const playerLands = getLands({
-          lands: stubGameState.battlefield.lands,
+          gameState: stubGameState,
           players: [player.id],
         });
         expect(playerLands.length).toBe(nTilesInRadius1);
       });
 
       it('should return the lands without owner', () => {
-        const playerLands = getLands({ lands: stubGameState.battlefield.lands, players: [] });
+        const playerLands = getLands({ gameState: stubGameState, players: [] });
         expect(playerLands.length).toBe(nTiles10x20 - nTilesInRadius1 * 3); // 3 players are placed on the map in createDefaultStubGameState
       });
 
       it('should return the lands of the owner without stronghold', () => {
         const playerLands = getLands({
-          lands: stubGameState.battlefield.lands,
+          gameState: stubGameState,
           players: [player.id],
           buildings: [],
         });
@@ -125,13 +142,13 @@ describe('MapLands', () => {
       it('should return the lands of the owner with stronghold', () => {
         construct(stubGameState, BuildingType.BARRACKS, { row: 3, col: 4 });
         let playerLands = getLands({
-          lands: stubGameState.battlefield.lands,
+          gameState: stubGameState,
           players: [player.id],
           buildings: [BuildingType.STRONGHOLD],
         });
         expect(playerLands.length).toBe(1);
         playerLands = getLands({
-          lands: stubGameState.battlefield.lands,
+          gameState: stubGameState,
           players: [player.id],
           buildings: [BuildingType.STRONGHOLD, BuildingType.BARRACKS],
         });
@@ -143,23 +160,18 @@ describe('MapLands', () => {
       it('should return the lands with heroes and without (1 player on map)', () => {
         const stubGameState = createGameStateStub({ nPlayers: 1 });
 
-        expect(getLands({ lands: stubGameState.battlefield.lands, noArmy: false }).length).toBe(1);
-        expect(getLands({ lands: stubGameState.battlefield.lands, noArmy: true }).length).toBe(
-          nTiles10x20 - 1
-        );
+        expect(getLands({ gameState: stubGameState, noArmy: false }).length).toBe(1);
+        expect(getLands({ gameState: stubGameState, noArmy: true }).length).toBe(nTiles10x20 - 1);
       });
 
       it('should return the lands with heroes and without (3 player on map)', () => {
         const stubGameState = createDefaultGameStateStub();
 
-        expect(getLands({ lands: stubGameState.battlefield.lands, noArmy: false }).length).toBe(3);
+        expect(getLands({ gameState: stubGameState, noArmy: false }).length).toBe(3);
         expect(
-          getLands({ lands: stubGameState.battlefield.lands, players: [player.id], noArmy: false })
-            .length
+          getLands({ gameState: stubGameState, players: [player.id], noArmy: false }).length
         ).toBe(1);
-        expect(getLands({ lands: stubGameState.battlefield.lands, noArmy: true }).length).toBe(
-          nTiles10x20 - 3
-        );
+        expect(getLands({ gameState: stubGameState, noArmy: true }).length).toBe(nTiles10x20 - 3);
       });
     });
   });

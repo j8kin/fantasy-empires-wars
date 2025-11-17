@@ -5,7 +5,7 @@ import { Army, isHero, RegularUnit } from '../../types/Army';
 export const mergeArmies = (gameState: GameState): void => {
   if (gameState == null || gameState.turnPhase === TurnPhase.MAIN) return;
 
-  getLands({ lands: gameState.battlefield.lands, players: [gameState.turnOwner], noArmy: false })
+  getLands({ gameState: gameState, players: [gameState.turnOwner], noArmy: false })
     .filter(
       (land) =>
         land.army.length > 1 &&

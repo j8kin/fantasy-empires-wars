@@ -13,15 +13,11 @@ describe('Game Start: add player to map', () => {
       addPlayersHomeland: false,
     });
 
-    expect(
-      getLands({ lands: gameState.battlefield.lands, buildings: [BuildingType.STRONGHOLD] }).length
-    ).toBe(0);
+    expect(getLands({ gameState: gameState, buildings: [BuildingType.STRONGHOLD] }).length).toBe(0);
 
     startTurn(gameState);
 
-    expect(
-      getLands({ lands: gameState.battlefield.lands, buildings: [BuildingType.STRONGHOLD] }).length
-    ).toBe(1);
+    expect(getLands({ gameState: gameState, buildings: [BuildingType.STRONGHOLD] }).length).toBe(1);
   });
 
   it('all players should be placed on map on Turn 1', () => {
@@ -36,9 +32,9 @@ describe('Game Start: add player to map', () => {
       endTurn(gameState);
     }
 
-    expect(
-      getLands({ lands: gameState.battlefield.lands, buildings: [BuildingType.STRONGHOLD] }).length
-    ).toBe(gameState.players.length);
+    expect(getLands({ gameState: gameState, buildings: [BuildingType.STRONGHOLD] }).length).toBe(
+      gameState.players.length
+    );
   });
 
   it.each([
@@ -63,10 +59,9 @@ describe('Game Start: add player to map', () => {
         endTurn(gameState);
       }
 
-      expect(
-        getLands({ lands: gameState.battlefield.lands, buildings: [BuildingType.STRONGHOLD] })
-          .length
-      ).toBe(gameState.players.length);
+      expect(getLands({ gameState: gameState, buildings: [BuildingType.STRONGHOLD] }).length).toBe(
+        gameState.players.length
+      );
     }
   );
 });

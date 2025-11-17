@@ -27,7 +27,7 @@ const UnitActionControl: React.FC = () => {
       // Get all lands owned by current player with BARRACKS or Mage Towers
       const recruitmentLands = (
         getLands({
-          lands: gameState.battlefield.lands,
+          gameState: gameState,
           players: [gameState.turnOwner],
           buildings: [
             BuildingType.BARRACKS,
@@ -68,7 +68,7 @@ const UnitActionControl: React.FC = () => {
       // Get all lands owned by current player that have heroes
       const questLands = (
         getLands({
-          lands: gameState.battlefield.lands,
+          gameState: gameState,
           players: [gameState.turnOwner],
           noArmy: false,
         }) || []
@@ -98,7 +98,7 @@ const UnitActionControl: React.FC = () => {
       // todo probably for change order we should get all lands with army owned by current player
       const armyLands = (
         getLands({
-          lands: gameState.battlefield.lands,
+          gameState: gameState,
           players: [gameState.turnOwner],
           noArmy: false,
         }) || []

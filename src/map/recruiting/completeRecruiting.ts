@@ -9,7 +9,7 @@ import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
   const heroesRecruited: HeroOutcome[] = [];
   getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     players: [gameState.turnOwner],
     buildings: [
       BuildingType.BARRACKS,

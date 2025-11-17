@@ -132,7 +132,7 @@ export const getNearestStrongholdLand = (
   radius: number = 1
 ): LandState | undefined => {
   const allStrongholdsInRadius2 = getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     buildings: [BuildingType.STRONGHOLD],
   })
     .filter(

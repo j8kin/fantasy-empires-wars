@@ -18,7 +18,7 @@ export const performMovements = (gameState: GameState): void => {
   const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map((p) => p.id);
 
   getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     players: [gameState.turnOwner, ...allies],
     noArmy: false,
   })

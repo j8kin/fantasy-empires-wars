@@ -14,7 +14,7 @@ export const changeOwner = (gameState: GameState): void => {
   const realmLands = getRealmLands(gameState).map((l) => battlefieldLandId(l.mapPos));
 
   getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     players: [gameState.turnOwner],
     noArmy: true,
   })

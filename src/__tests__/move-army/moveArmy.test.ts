@@ -1,12 +1,6 @@
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
-import {
-  battlefieldLandId,
-  GameState,
-  getTurnOwner,
-  LandState,
-  TurnPhase,
-} from '../../types/GameState';
+import { battlefieldLandId, GameState, LandState, TurnPhase } from '../../types/GameState';
 import {
   getDefaultUnit,
   HeroUnit,
@@ -57,7 +51,7 @@ describe('Move Army', () => {
     waitStartPhaseComplete();
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getLands({
-      lands: gameStateStub.battlefield.lands,
+      gameState: gameStateStub,
       players: [gameStateStub.turnOwner],
       buildings: [BuildingType.STRONGHOLD],
     })[0];

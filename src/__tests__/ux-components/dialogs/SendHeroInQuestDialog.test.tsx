@@ -170,7 +170,7 @@ describe('SendHeroInQuestDialog', () => {
   // Helper function to get hero lands for current player
   const getHeroLands = (gameState: GameState) => {
     return getLands({
-      lands: gameState.battlefield.lands,
+      gameState: gameState,
       players: [gameState.turnOwner],
       noArmy: false,
     }).filter(
@@ -602,7 +602,7 @@ describe('SendHeroInQuestDialog', () => {
       // This ensures that when createSlotClickHandler uses slot.id,
       // findHeroByName will find the correct hero
       const expectedHeroInGameState = getLands({
-        lands: mockGameState.battlefield.lands,
+        gameState: mockGameState,
         players: [mockGameState.turnOwner],
         noArmy: false,
       })
@@ -645,7 +645,7 @@ describe('SendHeroInQuestDialog', () => {
     it('should handle empty hero names gracefully', () => {
       // Modify hero to have empty name (edge case)
       const lands = getLands({
-        lands: mockGameState.battlefield.lands,
+        gameState: mockGameState,
         players: [mockGameState.turnOwner],
         noArmy: false,
       });
@@ -666,7 +666,7 @@ describe('SendHeroInQuestDialog', () => {
     it('should handle heroes with very long names', () => {
       // Modify hero to have very long name
       const lands = getLands({
-        lands: mockGameState.battlefield.lands,
+        gameState: mockGameState,
         players: [mockGameState.turnOwner],
         noArmy: false,
       });
@@ -696,7 +696,7 @@ describe('SendHeroInQuestDialog', () => {
     it('should handle heroes with single word names', () => {
       // Modify hero to have single word name
       const lands = getLands({
-        lands: mockGameState.battlefield.lands,
+        gameState: mockGameState,
         players: [mockGameState.turnOwner],
         noArmy: false,
       });
@@ -741,7 +741,7 @@ describe('SendHeroInQuestDialog', () => {
     beforeEach(() => {
       // Add additional heroes to test multiple hero scenarios
       const currentPlayerLands = getLands({
-        lands: mockGameState.battlefield.lands,
+        gameState: mockGameState,
         players: [mockGameState.turnOwner],
       });
 

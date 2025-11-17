@@ -19,7 +19,7 @@ describe('Construct Buildings', () => {
 
   const getPlayerLands = (player: GamePlayer) =>
     getLands({
-      lands: gameStateStub.battlefield.lands,
+      gameState: gameStateStub,
       players: [player.id],
     }).map((land) => battlefieldLandId(land.mapPos));
 
@@ -57,7 +57,7 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 8 });
 
       const player1Lands = getLands({
-        lands: gameStateStub.battlefield.lands,
+        gameState: gameStateStub,
         players: [player1.id],
       }).map((land) => battlefieldLandId(land.mapPos));
       // row 1
@@ -320,7 +320,7 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
 
       const emptyLand = getLands({
-        lands: gameStateStub.battlefield.lands,
+        gameState: gameStateStub,
         players: [gameStateStub.turnOwner],
         buildings: [],
       })[0];

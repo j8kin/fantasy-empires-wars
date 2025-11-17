@@ -1,4 +1,4 @@
-import { LandState, BattlefieldLands, GameState, battlefieldLandId } from '../../types/GameState';
+import { LandState, GameState, battlefieldLandId } from '../../types/GameState';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 import { LAND_TYPE } from '../../types/Land';
@@ -7,20 +7,21 @@ import { BuildingType } from '../../types/Building';
 export type LandPosition = { row: number; col: number };
 
 export const getLands = ({
-  lands,
+  gameState,
   players,
   landTypes,
   landAlignment,
   buildings,
   noArmy,
 }: {
-  lands: BattlefieldLands;
+  gameState: GameState;
   players?: string[];
   landTypes?: LAND_TYPE[];
   landAlignment?: Alignment;
   buildings?: BuildingType[];
   noArmy?: boolean;
 }): LandState[] => {
+  const lands = gameState.battlefield.lands;
   return Object.values(lands).filter(
     (landState) =>
       (players == null ||

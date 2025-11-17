@@ -238,11 +238,7 @@ const MoveArmyDialog: React.FC = () => {
     }
   };
 
-  const handleMouseDown = (
-    fromArray: Unit[],
-    unitIndex: number,
-    direction: 'right' | 'left'
-  ) => {
+  const handleMouseDown = (fromArray: Unit[], unitIndex: number, direction: 'right' | 'left') => {
     // Clear any existing interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);

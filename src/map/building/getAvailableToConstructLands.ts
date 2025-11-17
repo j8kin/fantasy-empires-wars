@@ -9,7 +9,7 @@ export const getAvailableToConstructLands = (
 ): string[] => {
   const owner = getTurnOwner(gameState)!;
   const playerLands = getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     players: [gameState.turnOwner],
   });
 
@@ -29,7 +29,7 @@ export const getAvailableToConstructLands = (
 
     case BuildingType.STRONGHOLD:
       const allStrongholds = getLands({
-        lands: gameState.battlefield.lands,
+        gameState: gameState,
         buildings: [BuildingType.STRONGHOLD],
       });
       const strongholdsExcludedArea = allStrongholds.flatMap((stronghold) =>

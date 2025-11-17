@@ -39,7 +39,7 @@ describe('Recruitment', () => {
     waitStartPhaseComplete();
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getLands({
-      lands: gameStateStub.battlefield.lands,
+      gameState: gameStateStub,
       players: [gameStateStub.turnOwner],
       buildings: [BuildingType.STRONGHOLD],
     })[0];

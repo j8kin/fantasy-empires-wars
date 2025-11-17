@@ -29,7 +29,7 @@ export const calculateMaintenance = (gameState: GameState): number => {
 
   // building maintenance
   const buildingMaintenance = getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     players: [gameState.turnOwner],
     buildings: Object.values(BuildingType),
   }).reduce((acc, land) => {
@@ -38,7 +38,7 @@ export const calculateMaintenance = (gameState: GameState): number => {
 
   // army maintenance
   const armyMaintenance = getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     players: [gameState.turnOwner],
     noArmy: false,
   }).reduce((acc, land) => {

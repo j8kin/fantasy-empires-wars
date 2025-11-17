@@ -64,7 +64,7 @@ describe('LandCharacteristicsPopup', () => {
 
     // Find a tile that's controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getLands({
-      lands: gameStateStub.battlefield.lands,
+      gameState: gameStateStub,
       players: [gameStateStub.players[1].id],
       buildings: [BuildingType.STRONGHOLD],
     })[0];

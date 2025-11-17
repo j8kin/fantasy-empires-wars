@@ -12,7 +12,7 @@ export const getAvailableToCastSpellLands = (gameState: GameState, spellName: Sp
           : gameState.players
         ).map((p) => p.id);
 
-  return getLands({ lands: gameState.battlefield.lands, players: playerFiltered }).map((land) =>
+  return getLands({ gameState: gameState, players: playerFiltered }).map((land) =>
     battlefieldLandId(land.mapPos)
   );
 };

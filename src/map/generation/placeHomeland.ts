@@ -26,7 +26,7 @@ export const placeHomeland = (gameState: GameState) => {
   let homeland: LandState;
 
   const existingPlayersHomelands = getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     buildings: [BuildingType.STRONGHOLD],
   });
 
@@ -74,7 +74,7 @@ export const placeHomeland = (gameState: GameState) => {
     if (freeToBuildLands.length === 0) {
       homeland = getRandomElement(
         getLands({
-          lands: gameState.battlefield.lands,
+          gameState: gameState,
           players: [NO_PLAYER.id],
           landAlignment: owner.alignment,
         })
@@ -94,7 +94,7 @@ export const placeHomeland = (gameState: GameState) => {
 
   // Place Barracks on the same alignment land except homeland
   let possibleBarracksLands = getLands({
-    lands: gameState.battlefield.lands,
+    gameState: gameState,
     players: [gameState.turnOwner],
     landAlignment: owner.alignment,
     buildings: [],
@@ -102,7 +102,7 @@ export const placeHomeland = (gameState: GameState) => {
   if (possibleBarracksLands.length === 0) {
     // fall back to any land if no alignment match
     possibleBarracksLands = getLands({
-      lands: gameState.battlefield.lands,
+      gameState: gameState,
       players: [gameState.turnOwner],
       buildings: [],
     });
