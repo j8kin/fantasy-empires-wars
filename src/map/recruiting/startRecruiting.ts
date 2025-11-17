@@ -3,7 +3,8 @@ import {
   HeroUnit,
   HeroUnitType,
   isHeroType,
-  RegularUnitType,
+  isRange,
+  isWarMachine,
   UnitType,
 } from '../../types/Army';
 import { getLand, LandPosition } from '../utils/getLands';
@@ -11,21 +12,10 @@ import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 
 const recruitmentDuration = (unitType: UnitType) => {
-  switch (unitType) {
-    case RegularUnitType.WARRIOR:
-    case RegularUnitType.DWARF:
-    case RegularUnitType.ORC:
-      return 1;
-    case RegularUnitType.ELF:
-    case RegularUnitType.DARK_ELF:
-      return 2;
-    case RegularUnitType.BALLISTA:
-    case RegularUnitType.CATAPULT:
-      return 3;
-    default:
-      // all heroes are recruited in 3 turns
-      return 3;
-  }
+  if (isHeroType(unitType)) return 3;
+  if (isWarMachine(unitType)) return 3;
+  if (isRange(unitType)) return 2;
+  return 1;
 };
 
 export const startRecruiting = (

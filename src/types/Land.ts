@@ -145,7 +145,7 @@ export const getLandById = (id: LAND_TYPE): Land => {
       return {
         id: LAND_TYPE.HILLS,
         alignment: Alignment.NEUTRAL,
-        unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.WARRIOR, HeroUnitType.FIGHTER],
+        unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.HALFLING, HeroUnitType.FIGHTER],
         goldPerTurn: { min: 500, max: 700 },
       };
     case LAND_TYPE.SWAMP:

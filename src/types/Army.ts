@@ -7,6 +7,7 @@ export enum RegularUnitType {
   WARRIOR = 'Warrior',
   DWARF = 'Dwarf',
   ORC = 'Orc',
+  HALFLING = 'Halfling',
   ELF = 'Elf',
   DARK_ELF = 'Dark-Elf',
   BALLISTA = 'Ballista',
@@ -50,6 +51,8 @@ export const isHeroType = (unitType: UnitType): boolean => isHero(getDefaultUnit
 export const isHero = (unit: Unit): boolean => typeof unit.level === 'number';
 export const isWarMachine = (unitType: UnitType): boolean =>
   unitType === RegularUnitType.BALLISTA || unitType === RegularUnitType.CATAPULT;
+export const isRange = (unitType: UnitType): boolean =>
+  getDefaultUnit(unitType).range !== undefined;
 
 export const isMage = (unitType: UnitType): boolean => {
   return (
@@ -151,6 +154,23 @@ export const getDefaultUnit = (unitType: UnitType): Unit => {
         maintainCost: 4.5,
         description:
           'Forged in chaos and fire, Orcs live for the clash of steel—each battle a hymn to their untamed hunger for conquest.',
+      };
+    case RegularUnitType.HALFLING:
+      return {
+        id: unitType,
+        attack: 6,
+        defense: 3,
+        range: 15,
+        rangeDamage: 8,
+        health: 15,
+        speed: 4,
+        alignment: Alignment.NEUTRAL,
+        level: UnitRank.REGULAR,
+        count: 25,
+        recruitCost: 700,
+        maintainCost: 3,
+        description:
+          'Small in stature, stubborn in spirit—halfling slingers pelt foes with stones and startling courage.',
       };
     case RegularUnitType.ELF:
     case RegularUnitType.DARK_ELF:

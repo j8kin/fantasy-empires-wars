@@ -3,6 +3,7 @@ import { HeroUnitType, RegularUnitType, UnitType } from '../types/Army';
 import wardHandsImg from './army/ward-hands.png';
 import warriorImg from './army/warrior.png';
 import dwarfImg from './army/dwarf.png';
+import halflingImg from './army/halflings.png';
 import elfImg from './army/elf.png';
 import darkElfImg from './army/dark-elf.png';
 import orcImg from './army/orc.png';
@@ -29,6 +30,8 @@ export const getUnitImg = (unit: UnitType) => {
       return warriorImg;
     case RegularUnitType.DWARF:
       return dwarfImg;
+    case RegularUnitType.HALFLING:
+      return halflingImg;
     case RegularUnitType.ELF:
       return elfImg;
     case RegularUnitType.DARK_ELF:
