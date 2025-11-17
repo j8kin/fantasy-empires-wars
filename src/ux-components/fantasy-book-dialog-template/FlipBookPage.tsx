@@ -89,7 +89,12 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     };
 
     return (
-      <div className={`${styles.pageStyle} ${finalClassName}`} ref={ref} style={style}>
+      <div
+        data-testid="flipbook-page"
+        className={`${styles.pageStyle} ${finalClassName}`}
+        ref={ref}
+        style={style}
+      >
         {children || (
           <>
             <div className={styles.caption}>{header}</div>
@@ -115,6 +120,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
               />
               {onSlotClick && availableSlots && availableSlots.length > 0 && (
                 <div
+                  data-testid="flipbook-slots"
                   className={`${styles.slotsContainer} ${availableSlots.length > 3 ? styles.slotsScrollable : styles.slotsVisible}`}
                 >
                   {availableSlots.map((slot) => (
@@ -132,6 +138,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
             <div className={styles.description}>
               <h4 className={styles.descriptionTitle}>Description:</h4>
               <p
+                data-testid="flipbook-description-text"
                 className={
                   maintainCost == null ? styles.descriptionTextExpanded : styles.descriptionText
                 }

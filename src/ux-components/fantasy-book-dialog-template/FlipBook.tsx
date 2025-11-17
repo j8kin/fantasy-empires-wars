@@ -70,6 +70,7 @@ const FlipBook: React.FC<FlipBookProps> = ({
       {/* Backdrop */}
       {showBackdrop && (
         <div
+          data-testid="flipbook-backdrop"
           style={{
             position: 'fixed',
             top: 0,
@@ -84,7 +85,11 @@ const FlipBook: React.FC<FlipBookProps> = ({
           }}
           onClick={handleBackdropClick}
         >
-          <div className={styles.flipbookContainer} onClick={(e) => e.stopPropagation()}>
+          <div
+            data-testid="flipbook-container"
+            className={styles.flipbookContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
             <HTMLFlipBook
               width={width}
               height={height}
@@ -117,7 +122,7 @@ const FlipBook: React.FC<FlipBookProps> = ({
       )}
       {/* Original layout for when backdrop is disabled */}
       {!showBackdrop && (
-        <div className={styles.flipbookContainer}>
+        <div className={styles.flipbookContainer} data-testid="flipbook-container">
           <HTMLFlipBook
             width={width}
             height={height}
