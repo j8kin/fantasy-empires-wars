@@ -267,9 +267,7 @@ const MoveArmyDialog: React.FC = () => {
         const reg = selectedUnit as RegularUnit;
         return arr.findIndex(
           (u) =>
-            !isHero(u) &&
-            (u as RegularUnit).id === reg.id &&
-            (u as RegularUnit).level === reg.level
+            !isHero(u) && (u as RegularUnit).id === reg.id && (u as RegularUnit).level === reg.level
         );
       }
     };
