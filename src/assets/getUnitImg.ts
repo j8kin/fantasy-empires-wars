@@ -9,6 +9,7 @@ import orcImg from './army/orc.png';
 import ballistaImg from './army/ballista.png';
 import catapultImg from './army/catapult.png';
 
+import warsmithImg from './army/warsmith.png';
 import fightableImg from './army/fighter.png';
 import hummerLordImg from './army/hummerlord.png';
 import rangerImg from './army/ranger.png';
@@ -39,6 +40,8 @@ export const getUnitImg = (unit: UnitType) => {
     case RegularUnitType.CATAPULT:
       return catapultImg;
 
+    case HeroUnitType.WARSMITH:
+      return warsmithImg;
     case HeroUnitType.FIGHTER:
       return fightableImg;
     case HeroUnitType.HAMMER_LORD:
