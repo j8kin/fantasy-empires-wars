@@ -14,6 +14,7 @@ import SaveGameDialog from '../dialogs/SaveGameDialog';
 import CastSpellDialog from '../dialogs/CastSpellDialog';
 import ConstructBuildingDialog from '../dialogs/ConstructBuildingDialog';
 import RecruitArmyDialog from '../dialogs/RecruitArmyDialog';
+import MoveArmyDialog from '../dialogs/MoveArmyDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
@@ -151,6 +152,9 @@ const MainViewContent: React.FC = () => {
 
       {/* Send Hero In Quest Dialog - shown as overlay */}
       <SendHeroInQuestDialog />
+
+      {/* Send Hero In Quest Dialog - shown as overlay */}
+      <MoveArmyDialog />
 
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />
