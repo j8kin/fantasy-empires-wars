@@ -25,18 +25,20 @@ const UnitActionControl: React.FC = () => {
       event.stopPropagation();
 
       // Get all lands owned by current player with BARRACKS or Mage Towers
-      const recruitmentLands = getLands({
-        lands: gameState.battlefield.lands,
-        players: [getTurnOwner(gameState)!],
-        buildings: [
-          BuildingType.BARRACKS,
-          BuildingType.WHITE_MAGE_TOWER,
-          BuildingType.BLACK_MAGE_TOWER,
-          BuildingType.BLUE_MAGE_TOWER,
-          BuildingType.GREEN_MAGE_TOWER,
-          BuildingType.RED_MAGE_TOWER,
-        ],
-      }).filter((land) => {
+      const recruitmentLands = (
+        getLands({
+          lands: gameState.battlefield.lands,
+          players: [getTurnOwner(gameState)!],
+          buildings: [
+            BuildingType.BARRACKS,
+            BuildingType.WHITE_MAGE_TOWER,
+            BuildingType.BLACK_MAGE_TOWER,
+            BuildingType.BLUE_MAGE_TOWER,
+            BuildingType.GREEN_MAGE_TOWER,
+            BuildingType.RED_MAGE_TOWER,
+          ],
+        }) || []
+      ).filter((land) => {
         // Only show lands with buildings that have available slots
         return land.buildings.some(
           (building) =>
@@ -64,11 +66,13 @@ const UnitActionControl: React.FC = () => {
       event.stopPropagation();
 
       // Get all lands owned by current player that have heroes
-      const questLands = getLands({
-        lands: gameState.battlefield.lands,
-        players: [getTurnOwner(gameState)!],
-        noArmy: false,
-      }).filter((l) =>
+      const questLands = (
+        getLands({
+          lands: gameState.battlefield.lands,
+          players: [getTurnOwner(gameState)!],
+          noArmy: false,
+        }) || []
+      ).filter((l) =>
         l.army.some((u) => u.movements == null && u.units.some((unit) => isHero(unit)))
       );
 
@@ -92,11 +96,13 @@ const UnitActionControl: React.FC = () => {
 
       // Get all lands owned by current player that have army
       // todo probably for change order we should get all lands with army owned by current player
-      const armyLands = getLands({
-        lands: gameState.battlefield.lands,
-        players: [getTurnOwner(gameState)!],
-        noArmy: false,
-      }).filter((l) => l.army.some((a) => a.movements == null));
+      const armyLands = (
+        getLands({
+          lands: gameState.battlefield.lands,
+          players: [getTurnOwner(gameState)!],
+          noArmy: false,
+        }) || []
+      ).filter((l) => l.army.some((a) => a.movements == null));
 
       setSelectedLandAction('MoveArmyFrom');
       // Add glowing to all army lands
@@ -109,7 +115,7 @@ const UnitActionControl: React.FC = () => {
   );
 
   return (
-    <div className={styles.gameControlContainer}>
+    <div className={styles.gameControlContainer} data-testid="game-control-container">
       <GameButton buttonName={ButtonName.RECRUIT} onClick={handleShowRecruitArmyDialog} />
       <GameButton buttonName={ButtonName.MOVE} onClick={handleShowMoveAmyDialog} />
       <GameButton buttonName={ButtonName.QUEST} onClick={handleShowSendHeroInQuestDialog} />
