@@ -232,7 +232,7 @@ export const getLandById = (id: LAND_TYPE): Land => {
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.ELF, HeroUnitType.RANGER],
         goldPerTurn: { min: 1000, max: 1000 },
         description:
-          'Grasses shimmer like sun-forged metal, nurturing harvests blessed by the land’s ancient warmth.',
+          'The cradle of living forests, where colossal trees whisper the pulse of Orrivane itself.',
       };
     case LAND_TYPE.VERDANT_GLADE:
       return {
