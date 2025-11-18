@@ -31,6 +31,7 @@ export interface Land {
   alignment: Alignment;
   unitsToRecruit: UnitType[];
   goldPerTurn: { min: number; max: number };
+  description: string;
 }
 
 export const getSurroundingLands = (landType: LAND_TYPE): LAND_TYPE[] => {
@@ -115,6 +116,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.WARRIOR, HeroUnitType.FIGHTER],
         goldPerTurn: { min: 650, max: 1000 },
+        description:
+          'Wide open fields where wind carries old war songs, and wanderers vanish beneath endless sky.',
       };
     case LAND_TYPE.MOUNTAINS:
       return {
@@ -122,6 +125,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.DWARF, HeroUnitType.HAMMER_LORD],
         goldPerTurn: { min: 900, max: 1150 },
+        description:
+          'Stone giants forged in ancient upheaval; their frozen peaks guard secrets older than kingdoms.',
       };
     case LAND_TYPE.GREEN_FOREST:
       return {
@@ -129,6 +134,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.ELF, HeroUnitType.RANGER],
         goldPerTurn: { min: 800, max: 950 },
+        description:
+          'Sunlit woods where gentle spirits linger, guiding hunters, wanderers, and the lost.',
       };
     case LAND_TYPE.DARK_FOREST:
       return {
@@ -140,6 +147,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
           HeroUnitType.SHADOW_BLADE,
         ],
         goldPerTurn: { min: 800, max: 950 },
+        description:
+          'A brooding woodland where moonlight falters, and unseen things watch from between twisted boughs.',
       };
     case LAND_TYPE.HILLS:
       return {
@@ -147,6 +156,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.HALFLING, HeroUnitType.FIGHTER],
         goldPerTurn: { min: 500, max: 700 },
+        description:
+          'Rolling highlands shaped by time and storms, favored by scouts who read stories in every ridge.',
       };
     case LAND_TYPE.SWAMP:
       return {
@@ -154,6 +165,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.ORC, HeroUnitType.OGR],
         goldPerTurn: { min: 350, max: 550 },
+        description:
+          'Murk and moss entwine here, where each step sinks into whispers of forgotten, half-drowned tales.',
       };
     case LAND_TYPE.DESERT:
       return {
@@ -167,6 +180,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
           HeroUnitType.RANGER,
         ],
         goldPerTurn: { min: 150, max: 270 },
+        description:
+          'Endless dunes scorched by merciless suns, hiding relics swallowed by empires long fallen.',
       };
     // special lands
     case LAND_TYPE.VOLCANO:
@@ -175,6 +190,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.ORC, HeroUnitType.OGR],
         goldPerTurn: { min: 1000, max: 1000 },
+        description:
+          'A furious mountain whose molten heart roars beneath the world, hungry for offerings of stone.',
       };
     case LAND_TYPE.LAVA:
       return {
@@ -182,6 +199,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.ORC, HeroUnitType.OGR],
         goldPerTurn: { min: 500, max: 600 },
+        description:
+          'A seething river of fire where earth’s skin tears open, leaving only heat, ruin, and trembling air.',
       };
     case LAND_TYPE.SUN_SPIRE_PEAKS:
       return {
@@ -189,6 +208,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.DWARF, HeroUnitType.HAMMER_LORD],
         goldPerTurn: { min: 1000, max: 1000 },
+        description:
+          'Radiant heights bathed in celestial fire, said to echo with the hymns of the first dawn.',
       };
     case LAND_TYPE.GOLDEN_PLAINS:
       return {
@@ -201,6 +222,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
           RegularUnitType.WARRIOR,
         ],
         goldPerTurn: { min: 500, max: 600 },
+        description:
+          'Grasses shimmer like sun-forged metal, nurturing harvests blessed by the land’s ancient warmth.',
       };
     case LAND_TYPE.HEARTWOOD_COVE:
       return {
@@ -208,6 +231,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.ELF, HeroUnitType.RANGER],
         goldPerTurn: { min: 1000, max: 1000 },
+        description:
+          'Grasses shimmer like sun-forged metal, nurturing harvests blessed by the land’s ancient warmth.',
       };
     case LAND_TYPE.VERDANT_GLADE:
       return {
@@ -215,6 +240,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.ELF, HeroUnitType.RANGER],
         goldPerTurn: { min: 500, max: 600 },
+        description:
+          'A lush sanctuary bursting with wild growth, where nature unfurls in joyous, untamed abundance.',
       };
     case LAND_TYPE.CRISTAL_BASIN:
       return {
@@ -222,6 +249,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.WARRIOR, HeroUnitType.FIGHTER],
         goldPerTurn: { min: 1000, max: 1000 },
+        description:
+          'A hollow of shimmering crystal veins that catch stray moonlight, bending it into spectral hues.',
       };
     case LAND_TYPE.MISTY_GLADES:
       return {
@@ -229,6 +258,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.WARRIOR, HeroUnitType.FIGHTER],
         goldPerTurn: { min: 500, max: 600 },
+        description:
+          'Cool lowlands veiled in drifting blue mist, where sound softens and time feels strangely thin.',
       };
     case LAND_TYPE.SHADOW_MIRE:
       return {
@@ -236,6 +267,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.ORC, HeroUnitType.OGR],
         goldPerTurn: { min: 1000, max: 1000 },
+        description:
+          'A stagnant bog where shadows cling to the water, feeding on fear as readily as decay.',
       };
     case LAND_TYPE.BLIGHTED_FEN:
       return {
@@ -243,6 +276,8 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitType.ORC, HeroUnitType.OGR],
         goldPerTurn: { min: 500, max: 600 },
+        description:
+          'Rot-soaked marshland cursed by old sorcery, where every root and reed seems to wither in despair.',
       };
     default:
       // used on map generation
@@ -251,6 +286,7 @@ export const getLandById = (id: LAND_TYPE): Land => {
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [],
         goldPerTurn: { min: 0, max: 0 },
+        description: '',
       };
   }
 };
