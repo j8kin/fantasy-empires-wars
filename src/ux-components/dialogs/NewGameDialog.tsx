@@ -60,7 +60,7 @@ const NewGameDialog: React.FC = () => {
     showSelectOpponentDialogWithConfig,
   } = useApplicationContext();
 
-  const { startNewGame } = useGameContext();
+  const { startNewGame, gameState } = useGameContext();
 
   // Local state for dialog-specific values
   const [mapSize, setMapSize] = useState<DialogMapSize>('medium');
@@ -245,11 +245,11 @@ const NewGameDialog: React.FC = () => {
 
     // Initialize starting mana values todo: set to 0 when mana is implemented
     const initialMana: Mana = {
-      [ManaType.GREEN]: 50,
+      [ManaType.GREEN]: 100,
       [ManaType.BLUE]: 100,
-      [ManaType.RED]: 10,
-      [ManaType.WHITE]: 400,
-      [ManaType.BLACK]: 130,
+      [ManaType.RED]: 100,
+      [ManaType.WHITE]: 100,
+      [ManaType.BLACK]: 100,
     };
 
     const initialMoney = 15000;
@@ -339,7 +339,11 @@ const NewGameDialog: React.FC = () => {
       screenPosition={{ x: dialogDimensions.dialogX, y: dialogDimensions.dialogY }}
       frameSize={{ width: dialogDimensions.dialogWidth, height: dialogDimensions.dialogHeight }}
       primaryButton={<GameButton buttonName={ButtonName.START} onClick={handleStartGame} />}
-      secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />}
+      secondaryButton={
+        gameState != null ? (
+          <GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />
+        ) : undefined
+      }
       zIndex={1005}
     >
       <div className={styles.content}>

@@ -66,6 +66,8 @@ const MapActionsControl: React.FC = () => {
     setShowErrorMessagePopup,
   ]);
 
+  if (getTurnOwner(gameState)?.playerType !== 'human') return null;
+
   return (
     <div className={styles.gameControlContainer}>
       <GameButton buttonName={ButtonName.BUILD} onClick={handleShowConstructBuildingDialog} />

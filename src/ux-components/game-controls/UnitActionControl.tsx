@@ -7,7 +7,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { ButtonName } from '../../types/ButtonName';
 import GameButton from '../buttons/GameButton';
 import { getLands } from '../../map/utils/getLands';
-import { battlefieldLandId } from '../../types/GameState';
+import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 import { isHero } from '../../types/Army';
 
@@ -113,6 +113,8 @@ const UnitActionControl: React.FC = () => {
     },
     [addGlowingTile, clearAllGlow, gameState, setSelectedLandAction]
   );
+
+  if (getTurnOwner(gameState)?.playerType !== 'human') return null;
 
   return (
     <div className={styles.gameControlContainer} data-testid="game-control-container">

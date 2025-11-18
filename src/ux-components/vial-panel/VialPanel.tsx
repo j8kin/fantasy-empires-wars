@@ -7,18 +7,24 @@ import { getTurnOwner } from '../../types/GameState';
 import ManaVial from './ManaVial';
 
 import { ManaType } from '../../types/Mana';
+import { getMinManaCost } from '../../types/Spell';
 
 const VialPanel: React.FC = () => {
   const { gameState } = useGameContext();
-  const selectedPlayer = getTurnOwner(gameState);
+  const turnOwner = getTurnOwner(gameState);
+
+  // do not show mana vials for AI players
+  if (turnOwner?.playerType !== 'human') return null;
+
+  // do not show mana vials if not enough mana to cast related school spells
+  const availableMana = Object.values(ManaType).filter(
+    (manaType) => turnOwner?.mana?.[manaType]! > getMinManaCost(manaType)
+  );
 
   return (
     <div className={styles.vialPanel}>
-      <ManaVial color={ManaType.BLACK} mana={selectedPlayer?.mana?.black} />
-      <ManaVial color={ManaType.WHITE} mana={selectedPlayer?.mana?.white} />
-      <ManaVial color={ManaType.BLUE} mana={selectedPlayer?.mana?.blue} />
-      <ManaVial color={ManaType.GREEN} mana={selectedPlayer?.mana?.green} />
-      <ManaVial color={ManaType.RED} mana={selectedPlayer?.mana?.red} />
+      {availableMana &&
+        availableMana.map((m) => <ManaVial color={m} mana={turnOwner?.mana?.[m]} />)}
     </div>
   );
 };

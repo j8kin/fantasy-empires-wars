@@ -175,11 +175,7 @@ describe('UnitActionControl', () => {
 
       render(<UnitActionControl />, { wrapper: TestWrapper });
 
-      const recruitButton = screen.getByTestId(`game-button-${ButtonName.RECRUIT}`);
-      fireEvent.click(recruitButton);
-
-      // Should not crash when gameState is null
-      expect(recruitButton).toBeInTheDocument();
+      expect(screen.queryByTestId(`game-button-${ButtonName.RECRUIT}`)).not.toBeInTheDocument();
     });
   });
 
@@ -279,10 +275,7 @@ describe('UnitActionControl', () => {
 
       render(<UnitActionControl />, { wrapper: TestWrapper });
 
-      const questButton = screen.getByTestId(`game-button-${ButtonName.QUEST}`);
-      fireEvent.click(questButton);
-
-      expect(questButton).toBeInTheDocument();
+      expect(screen.queryByTestId(`game-button-${ButtonName.QUEST}`)).not.toBeInTheDocument();
     });
   });
 
@@ -353,10 +346,7 @@ describe('UnitActionControl', () => {
 
       render(<UnitActionControl />, { wrapper: TestWrapper });
 
-      const moveButton = screen.getByTestId(`game-button-${ButtonName.MOVE}`);
-      fireEvent.click(moveButton);
-
-      expect(moveButton).toBeInTheDocument();
+      expect(screen.queryByTestId(`game-button-${ButtonName.MOVE}`)).not.toBeInTheDocument();
     });
   });
 
