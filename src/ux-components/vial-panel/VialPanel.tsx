@@ -24,7 +24,7 @@ const VialPanel: React.FC = () => {
   return (
     <div className={styles.vialPanel}>
       {availableMana &&
-        availableMana.map((m) => <ManaVial color={m} mana={turnOwner?.mana?.[m]} />)}
+        availableMana.map((m) => <ManaVial key={m} color={m} mana={turnOwner?.mana?.[m]} />)}
     </div>
   );
 };
