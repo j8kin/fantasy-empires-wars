@@ -148,26 +148,18 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     }
   };
 
-  const tileStyle: React.CSSProperties = {
-    backgroundColor: getBackgroundColor(),
-    filter: isGlowing
-      ? 'brightness(1.3) drop-shadow(0 4px 12px rgba(255, 215, 0, 0.6))'
-      : 'brightness(1) ',
-    transform: isGlowing ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
-    transition: 'all 0.3s ease',
-    border: isGlowing ? '5px' : 'none',
-    zIndex: isGlowing ? 10 : 1,
-    position: 'relative',
-  };
+  const tileClassName = `${styles.hexTile} ${
+    isGlowing ? styles['hexTile--glowing'] : styles['hexTile--normal']
+  }`;
 
   return (
     <>
       <div
-        className={styles.hexTile}
+        className={tileClassName}
         title={`${battlefieldTile.land.id} (${battlefieldTile.land.alignment})`}
         onContextMenu={handleRightClick}
         onClick={handleClick}
-        style={tileStyle}
+        style={{ backgroundColor: getBackgroundColor() }}
       >
         {imageSrc ? (
           <img src={imageSrc} alt={altText} className={styles.hexTileImg} />

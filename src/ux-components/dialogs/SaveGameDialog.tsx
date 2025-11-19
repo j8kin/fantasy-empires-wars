@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './css/SaveGameDialog.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
@@ -42,13 +43,10 @@ const SaveGameDialog: React.FC = () => {
         primaryButton={<GameButton buttonName={ButtonName.SAVE} onClick={handleSave} />}
         secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />}
       >
-        <div style={{ textAlign: 'center', color: 'white' }}>
-          <h2 style={{ marginBottom: '30px', fontSize: '24px' }}>Save Game</h2>
-          <div style={{ marginBottom: '20px' }}>
-            <label
-              htmlFor="saveName"
-              style={{ display: 'block', marginBottom: '10px', fontSize: '18px' }}
-            >
+        <div className={styles.container}>
+          <h2 className={styles.title}>Save Game</h2>
+          <div className={styles.inputSection}>
+            <label htmlFor="saveName" className={styles.inputLabel}>
               Enter save name:
             </label>
             <input
@@ -57,20 +55,12 @@ const SaveGameDialog: React.FC = () => {
               value={saveGameName}
               onChange={(e) => setSaveGameName(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSave()}
-              style={{
-                width: '300px',
-                padding: '10px',
-                fontSize: '16px',
-                borderRadius: '5px',
-                border: '2px solid #8B4513',
-                backgroundColor: '#2F2F2F',
-                color: 'white',
-              }}
+              className={styles.saveInput}
               placeholder="My Game Save"
               autoFocus
             />
           </div>
-          <div style={{ fontSize: '14px', color: '#CCCCCC', marginTop: '20px' }}>
+          <div className={styles.helperText}>
             Your game progress will be saved and can be loaded later.
           </div>
         </div>

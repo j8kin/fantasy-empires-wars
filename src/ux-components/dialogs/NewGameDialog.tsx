@@ -364,36 +364,12 @@ const NewGameDialog: React.FC = () => {
               : selectedOpponents.filter((o) => o !== null).length}{' '}
             of {maxOpponents}):
           </label>
-          <div
-            style={{
-              display: 'flex',
-              padding: '20px',
-              backgroundColor: 'rgba(0, 0, 0, 0.2)',
-              borderRadius: '8px',
-              border: '1px solid #8b7355',
-              minHeight: '100px',
-              gap: '20px',
-            }}
-          >
+          <div className={styles.opponentSelectionContainer}>
             {/* Controls Section */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-                paddingRight: '20px',
-                borderRight: '1px solid #8b7355',
-                minWidth: '200px',
-              }}
-            >
+            <div className={styles.opponentControlsSection}>
               {/* Map Size */}
               <div>
-                <label
-                  className={styles.label}
-                  style={{ fontSize: '14px', marginBottom: '8px', display: 'block' }}
-                >
-                  Map Size:
-                </label>
+                <label className={`${styles.label} ${styles.mapSizeLabel}`}>Map Size:</label>
                 <select
                   className={styles.dropdown}
                   value={mapSize}
@@ -409,8 +385,7 @@ const NewGameDialog: React.FC = () => {
               {/* Opponent Selection Mode */}
               <div>
                 <label
-                  className={`${styles.label} ${styles.checkboxContainer}`}
-                  style={{ fontSize: '14px' }}
+                  className={`${styles.label} ${styles.checkboxContainer} ${styles.checkboxLabel}`}
                 >
                   <input
                     type="checkbox"
@@ -429,28 +404,16 @@ const NewGameDialog: React.FC = () => {
             </div>
 
             {/* Opponents Avatars Section */}
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'nowrap',
-                gap: '10px',
-                flex: 1,
-                alignItems: 'flex-start',
-                overflowX: 'auto',
-              }}
-            >
+            <div className={styles.opponentAvatarsContainer}>
               {selectedOpponents.map((opponent, index) => (
                 <div
                   key={index}
                   onClick={() => opponentSelectionMode === 'manual' && handleOpponentClick(index)}
-                  style={{
-                    cursor: opponentSelectionMode === 'manual' ? 'pointer' : 'default',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.3s ease',
-                    position: 'relative',
-                  }}
+                  className={`${styles.opponentAvatarContainer} ${
+                    opponentSelectionMode === 'manual'
+                      ? styles['opponentAvatarContainer--manual']
+                      : styles['opponentAvatarContainer--random']
+                  }`}
                   onMouseEnter={(e) => {
                     if (opponentSelectionMode === 'manual') {
                       e.currentTarget.style.transform = 'scale(1.05)';
@@ -466,10 +429,8 @@ const NewGameDialog: React.FC = () => {
                     opponentSelectionMode === 'random' ? (
                       // Don't show avatar for random mode, just colored circle
                       <div
+                        className={styles.randomOpponentCircle}
                         style={{
-                          width: '100%',
-                          height: '100%',
-                          borderRadius: '50%',
                           background:
                             PLAYER_COLORS.find((c) => c.name === opponent.color)?.value ||
                             '#8b7355',

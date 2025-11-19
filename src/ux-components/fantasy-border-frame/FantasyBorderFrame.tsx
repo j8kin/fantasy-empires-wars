@@ -3,6 +3,7 @@ import React from 'react';
 import CornerBorder from './CornerBorder';
 import HorizontalBorder from './HorizontalBorder';
 import VerticalBorder from './VerticalBorder';
+import './FantasyBorderFrame.css';
 
 /**
  * Top Left position of the window/dialog/popup
@@ -58,27 +59,20 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
       {/* Backdrop */}
       {!accessible && (
         <div
+          className="fantasy-border-frame__backdrop"
           style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
             zIndex: zIndex - 1,
-            pointerEvents: 'none',
           }}
         />
       )}
       {/* Dialog */}
       <div
+        className="fantasy-border-frame__dialog"
         style={{
-          position: 'fixed',
           left: x,
           top: y,
           width,
           height,
-          pointerEvents: 'auto',
           zIndex: zIndex,
         }}
       >
@@ -126,17 +120,19 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
 
         {/* Dialog content area */}
         <div
+          className={`fantasy-border-frame__content ${
+            !accessible ? 'fantasy-border-frame__content--not-accessible' : ''
+          } ${
+            flexibleSizing
+              ? 'fantasy-border-frame__content--flexible'
+              : 'fantasy-border-frame__content--fixed'
+          }`}
           style={{
-            position: 'absolute',
             left: cornerSize(tileDimensions),
             top: cornerSize(tileDimensions),
             width: width - cornerSize(tileDimensions) * 2,
             height: flexibleSizing ? 'auto' : height - cornerSize(tileDimensions) * 2,
             maxHeight: flexibleSizing ? height - cornerSize(tileDimensions) * 2 : undefined,
-            backgroundColor: !accessible ? 'rgba(0, 0, 0, 0.8)' : undefined,
-            padding: !accessible ? '20px' : undefined,
-            boxSizing: 'border-box',
-            overflowY: flexibleSizing ? 'visible' : 'auto',
             zIndex: zIndex,
           }}
         >
@@ -146,16 +142,11 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
         {/* Button area on bottom border */}
         {(primaryButton || secondaryButton) && (
           <div
+            className="fantasy-border-frame__button-area"
             style={{
-              position: 'absolute',
               left: cornerSize(tileDimensions),
-              bottom: 0,
               width: width - cornerSize(tileDimensions) * 2,
               height: Math.min(Math.min(tileDimensions.height, tileDimensions.width), 60),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '20px',
               zIndex: zIndex + 2,
             }}
           >

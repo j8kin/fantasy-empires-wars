@@ -43,8 +43,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
       <div
         id="TopPanel"
         data-testid="TopPanel"
-        className={`${styles.frameContainer} top-bar-panel`}
-        style={{ height: '100%', width: '100%' }}
+        className={`${styles.frameContainer} ${styles.fullSize} top-bar-panel`}
       >
         <div className={styles.panelContainer}>
           {/* Left Side - Action Controls only if the game is started*/}

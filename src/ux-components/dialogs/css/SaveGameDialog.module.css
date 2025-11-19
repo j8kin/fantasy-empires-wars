@@ -1,0 +1,43 @@
+/* SaveGameDialog CSS Module */
+
+.container {
+  text-align: center;
+  color: white;
+}
+
+.title {
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.inputSection {
+  margin-bottom: 20px;
+}
+
+.inputLabel {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.saveInput {
+  width: 300px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 2px solid #8b4513;
+  background-color: #2f2f2f;
+  color: white;
+}
+
+.saveInput:focus {
+  outline: none;
+  border-color: #d4af37;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+}
+
+.helperText {
+  font-size: 14px;
+  color: #cccccc;
+  margin-top: 20px;
+}

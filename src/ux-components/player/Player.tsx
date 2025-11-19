@@ -32,7 +32,7 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
 
   return (
     <div className={styles.playerContainer}>
-      <div onClick={handleAvatarClick} style={{ cursor: 'pointer' }}>
+      <div onClick={handleAvatarClick} className={styles.clickableAvatar}>
         <Avatar
           player={turnOwner}
           size={avatarSize}

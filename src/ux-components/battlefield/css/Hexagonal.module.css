@@ -35,3 +35,21 @@
 .hex-row:nth-child(even) {
   margin-left: var(--hex-row-offset, 50px); /* Dynamic offset for even rows based on tile size */
 }
+
+/* Glowing tile states */
+.hexTile--glowing {
+  filter: brightness(1.3) drop-shadow(0 4px 12px rgba(255, 215, 0, 0.6));
+  transform: scale(1.1) translateY(-2px);
+  border: 5px solid transparent;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.hexTile--normal {
+  filter: brightness(1);
+  transform: scale(1);
+  border: none;
+  z-index: 1;
+  position: relative;
+  transition: all 0.3s ease;
+}

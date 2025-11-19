@@ -223,11 +223,7 @@ describe('TopPanel Component', () => {
     it('applies correct container styles', () => {
       renderWithProvider(<TopPanel {...defaultProps} />);
       const topPanel = screen.getByTestId('TopPanel');
-      expect(topPanel).toHaveStyle({
-        height: '100%',
-        width: '100%',
-      });
-      expect(topPanel).toHaveClass('frameContainer', 'top-bar-panel');
+      expect(topPanel).toHaveClass('frameContainer', 'fullSize', 'top-bar-panel');
     });
 
     it('handles different panel heights correctly', async () => {
