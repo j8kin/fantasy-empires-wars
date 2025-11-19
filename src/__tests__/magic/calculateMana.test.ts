@@ -143,36 +143,31 @@ describe('Calculate Mana', () => {
     ])(
       'special land has effect if player (%s) own it and has hero of the related type',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerInfo, inc: number) => {
-        it.each(getSpecialLandTypes())(
-          'verify effect of %s on mana pool',
-          (landType: LandType) => {
-            expect(player.type).toBe(heroType);
+        it.each(getSpecialLandTypes())('verify effect of %s on mana pool', (landType: LandType) => {
+          expect(player.type).toBe(heroType);
 
-            const hasEffect = getManaSource({ landType: landType })?.heroTypes.includes(
-              player.type
-            )!;
+          const hasEffect = getManaSource({ landType: landType })?.heroTypes.includes(player.type)!;
 
-            const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
-            gameStateStub = createGameStateStub({ gamePlayers: players });
-            const homeLand = getLands({
-              gameState: gameStateStub,
-              players: [gameStateStub.turnOwner],
-              buildings: [BuildingType.STRONGHOLD],
-            })[0];
-            const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
-            getLand(gameStateStub, specialLand).land = getLandById(landType);
-            gameStateStub.turn = 2;
-            testTurnManagement.setGameState(gameStateStub);
-            testTurnManagement.startNewTurn(gameStateStub);
-            testTurnManagement.waitStartPhaseComplete();
+          const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
+          gameStateStub = createGameStateStub({ gamePlayers: players });
+          const homeLand = getLands({
+            gameState: gameStateStub,
+            players: [gameStateStub.turnOwner],
+            buildings: [BuildingType.STRONGHOLD],
+          })[0];
+          const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
+          getLand(gameStateStub, specialLand).land = getLandById(landType);
+          gameStateStub.turn = 2;
+          testTurnManagement.setGameState(gameStateStub);
+          testTurnManagement.startNewTurn(gameStateStub);
+          testTurnManagement.waitStartPhaseComplete();
 
-            expectedMana(manaType, inc + (hasEffect ? 1 : 0));
+          expectedMana(manaType, inc + (hasEffect ? 1 : 0));
 
-            testTurnManagement.makeNTurns(1);
+          testTurnManagement.makeNTurns(1);
 
-            expectedMana(manaType, (gameStateStub.turn - 1) * (inc + (hasEffect ? 1 : 0)));
-          }
-        );
+          expectedMana(manaType, (gameStateStub.turn - 1) * (inc + (hasEffect ? 1 : 0)));
+        });
       }
     );
   });
