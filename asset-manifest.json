@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/fantasy-empires-wars/static/css/main.e57adbe2.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.81a61a0c.js",
+    "main.css": "/fantasy-empires-wars/static/css/main.0b22e565.css",
+    "main.js": "/fantasy-empires-wars/static/js/main.507f421f.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
@@ -98,13 +98,14 @@
     "static/media/teleport.png": "/fantasy-empires-wars/static/media/teleport.e20b2087231f30cf81a6.png",
     "static/media/PageOdd.png": "/fantasy-empires-wars/static/media/PageOdd.692b562e83a17ebf3638.png",
     "static/media/PageEven.png": "/fantasy-empires-wars/static/media/PageEven.8a6a120c45b62dd81d2c.png",
+    "static/media/mana-vial.png": "/fantasy-empires-wars/static/media/mana-vial.acdc30884558a3ecf7c0.png",
     "index.html": "/fantasy-empires-wars/index.html",
-    "main.e57adbe2.css.map": "/fantasy-empires-wars/static/css/main.e57adbe2.css.map",
-    "main.81a61a0c.js.map": "/fantasy-empires-wars/static/js/main.81a61a0c.js.map",
+    "main.0b22e565.css.map": "/fantasy-empires-wars/static/css/main.0b22e565.css.map",
+    "main.507f421f.js.map": "/fantasy-empires-wars/static/js/main.507f421f.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e57adbe2.css",
-    "static/js/main.81a61a0c.js"
+    "static/css/main.0b22e565.css",
+    "static/js/main.507f421f.js"
   ]
 }
