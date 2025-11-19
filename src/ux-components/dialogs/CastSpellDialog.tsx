@@ -63,7 +63,11 @@ const CastSpellDialog: React.FC = () => {
 
   // todo it should be possible to cast turn undead only once per turn
   const availableSpells = playerMana
-    ? AllSpells.filter((spell) => spell.manaCost <= playerMana[spell.school])
+    ? AllSpells.filter(
+        (spell) =>
+          spell.manaCost <= playerMana[spell.school] &&
+          (spell.id !== SpellName.TURN_UNDEAD || selectedPlayer?.mana.white > 0)
+      )
     : [];
 
   return (

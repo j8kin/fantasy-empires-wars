@@ -36,7 +36,6 @@ const MapActionsControl: React.FC = () => {
       setShowCastSpellDialog(true);
     } else {
       if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
-        alert('Not enough mana to cast Spells!');
         setErrorMessagePopupMessage('Not enough mana to cast Spells!');
         setShowErrorMessagePopup(true);
       }

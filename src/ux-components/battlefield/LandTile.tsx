@@ -80,7 +80,6 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
         const selectedPlayer = getTurnOwner(gameState);
         if (selectedPlayer) {
-          selectedPlayer.mana![spellToCast.school] -= spellToCast.manaCost;
           // todo add animation for casting spell
           castSpell(spellToCast, battlefieldPosition, gameState!);
 
