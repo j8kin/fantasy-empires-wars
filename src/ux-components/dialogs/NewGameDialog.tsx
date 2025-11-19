@@ -243,13 +243,13 @@ const NewGameDialog: React.FC = () => {
             .filter((o) => o.id !== NO_PLAYER.id)
             .map((opponent) => toGamePlayer(opponent, 'computer'));
 
-    const initialMana: Mana = {
+    const initialMana = (): Mana => ({
       [ManaType.GREEN]: 0,
       [ManaType.BLUE]: 0,
       [ManaType.RED]: 0,
       [ManaType.WHITE]: 0,
       [ManaType.BLACK]: 0,
-    };
+    });
 
     const initialMoney = 15000;
 
@@ -264,7 +264,7 @@ const NewGameDialog: React.FC = () => {
           ),
           [selectedPlayer.id]: DiplomacyStatus.NO_TREATY,
         },
-        mana: initialMana,
+        mana: initialMana(),
         vault: initialMoney,
         income: 0, // will calculate on game start on the first turn
         playerType: 'computer', // all opponents for now are computer players
@@ -276,7 +276,7 @@ const NewGameDialog: React.FC = () => {
     const createdPlayer: GamePlayer = {
       ...selectedPlayer,
       diplomacy: Object.fromEntries(opponents.map((op) => [op.id, DiplomacyStatus.NO_TREATY])),
-      mana: initialMana,
+      mana: initialMana(),
       vault: initialMoney,
       income: 0, // will calculate on game start on first turn
       playerType: 'human',
