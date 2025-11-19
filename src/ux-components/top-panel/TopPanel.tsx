@@ -2,7 +2,6 @@ import React from 'react';
 import styles from './css/TopPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
-import { getTurnOwner } from '../../types/GameState';
 
 import GameControl from '../game-controls/GameControl';
 import MapActionsControl from '../game-controls/MapActionsControl';
@@ -20,8 +19,7 @@ export interface TopPanelProps {
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
-  const { gameState, endCurrentTurn, canEndTurn } = useGameContext();
-  const selectedPlayer = getTurnOwner(gameState);
+  const { endCurrentTurn, canEndTurn } = useGameContext();
 
   const avatarSize = height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10;
 
@@ -50,17 +48,17 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
       >
         <div className={styles.panelContainer}>
           {/* Left Side - Action Controls only if the game is started*/}
-          {selectedPlayer && <MapActionsControl />}
-          {selectedPlayer && <UnitActionControl />}
+          <MapActionsControl />
+          <UnitActionControl />
 
           {/* Display Player Info only if Game Started */}
-          {selectedPlayer && <Player avatarSize={avatarSize} />}
+          <Player avatarSize={avatarSize} />
 
           {/* Center - Mana Vials only if Game Started */}
-          {selectedPlayer && <VialPanel />}
+          <VialPanel />
 
           {/* Display Opponents only if Game Started */}
-          {selectedPlayer && <OpponentsPanel />}
+          <OpponentsPanel />
 
           {/* Right Side - Game Controls */}
           <GameControl />

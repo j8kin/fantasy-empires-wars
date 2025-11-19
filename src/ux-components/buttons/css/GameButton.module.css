@@ -11,30 +11,3 @@
   transform: translateY(-2px);
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.7));
 }
-
-.textButton {
-  width: 80px;
-  height: 40px;
-  background: linear-gradient(135deg, #8b4513, #a0522d);
-  border: 2px solid #654321;
-  border-radius: 8px;
-  color: #f5deb3;
-  font-family: 'Georgia', serif;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.textButton:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #a0522d, #cd853f);
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.7));
-}
-
-.textButton:active {
-  transform: translateY(1px);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-}

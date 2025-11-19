@@ -17,16 +17,18 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
   const { addGlowingTile } = useApplicationContext();
   const { gameState } = useGameContext();
 
-  const turnOwner = getTurnOwner(gameState)!;
+  const turnOwner = getTurnOwner(gameState);
 
   const handleAvatarClick = () => {
     // Find all lands controlled by the selected player
     setTimeout(() => {
-      getLands({ gameState: gameState!, players: [turnOwner.id] }).forEach((land) => {
+      getLands({ gameState: gameState!, players: [turnOwner!.id] }).forEach((land) => {
         addGlowingTile(battlefieldLandId(land.mapPos));
       });
     }, 0);
   };
+
+  if (turnOwner == null) return null;
 
   return (
     <div className={styles.playerContainer}>

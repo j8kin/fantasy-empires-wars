@@ -60,7 +60,7 @@ const NewGameDialog: React.FC = () => {
     showSelectOpponentDialogWithConfig,
   } = useApplicationContext();
 
-  const { startNewGame } = useGameContext();
+  const { startNewGame, gameState } = useGameContext();
 
   // Local state for dialog-specific values
   const [mapSize, setMapSize] = useState<DialogMapSize>('medium');
@@ -243,14 +243,13 @@ const NewGameDialog: React.FC = () => {
             .filter((o) => o.id !== NO_PLAYER.id)
             .map((opponent) => toGamePlayer(opponent, 'computer'));
 
-    // Initialize starting mana values todo: set to 0 when mana is implemented
-    const initialMana: Mana = {
-      [ManaType.GREEN]: 50,
-      [ManaType.BLUE]: 100,
-      [ManaType.RED]: 10,
-      [ManaType.WHITE]: 400,
-      [ManaType.BLACK]: 130,
-    };
+    const initialMana = (): Mana => ({
+      [ManaType.GREEN]: 0,
+      [ManaType.BLUE]: 0,
+      [ManaType.RED]: 0,
+      [ManaType.WHITE]: 0,
+      [ManaType.BLACK]: 0,
+    });
 
     const initialMoney = 15000;
 
@@ -265,7 +264,7 @@ const NewGameDialog: React.FC = () => {
           ),
           [selectedPlayer.id]: DiplomacyStatus.NO_TREATY,
         },
-        mana: initialMana,
+        mana: initialMana(),
         vault: initialMoney,
         income: 0, // will calculate on game start on the first turn
         playerType: 'computer', // all opponents for now are computer players
@@ -277,7 +276,7 @@ const NewGameDialog: React.FC = () => {
     const createdPlayer: GamePlayer = {
       ...selectedPlayer,
       diplomacy: Object.fromEntries(opponents.map((op) => [op.id, DiplomacyStatus.NO_TREATY])),
-      mana: initialMana,
+      mana: initialMana(),
       vault: initialMoney,
       income: 0, // will calculate on game start on first turn
       playerType: 'human',
@@ -339,7 +338,11 @@ const NewGameDialog: React.FC = () => {
       screenPosition={{ x: dialogDimensions.dialogX, y: dialogDimensions.dialogY }}
       frameSize={{ width: dialogDimensions.dialogWidth, height: dialogDimensions.dialogHeight }}
       primaryButton={<GameButton buttonName={ButtonName.START} onClick={handleStartGame} />}
-      secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />}
+      secondaryButton={
+        gameState != null ? (
+          <GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />
+        ) : undefined
+      }
       zIndex={1005}
     >
       <div className={styles.content}>

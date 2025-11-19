@@ -32,7 +32,7 @@ export interface Spell {
   id: SpellName;
   description: string;
   manaCost: number;
-  school: ManaType;
+  manaType: ManaType;
   apply: 'player' | 'opponent' | 'both';
 }
 
@@ -42,28 +42,28 @@ const WhiteMagicSpells: Spell[] = [
     description: 'Turns undead on the selected land',
     manaCost: 0,
     apply: 'opponent',
-    school: ManaType.WHITE,
+    manaType: ManaType.WHITE,
   },
   {
     id: SpellName.VIEW_TERRITORY,
     description: "Reveals information about an opponent's territory",
     manaCost: 25,
     apply: 'opponent',
-    school: ManaType.WHITE,
+    manaType: ManaType.WHITE,
   },
   {
     id: SpellName.BLESSING,
     description: 'Increases defense of all units on a territory for 2 turns (+20%)',
     manaCost: 40,
     apply: 'player', // todo: probably both to be able cast on ally
-    school: ManaType.WHITE,
+    manaType: ManaType.WHITE,
   },
   {
     id: SpellName.HEAL,
     description: 'Restores 20–30% of lost units after battle (cannot resurrect heroes)',
     manaCost: 60,
     apply: 'player', // todo: probably both to be able cast on ally
-    school: ManaType.WHITE,
+    manaType: ManaType.WHITE,
   },
 ];
 
@@ -73,21 +73,21 @@ const BlueMagicSpells: Spell[] = [
     description: 'Creates fake army markers on the map for 3 turns (disappear if attacked)',
     manaCost: 25,
     apply: 'player',
-    school: ManaType.BLUE,
+    manaType: ManaType.BLUE,
   },
   {
     id: SpellName.TELEPORT,
     description: 'Instantly move one army to a friendly stronghold',
     manaCost: 100,
     apply: 'player',
-    school: ManaType.BLUE,
+    manaType: ManaType.BLUE,
   },
   {
     id: SpellName.TORNADO,
     description: 'Kills 20–35% of all troops (heroes may be killed based on level)',
     manaCost: 50,
     apply: 'opponent',
-    school: ManaType.BLUE,
+    manaType: ManaType.BLUE,
   },
 ];
 
@@ -97,21 +97,21 @@ const GreenMagicSpells: Spell[] = [
     description: 'Increase gold production on lands in radius 1 by +50% for 3 turns',
     manaCost: 40,
     apply: 'player',
-    school: ManaType.GREEN,
+    manaType: ManaType.GREEN,
   },
   {
     id: SpellName.ENTANGLING_ROOTS,
     description: 'Enemy army on a territory cannot move for 1 turn',
     manaCost: 100,
     apply: 'opponent',
-    school: ManaType.GREEN,
+    manaType: ManaType.GREEN,
   },
   {
     id: SpellName.BEAST_ATTACK,
     description: 'Kills 15–25% of all troops (heroes may be killed based on level)',
     manaCost: 70,
     apply: 'opponent',
-    school: ManaType.GREEN,
+    manaType: ManaType.GREEN,
   },
   {
     id: SpellName.EARTHQUAKE,
@@ -119,7 +119,7 @@ const GreenMagicSpells: Spell[] = [
       'Kills 10–20% of all troops, 40% chance to destroy a building (heroes may be killed based on level)',
     manaCost: 100,
     apply: 'opponent',
-    school: ManaType.GREEN,
+    manaType: ManaType.GREEN,
   },
 ];
 
@@ -129,14 +129,14 @@ const RedMagicSpells: Spell[] = [
     description: 'Instantly recruits +33% of one unit type available in a territory with Barracks',
     manaCost: 80,
     apply: 'player',
-    school: ManaType.RED,
+    manaType: ManaType.RED,
   },
   {
     id: SpellName.FIRESTORM,
     description: 'Damages units in radius 1 lands at once (15–20% each)',
     manaCost: 100,
     apply: 'opponent',
-    school: ManaType.RED,
+    manaType: ManaType.RED,
   },
   {
     id: SpellName.METEOR_SHOWER,
@@ -144,7 +144,7 @@ const RedMagicSpells: Spell[] = [
       'Kills 35–45% of all troops, 50% chance to destroy a building (heroes may be killed based on level)',
     manaCost: 120,
     apply: 'opponent',
-    school: ManaType.RED,
+    manaType: ManaType.RED,
   },
 ];
 
@@ -155,28 +155,28 @@ const BlackMagicSpells: Spell[] = [
       'Converts neutral land into chaotic land (if no stronghold present, only 6 lands per game)',
     manaCost: 200,
     apply: 'both',
-    school: ManaType.BLACK,
+    manaType: ManaType.BLACK,
   },
   {
     id: SpellName.RAISE_DEAD_HERO,
     description: 'Revives one fallen Hero as an Undead Hero (loses original alignment)',
     manaCost: 150,
     apply: 'player',
-    school: ManaType.BLACK,
+    manaType: ManaType.BLACK,
   },
   {
     id: SpellName.SUMMON_UNDEAD,
     description: 'Summons 30–60 undead troops depending on maximum Necromancer level',
     manaCost: 25,
     apply: 'player',
-    school: ManaType.BLACK,
+    manaType: ManaType.BLACK,
   },
   {
     id: SpellName.PLAGUE,
     description: 'Kills 25–40% of all troops (heroes may be killed based on level)',
     manaCost: 75,
     apply: 'opponent',
-    school: ManaType.BLACK,
+    manaType: ManaType.BLACK,
   },
 ];
 
@@ -189,3 +189,18 @@ export const AllSpells: Spell[] = [
 ];
 
 export const getSpellById = (id: SpellName): Spell => AllSpells.find((spell) => spell.id === id)!;
+
+export const getMinManaCost = (mana: ManaType): number => {
+  switch (mana) {
+    case ManaType.WHITE:
+      return Math.max(5, Math.min(...WhiteMagicSpells.map((spell) => spell.manaCost)));
+    case ManaType.BLUE:
+      return Math.max(5, Math.min(...BlueMagicSpells.map((spell) => spell.manaCost)));
+    case ManaType.GREEN:
+      return Math.max(5, Math.min(...GreenMagicSpells.map((spell) => spell.manaCost)));
+    case ManaType.RED:
+      return Math.max(5, Math.min(...RedMagicSpells.map((spell) => spell.manaCost)));
+    case ManaType.BLACK:
+      return Math.max(5, Math.min(...BlackMagicSpells.map((spell) => spell.manaCost)));
+  }
+};

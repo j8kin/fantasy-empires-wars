@@ -12,7 +12,7 @@ import { BuildingType, getBuilding } from '../../types/Building';
 import { construct } from '../../map/building/construct';
 
 import { getSpellById, SpellName } from '../../types/Spell';
-import { castSpell } from '../../map/cast-spell/castSpell';
+import { castSpell } from '../../map/magic/castSpell';
 
 import { getLandImg } from '../../assets/getLandImg';
 import { getPlayerColorValue } from '../../types/PlayerColors';
@@ -80,7 +80,6 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
         const selectedPlayer = getTurnOwner(gameState);
         if (selectedPlayer) {
-          selectedPlayer.mana![spellToCast.school] -= spellToCast.manaCost;
           // todo add animation for casting spell
           castSpell(spellToCast, battlefieldPosition, gameState!);
 

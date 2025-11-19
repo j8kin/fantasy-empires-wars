@@ -1,4 +1,4 @@
-import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
+import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameState';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { BuildingType } from '../../types/Building';
@@ -10,9 +10,7 @@ import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
 describe('Recruitment', () => {
   let randomSpy: jest.SpyInstance<number, []>;
 
-  let turnManager: TurnManager;
-  let mockCallbacks: jest.Mocked<TurnManagerCallbacks>;
-
+  let testTurnManagement: TestTurnManagement;
   let gameStateStub: GameState;
 
   let homeLand: LandState;
@@ -20,23 +18,16 @@ describe('Recruitment', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.clearAllMocks();
-    mockCallbacks = {
-      onTurnPhaseChange: jest.fn(),
-      onGameOver: jest.fn(),
-      onStartProgress: jest.fn(),
-      onHideProgress: jest.fn(),
-      onComputerMainTurn: jest.fn(),
-      onHeroOutcomeResult: jest.fn(),
-    };
 
-    turnManager = new TurnManager(mockCallbacks);
     randomSpy = jest.spyOn(Math, 'random');
 
     gameStateStub = createDefaultGameStateStub();
     gameStateStub.turn = 2;
-    turnManager.startNewTurn(gameStateStub);
 
-    waitStartPhaseComplete();
+    testTurnManagement = new TestTurnManagement(gameStateStub);
+    testTurnManagement.startNewTurn(gameStateStub);
+    testTurnManagement.waitStartPhaseComplete();
+
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getLands({
       gameState: gameStateStub,
@@ -51,60 +42,6 @@ describe('Recruitment', () => {
     jest.useFakeTimers();
     randomSpy.mockRestore();
   });
-
-  const clickEndOfTurn = (): void => {
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-
-    turnManager.endCurrentTurn(gameStateStub);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.END);
-
-    jest.advanceTimersByTime(500);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-  };
-
-  const waitStartPhaseComplete = (): void => {
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-    jest.advanceTimersByTime(1000);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-  };
-
-  const performAiTurns = (owner: string): void => {
-    const cTurn = gameStateStub.turn;
-    const newOwnerIdx =
-      (gameStateStub.players.findIndex((p) => p.id === gameStateStub.turnOwner) + 1) %
-      gameStateStub.players.length;
-    expect(gameStateStub.turnOwner).toBe(owner);
-
-    // computer players turns
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-    jest.advanceTimersByTime(1000);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-    jest.advanceTimersByTime(2000);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.END);
-    jest.advanceTimersByTime(500);
-
-    // new Owner's turn
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-    expect(gameStateStub.turnOwner).toBe(gameStateStub.players[newOwnerIdx].id);
-    expect(gameStateStub.turn).toBe(newOwnerIdx === 0 ? cTurn + 1 : cTurn);
-  };
-
-  const makeNTurns = (turns: number): void => {
-    const cTurn = gameStateStub.turn;
-    for (let i = 0; i < turns; i++) {
-      expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-
-      clickEndOfTurn();
-      // computer players turns
-      while (gameStateStub.turnOwner !== gameStateStub.players[0].id) {
-        performAiTurns(gameStateStub.turnOwner);
-      }
-
-      expect(gameStateStub.turn).toBe(cTurn + i + 1); // new turn
-
-      waitStartPhaseComplete();
-    }
-  };
 
   const verifyRecruitSlot = (
     landPos: LandPosition,
@@ -170,7 +107,7 @@ describe('Recruitment', () => {
 
         verifyRecruitSlot(barracksLand.mapPos, 0, 1, unitType, nTurns);
 
-        makeNTurns(nTurns);
+        testTurnManagement.makeNTurns(nTurns);
 
         expect(barracksLand.buildings[0].slots?.length).toBe(0); // no units in recruitment queue
 
@@ -192,7 +129,7 @@ describe('Recruitment', () => {
       startRecruiting(RegularUnitType.BALLISTA, barracksLand.mapPos, gameStateStub);
       verifyRecruitSlot(barracksLand.mapPos, 0, 1, RegularUnitType.BALLISTA, 3);
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
       expect(barracksLand.buildings[0].slots?.length).toBe(1); // ballista still in recruitment queue
       verifyRecruitSlot(barracksLand.mapPos, 0, 1, RegularUnitType.BALLISTA, 2);
@@ -202,7 +139,7 @@ describe('Recruitment', () => {
       verifyRecruitSlot(barracksLand.mapPos, 0, 2, RegularUnitType.BALLISTA, 2);
       verifyRecruitSlot(barracksLand.mapPos, 1, 2, RegularUnitType.WARRIOR, 1);
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
       expect(barracksLand.buildings[0].slots?.length).toBe(1); // ballista still in recruitment queue
       verifyRecruitSlot(barracksLand.mapPos, 0, 1, RegularUnitType.BALLISTA, 1);
 
@@ -215,7 +152,7 @@ describe('Recruitment', () => {
       expect(recruitedUnit.count).toBe(20);
       expect(recruitedUnit.level).toBe('regular');
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
@@ -245,7 +182,7 @@ describe('Recruitment', () => {
       verifyRecruitSlot(barracksLand.mapPos, 1, 3, RegularUnitType.WARRIOR, 1);
       verifyRecruitSlot(barracksLand.mapPos, 2, 3, RegularUnitType.WARRIOR, 1);
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
@@ -260,7 +197,7 @@ describe('Recruitment', () => {
       startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
       verifyRecruitSlot(barracksLand.mapPos, 0, 1, RegularUnitType.WARRIOR, 1);
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
@@ -273,7 +210,7 @@ describe('Recruitment', () => {
       startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub); // recruit more warrior
       verifyRecruitSlot(barracksLand.mapPos, 0, 1, RegularUnitType.WARRIOR, 1);
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
@@ -303,7 +240,7 @@ describe('Recruitment', () => {
         startRecruiting(RegularUnitType.WARRIOR, emptyLandPos, gameStateStub);
         expect(emptyLand.buildings.length).toBe(0);
 
-        makeNTurns(1); //wait 1 turn to make sure unit will not appear on the map
+        testTurnManagement.makeNTurns(1); //wait 1 turn to make sure unit will not appear on the map
         expect(emptyLand.army.length).toBe(0);
       });
 
@@ -352,7 +289,7 @@ describe('Recruitment', () => {
           startRecruiting(unitType, barracksLand.mapPos, gameStateStub);
           verifyRecruitSlot(barracksLand.mapPos, 0, 1, unitType, 3);
 
-          makeNTurns(3);
+          testTurnManagement.makeNTurns(3);
 
           expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
@@ -387,7 +324,7 @@ describe('Recruitment', () => {
           startRecruiting(unitType, mageTowerLand.mapPos, gameStateStub);
           verifyRecruitSlot(mageTowerLand.mapPos, 0, 1, unitType, 3);
 
-          makeNTurns(3);
+          testTurnManagement.makeNTurns(3);
 
           expect(mageTowerLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
@@ -419,7 +356,7 @@ describe('Recruitment', () => {
         verifyRecruitSlot(barracksLand.mapPos, 1, 3, HeroUnitType.FIGHTER, 3);
         verifyRecruitSlot(barracksLand.mapPos, 2, 3, HeroUnitType.FIGHTER, 3);
 
-        makeNTurns(3);
+        testTurnManagement.makeNTurns(3);
 
         expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
@@ -468,7 +405,7 @@ describe('Recruitment', () => {
         startRecruiting(HeroUnitType.DRUID, emptyLandPos, gameStateStub);
         expect(emptyLand.buildings.length).toBe(0);
 
-        makeNTurns(1); //wait 1 turn to make sure unit will not appear on the map
+        testTurnManagement.makeNTurns(1); //wait 1 turn to make sure unit will not appear on the map
         expect(emptyLand.army.length).toBe(0);
       });
 

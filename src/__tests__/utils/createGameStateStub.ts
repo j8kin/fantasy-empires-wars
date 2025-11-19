@@ -1,5 +1,5 @@
 import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { toGamePlayer } from './toGamePlayer';
 import { generateMockMap } from './generateMockMap';
 import { construct } from '../../map/building/construct';
@@ -8,12 +8,14 @@ import { LandPosition } from '../../map/utils/getLands';
 import { placeUnitsOnMap } from './placeUnitsOnMap';
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
 import { generateMap } from '../../map/generation/generateMap';
+import { levelUpHero } from '../../map/recruiting/levelUpHero';
 
 export const defaultBattlefieldSizeStub = { rows: 10, cols: 20 };
 export const createDefaultGameStateStub = (): GameState => createGameStateStub({});
 
 export const createGameStateStub = ({
   nPlayers = 3,
+  gamePlayers,
   turnOwner = 0,
   turnPhase = TurnPhase.START,
   battlefieldSize = defaultBattlefieldSizeStub,
@@ -21,14 +23,15 @@ export const createGameStateStub = ({
   addPlayersHomeland = true,
 }: {
   nPlayers?: number;
+  gamePlayers?: PlayerInfo[];
   turnOwner?: number;
   turnPhase?: TurnPhase;
   battlefieldSize?: BattlefieldDimensions;
   realBattlefield?: boolean;
   addPlayersHomeland?: boolean;
 }): GameState => {
-  const players = PREDEFINED_PLAYERS.slice(0, nPlayers).map((p, idx) =>
-    toGamePlayer(p, idx === 0 ? 'human' : 'computer')
+  const players = (gamePlayers == null ? PREDEFINED_PLAYERS.slice(0, nPlayers) : gamePlayers).map(
+    (p, idx) => toGamePlayer(p, idx === 0 ? 'human' : 'computer')
   );
 
   const stubGameState: GameState = {
@@ -47,7 +50,8 @@ export const createGameStateStub = ({
 
       const hero = getDefaultUnit(player.type) as HeroUnit;
       hero.name = player.name;
-      hero.level = player.level;
+      hero.level = player.level - 1;
+      levelUpHero(hero, player);
 
       placeUnitsOnMap(hero, stubGameState, homeland);
     });

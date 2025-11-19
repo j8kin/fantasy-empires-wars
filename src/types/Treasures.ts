@@ -44,6 +44,7 @@ export enum TreasureItem {
   MIRROR_OF_ILLUSION = 'Mirror of Illusion',
   BANNER_OF_UNITY = 'Banner of Unity',
   HEARTSTONE_OF_ORRIVANE = 'Heartstone of Orrivane',
+  SHARD_OF_THE_SILENT_ANVIL = 'Shard of the Silent Anvil',
   CROWN_OF_DOMINION = 'Crown of Dominion',
   SCEPTER_OF_TEMPESTS = 'Scepter of Tempests',
   OBSIDIAN_CHALICE = 'Obsidian Chalice',
@@ -131,17 +132,25 @@ export const relicts: Relic[] = [
   {
     id: TreasureItem.BANNER_OF_UNITY,
     description: 'An ancient symbol of peace that rallies hearts even in distant provinces.',
-    effect: '+50% income from all lands',
+    effect: '+25% income from all lands',
   },
+  // not available for non-magical players (for example, Kaer Dravane)
   {
     id: TreasureItem.HEARTSTONE_OF_ORRIVANE,
     description: 'Pulses with the rhythm of the living world — the first heartbeat of creation.',
-    effect: '+1 mana from all sources for every controlled land',
+    effect: '+1 mana from the land’s natural source for each controlled special land.',
+  },
+  // not available for players who use magic and recruit mages
+  {
+    id: TreasureItem.SHARD_OF_THE_SILENT_ANVIL,
+    description:
+      'Forged in defiance of the arcane, this iron shard hums with a stillness that smothers spellcraft.',
+    effect: 'Reduces enemy spell damage against you by 35% and increases army morale by 10%.',
   },
   {
     id: TreasureItem.CROWN_OF_DOMINION,
     description: 'Worn by the first High King, its weight commands the land itself.',
-    effect: '-10% building and recruitment cost empire-wide',
+    effect: '-15% building and recruitment cost empire-wide',
   },
   {
     id: TreasureItem.SCEPTER_OF_TEMPESTS,
@@ -151,13 +160,13 @@ export const relicts: Relic[] = [
   {
     id: TreasureItem.OBSIDIAN_CHALICE,
     description: 'Said to be carved from a meteor; it thirsts for both power and blood.',
-    effect: 'Converts 10% of income into black mana',
+    effect: 'Converts 10% of income into 0.2% of black mana',
     alignment: Alignment.CHAOTIC,
   },
   {
     id: TreasureItem.VERDANT_IDOL,
     description: 'Covered in moss that never dies; druids whisper that it breathes.',
-    effect: 'All Green Mana spells cost 10% less',
+    effect: 'All Green Mana spells cost 15% less',
     alignment: Alignment.LAWFUL,
   },
   {
@@ -165,7 +174,7 @@ export const relicts: Relic[] = [
     description:
       'Said to resonate with the afterglow of the first dawn, it repeats what has once been cast.',
     effect:
-      'Each offensive spell has a 15% chance to automatically repeat its effect on a nearby enemy land.',
+      'Each offensive spell has a 15% chance to automatically repeat once its effect on a nearby enemy land.',
     alignment: Alignment.NEUTRAL,
   },
 ];

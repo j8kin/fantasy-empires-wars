@@ -26,6 +26,19 @@ export enum LAND_TYPE {
   BLIGHTED_FEN = 'Blighted Fen',
 }
 
+export const getSpecialLandTypes = (): LAND_TYPE[] => [
+  LAND_TYPE.VOLCANO,
+  LAND_TYPE.LAVA,
+  LAND_TYPE.SUN_SPIRE_PEAKS,
+  LAND_TYPE.GOLDEN_PLAINS,
+  LAND_TYPE.HEARTWOOD_COVE,
+  LAND_TYPE.VERDANT_GLADE,
+  LAND_TYPE.CRISTAL_BASIN,
+  LAND_TYPE.MISTY_GLADES,
+  LAND_TYPE.SHADOW_MIRE,
+  LAND_TYPE.BLIGHTED_FEN,
+];
+
 export interface Land {
   id: LAND_TYPE;
   alignment: Alignment;

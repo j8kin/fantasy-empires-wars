@@ -8,6 +8,8 @@ import { HeroOutcome } from '../types/HeroOutcome';
 import { mergeArmies } from '../map/move-army/mergeArmies';
 import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPenalty';
 import { changeOwner } from '../map/move-army/changeOwner';
+import { calculateMana } from '../map/magic/calculateMana';
+import { TreasureItem } from '../types/Treasures';
 
 export const startTurn = (
   gameState: GameState,
@@ -36,17 +38,35 @@ export const startTurn = (
 
   const questStatus = completeQuest(gameState);
   if (
-    getTurnOwner(gameState)?.playerType === 'human' &&
+    player.playerType === 'human' &&
     (questStatus.length > 0 || heroRecruitingStatus.length > 0)
   ) {
     onQuestResults?.([...questStatus, ...heroRecruitingStatus]);
   }
 
   // Calculate income based on current player's lands and army's
-  const income = calculateIncome(gameState) - calculateMaintenance(gameState);
+  player.income = calculateIncome(gameState) - calculateMaintenance(gameState);
+  const hasObsidianChalice = player.empireTreasures?.some(
+    (t) => t.id === TreasureItem.OBSIDIAN_CHALICE
+  );
+  const hasBannerOfUnity = player.empireTreasures?.some(
+    (t) => t.id === TreasureItem.BANNER_OF_UNITY
+  );
+
+  // Empire treasures permanent effects:
+  // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests#-empire-artifacts-permanent
+  player.income = hasBannerOfUnity ? Math.ceil(player.income * 1.25) : player.income;
+  // see OBSIDIAN_CHALICE effect: convert 10% of income to 0.02% of black mana
+  player.mana.black = hasObsidianChalice
+    ? player.mana.black + player.income * 0.02
+    : player.mana.black;
+  player.income = hasObsidianChalice ? Math.ceil(player.income * 0.9) : player.income;
+
   // calculate income and update player#s money and income after turn 2
   if (gameState.turn > 2) {
-    gameState.players.find((p) => p.id === player.id)!.vault += income;
+    player.vault += player.income;
   }
-  gameState.players.find((p) => p.id === player.id)!.income = income;
+
+  // calculate Mana
+  calculateMana(gameState);
 };
