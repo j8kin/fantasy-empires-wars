@@ -1,5 +1,5 @@
 import { HeroUnitType } from './Army';
-import { LAND_TYPE } from './Land';
+import { LandType } from './Land';
 
 export const MAX_MANA = 200;
 
@@ -14,34 +14,34 @@ export enum ManaType {
 export interface ManaSource {
   type: ManaType;
   heroTypes: HeroUnitType[];
-  landTypes: LAND_TYPE[];
+  landTypes: LandType[];
 }
 
 const MANA_SOURCES: ManaSource[] = [
   {
     type: ManaType.BLACK,
     heroTypes: [HeroUnitType.NECROMANCER],
-    landTypes: [LAND_TYPE.SHADOW_MIRE, LAND_TYPE.BLIGHTED_FEN],
+    landTypes: [LandType.SHADOW_MIRE, LandType.BLIGHTED_FEN],
   },
   {
     type: ManaType.RED,
     heroTypes: [HeroUnitType.PYROMANCER],
-    landTypes: [LAND_TYPE.VOLCANO, LAND_TYPE.LAVA],
+    landTypes: [LandType.VOLCANO, LandType.LAVA],
   },
   {
     type: ManaType.BLUE,
     heroTypes: [HeroUnitType.ENCHANTER],
-    landTypes: [LAND_TYPE.CRISTAL_BASIN, LAND_TYPE.MISTY_GLADES],
+    landTypes: [LandType.CRISTAL_BASIN, LandType.MISTY_GLADES],
   },
   {
     type: ManaType.GREEN,
     heroTypes: [HeroUnitType.DRUID],
-    landTypes: [LAND_TYPE.HEARTWOOD_COVE, LAND_TYPE.VERDANT_GLADE],
+    landTypes: [LandType.HEARTWOOD_COVE, LandType.VERDANT_GLADE],
   },
   {
     type: ManaType.WHITE,
     heroTypes: [HeroUnitType.CLERIC],
-    landTypes: [LAND_TYPE.SUN_SPIRE_PEAKS, LAND_TYPE.GOLDEN_PLAINS],
+    landTypes: [LandType.SUN_SPIRE_PEAKS, LandType.GOLDEN_PLAINS],
   },
 ];
 
@@ -50,7 +50,7 @@ export const getManaSource = ({
   landType,
 }: {
   heroType?: HeroUnitType;
-  landType?: LAND_TYPE;
+  landType?: LandType;
 }): ManaSource | undefined => {
   return MANA_SOURCES.find(
     (source) =>

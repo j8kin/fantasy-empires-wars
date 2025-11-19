@@ -12,7 +12,7 @@ import {
   getRegularLandTypes,
   getSurroundingLands,
   Land,
-  LAND_TYPE,
+  LandType,
 } from '../../types/Land';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { LandPosition } from '../utils/getLands';
@@ -25,7 +25,7 @@ const calculateBaseLandGold = (land: Land): number => {
 };
 
 const getRandomEmptyLand = (tiles: BattlefieldLands): LandState | undefined => {
-  const emptyLands = Object.values(tiles).filter((tile) => tile.land.id === LAND_TYPE.NONE);
+  const emptyLands = Object.values(tiles).filter((tile) => tile.land.id === LandType.NONE);
   if (emptyLands.length === 0) return undefined;
   return getRandomElement(emptyLands);
 };
@@ -33,7 +33,7 @@ const getRandomEmptyLand = (tiles: BattlefieldLands): LandState | undefined => {
 const getEmptyNeighbors = (battlefield: BattlefieldMap, position: LandPosition): LandState[] => {
   return getTilesInRadius(battlefield.dimensions, position, 1)
     .map((pos) => battlefield.lands[battlefieldLandId(pos)])
-    .filter((tile) => tile.land.id === LAND_TYPE.NONE);
+    .filter((tile) => tile.land.id === LandType.NONE);
 };
 
 const getRandomNoneNeighbor = (
@@ -57,7 +57,7 @@ const createEmptyBattlefield = (dimensions: BattlefieldDimensions): BattlefieldL
 
       battlefield[battlefieldLandId(mapPos)] = {
         mapPos: mapPos,
-        land: getLandById(LAND_TYPE.NONE), // Temporary, will be overwritten
+        land: getLandById(LandType.NONE), // Temporary, will be overwritten
         controlledBy: NO_PLAYER.id,
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
@@ -68,7 +68,7 @@ const createEmptyBattlefield = (dimensions: BattlefieldDimensions): BattlefieldL
   return battlefield;
 };
 
-const placeSpecialLand = (battlefield: BattlefieldMap, landType: LAND_TYPE) => {
+const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
   const placedSpecialLands = Object.values(battlefield.lands).filter((land) =>
     getMainSpecialLandTypes().includes(land.land.id)
   );
@@ -85,7 +85,7 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LAND_TYPE) => {
   if (freeToPlaceLands.length === 0) {
     // fallback to any land free land
     freeToPlaceLands = Object.values(battlefield.lands)
-      .filter((land) => land.land.id === LAND_TYPE.NONE)
+      .filter((land) => land.land.id === LandType.NONE)
       .map((l) => battlefieldLandId(l.mapPos));
   }
 
@@ -162,8 +162,8 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap =
 
   // if we have empty lands fill with deserts
   Object.values(battlefield.lands)
-    .filter((tile) => tile.land.id === LAND_TYPE.NONE)
-    .forEach((tile) => (tile.land = getLandById(LAND_TYPE.DESERT)));
+    .filter((tile) => tile.land.id === LandType.NONE)
+    .forEach((tile) => (tile.land = getLandById(LandType.DESERT)));
 
   // Calculate gold for all tiles
   Object.values(battlefield.lands).forEach((tile) => {

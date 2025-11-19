@@ -1,19 +1,19 @@
 import { BattlefieldMap, battlefieldLandId, BattlefieldDimensions } from '../../types/GameState';
 import { LandPosition } from '../../map/utils/getLands';
-import { getLandById, Land, LAND_TYPE } from '../../types/Land';
+import { getLandById, Land, LandType } from '../../types/Land';
 import { NO_PLAYER } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 
 const genLand = (alignment: Alignment | undefined): Land => {
   switch (alignment) {
     case Alignment.LAWFUL:
-      return getLandById(LAND_TYPE.MOUNTAINS);
+      return getLandById(LandType.MOUNTAINS);
     case Alignment.NEUTRAL:
-      return getLandById(LAND_TYPE.HILLS);
+      return getLandById(LandType.HILLS);
     case Alignment.CHAOTIC:
-      return getLandById(LAND_TYPE.SWAMP);
+      return getLandById(LandType.SWAMP);
     default:
-      return getLandById(LAND_TYPE.PLAINS);
+      return getLandById(LandType.PLAINS);
   }
 };
 export const generateMockMap = (

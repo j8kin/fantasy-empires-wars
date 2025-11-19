@@ -3,7 +3,7 @@ import { GamePlayer, PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlay
 import { getManaSource, ManaType } from '../../types/Mana';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { HeroUnit, HeroUnitType } from '../../types/Army';
-import { getLandById, getSpecialLandTypes, LAND_TYPE } from '../../types/Land';
+import { getLandById, getSpecialLandTypes, LandType } from '../../types/Land';
 import { getLand, getLands } from '../../map/utils/getLands';
 import { BuildingType } from '../../types/Building';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
@@ -70,7 +70,7 @@ describe('Calculate Mana', () => {
     ])(
       'special land has no effect if player (%s) not own them',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerInfo, inc: number) => {
-        it.each(getSpecialLandTypes())('%s not add mana in mana pool', (landType: LAND_TYPE) => {
+        it.each(getSpecialLandTypes())('%s not add mana in mana pool', (landType: LandType) => {
           expect(player.type).toBe(heroType);
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
@@ -105,7 +105,7 @@ describe('Calculate Mana', () => {
     ])(
       'special land has no effect if other player then current (%s) own it',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerInfo, inc: number) => {
-        it.each(getSpecialLandTypes())('%s not add mana in mana pool', (landType: LAND_TYPE) => {
+        it.each(getSpecialLandTypes())('%s not add mana in mana pool', (landType: LandType) => {
           expect(player.type).toBe(heroType);
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
@@ -145,7 +145,7 @@ describe('Calculate Mana', () => {
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerInfo, inc: number) => {
         it.each(getSpecialLandTypes())(
           'verify effect of %s on mana pool',
-          (landType: LAND_TYPE) => {
+          (landType: LandType) => {
             expect(player.type).toBe(heroType);
 
             const hasEffect = getManaSource({ landType: landType })?.heroTypes.includes(
@@ -193,15 +193,15 @@ describe('Calculate Mana', () => {
     }).filter(
       (l) =>
         (player.type === HeroUnitType.NECROMANCER &&
-          (l.land.id === LAND_TYPE.BLIGHTED_FEN || l.land.id === LAND_TYPE.SHADOW_MIRE)) ||
+          (l.land.id === LandType.BLIGHTED_FEN || l.land.id === LandType.SHADOW_MIRE)) ||
         (player.type === HeroUnitType.CLERIC &&
-          (l.land.id === LAND_TYPE.SUN_SPIRE_PEAKS || l.land.id === LAND_TYPE.GOLDEN_PLAINS)) ||
+          (l.land.id === LandType.SUN_SPIRE_PEAKS || l.land.id === LandType.GOLDEN_PLAINS)) ||
         (player.type === HeroUnitType.ENCHANTER &&
-          (l.land.id === LAND_TYPE.CRISTAL_BASIN || l.land.id === LAND_TYPE.MISTY_GLADES)) ||
+          (l.land.id === LandType.CRISTAL_BASIN || l.land.id === LandType.MISTY_GLADES)) ||
         (player.type === HeroUnitType.DRUID &&
-          (l.land.id === LAND_TYPE.HEARTWOOD_COVE || l.land.id === LAND_TYPE.VERDANT_GLADE)) ||
+          (l.land.id === LandType.HEARTWOOD_COVE || l.land.id === LandType.VERDANT_GLADE)) ||
         (player.type === HeroUnitType.PYROMANCER &&
-          (l.land.id === LAND_TYPE.VOLCANO || l.land.id === LAND_TYPE.LAVA))
+          (l.land.id === LandType.VOLCANO || l.land.id === LandType.LAVA))
     ).length;
     const playerHero = getLands({
       gameState: gameStateStub,

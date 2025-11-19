@@ -3,7 +3,7 @@ import { construct } from '../map/building/construct';
 import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BuildingType } from '../types/Building';
 import { BattlefieldMap, GameState, BattlefieldDimensions } from '../types/GameState';
-import { getLandById, LAND_TYPE } from '../types/Land';
+import { getLandById, LandType } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { toGamePlayer } from './utils/toGamePlayer';
 import { createDefaultGameStateStub, createGameStateStub } from './utils/createGameStateStub';
@@ -40,24 +40,24 @@ describe('MapLands', () => {
         });
         const mockMap: BattlefieldMap = gameStateStub.battlefield;
 
-        mockMap.lands['0-0'].land = getLandById(LAND_TYPE.VOLCANO);
-        mockMap.lands['0-1'].land = getLandById(LAND_TYPE.LAVA);
+        mockMap.lands['0-0'].land = getLandById(LandType.VOLCANO);
+        mockMap.lands['0-1'].land = getLandById(LandType.LAVA);
         mockMap.lands['0-1'].controlledBy = gameStateStub.turnOwner;
-        expect(getLands({ gameState: gameStateStub, landTypes: [LAND_TYPE.VOLCANO] }).length).toBe(
+        expect(getLands({ gameState: gameStateStub, landTypes: [LandType.VOLCANO] }).length).toBe(
           1
         );
         expect(
-          getLands({ gameState: gameStateStub, players: [player.id], landTypes: [LAND_TYPE.LAVA] })
+          getLands({ gameState: gameStateStub, players: [player.id], landTypes: [LandType.LAVA] })
             .length
         ).toBe(1);
-        expect(getLands({ gameState: gameStateStub, landTypes: [LAND_TYPE.PLAINS] }).length).toBe(
+        expect(getLands({ gameState: gameStateStub, landTypes: [LandType.PLAINS] }).length).toBe(
           nTiles5x5 - 2
         );
         expect(
           getLands({
             gameState: gameStateStub,
             players: [gameStateStub.turnOwner],
-            landTypes: [LAND_TYPE.PLAINS],
+            landTypes: [LandType.PLAINS],
           }).length
         ).toBe(0);
       });
@@ -71,8 +71,8 @@ describe('MapLands', () => {
         });
         const mockMap: BattlefieldMap = gameStateStub.battlefield;
 
-        mockMap.lands['0-0'].land = getLandById(LAND_TYPE.VOLCANO);
-        mockMap.lands['0-1'].land = getLandById(LAND_TYPE.LAVA);
+        mockMap.lands['0-0'].land = getLandById(LandType.VOLCANO);
+        mockMap.lands['0-1'].land = getLandById(LandType.LAVA);
 
         expect(
           getLands({ gameState: gameStateStub, landAlignment: Alignment.CHAOTIC }).length

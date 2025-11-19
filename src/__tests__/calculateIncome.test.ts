@@ -2,7 +2,7 @@ import { calculateIncome } from '../map/gold/calculateIncome';
 import { battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { BuildingType, getBuilding } from '../types/Building';
-import { getLandById, LAND_TYPE } from '../types/Land';
+import { getLandById, LandType } from '../types/Land';
 import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
 import { Alignment } from '../types/Alignment';
 import { GamePlayer } from '../types/GamePlayer';
@@ -111,15 +111,15 @@ describe('Calculate Income', () => {
   );
 
   it.each([
-    [lawfulPlayer, LAND_TYPE.PLAINS, 100],
-    [lawfulPlayer, LAND_TYPE.VOLCANO, 80],
-    [lawfulPlayer, LAND_TYPE.MOUNTAINS, 130],
-    [chaoticPlayer, LAND_TYPE.PLAINS, 100],
-    [chaoticPlayer, LAND_TYPE.VOLCANO, 200],
-    [chaoticPlayer, LAND_TYPE.MOUNTAINS, 50],
-    [neutralPlayer, LAND_TYPE.PLAINS, 100],
-    [neutralPlayer, LAND_TYPE.VOLCANO, 100],
-    [neutralPlayer, LAND_TYPE.MOUNTAINS, 100],
+    [lawfulPlayer, LandType.PLAINS, 100],
+    [lawfulPlayer, LandType.VOLCANO, 80],
+    [lawfulPlayer, LandType.MOUNTAINS, 130],
+    [chaoticPlayer, LandType.PLAINS, 100],
+    [chaoticPlayer, LandType.VOLCANO, 200],
+    [chaoticPlayer, LandType.MOUNTAINS, 50],
+    [neutralPlayer, LandType.PLAINS, 100],
+    [neutralPlayer, LandType.VOLCANO, 100],
+    [neutralPlayer, LandType.MOUNTAINS, 100],
   ])(
     `Calculate income with land alignment penalty based on player's alignment`,
     (player, land, expected) => {
