@@ -7,7 +7,7 @@ import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/
 
 import { AllSpells, getSpellById, SpellName } from '../../types/Spell';
 import { getTurnOwner } from '../../types/GameState';
-import { getAvailableToCastSpellLands } from '../../map/cast-spell/getAvailableToCastSpellLands';
+import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCastSpellLands';
 
 import { getSpellImg } from '../../assets/getSpellImg';
 

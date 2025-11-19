@@ -192,7 +192,7 @@ describe('Hero Quest', () => {
     ).toBe(0); // not returned to map at all
   });
 
-  it('When hero Quest is complete and hero survive if his level is related to quest level', () => {
+  it(`When hero Quest is complete and hero survive if his level is related to quest level`, () => {
     randomSpy.mockReturnValue(0.01); // always survive
     const heroStatsBefore = { ...hero };
 
@@ -217,7 +217,7 @@ describe('Hero Quest', () => {
 
     // verify that hero stats are incremented exact new stats calculation verified separately
     expect(hero.attack).toBeGreaterThan(heroStatsBefore.attack);
-    expect(hero.defense).toBeGreaterThan(heroStatsBefore.defense);
+    expect(hero.defense).toBe(heroStatsBefore.defense); // in levelUpHero used Math.floor and 6.52 for level 9 is 6 (the same as previous level)
     expect(hero.health).toBeGreaterThan(heroStatsBefore.health);
     expect(hero.rangeDamage).toBeGreaterThan(heroStatsBefore.rangeDamage!);
     // not changed parameters

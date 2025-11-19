@@ -12,7 +12,7 @@ import { BuildingType, getBuilding } from '../../types/Building';
 import { construct } from '../../map/building/construct';
 
 import { getSpellById, SpellName } from '../../types/Spell';
-import { castSpell } from '../../map/cast-spell/castSpell';
+import { castSpell } from '../../map/magic/castSpell';
 
 import { getLandImg } from '../../assets/getLandImg';
 import { getPlayerColorValue } from '../../types/PlayerColors';

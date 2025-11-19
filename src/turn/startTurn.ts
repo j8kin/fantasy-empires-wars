@@ -8,6 +8,7 @@ import { HeroOutcome } from '../types/HeroOutcome';
 import { mergeArmies } from '../map/move-army/mergeArmies';
 import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPenalty';
 import { changeOwner } from '../map/move-army/changeOwner';
+import { calculateMana } from '../map/magic/calculateMana';
 
 export const startTurn = (
   gameState: GameState,
@@ -49,4 +50,7 @@ export const startTurn = (
     gameState.players.find((p) => p.id === player.id)!.vault += income;
   }
   gameState.players.find((p) => p.id === player.id)!.income = income;
+
+  // calculate Mana
+  calculateMana(gameState);
 };

@@ -243,13 +243,12 @@ const NewGameDialog: React.FC = () => {
             .filter((o) => o.id !== NO_PLAYER.id)
             .map((opponent) => toGamePlayer(opponent, 'computer'));
 
-    // Initialize starting mana values todo: set to 0 when mana is implemented
     const initialMana: Mana = {
-      [ManaType.GREEN]: 100,
-      [ManaType.BLUE]: 100,
-      [ManaType.RED]: 100,
-      [ManaType.WHITE]: 100,
-      [ManaType.BLACK]: 100,
+      [ManaType.GREEN]: 0,
+      [ManaType.BLUE]: 0,
+      [ManaType.RED]: 0,
+      [ManaType.WHITE]: 0,
+      [ManaType.BLACK]: 0,
     };
 
     const initialMoney = 15000;

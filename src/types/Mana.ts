@@ -1,3 +1,6 @@
+import { HeroUnitType } from './Army';
+import { LAND_TYPE } from './Land';
+
 export const MAX_MANA = 200;
 
 export enum ManaType {
@@ -7,6 +10,54 @@ export enum ManaType {
   BLUE = 'blue',
   RED = 'red',
 }
+
+export interface ManaSource {
+  type: ManaType;
+  heroTypes: HeroUnitType[];
+  landTypes: LAND_TYPE[];
+}
+
+const MANA_SOURCES: ManaSource[] = [
+  {
+    type: ManaType.BLACK,
+    heroTypes: [HeroUnitType.NECROMANCER],
+    landTypes: [LAND_TYPE.SHADOW_MIRE, LAND_TYPE.BLIGHTED_FEN],
+  },
+  {
+    type: ManaType.RED,
+    heroTypes: [HeroUnitType.PYROMANCER],
+    landTypes: [LAND_TYPE.VOLCANO, LAND_TYPE.LAVA],
+  },
+  {
+    type: ManaType.BLUE,
+    heroTypes: [HeroUnitType.ENCHANTER],
+    landTypes: [LAND_TYPE.CRISTAL_BASIN, LAND_TYPE.MISTY_GLADES],
+  },
+  {
+    type: ManaType.GREEN,
+    heroTypes: [HeroUnitType.DRUID],
+    landTypes: [LAND_TYPE.HEARTWOOD_COVE, LAND_TYPE.VERDANT_GLADE],
+  },
+  {
+    type: ManaType.WHITE,
+    heroTypes: [HeroUnitType.CLERIC],
+    landTypes: [LAND_TYPE.SUN_SPIRE_PEAKS, LAND_TYPE.GOLDEN_PLAINS],
+  },
+];
+
+export const getManaSource = ({
+  heroType,
+  landType,
+}: {
+  heroType?: HeroUnitType;
+  landType?: LAND_TYPE;
+}): ManaSource | undefined => {
+  return MANA_SOURCES.find(
+    (source) =>
+      (heroType != null && source.heroTypes.includes(heroType)) ||
+      (landType != null && source.landTypes.includes(landType))
+  );
+};
 
 export type Mana = Record<ManaType, number>;
 
