@@ -1,5 +1,4 @@
-import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
-import { GameState, TurnPhase } from '../../types/GameState';
+import { GameState } from '../../types/GameState';
 import { PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { getManaSource, ManaType } from '../../types/Mana';
 import { createGameStateStub } from '../utils/createGameStateStub';
@@ -7,26 +6,16 @@ import { HeroUnitType } from '../../types/Army';
 import { getLandById, getSpecialLandTypes, LAND_TYPE } from '../../types/Land';
 import { getLand, getLands } from '../../map/utils/getLands';
 import { BuildingType } from '../../types/Building';
+import { TestTurnManagement } from '../utils/TestTurnManagement';
 
 describe('Calculate Mana', () => {
-  let turnManager: TurnManager;
-  let mockCallbacks: jest.Mocked<TurnManagerCallbacks>;
-
+  let testTurnManagement: TestTurnManagement;
   let gameStateStub: GameState;
 
   beforeEach(() => {
     jest.useFakeTimers();
     jest.clearAllMocks();
-    mockCallbacks = {
-      onTurnPhaseChange: jest.fn(),
-      onGameOver: jest.fn(),
-      onStartProgress: jest.fn(),
-      onHideProgress: jest.fn(),
-      onComputerMainTurn: jest.fn(),
-      onHeroOutcomeResult: jest.fn(),
-    };
-
-    turnManager = new TurnManager(mockCallbacks);
+    testTurnManagement = new TestTurnManagement();
   });
 
   afterEach(() => {
@@ -34,60 +23,6 @@ describe('Calculate Mana', () => {
     jest.useRealTimers();
     jest.useFakeTimers();
   });
-
-  const clickEndOfTurn = (): void => {
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-
-    turnManager.endCurrentTurn(gameStateStub);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.END);
-
-    jest.advanceTimersByTime(500);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-  };
-
-  const waitStartPhaseComplete = (): void => {
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-    jest.advanceTimersByTime(1000);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-  };
-
-  const performAiTurns = (owner: string): void => {
-    const cTurn = gameStateStub.turn;
-    const newOwnerIdx =
-      (gameStateStub.players.findIndex((p) => p.id === gameStateStub.turnOwner) + 1) %
-      gameStateStub.players.length;
-    expect(gameStateStub.turnOwner).toBe(owner);
-
-    // computer players turns
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-    jest.advanceTimersByTime(1000);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-    jest.advanceTimersByTime(2000);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.END);
-    jest.advanceTimersByTime(500);
-
-    // new Owner's turn
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-    expect(gameStateStub.turnOwner).toBe(gameStateStub.players[newOwnerIdx].id);
-    expect(gameStateStub.turn).toBe(newOwnerIdx === 0 ? cTurn + 1 : cTurn);
-  };
-
-  const makeNTurns = (turns: number): void => {
-    const cTurn = gameStateStub.turn;
-    for (let i = 0; i < turns; i++) {
-      expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-
-      clickEndOfTurn();
-      // computer players turns
-      while (gameStateStub.turnOwner !== gameStateStub.players[0].id) {
-        performAiTurns(gameStateStub.turnOwner);
-      }
-
-      expect(gameStateStub.turn).toBe(cTurn + i + 1); // new turn
-
-      waitStartPhaseComplete();
-    }
-  };
 
   describe('only one initial mage', () => {
     const expectedMana = (manaType: ManaType, mana: number): void => {
@@ -111,13 +46,14 @@ describe('Calculate Mana', () => {
         const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
         gameStateStub = createGameStateStub({ gamePlayers: players });
         gameStateStub.turn = 2;
-        turnManager.startNewTurn(gameStateStub);
+        testTurnManagement.setGameState(gameStateStub);
+        testTurnManagement.startNewTurn(gameStateStub);
 
-        waitStartPhaseComplete();
+        testTurnManagement.waitStartPhaseComplete();
 
         expectedMana(manaType, inc);
 
-        makeNTurns(1);
+        testTurnManagement.makeNTurns(1);
 
         expectedMana(manaType, (gameStateStub.turn - 1) * inc);
       }
@@ -145,12 +81,13 @@ describe('Calculate Mana', () => {
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 2 }; // outside player land
           getLand(gameStateStub, specialLand).land = getLandById(landType);
           gameStateStub.turn = 2;
-          turnManager.startNewTurn(gameStateStub);
-          waitStartPhaseComplete();
+          testTurnManagement.setGameState(gameStateStub);
+          testTurnManagement.startNewTurn(gameStateStub);
+          testTurnManagement.waitStartPhaseComplete();
 
           expectedMana(manaType, inc);
 
-          makeNTurns(1);
+          testTurnManagement.makeNTurns(1);
 
           expectedMana(manaType, (gameStateStub.turn - 1) * inc);
         });
@@ -182,12 +119,13 @@ describe('Calculate Mana', () => {
           }; // player 2 land
           getLand(gameStateStub, specialLand).land = getLandById(landType);
           gameStateStub.turn = 2;
-          turnManager.startNewTurn(gameStateStub);
-          waitStartPhaseComplete();
+          testTurnManagement.setGameState(gameStateStub);
+          testTurnManagement.startNewTurn(gameStateStub);
+          testTurnManagement.waitStartPhaseComplete();
 
           expectedMana(manaType, inc);
 
-          makeNTurns(1);
+          testTurnManagement.makeNTurns(1);
 
           expectedMana(manaType, (gameStateStub.turn - 1) * inc);
         });
@@ -222,12 +160,13 @@ describe('Calculate Mana', () => {
             const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
             getLand(gameStateStub, specialLand).land = getLandById(landType);
             gameStateStub.turn = 2;
-            turnManager.startNewTurn(gameStateStub);
-            waitStartPhaseComplete();
+            testTurnManagement.setGameState(gameStateStub);
+            testTurnManagement.startNewTurn(gameStateStub);
+            testTurnManagement.waitStartPhaseComplete();
 
             expectedMana(manaType, inc + (hasEffect ? 1 : 0));
 
-            makeNTurns(1);
+            testTurnManagement.makeNTurns(1);
 
             expectedMana(manaType, (gameStateStub.turn - 1) * (inc + (hasEffect ? 1 : 0)));
           }

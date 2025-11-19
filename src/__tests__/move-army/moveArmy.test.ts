@@ -1,6 +1,6 @@
+import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
-import { battlefieldLandId, GameState, LandState, TurnPhase } from '../../types/GameState';
+import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
 import {
   getDefaultUnit,
   HeroUnit,
@@ -19,9 +19,7 @@ import { NO_PLAYER } from '../../types/GamePlayer';
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;
 
-  let turnManager: TurnManager;
-  let mockCallbacks: jest.Mocked<TurnManagerCallbacks>;
-
+  let testTurnManagement: TestTurnManagement;
   let gameStateStub: GameState;
 
   let homeLand: LandState;
@@ -30,25 +28,17 @@ describe('Move Army', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.clearAllMocks();
-    mockCallbacks = {
-      onTurnPhaseChange: jest.fn(),
-      onGameOver: jest.fn(),
-      onStartProgress: jest.fn(),
-      onHideProgress: jest.fn(),
-      onComputerMainTurn: jest.fn(),
-      onHeroOutcomeResult: jest.fn(),
-    };
 
-    turnManager = new TurnManager(mockCallbacks);
     randomSpy = jest.spyOn(Math, 'random');
-
     randomSpy.mockReturnValue(0.01); // to return the same value on any random function call
 
     gameStateStub = createDefaultGameStateStub();
     gameStateStub.turn = 2;
-    turnManager.startNewTurn(gameStateStub);
 
-    waitStartPhaseComplete();
+    testTurnManagement = new TestTurnManagement(gameStateStub);
+    testTurnManagement.startNewTurn(gameStateStub);
+    testTurnManagement.waitStartPhaseComplete();
+
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getLands({
       gameState: gameStateStub,
@@ -64,17 +54,17 @@ describe('Move Army', () => {
     startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
     startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
 
-    makeNTurns(1);
+    testTurnManagement.makeNTurns(1);
 
     startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
     startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
 
-    makeNTurns(1);
+    testTurnManagement.makeNTurns(1);
 
     startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
     startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
 
-    makeNTurns(1);
+    testTurnManagement.makeNTurns(1);
 
     expect(barracksLand.army.length).toBe(1);
     expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
@@ -91,60 +81,6 @@ describe('Move Army', () => {
     jest.useFakeTimers();
     randomSpy.mockRestore();
   });
-
-  const clickEndOfTurn = (): void => {
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-
-    turnManager.endCurrentTurn(gameStateStub);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.END);
-
-    jest.advanceTimersByTime(500);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-  };
-
-  const waitStartPhaseComplete = (): void => {
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-    jest.advanceTimersByTime(1000);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-  };
-
-  const performAiTurns = (owner: string): void => {
-    const cTurn = gameStateStub.turn;
-    const newOwnerIdx =
-      (gameStateStub.players.findIndex((p) => p.id === gameStateStub.turnOwner) + 1) %
-      gameStateStub.players.length;
-    expect(gameStateStub.turnOwner).toBe(owner);
-
-    // computer players turns
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-    jest.advanceTimersByTime(1000);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-    jest.advanceTimersByTime(2000);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.END);
-    jest.advanceTimersByTime(500);
-
-    // new Owner's turn
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
-    expect(gameStateStub.turnOwner).toBe(gameStateStub.players[newOwnerIdx].id);
-    expect(gameStateStub.turn).toBe(newOwnerIdx === 0 ? cTurn + 1 : cTurn);
-  };
-
-  const makeNTurns = (turns: number): void => {
-    const cTurn = gameStateStub.turn;
-    for (let i = 0; i < turns; i++) {
-      expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
-
-      clickEndOfTurn();
-      // computer players turns
-      while (gameStateStub.turnOwner !== gameStateStub.players[0].id) {
-        performAiTurns(gameStateStub.turnOwner);
-      }
-
-      expect(gameStateStub.turn).toBe(cTurn + i + 1); // new turn
-
-      waitStartPhaseComplete();
-    }
-  };
 
   describe('Start Movements', () => {
     // barack land is 3,4
@@ -323,7 +259,7 @@ describe('Move Army', () => {
       const unitsToMove = getLand(gameStateStub, homeLand.mapPos).army[0].units; // initial hero in homeland
 
       startMovement(homeLand.mapPos, to, unitsToMove, gameStateStub);
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
       expect(getLand(gameStateStub, homeLand.mapPos).army.length).toBe(0);
 
@@ -341,7 +277,7 @@ describe('Move Army', () => {
 
       startMovement(homeLand.mapPos, barracksLand.mapPos, unitsToMove, gameStateStub);
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
       expect(getLand(gameStateStub, homeLand.mapPos).army.length).toBe(0);
       expect(getLand(gameStateStub, barracksLand.mapPos).army.length).toBe(1); // Stationed Army
 
@@ -370,7 +306,7 @@ describe('Move Army', () => {
       startMovement(from, to, unitsToMove, gameStateStub);
       expect(getLand(gameStateStub, from).army.length).toBe(2);
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
       expect(getLand(gameStateStub, from).army.length).toBe(1); // hero stay in barracks land
 
@@ -399,7 +335,7 @@ describe('Move Army', () => {
       startMovement(from, to, unitsToMove, gameStateStub);
       expect(getLand(gameStateStub, from).army.length).toBe(2);
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
       expect(getLand(gameStateStub, from).army.length).toBe(1); // hero and the rest of the warriors
 
@@ -432,7 +368,7 @@ describe('Move Army', () => {
       startMovement(from, to, unitsToMove2, gameStateStub);
       expect(getLand(gameStateStub, from).army.length).toBe(3);
 
-      makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
       expect(getLand(gameStateStub, from).army.length).toBe(1); // hero and the rest of the warriors
 
