@@ -29,8 +29,8 @@ const MapActionsControl: React.FC = () => {
         (spell) =>
           // turn undead could only be cast if related mana is available
           // todo it should be possible to cast turn undead only once per turn
-          !(spell.id === SpellName.TURN_UNDEAD && playerMana[spell.school] === 0) &&
-          spell.manaCost <= playerMana[spell.school]
+          !(spell.id === SpellName.TURN_UNDEAD && playerMana[spell.manaType] === 0) &&
+          spell.manaCost <= playerMana[spell.manaType]
       )
     ) {
       setShowCastSpellDialog(true);

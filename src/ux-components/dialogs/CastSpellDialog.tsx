@@ -65,7 +65,7 @@ const CastSpellDialog: React.FC = () => {
   const availableSpells = playerMana
     ? AllSpells.filter(
         (spell) =>
-          spell.manaCost <= playerMana[spell.school] &&
+          spell.manaCost <= playerMana[spell.manaType] &&
           (spell.id !== SpellName.TURN_UNDEAD || selectedPlayer?.mana.white > 0)
       )
     : [];

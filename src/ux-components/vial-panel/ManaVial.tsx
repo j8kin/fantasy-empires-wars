@@ -33,7 +33,6 @@ const ManaVial: React.FC<FilledManaVialProps> = ({ color, mana }) => {
         </div>
       </div>
       <img src={getManaVialImg()} className={styles.vialImage} alt={`${color} mana vial`} />
-      {/*<span>{mana}</span>*/}
     </div>
   );
 };

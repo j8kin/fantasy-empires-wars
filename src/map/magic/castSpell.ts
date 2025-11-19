@@ -13,10 +13,10 @@ export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: G
     (t) => t.id === TreasureItem.VERDANT_IDOL
   );
 
-  if (spell.school === ManaType.GREEN && hasVerdantIdol) {
-    spellOwner.mana[spell.school] -= spell.manaCost * 0.85;
+  if (spell.manaType === ManaType.GREEN && hasVerdantIdol) {
+    spellOwner.mana[spell.manaType] -= spell.manaCost * 0.85;
   } else {
-    spellOwner.mana[spell.school] -= spell.manaCost;
+    spellOwner.mana[spell.manaType] -= spell.manaCost;
   }
   const landId = battlefieldLandId(affectedLand);
   console.log(`Casting ${spell} on ${landId}`);
