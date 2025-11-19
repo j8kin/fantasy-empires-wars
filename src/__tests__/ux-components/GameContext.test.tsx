@@ -29,7 +29,6 @@ const mockCalculateMaintenance = calculateMaintenance as jest.MockedFunction<
 const mockTurnManager = {
   startNewTurn: jest.fn(),
   endCurrentTurn: jest.fn(),
-  canEndTurn: jest.fn(),
 };
 
 const MockedTurnManager = TurnManager as jest.MockedClass<typeof TurnManager>;
@@ -107,8 +106,6 @@ describe('GameContext', () => {
     // Reset all mock functions
     mockTurnManager.startNewTurn.mockClear();
     mockTurnManager.endCurrentTurn.mockClear();
-    mockTurnManager.canEndTurn.mockClear();
-    mockTurnManager.canEndTurn.mockReturnValue(true);
 
     // Ensure the TurnManager mock constructor returns our mock instance
     MockedTurnManager.mockClear();
@@ -146,7 +143,6 @@ describe('GameContext', () => {
       expect(typeof result.current.recalculateActivePlayerIncome).toBe('function');
       expect(typeof result.current.startNewTurn).toBe('function');
       expect(typeof result.current.endCurrentTurn).toBe('function');
-      expect(typeof result.current.canEndTurn).toBe('function');
       expect(typeof result.current.setTurnManagerCallbacks).toBe('function');
     });
   });
@@ -313,32 +309,6 @@ describe('GameContext', () => {
       });
 
       expect(mockTurnManager.endCurrentTurn).toHaveBeenCalledWith(result.current.gameState);
-    });
-
-    it('should check if turn can end', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockGameState = createMockGameState();
-      mockTurnManager.canEndTurn.mockReturnValue(true);
-
-      act(() => {
-        result.current.updateGameState(mockGameState);
-      });
-
-      const canEnd = result.current.canEndTurn();
-      expect(canEnd).toBe(true);
-      expect(mockTurnManager.canEndTurn).toHaveBeenCalledWith(result.current.gameState);
-    });
-
-    it('should return false for canEndTurn when no TurnManager', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const canEnd = result.current.canEndTurn();
-      expect(canEnd).toBe(false);
     });
 
     it('should not perform turn operations without TurnManager or gameState', () => {

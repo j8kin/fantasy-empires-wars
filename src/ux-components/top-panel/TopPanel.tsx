@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './css/TopPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
+import { TurnPhase } from '../../types/GameState';
 
 import GameControl from '../game-controls/GameControl';
 import MapActionsControl from '../game-controls/MapActionsControl';
@@ -19,12 +20,12 @@ export interface TopPanelProps {
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
-  const { endCurrentTurn, canEndTurn } = useGameContext();
+  const { endCurrentTurn, gameState } = useGameContext();
 
   const avatarSize = height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10;
 
   const handleEndTurn = () => {
-    if (canEndTurn()) {
+    if (gameState?.turnPhase === TurnPhase.MAIN) {
       endCurrentTurn();
     }
   };

@@ -26,7 +26,6 @@ const mockCalculateMaintenance = calculateMaintenance as jest.MockedFunction<
 const mockTurnManager = {
   startNewTurn: jest.fn(),
   endCurrentTurn: jest.fn(),
-  canEndTurn: jest.fn(),
 };
 
 const MockedTurnManager = TurnManager as jest.MockedClass<typeof TurnManager>;
@@ -55,8 +54,6 @@ describe('GameContext-TurnManager Integration', () => {
     // Reset all mock functions
     mockTurnManager.startNewTurn.mockClear();
     mockTurnManager.endCurrentTurn.mockClear();
-    mockTurnManager.canEndTurn.mockClear();
-    mockTurnManager.canEndTurn.mockReturnValue(true);
 
     // Ensure the TurnManager mock constructor returns our mock instance
     MockedTurnManager.mockClear();
@@ -84,7 +81,6 @@ describe('GameContext-TurnManager Integration', () => {
       expect(result.current.gameState).toEqual(mockGameState);
       expect(result.current.startNewTurn).toBeDefined();
       expect(result.current.endCurrentTurn).toBeDefined();
-      expect(result.current.canEndTurn).toBeDefined();
     });
 
     it('should delegate turn management calls to TurnManager', () => {
@@ -107,11 +103,6 @@ describe('GameContext-TurnManager Integration', () => {
       act(() => {
         result.current.endCurrentTurn();
       });
-
-      // Test canEndTurn delegation
-      mockTurnManager.canEndTurn.mockReturnValue(true);
-      const canEnd = result.current.canEndTurn();
-      expect(canEnd).toBe(true);
     });
 
     it('should handle turn phase changes through callbacks', () => {
@@ -221,10 +212,6 @@ describe('GameContext-TurnManager Integration', () => {
         result.current.updateGameState(mockGameState);
       });
 
-      // Human player should be able to end turn
-      mockTurnManager.canEndTurn.mockReturnValue(true);
-      expect(result.current.canEndTurn()).toBe(true);
-
       // Start a new turn
       act(() => {
         result.current.startNewTurn();
@@ -249,10 +236,6 @@ describe('GameContext-TurnManager Integration', () => {
       act(() => {
         result.current.updateGameState(mockGameState);
       });
-
-      // Computer player should not be able to manually end turn
-      mockTurnManager.canEndTurn.mockReturnValue(false);
-      expect(result.current.canEndTurn()).toBe(false);
     });
 
     it('should maintain state consistency during turn transitions', () => {
@@ -350,8 +333,6 @@ describe('GameContext-TurnManager Integration', () => {
           result.current.endCurrentTurn();
         });
       }).not.toThrow();
-
-      expect(result.current.canEndTurn()).toBe(false);
     });
 
     it('should handle invalid game state gracefully', () => {
@@ -369,11 +350,6 @@ describe('GameContext-TurnManager Integration', () => {
           result.current.updateGameState(invalidGameState);
         });
       }).not.toThrow();
-
-      // Operations should still work without crashing
-      // For invalid game state, canEndTurn should return false
-      mockTurnManager.canEndTurn.mockReturnValue(false);
-      expect(result.current.canEndTurn()).toBe(false);
     });
   });
 
@@ -422,7 +398,6 @@ describe('GameContext-TurnManager Integration', () => {
       act(() => {
         for (let i = 0; i < 10; i++) {
           result.current.recalculateActivePlayerIncome();
-          result.current.canEndTurn();
           result.current.getTotalPlayerGold(mockGameState.players[0]);
         }
       });

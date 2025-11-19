@@ -21,7 +21,6 @@ interface GameContextType {
   // Turn Management
   startNewTurn: () => void;
   endCurrentTurn: () => void;
-  canEndTurn: () => boolean;
 
   // Turn Manager Callbacks
   setTurnManagerCallbacks: (callbacks: Partial<TurnManagerCallbacks>) => void;
@@ -139,13 +138,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     }
   }, [turnManager, gameState]);
 
-  const canEndTurn = useCallback(() => {
-    if (turnManager && gameState) {
-      return turnManager.canEndTurn(gameState);
-    }
-    return false;
-  }, [turnManager, gameState]);
-
   const setTurnManagerCallbacks = useCallback((callbacks: Partial<TurnManagerCallbacks>) => {
     turnManagerCallbacksRef.current = { ...turnManagerCallbacksRef.current, ...callbacks };
   }, []);
@@ -158,7 +150,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     recalculateActivePlayerIncome,
     startNewTurn,
     endCurrentTurn,
-    canEndTurn,
     setTurnManagerCallbacks,
   };
 
