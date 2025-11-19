@@ -7,6 +7,7 @@ import { getLandById, getSpecialLandTypes, LandType } from '../../types/Land';
 import { getLand, getLands } from '../../map/utils/getLands';
 import { BuildingType } from '../../types/Building';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { relicts, TreasureItem } from '../../types/Treasures';
 
 describe('Calculate Mana', () => {
   let testTurnManagement: TestTurnManagement;
@@ -232,5 +233,30 @@ describe('Calculate Mana', () => {
       testTurnManagement.makeNTurns(1);
       expectManaOnTurn(gameStateStub.turn, basePlayersMana);
     }
+  });
+
+  it('mana increased by 1 per each specific land even if no such hero type when player have TreasureItem.HEARTSTONE_OF_ORRIVANE', () => {
+    const players = [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]];
+    gameStateStub = createGameStateStub({ gamePlayers: players });
+    gameStateStub.players[0].empireTreasures.push(
+      relicts.find((r) => r.id === TreasureItem.HEARTSTONE_OF_ORRIVANE)!
+    );
+    const homeLand = getLands({
+      gameState: gameStateStub,
+      players: [gameStateStub.turnOwner],
+      buildings: [BuildingType.STRONGHOLD],
+    })[0];
+
+    getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandType.VOLCANO); // this should add red mana to player 0
+    gameStateStub.turn = 2;
+    testTurnManagement.setGameState(gameStateStub);
+    testTurnManagement.startNewTurn(gameStateStub);
+    testTurnManagement.waitStartPhaseComplete();
+
+    expect(gameStateStub.players[0].mana[ManaType.RED]).toBe(1);
+    expect(gameStateStub.players[0].mana[ManaType.BLACK]).toBe(7);
+    expect(gameStateStub.players[0].mana[ManaType.WHITE]).toBe(0);
+    expect(gameStateStub.players[0].mana[ManaType.BLUE]).toBe(0);
+    expect(gameStateStub.players[0].mana[ManaType.GREEN]).toBe(0);
   });
 });

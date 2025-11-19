@@ -1,7 +1,7 @@
 import { battlefieldLandId, getTurnOwner } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
-import { BuildingType } from '../types/Building';
+import { BuildingType, getBuilding } from '../types/Building';
 import { getLand, getLands, LandPosition } from '../map/utils/getLands';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { getDefaultUnit, RegularUnitType } from '../types/Army';
@@ -10,6 +10,7 @@ import {
   defaultBattlefieldSizeStub,
 } from './utils/createGameStateStub';
 import { GamePlayer } from '../types/GamePlayer';
+import { relicts, TreasureItem } from '../types/Treasures';
 
 describe('Construct Buildings', () => {
   let gameStateStub = createDefaultGameStateStub();
@@ -124,6 +125,18 @@ describe('Construct Buildings', () => {
 
       // no other lands should be in the player's land's
       expect(player2Lands.length).toBe(6);
+    });
+
+    it('Construction cost 15% less if player has TreasureItem.CROWN_OF_DOMINION', () => {
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      gameStateStub.players[0].empireTreasures.push(
+        relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!
+      );
+      expect(gameStateStub.players[0].vault).toBe(200000);
+      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+      expect(gameStateStub.players[0].vault).toBe(
+        200000 - Math.ceil(getBuilding(BuildingType.STRONGHOLD).buildCost * 0.85)
+      );
     });
   });
 
