@@ -89,7 +89,7 @@ const MainViewContent: React.FC = () => {
   useEffect(() => {
     if (gameStarted && gameState && gameState.turn === 1) {
       // Create a unique identifier for this game state to detect new games
-      const currentGameId = `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.id}`;
+      const currentGameId = `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.playerId}`;
 
       // Check if this is a different game than the last one
       if (lastGameStateRef.current !== currentGameId) {

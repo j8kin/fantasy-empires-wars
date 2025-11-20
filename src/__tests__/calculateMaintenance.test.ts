@@ -42,14 +42,14 @@ describe('Calculate Maintenance', () => {
       [HeroUnitType.NECROMANCER, 1, 100],
     ])('Hero %s maintenance level %s', (hero, level, expected) => {
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.id;
+        player.playerId;
       const heroUnit = getDefaultUnit(hero) as HeroUnit;
       heroUnit.level = level;
 
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
         {
           units: [heroUnit],
-          controlledBy: player.id,
+          controlledBy: player.playerId,
         },
       ];
       const maintenance = calculateMaintenance(gameStateStub);
@@ -73,7 +73,7 @@ describe('Calculate Maintenance', () => {
       [RegularUnitType.CATAPULT, UnitRank.REGULAR, 1, 50],
     ])('Unit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.id;
+        player.playerId;
       const regularUnit = getDefaultUnit(regular) as RegularUnit;
       regularUnit.level = level;
       regularUnit.count = quantity;
@@ -81,7 +81,7 @@ describe('Calculate Maintenance', () => {
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
         {
           units: [regularUnit],
-          controlledBy: player.id,
+          controlledBy: player.playerId,
         },
       ];
       const maintenance = calculateMaintenance(gameStateStub);
@@ -94,23 +94,23 @@ describe('Calculate Maintenance', () => {
       elitDwarf.count = 17;
 
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.id;
+        player.playerId;
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
         {
           units: [getDefaultUnit(HeroUnitType.NECROMANCER)],
-          controlledBy: player.id,
+          controlledBy: player.playerId,
         },
         {
           units: [getDefaultUnit(RegularUnitType.DWARF)],
-          controlledBy: player.id,
+          controlledBy: player.playerId,
         },
         {
           units: [getDefaultUnit(RegularUnitType.BALLISTA)],
-          controlledBy: player.id,
+          controlledBy: player.playerId,
         },
         {
           units: [elitDwarf],
-          controlledBy: player.id,
+          controlledBy: player.playerId,
         },
       ];
       const maintenance = calculateMaintenance(gameStateStub);
@@ -132,7 +132,8 @@ describe('Calculate Maintenance', () => {
       [BuildingType.WALL, 100],
     ])('Building %s maintenance cost', (building, expected) => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
-      gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy = player.id;
+      gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy =
+        player.playerId;
       construct(gameStateStub, building, buildingPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
@@ -141,7 +142,8 @@ describe('Calculate Maintenance', () => {
 
     it('Multiple buildings', () => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
-      gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy = player.id;
+      gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy =
+        player.playerId;
       construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
       construct(gameStateStub, BuildingType.WALL, buildingPos);
       construct(gameStateStub, BuildingType.WALL, buildingPos);

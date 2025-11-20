@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../types/GameState';
+import { GameState } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { BuildingType } from '../types/Building';
@@ -12,7 +12,7 @@ describe('getAvailableLands', () => {
 
   beforeEach(() => {
     gameStateStub.battlefield = generateMockMap(defaultBattlefieldSizeStub);
-    gameStateStub.turnOwner = gameStateStub.players[0].id;
+    gameStateStub.turnOwner = gameStateStub.players[0].playerId;
   });
 
   it('should return no available lands for non-stronghold building when player has no lands under control', () => {
@@ -119,10 +119,10 @@ describe('getAvailableLands', () => {
 
   it('should return all border lands when have a border with other player', () => {
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
-    gameStateStub.turnOwner = gameStateStub.players[1].id;
+    gameStateStub.turnOwner = gameStateStub.players[1].playerId;
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 6 }); // other player
 
-    gameStateStub.turnOwner = gameStateStub.players[0].id;
+    gameStateStub.turnOwner = gameStateStub.players[0].playerId;
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.WALL);
 
     expect(availableLands.length).toBe(6); // number of lands outside radius 1 from stronghold

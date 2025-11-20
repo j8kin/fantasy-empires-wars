@@ -26,7 +26,7 @@ describe('Calculate Income', () => {
 
   it('Corner case: No owned strongholds', () => {
     gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
-      lawfulPlayer.id;
+      lawfulPlayer.playerId;
 
     const income = calculateIncome(gameStateStub);
     expect(income).toBe(0);
@@ -50,7 +50,7 @@ describe('Calculate Income', () => {
       player,
       allLandsAlignment,
       expectedIncome,
-      name: `Calculate income for player with alignment ${player.alignment} in ${allLandsAlignment} land alignment`,
+      name: `Calculate income for player with alignment ${player.getAlignment()} in ${allLandsAlignment} land alignment`,
     }))
   )(
     '$name', // Use the pre-generated test name
@@ -61,7 +61,7 @@ describe('Calculate Income', () => {
         100
       );
       gameStateStub.turnPhase = TurnPhase.MAIN;
-      gameStateStub.turnOwner = player.id;
+      gameStateStub.turnOwner = player.playerId;
       // add stronghold
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
       const income = calculateIncome(gameStateStub);
@@ -89,10 +89,10 @@ describe('Calculate Income', () => {
             ? neutralPlayer
             : chaoticPlayer;
 
-      gameStateStub.turnOwner = player.id;
+      gameStateStub.turnOwner = player.playerId;
       // stronghold
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
-        player.id;
+        player.playerId;
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].goldPerTurn = 100;
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
@@ -100,7 +100,7 @@ describe('Calculate Income', () => {
 
       // additional land (should be calculated with penalty
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: landCol })].controlledBy =
-        player.id;
+        player.playerId;
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: landCol })].goldPerTurn =
         100;
 
@@ -123,13 +123,13 @@ describe('Calculate Income', () => {
   ])(
     `Calculate income with land alignment penalty based on player's alignment`,
     (player, land, expected) => {
-      gameStateStub.turnOwner = player.id;
+      gameStateStub.turnOwner = player.playerId;
 
       // add different type land in the stronghold radius to demonstrate different income calculations
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].land =
         getLandById(land);
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].controlledBy =
-        player.id;
+        player.playerId;
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].goldPerTurn = 100;
       gameStateStub.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),

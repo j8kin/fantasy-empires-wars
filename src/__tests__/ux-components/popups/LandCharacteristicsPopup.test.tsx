@@ -65,7 +65,7 @@ describe('LandCharacteristicsPopup', () => {
     // Find a tile that's controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getLands({
       gameState: gameStateStub,
-      players: [gameStateStub.players[1].id],
+      players: [gameStateStub.players[1].playerId],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 
@@ -97,7 +97,7 @@ describe('LandCharacteristicsPopup', () => {
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(mockTileState.controlledBy).toBe(gameStateStub.players[1].id);
+    expect(mockTileState.controlledBy).toBe(gameStateStub.players[1].playerId);
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
 

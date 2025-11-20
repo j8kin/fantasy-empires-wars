@@ -25,12 +25,12 @@ export const construct = (
 
     case BuildingType.STRONGHOLD:
       battlefield.lands[mapPosition].buildings.push(building);
-      battlefield.lands[mapPosition].controlledBy = owner.id;
+      battlefield.lands[mapPosition].controlledBy = owner.playerId;
       const newLandsCandidates = getTilesInRadius(battlefield.dimensions, position, 1, true);
       newLandsCandidates.forEach((land) => {
         // if the land is not controlled by any player, it becomes controlled by the player
         if (getLand(gameState, land).controlledBy === NO_PLAYER.id) {
-          battlefield.lands[battlefieldLandId(land)].controlledBy = owner.id;
+          battlefield.lands[battlefieldLandId(land)].controlledBy = owner.playerId;
         }
       });
       break;

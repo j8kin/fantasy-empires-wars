@@ -23,7 +23,7 @@ export const calculateMana = (gameState: GameState): void => {
 
   getLands({
     gameState: gameState,
-    players: [turnOwner.id],
+    players: [turnOwner.playerId],
     landTypes: getSpecialLandTypes(),
   }).forEach((land) => {
     const manaSource = getManaSource({ landType: land.land.id })!;

@@ -99,19 +99,21 @@ export const getBuilding = (building: BuildingType): Building => {
 };
 
 export const getAllBuildings = (player: PlayerState): Building[] => {
+  const playerType = player.getType();
+  const playerAlignment = player.getAlignment();
   return Object.values(BuildingType)
     .map(getBuilding)
     .filter(
       (building) =>
         !building.id.toString().includes('Mage Tower') ||
         building.id === BuildingType.BLUE_MAGE_TOWER ||
-        (building.id === BuildingType.WHITE_MAGE_TOWER && player.type === HeroUnitType.CLERIC) ||
-        (building.id === BuildingType.WHITE_MAGE_TOWER && player.alignment === Alignment.LAWFUL) ||
+        (building.id === BuildingType.WHITE_MAGE_TOWER && playerType === HeroUnitType.CLERIC) ||
+        (building.id === BuildingType.WHITE_MAGE_TOWER && playerAlignment === Alignment.LAWFUL) ||
         (building.id === BuildingType.BLACK_MAGE_TOWER &&
-          player.type === HeroUnitType.NECROMANCER) ||
-        (building.id === BuildingType.BLACK_MAGE_TOWER && player.alignment === Alignment.CHAOTIC) ||
-        (building.id === BuildingType.GREEN_MAGE_TOWER && player.alignment !== Alignment.CHAOTIC) ||
-        (building.id === BuildingType.RED_MAGE_TOWER && player.alignment !== Alignment.LAWFUL)
+          playerType === HeroUnitType.NECROMANCER) ||
+        (building.id === BuildingType.BLACK_MAGE_TOWER && playerAlignment === Alignment.CHAOTIC) ||
+        (building.id === BuildingType.GREEN_MAGE_TOWER && playerAlignment !== Alignment.CHAOTIC) ||
+        (building.id === BuildingType.RED_MAGE_TOWER && playerAlignment !== Alignment.LAWFUL)
     );
 };
 

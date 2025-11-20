@@ -15,7 +15,9 @@ export const performMovements = (gameState: GameState): void => {
     isAtDestination: boolean;
   }> = [];
 
-  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map((p) => p.id);
+  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map(
+    (p) => p.playerId
+  );
 
   getLands({
     gameState: gameState,

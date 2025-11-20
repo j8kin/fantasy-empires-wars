@@ -37,7 +37,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
           },
           turn: 0,
           turnPhase: TurnPhase.MAIN,
-          turnOwner: selectedPlayer.id,
+          turnOwner: selectedPlayer.playerId,
           players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map((p) => toGamePlayer(p))],
         });
       }

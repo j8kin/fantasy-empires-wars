@@ -43,7 +43,7 @@ export const getPlayerById = (
   gameState?: GameState,
   playerId?: string
 ): PlayerState | undefined => {
-  return gameState?.players.find((player) => player.id === playerId);
+  return gameState?.players.find((player) => player.playerId === playerId);
 };
 
 export const getTurnOwner = (gameState?: GameState): PlayerState | undefined => {

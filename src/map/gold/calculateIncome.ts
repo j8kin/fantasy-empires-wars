@@ -39,13 +39,13 @@ export const calculateIncome = (gameState: GameState): number => {
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Buildings#stronghold
     if (
       !land.buildings.some((b) => b.id === BuildingType.STRONGHOLD) &&
-      player.alignment === Alignment.CHAOTIC
+      player.getAlignment() === Alignment.CHAOTIC
     ) {
       landIncome = land.goldPerTurn * 0.8;
     }
 
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
-    if (player.alignment === Alignment.LAWFUL) {
+    if (player.getAlignment() === Alignment.LAWFUL) {
       if (land.land.alignment === Alignment.LAWFUL) {
         landIncome = landIncome * 1.3;
       }
@@ -53,7 +53,7 @@ export const calculateIncome = (gameState: GameState): number => {
         landIncome = landIncome * 0.8;
       }
     }
-    if (player.alignment === Alignment.CHAOTIC) {
+    if (player.getAlignment() === Alignment.CHAOTIC) {
       if (land.land.alignment === Alignment.CHAOTIC) {
         landIncome = landIncome * 2;
       }

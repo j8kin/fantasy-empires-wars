@@ -70,10 +70,14 @@ describe('OpponentInfoPopup', () => {
       getPlayerTiles: jest.fn(),
     });
 
-    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.NO_TREATY;
-    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id] = DiplomacyStatus.NO_TREATY;
-    gameStateStub.players[2].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.NO_TREATY;
-    gameStateStub.players[0].diplomacy[gameStateStub.players[2].id] = DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[1].diplomacy[gameStateStub.players[0].playerId] =
+      DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[1].playerId] =
+      DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[2].diplomacy[gameStateStub.players[0].playerId] =
+      DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[2].playerId] =
+      DiplomacyStatus.NO_TREATY;
   });
 
   it('returns null when opponent is null or undefined', () => {
@@ -93,7 +97,7 @@ describe('OpponentInfoPopup', () => {
       </ApplicationContextProvider>
     );
 
-    expect(screen.getByText(gameStateStub.players[1].name)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].getName())).toBeInTheDocument();
   });
 
   it('renders player avatar with correct properties', () => {
@@ -104,7 +108,7 @@ describe('OpponentInfoPopup', () => {
     );
 
     const avatar = screen.getByTestId('player-avatar');
-    expect(avatar).toHaveAttribute('data-player-name', gameStateStub.players[1].name);
+    expect(avatar).toHaveAttribute('data-player-name', gameStateStub.players[1].getName());
     expect(avatar).toHaveAttribute('data-size', '55');
     expect(avatar).toHaveAttribute('data-shape', 'rectangle');
     expect(avatar).toHaveAttribute('data-border-color', gameStateStub.players[1].color);
@@ -118,7 +122,7 @@ describe('OpponentInfoPopup', () => {
     );
 
     expect(screen.getByText('Race:')).toBeInTheDocument();
-    expect(screen.getByText(gameStateStub.players[1].race)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].getRace())).toBeInTheDocument();
   });
 
   it('displays alignment information with correct color', () => {
@@ -129,7 +133,7 @@ describe('OpponentInfoPopup', () => {
     );
 
     expect(screen.getByText('Alignment:')).toBeInTheDocument();
-    expect(screen.getByText(gameStateStub.players[2].alignment)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[2].getAlignment())).toBeInTheDocument();
   });
 
   it('displays level information', () => {
@@ -140,7 +144,7 @@ describe('OpponentInfoPopup', () => {
     );
 
     expect(screen.getByText('Level:')).toBeInTheDocument();
-    expect(screen.getByText(gameStateStub.players[1].level.toString())).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].getLevel().toString())).toBeInTheDocument();
   });
 
   describe('diplomacy status display', () => {
@@ -156,8 +160,8 @@ describe('OpponentInfoPopup', () => {
     });
 
     it('displays "Peace" status correctly', () => {
-      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.PEACE;
-      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id] = DiplomacyStatus.PEACE;
+      gameStateStub.players[2].diplomacy[gameStateStub.players[0].playerId] = DiplomacyStatus.PEACE;
+      gameStateStub.players[0].diplomacy[gameStateStub.players[2].playerId] = DiplomacyStatus.PEACE;
 
       render(
         <ApplicationContextProvider>
@@ -170,8 +174,8 @@ describe('OpponentInfoPopup', () => {
     });
 
     it('displays "War" status correctly', () => {
-      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.WAR;
-      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id] = DiplomacyStatus.WAR;
+      gameStateStub.players[2].diplomacy[gameStateStub.players[0].playerId] = DiplomacyStatus.WAR;
+      gameStateStub.players[0].diplomacy[gameStateStub.players[2].playerId] = DiplomacyStatus.WAR;
 
       render(
         <ApplicationContextProvider>
@@ -195,7 +199,7 @@ describe('OpponentInfoPopup', () => {
 
     // The popup should be offset by -50 in x and +10 in y
     // This would be tested through the PopupWrapper component
-    expect(screen.getByText(gameStateStub.players[1].name)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].getName())).toBeInTheDocument();
   });
 
   it('has appropriate dimensions', () => {
@@ -207,7 +211,7 @@ describe('OpponentInfoPopup', () => {
 
     // Component should render with fixed width of 310px
     // Height is calculated dynamically but capped at 400px
-    expect(screen.getByText(gameStateStub.players[1].name)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].getName())).toBeInTheDocument();
   });
 
   it('calls onClose when close action is triggered', () => {
@@ -237,8 +241,8 @@ describe('OpponentInfoPopup', () => {
   });
 
   it('works with different predefined players', () => {
-    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.WAR;
-    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id] = DiplomacyStatus.WAR;
+    gameStateStub.players[1].diplomacy[gameStateStub.players[0].playerId] = DiplomacyStatus.WAR;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[1].playerId] = DiplomacyStatus.WAR;
 
     render(
       <ApplicationContextProvider>

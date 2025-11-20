@@ -1,24 +1,13 @@
-import { PlayerState, PlayerProfile } from '../../types/GamePlayer';
-import { ManaType } from '../../types/Mana';
+import { PlayerState, PlayerProfile, createPlayerState } from '../../types/GamePlayer';
 
+/**
+ * Test method only.
+ * @param player
+ * @param playerType
+ */
 export const toGamePlayer = (
   player: PlayerProfile,
   playerType: 'human' | 'computer' = 'human'
 ): PlayerState => {
-  return {
-    ...player,
-    mana: {
-      [ManaType.WHITE]: 0,
-      [ManaType.BLACK]: 0,
-      [ManaType.GREEN]: 0,
-      [ManaType.BLUE]: 0,
-      [ManaType.RED]: 0,
-    },
-    vault: 200000, // default for testing to be able to buy buildings and units in tests by default
-    income: 0, // recalculated at the START phase of the turn
-    diplomacy: {},
-    playerType: playerType,
-    quests: [], // no heroes are send to quests
-    empireTreasures: [],
-  };
+  return { ...createPlayerState(player, playerType), vault: 200000 };
 };

@@ -22,7 +22,7 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
   const handleAvatarClick = () => {
     // Find all lands controlled by the selected player
     setTimeout(() => {
-      getLands({ gameState: gameState!, players: [turnOwner!.id] }).forEach((land) => {
+      getLands({ gameState: gameState!, players: [turnOwner!.playerId] }).forEach((land) => {
         addGlowingTile(battlefieldLandId(land.mapPos));
       });
     }, 0);
@@ -34,14 +34,14 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
     <div className={styles.playerContainer}>
       <div onClick={handleAvatarClick} className={styles.clickableAvatar}>
         <Avatar
-          player={turnOwner}
+          player={turnOwner.getProfile()}
           size={avatarSize}
           shape="rectangle"
           borderColor={turnOwner.color}
         />
       </div>
       <div className={styles.playerDetails}>
-        <div className={styles.playerName}>{turnOwner.name}</div>
+        <div className={styles.playerName}>{turnOwner.getName()}</div>
         <div className={styles.moneyInfo}>
           <div className={styles.moneyItem}>Gold: {turnOwner.vault}</div>
           <div className={styles.moneyItem}>+{turnOwner.income}/turn</div>

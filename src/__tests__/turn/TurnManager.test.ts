@@ -28,7 +28,7 @@ describe('TurnManager', () => {
 
   const createMockGameState = (turnOwner: number = 0, turn: number = 2): GameState => {
     const gameStateStub = createDefaultGameStateStub();
-    gameStateStub.turnOwner = gameStateStub.players[turnOwner].id;
+    gameStateStub.turnOwner = gameStateStub.players[turnOwner].playerId;
     gameStateStub.turn = turn;
 
     return gameStateStub;
@@ -293,7 +293,7 @@ describe('TurnManager', () => {
   describe('canEndTurn', () => {
     it('should return true for human player in main phase', () => {
       mockGameState.turnPhase = TurnPhase.MAIN;
-      mockGameState.turnOwner = mockGameState.players[0].id; // Human player
+      mockGameState.turnOwner = mockGameState.players[0].playerId; // Human player
 
       const result = turnManager.canEndTurn(mockGameState);
 

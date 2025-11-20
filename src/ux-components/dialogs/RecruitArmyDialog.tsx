@@ -132,7 +132,7 @@ const RecruitArmyDialog: React.FC = () => {
           !isMage(u) &&
           // The players, who reject magic, should be able to recruit their owned special heroes
           (u !== HeroUnitType.WARSMITH ||
-            getTurnOwner(gameState)?.type === HeroUnitType.WARSMITH)) ||
+            getTurnOwner(gameState)?.getType() === HeroUnitType.WARSMITH)) ||
         // mage Heroes should be recruited in related towers only
         (u === HeroUnitType.CLERIC && recruitBuilding.id === BuildingType.WHITE_MAGE_TOWER) ||
         (u === HeroUnitType.ENCHANTER && recruitBuilding.id === BuildingType.BLUE_MAGE_TOWER) ||

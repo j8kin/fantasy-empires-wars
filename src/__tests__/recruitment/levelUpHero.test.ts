@@ -88,9 +88,9 @@ describe('level up hero', () => {
 
   it('Ring of the Ascendant (RING_OF_EXPERIENCE) artifact increment level by 2', () => {
     const player = toGamePlayer(PREDEFINED_PLAYERS[0]);
-    const hero1 = getDefaultUnit(player.type) as HeroUnit;
+    const hero1 = getDefaultUnit(player.getType()) as HeroUnit;
     hero1.level = 1;
-    const hero2 = getDefaultUnit(player.type) as HeroUnit;
+    const hero2 = getDefaultUnit(player.getType()) as HeroUnit;
     hero2.level = 1;
     hero2.artifacts.push(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
 
@@ -103,9 +103,9 @@ describe('level up hero', () => {
 
   it('level up after 32 is not possible', () => {
     const player = toGamePlayer(PREDEFINED_PLAYERS[0]);
-    const hero1 = getDefaultUnit(player.type) as HeroUnit;
+    const hero1 = getDefaultUnit(player.getType()) as HeroUnit;
     hero1.level = 32;
-    const hero2 = getDefaultUnit(player.type) as HeroUnit;
+    const hero2 = getDefaultUnit(player.getType()) as HeroUnit;
     hero2.level = 31;
     hero2.artifacts.push(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
 

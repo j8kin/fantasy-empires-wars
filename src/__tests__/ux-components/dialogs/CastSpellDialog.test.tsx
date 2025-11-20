@@ -125,7 +125,7 @@ const renderWithApplicationContext = () => {
             lands: {},
           },
           turn: 0,
-          turnOwner: selectedPlayer.id,
+          turnOwner: selectedPlayer.playerId,
           players: [
             selectedPlayer,
             toGamePlayer(PREDEFINED_PLAYERS[1]),

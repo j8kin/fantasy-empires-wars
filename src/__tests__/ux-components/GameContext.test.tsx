@@ -1,13 +1,9 @@
 import { render, renderHook, act, screen } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { GameState, TurnPhase } from '../../types/GameState';
-import { PlayerState } from '../../types/GamePlayer';
-import { Alignment } from '../../types/Alignment';
-import { HeroUnitType } from '../../types/Army';
-import { DiplomacyStatus } from '../../types/Diplomacy';
 import { TurnManager } from '../../turn/TurnManager';
 import { calculateIncome } from '../../map/gold/calculateIncome';
 import { calculateMaintenance } from '../../map/gold/calculateMaintenance';
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 // Mock the mapGeneration module to return empty tiles initially
 jest.mock('../../map/generation/generateMap', () => ({
@@ -35,69 +31,6 @@ const MockedTurnManager = TurnManager as jest.MockedClass<typeof TurnManager>;
 MockedTurnManager.mockImplementation(() => mockTurnManager as any);
 
 describe('GameContext', () => {
-  const createMockGameState = (): GameState => ({
-    battlefield: {
-      dimensions: { rows: 5, cols: 5 },
-      lands: {
-        '0-0': {
-          mapPos: { row: 0, col: 0 },
-          land: { type: 'grassland', name: 'Grassland' } as any,
-          controlledBy: 'player1',
-          goldPerTurn: 10,
-          buildings: [],
-          army: { units: [] } as any,
-        },
-        '0-1': {
-          mapPos: { row: 0, col: 1 },
-          land: { type: 'mountain', name: 'Mountain' } as any,
-          controlledBy: 'player2',
-          goldPerTurn: 15,
-          buildings: [],
-          army: { units: [] } as any,
-        },
-      },
-    },
-    turn: 1,
-    turnOwner: 'player1',
-    turnPhase: TurnPhase.MAIN,
-    players: [
-      {
-        id: 'player1',
-        name: 'Test Player 1',
-        alignment: Alignment.NEUTRAL,
-        race: 'Human',
-        type: HeroUnitType.FIGHTER,
-        level: 1,
-        description: 'Test player 1',
-        color: 'blue',
-        mana: { red: 0, blue: 0, green: 0, black: 0, white: 0 },
-        vault: 100,
-        income: 50,
-        diplomacy: { player2: DiplomacyStatus.NO_TREATY },
-        playerType: 'human',
-        empireTreasures: [],
-        quests: [],
-      } as PlayerState,
-      {
-        id: 'player2',
-        name: 'Test Player 2',
-        alignment: Alignment.NEUTRAL,
-        race: 'Elf',
-        type: HeroUnitType.RANGER,
-        level: 1,
-        description: 'Test player 2',
-        color: 'red',
-        mana: { red: 0, blue: 0, green: 0, black: 0, white: 0 },
-        vault: 80,
-        income: 30,
-        diplomacy: { player1: DiplomacyStatus.NO_TREATY },
-        playerType: 'computer',
-        empireTreasures: [],
-        quests: [],
-      } as PlayerState,
-    ],
-  });
-
   beforeEach(() => {
     jest.clearAllMocks();
     mockCalculateIncome.mockReturnValue(100);
@@ -151,7 +84,7 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const mockGameState = createDefaultGameStateStub();
 
       act(() => {
         result.current.updateGameState(mockGameState);
@@ -174,7 +107,7 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const mockGameState = createDefaultGameStateStub();
 
       act(() => {
         result.current.updateGameState(mockGameState);
@@ -197,7 +130,7 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const mockGameState = createDefaultGameStateStub();
 
       act(() => {
         result.current.updateGameState(mockGameState);
@@ -215,7 +148,7 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const mockGameState = createDefaultGameStateStub();
 
       act(() => {
         result.current.updateGameState(mockGameState);
@@ -259,7 +192,7 @@ describe('GameContext', () => {
       });
 
       // Callbacks should be stored internally (tested via TurnManager initialization)
-      const mockGameState = createMockGameState();
+      const mockGameState = createDefaultGameStateStub();
       act(() => {
         result.current.updateGameState(mockGameState);
       });

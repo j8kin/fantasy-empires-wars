@@ -131,7 +131,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 <span className={commonStyles.value}>
                   {(() => {
                     const player = getPlayerById(gameState, land.controlledBy);
-                    return player ? player.name : NO_PLAYER.name;
+                    return player ? player.getName() : NO_PLAYER.name;
                   })()}
                 </span>
               </div>

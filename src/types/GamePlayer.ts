@@ -1,7 +1,7 @@
 import { PlayerColorName } from './PlayerColors';
 import { Alignment } from './Alignment';
 import { HeroUnitType } from './Army';
-import { Mana } from './Mana';
+import { Mana, ManaType } from './Mana';
 import { HeroQuest } from './Quest';
 import { EmpireTreasure } from './Treasures';
 import { Diplomacy } from './Diplomacy';
@@ -19,7 +19,7 @@ export interface PlayerProfile {
   color: PlayerColorName; // base player color when game starts continues current color
 }
 
-export interface PlayerState extends PlayerProfile {
+export interface PlayerState {
   playerId: string; // link to PlayerProfile.id
   playerType: 'human' | 'computer';
 
@@ -30,8 +30,50 @@ export interface PlayerState extends PlayerProfile {
   diplomacy: Diplomacy;
   empireTreasures: EmpireTreasure[];
   quests: HeroQuest[];
+  color: PlayerColorName;
+
+  getAlignment(): Alignment;
+  getLevel(): number;
+  getName(): string;
+  getType(): HeroUnitType;
+  getRace(): PlayerRace;
+
+  getProfile(): PlayerProfile;
 }
 
+export const createPlayerState = (
+  profile: PlayerProfile,
+  playerType: 'human' | 'computer'
+): PlayerState => {
+  return {
+    diplomacy: {},
+    empireTreasures: [],
+    income: 0,
+    mana: {
+      [ManaType.WHITE]: 0,
+      [ManaType.BLACK]: 0,
+      [ManaType.GREEN]: 0,
+      [ManaType.BLUE]: 0,
+      [ManaType.RED]: 0,
+    },
+    playerId: profile.id, // Fixed: was empty string before
+    playerType: playerType,
+    quests: [],
+    vault: 0,
+    color: profile.color,
+
+    getAlignment: () => getPlayerProfile(profile.id).alignment,
+    getLevel: () => getPlayerProfile(profile.id).level,
+    getName: () => getPlayerProfile(profile.id).name,
+    getType: () => getPlayerProfile(profile.id).type,
+    getRace: () => getPlayerProfile(profile.id).race,
+    getProfile: () => getPlayerProfile(profile.id),
+  };
+};
+
+const getPlayerProfile = (playerId: string): PlayerProfile => {
+  return PREDEFINED_PLAYERS.find((p) => p.id === playerId)!;
+};
 export const NO_PLAYER: PlayerProfile = {
   id: 'none',
   name: 'None',

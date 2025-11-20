@@ -82,7 +82,7 @@ const gainItem = (player: PlayerState, hero: HeroUnit): HeroOutcome => {
 const gainRelic = (gameState: GameState, hero: HeroUnit): HeroOutcome => {
   const relicInPlay = gameState.players.flatMap((p) => p.empireTreasures);
   const availableRelics = relicts
-    .filter((a) => a.alignment == null || a.alignment === getTurnOwner(gameState)?.alignment)
+    .filter((a) => a.alignment == null || a.alignment === getTurnOwner(gameState)?.getAlignment())
     .filter((a) => !relicInPlay.some((r) => r.id === a.id));
 
   if (availableRelics.length > 0) {

@@ -11,12 +11,16 @@ import PlayerSelection from '../player-selection/PlayerSelection';
 
 import { generateMap } from '../../map/generation/generateMap';
 import { ButtonName } from '../../types/ButtonName';
-import { PlayerState, NO_PLAYER, PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import {
+  PlayerState,
+  NO_PLAYER,
+  PlayerProfile,
+  PREDEFINED_PLAYERS,
+  createPlayerState,
+} from '../../types/GamePlayer';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { getPlayerColorValue, PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
-import { Mana, ManaType } from '../../types/Mana';
-import { toGamePlayer } from '../../__tests__/utils/toGamePlayer';
 
 // Local map size type for this dialog only
 type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';
@@ -237,19 +241,11 @@ const NewGameDialog: React.FC = () => {
   const handleStartGame = useCallback(() => {
     const opponents =
       opponentSelectionMode === 'random'
-        ? selectedOpponents.filter((o) => o != null).map((o) => toGamePlayer(o, 'computer'))
+        ? selectedOpponents.filter((o) => o != null).map((o) => createPlayerState(o, 'computer'))
         : selectedOpponents
             .filter((o) => o != null)
             .filter((o) => o.id !== NO_PLAYER.id)
-            .map((opponent) => toGamePlayer(opponent, 'computer'));
-
-    const initialMana = (): Mana => ({
-      [ManaType.GREEN]: 0,
-      [ManaType.BLUE]: 0,
-      [ManaType.RED]: 0,
-      [ManaType.WHITE]: 0,
-      [ManaType.BLACK]: 0,
-    });
+            .map((opponent) => createPlayerState(opponent, 'computer'));
 
     const initialMoney = 15000;
 
@@ -259,12 +255,11 @@ const NewGameDialog: React.FC = () => {
         diplomacy: {
           ...Object.fromEntries(
             opponents
-              .filter((o) => o.id !== opponent.id)
-              .map((op) => [op.id, DiplomacyStatus.NO_TREATY])
+              .filter((o) => o.playerId !== opponent.playerId)
+              .map((op) => [op.playerId, DiplomacyStatus.NO_TREATY])
           ),
           [selectedPlayer.id]: DiplomacyStatus.NO_TREATY,
         },
-        mana: initialMana(),
         vault: initialMoney,
         income: 0, // will calculate on game start on the first turn
         playerType: 'computer', // all opponents for now are computer players
@@ -273,16 +268,11 @@ const NewGameDialog: React.FC = () => {
       } as PlayerState;
     });
 
-    const createdPlayer: PlayerState = {
-      ...selectedPlayer,
-      diplomacy: Object.fromEntries(opponents.map((op) => [op.id, DiplomacyStatus.NO_TREATY])),
-      mana: initialMana(),
-      vault: initialMoney,
-      income: 0, // will calculate on game start on first turn
-      playerType: 'human',
-      quests: [], // no heroes are send to quests at game start
-      empireTreasures: [], // no treasures at game start
-    };
+    const createdPlayer: PlayerState = createPlayerState(selectedPlayer, 'human');
+    createdPlayer.diplomacy = Object.fromEntries(
+      opponents.map((op) => [op.playerId, DiplomacyStatus.NO_TREATY])
+    );
+    createdPlayer.vault = initialMoney;
 
     setShowStartWindow(false);
     setProgressMessage('Creating new game...');
@@ -292,7 +282,7 @@ const NewGameDialog: React.FC = () => {
       const gameState: GameState = {
         battlefield: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 1,
-        turnOwner: createdPlayer.id,
+        turnOwner: createdPlayer.playerId,
         turnPhase: TurnPhase.START,
         players: [createdPlayer, ...createdOpponents],
       };

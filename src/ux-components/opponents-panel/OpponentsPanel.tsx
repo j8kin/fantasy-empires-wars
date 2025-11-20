@@ -19,7 +19,7 @@ const OpponentsPanel: React.FC = () => {
       showOpponentInfo(opponent, screenPosition);
 
       setTimeout(() => {
-        getLands({ gameState: gameState!, players: [opponent.id] }).forEach((land) => {
+        getLands({ gameState: gameState!, players: [opponent.playerId] }).forEach((land) => {
           addGlowingTile(battlefieldLandId(land.mapPos));
         });
       }, 0);
@@ -29,7 +29,8 @@ const OpponentsPanel: React.FC = () => {
 
   // Get all players except the selected player (opponents)
   const selectedPlayer = getTurnOwner(gameState);
-  const opponents = gameState?.players?.filter((player) => player.id !== selectedPlayer?.id) || [];
+  const opponents =
+    gameState?.players?.filter((player) => player.playerId !== selectedPlayer?.playerId) || [];
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {
@@ -47,7 +48,7 @@ const OpponentsPanel: React.FC = () => {
     <div key={rowIndex} className={styles.avatarRow}>
       {avatars.map((opponent, opponentIndex) => (
         <div
-          key={`${rowIndex}-${opponentIndex}-${opponent.id}`}
+          key={`${rowIndex}-${opponentIndex}-${opponent.playerId}`}
           className={styles.avatarContainer}
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
@@ -56,7 +57,7 @@ const OpponentsPanel: React.FC = () => {
           }}
         >
           <Avatar
-            player={opponent}
+            player={opponent.getProfile()}
             size={opponents.length <= 4 ? 120 : 90}
             shape="circle"
             borderColor={opponent.color}

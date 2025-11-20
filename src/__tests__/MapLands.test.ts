@@ -47,8 +47,11 @@ describe('MapLands', () => {
           1
         );
         expect(
-          getLands({ gameState: gameStateStub, players: [player.id], landTypes: [LandType.LAVA] })
-            .length
+          getLands({
+            gameState: gameStateStub,
+            players: [player.playerId],
+            landTypes: [LandType.LAVA],
+          }).length
         ).toBe(1);
         expect(getLands({ gameState: gameStateStub, landTypes: [LandType.PLAINS] }).length).toBe(
           nTiles5x5 - 2
@@ -120,7 +123,7 @@ describe('MapLands', () => {
       it('should return the lands of the owner', () => {
         const playerLands = getLands({
           gameState: stubGameState,
-          players: [player.id],
+          players: [player.playerId],
         });
         expect(playerLands.length).toBe(nTilesInRadius1);
       });
@@ -133,7 +136,7 @@ describe('MapLands', () => {
       it('should return the lands of the owner without stronghold', () => {
         const playerLands = getLands({
           gameState: stubGameState,
-          players: [player.id],
+          players: [player.playerId],
           buildings: [],
         });
         expect(playerLands.length).toBe(nTilesInRadius1 - 1);
@@ -143,13 +146,13 @@ describe('MapLands', () => {
         construct(stubGameState, BuildingType.BARRACKS, { row: 3, col: 4 });
         let playerLands = getLands({
           gameState: stubGameState,
-          players: [player.id],
+          players: [player.playerId],
           buildings: [BuildingType.STRONGHOLD],
         });
         expect(playerLands.length).toBe(1);
         playerLands = getLands({
           gameState: stubGameState,
-          players: [player.id],
+          players: [player.playerId],
           buildings: [BuildingType.STRONGHOLD, BuildingType.BARRACKS],
         });
         expect(playerLands.length).toBe(2);
@@ -169,7 +172,7 @@ describe('MapLands', () => {
 
         expect(getLands({ gameState: stubGameState, noArmy: false }).length).toBe(3);
         expect(
-          getLands({ gameState: stubGameState, players: [player.id], noArmy: false }).length
+          getLands({ gameState: stubGameState, players: [player.playerId], noArmy: false }).length
         ).toBe(1);
         expect(getLands({ gameState: stubGameState, noArmy: true }).length).toBe(nTiles10x20 - 3);
       });

@@ -35,7 +35,7 @@ interface ApplicationContextType {
   setHeroOutcome: (results: HeroOutcome[]) => void;
 
   // Dialog data
-  selectedOpponent: PlayerProfile | undefined;
+  selectedOpponent: PlayerState | undefined;
   opponentScreenPosition: ScreenPosition;
   selectOpponentExcludedIds: string[];
   selectOpponentCallback: ((player: PlayerProfile) => void) | null;

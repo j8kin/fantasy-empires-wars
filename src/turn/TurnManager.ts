@@ -41,8 +41,8 @@ export class TurnManager {
     // Show progress popup with turn message
     const message =
       gameState.turn === 1
-        ? `The banners of ${player.name} rise over a new realm!`
-        : `Player ${player.name} turn`;
+        ? `The banners of ${player.getName()} rise over a new realm!`
+        : `Player ${player.getName()} turn`;
     this.callbacks.onStartProgress(message);
 
     // Execute start turn logic

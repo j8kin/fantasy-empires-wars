@@ -11,28 +11,37 @@
  */
 
 import { GameState } from '../../types/GameState';
-import { PlayerState } from '../../types/GamePlayer';
+import { createPlayerState, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 
 describe('MainView Game Initialization Logic', () => {
   // Test the game identification logic that's used in MainView
   const createGameId = (gameState: GameState): string => {
-    return `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.id}`;
+    return `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.playerId}`;
   };
 
   it('should generate unique identifiers for different games', () => {
     // Mock game states with different configurations
     const game1: Partial<GameState> = {
-      players: [{ id: 'player1' }, { id: 'player2' }] as PlayerState[],
+      players: [
+        createPlayerState(PREDEFINED_PLAYERS[0], 'human'),
+        createPlayerState(PREDEFINED_PLAYERS[1], 'computer'),
+      ],
       battlefield: { dimensions: { rows: 9, cols: 18 } } as any,
     };
 
     const game2: Partial<GameState> = {
-      players: [{ id: 'player1' }, { id: 'player2' }] as PlayerState[],
+      players: [
+        createPlayerState(PREDEFINED_PLAYERS[0], 'human'),
+        createPlayerState(PREDEFINED_PLAYERS[1], 'computer'),
+      ],
       battlefield: { dimensions: { rows: 11, cols: 23 } } as any,
     };
 
     const game3: Partial<GameState> = {
-      players: [{ id: 'newPlayer1' }, { id: 'newPlayer2' }] as PlayerState[],
+      players: [
+        createPlayerState(PREDEFINED_PLAYERS[2], 'human'), // Different first player
+        createPlayerState(PREDEFINED_PLAYERS[3], 'computer'),
+      ],
       battlefield: { dimensions: { rows: 9, cols: 18 } } as any,
     };
 
@@ -82,7 +91,10 @@ describe('MainView Game Initialization Logic', () => {
     // First game - medium map
     const game1 = {
       turn: 1,
-      players: [{ id: 'player1' }, { id: 'player2' }] as PlayerState[],
+      players: [
+        createPlayerState(PREDEFINED_PLAYERS[0], 'human'),
+        createPlayerState(PREDEFINED_PLAYERS[1], 'computer'),
+      ],
       battlefield: { dimensions: { rows: 9, cols: 18 } } as any,
     } as GameState;
 
@@ -92,7 +104,10 @@ describe('MainView Game Initialization Logic', () => {
     // Second game - large map (this was the problematic case)
     const game2 = {
       turn: 1,
-      players: [{ id: 'player1' }, { id: 'player2' }] as PlayerState[],
+      players: [
+        createPlayerState(PREDEFINED_PLAYERS[0], 'human'),
+        createPlayerState(PREDEFINED_PLAYERS[1], 'computer'),
+      ],
       battlefield: { dimensions: { rows: 11, cols: 23 } } as any,
     } as GameState;
 

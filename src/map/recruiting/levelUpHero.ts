@@ -55,7 +55,7 @@ export const levelUpHero = (hero: HeroUnit, player: PlayerState): void => {
   // increase characteristics
   const baseHeroClass = getDefaultUnit(hero.id) as HeroUnit;
   const baseLevelUpParams = baseLevelUpParameters(hero.id);
-  const alignmentModifier = alignmentModifiers(player.alignment);
+  const alignmentModifier = alignmentModifiers(player.getAlignment());
   hero.attack = Math.floor(
     baseHeroClass.attack + baseLevelUpParams.attack * alignmentModifier.attack * (hero.level - 1)
   );

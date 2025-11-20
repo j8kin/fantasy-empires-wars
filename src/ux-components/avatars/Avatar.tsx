@@ -33,7 +33,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const containerClassName = `${styles.container} ${styles[`container--${shape}`]} ${className || ''}`;
 
   // Check if this is an empty player
-  if (player.id === NO_PLAYER.id) {
+  if (player == null || player.id === NO_PLAYER.id) {
     return (
       <div style={dynamicStyles} className={containerClassName}>
         <div className={styles['empty-placeholder']}>EMPTY</div>

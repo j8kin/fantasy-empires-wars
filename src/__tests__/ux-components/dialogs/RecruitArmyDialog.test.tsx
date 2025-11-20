@@ -590,9 +590,11 @@ describe('RecruitArmyDialog', () => {
   describe('Player Type Restrictions', () => {
     it('should allow WARSMITH recruitment for WARSMITH players', () => {
       // Set turn owner to WARSMITH player
-      const warsmithPlayer = mockGameState.players.find((p) => p.type === HeroUnitType.WARSMITH);
+      const warsmithPlayer = mockGameState.players.find(
+        (p) => p.getType() === HeroUnitType.WARSMITH
+      );
       if (warsmithPlayer) {
-        mockGameState.turnOwner = warsmithPlayer.id;
+        mockGameState.turnOwner = warsmithPlayer.playerId;
       }
 
       renderWithProviders(<RecruitArmyDialog />);
@@ -604,9 +606,11 @@ describe('RecruitArmyDialog', () => {
 
     it('should not allow WARSMITH recruitment for non-WARSMITH players', () => {
       // Set turn owner to a different type
-      const nonWarsmithPlayer = mockGameState.players.find((p) => p.type !== HeroUnitType.WARSMITH);
+      const nonWarsmithPlayer = mockGameState.players.find(
+        (p) => p.getType() !== HeroUnitType.WARSMITH
+      );
       if (nonWarsmithPlayer) {
-        mockGameState.turnOwner = nonWarsmithPlayer.id;
+        mockGameState.turnOwner = nonWarsmithPlayer.playerId;
       }
 
       // Remove WARSMITH from available units to test the filter

@@ -185,23 +185,23 @@ describe('Calculate Mana', () => {
   const baseMana = (player: PlayerState) => {
     const playerSpecialLands = getLands({
       gameState: gameStateStub,
-      players: [player.id],
+      players: [player.playerId],
     }).filter(
       (l) =>
-        (player.type === HeroUnitType.NECROMANCER &&
+        (player.getType() === HeroUnitType.NECROMANCER &&
           (l.land.id === LandType.BLIGHTED_FEN || l.land.id === LandType.SHADOW_MIRE)) ||
-        (player.type === HeroUnitType.CLERIC &&
+        (player.getType() === HeroUnitType.CLERIC &&
           (l.land.id === LandType.SUN_SPIRE_PEAKS || l.land.id === LandType.GOLDEN_PLAINS)) ||
-        (player.type === HeroUnitType.ENCHANTER &&
+        (player.getType() === HeroUnitType.ENCHANTER &&
           (l.land.id === LandType.CRISTAL_BASIN || l.land.id === LandType.MISTY_GLADES)) ||
-        (player.type === HeroUnitType.DRUID &&
+        (player.getType() === HeroUnitType.DRUID &&
           (l.land.id === LandType.HEARTWOOD_COVE || l.land.id === LandType.VERDANT_GLADE)) ||
-        (player.type === HeroUnitType.PYROMANCER &&
+        (player.getType() === HeroUnitType.PYROMANCER &&
           (l.land.id === LandType.VOLCANO || l.land.id === LandType.LAVA))
     ).length;
     const playerHero = getLands({
       gameState: gameStateStub,
-      players: [player.id],
+      players: [player.playerId],
       noArmy: false,
     })[0].army[0].units[0] as HeroUnit;
     return (playerHero.mana || 0) + playerSpecialLands;

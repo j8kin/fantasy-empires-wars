@@ -11,13 +11,13 @@ import { levelUpHero } from '../recruiting/levelUpHero';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   const player = getTurnOwner(gameState)!;
-  const hero = getDefaultUnit(player.type) as HeroUnit;
-  hero.name = player.name;
-  hero.level = player.level - 1; // levelUpHero will increment level
+  const hero = getDefaultUnit(player.getType()) as HeroUnit;
+  hero.name = player.getName();
+  hero.level = player.getLevel() - 1; // levelUpHero will increment level
   // increment characteristics
   levelUpHero(hero, player);
   // initial Hero immediately available in normal game it turn 3 turn to recruit#
-  getLand(gameState, homeland.mapPos).army.push({ units: [hero], controlledBy: player.id });
+  getLand(gameState, homeland.mapPos).army.push({ units: [hero], controlledBy: player.playerId });
 };
 
 export const placeHomeland = (gameState: GameState) => {
@@ -61,7 +61,7 @@ export const placeHomeland = (gameState: GameState) => {
 
   let possibleHomelands = freeToBuildLands
     .map((key) => gameState.battlefield.lands[key])
-    .filter((land) => land.land.alignment === owner.alignment);
+    .filter((land) => land.land.alignment === owner.getAlignment());
 
   if (possibleHomelands.length === 0) {
     possibleHomelands = freeToBuildLands
@@ -76,7 +76,7 @@ export const placeHomeland = (gameState: GameState) => {
         getLands({
           gameState: gameState,
           players: [NO_PLAYER.id],
-          landAlignment: owner.alignment,
+          landAlignment: owner.getAlignment(),
         })
       );
     } else {
@@ -96,7 +96,7 @@ export const placeHomeland = (gameState: GameState) => {
   let possibleBarracksLands = getLands({
     gameState: gameState,
     players: [gameState.turnOwner],
-    landAlignment: owner.alignment,
+    landAlignment: owner.getAlignment(),
     buildings: [],
   });
   if (possibleBarracksLands.length === 0) {

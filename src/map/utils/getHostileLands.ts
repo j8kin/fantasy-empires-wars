@@ -7,7 +7,9 @@ export const getHostileLands = (gameState: GameState): LandState[] => {
   const turnOwner = getTurnOwner(gameState)!;
 
   const realmLands = getRealmLands(gameState).flatMap((l) => battlefieldLandId(l.mapPos));
-  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map((p) => p.id);
+  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map(
+    (p) => p.playerId
+  );
 
   return getLands({
     gameState: gameState,
@@ -16,6 +18,6 @@ export const getHostileLands = (gameState: GameState): LandState[] => {
     (land) =>
       !(
         realmLands.includes(battlefieldLandId(land.mapPos)) || allies.includes(land.controlledBy)
-      ) && land.army.some((a) => a.controlledBy === turnOwner.id)
+      ) && land.army.some((a) => a.controlledBy === turnOwner.playerId)
   );
 };

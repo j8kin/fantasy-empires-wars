@@ -38,24 +38,24 @@ export const createGameStateStub = ({
     battlefield: realBattlefield ? generateMap(battlefieldSize) : generateMockMap(battlefieldSize),
     players: players,
     turn: 1,
-    turnOwner: players[turnOwner].id,
+    turnOwner: players[turnOwner].playerId,
     turnPhase: turnPhase,
   };
 
   if (addPlayersHomeland) {
     players.forEach((player, idx) => {
-      stubGameState.turnOwner = player.id;
+      stubGameState.turnOwner = player.playerId;
       const homeland: LandPosition = { row: 3 + (idx % 2), col: 3 + idx * 5 };
       construct(stubGameState, BuildingType.STRONGHOLD, homeland);
 
-      const hero = getDefaultUnit(player.type) as HeroUnit;
-      hero.name = player.name;
-      hero.level = player.level - 1;
+      const hero = getDefaultUnit(player.getType()) as HeroUnit;
+      hero.name = player.getName();
+      hero.level = player.getLevel() - 1;
       levelUpHero(hero, player);
 
       placeUnitsOnMap(hero, stubGameState, homeland);
     });
-    stubGameState.turnOwner = players[0].id;
+    stubGameState.turnOwner = players[0].playerId;
   }
   return stubGameState;
 };
