@@ -3,9 +3,17 @@ import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameS
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { BuildingType } from '../../types/Building';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
-import { HeroUnit, HeroUnitType, RegularUnit, RegularUnitType, UnitType } from '../../types/Army';
+import {
+  getDefaultUnit,
+  HeroUnit,
+  HeroUnitType,
+  RegularUnit,
+  RegularUnitType,
+  UnitType,
+} from '../../types/Army';
 import { construct } from '../../map/building/construct';
 import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
+import { relicts, TreasureItem } from '../../types/Treasures';
 
 describe('Recruitment', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -57,6 +65,29 @@ describe('Recruitment', () => {
     expect(land!.buildings[0].slots![slot].unit).toBe(unitType);
     expect(land!.buildings[0].slots![slot].turnsRemaining).toBe(remainTurns);
   };
+
+  it('Recruitment cost less when player has TreasureItem.CROWN_OF_DOMINION', () => {
+    const player = getTurnOwner(gameStateStub)!;
+    // add  TreasureItem.CROWN_OF_DOMINION to player treasury
+    player.empireTreasures.push(relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!);
+
+    const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+    construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
+    let vault = player.vault;
+
+    startRecruiting(RegularUnitType.WARRIOR, barracksPos, gameStateStub);
+    // artifact has effect on regular units
+    expect(player.vault).toBe(
+      vault - Math.ceil(getDefaultUnit(RegularUnitType.WARRIOR).recruitCost * 0.85)
+    );
+
+    // artifact has effect on hero units
+    vault = player.vault;
+    startRecruiting(HeroUnitType.FIGHTER, barracksPos, gameStateStub);
+    expect(player.vault).toBe(
+      vault - Math.ceil(getDefaultUnit(HeroUnitType.FIGHTER).recruitCost * 0.85)
+    );
+  });
 
   describe('Recruit regular units', () => {
     let barracksLand: LandState;

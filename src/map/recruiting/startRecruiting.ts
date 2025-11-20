@@ -10,6 +10,7 @@ import {
 import { getLand, LandPosition } from '../utils/getLands';
 import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
+import { TreasureItem } from '../../types/Treasures';
 
 const recruitmentDuration = (unitType: UnitType) => {
   if (isHeroType(unitType)) return 3;
@@ -72,7 +73,12 @@ export const startRecruiting = (
 
     const availableGold = getTurnOwner(gameState)!.vault;
     if (availableGold != null && availableGold > getDefaultUnit(unitType)!.recruitCost) {
-      getTurnOwner(gameState)!.vault -= getDefaultUnit(unitType).recruitCost;
+      const hasCrownOfDominion = getTurnOwner(gameState)!.empireTreasures?.some(
+        (r) => r.id === TreasureItem.CROWN_OF_DOMINION
+      );
+      getTurnOwner(gameState)!.vault -= hasCrownOfDominion
+        ? Math.ceil(getDefaultUnit(unitType).recruitCost * 0.85)
+        : getDefaultUnit(unitType).recruitCost;
       building[0].slots!.push({
         unit: unitType,
         turnsRemaining: recruitmentDuration(unitType),

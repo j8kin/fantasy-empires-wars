@@ -51,8 +51,7 @@ export const isHeroType = (unitType: UnitType): boolean => isHero(getDefaultUnit
 export const isHero = (unit: Unit): boolean => typeof unit.level === 'number';
 export const isWarMachine = (unitType: UnitType): boolean =>
   unitType === RegularUnitType.BALLISTA || unitType === RegularUnitType.CATAPULT;
-export const isRange = (unitType: UnitType): boolean =>
-  getDefaultUnit(unitType).range !== undefined;
+export const isRange = (unitType: UnitType): boolean => getDefaultUnit(unitType).range != null;
 
 export const isMage = (unitType: UnitType): boolean => {
   return (
