@@ -152,52 +152,6 @@ describe('GameContext-TurnManager Integration', () => {
       // Verify that callbacks were set (this would be tested through TurnManager behavior)
       expect(result.current.gameState).toBeDefined();
     });
-
-    it('should handle income recalculation in context of turns', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockGameState = createMockGameState();
-
-      act(() => {
-        result.current.updateGameState(mockGameState);
-      });
-
-      const originalIncome = result.current.gameState?.players[0].income;
-
-      act(() => {
-        result.current.recalculateActivePlayerIncome();
-      });
-
-      const updatedIncome = result.current.gameState?.players[0].income;
-      expect(updatedIncome).toBe(80); // 100 - 20 from mocked functions
-      expect(updatedIncome).not.toBe(originalIncome);
-    });
-
-    it('should handle gold calculation in context of game state', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockGameState = createMockGameState();
-
-      act(() => {
-        result.current.updateGameState(mockGameState);
-      });
-
-      const player1 = result.current.gameState!.players[0];
-      const player2 = result.current.gameState!.players[1];
-      const player3 = result.current.gameState!.players[2];
-
-      const player1Gold = result.current.getTotalPlayerGold(player1);
-      const player2Gold = result.current.getTotalPlayerGold(player2);
-      const player3Gold = result.current.getTotalPlayerGold(player3);
-
-      expect(player1Gold).toBe(441);
-      expect(player2Gold).toBe(609);
-      expect(player3Gold).toBe(511);
-    });
   });
 
   describe('Turn Flow Integration', () => {
@@ -236,30 +190,6 @@ describe('GameContext-TurnManager Integration', () => {
       act(() => {
         result.current.updateGameState(mockGameState);
       });
-    });
-
-    it('should maintain state consistency during turn transitions', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockGameState = createMockGameState();
-      const originalTurn = mockGameState.turn;
-      const originalTurnOwner = mockGameState.turnOwner;
-
-      act(() => {
-        result.current.updateGameState(mockGameState);
-      });
-
-      // Perform some turn operations
-      act(() => {
-        result.current.recalculateActivePlayerIncome();
-      });
-
-      // Basic state should remain consistent
-      expect(result.current.gameState?.turn).toBe(originalTurn);
-      expect(result.current.gameState?.turnOwner).toBe(originalTurnOwner);
-      expect(result.current.gameState?.players).toHaveLength(3);
     });
   });
 
@@ -381,29 +311,6 @@ describe('GameContext-TurnManager Integration', () => {
       expect(constructorSpy.mock.calls.length).toBe(initialCallCount);
 
       constructorSpy.mockRestore();
-    });
-
-    it('should handle rapid successive operations without issues', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockGameState = createMockGameState();
-
-      act(() => {
-        result.current.updateGameState(mockGameState);
-      });
-
-      // Perform rapid successive operations
-      act(() => {
-        for (let i = 0; i < 10; i++) {
-          result.current.recalculateActivePlayerIncome();
-          result.current.getTotalPlayerGold(mockGameState.players[0]);
-        }
-      });
-
-      expect(result.current.gameState).toBeDefined();
-      expect(result.current.gameState?.players[0].income).toBe(80);
     });
   });
 });

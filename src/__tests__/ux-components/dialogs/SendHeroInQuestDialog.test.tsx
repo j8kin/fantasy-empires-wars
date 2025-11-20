@@ -91,10 +91,7 @@ const mockApplicationContext = {
 const mockGameContext = {
   gameState: createDefaultGameStateStub(),
   updateGameState: jest.fn(),
-  getTotalPlayerGold: jest.fn(),
   getPlayerById: jest.fn(),
-  getAllPlayersExcept: jest.fn(),
-  getOpponents: jest.fn(),
 };
 
 jest.mock('../../../contexts/ApplicationContext', () => ({

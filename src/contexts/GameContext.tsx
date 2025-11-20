@@ -1,18 +1,11 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useRef } from 'react';
 import { GameState, TurnPhase } from '../types/GameState';
-import { GamePlayer } from '../types/GamePlayer';
-import { calculateIncome } from '../map/gold/calculateIncome';
-import { calculateMaintenance } from '../map/gold/calculateMaintenance';
 import { TurnManager, TurnManagerCallbacks } from '../turn/TurnManager';
 import { HeroOutcome } from '../types/HeroOutcome';
 
 interface GameContextType {
   // Game State
   gameState?: GameState;
-
-  // Player Management
-  getTotalPlayerGold: (player: GamePlayer) => number;
-  recalculateActivePlayerIncome: () => void;
 
   // Game Flow
   updateGameState: (gameState: GameState) => void;
@@ -93,38 +86,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     [turnManager, createDefaultCallbacks]
   );
 
-  const getTotalPlayerGold = useCallback(
-    (player: GamePlayer) => {
-      return Object.values(gameState?.battlefield.lands || {})
-        .filter((lands) => lands.controlledBy === player.id)
-        .reduce((total, battlefieldLand) => total + battlefieldLand.goldPerTurn, 0);
-    },
-    [gameState?.battlefield]
-  );
-
-  const recalculateActivePlayerIncome = useCallback(() => {
-    setGameState((prev) => {
-      if (!prev || !prev.turnOwner) return prev;
-
-      // Calculate income only for the active player
-      const updatedPlayers = prev.players.map((player) => {
-        if (player.id === prev.turnOwner) {
-          const playerIncome = calculateIncome(prev) - calculateMaintenance(prev);
-          return {
-            ...player,
-            income: playerIncome,
-          };
-        }
-        return player;
-      });
-
-      return {
-        ...prev,
-        players: updatedPlayers,
-      };
-    });
-  }, []);
-
   // Turn management functions
   const startNewTurn = useCallback(() => {
     if (turnManager && gameState) {
@@ -146,8 +107,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     gameState,
     updateGameState: updateGameConfig,
     startNewGame: startNewGameConfig,
-    getTotalPlayerGold,
-    recalculateActivePlayerIncome,
     startNewTurn,
     endCurrentTurn,
     setTurnManagerCallbacks,

@@ -81,7 +81,6 @@ jest.mock('../../contexts/GameContext', () => ({
     updateGameConfig: jest.fn(),
     getTile: jest.fn(),
     getPlayerTiles: jest.fn(),
-    getTotalPlayerGold: jest.fn(),
   }),
 }));
 

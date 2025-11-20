@@ -92,10 +92,7 @@ const mockApplicationContext = {
 const mockGameContext = {
   gameState: null as GameState | null,
   updateGameState: jest.fn(),
-  getTotalPlayerGold: jest.fn(),
   getPlayerById: jest.fn(),
-  getAllPlayersExcept: jest.fn(),
-  getOpponents: jest.fn(),
   recalculateActivePlayerIncome: jest.fn(),
 };
 

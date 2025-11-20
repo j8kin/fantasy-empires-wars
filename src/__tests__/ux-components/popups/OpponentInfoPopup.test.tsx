@@ -68,7 +68,6 @@ describe('OpponentInfoPopup', () => {
       updateGameState: jest.fn(),
       getTile: jest.fn(),
       getPlayerTiles: jest.fn(),
-      getTotalPlayerGold: jest.fn(),
     });
 
     gameStateStub.players[1].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.NO_TREATY;

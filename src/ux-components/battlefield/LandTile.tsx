@@ -42,7 +42,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     addGlowingTile,
     setMoveArmyPath,
   } = useApplicationContext();
-  const { gameState, updateGameState, recalculateActivePlayerIncome } = useGameContext();
+  const { gameState, updateGameState } = useGameContext();
 
   const showPopup =
     landPopupPosition?.row === battlefieldPosition.row &&
@@ -93,7 +93,6 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
           // todo add animation for building
           construct(gameState!, buildingToConstruct, battlefieldPosition);
           updateGameState(gameState!);
-          recalculateActivePlayerIncome();
         }
       } else if (selectedLandAction === 'Recruit') {
         // Handle recruit action - store the selected land position and show dialog

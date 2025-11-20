@@ -138,9 +138,7 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      expect(typeof result.current.getTotalPlayerGold).toBe('function');
       expect(typeof result.current.updateGameState).toBe('function');
-      expect(typeof result.current.recalculateActivePlayerIncome).toBe('function');
       expect(typeof result.current.startNewTurn).toBe('function');
       expect(typeof result.current.endCurrentTurn).toBe('function');
       expect(typeof result.current.setTurnManagerCallbacks).toBe('function');
@@ -190,87 +188,6 @@ describe('GameContext', () => {
       });
 
       expect(MockedTurnManager.mock.calls.length).toBe(firstCallCount);
-    });
-  });
-
-  describe('Player Gold Calculation', () => {
-    it('should calculate total player gold correctly', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockGameState = createMockGameState();
-      const player1 = mockGameState.players[0];
-
-      act(() => {
-        result.current.updateGameState(mockGameState);
-      });
-
-      const totalGold = result.current.getTotalPlayerGold(player1);
-      expect(totalGold).toBe(10); // Only the land controlled by player1
-    });
-
-    it('should return 0 for player with no controlled lands', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockGameState = createMockGameState();
-      const playerWithNoLands = {
-        ...mockGameState.players[0],
-        id: 'player3',
-      };
-
-      act(() => {
-        result.current.updateGameState(mockGameState);
-      });
-
-      const totalGold = result.current.getTotalPlayerGold(playerWithNoLands);
-      expect(totalGold).toBe(0);
-    });
-
-    it('should return 0 for getTotalPlayerGold with no game state', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockPlayer = { id: 'test-player' } as any;
-      const gold = result.current.getTotalPlayerGold(mockPlayer);
-      expect(gold).toBe(0);
-    });
-  });
-
-  describe('Income Recalculation', () => {
-    it('should recalculate active player income', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      const mockGameState = createMockGameState();
-
-      act(() => {
-        result.current.updateGameState(mockGameState);
-      });
-
-      act(() => {
-        result.current.recalculateActivePlayerIncome();
-      });
-
-      const updatedState = result.current.gameState;
-      const activePlayer = updatedState?.players.find((p) => p.id === mockGameState.turnOwner);
-      expect(activePlayer?.income).toBe(80); // 100 - 20 from mocked functions
-    });
-
-    it('should not recalculate if no game state or turn owner', () => {
-      const { result } = renderHook(() => useGameContext(), {
-        wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
-      });
-
-      act(() => {
-        result.current.recalculateActivePlayerIncome();
-      });
-
-      expect(result.current.gameState).toBeUndefined();
     });
   });
 
