@@ -18,6 +18,7 @@ export enum SpellName {
   BEAST_ATTACK = 'Beast Attack',
   EARTHQUAKE = 'Earthquake',
   // red
+  EMBER_RAID = 'Ember Raid',
   FORGE_OF_WAR = 'Forge Of War',
   FIRESTORM = 'Firestorm',
   METEOR_SHOWER = 'Meteor Shower',
@@ -124,6 +125,14 @@ const GreenMagicSpells: Spell[] = [
 ];
 
 const RedMagicSpells: Spell[] = [
+  {
+    id: SpellName.EMBER_RAID,
+    description:
+      'Sabotages enemy recruitment: adds +1 turn to ongoing unit training and prevents repeated casting on the same territory for 3 turns.',
+    manaCost: 30,
+    apply: 'opponent',
+    manaType: ManaType.RED,
+  },
   {
     id: SpellName.FORGE_OF_WAR,
     description: 'Instantly recruits +33% of one unit type available in a territory with Barracks',
