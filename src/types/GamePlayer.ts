@@ -72,8 +72,9 @@ export const createPlayerState = (
 };
 
 const getPlayerProfile = (playerId: string): PlayerProfile => {
-  return PREDEFINED_PLAYERS.find((p) => p.id === playerId)!;
+  return PREDEFINED_PLAYERS.find((p) => p.id === playerId) || NO_PLAYER;
 };
+
 export const NO_PLAYER: PlayerProfile = {
   id: 'none',
   name: 'None',

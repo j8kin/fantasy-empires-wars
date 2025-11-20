@@ -4,6 +4,7 @@ import OpponentInfoPopup from '../../../ux-components/popups/OpponentInfoPopup';
 import { DiplomacyStatus } from '../../../types/Diplomacy';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
+import { getPlayerColorValue } from '../../../types/PlayerColors';
 
 jest.mock('../../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
   popupContent: 'mocked-popup-content',
@@ -111,7 +112,10 @@ describe('OpponentInfoPopup', () => {
     expect(avatar).toHaveAttribute('data-player-name', gameStateStub.players[1].getName());
     expect(avatar).toHaveAttribute('data-size', '55');
     expect(avatar).toHaveAttribute('data-shape', 'rectangle');
-    expect(avatar).toHaveAttribute('data-border-color', gameStateStub.players[1].color);
+    expect(avatar).toHaveAttribute(
+      'data-border-color',
+      getPlayerColorValue(gameStateStub.players[1].color)
+    );
   });
 
   it('displays race information', () => {

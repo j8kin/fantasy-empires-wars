@@ -12,6 +12,7 @@ import { getAlignmentColor } from '../../types/Alignment';
 import { PlayerState } from '../../types/GamePlayer';
 import { getTurnOwner } from '../../types/GameState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
+import { getPlayerColorValue } from '../../types/PlayerColors';
 
 export interface OpponentInfoProps extends PopupProps {
   opponent?: PlayerState;
@@ -61,7 +62,7 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
               player={opponent.getProfile()}
               size={55}
               shape="rectangle"
-              borderColor={opponent.color}
+              borderColor={getPlayerColorValue(opponent.color)}
               className={styles.opponentAvatar}
             />
           </div>

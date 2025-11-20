@@ -9,6 +9,7 @@ import Avatar from '../avatars/Avatar';
 import { PlayerState } from '../../types/GamePlayer';
 import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../../map/utils/getLands';
+import { getPlayerColorValue } from '../../types/PlayerColors';
 
 const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameContext();
@@ -60,7 +61,7 @@ const OpponentsPanel: React.FC = () => {
             player={opponent.getProfile()}
             size={opponents.length <= 4 ? 120 : 90}
             shape="circle"
-            borderColor={opponent.color}
+            borderColor={getPlayerColorValue(opponent.color)}
           />
         </div>
       ))}
