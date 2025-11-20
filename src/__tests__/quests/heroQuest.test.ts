@@ -211,7 +211,7 @@ describe('Hero Quest', () => {
     expect(barracksLand.army[0].units.length).toBe(3);
 
     /* ********************** SEND TO QUEST ******************* */
-    randomSpy.mockReturnValue(0.01); // always survive (to successfully return all 3 heroes to the same land)
+    randomSpy.mockReturnValue(0); // always survive (to successfully return all 3 heroes to the same land)
     barracksLand.army.forEach((armyUnit) => {
       armyUnit.units
         .filter((unit) => isHero(unit))
