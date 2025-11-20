@@ -9,11 +9,11 @@ import Avatar from '../avatars/Avatar';
 import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../../map/utils/getLands';
 
-export interface PlayerProps {
+export interface PlayerSummaryProps {
   avatarSize: number;
 }
 
-const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
+const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
   const { addGlowingTile } = useApplicationContext();
   const { gameState } = useGameContext();
 
@@ -51,4 +51,4 @@ const Player: React.FC<PlayerProps> = ({ avatarSize }) => {
   );
 };
 
-export default Player;
+export default PlayerSummary;

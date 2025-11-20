@@ -1,13 +1,13 @@
 import React from 'react';
 import styles from './css/Avatar.module.css';
 
-import { NO_PLAYER, PlayerInfo } from '../../types/GamePlayer';
+import { NO_PLAYER, PlayerProfile } from '../../types/GamePlayer';
 import { getAvatarImg } from '../../assets/getAvatarImg';
 
 type AvatarShape = 'circle' | 'rectangle';
 
 interface AvatarProps {
-  player: PlayerInfo;
+  player: PlayerProfile;
   size?: number;
   shape?: AvatarShape;
   borderColor?: string;

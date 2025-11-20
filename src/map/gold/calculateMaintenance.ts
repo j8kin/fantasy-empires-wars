@@ -1,5 +1,5 @@
 import { GameState, getTurnOwner } from '../../types/GameState';
-import { PlayerInfo } from '../../types/GamePlayer';
+import { PlayerProfile } from '../../types/GamePlayer';
 
 import { getLands } from '../utils/getLands';
 
@@ -24,7 +24,7 @@ const unitMaintenanceCost = (unit: Unit): number => {
 };
 
 export const calculateMaintenance = (gameState: GameState): number => {
-  const player: PlayerInfo = getTurnOwner(gameState) as PlayerInfo;
+  const player: PlayerProfile = getTurnOwner(gameState) as PlayerProfile;
   if (player == null) return 0;
 
   // building maintenance

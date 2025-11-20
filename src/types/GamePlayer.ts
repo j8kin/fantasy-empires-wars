@@ -8,7 +8,7 @@ import { Diplomacy } from './Diplomacy';
 
 export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
 
-export interface PlayerInfo {
+export interface PlayerProfile {
   id: string;
   name: string;
   alignment: Alignment;
@@ -19,17 +19,20 @@ export interface PlayerInfo {
   color: PlayerColorName; // base player color when game starts continues current color
 }
 
-export interface GamePlayer extends PlayerInfo {
+export interface PlayerState extends PlayerProfile {
+  playerId: string; // link to PlayerProfile.id
+  playerType: 'human' | 'computer';
+
   mana: Mana;
   vault: number;
   income: number;
+
   diplomacy: Diplomacy;
-  playerType: 'human' | 'computer';
   empireTreasures: EmpireTreasure[];
   quests: HeroQuest[];
 }
 
-export const NO_PLAYER: PlayerInfo = {
+export const NO_PLAYER: PlayerProfile = {
   id: 'none',
   name: 'None',
   alignment: Alignment.NEUTRAL,
@@ -40,7 +43,7 @@ export const NO_PLAYER: PlayerInfo = {
   color: 'white',
 };
 
-export const PREDEFINED_PLAYERS: PlayerInfo[] = [
+export const PREDEFINED_PLAYERS: PlayerProfile[] = [
   {
     id: 'alaric',
     name: 'Alaric the Bold',

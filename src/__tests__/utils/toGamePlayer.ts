@@ -1,10 +1,10 @@
-import { GamePlayer, PlayerInfo } from '../../types/GamePlayer';
+import { PlayerState, PlayerProfile } from '../../types/GamePlayer';
 import { ManaType } from '../../types/Mana';
 
 export const toGamePlayer = (
-  player: PlayerInfo,
+  player: PlayerProfile,
   playerType: 'human' | 'computer' = 'human'
-): GamePlayer => {
+): PlayerState => {
   return {
     ...player,
     mana: {

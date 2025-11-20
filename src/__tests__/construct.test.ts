@@ -9,7 +9,7 @@ import {
   createDefaultGameStateStub,
   defaultBattlefieldSizeStub,
 } from './utils/createGameStateStub';
-import { GamePlayer } from '../types/GamePlayer';
+import { PlayerState } from '../types/GamePlayer';
 import { relicts, TreasureItem } from '../types/Treasures';
 
 describe('Construct Buildings', () => {
@@ -18,7 +18,7 @@ describe('Construct Buildings', () => {
   const player1 = gameStateStub.players[0];
   const player2 = gameStateStub.players[1];
 
-  const getPlayerLands = (player: GamePlayer) =>
+  const getPlayerLands = (player: PlayerState) =>
     getLands({
       gameState: gameStateStub,
       players: [player.id],

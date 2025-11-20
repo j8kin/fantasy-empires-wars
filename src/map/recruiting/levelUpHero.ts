@@ -1,7 +1,7 @@
 import { getDefaultUnit, HeroUnit, HeroUnitType } from '../../types/Army';
 import { TreasureItem } from '../../types/Treasures';
 import { Alignment } from '../../types/Alignment';
-import { GamePlayer } from '../../types/GamePlayer';
+import { PlayerState } from '../../types/GamePlayer';
 
 const baseLevelUpParameters = (heroType: HeroUnitType) => {
   switch (heroType) {
@@ -39,7 +39,7 @@ const alignmentModifiers = (alignment: Alignment) => {
  * @param hero
  * @param player - hero owner to calculate additional bonuses
  */
-export const levelUpHero = (hero: HeroUnit, player: GamePlayer): void => {
+export const levelUpHero = (hero: HeroUnit, player: PlayerState): void => {
   if (hero.level === 32) return; // hero reached max level
 
   if (

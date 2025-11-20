@@ -1,4 +1,4 @@
-import { PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { getDefaultUnit, HeroUnit, HeroUnitType } from '../../types/Army';
 import { levelUpHero } from '../../map/recruiting/levelUpHero';
 import { toGamePlayer } from '../utils/toGamePlayer';
@@ -68,7 +68,7 @@ describe('level up hero', () => {
     ],
   ])(
     'should increase characteristics when hero (%s) gain level %s',
-    (playerType: HeroUnitType, initLevel: number, player: PlayerInfo, expected) => {
+    (playerType: HeroUnitType, initLevel: number, player: PlayerProfile, expected) => {
       expect(player.type).toBe(playerType);
 
       const hero = getDefaultUnit(player.type) as HeroUnit;

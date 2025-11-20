@@ -1,7 +1,7 @@
 import { render, renderHook, act, screen } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GameState, TurnPhase } from '../../types/GameState';
-import { GamePlayer } from '../../types/GamePlayer';
+import { PlayerState } from '../../types/GamePlayer';
 import { Alignment } from '../../types/Alignment';
 import { HeroUnitType } from '../../types/Army';
 import { DiplomacyStatus } from '../../types/Diplomacy';
@@ -77,7 +77,7 @@ describe('GameContext', () => {
         playerType: 'human',
         empireTreasures: [],
         quests: [],
-      } as GamePlayer,
+      } as PlayerState,
       {
         id: 'player2',
         name: 'Test Player 2',
@@ -94,7 +94,7 @@ describe('GameContext', () => {
         playerType: 'computer',
         empireTreasures: [],
         quests: [],
-      } as GamePlayer,
+      } as PlayerState,
     ],
   });
 

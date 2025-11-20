@@ -5,13 +5,13 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import GameButton from '../buttons/GameButton';
 
-import { NO_PLAYER, PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { NO_PLAYER, PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { ButtonName } from '../../types/ButtonName';
 
 export interface SelectOpponentDialogProps {
   excludedPlayerIds: string[];
   allowEmptyPlayer?: boolean;
-  onSelect?: (player: PlayerInfo) => void;
+  onSelect?: (player: PlayerProfile) => void;
   onCancel?: () => void;
 }
 
@@ -24,10 +24,10 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   const { selectOpponentCallback, hideSelectOpponentDialog } = useApplicationContext();
 
   // Local state for dialog-specific values
-  const [selectedPlayer, setSelectedPlayer] = useState<PlayerInfo>(PREDEFINED_PLAYERS[0]);
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerProfile>(PREDEFINED_PLAYERS[0]);
 
   const availablePlayers = useMemo(
-    (): PlayerInfo[] => [
+    (): PlayerProfile[] => [
       ...(allowEmptyPlayer ? [NO_PLAYER] : []),
       ...PREDEFINED_PLAYERS.filter((player) => !excludedPlayerIds.includes(player.id)),
     ],
@@ -40,7 +40,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
   }, [availablePlayers]);
 
   const handleOpponentSelect = useCallback(
-    (player: PlayerInfo) => {
+    (player: PlayerProfile) => {
       if (onSelect) {
         onSelect(player);
       } else if (selectOpponentCallback) {
@@ -59,7 +59,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     }
   }, [onCancel, hideSelectOpponentDialog]);
 
-  const handlePlayerSelect = (player: PlayerInfo) => {
+  const handlePlayerSelect = (player: PlayerProfile) => {
     setSelectedPlayer(player);
     handleOpponentSelect(player);
   };

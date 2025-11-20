@@ -8,7 +8,7 @@ import {
 } from '../../../contexts/ApplicationContext';
 import { AllSpells } from '../../../types/Spell';
 import { ManaType } from '../../../types/Mana';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../../../types/GamePlayer';
+import { PlayerState, PREDEFINED_PLAYERS } from '../../../types/GamePlayer';
 import { toGamePlayer } from '../../utils/toGamePlayer';
 import { TurnPhase } from '../../../types/GameState';
 
@@ -100,7 +100,7 @@ const renderWithApplicationContext = () => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState, gameState } = useGameContext();
     React.useEffect(() => {
-      const selectedPlayer: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+      const selectedPlayer: PlayerState = toGamePlayer(PREDEFINED_PLAYERS[0]);
       selectedPlayer.mana = {
         [ManaType.WHITE]: 1000,
         [ManaType.BLACK]: 1000,

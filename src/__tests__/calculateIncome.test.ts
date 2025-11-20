@@ -5,7 +5,7 @@ import { BuildingType, getBuilding } from '../types/Building';
 import { getLandById, LandType } from '../types/Land';
 import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
 import { Alignment } from '../types/Alignment';
-import { GamePlayer } from '../types/GamePlayer';
+import { PlayerState } from '../types/GamePlayer';
 import { construct } from '../map/building/construct';
 
 describe('Calculate Income', () => {
@@ -33,7 +33,7 @@ describe('Calculate Income', () => {
   });
 
   // ... existing code ...
-  const testCaseMap: [GamePlayer, Alignment, number][] = [
+  const testCaseMap: [PlayerState, Alignment, number][] = [
     [chaoticPlayer, Alignment.CHAOTIC, 1160],
     [chaoticPlayer, Alignment.NEUTRAL, 580],
     [chaoticPlayer, Alignment.LAWFUL, 290],

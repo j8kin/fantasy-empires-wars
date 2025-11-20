@@ -5,7 +5,7 @@ import TopPanel from '../../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerState, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { ManaType } from '../../types/Mana';
 import { TurnPhase } from '../../types/GameState';
 import { toGamePlayer } from '../utils/toGamePlayer';
@@ -14,7 +14,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState, gameState } = useGameContext();
     React.useEffect(() => {
-      const selectedPlayer: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+      const selectedPlayer: PlayerState = toGamePlayer(PREDEFINED_PLAYERS[0]);
       selectedPlayer.vault = 1500;
       selectedPlayer.mana = {
         [ManaType.WHITE]: 100,

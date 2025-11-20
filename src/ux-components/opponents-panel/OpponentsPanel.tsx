@@ -6,7 +6,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { GamePlayer } from '../../types/GamePlayer';
+import { PlayerState } from '../../types/GamePlayer';
 import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../../map/utils/getLands';
 
@@ -15,7 +15,7 @@ const OpponentsPanel: React.FC = () => {
   const { showOpponentInfo, addGlowingTile } = useApplicationContext();
 
   const handleShowOpponentInfo = useCallback(
-    (opponent: GamePlayer, screenPosition: { x: number; y: number }) => {
+    (opponent: PlayerState, screenPosition: { x: number; y: number }) => {
       showOpponentInfo(opponent, screenPosition);
 
       setTimeout(() => {
@@ -43,7 +43,7 @@ const OpponentsPanel: React.FC = () => {
 
   const layout = getAvatarLayout(opponents.length);
 
-  const renderAvatarRow = (avatars: GamePlayer[], rowIndex: number) => (
+  const renderAvatarRow = (avatars: PlayerState[], rowIndex: number) => (
     <div key={rowIndex} className={styles.avatarRow}>
       {avatars.map((opponent, opponentIndex) => (
         <div

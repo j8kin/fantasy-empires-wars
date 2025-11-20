@@ -1,6 +1,6 @@
 import { Alignment } from './Alignment';
 import { HeroUnitType, UnitType } from './Army';
-import { GamePlayer } from './GamePlayer';
+import { PlayerState } from './GamePlayer';
 
 export enum BuildingType {
   STRONGHOLD = 'Stronghold',
@@ -98,7 +98,7 @@ export const getBuilding = (building: BuildingType): Building => {
   }
 };
 
-export const getAllBuildings = (player: GamePlayer): Building[] => {
+export const getAllBuildings = (player: PlayerState): Building[] => {
   return Object.values(BuildingType)
     .map(getBuilding)
     .filter(

@@ -1,7 +1,7 @@
 import { Land } from './Land';
 import { Building } from './Building';
 import { Armies } from './Army';
-import { GamePlayer } from './GamePlayer';
+import { PlayerState } from './GamePlayer';
 import { LandPosition } from '../map/utils/getLands';
 
 export interface BattlefieldDimensions {
@@ -36,14 +36,17 @@ export interface GameState {
   turn: number;
   turnOwner: string;
   turnPhase: TurnPhase;
-  players: GamePlayer[];
+  players: PlayerState[];
 }
 
-export const getPlayerById = (gameState?: GameState, playerId?: string): GamePlayer | undefined => {
+export const getPlayerById = (
+  gameState?: GameState,
+  playerId?: string
+): PlayerState | undefined => {
   return gameState?.players.find((player) => player.id === playerId);
 };
 
-export const getTurnOwner = (gameState?: GameState): GamePlayer | undefined => {
+export const getTurnOwner = (gameState?: GameState): PlayerState | undefined => {
   return getPlayerById(gameState, gameState?.turnOwner);
 };
 

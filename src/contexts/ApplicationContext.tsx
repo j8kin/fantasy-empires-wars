@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { GamePlayer, PlayerInfo } from '../types/GamePlayer';
+import { PlayerState, PlayerProfile } from '../types/GamePlayer';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { LandPosition } from '../map/utils/getLands';
 import { HeroOutcome } from '../types/HeroOutcome';
@@ -35,10 +35,10 @@ interface ApplicationContextType {
   setHeroOutcome: (results: HeroOutcome[]) => void;
 
   // Dialog data
-  selectedOpponent: PlayerInfo | undefined;
+  selectedOpponent: PlayerProfile | undefined;
   opponentScreenPosition: ScreenPosition;
   selectOpponentExcludedIds: string[];
-  selectOpponentCallback: ((player: PlayerInfo) => void) | null;
+  selectOpponentCallback: ((player: PlayerProfile) => void) | null;
   allowEmptyPlayer: boolean;
   progressMessage: string;
 
@@ -69,10 +69,10 @@ interface ApplicationContextType {
   setShowSendHeroInQuestDialog: (show: boolean) => void;
   setShowSelectOpponentDialog: (show: boolean) => void;
   setShowProgressPopup: (show: boolean) => void;
-  setSelectedOpponent: (opponent: GamePlayer | undefined) => void;
+  setSelectedOpponent: (opponent: PlayerState | undefined) => void;
   setOpponentScreenPosition: (position: ScreenPosition) => void;
   setSelectOpponentExcludedIds: (ids: string[]) => void;
-  setSelectOpponentCallback: (callback: ((player: PlayerInfo) => void) | null) => void;
+  setSelectOpponentCallback: (callback: ((player: PlayerProfile) => void) | null) => void;
   setAllowEmptyPlayer: (allow: boolean) => void;
   setProgressMessage: (message: string) => void;
 
@@ -96,11 +96,11 @@ interface ApplicationContextType {
   clearAllGlow: () => void;
 
   // Combined actions
-  showOpponentInfo: (opponent: GamePlayer, screenPosition: ScreenPosition) => void;
+  showOpponentInfo: (opponent: PlayerState, screenPosition: ScreenPosition) => void;
   hideOpponentInfo: () => void;
   showSelectOpponentDialogWithConfig: (
     excludedPlayerIds: string[],
-    onSelect: (player: PlayerInfo) => void,
+    onSelect: (player: PlayerProfile) => void,
     allowEmptyPlayer?: boolean
   ) => void;
   hideSelectOpponentDialog: () => void;
@@ -133,14 +133,14 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [heroOutcome, setHeroOutcome] = useState<HeroOutcome[]>([]);
 
   // Dialog data
-  const [selectedOpponent, setSelectedOpponent] = useState<GamePlayer | undefined>(undefined);
+  const [selectedOpponent, setSelectedOpponent] = useState<PlayerState | undefined>(undefined);
   const [opponentScreenPosition, setOpponentScreenPosition] = useState<ScreenPosition>({
     x: 0,
     y: 0,
   });
   const [selectOpponentExcludedIds, setSelectOpponentExcludedIds] = useState<string[]>([]);
   const [selectOpponentCallback, setSelectOpponentCallback] = useState<
-    ((player: PlayerInfo) => void) | null
+    ((player: PlayerProfile) => void) | null
   >(null);
   const [allowEmptyPlayer, setAllowEmptyPlayer] = useState<boolean>(true);
   const [progressMessage, setProgressMessage] = useState<string>('');
@@ -185,7 +185,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   // Combined actions
   const showOpponentInfo = useCallback(
-    (opponent: GamePlayer | undefined, screenPosition: ScreenPosition) => {
+    (opponent: PlayerState | undefined, screenPosition: ScreenPosition) => {
       setSelectedOpponent(opponent);
       setOpponentScreenPosition(screenPosition);
     },
@@ -199,7 +199,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const showSelectOpponentDialogWithConfig = useCallback(
     (
       excludedPlayerIds: string[],
-      onSelect: (player: PlayerInfo) => void,
+      onSelect: (player: PlayerProfile) => void,
       allowEmptyPlayer: boolean = true
     ) => {
       setSelectOpponentExcludedIds(excludedPlayerIds);

@@ -11,7 +11,7 @@
  */
 
 import { GameState } from '../../types/GameState';
-import { GamePlayer } from '../../types/GamePlayer';
+import { PlayerState } from '../../types/GamePlayer';
 
 describe('MainView Game Initialization Logic', () => {
   // Test the game identification logic that's used in MainView
@@ -22,17 +22,17 @@ describe('MainView Game Initialization Logic', () => {
   it('should generate unique identifiers for different games', () => {
     // Mock game states with different configurations
     const game1: Partial<GameState> = {
-      players: [{ id: 'player1' }, { id: 'player2' }] as GamePlayer[],
+      players: [{ id: 'player1' }, { id: 'player2' }] as PlayerState[],
       battlefield: { dimensions: { rows: 9, cols: 18 } } as any,
     };
 
     const game2: Partial<GameState> = {
-      players: [{ id: 'player1' }, { id: 'player2' }] as GamePlayer[],
+      players: [{ id: 'player1' }, { id: 'player2' }] as PlayerState[],
       battlefield: { dimensions: { rows: 11, cols: 23 } } as any,
     };
 
     const game3: Partial<GameState> = {
-      players: [{ id: 'newPlayer1' }, { id: 'newPlayer2' }] as GamePlayer[],
+      players: [{ id: 'newPlayer1' }, { id: 'newPlayer2' }] as PlayerState[],
       battlefield: { dimensions: { rows: 9, cols: 18 } } as any,
     };
 
@@ -82,7 +82,7 @@ describe('MainView Game Initialization Logic', () => {
     // First game - medium map
     const game1 = {
       turn: 1,
-      players: [{ id: 'player1' }, { id: 'player2' }] as GamePlayer[],
+      players: [{ id: 'player1' }, { id: 'player2' }] as PlayerState[],
       battlefield: { dimensions: { rows: 9, cols: 18 } } as any,
     } as GameState;
 
@@ -92,7 +92,7 @@ describe('MainView Game Initialization Logic', () => {
     // Second game - large map (this was the problematic case)
     const game2 = {
       turn: 1,
-      players: [{ id: 'player1' }, { id: 'player2' }] as GamePlayer[],
+      players: [{ id: 'player1' }, { id: 'player2' }] as PlayerState[],
       battlefield: { dimensions: { rows: 11, cols: 23 } } as any,
     } as GameState;
 

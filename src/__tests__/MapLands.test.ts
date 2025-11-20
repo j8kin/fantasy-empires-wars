@@ -1,6 +1,6 @@
 import { getLands } from '../map/utils/getLands';
 import { construct } from '../map/building/construct';
-import { GamePlayer, PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { PlayerState, PREDEFINED_PLAYERS } from '../types/GamePlayer';
 import { BuildingType } from '../types/Building';
 import { BattlefieldMap, GameState, BattlefieldDimensions } from '../types/GameState';
 import { getLandById, LandType } from '../types/Land';
@@ -12,7 +12,7 @@ describe('MapLands', () => {
   const nTiles10x20 = 5 * 20 + 5 * 19;
   const nTiles5x5 = 5 * 3 + 4 * 2;
   const nTilesInRadius1 = 2 * 2 + 3;
-  const player: GamePlayer = toGamePlayer(PREDEFINED_PLAYERS[0]);
+  const player: PlayerState = toGamePlayer(PREDEFINED_PLAYERS[0]);
   const battlefieldSize: BattlefieldDimensions = { rows: 5, cols: 5 };
 
   describe('Get lands', () => {

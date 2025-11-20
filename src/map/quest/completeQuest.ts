@@ -10,7 +10,7 @@ import {
   heroGainRelic,
 } from './questCompleteMessages';
 import { HeroUnit } from '../../types/Army';
-import { GamePlayer } from '../../types/GamePlayer';
+import { PlayerState } from '../../types/GamePlayer';
 import { getLand } from '../utils/getLands';
 import { levelUpHero } from '../recruiting/levelUpHero';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
@@ -66,7 +66,7 @@ const gainArtifact = (hero: HeroUnit, questType: QuestType): HeroOutcome => {
   };
 };
 
-const gainItem = (player: GamePlayer, hero: HeroUnit): HeroOutcome => {
+const gainItem = (player: PlayerState, hero: HeroUnit): HeroOutcome => {
   const item = getRandomElement(items);
   if (item.charge == null) {
     item.charge = getRandomElement([7, 10, 15]);

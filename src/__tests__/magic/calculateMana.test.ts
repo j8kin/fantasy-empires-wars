@@ -1,5 +1,5 @@
 import { GameState } from '../../types/GameState';
-import { GamePlayer, PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerState, PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { getManaSource, ManaType } from '../../types/Mana';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { HeroUnit, HeroUnitType } from '../../types/Army';
@@ -43,7 +43,7 @@ describe('Calculate Mana', () => {
       [HeroUnitType.PYROMANCER, ManaType.RED, PREDEFINED_PLAYERS[14], 6],
     ])(
       '%s produce only %s mana',
-      (heroType: HeroUnitType, manaType: ManaType, player: PlayerInfo, inc: number) => {
+      (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
         expect(player.type).toBe(heroType);
 
         const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
@@ -70,7 +70,7 @@ describe('Calculate Mana', () => {
       [HeroUnitType.PYROMANCER, ManaType.RED, PREDEFINED_PLAYERS[14], 6],
     ])(
       'special land has no effect if player (%s) not own them',
-      (heroType: HeroUnitType, manaType: ManaType, player: PlayerInfo, inc: number) => {
+      (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
         it.each(getSpecialLandTypes())('%s not add mana in mana pool', (landType: LandType) => {
           expect(player.type).toBe(heroType);
 
@@ -105,7 +105,7 @@ describe('Calculate Mana', () => {
       [HeroUnitType.PYROMANCER, ManaType.RED, PREDEFINED_PLAYERS[14], 6],
     ])(
       'special land has no effect if other player then current (%s) own it',
-      (heroType: HeroUnitType, manaType: ManaType, player: PlayerInfo, inc: number) => {
+      (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
         it.each(getSpecialLandTypes())('%s not add mana in mana pool', (landType: LandType) => {
           expect(player.type).toBe(heroType);
 
@@ -143,7 +143,7 @@ describe('Calculate Mana', () => {
       [HeroUnitType.PYROMANCER, ManaType.RED, PREDEFINED_PLAYERS[14], 6],
     ])(
       'special land has effect if player (%s) own it and has hero of the related type',
-      (heroType: HeroUnitType, manaType: ManaType, player: PlayerInfo, inc: number) => {
+      (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
         it.each(getSpecialLandTypes())('verify effect of %s on mana pool', (landType: LandType) => {
           expect(player.type).toBe(heroType);
 
@@ -182,7 +182,7 @@ describe('Calculate Mana', () => {
     expectedMana(ManaType.RED, base[4] * (turn - 2), 4);
   };
 
-  const baseMana = (player: GamePlayer) => {
+  const baseMana = (player: PlayerState) => {
     const playerSpecialLands = getLands({
       gameState: gameStateStub,
       players: [player.id],

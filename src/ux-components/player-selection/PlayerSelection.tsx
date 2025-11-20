@@ -3,15 +3,15 @@ import styles from './css/PlayerSelection.module.css';
 
 import Avatar from '../avatars/Avatar';
 
-import { PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
 import { getAlignmentColor } from '../../types/Alignment';
 import { getPlayerColorValue } from '../../types/PlayerColors';
 
 interface PlayerSelectionProps {
   label?: string;
-  selectedPlayer: PlayerInfo;
-  onPlayerChange: (player: PlayerInfo) => void;
-  availablePlayers?: PlayerInfo[];
+  selectedPlayer: PlayerProfile;
+  onPlayerChange: (player: PlayerProfile) => void;
+  availablePlayers?: PlayerProfile[];
 }
 
 const PlayerSelection: React.FC<PlayerSelectionProps> = ({
@@ -20,7 +20,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
   onPlayerChange,
   availablePlayers = PREDEFINED_PLAYERS,
 }) => {
-  const [hoveredPlayer, setHoveredPlayer] = useState<PlayerInfo | null>(null);
+  const [hoveredPlayer, setHoveredPlayer] = useState<PlayerProfile | null>(null);
 
   const displayPlayer = hoveredPlayer || selectedPlayer;
 

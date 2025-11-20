@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import OpponentsPanel from '../../ux-components/opponents-panel/OpponentsPanel';
-import { PREDEFINED_PLAYERS, NO_PLAYER, GamePlayer } from '../../types/GamePlayer';
+import { PREDEFINED_PLAYERS, NO_PLAYER, PlayerState } from '../../types/GamePlayer';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { toGamePlayer } from '../utils/toGamePlayer';
@@ -11,8 +11,8 @@ import { TurnPhase } from '../../types/GameState';
 // Test wrapper that provides GameContext and ApplicationContext and allows updating game state
 const TestWrapper: React.FC<{
   children: React.ReactNode;
-  opponents: GamePlayer[];
-  selectedPlayer?: GamePlayer;
+  opponents: PlayerState[];
+  selectedPlayer?: PlayerState;
 }> = ({ children, opponents, selectedPlayer = toGamePlayer(PREDEFINED_PLAYERS[0]) }) => {
   const TestComponent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState } = useGameContext();
@@ -42,7 +42,7 @@ const TestWrapper: React.FC<{
   );
 };
 
-const renderWithGameContext = (opponents: GamePlayer[], selectedPlayer?: GamePlayer) => {
+const renderWithGameContext = (opponents: PlayerState[], selectedPlayer?: PlayerState) => {
   return render(
     <TestWrapper opponents={opponents} selectedPlayer={selectedPlayer}>
       <OpponentsPanel />
