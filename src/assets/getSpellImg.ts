@@ -8,7 +8,11 @@ import illusionImg from './spells/blue/illusion.png';
 import teleportImg from './spells/blue/teleport.png';
 import tornadoImg from './spells/blue/tornado.png';
 import fertileLandsImg from './spells/green/fertile-lands.png';
-import rootsImg from './spells/green/roots.png';
+import entangledRootsImg from './spells/green/entangled-roots.png';
+import beastAttachImg from './spells/green/beast-attack.png';
+import earthquakeImg from '.spells/green/earthquake.png';
+
+import summonUndeadImg from './spells/black/summon-undead.png';
 
 export const getSpellImg = (spell: Spell) => {
   switch (spell.id) {
@@ -32,7 +36,16 @@ export const getSpellImg = (spell: Spell) => {
     case SpellName.FERTILE_LAND:
       return fertileLandsImg;
     case SpellName.ENTANGLING_ROOTS:
-      return rootsImg;
+      return entangledRootsImg;
+    case SpellName.BEAST_ATTACK:
+      return beastAttachImg;
+    case SpellName.EARTHQUAKE:
+      return earthquakeImg;
+    // red spells
+
+    // black spells
+    case SpellName.SUMMON_UNDEAD:
+      return summonUndeadImg;
     default:
       return undefined;
   }

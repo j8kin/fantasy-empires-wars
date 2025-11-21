@@ -95,7 +95,7 @@ const BlueMagicSpells: Spell[] = [
 const GreenMagicSpells: Spell[] = [
   {
     id: SpellName.FERTILE_LAND,
-    description: 'Increase gold production on lands in radius 1 by +50% for 3 turns',
+    description: 'Increase gold production on lands in radius 1 by +50% for 2 turns',
     manaCost: 40,
     apply: 'player',
     manaType: ManaType.GREEN,
