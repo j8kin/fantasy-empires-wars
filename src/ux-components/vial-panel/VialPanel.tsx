@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './css/VialPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
-import { getTurnOwner } from '../../types/GameState';
+import { getTurnOwner } from '../../state/GameState';
 
 import ManaVial from './ManaVial';
 

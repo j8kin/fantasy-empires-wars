@@ -1,7 +1,7 @@
-import { BattlefieldMap, getLandId, BattlefieldDimensions } from '../../types/GameState';
+import { BattlefieldMap, getLandId, BattlefieldDimensions } from '../../state/GameState';
 import { LandPosition } from '../../map/utils/getLands';
 import { getLandById, Land, LandType } from '../../types/Land';
-import { NO_PLAYER } from '../../types/PlayerState';
+import { NO_PLAYER } from '../../state/PlayerState';
 import { Alignment } from '../../types/Alignment';
 
 const genLand = (alignment: Alignment | undefined): Land => {

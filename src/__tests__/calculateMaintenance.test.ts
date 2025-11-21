@@ -1,5 +1,5 @@
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
-import { getLandId, GameState } from '../types/GameState';
+import { getLandId, GameState } from '../state/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import {
   getDefaultUnit,

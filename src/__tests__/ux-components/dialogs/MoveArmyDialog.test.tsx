@@ -6,7 +6,7 @@ import '@testing-library/jest-dom';
 import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
-import { GameState } from '../../../types/GameState';
+import { GameState } from '../../../state/GameState';
 import {
   Unit,
   RegularUnit,

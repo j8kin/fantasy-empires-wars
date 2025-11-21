@@ -8,9 +8,9 @@ import {
 } from '../../../contexts/ApplicationContext';
 import { AllSpells } from '../../../types/Spell';
 import { ManaType } from '../../../types/Mana';
-import { PlayerState, PREDEFINED_PLAYERS } from '../../../types/PlayerState';
+import { PlayerState, PREDEFINED_PLAYERS } from '../../../state/PlayerState';
 import { toGamePlayer } from '../../utils/toGamePlayer';
-import { TurnPhase } from '../../../types/GameState';
+import { TurnPhase } from '../../../state/GameState';
 
 // Mock CSS modules
 jest.mock(

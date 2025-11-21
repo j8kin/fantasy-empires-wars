@@ -1,4 +1,4 @@
-import { getLandId, GameState, TurnPhase } from '../../types/GameState';
+import { getLandId, GameState, TurnPhase } from '../../state/GameState';
 import { mergeArmies } from './mergeArmies';
 import { getLands, LandPosition } from '../utils/getLands';
 import { Army } from '../../types/Army';

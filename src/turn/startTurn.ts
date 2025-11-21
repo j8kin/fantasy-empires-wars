@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../types/GameState';
+import { GameState, getTurnOwner } from '../state/GameState';
 import { calculateIncome } from '../map/gold/calculateIncome';
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
 import { placeHomeland } from '../map/generation/placeHomeland';

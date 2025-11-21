@@ -1,4 +1,4 @@
-import { GameState } from '../types/GameState';
+import { GameState } from '../state/GameState';
 
 export const mainAiTurn = (gameState: GameState): void => {
   // Stub implementation for computer AI turn

@@ -1,6 +1,6 @@
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameState';
+import { GameState, getTurnOwner, LandState, TurnPhase } from '../../state/GameState';
 import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
 import { startQuest } from '../../map/quest/startQuest';
 import { HeroUnit, HeroUnitType, isHero, RegularUnitType } from '../../types/Army';

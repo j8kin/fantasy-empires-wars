@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './css/TopPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
-import { TurnPhase } from '../../types/GameState';
+import { TurnPhase } from '../../state/GameState';
 
 import GameControl from '../game-controls/GameControl';
 import MapActionsControl from '../game-controls/MapActionsControl';

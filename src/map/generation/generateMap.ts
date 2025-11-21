@@ -4,7 +4,7 @@ import {
   BattlefieldLands,
   BattlefieldMap,
   LandState,
-} from '../../types/GameState';
+} from '../../state/GameState';
 import {
   getLandById,
   getMainSpecialLandTypes,
@@ -14,7 +14,7 @@ import {
   Land,
   LandType,
 } from '../../types/Land';
-import { NO_PLAYER } from '../../types/PlayerState';
+import { NO_PLAYER } from '../../state/PlayerState';
 import { LandPosition } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getRandomElement } from '../../types/getRandomElement';

@@ -1,4 +1,4 @@
-import { GameState, TurnPhase } from '../../types/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { TurnManager } from '../../turn/TurnManager';
 import { createGameStateStub } from '../utils/createGameStateStub';
 

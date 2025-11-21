@@ -7,7 +7,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { ButtonName } from '../../types/ButtonName';
 import GameButton from '../buttons/GameButton';
 import { getLands } from '../../map/utils/getLands';
-import { getLandId, getTurnOwner } from '../../types/GameState';
+import { getLandId, getTurnOwner } from '../../state/GameState';
 import { BuildingType } from '../../types/Building';
 import { isHero } from '../../types/Army';
 

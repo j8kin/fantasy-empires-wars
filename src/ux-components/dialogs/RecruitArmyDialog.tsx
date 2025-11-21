@@ -5,7 +5,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { getTurnOwner } from '../../types/GameState';
+import { getTurnOwner } from '../../state/GameState';
 import { BuildingType } from '../../types/Building';
 import {
   getDefaultUnit,

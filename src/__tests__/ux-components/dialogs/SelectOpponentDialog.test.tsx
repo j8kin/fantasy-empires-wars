@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import SelectOpponentDialog from '../../../ux-components/dialogs/SelectOpponentDialog';
-import { PREDEFINED_PLAYERS, NO_PLAYER } from '../../../types/PlayerState';
+import { PREDEFINED_PLAYERS, NO_PLAYER } from '../../../state/PlayerState';
 import type { FantasyBorderFrameProps } from '../../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 

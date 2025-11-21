@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useRef } from 'react';
-import { GameState, TurnPhase } from '../types/GameState';
+import { GameState, TurnPhase } from '../state/GameState';
 import { TurnManager, TurnManagerCallbacks } from '../turn/TurnManager';
 import { HeroOutcome } from '../types/HeroOutcome';
 

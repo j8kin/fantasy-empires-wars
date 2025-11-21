@@ -17,10 +17,10 @@ import {
   PlayerProfile,
   PREDEFINED_PLAYERS,
   createPlayerState,
-} from '../../types/PlayerState';
+} from '../../state/PlayerState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { getPlayerColorValue, PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
-import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
+import { BattlefieldDimensions, GameState, TurnPhase } from '../../state/GameState';
 
 // Local map size type for this dialog only
 type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';

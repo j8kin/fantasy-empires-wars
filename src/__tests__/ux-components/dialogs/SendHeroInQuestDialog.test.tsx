@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
-import { GameState, TurnPhase } from '../../../types/GameState';
+import { GameState, TurnPhase } from '../../../state/GameState';
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
 import { getLands } from '../../../map/utils/getLands';
 

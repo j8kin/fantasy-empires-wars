@@ -1,8 +1,8 @@
 import { BuildingType, getBuilding } from '../../types/Building';
 import { getLand, LandPosition } from '../utils/getLands';
-import { getLandId, GameState, getTurnOwner } from '../../types/GameState';
+import { getLandId, GameState, getTurnOwner } from '../../state/GameState';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { NO_PLAYER } from '../../types/PlayerState';
+import { NO_PLAYER } from '../../state/PlayerState';
 import { destroyBuilding } from './destroyBuilding';
 import { TreasureItem } from '../../types/Treasures';
 

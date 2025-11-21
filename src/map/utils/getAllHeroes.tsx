@@ -1,6 +1,6 @@
 import { HeroUnit, isHero, isMage } from '../../types/Army';
 import { getLands } from './getLands';
-import { GameState, getTurnOwner } from '../../types/GameState';
+import { GameState, getTurnOwner } from '../../state/GameState';
 
 /**
  * Retrieves a list of all hero units in the game include heroes in Quest.

@@ -2,11 +2,11 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import OpponentsPanel from '../../ux-components/opponents-panel/OpponentsPanel';
-import { PREDEFINED_PLAYERS, NO_PLAYER, PlayerState } from '../../types/PlayerState';
+import { PREDEFINED_PLAYERS, NO_PLAYER, PlayerState } from '../../state/PlayerState';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { toGamePlayer } from '../utils/toGamePlayer';
-import { TurnPhase } from '../../types/GameState';
+import { TurnPhase } from '../../state/GameState';
 
 // Test wrapper that provides GameContext and ApplicationContext and allows updating game state
 const TestWrapper: React.FC<{

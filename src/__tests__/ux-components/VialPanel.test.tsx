@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 
 import VialPanel from '../../ux-components/vial-panel/VialPanel';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { GameState } from '../../types/GameState';
+import { GameState } from '../../state/GameState';
 import { ManaType } from '../../types/Mana';
 import { getMinManaCost } from '../../types/Spell';
 

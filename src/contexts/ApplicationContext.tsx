@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { PlayerState, PlayerProfile } from '../types/PlayerState';
+import { PlayerState, PlayerProfile } from '../state/PlayerState';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { LandPosition } from '../map/utils/getLands';
 import { HeroOutcome } from '../types/HeroOutcome';

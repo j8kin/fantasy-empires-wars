@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
+import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
 import { getAllHeroes } from '../utils/getAllHeroes';
 import { getManaSource } from '../../types/Mana';
 import { getLands } from '../utils/getLands';

@@ -1,10 +1,10 @@
-import { PlayerColorName } from './PlayerColors';
-import { Alignment } from './Alignment';
-import { HeroUnitType } from './Army';
-import { Mana, ManaType } from './Mana';
-import { HeroQuest } from './Quest';
-import { EmpireTreasure } from './Treasures';
-import { Diplomacy } from './Diplomacy';
+import { PlayerColorName } from '../types/PlayerColors';
+import { Alignment } from '../types/Alignment';
+import { HeroUnitType } from '../types/Army';
+import { Mana, ManaType } from '../types/Mana';
+import { HeroQuest } from '../types/Quest';
+import { EmpireTreasure } from '../types/Treasures';
+import { Diplomacy } from '../types/Diplomacy';
 
 export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
 

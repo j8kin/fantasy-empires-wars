@@ -6,7 +6,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandTile from './LandTile';
 import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
-import { BattlefieldDimensions, getLandId, getTurnOwner } from '../../types/GameState';
+import { BattlefieldDimensions, getLandId, getTurnOwner } from '../../state/GameState';
 
 export interface BattlefieldProps {
   topPanelHeight: number;

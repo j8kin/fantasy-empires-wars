@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { GameState, TurnPhase } from '../../types/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { TurnManager } from '../../turn/TurnManager';
 import { calculateIncome } from '../../map/gold/calculateIncome';
 import { calculateMaintenance } from '../../map/gold/calculateMaintenance';

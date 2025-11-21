@@ -1,9 +1,9 @@
-import { getLandId, GameState } from '../../types/GameState';
+import { getLandId, GameState } from '../../state/GameState';
 import { getHostileLands } from '../utils/getHostileLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getLand, getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
-import { NO_PLAYER } from '../../types/PlayerState';
+import { NO_PLAYER } from '../../state/PlayerState';
 import { getRealmLands } from '../utils/getRealmLands';
 
 export const changeOwner = (gameState: GameState): void => {

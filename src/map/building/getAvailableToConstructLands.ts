@@ -1,5 +1,5 @@
 import { BuildingType } from '../../types/Building';
-import { getLandId, GameState, getTurnOwner } from '../../types/GameState';
+import { getLandId, GameState, getTurnOwner } from '../../state/GameState';
 import { getLand, getLands } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 

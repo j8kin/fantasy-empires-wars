@@ -1,4 +1,4 @@
-import { GameState, TurnPhase, getTurnOwner } from '../types/GameState';
+import { GameState, TurnPhase, getTurnOwner } from '../state/GameState';
 import { startTurn } from './startTurn';
 import { endTurn } from './endTurn';
 import { mainAiTurn } from './mainAiTurn';

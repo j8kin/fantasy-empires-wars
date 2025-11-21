@@ -10,8 +10,8 @@
  * The fix uses a game state fingerprint to detect when a truly new game has started.
  */
 
-import { GameState } from '../../types/GameState';
-import { createPlayerState, PREDEFINED_PLAYERS } from '../../types/PlayerState';
+import { GameState } from '../../state/GameState';
+import { createPlayerState, PREDEFINED_PLAYERS } from '../../state/PlayerState';
 
 describe('MainView Game Initialization Logic', () => {
   // Test the game identification logic that's used in MainView

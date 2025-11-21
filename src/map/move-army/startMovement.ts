@@ -1,6 +1,6 @@
 import { getLand, LandPosition } from '../utils/getLands';
 import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Army';
-import { GameState, TurnPhase } from '../../types/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { findShortestPath } from '../utils/mapAlgorithms';
 
 export const MIN_HERO_PACKS = 10;

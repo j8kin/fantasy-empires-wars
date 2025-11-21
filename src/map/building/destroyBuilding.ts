@@ -1,7 +1,7 @@
-import { getLandId, GameState } from '../../types/GameState';
+import { getLandId, GameState } from '../../state/GameState';
 import { BuildingType } from '../../types/Building';
 import { getNearestStrongholdLand, getTilesInRadius } from '../utils/mapAlgorithms';
-import { NO_PLAYER } from '../../types/PlayerState';
+import { NO_PLAYER } from '../../state/PlayerState';
 import { LandPosition } from '../utils/getLands';
 
 /**

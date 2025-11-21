@@ -3,12 +3,12 @@ import commonStyles from './css/Popup.module.css';
 import styles from './css/LandCharacteristicsPopup.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { getLandId, getPlayerById } from '../../types/GameState';
+import { getLandId, getPlayerById } from '../../state/GameState';
 
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { NO_PLAYER } from '../../types/PlayerState';
+import { NO_PLAYER } from '../../state/PlayerState';
 import { LandPosition } from '../../map/utils/getLands';
 import { useGameContext } from '../../contexts/GameContext';
 import { HeroUnit, isHero, RegularUnit } from '../../types/Army';

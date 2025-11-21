@@ -1,4 +1,4 @@
-import { GameState } from '../../types/GameState';
+import { GameState } from '../../state/GameState';
 import { getLand, getLands } from './getLands';
 import { BuildingType } from '../../types/Building';
 import { getTilesInRadius } from './mapAlgorithms';

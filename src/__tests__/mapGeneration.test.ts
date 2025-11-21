@@ -1,7 +1,7 @@
 import { generateMap } from '../map/generation/generateMap';
 import { getMainSpecialLandTypes, getNearSpecialLandTypes, LandType } from '../types/Land';
-import { NO_PLAYER } from '../types/PlayerState';
-import { BattlefieldDimensions } from '../types/GameState';
+import { NO_PLAYER } from '../state/PlayerState';
+import { BattlefieldDimensions } from '../state/GameState';
 import { defaultBattlefieldSizeStub } from './utils/createGameStateStub';
 
 describe('Map Generation', () => {

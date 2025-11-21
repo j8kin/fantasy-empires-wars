@@ -1,6 +1,6 @@
-import { Land } from './Land';
-import { Building } from './Building';
-import { Armies } from './Army';
+import { Land } from '../types/Land';
+import { Building } from '../types/Building';
+import { Armies } from '../types/Army';
 import { PlayerState } from './PlayerState';
 import { LandPosition } from '../map/utils/getLands';
 

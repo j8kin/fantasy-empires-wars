@@ -1,5 +1,5 @@
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { GameState, getTurnOwner, LandState, TurnPhase } from '../../types/GameState';
+import { GameState, getTurnOwner, LandState, TurnPhase } from '../../state/GameState';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { BuildingType } from '../../types/Building';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';

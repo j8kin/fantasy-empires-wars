@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
 import { createGameStateStub } from '../../utils/createGameStateStub';
-import { GameState, TurnPhase } from '../../../types/GameState';
+import { GameState, TurnPhase } from '../../../state/GameState';
 import { BuildingType } from '../../../types/Building';
 import { construct } from '../../../map/building/construct';
 import { UnitType, RegularUnitType, HeroUnitType } from '../../../types/Army';

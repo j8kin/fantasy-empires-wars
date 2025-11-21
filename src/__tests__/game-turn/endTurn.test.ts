@@ -1,4 +1,4 @@
-import { GameState } from '../../types/GameState';
+import { GameState } from '../../state/GameState';
 import { endTurn } from '../../turn/endTurn';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 

@@ -1,5 +1,5 @@
 import { getLand, getLands, LandPosition } from './getLands';
-import { BattlefieldDimensions, getLandId, GameState, LandState } from '../../types/GameState';
+import { BattlefieldDimensions, getLandId, GameState, LandState } from '../../state/GameState';
 import { BuildingType } from '../../types/Building';
 
 export const calculateHexDistance = (

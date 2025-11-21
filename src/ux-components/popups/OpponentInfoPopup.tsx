@@ -9,8 +9,8 @@ import Avatar from '../avatars/Avatar';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { PlayerState } from '../../types/PlayerState';
-import { getTurnOwner } from '../../types/GameState';
+import { PlayerState } from '../../state/PlayerState';
+import { getTurnOwner } from '../../state/GameState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { getPlayerColorValue } from '../../types/PlayerColors';
 

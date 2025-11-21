@@ -1,4 +1,4 @@
-import { GameState, TurnPhase } from '../../types/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 import { Army, isHero, RegularUnit } from '../../types/Army';
 

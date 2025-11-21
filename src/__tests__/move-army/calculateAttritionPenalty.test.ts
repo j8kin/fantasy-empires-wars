@@ -1,5 +1,5 @@
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { getLandId, GameState, TurnPhase } from '../../types/GameState';
+import { getLandId, GameState, TurnPhase } from '../../state/GameState';
 import { getLand } from '../../map/utils/getLands';
 import { Army, getDefaultUnit, RegularUnit, RegularUnitType, UnitRank } from '../../types/Army';
 import { Movements } from '../../types/Movements';

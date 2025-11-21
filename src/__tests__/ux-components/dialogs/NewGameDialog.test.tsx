@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../../../ux-components/dialogs/NewGameDialog';
-import { PREDEFINED_PLAYERS } from '../../../types/PlayerState';
+import { PREDEFINED_PLAYERS } from '../../../state/PlayerState';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';

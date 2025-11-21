@@ -2,7 +2,7 @@ import * as startTurnModule from '../../turn/startTurn';
 import * as endTurnModule from '../../turn/endTurn';
 import * as mainAiTurnModule from '../../turn/mainAiTurn';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
-import { GameState, TurnPhase } from '../../types/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 // Mock the turn modules

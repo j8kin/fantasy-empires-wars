@@ -6,8 +6,8 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { PlayerState } from '../../types/PlayerState';
-import { getLandId, getTurnOwner } from '../../types/GameState';
+import { PlayerState } from '../../state/PlayerState';
+import { getLandId, getTurnOwner } from '../../state/GameState';
 import { getLands } from '../../map/utils/getLands';
 import { getPlayerColorValue } from '../../types/PlayerColors';
 

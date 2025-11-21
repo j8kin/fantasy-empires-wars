@@ -1,8 +1,8 @@
 import { getLands } from '../map/utils/getLands';
 import { construct } from '../map/building/construct';
-import { PlayerState, PREDEFINED_PLAYERS } from '../types/PlayerState';
+import { PlayerState, PREDEFINED_PLAYERS } from '../state/PlayerState';
 import { BuildingType } from '../types/Building';
-import { BattlefieldMap, GameState, BattlefieldDimensions } from '../types/GameState';
+import { BattlefieldMap, GameState, BattlefieldDimensions } from '../state/GameState';
 import { getLandById, LandType } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { toGamePlayer } from './utils/toGamePlayer';

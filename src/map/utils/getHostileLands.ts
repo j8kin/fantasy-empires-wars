@@ -1,4 +1,4 @@
-import { getLandId, GameState, getTurnOwner, LandState } from '../../types/GameState';
+import { getLandId, GameState, getTurnOwner, LandState } from '../../state/GameState';
 import { getLands } from './getLands';
 import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
 import { getRealmLands } from './getRealmLands';

@@ -1,4 +1,4 @@
-import { getLandId, getTurnOwner } from '../types/GameState';
+import { getLandId, getTurnOwner } from '../state/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
 import { BuildingType, getBuilding } from '../types/Building';
@@ -9,7 +9,7 @@ import {
   createDefaultGameStateStub,
   defaultBattlefieldSizeStub,
 } from './utils/createGameStateStub';
-import { PlayerState } from '../types/PlayerState';
+import { PlayerState } from '../state/PlayerState';
 import { relicts, TreasureItem } from '../types/Treasures';
 
 describe('Construct Buildings', () => {

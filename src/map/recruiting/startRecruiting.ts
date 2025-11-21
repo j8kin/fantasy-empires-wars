@@ -8,7 +8,7 @@ import {
   UnitType,
 } from '../../types/Army';
 import { getLand, LandPosition } from '../utils/getLands';
-import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
+import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
 

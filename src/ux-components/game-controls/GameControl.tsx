@@ -6,7 +6,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import GameButton from '../buttons/GameButton';
 import { ButtonName } from '../../types/ButtonName';
-import { getTurnOwner } from '../../types/GameState';
+import { getTurnOwner } from '../../state/GameState';
 
 const GameControl: React.FC = () => {
   const { setShowStartWindow, setShowSaveDialog } = useApplicationContext();

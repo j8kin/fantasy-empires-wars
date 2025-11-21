@@ -1,7 +1,7 @@
 import { getDefaultUnit, HeroUnit, HeroUnitType } from '../../types/Army';
 import { TreasureItem } from '../../types/Treasures';
 import { Alignment } from '../../types/Alignment';
-import { PlayerState } from '../../types/PlayerState';
+import { PlayerState } from '../../state/PlayerState';
 
 const baseLevelUpParameters = (heroType: HeroUnitType) => {
   switch (heroType) {

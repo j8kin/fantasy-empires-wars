@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
+import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
 import { getQuest, HeroQuest, QuestType } from '../../types/Quest';
 import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
@@ -10,7 +10,7 @@ import {
   heroGainRelic,
 } from './questCompleteMessages';
 import { HeroUnit } from '../../types/Army';
-import { PlayerState } from '../../types/PlayerState';
+import { PlayerState } from '../../state/PlayerState';
 import { getLand } from '../utils/getLands';
 import { levelUpHero } from '../recruiting/levelUpHero';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';

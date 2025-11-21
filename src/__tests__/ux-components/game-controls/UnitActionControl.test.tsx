@@ -10,7 +10,7 @@ import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { getDefaultUnit, HeroUnit } from '../../../types/Army';
 import { LandPosition } from '../../../map/utils/getLands';
 import { construct } from '../../../map/building/construct';
-import { GameState } from '../../../types/GameState';
+import { GameState } from '../../../state/GameState';
 
 // Mock GameButton component
 jest.mock('../../../ux-components/buttons/GameButton', () => {

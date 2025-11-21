@@ -1,4 +1,4 @@
-import { GameState } from '../types/GameState';
+import { GameState } from '../state/GameState';
 import { performMovements } from '../map/move-army/performMovements';
 import { changeOwner } from '../map/move-army/changeOwner';
 

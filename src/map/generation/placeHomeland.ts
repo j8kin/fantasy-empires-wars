@@ -1,5 +1,5 @@
-import { getLandId, GameState, getTurnOwner, LandState } from '../../types/GameState';
-import { NO_PLAYER } from '../../types/PlayerState';
+import { getLandId, GameState, getTurnOwner, LandState } from '../../state/GameState';
+import { NO_PLAYER } from '../../state/PlayerState';
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
 import { getLand, getLands } from '../utils/getLands';
 import { construct } from '../building/construct';

@@ -1,4 +1,4 @@
-import { GameState } from '../types/GameState';
+import { GameState } from '../state/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { BuildingType } from '../types/Building';

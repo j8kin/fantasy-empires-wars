@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import Battlefield from '../../ux-components/battlefield/Battlefield';
-import { GameState, BattlefieldDimensions } from '../../types/GameState';
+import { GameState, BattlefieldDimensions } from '../../state/GameState';
 import { LandPosition } from '../../map/utils/getLands';
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { createGameStateStub } from '../utils/createGameStateStub';
@@ -16,7 +16,7 @@ jest.mock('../../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 
 // Mock HexTile component
 jest.mock('../../ux-components/battlefield/LandTile', () => {
-  const { getLandId } = require('../../types/GameState');
+  const { getLandId } = require('../../state/GameState');
   const { useGameContext } = require('../../contexts/GameContext');
 
   return (props: { battlefieldPosition: LandPosition }) => {

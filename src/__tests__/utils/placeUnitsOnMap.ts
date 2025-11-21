@@ -1,5 +1,5 @@
 import { Unit } from '../../types/Army';
-import { GameState } from '../../types/GameState';
+import { GameState } from '../../state/GameState';
 import { getLand, LandPosition } from '../../map/utils/getLands';
 
 /**

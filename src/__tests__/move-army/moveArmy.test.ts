@@ -1,6 +1,6 @@
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { getLandId, GameState, LandState } from '../../types/GameState';
+import { getLandId, GameState, LandState } from '../../state/GameState';
 import {
   getDefaultUnit,
   HeroUnit,
@@ -14,7 +14,7 @@ import { BuildingType } from '../../types/Building';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
-import { NO_PLAYER } from '../../types/PlayerState';
+import { NO_PLAYER } from '../../state/PlayerState';
 
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;

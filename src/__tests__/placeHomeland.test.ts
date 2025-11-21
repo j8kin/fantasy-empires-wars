@@ -1,5 +1,5 @@
 import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
-import { BattlefieldDimensions, TurnPhase } from '../types/GameState';
+import { BattlefieldDimensions, TurnPhase } from '../state/GameState';
 import { getLands } from '../map/utils/getLands';
 import { BuildingType } from '../types/Building';
 import { startTurn } from '../turn/startTurn';

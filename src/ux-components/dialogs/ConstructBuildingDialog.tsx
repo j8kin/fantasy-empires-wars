@@ -6,7 +6,7 @@ import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { BuildingType, getAllBuildings } from '../../types/Building';
-import { getTurnOwner } from '../../types/GameState';
+import { getTurnOwner } from '../../state/GameState';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
