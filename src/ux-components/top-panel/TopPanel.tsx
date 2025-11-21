@@ -2,17 +2,20 @@ import React from 'react';
 import styles from './css/TopPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
-import { TurnPhase } from '../../state/GameState';
+import { FrameSize } from '../../contexts/ApplicationContext';
 
 import GameControl from '../game-controls/GameControl';
 import MapActionsControl from '../game-controls/MapActionsControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import GameButton from '../buttons/GameButton';
-import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
+import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import PlayerSummary from '../player/PlayerSummary';
-import { ButtonName } from '../../types/ButtonName';
 import UnitActionControl from '../game-controls/UnitActionControl';
+
+import { TurnPhase } from '../../state/GameState';
+
+import { ButtonName } from '../../types/ButtonName';
 
 export interface TopPanelProps {
   height: number;

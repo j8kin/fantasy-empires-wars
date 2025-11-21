@@ -1,8 +1,22 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { PlayerState, PlayerProfile } from '../state/PlayerState';
 import { LandPosition } from '../state/LandState';
-import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { HeroOutcome } from '../types/HeroOutcome';
+
+/**
+ * Top Left position of the window/dialog/popup
+ */
+export interface ScreenPosition {
+  x: number;
+  y: number;
+}
+/**
+ * Width and height of the window/dialog/popup
+ */
+export interface FrameSize {
+  width: number;
+  height: number;
+}
 
 interface MoveArmyPath {
   from: LandPosition;

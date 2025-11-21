@@ -3,9 +3,10 @@ import styles from './css/Battlefield.module.css';
 import hexStyles from './css/Hexagonal.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
+import { FrameSize } from '../../contexts/ApplicationContext';
 
 import LandTile from './LandTile';
-import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
+import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 
 import { BattlefieldDimensions, getTurnOwner } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
