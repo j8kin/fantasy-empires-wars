@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
-import { GameState } from '../../../state/GameState';
+import { GameState, getLandOwner } from '../../../state/GameState';
 import { getLandId, LandState } from '../../../state/LandState';
 import {
   Armies,
@@ -99,7 +99,9 @@ describe('LandCharacteristicsPopup', () => {
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(mockTileState.controlledBy).toBe(gameStateStub.players[1].playerId);
+    expect(getLandOwner(gameStateStub, getLandId(mockTileState.mapPos))).toBe(
+      gameStateStub.players[1].playerId
+    );
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
 

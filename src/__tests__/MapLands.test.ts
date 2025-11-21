@@ -2,7 +2,7 @@ import { getLands } from '../map/utils/getLands';
 import { construct } from '../map/building/construct';
 import { PlayerState, PREDEFINED_PLAYERS } from '../state/PlayerState';
 import { BuildingType } from '../types/Building';
-import { BattlefieldMap, GameState, BattlefieldDimensions } from '../state/GameState';
+import { BattlefieldMap, GameState, BattlefieldDimensions, getTurnOwner } from '../state/GameState';
 import { getLandById, LandType } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { toGamePlayer } from './utils/toGamePlayer';
@@ -42,7 +42,8 @@ describe('MapLands', () => {
 
         mockMap.lands['0-0'].land = getLandById(LandType.VOLCANO);
         mockMap.lands['0-1'].land = getLandById(LandType.LAVA);
-        mockMap.lands['0-1'].controlledBy = gameStateStub.turnOwner;
+        getTurnOwner(gameStateStub)!.addLand('0-1');
+        //mockMap.lands['0-1'].controlledBy = gameStateStub.turnOwner;
         expect(getLands({ gameState: gameStateStub, landTypes: [LandType.VOLCANO] }).length).toBe(
           1
         );

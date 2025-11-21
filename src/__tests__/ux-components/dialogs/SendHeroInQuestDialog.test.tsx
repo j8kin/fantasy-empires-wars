@@ -4,15 +4,19 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
-import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
-import { GameState, TurnPhase } from '../../../state/GameState';
+
+import { GameState, getLandOwner, TurnPhase } from '../../../state/GameState';
+import { getLandId } from '../../../state/LandState';
+
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
+import { Alignment } from '../../../types/Alignment';
 import { getLands } from '../../../map/utils/getLands';
 
-import { Alignment } from '../../../types/Alignment';
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
+
 // Import the mocked function (will be the mocked version due to jest.mock above)
 import { startQuest as mockStartQuest } from '../../../map/quest/startQuest';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 
 // Mock modules
 jest.mock('../../../map/quest/startQuest', () => ({
@@ -250,7 +254,7 @@ describe('SendHeroInQuestDialog', () => {
       // Remove armies from lands owned by current player but keep armies on other lands
       const currentPlayerId = mockGameState.turnOwner;
       Object.values(mockGameState.battlefield.lands).forEach((land) => {
-        if (land.controlledBy === currentPlayerId) {
+        if (getLandOwner(mockGameState, getLandId(land.mapPos)) === currentPlayerId) {
           land.army = [];
         }
       });

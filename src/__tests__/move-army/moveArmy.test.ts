@@ -1,4 +1,4 @@
-import { GameState } from '../../state/GameState';
+import { GameState, getLandOwner } from '../../state/GameState';
 import { getLandId, LandPosition, LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
@@ -302,7 +302,7 @@ describe('Move Army', () => {
       expect((getLand(gameStateStub, from).army[0].units[0] as RegularUnit).count).toBe(120);
 
       const to = { row: 3, col: 5 };
-      expect(getLand(gameStateStub, to).controlledBy).toBe(NO_PLAYER.id);
+      expect(getLandOwner(gameStateStub, getLandId(to))).toBe(NO_PLAYER.id);
 
       const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
       (unitsToMove[0] as RegularUnit).count = 120;
@@ -331,7 +331,7 @@ describe('Move Army', () => {
       expect((getLand(gameStateStub, from).army[0].units[0] as RegularUnit).count).toBe(120);
 
       const to = { row: 3, col: 5 };
-      expect(getLand(gameStateStub, to).controlledBy).toBe(NO_PLAYER.id);
+      expect(getLandOwner(gameStateStub, getLandId(to))).toBe(NO_PLAYER.id);
 
       const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
       (unitsToMove[0] as RegularUnit).count = 20; // 20 regular units is not enough to conquer the new territory
@@ -344,7 +344,7 @@ describe('Move Army', () => {
       expect(getLand(gameStateStub, from).army.length).toBe(1); // hero and the rest of the warriors
 
       const newLand = getLand(gameStateStub, to);
-      expect(newLand.controlledBy).toBe(NO_PLAYER.id); // new territory owner is not changed
+      expect(getLandOwner(gameStateStub, getLandId(newLand.mapPos))).toBe(NO_PLAYER.id); // new territory owner is not changed
       expect(newLand.army.length).toBe(0);
     });
 
@@ -356,7 +356,7 @@ describe('Move Army', () => {
       expect((getLand(gameStateStub, from).army[0].units[0] as RegularUnit).count).toBe(120);
 
       const to = { row: 3, col: 5 };
-      expect(getLand(gameStateStub, to).controlledBy).toBe(NO_PLAYER.id);
+      expect(getLandOwner(gameStateStub, getLandId(to))).toBe(NO_PLAYER.id);
 
       // first army is moved to new territory
       const unitsToMove1: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
@@ -377,7 +377,7 @@ describe('Move Army', () => {
       expect(getLand(gameStateStub, from).army.length).toBe(1); // hero and the rest of the warriors
 
       const newLand = getLand(gameStateStub, to);
-      expect(newLand.controlledBy).toBe(gameStateStub.turnOwner); // new territory owner is not changed
+      expect(getLandOwner(gameStateStub, getLandId(newLand.mapPos))).toBe(gameStateStub.turnOwner); // new territory owner is not changed
       expect(newLand.army.length).toBe(1);
       expect(newLand.army[0].units.length).toBe(1);
       expect(newLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);

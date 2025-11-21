@@ -1,4 +1,4 @@
-import { GameState } from '../../state/GameState';
+import { GameState, getLandOwner } from '../../state/GameState';
 import { getLandId, LandPosition, LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
@@ -25,8 +25,10 @@ export const getLands = ({
   return Object.values(lands).filter(
     (landState) =>
       (players == null ||
-        (players.length === 0 && landState.controlledBy === NO_PLAYER.id) ||
-        (players.length > 0 && players.some((gp) => gp === landState.controlledBy))) &&
+        (players.length === 0 &&
+          getLandOwner(gameState, getLandId(landState.mapPos)) === NO_PLAYER.id) ||
+        (players.length > 0 &&
+          players.some((gp) => gp === getLandOwner(gameState, getLandId(landState.mapPos))))) &&
       (landTypes == null || landTypes.includes(landState.land.id)) &&
       (landAlignment == null || landState.land.alignment === landAlignment) &&
       // ignore buildings

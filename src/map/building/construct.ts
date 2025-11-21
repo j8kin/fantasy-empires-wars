@@ -1,11 +1,9 @@
 import { GameState, getTurnOwner } from '../../state/GameState';
 import { getLandId, LandPosition } from '../../state/LandState';
-import { NO_PLAYER } from '../../state/PlayerState';
 
 import { TreasureItem } from '../../types/Treasures';
 import { BuildingType, getBuilding } from '../../types/Building';
 
-import { getLand } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 
 import { destroyBuilding } from './destroyBuilding';
@@ -29,12 +27,12 @@ export const construct = (
 
     case BuildingType.STRONGHOLD:
       battlefield.lands[mapPosition].buildings.push(building);
-      battlefield.lands[mapPosition].controlledBy = owner.playerId;
+      owner.addLand(mapPosition);
       const newLandsCandidates = getTilesInRadius(battlefield.dimensions, position, 1, true);
       newLandsCandidates.forEach((land) => {
         // if the land is not controlled by any player, it becomes controlled by the player
-        if (getLand(gameState, land).controlledBy === NO_PLAYER.id) {
-          battlefield.lands[getLandId(land)].controlledBy = owner.playerId;
+        if (!gameState.players.some((p) => p.hasLand(getLandId(land)))) {
+          owner.addLand(getLandId(land));
         }
       });
       break;

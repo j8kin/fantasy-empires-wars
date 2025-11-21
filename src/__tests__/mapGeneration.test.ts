@@ -1,6 +1,5 @@
 import { generateMap } from '../map/generation/generateMap';
 import { getMainSpecialLandTypes, getNearSpecialLandTypes, LandType } from '../types/Land';
-import { NO_PLAYER } from '../state/PlayerState';
 import { BattlefieldDimensions } from '../state/GameState';
 import { defaultBattlefieldSizeStub } from './utils/createGameStateStub';
 
@@ -19,7 +18,6 @@ describe('Map Generation', () => {
 
     // All tiles should be controlled by a neutral player
     Object.values(lands.lands).forEach((land) => {
-      expect(land.controlledBy).toBe(NO_PLAYER.id);
       expect(land.land.id).not.toBe(LandType.NONE);
       expect(land.goldPerTurn).toBeGreaterThan(0);
     });

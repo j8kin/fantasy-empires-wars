@@ -1,5 +1,5 @@
-import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
-import { LandPosition } from '../../state/LandState';
+import { GameState, getLandOwner, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { getLandId, LandPosition } from '../../state/LandState';
 
 import {
   getDefaultUnit,
@@ -28,7 +28,7 @@ export const startRecruiting = (
   gameState: GameState
 ): void => {
   if (
-    getLand(gameState, landPos).controlledBy !== gameState.turnOwner &&
+    getLandOwner(gameState, getLandId(landPos)) !== gameState.turnOwner &&
     gameState.turnPhase !== TurnPhase.MAIN
   ) {
     return; // fallback: a wrong Land Owner should never happen on real game

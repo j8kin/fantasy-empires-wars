@@ -1,5 +1,4 @@
 import { BattlefieldMap, BattlefieldDimensions } from '../../state/GameState';
-import { NO_PLAYER } from '../../state/PlayerState';
 import { getLandId, LandPosition } from '../../state/LandState';
 
 import { getLandById, Land, LandType } from '../../types/Land';
@@ -35,7 +34,6 @@ export const generateMockMap = (
       result.lands[key] = {
         mapPos: position,
         land: genLand(alignment),
-        controlledBy: NO_PLAYER.id,
         buildings: [],
         goldPerTurn: income != null ? income : landNumber,
         army: [],

@@ -1,6 +1,5 @@
 import { BattlefieldDimensions, BattlefieldLands, BattlefieldMap } from '../../state/GameState';
 import { getLandId, LandPosition, LandState } from '../../state/LandState';
-import { NO_PLAYER } from '../../state/PlayerState';
 
 import {
   getLandById,
@@ -54,7 +53,6 @@ const createEmptyBattlefield = (dimensions: BattlefieldDimensions): BattlefieldL
       battlefield[getLandId(mapPos)] = {
         mapPos: mapPos,
         land: getLandById(LandType.NONE), // Temporary, will be overwritten
-        controlledBy: NO_PLAYER.id,
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
         army: [],

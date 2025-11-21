@@ -3,7 +3,7 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getPlayerById, getTurnOwner } from '../../state/GameState';
+import { getLandOwner, getPlayerById, getTurnOwner } from '../../state/GameState';
 import { getLandId, LandPosition } from '../../state/LandState';
 
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
@@ -60,7 +60,11 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
   // Get the controlling player's color or default to white if not controlled
   const getBackgroundColor = (): string => {
-    const controllingPlayer = getPlayerById(gameState, battlefieldTile.controlledBy);
+    if (gameState == null) return 'white';
+    const controllingPlayer = getPlayerById(
+      gameState,
+      getLandOwner(gameState, getLandId(battlefieldTile.mapPos))
+    );
     return getPlayerColorValue(controllingPlayer?.color ?? 'white');
   };
 

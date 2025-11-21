@@ -1,9 +1,5 @@
-import { BattlefieldDimensions, GameState } from '../../state/GameState';
-import { getLandId, LandPosition, LandState } from '../../state/LandState';
-
-import { BuildingType } from '../../types/Building';
-
-import { getLand, getLands } from './getLands';
+import { BattlefieldDimensions } from '../../state/GameState';
+import { getLandId, LandPosition } from '../../state/LandState';
 
 export const calculateHexDistance = (
   dimensions: BattlefieldDimensions,
@@ -123,39 +119,6 @@ export const getTilesInRadius = (
   }
   return excludeCenter ? excludePosition(tilesInRadius, center) : tilesInRadius;
 };
-
-export const getNearestStrongholdLand = (
-  landPos: LandPosition,
-  gameState: GameState,
-  radius: number = 1
-): LandState | undefined => {
-  const allStrongholdsInRadius2 = getLands({
-    gameState: gameState,
-    buildings: [BuildingType.STRONGHOLD],
-  })
-    .filter(
-      (stronghold) => stronghold.mapPos.row !== landPos.row || stronghold.mapPos.col !== landPos.col
-    )
-    .filter(
-      (stronghold) =>
-        calculateHexDistance(gameState.battlefield.dimensions, landPos, stronghold.mapPos) <= radius
-    );
-
-  // no stronghold in radius 2
-  if (allStrongholdsInRadius2.length === 0) return undefined;
-
-  // if there is a stronghold in radius 2 with the same owner as the land, return it
-  const sameOwnerStronghold = allStrongholdsInRadius2.find(
-    (s) => s.controlledBy === getLand(gameState, landPos).controlledBy
-  );
-  if (sameOwnerStronghold) {
-    return sameOwnerStronghold;
-  }
-
-  // return the closest stronghold in radius 2
-  return allStrongholdsInRadius2[0];
-};
-
 const isValidPosition = (dimensions: BattlefieldDimensions, pos: LandPosition): boolean => {
   const { rows, cols } = dimensions;
   if (pos.row < 0 || pos.row >= rows) return false;

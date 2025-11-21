@@ -1,4 +1,4 @@
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState, getLandOwner, getTurnOwner, TurnPhase } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 import { Army, getDefaultUnit, RegularUnit, RegularUnitType, UnitRank } from '../../types/Army';
@@ -68,7 +68,7 @@ describe('Calculate Attrition Penalty', () => {
 
   it('armies on lands owned by player should not be affected', () => {
     const armyLand = getLand(gameStateStub, { row: 3, col: 4 });
-    expect(armyLand.controlledBy).toBe(gameStateStub.turnOwner);
+    expect(getTurnOwner(gameStateStub)!.hasLand(getLandId(armyLand.mapPos))).toBeTruthy();
 
     // place army on land owned by player
     gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)] = {
@@ -119,7 +119,9 @@ describe('Calculate Attrition Penalty', () => {
       randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
       const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
-      expect(armyLand.controlledBy).not.toBe(gameStateStub.turnOwner);
+      expect(getLandOwner(gameStateStub, getLandId(armyLand.mapPos))).not.toBe(
+        getTurnOwner(gameStateStub)
+      );
 
       army1.units = [createRegularUnit(RegularUnitType.WARRIOR, army1Initial, rank)];
       army2.units = [createRegularUnit(RegularUnitType.WARRIOR, army2Initial, rank)];
@@ -146,7 +148,9 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
-    expect(armyLand.controlledBy).not.toBe(gameStateStub.turnOwner);
+    expect(getLandOwner(gameStateStub, getLandId(armyLand.mapPos))).not.toBe(
+      getTurnOwner(gameStateStub)
+    );
 
     army1.units = [
       createRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR),
@@ -170,7 +174,9 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
-    expect(armyLand.controlledBy).not.toBe(gameStateStub.turnOwner);
+    expect(getLandOwner(gameStateStub, getLandId(armyLand.mapPos))).not.toBe(
+      getTurnOwner(gameStateStub)
+    );
 
     army1.units = [
       createRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR),
@@ -198,7 +204,9 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
-    expect(armyLand.controlledBy).not.toBe(gameStateStub.turnOwner);
+    expect(getLandOwner(gameStateStub, getLandId(armyLand.mapPos))).not.toBe(
+      getTurnOwner(gameStateStub)
+    );
 
     // 40-60 minimum should be killed it means army will be destroyed
     army1.units = [createRegularUnit(RegularUnitType.WARRIOR, 30, UnitRank.REGULAR)];

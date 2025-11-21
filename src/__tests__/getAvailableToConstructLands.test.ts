@@ -1,17 +1,16 @@
-import { GameState } from '../state/GameState';
-import { generateMockMap } from './utils/generateMockMap';
+import { GameState, getTurnOwner } from '../state/GameState';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
-import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
+import { createGameStateStub } from './utils/createGameStateStub';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { getDefaultUnit, HeroUnitType } from '../types/Army';
 
 describe('getAvailableLands', () => {
-  const gameStateStub: GameState = createGameStateStub({ addPlayersHomeland: false });
+  let gameStateStub: GameState;
 
   beforeEach(() => {
-    gameStateStub.battlefield = generateMockMap(defaultBattlefieldSizeStub);
+    gameStateStub = createGameStateStub({ addPlayersHomeland: false });
     gameStateStub.turnOwner = gameStateStub.players[0].playerId;
   });
 
@@ -49,7 +48,8 @@ describe('getAvailableLands', () => {
   it('should return all available lands for stronghold building which controlled by army', () => {
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
     placeUnitsOnMap(getDefaultUnit(HeroUnitType.FIGHTER), gameStateStub, { row: 3, col: 5 });
-    gameStateStub.battlefield.lands['3-5'].controlledBy = gameStateStub.turnOwner;
+    getTurnOwner(gameStateStub)!.addLand('3-5');
+    //gameStateStub.battlefield.lands['3-5'].controlledBy = gameStateStub.turnOwner;
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.STRONGHOLD);
 

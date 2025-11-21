@@ -1,5 +1,5 @@
 import { calculateIncome } from '../map/gold/calculateIncome';
-import { GameState, TurnPhase } from '../state/GameState';
+import { GameState, getTurnOwner, TurnPhase } from '../state/GameState';
 import { getLandId } from '../state/LandState';
 import { PlayerState } from '../state/PlayerState';
 
@@ -13,14 +13,18 @@ import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createG
 import { generateMockMap } from './utils/generateMockMap';
 
 describe('Calculate Income', () => {
-  const gameStateStub: GameState = createGameStateStub({ addPlayersHomeland: false });
-  const lawfulPlayer = gameStateStub.players[0];
-  const chaoticPlayer = gameStateStub.players[1];
-  const neutralPlayer = gameStateStub.players[2];
+  let gameStateStub: GameState;
+  let lawfulPlayer: PlayerState;
+  let chaoticPlayer: PlayerState;
+  let neutralPlayer: PlayerState;
 
   beforeEach(() => {
     // clear the map before each test
-    gameStateStub.battlefield = generateMockMap(defaultBattlefieldSizeStub);
+    gameStateStub = createGameStateStub({ addPlayersHomeland: false });
+
+    lawfulPlayer = gameStateStub.players[0];
+    chaoticPlayer = gameStateStub.players[1];
+    neutralPlayer = gameStateStub.players[2];
   });
 
   it('No land owned', () => {
@@ -29,36 +33,34 @@ describe('Calculate Income', () => {
   });
 
   it('Corner case: No owned strongholds', () => {
-    gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].controlledBy =
-      lawfulPlayer.playerId;
+    lawfulPlayer.addLand(getLandId({ row: 5, col: 5 }));
+    // gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].controlledBy =
+    //   lawfulPlayer.playerId;
 
     const income = calculateIncome(gameStateStub);
     expect(income).toBe(0);
   });
 
-  // ... existing code ...
-  const testCaseMap: [PlayerState, Alignment, number][] = [
-    [chaoticPlayer, Alignment.CHAOTIC, 1160],
-    [chaoticPlayer, Alignment.NEUTRAL, 580],
-    [chaoticPlayer, Alignment.LAWFUL, 290],
-    [neutralPlayer, Alignment.CHAOTIC, 700],
-    [neutralPlayer, Alignment.NEUTRAL, 700],
-    [neutralPlayer, Alignment.LAWFUL, 700],
-    [lawfulPlayer, Alignment.CHAOTIC, 560],
-    [lawfulPlayer, Alignment.NEUTRAL, 700],
-    [lawfulPlayer, Alignment.LAWFUL, 910],
-  ];
+  it.each([
+    [Alignment.CHAOTIC, Alignment.CHAOTIC, 1160],
+    [Alignment.CHAOTIC, Alignment.NEUTRAL, 580],
+    [Alignment.CHAOTIC, Alignment.LAWFUL, 290],
+    [Alignment.NEUTRAL, Alignment.CHAOTIC, 700],
+    [Alignment.NEUTRAL, Alignment.NEUTRAL, 700],
+    [Alignment.NEUTRAL, Alignment.LAWFUL, 700],
+    [Alignment.LAWFUL, Alignment.CHAOTIC, 560],
+    [Alignment.LAWFUL, Alignment.NEUTRAL, 700],
+    [Alignment.LAWFUL, Alignment.LAWFUL, 910],
+  ])(
+    'Calculate income for player with alignment %s in %s land alignment',
+    (playerAlignment: Alignment, allLandsAlignment: Alignment, expectedIncome: number) => {
+      const player =
+        playerAlignment === Alignment.LAWFUL
+          ? lawfulPlayer
+          : playerAlignment === Alignment.NEUTRAL
+            ? neutralPlayer
+            : chaoticPlayer;
 
-  it.each(
-    testCaseMap.map(([player, allLandsAlignment, expectedIncome]) => ({
-      player,
-      allLandsAlignment,
-      expectedIncome,
-      name: `Calculate income for player with alignment ${player.getAlignment()} in ${allLandsAlignment} land alignment`,
-    }))
-  )(
-    '$name', // Use the pre-generated test name
-    ({ player, allLandsAlignment, expectedIncome }) => {
       gameStateStub.battlefield = generateMockMap(
         defaultBattlefieldSizeStub,
         allLandsAlignment,
@@ -95,15 +97,17 @@ describe('Calculate Income', () => {
 
       gameStateStub.turnOwner = player.playerId;
       // stronghold
-      gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].controlledBy = player.playerId;
+      getTurnOwner(gameStateStub)!.addLand(getLandId({ row: 5, col: 5 }));
+      //gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].controlledBy = player.playerId;
       gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
       gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
       ];
 
       // additional land (should be calculated with penalty
-      gameStateStub.battlefield.lands[getLandId({ row: 5, col: landCol })].controlledBy =
-        player.playerId;
+      player.addLand(getLandId({ row: 5, col: landCol }));
+      // gameStateStub.battlefield.lands[getLandId({ row: 5, col: landCol })].controlledBy =
+      //   player.playerId;
       gameStateStub.battlefield.lands[getLandId({ row: 5, col: landCol })].goldPerTurn = 100;
 
       const income = calculateIncome(gameStateStub);
@@ -113,23 +117,31 @@ describe('Calculate Income', () => {
   );
 
   it.each([
-    [lawfulPlayer, LandType.PLAINS, 100],
-    [lawfulPlayer, LandType.VOLCANO, 80],
-    [lawfulPlayer, LandType.MOUNTAINS, 130],
-    [chaoticPlayer, LandType.PLAINS, 100],
-    [chaoticPlayer, LandType.VOLCANO, 200],
-    [chaoticPlayer, LandType.MOUNTAINS, 50],
-    [neutralPlayer, LandType.PLAINS, 100],
-    [neutralPlayer, LandType.VOLCANO, 100],
-    [neutralPlayer, LandType.MOUNTAINS, 100],
+    [Alignment.LAWFUL, LandType.PLAINS, 100],
+    [Alignment.LAWFUL, LandType.VOLCANO, 80],
+    [Alignment.LAWFUL, LandType.MOUNTAINS, 130],
+    [Alignment.CHAOTIC, LandType.PLAINS, 100],
+    [Alignment.CHAOTIC, LandType.VOLCANO, 200],
+    [Alignment.CHAOTIC, LandType.MOUNTAINS, 50],
+    [Alignment.NEUTRAL, LandType.PLAINS, 100],
+    [Alignment.NEUTRAL, LandType.VOLCANO, 100],
+    [Alignment.NEUTRAL, LandType.MOUNTAINS, 100],
   ])(
     `Calculate income with land alignment penalty based on player's alignment`,
-    (player, land, expected) => {
+    (playerAlignment: Alignment, land, expected) => {
+      const player =
+        playerAlignment === Alignment.LAWFUL
+          ? lawfulPlayer
+          : playerAlignment === Alignment.NEUTRAL
+            ? neutralPlayer
+            : chaoticPlayer;
+
       gameStateStub.turnOwner = player.playerId;
 
       // add different type land in the stronghold radius to demonstrate different income calculations
       gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].land = getLandById(land);
-      gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].controlledBy = player.playerId;
+      player.addLand(getLandId({ row: 4, col: 4 }));
+      //gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].controlledBy = player.playerId;
       gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
       gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),

@@ -1,4 +1,4 @@
-import { PlayerState } from './PlayerState';
+import { NO_PLAYER, PlayerState } from './PlayerState';
 import { LandState } from './LandState';
 
 export interface BattlefieldDimensions {
@@ -37,3 +37,6 @@ export const getPlayerById = (
 export const getTurnOwner = (gameState?: GameState): PlayerState | undefined => {
   return getPlayerById(gameState, gameState?.turnOwner);
 };
+
+export const getLandOwner = (gameState: GameState, landId: string): string =>
+  gameState.players.find((p) => p.hasLand(landId))?.playerId || NO_PLAYER.id;

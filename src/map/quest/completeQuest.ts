@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { GameState, getLandOwner, getTurnOwner, TurnPhase } from '../../state/GameState';
 import { getQuest, HeroQuest, QuestType } from '../../types/Quest';
 import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
@@ -14,6 +14,7 @@ import { PlayerState } from '../../state/PlayerState';
 import { getLand } from '../utils/getLands';
 import { levelUpHero } from '../recruiting/levelUpHero';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
+import { getLandId } from '../../state/LandState';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
@@ -105,7 +106,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
     // player survived quest
     surviveInQuest(quest) &&
     // and player still controls the land where quest is
-    getLand(gameState, quest.land).controlledBy === gameState.turnOwner
+    getLandOwner(gameState, getLandId(quest.land)) === gameState.turnOwner
   ) {
     const hero = quest.hero;
 

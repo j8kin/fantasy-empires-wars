@@ -7,7 +7,6 @@ export type LandPosition = { row: number; col: number };
 export interface LandState {
   mapPos: LandPosition;
   land: Land;
-  controlledBy: string;
   goldPerTurn: number;
   buildings: Building[];
   army: Armies;

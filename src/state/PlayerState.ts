@@ -32,6 +32,11 @@ export interface PlayerState {
   quests: HeroQuest[];
   color: PlayerColorName;
 
+  addLand(landId: string): void;
+  removeLand(landId: string): void;
+  hasLand(landId: string): boolean;
+  nLands(): number;
+
   getAlignment(): Alignment;
   getLevel(): number;
   getName(): string;
@@ -45,6 +50,8 @@ export const createPlayerState = (
   profile: PlayerProfile,
   playerType: 'human' | 'computer'
 ): PlayerState => {
+  const controlledLands: string[] = [];
+
   return {
     diplomacy: {},
     empireTreasures: [],
@@ -62,6 +69,25 @@ export const createPlayerState = (
     vault: 0,
     color: profile.color,
 
+    // land control methods
+    addLand: function (landId: string): void {
+      if (controlledLands.includes(landId)) return;
+      controlledLands.push(landId);
+    },
+    removeLand: function (landId: string): void {
+      const index = controlledLands.indexOf(landId);
+      if (index > -1) {
+        controlledLands.splice(index, 1);
+      }
+    },
+    hasLand: function (landId: string): boolean {
+      return controlledLands.includes(landId);
+    },
+    nLands: function (): number {
+      return controlledLands.length;
+    },
+
+    // get PlayerProfile properties
     getAlignment: () => getPlayerProfile(profile.id).alignment,
     getLevel: () => getPlayerProfile(profile.id).level,
     getName: () => getPlayerProfile(profile.id).name,
