@@ -46,9 +46,9 @@ describe('Construct Buildings', () => {
     });
 
     it('Build two Strongholds for two players, no intersection', () => {
-      gameStateStub.turnOwner = gameStateStub.players[0].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);
-      gameStateStub.turnOwner = gameStateStub.players[1].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand2);
 
       expectLands(player1, getLandsInRadius(homeLand1).map(getLandId));
@@ -56,11 +56,11 @@ describe('Construct Buildings', () => {
     });
 
     it('Build two Strongholds for two players, has intersection radius 1 no building on intersection', () => {
-      gameStateStub.turnOwner = gameStateStub.players[0].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);
       expectLands(player1, getLandsInRadius(homeLand1).map(getLandId));
 
-      gameStateStub.turnOwner = gameStateStub.players[1].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 5 });
       expectLands(player1, getLandsInRadius(homeLand1).map(getLandId));
 
@@ -73,7 +73,7 @@ describe('Construct Buildings', () => {
     });
 
     it('Construction cost 15% less if player has TreasureItem.CROWN_OF_DOMINION', () => {
-      gameStateStub.turnOwner = gameStateStub.players[0].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
       gameStateStub.players[0].empireTreasures.push(
         relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!
       );
@@ -191,9 +191,9 @@ describe('Construct Buildings', () => {
     });
 
     it('When stronghold destroyed land could change owner', () => {
-      gameStateStub.turnOwner = gameStateStub.players[0].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);
-      gameStateStub.turnOwner = gameStateStub.players[1].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 5 });
 
       expectLands(player1, getLandsInRadius(homeLand1).map(getLandId));
@@ -205,7 +205,7 @@ describe('Construct Buildings', () => {
       );
 
       // DEMOLITION
-      gameStateStub.turnOwner = gameStateStub.players[0].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
       construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       // no player lands exist
@@ -217,10 +217,10 @@ describe('Construct Buildings', () => {
     });
 
     it('When stronghold destroyed land not change owner if another stronghold of the same owner is near', () => {
-      gameStateStub.turnOwner = gameStateStub.players[0].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 2, col: 5 }); // stronghold of player 1 near destroyed land
-      gameStateStub.turnOwner = gameStateStub.players[1].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 4, col: 5 });
 
       expect(player1.nLands()).toBe(12);
@@ -230,7 +230,7 @@ describe('Construct Buildings', () => {
       expect(player1.hasLand('4-4')).toBeTruthy();
 
       // DEMOLITION
-      gameStateStub.turnOwner = gameStateStub.players[0].playerId;
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
       construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       // player1 has only one stronghold left

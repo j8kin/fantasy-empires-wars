@@ -24,7 +24,7 @@ export const getAvailableToConstructLands = (
             (land.buildings.length === 0 ||
               !land.buildings?.some((b) => b.id === BuildingType.WALL)) &&
             getTilesInRadius(gameState.battlefield.dimensions, land.mapPos, 1, true).some(
-              (tile) => getLandOwner(gameState, getLandId(tile)) !== owner.playerId
+              (tile) => getLandOwner(gameState, getLandId(tile)) !== owner.id
             )
         )
         .map((l) => getLandId(l.mapPos));

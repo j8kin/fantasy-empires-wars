@@ -27,11 +27,8 @@ export interface GameState {
   players: PlayerState[];
 }
 
-export const getPlayerById = (
-  gameState?: GameState,
-  playerId?: string
-): PlayerState | undefined => {
-  return gameState?.players.find((player) => player.playerId === playerId);
+export const getPlayerById = (gameState?: GameState, id?: string): PlayerState | undefined => {
+  return gameState?.players.find((player) => player.id === id);
 };
 
 export const getTurnOwner = (gameState?: GameState): PlayerState | undefined => {
@@ -39,4 +36,4 @@ export const getTurnOwner = (gameState?: GameState): PlayerState | undefined => 
 };
 
 export const getLandOwner = (gameState: GameState, landId: string): string =>
-  gameState.players.find((p) => p.hasLand(landId))?.playerId || NO_PLAYER.id;
+  gameState.players.find((p) => p.hasLand(landId))?.id || NO_PLAYER.id;

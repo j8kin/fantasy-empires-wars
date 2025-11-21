@@ -25,8 +25,7 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
   if (opponent == null || gameState == null) return null;
 
   const selectedPlayer = getTurnOwner(gameState);
-  const diplomacyStatus =
-    selectedPlayer?.diplomacy![opponent.playerId] || DiplomacyStatus.NO_TREATY;
+  const diplomacyStatus = selectedPlayer?.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {
     hideOpponentInfo();

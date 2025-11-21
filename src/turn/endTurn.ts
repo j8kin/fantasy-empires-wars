@@ -14,9 +14,9 @@ export const endTurn = (gameState: GameState) => {
 
   // change active player
   const playerIdx =
-    (gameState.players.findIndex((p) => p.playerId === gameState.turnOwner) + 1) %
+    (gameState.players.findIndex((p) => p.id === gameState.turnOwner) + 1) %
     gameState.players.length;
-  gameState.turnOwner = gameState.players[playerIdx].playerId;
+  gameState.turnOwner = gameState.players[playerIdx].id;
 
   if (playerIdx === 0) {
     gameState.turn++;

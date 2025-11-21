@@ -34,8 +34,6 @@ describe('Calculate Income', () => {
 
   it('Corner case: No owned strongholds', () => {
     lawfulPlayer.addLand(getLandId({ row: 5, col: 5 }));
-    // gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].controlledBy =
-    //   lawfulPlayer.playerId;
 
     const income = calculateIncome(gameStateStub);
     expect(income).toBe(0);
@@ -67,7 +65,7 @@ describe('Calculate Income', () => {
         100
       );
       gameStateStub.turnPhase = TurnPhase.MAIN;
-      gameStateStub.turnOwner = player.playerId;
+      gameStateStub.turnOwner = player.id;
       // add stronghold
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
       const income = calculateIncome(gameStateStub);
@@ -95,10 +93,9 @@ describe('Calculate Income', () => {
             ? neutralPlayer
             : chaoticPlayer;
 
-      gameStateStub.turnOwner = player.playerId;
+      gameStateStub.turnOwner = player.id;
       // stronghold
       getTurnOwner(gameStateStub)!.addLand(getLandId({ row: 5, col: 5 }));
-      //gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].controlledBy = player.playerId;
       gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
       gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
@@ -106,8 +103,6 @@ describe('Calculate Income', () => {
 
       // additional land (should be calculated with penalty
       player.addLand(getLandId({ row: 5, col: landCol }));
-      // gameStateStub.battlefield.lands[getLandId({ row: 5, col: landCol })].controlledBy =
-      //   player.playerId;
       gameStateStub.battlefield.lands[getLandId({ row: 5, col: landCol })].goldPerTurn = 100;
 
       const income = calculateIncome(gameStateStub);
@@ -136,12 +131,11 @@ describe('Calculate Income', () => {
             ? neutralPlayer
             : chaoticPlayer;
 
-      gameStateStub.turnOwner = player.playerId;
+      gameStateStub.turnOwner = player.id;
 
       // add different type land in the stronghold radius to demonstrate different income calculations
       gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].land = getLandById(land);
       player.addLand(getLandId({ row: 4, col: 4 }));
-      //gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].controlledBy = player.playerId;
       gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
       gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),

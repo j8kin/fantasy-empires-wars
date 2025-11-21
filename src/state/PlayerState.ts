@@ -20,7 +20,7 @@ export interface PlayerProfile {
 }
 
 export interface PlayerState {
-  playerId: string; // link to PlayerProfile.id
+  id: string; // link to PlayerProfile.id
   playerType: 'human' | 'computer';
 
   mana: Mana;
@@ -63,7 +63,7 @@ export const createPlayerState = (
       [ManaType.BLUE]: 0,
       [ManaType.RED]: 0,
     },
-    playerId: profile.id, // Fixed: was empty string before
+    id: profile.id, // Fixed: was empty string before
     playerType: playerType,
     quests: [],
     vault: 0,

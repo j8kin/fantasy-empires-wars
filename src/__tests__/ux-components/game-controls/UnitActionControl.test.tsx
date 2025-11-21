@@ -93,7 +93,7 @@ describe('UnitActionControl', () => {
       const barracksPosition: LandPosition = { row: 3, col: 3 };
 
       // Add barracks to a land owned by the turn owner
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BARRACKS, barracksPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -110,7 +110,7 @@ describe('UnitActionControl', () => {
       const towerPosition: LandPosition = { row: 3, col: 3 };
 
       // Add white mage tower to a land owned by the turn owner
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.WHITE_MAGE_TOWER, towerPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -127,7 +127,7 @@ describe('UnitActionControl', () => {
       const barracksPosition: LandPosition = { row: 3, col: 3 };
 
       // Add barracks with full slots
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BARRACKS, barracksPosition);
 
       // Fill all slots in the barracks
@@ -189,7 +189,7 @@ describe('UnitActionControl', () => {
       const heroPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a hero to a land owned by the turn owner
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       const hero = getDefaultUnit(gameState.players[0].getType()) as HeroUnit;
       hero.name = 'Test Hero';
       placeUnitsOnMap(hero, gameState, heroPosition);
@@ -208,7 +208,7 @@ describe('UnitActionControl', () => {
       const heroPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a hero with movements
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       const hero = getDefaultUnit(gameState.players[0].getType()) as HeroUnit;
       hero.name = 'Test Hero';
       placeUnitsOnMap(hero, gameState, heroPosition);
@@ -238,7 +238,7 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a non-hero unit
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       const nonHeroUnit = getDefaultUnit(gameState.players[0].getType());
       // Ensure it's not a hero by removing hero-specific properties
       delete (nonHeroUnit as any).experience;
@@ -301,7 +301,7 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add army with movements
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       const unit = getDefaultUnit(gameState.players[0].getType());
       placeUnitsOnMap(unit, gameState, armyPosition);
 
@@ -395,7 +395,7 @@ describe('UnitActionControl', () => {
       const position: LandPosition = { row: 3, col: 3 };
 
       // Add multiple recruitment buildings
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BARRACKS, position);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -410,7 +410,7 @@ describe('UnitActionControl', () => {
       const gameState = createGameStateStub({ nPlayers: 3, addPlayersHomeland: true });
 
       // Set turn owner to first player
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -455,7 +455,7 @@ describe('UnitActionControl', () => {
   describe('All Mage Tower Types', () => {
     it('highlights lands with white mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.WHITE_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -466,7 +466,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with black mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BLACK_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -477,7 +477,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with blue mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BLUE_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -488,7 +488,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with green mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.GREEN_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -499,7 +499,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with red mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].playerId;
+      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.RED_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);

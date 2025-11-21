@@ -19,7 +19,7 @@ const TestWrapper: React.FC<{
 
     React.useEffect(() => {
       updateGameState({
-        turnOwner: selectedPlayer.playerId,
+        turnOwner: selectedPlayer.id,
         players: [selectedPlayer, ...opponents],
         battlefield: {
           dimensions: { rows: 1, cols: 1 },

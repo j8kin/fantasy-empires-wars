@@ -185,7 +185,7 @@ describe('Calculate Mana', () => {
   const baseMana = (player: PlayerState) => {
     const playerSpecialLands = getLands({
       gameState: gameStateStub,
-      players: [player.playerId],
+      players: [player.id],
     }).filter(
       (l) =>
         (player.getType() === HeroUnitType.NECROMANCER &&
@@ -201,7 +201,7 @@ describe('Calculate Mana', () => {
     ).length;
     const playerHero = getLands({
       gameState: gameStateStub,
-      players: [player.playerId],
+      players: [player.id],
       noArmy: false,
     })[0].army[0].units[0] as HeroUnit;
     return (playerHero.mana || 0) + playerSpecialLands;

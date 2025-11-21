@@ -255,8 +255,8 @@ const NewGameDialog: React.FC = () => {
         diplomacy: {
           ...Object.fromEntries(
             opponents
-              .filter((o) => o.playerId !== opponent.playerId)
-              .map((op) => [op.playerId, DiplomacyStatus.NO_TREATY])
+              .filter((o) => o.id !== opponent.id)
+              .map((op) => [op.id, DiplomacyStatus.NO_TREATY])
           ),
           [selectedPlayer.id]: DiplomacyStatus.NO_TREATY,
         },
@@ -270,7 +270,7 @@ const NewGameDialog: React.FC = () => {
 
     const createdPlayer: PlayerState = createPlayerState(selectedPlayer, 'human');
     createdPlayer.diplomacy = Object.fromEntries(
-      opponents.map((op) => [op.playerId, DiplomacyStatus.NO_TREATY])
+      opponents.map((op) => [op.id, DiplomacyStatus.NO_TREATY])
     );
     createdPlayer.vault = initialMoney;
 
@@ -282,7 +282,7 @@ const NewGameDialog: React.FC = () => {
       const gameState: GameState = {
         battlefield: generateMap(getBattlefieldDimensions(mapSize)),
         turn: 1,
-        turnOwner: createdPlayer.playerId,
+        turnOwner: createdPlayer.id,
         turnPhase: TurnPhase.START,
         players: [createdPlayer, ...createdOpponents],
       };

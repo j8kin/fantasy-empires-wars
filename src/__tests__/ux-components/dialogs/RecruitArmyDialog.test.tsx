@@ -598,7 +598,7 @@ describe('RecruitArmyDialog', () => {
         (p) => p.getType() === HeroUnitType.WARSMITH
       );
       if (warsmithPlayer) {
-        mockGameState.turnOwner = warsmithPlayer.playerId;
+        mockGameState.turnOwner = warsmithPlayer.id;
       }
 
       renderWithProviders(<RecruitArmyDialog />);
@@ -614,7 +614,7 @@ describe('RecruitArmyDialog', () => {
         (p) => p.getType() !== HeroUnitType.WARSMITH
       );
       if (nonWarsmithPlayer) {
-        mockGameState.turnOwner = nonWarsmithPlayer.playerId;
+        mockGameState.turnOwner = nonWarsmithPlayer.id;
       }
 
       // Remove WARSMITH from available units to test the filter

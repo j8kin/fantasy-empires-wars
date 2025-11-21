@@ -11,9 +11,9 @@ export const getAvailableToCastSpellLands = (gameState: GameState, spellName: Sp
     spell.apply === 'player'
       ? [gameState.turnOwner]
       : (spell.apply === 'opponent'
-          ? gameState.players.filter((p) => p.playerId !== gameState.turnOwner)
+          ? gameState.players.filter((p) => p.id !== gameState.turnOwner)
           : gameState.players
-        ).map((p) => p.playerId);
+        ).map((p) => p.id);
 
   return getLands({ gameState: gameState, players: playerFiltered }).map((land) =>
     getLandId(land.mapPos)

@@ -15,7 +15,7 @@ export const startTurn = (
   gameState: GameState,
   onQuestResults?: (results: HeroOutcome[]) => void
 ) => {
-  if (!gameState.players.some((p) => p.playerId === gameState.turnOwner)) return;
+  if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
 
   if (gameState.turn === 1) {
     // on first turn place players randomly on a map

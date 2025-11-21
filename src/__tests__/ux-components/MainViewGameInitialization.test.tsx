@@ -16,7 +16,7 @@ import { createPlayerState, PREDEFINED_PLAYERS } from '../../state/PlayerState';
 describe('MainView Game Initialization Logic', () => {
   // Test the game identification logic that's used in MainView
   const createGameId = (gameState: GameState): string => {
-    return `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.playerId}`;
+    return `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.id}`;
   };
 
   it('should generate unique identifiers for different games', () => {

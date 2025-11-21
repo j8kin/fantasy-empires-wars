@@ -15,5 +15,5 @@ export const getPlayersByDiplomacy = (
   statuses: DiplomacyStatus[]
 ): PlayerState[] =>
   gameState.players.filter(
-    (p) => p.playerId !== gameState.turnOwner && statuses.includes(p.diplomacy[gameState.turnOwner])
+    (p) => p.id !== gameState.turnOwner && statuses.includes(p.diplomacy[gameState.turnOwner])
   );
