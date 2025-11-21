@@ -3,7 +3,7 @@ import styles from './css/PlayerSelection.module.css';
 
 import Avatar from '../avatars/Avatar';
 
-import { PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerProfile, PREDEFINED_PLAYERS } from '../../types/PlayerState';
 import { getAlignmentColor } from '../../types/Alignment';
 import { getPlayerColorValue } from '../../types/PlayerColors';
 

@@ -24,7 +24,7 @@ jest.mock('../../../ux-components/main-view/css/Background.module.css', () => ({
 // Mock child components
 jest.mock('../../ux-components/top-panel/TopPanel', () => {
   return () => {
-    const { PREDEFINED_PLAYERS } = jest.requireActual('../../types/GamePlayer');
+    const { PREDEFINED_PLAYERS } = jest.requireActual('../../types/PlayerState');
     const { useApplicationContext } = jest.requireActual('../../contexts/ApplicationContext');
     const mockPlayer = PREDEFINED_PLAYERS[0];
     const { setShowStartWindow, setShowSaveDialog, showOpponentInfo } = useApplicationContext();

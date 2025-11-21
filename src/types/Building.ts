@@ -1,6 +1,6 @@
 import { Alignment } from './Alignment';
 import { HeroUnitType, UnitType } from './Army';
-import { PlayerState } from './GamePlayer';
+import { PlayerState } from './PlayerState';
 
 export enum BuildingType {
   STRONGHOLD = 'Stronghold',

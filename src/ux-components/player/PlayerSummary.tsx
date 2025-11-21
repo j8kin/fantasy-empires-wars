@@ -6,7 +6,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
+import { getLandId, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../../map/utils/getLands';
 
 export interface PlayerSummaryProps {
@@ -23,7 +23,7 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
     // Find all lands controlled by the selected player
     setTimeout(() => {
       getLands({ gameState: gameState!, players: [turnOwner!.playerId] }).forEach((land) => {
-        addGlowingTile(battlefieldLandId(land.mapPos));
+        addGlowingTile(getLandId(land.mapPos));
       });
     }, 0);
   };

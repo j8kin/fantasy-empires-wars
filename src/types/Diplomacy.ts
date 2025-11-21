@@ -1,5 +1,5 @@
 import { GameState } from './GameState';
-import { PlayerState } from './GamePlayer';
+import { PlayerState } from './PlayerState';
 
 export enum DiplomacyStatus {
   NO_TREATY = 'No Treaty',

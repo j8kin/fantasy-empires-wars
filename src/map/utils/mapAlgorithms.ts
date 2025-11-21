@@ -1,10 +1,5 @@
 import { getLand, getLands, LandPosition } from './getLands';
-import {
-  BattlefieldDimensions,
-  battlefieldLandId,
-  GameState,
-  LandState,
-} from '../../types/GameState';
+import { BattlefieldDimensions, getLandId, GameState, LandState } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 
 export const calculateHexDistance = (
@@ -54,7 +49,7 @@ export const findShortestPath = (
   const visited = new Set<string>();
   const queue: { pos: LandPosition; path: LandPosition[] }[] = [];
 
-  visited.add(battlefieldLandId(startPosition));
+  visited.add(getLandId(startPosition));
   queue.push({ pos: startPosition, path: [startPosition] });
 
   while (queue.length > 0) {
@@ -68,7 +63,7 @@ export const findShortestPath = (
     const neighbors = getValidNeighbors(dimensions, current.pos);
 
     for (const neighbor of neighbors) {
-      const neighborKey = battlefieldLandId(neighbor);
+      const neighborKey = getLandId(neighbor);
 
       if (!visited.has(neighborKey)) {
         //const weight = 1; // Can be modified later for different terrain costs

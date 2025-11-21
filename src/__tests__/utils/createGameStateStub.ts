@@ -1,5 +1,5 @@
 import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
-import { PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerProfile, PREDEFINED_PLAYERS } from '../../types/PlayerState';
 import { toGamePlayer } from './toGamePlayer';
 import { generateMockMap } from './generateMockMap';
 import { construct } from '../../map/building/construct';

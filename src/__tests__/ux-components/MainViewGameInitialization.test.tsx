@@ -11,7 +11,7 @@
  */
 
 import { GameState } from '../../types/GameState';
-import { createPlayerState, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { createPlayerState, PREDEFINED_PLAYERS } from '../../types/PlayerState';
 
 describe('MainView Game Initialization Logic', () => {
   // Test the game identification logic that's used in MainView

@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import PlayerSelection from '../../ux-components/player-selection/PlayerSelection';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PREDEFINED_PLAYERS } from '../../types/PlayerState';
 import { Alignment } from '../../types/Alignment';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 

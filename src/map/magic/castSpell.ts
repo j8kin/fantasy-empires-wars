@@ -1,6 +1,6 @@
 import { Spell } from '../../types/Spell';
 import { LandPosition } from '../utils/getLands';
-import { battlefieldLandId, GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
+import { getLandId, GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
 import { TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
 
@@ -18,7 +18,7 @@ export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: G
   } else {
     spellOwner.mana[spell.manaType] -= spell.manaCost;
   }
-  const landId = battlefieldLandId(affectedLand);
+  const landId = getLandId(affectedLand);
   console.log(`Casting ${spell} on ${landId}`);
 
   // todo implement spell casting logic

@@ -1,5 +1,5 @@
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
-import { battlefieldLandId, GameState } from '../types/GameState';
+import { getLandId, GameState } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import {
   getDefaultUnit,
@@ -41,12 +41,11 @@ describe('Calculate Maintenance', () => {
       [HeroUnitType.ENCHANTER, 1, 100],
       [HeroUnitType.NECROMANCER, 1, 100],
     ])('Hero %s maintenance level %s', (hero, level, expected) => {
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.playerId;
+      gameStateStub.battlefield.lands[getLandId({ row: 0, col: 0 })].controlledBy = player.playerId;
       const heroUnit = getDefaultUnit(hero) as HeroUnit;
       heroUnit.level = level;
 
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
+      gameStateStub.battlefield.lands[getLandId({ row: 0, col: 0 })].army = [
         {
           units: [heroUnit],
           controlledBy: player.playerId,
@@ -72,13 +71,12 @@ describe('Calculate Maintenance', () => {
       [RegularUnitType.BALLISTA, UnitRank.REGULAR, 1, 150],
       [RegularUnitType.CATAPULT, UnitRank.REGULAR, 1, 50],
     ])('Unit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.playerId;
+      gameStateStub.battlefield.lands[getLandId({ row: 0, col: 0 })].controlledBy = player.playerId;
       const regularUnit = getDefaultUnit(regular) as RegularUnit;
       regularUnit.level = level;
       regularUnit.count = quantity;
 
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
+      gameStateStub.battlefield.lands[getLandId({ row: 0, col: 0 })].army = [
         {
           units: [regularUnit],
           controlledBy: player.playerId,
@@ -93,9 +91,8 @@ describe('Calculate Maintenance', () => {
       elitDwarf.level = UnitRank.ELITE;
       elitDwarf.count = 17;
 
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.playerId;
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
+      gameStateStub.battlefield.lands[getLandId({ row: 0, col: 0 })].controlledBy = player.playerId;
+      gameStateStub.battlefield.lands[getLandId({ row: 0, col: 0 })].army = [
         {
           units: [getDefaultUnit(HeroUnitType.NECROMANCER)],
           controlledBy: player.playerId,
@@ -132,8 +129,7 @@ describe('Calculate Maintenance', () => {
       [BuildingType.WALL, 100],
     ])('Building %s maintenance cost', (building, expected) => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
-      gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy =
-        player.playerId;
+      gameStateStub.battlefield.lands[getLandId(buildingPos)].controlledBy = player.playerId;
       construct(gameStateStub, building, buildingPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
@@ -142,8 +138,7 @@ describe('Calculate Maintenance', () => {
 
     it('Multiple buildings', () => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
-      gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy =
-        player.playerId;
+      gameStateStub.battlefield.lands[getLandId(buildingPos)].controlledBy = player.playerId;
       construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
       construct(gameStateStub, BuildingType.WALL, buildingPos);
       construct(gameStateStub, BuildingType.WALL, buildingPos);

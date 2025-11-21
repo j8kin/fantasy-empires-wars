@@ -1,5 +1,5 @@
-import { LandState, GameState, battlefieldLandId } from '../../types/GameState';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { LandState, GameState, getLandId } from '../../types/GameState';
+import { NO_PLAYER } from '../../types/PlayerState';
 import { Alignment } from '../../types/Alignment';
 import { LandType } from '../../types/Land';
 import { BuildingType } from '../../types/Building';
@@ -42,4 +42,4 @@ export const getLands = ({
 };
 
 export const getLand = (gameState: GameState, landPos: LandPosition): LandState =>
-  gameState.battlefield.lands[battlefieldLandId(landPos)];
+  gameState.battlefield.lands[getLandId(landPos)];

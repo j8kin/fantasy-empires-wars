@@ -5,7 +5,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
-import { battlefieldLandId, getPlayerById, getTurnOwner } from '../../types/GameState';
+import { getLandId, getPlayerById, getTurnOwner } from '../../types/GameState';
 import { getLand, LandPosition } from '../../map/utils/getLands';
 
 import { BuildingType, getBuilding } from '../../types/Building';
@@ -48,7 +48,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     landPopupPosition?.row === battlefieldPosition.row &&
     landPopupPosition?.col === battlefieldPosition.col;
 
-  const battlefieldTile = gameState!.battlefield.lands[battlefieldLandId(battlefieldPosition)];
+  const battlefieldTile = gameState!.battlefield.lands[getLandId(battlefieldPosition)];
 
   if (!battlefieldTile) {
     return <div className={styles.hexTile} title="Empty Tile" />;
@@ -68,7 +68,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     showLandPopup(battlefieldPosition, { x: event.clientX, y: event.clientY });
   };
 
-  const tileId = battlefieldLandId(battlefieldPosition);
+  const tileId = getLandId(battlefieldPosition);
   const isGlowing = glowingTiles.has(tileId) || battlefieldTile.glow;
 
   const handleClick = (event: React.MouseEvent) => {
@@ -132,7 +132,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
           ).values()
         );
 
-        moveToLands.forEach((land) => addGlowingTile(battlefieldLandId(land)));
+        moveToLands.forEach((land) => addGlowingTile(getLandId(land)));
 
         return;
       } else if (selectedLandAction === 'MoveArmyTo') {

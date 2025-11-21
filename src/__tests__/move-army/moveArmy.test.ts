@@ -1,6 +1,6 @@
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { battlefieldLandId, GameState, LandState } from '../../types/GameState';
+import { getLandId, GameState, LandState } from '../../types/GameState';
 import {
   getDefaultUnit,
   HeroUnit,
@@ -14,7 +14,7 @@ import { BuildingType } from '../../types/Building';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/PlayerState';
 
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -113,7 +113,7 @@ describe('Move Army', () => {
         expect(barracksLand.army[1].movements?.to).toBe(to);
         expect(barracksLand.army[1].movements?.path.length).toBe(pathLength);
         barracksLand.army[1].movements?.path.forEach((p, i) => {
-          expect(battlefieldLandId(p)).toBe(path[i]);
+          expect(getLandId(p)).toBe(path[i]);
         });
       }
     );

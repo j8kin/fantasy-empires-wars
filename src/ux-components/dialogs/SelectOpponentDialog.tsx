@@ -5,7 +5,7 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import PlayerSelection from '../player-selection/PlayerSelection';
 import GameButton from '../buttons/GameButton';
 
-import { NO_PLAYER, PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { NO_PLAYER, PlayerProfile, PREDEFINED_PLAYERS } from '../../types/PlayerState';
 import { ButtonName } from '../../types/ButtonName';
 
 export interface SelectOpponentDialogProps {

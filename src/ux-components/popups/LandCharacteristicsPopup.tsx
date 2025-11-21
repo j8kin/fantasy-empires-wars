@@ -3,12 +3,12 @@ import commonStyles from './css/Popup.module.css';
 import styles from './css/LandCharacteristicsPopup.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { battlefieldLandId, getPlayerById } from '../../types/GameState';
+import { getLandId, getPlayerById } from '../../types/GameState';
 
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/PlayerState';
 import { LandPosition } from '../../map/utils/getLands';
 import { useGameContext } from '../../contexts/GameContext';
 import { HeroUnit, isHero, RegularUnit } from '../../types/Army';
@@ -23,7 +23,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 }) => {
   const { hideLandPopup } = useApplicationContext();
   const { gameState } = useGameContext();
-  const land = gameState!.battlefield.lands[battlefieldLandId(battlefieldPosition)];
+  const land = gameState!.battlefield.lands[getLandId(battlefieldPosition)];
 
   // Calculate dynamic size based on content type
   // MANUAL ADJUSTMENT POINT 1: Base heights and row spacing

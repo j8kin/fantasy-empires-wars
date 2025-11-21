@@ -1,4 +1,4 @@
-import { battlefieldLandId, GameState, TurnPhase } from '../../types/GameState';
+import { getLandId, GameState, TurnPhase } from '../../types/GameState';
 import { mergeArmies } from './mergeArmies';
 import { getLands, LandPosition } from '../utils/getLands';
 import { Army } from '../../types/Army';
@@ -58,8 +58,8 @@ export const performMovements = (gameState: GameState): void => {
 
   // Process each army movement
   armiesToMove.forEach(({ army, currentLandPos, nextLandPos, isAtDestination }) => {
-    const currentLandId = battlefieldLandId(currentLandPos);
-    const nextLandId = battlefieldLandId(nextLandPos);
+    const currentLandId = getLandId(currentLandPos);
+    const nextLandId = getLandId(nextLandPos);
 
     // Remove army from current land
     if (updatedLands[currentLandId]) {

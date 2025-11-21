@@ -5,7 +5,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { battlefieldLandId } from '../../types/GameState';
+import { getLandId } from '../../types/GameState';
 import { HeroUnit, isHero } from '../../types/Army';
 import { findHeroByName } from '../../map/utils/findHeroByName';
 import { startQuest } from '../../map/quest/startQuest';
@@ -37,7 +37,7 @@ const SendHeroInQuestDialog: React.FC = () => {
   useEffect(() => {
     if (!gameState || !showSendHeroInQuestDialog || !actionLandPosition) return;
 
-    const land = gameState.battlefield.lands[battlefieldLandId(actionLandPosition)];
+    const land = gameState.battlefield.lands[getLandId(actionLandPosition)];
     if (!land || land.army.length === 0) {
       handleClose();
       return;
@@ -79,7 +79,7 @@ const SendHeroInQuestDialog: React.FC = () => {
 
   if (!gameState || !showSendHeroInQuestDialog || !actionLandPosition) return undefined;
 
-  const land = gameState.battlefield.lands[battlefieldLandId(actionLandPosition)];
+  const land = gameState.battlefield.lands[getLandId(actionLandPosition)];
 
   // If no land with heroes is available, don't render content
   if (!land || land.army.length === 0) {

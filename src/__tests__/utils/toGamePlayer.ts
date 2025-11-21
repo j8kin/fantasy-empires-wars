@@ -1,4 +1,4 @@
-import { PlayerState, PlayerProfile, createPlayerState } from '../../types/GamePlayer';
+import { PlayerState, PlayerProfile, createPlayerState } from '../../types/PlayerState';
 
 /**
  * Test method only.

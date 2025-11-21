@@ -1,6 +1,6 @@
 import {
   BattlefieldDimensions,
-  battlefieldLandId,
+  getLandId,
   BattlefieldLands,
   BattlefieldMap,
   LandState,
@@ -14,7 +14,7 @@ import {
   Land,
   LandType,
 } from '../../types/Land';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/PlayerState';
 import { LandPosition } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getRandomElement } from '../../types/getRandomElement';
@@ -32,7 +32,7 @@ const getRandomEmptyLand = (tiles: BattlefieldLands): LandState | undefined => {
 
 const getEmptyNeighbors = (battlefield: BattlefieldMap, position: LandPosition): LandState[] => {
   return getTilesInRadius(battlefield.dimensions, position, 1)
-    .map((pos) => battlefield.lands[battlefieldLandId(pos)])
+    .map((pos) => battlefield.lands[getLandId(pos)])
     .filter((tile) => tile.land.id === LandType.NONE);
 };
 
@@ -55,7 +55,7 @@ const createEmptyBattlefield = (dimensions: BattlefieldDimensions): BattlefieldL
     for (let col = 0; col < colsInRow; col++) {
       const mapPos: LandPosition = { row: row, col: col };
 
-      battlefield[battlefieldLandId(mapPos)] = {
+      battlefield[getLandId(mapPos)] = {
         mapPos: mapPos,
         land: getLandById(LandType.NONE), // Temporary, will be overwritten
         controlledBy: NO_PLAYER.id,
@@ -78,7 +78,7 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
       // exclude border lands
       !placedSpecialLands
         .flatMap((h) => getTilesInRadius(battlefield.dimensions, h.mapPos, 4, false))
-        .map((tola) => battlefieldLandId(tola))
+        .map((tola) => getLandId(tola))
         .includes(landId)
   );
 
@@ -86,7 +86,7 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
     // fallback to any land free land
     freeToPlaceLands = Object.values(battlefield.lands)
       .filter((land) => land.land.id === LandType.NONE)
-      .map((l) => battlefieldLandId(l.mapPos));
+      .map((l) => getLandId(l.mapPos));
   }
 
   const newLandPos = getRandomElement(freeToPlaceLands);
@@ -99,7 +99,7 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
   );
 
   for (let i = 0; i < nSupplementedLands && i < shuffledCandidates.length; i++) {
-    battlefield.lands[battlefieldLandId(shuffledCandidates[i])].land = getLandById(
+    battlefield.lands[getLandId(shuffledCandidates[i])].land = getLandById(
       getNearSpecialLandTypes(landType)
     );
   }
@@ -140,7 +140,7 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap =
     ) {
       let startLand = getRandomEmptyLand(battlefield.lands);
       if (startLand == null) break;
-      battlefield.lands[battlefieldLandId(startLand.mapPos)].land = getLandById(landType);
+      battlefield.lands[getLandId(startLand.mapPos)].land = getLandById(landType);
 
       // place 6 land of the same time nearby
       for (
@@ -153,7 +153,7 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap =
         const emptyNeighbor = getRandomNoneNeighbor(battlefield, startLand.mapPos);
         if (emptyNeighbor == null) break;
 
-        const neighborTileId = battlefieldLandId(emptyNeighbor.mapPos);
+        const neighborTileId = getLandId(emptyNeighbor.mapPos);
         battlefield.lands[neighborTileId].land = getLandById(landType);
         startLand = battlefield.lands[neighborTileId];
       }

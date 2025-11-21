@@ -1,7 +1,7 @@
 import { Land } from './Land';
 import { Building } from './Building';
 import { Armies } from './Army';
-import { PlayerState } from './GamePlayer';
+import { PlayerState } from './PlayerState';
 import { LandPosition } from '../map/utils/getLands';
 
 export interface BattlefieldDimensions {
@@ -50,5 +50,5 @@ export const getTurnOwner = (gameState?: GameState): PlayerState | undefined => 
   return getPlayerById(gameState, gameState?.turnOwner);
 };
 
-export const battlefieldLandId = (landPosition: LandPosition): string =>
+export const getLandId = (landPosition: LandPosition): string =>
   `${landPosition.row}-${landPosition.col}`;

@@ -6,8 +6,8 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { PlayerState } from '../../types/GamePlayer';
-import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
+import { PlayerState } from '../../types/PlayerState';
+import { getLandId, getTurnOwner } from '../../types/GameState';
 import { getLands } from '../../map/utils/getLands';
 import { getPlayerColorValue } from '../../types/PlayerColors';
 
@@ -21,7 +21,7 @@ const OpponentsPanel: React.FC = () => {
 
       setTimeout(() => {
         getLands({ gameState: gameState!, players: [opponent.playerId] }).forEach((land) => {
-          addGlowingTile(battlefieldLandId(land.mapPos));
+          addGlowingTile(getLandId(land.mapPos));
         });
       }, 0);
     },

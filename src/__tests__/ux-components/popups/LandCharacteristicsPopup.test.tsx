@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
-import { battlefieldLandId, GameState, LandState } from '../../../types/GameState';
+import { getLandId, GameState, LandState } from '../../../types/GameState';
 import {
   Armies,
   getDefaultUnit,
@@ -161,7 +161,7 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
         battlefield: {
@@ -207,7 +207,7 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
         battlefield: {
@@ -244,7 +244,7 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
         battlefield: {
@@ -295,7 +295,7 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
         battlefield: {
@@ -333,7 +333,7 @@ describe('LandCharacteristicsPopup', () => {
         army: [],
       };
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithoutArmy = {
         ...gameStateStub,
         battlefield: {
@@ -371,7 +371,7 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
         battlefield: {
@@ -411,7 +411,7 @@ describe('LandCharacteristicsPopup', () => {
         army: mockArmy,
       };
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
         battlefield: {

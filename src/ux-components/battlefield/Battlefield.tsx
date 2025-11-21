@@ -6,7 +6,7 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandTile from './LandTile';
 import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
-import { BattlefieldDimensions, battlefieldLandId, getTurnOwner } from '../../types/GameState';
+import { BattlefieldDimensions, getLandId, getTurnOwner } from '../../types/GameState';
 
 export interface BattlefieldProps {
   topPanelHeight: number;
@@ -59,7 +59,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
 
     for (let col = 0; col < colsInThisRow; col++) {
       const mapPosition = { row: row, col: col };
-      const tileId = battlefieldLandId(mapPosition);
+      const tileId = getLandId(mapPosition);
 
       hexRow.push(<LandTile key={tileId} battlefieldPosition={mapPosition} />);
     }

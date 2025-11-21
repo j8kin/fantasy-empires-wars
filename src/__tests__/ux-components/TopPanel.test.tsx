@@ -5,7 +5,7 @@ import TopPanel from '../../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { PlayerState, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerState, PREDEFINED_PLAYERS } from '../../types/PlayerState';
 import { ManaType } from '../../types/Mana';
 import { TurnPhase } from '../../types/GameState';
 import { toGamePlayer } from '../utils/toGamePlayer';

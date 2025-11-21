@@ -1,5 +1,5 @@
 import { GameState } from '../../types/GameState';
-import { PlayerState, PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerState, PlayerProfile, PREDEFINED_PLAYERS } from '../../types/PlayerState';
 import { getManaSource, ManaType } from '../../types/Mana';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { HeroUnit, HeroUnitType } from '../../types/Army';

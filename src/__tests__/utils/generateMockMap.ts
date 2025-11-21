@@ -1,7 +1,7 @@
-import { BattlefieldMap, battlefieldLandId, BattlefieldDimensions } from '../../types/GameState';
+import { BattlefieldMap, getLandId, BattlefieldDimensions } from '../../types/GameState';
 import { LandPosition } from '../../map/utils/getLands';
 import { getLandById, Land, LandType } from '../../types/Land';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/PlayerState';
 import { Alignment } from '../../types/Alignment';
 
 const genLand = (alignment: Alignment | undefined): Land => {
@@ -30,7 +30,7 @@ export const generateMockMap = (
     const colsInRow = row % 2 === 0 ? dimensions.cols : dimensions.cols - 1;
     for (let col = 0; col < colsInRow; col++) {
       const position: LandPosition = { row: row, col: col };
-      const key = battlefieldLandId(position);
+      const key = getLandId(position);
       result.lands[key] = {
         mapPos: position,
         land: genLand(alignment),

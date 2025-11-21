@@ -17,7 +17,7 @@ import {
   PlayerProfile,
   PREDEFINED_PLAYERS,
   createPlayerState,
-} from '../../types/GamePlayer';
+} from '../../types/PlayerState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { getPlayerColorValue, PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';

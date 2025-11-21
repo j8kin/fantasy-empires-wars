@@ -1,5 +1,5 @@
 import { BuildingType } from '../../types/Building';
-import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
+import { getLandId, GameState, getTurnOwner } from '../../types/GameState';
 import { getLand, getLands } from '../utils/getLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 
@@ -25,7 +25,7 @@ export const getAvailableToConstructLands = (
               (tile) => getLand(gameState, tile).controlledBy !== owner.playerId
             )
         )
-        .map((l) => battlefieldLandId(l.mapPos));
+        .map((l) => getLandId(l.mapPos));
 
     case BuildingType.STRONGHOLD:
       const allStrongholds = getLands({
@@ -34,18 +34,18 @@ export const getAvailableToConstructLands = (
       });
       const strongholdsExcludedArea = allStrongholds.flatMap((stronghold) =>
         getTilesInRadius(gameState.battlefield.dimensions, stronghold.mapPos, 1, false).map(
-          (tile) => battlefieldLandId(tile)
+          (tile) => getLandId(tile)
         )
       );
 
       return playerLands
-        .filter((land) => !strongholdsExcludedArea.includes(battlefieldLandId(land.mapPos)))
-        .map((l) => battlefieldLandId(l.mapPos));
+        .filter((land) => !strongholdsExcludedArea.includes(getLandId(land.mapPos)))
+        .map((l) => getLandId(l.mapPos));
 
     case BuildingType.DEMOLITION:
       return playerLands
         .filter((land) => land.buildings.length > 0)
-        .map((l) => battlefieldLandId(l.mapPos));
+        .map((l) => getLandId(l.mapPos));
 
     default:
       return playerLands
@@ -54,6 +54,6 @@ export const getAvailableToConstructLands = (
             land.buildings.length === 0 ||
             (land.buildings.length === 1 && land.buildings[0].id === BuildingType.WALL)
         )
-        .map((l) => battlefieldLandId(l.mapPos));
+        .map((l) => getLandId(l.mapPos));
   }
 };

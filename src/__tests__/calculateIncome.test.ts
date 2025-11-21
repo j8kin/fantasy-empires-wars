@@ -1,11 +1,11 @@
 import { calculateIncome } from '../map/gold/calculateIncome';
-import { battlefieldLandId, GameState, TurnPhase } from '../types/GameState';
+import { getLandId, GameState, TurnPhase } from '../types/GameState';
 import { generateMockMap } from './utils/generateMockMap';
 import { BuildingType, getBuilding } from '../types/Building';
 import { getLandById, LandType } from '../types/Land';
 import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
 import { Alignment } from '../types/Alignment';
-import { PlayerState } from '../types/GamePlayer';
+import { PlayerState } from '../types/PlayerState';
 import { construct } from '../map/building/construct';
 
 describe('Calculate Income', () => {
@@ -25,7 +25,7 @@ describe('Calculate Income', () => {
   });
 
   it('Corner case: No owned strongholds', () => {
-    gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
+    gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].controlledBy =
       lawfulPlayer.playerId;
 
     const income = calculateIncome(gameStateStub);
@@ -91,18 +91,16 @@ describe('Calculate Income', () => {
 
       gameStateStub.turnOwner = player.playerId;
       // stronghold
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].controlledBy =
-        player.playerId;
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].goldPerTurn = 100;
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: 5 })].buildings = [
+      gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].controlledBy = player.playerId;
+      gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
+      gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
       ];
 
       // additional land (should be calculated with penalty
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: landCol })].controlledBy =
+      gameStateStub.battlefield.lands[getLandId({ row: 5, col: landCol })].controlledBy =
         player.playerId;
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 5, col: landCol })].goldPerTurn =
-        100;
+      gameStateStub.battlefield.lands[getLandId({ row: 5, col: landCol })].goldPerTurn = 100;
 
       const income = calculateIncome(gameStateStub);
 
@@ -126,12 +124,10 @@ describe('Calculate Income', () => {
       gameStateStub.turnOwner = player.playerId;
 
       // add different type land in the stronghold radius to demonstrate different income calculations
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].land =
-        getLandById(land);
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].controlledBy =
-        player.playerId;
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].goldPerTurn = 100;
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 4, col: 4 })].buildings = [
+      gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].land = getLandById(land);
+      gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].controlledBy = player.playerId;
+      gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
+      gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
       ];
 

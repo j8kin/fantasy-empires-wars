@@ -1,6 +1,6 @@
 import { getLands } from '../map/utils/getLands';
 import { construct } from '../map/building/construct';
-import { PlayerState, PREDEFINED_PLAYERS } from '../types/GamePlayer';
+import { PlayerState, PREDEFINED_PLAYERS } from '../types/PlayerState';
 import { BuildingType } from '../types/Building';
 import { BattlefieldMap, GameState, BattlefieldDimensions } from '../types/GameState';
 import { getLandById, LandType } from '../types/Land';

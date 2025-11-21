@@ -1,7 +1,7 @@
-import { battlefieldLandId, GameState } from '../../types/GameState';
+import { getLandId, GameState } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 import { getNearestStrongholdLand, getTilesInRadius } from '../utils/mapAlgorithms';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/PlayerState';
 import { LandPosition } from '../utils/getLands';
 
 /**
@@ -11,7 +11,7 @@ import { LandPosition } from '../utils/getLands';
  * @param gameState - Game State (income and player lands could be updated)
  */
 export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => {
-  const landId = battlefieldLandId(landPos);
+  const landId = getLandId(landPos);
   const player = gameState.battlefield.lands[landId].controlledBy;
   const isStronghold = gameState.battlefield.lands[landId].buildings.some(
     (b) => b.id === BuildingType.STRONGHOLD
@@ -28,7 +28,7 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
       1,
       false
     )
-      .map(battlefieldLandId)
+      .map(getLandId)
       .filter(
         (l) =>
           gameState.battlefield.lands[l].controlledBy === player &&

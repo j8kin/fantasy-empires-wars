@@ -1,5 +1,5 @@
-import { battlefieldLandId, GameState, getTurnOwner, LandState } from '../../types/GameState';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { getLandId, GameState, getTurnOwner, LandState } from '../../types/GameState';
+import { NO_PLAYER } from '../../types/PlayerState';
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
 import { getLand, getLands } from '../utils/getLands';
 import { construct } from '../building/construct';
@@ -40,7 +40,7 @@ export const placeHomeland = (gameState: GameState) => {
       !landId.startsWith(`${gameState.battlefield.dimensions.rows - 2}-`) &&
       !existingPlayersHomelands
         .flatMap((h) => getTilesInRadius(gameState.battlefield.dimensions, h.mapPos, 4, false))
-        .map((tola) => battlefieldLandId(tola))
+        .map((tola) => getLandId(tola))
         .includes(landId)
   );
 
@@ -54,7 +54,7 @@ export const placeHomeland = (gameState: GameState) => {
         !landId.startsWith(`${gameState.battlefield.dimensions.rows - 2}-`) &&
         !existingPlayersHomelands
           .flatMap((h) => getTilesInRadius(gameState.battlefield.dimensions, h.mapPos, 3, false))
-          .map((tola) => battlefieldLandId(tola))
+          .map((tola) => getLandId(tola))
           .includes(landId)
     );
   }

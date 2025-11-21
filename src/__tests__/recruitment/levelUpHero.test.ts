@@ -1,4 +1,4 @@
-import { PlayerProfile, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
+import { PlayerProfile, PREDEFINED_PLAYERS } from '../../types/PlayerState';
 import { getDefaultUnit, HeroUnit, HeroUnitType } from '../../types/Army';
 import { levelUpHero } from '../../map/recruiting/levelUpHero';
 import { toGamePlayer } from '../utils/toGamePlayer';

@@ -7,7 +7,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { ButtonName } from '../../types/ButtonName';
 import GameButton from '../buttons/GameButton';
 import { getLands } from '../../map/utils/getLands';
-import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
+import { getLandId, getTurnOwner } from '../../types/GameState';
 import { BuildingType } from '../../types/Building';
 import { isHero } from '../../types/Army';
 
@@ -49,7 +49,7 @@ const UnitActionControl: React.FC = () => {
       setSelectedLandAction('Recruit');
       // Add glowing to all recruitment lands
       recruitmentLands.forEach((land) => {
-        const tileId = battlefieldLandId(land.mapPos);
+        const tileId = getLandId(land.mapPos);
         addGlowingTile(tileId);
       });
     },
@@ -79,7 +79,7 @@ const UnitActionControl: React.FC = () => {
       setSelectedLandAction('Quest');
       // Add glowing to all quest lands
       questLands.forEach((land) => {
-        const tileId = battlefieldLandId(land.mapPos);
+        const tileId = getLandId(land.mapPos);
         addGlowingTile(tileId);
       });
     },
@@ -107,7 +107,7 @@ const UnitActionControl: React.FC = () => {
       setSelectedLandAction('MoveArmyFrom');
       // Add glowing to all army lands
       armyLands.forEach((land) => {
-        const tileId = battlefieldLandId(land.mapPos);
+        const tileId = getLandId(land.mapPos);
         addGlowingTile(tileId);
       });
     },

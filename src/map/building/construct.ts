@@ -1,8 +1,8 @@
 import { BuildingType, getBuilding } from '../../types/Building';
 import { getLand, LandPosition } from '../utils/getLands';
-import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
+import { getLandId, GameState, getTurnOwner } from '../../types/GameState';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/PlayerState';
 import { destroyBuilding } from './destroyBuilding';
 import { TreasureItem } from '../../types/Treasures';
 
@@ -13,7 +13,7 @@ export const construct = (
 ) => {
   const { battlefield } = gameState;
   const owner = getTurnOwner(gameState)!;
-  const mapPosition = battlefieldLandId(position);
+  const mapPosition = getLandId(position);
   const building = getBuilding(buildingType);
   if (owner.vault < building.buildCost) {
     return;
@@ -30,7 +30,7 @@ export const construct = (
       newLandsCandidates.forEach((land) => {
         // if the land is not controlled by any player, it becomes controlled by the player
         if (getLand(gameState, land).controlledBy === NO_PLAYER.id) {
-          battlefield.lands[battlefieldLandId(land)].controlledBy = owner.playerId;
+          battlefield.lands[getLandId(land)].controlledBy = owner.playerId;
         }
       });
       break;

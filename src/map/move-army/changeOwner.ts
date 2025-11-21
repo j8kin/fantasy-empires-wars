@@ -1,9 +1,9 @@
-import { battlefieldLandId, GameState } from '../../types/GameState';
+import { getLandId, GameState } from '../../types/GameState';
 import { getHostileLands } from '../utils/getHostileLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getLand, getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { NO_PLAYER } from '../../types/PlayerState';
 import { getRealmLands } from '../utils/getRealmLands';
 
 export const changeOwner = (gameState: GameState): void => {
@@ -11,7 +11,7 @@ export const changeOwner = (gameState: GameState): void => {
   getHostileLands(gameState).forEach((land) => (land.controlledBy = gameState.turnOwner));
 
   // find lands controller by player but far from strongholds and no army
-  const realmLands = getRealmLands(gameState).map((l) => battlefieldLandId(l.mapPos));
+  const realmLands = getRealmLands(gameState).map((l) => getLandId(l.mapPos));
 
   getLands({
     gameState: gameState,
@@ -20,7 +20,7 @@ export const changeOwner = (gameState: GameState): void => {
   })
     .filter(
       (l) =>
-        !realmLands.includes(battlefieldLandId(l.mapPos)) &&
+        !realmLands.includes(getLandId(l.mapPos)) &&
         !l.army.some((a) => a.controlledBy === gameState.turnOwner)
     )
     .forEach((hostileLand) => {

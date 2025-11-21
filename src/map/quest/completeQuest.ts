@@ -10,7 +10,7 @@ import {
   heroGainRelic,
 } from './questCompleteMessages';
 import { HeroUnit } from '../../types/Army';
-import { PlayerState } from '../../types/GamePlayer';
+import { PlayerState } from '../../types/PlayerState';
 import { getLand } from '../utils/getLands';
 import { levelUpHero } from '../recruiting/levelUpHero';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
