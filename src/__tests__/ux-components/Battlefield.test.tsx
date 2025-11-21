@@ -20,12 +20,14 @@ jest.mock('../../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 jest.mock('../../ux-components/battlefield/LandTile', () => {
   const { getLandId } = require('../../state/LandState');
   const { useGameContext } = require('../../contexts/GameContext');
+  const { getLandOwner } = require('../../state/GameState');
 
   return (props: { battlefieldPosition: LandPosition }) => {
     const { battlefieldPosition } = props;
     const tileId: string = getLandId(battlefieldPosition);
     const { gameState } = useGameContext();
     const tile = gameState.battlefield.lands[tileId];
+    const controlledBy = tile ? getLandOwner(gameState, tileId) : undefined;
 
     return (
       <div
@@ -33,7 +35,7 @@ jest.mock('../../ux-components/battlefield/LandTile', () => {
         data-tile-id={tileId}
         data-row={battlefieldPosition.row}
         data-col={battlefieldPosition.col}
-        data-controlled-by={tile?.controlledBy}
+        data-controlled-by={controlledBy}
         data-land-type={tile?.land?.id}
       />
     );
