@@ -3,8 +3,8 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getLandId, getPlayerById, getTurnOwner } from '../../state/GameState';
-import { LandPosition } from '../../state/LandState';
+import { getPlayerById, getTurnOwner } from '../../state/GameState';
+import { getLandId, LandPosition } from '../../state/LandState';
 
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 

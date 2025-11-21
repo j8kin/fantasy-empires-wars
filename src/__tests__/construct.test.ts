@@ -1,6 +1,6 @@
-import { getLandId, getTurnOwner } from '../state/GameState';
+import { getTurnOwner } from '../state/GameState';
 import { PlayerState } from '../state/PlayerState';
-import { LandPosition } from '../state/LandState';
+import { getLandId, LandPosition } from '../state/LandState';
 
 import { BuildingType, getBuilding } from '../types/Building';
 import { getLand, getLands } from '../map/utils/getLands';

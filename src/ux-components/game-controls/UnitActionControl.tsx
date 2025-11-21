@@ -4,12 +4,16 @@ import styles from './css/GameControl.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { ButtonName } from '../../types/ButtonName';
 import GameButton from '../buttons/GameButton';
-import { getLands } from '../../map/utils/getLands';
-import { getLandId, getTurnOwner } from '../../state/GameState';
+
+import { getTurnOwner } from '../../state/GameState';
+import { getLandId } from '../../state/LandState';
+
+import { ButtonName } from '../../types/ButtonName';
 import { BuildingType } from '../../types/Building';
 import { isHero } from '../../types/Army';
+
+import { getLands } from '../../map/utils/getLands';
 
 const UnitActionControl: React.FC = () => {
   const { addGlowingTile, clearAllGlow, setSelectedLandAction } = useApplicationContext();

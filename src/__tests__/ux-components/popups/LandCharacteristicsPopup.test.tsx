@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
-import { getLandId, GameState } from '../../../state/GameState';
-import { LandState } from '../../../state/LandState';
+import { GameState } from '../../../state/GameState';
+import { getLandId, LandState } from '../../../state/LandState';
 import {
   Armies,
   getDefaultUnit,

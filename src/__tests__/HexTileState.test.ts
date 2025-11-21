@@ -1,4 +1,4 @@
-import { getLandId } from '../state/GameState';
+import { getLandId } from '../state/LandState';
 
 describe('HexTileState Utility Functions', () => {
   describe('createTileId', () => {

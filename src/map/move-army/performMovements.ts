@@ -1,5 +1,5 @@
-import { getLandId, GameState, TurnPhase } from '../../state/GameState';
-import { LandPosition } from '../../state/LandState';
+import { GameState, TurnPhase } from '../../state/GameState';
+import { getLandId, LandPosition } from '../../state/LandState';
 
 import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
 import { Army } from '../../types/Army';

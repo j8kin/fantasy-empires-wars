@@ -1,6 +1,6 @@
-import { BattlefieldMap, getLandId, BattlefieldDimensions } from '../../state/GameState';
+import { BattlefieldMap, BattlefieldDimensions } from '../../state/GameState';
 import { NO_PLAYER } from '../../state/PlayerState';
-import { LandPosition } from '../../state/LandState';
+import { getLandId, LandPosition } from '../../state/LandState';
 
 import { getLandById, Land, LandType } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';

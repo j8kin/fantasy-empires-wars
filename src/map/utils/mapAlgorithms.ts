@@ -1,5 +1,5 @@
-import { BattlefieldDimensions, getLandId, GameState } from '../../state/GameState';
-import { LandPosition, LandState } from '../../state/LandState';
+import { BattlefieldDimensions, GameState } from '../../state/GameState';
+import { getLandId, LandPosition, LandState } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
 

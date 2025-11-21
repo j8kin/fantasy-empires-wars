@@ -1,9 +1,14 @@
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { getLandId, GameState, TurnPhase } from '../../state/GameState';
-import { getLand } from '../../map/utils/getLands';
+import { GameState, TurnPhase } from '../../state/GameState';
+import { getLandId } from '../../state/LandState';
+
 import { Army, getDefaultUnit, RegularUnit, RegularUnitType, UnitRank } from '../../types/Army';
 import { Movements } from '../../types/Movements';
+
 import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
+
+import { getLand } from '../../map/utils/getLands';
+
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('Calculate Attrition Penalty', () => {
   let randomSpy: jest.SpyInstance<number, []>;

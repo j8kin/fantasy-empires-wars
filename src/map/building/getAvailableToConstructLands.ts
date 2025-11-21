@@ -1,7 +1,9 @@
 import { BuildingType } from '../../types/Building';
-import { getLandId, GameState, getTurnOwner } from '../../state/GameState';
-import { getLand, getLands } from '../utils/getLands';
+import { GameState, getTurnOwner } from '../../state/GameState';
+import { getLandId } from '../../state/LandState';
+
 import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { getLand, getLands } from '../utils/getLands';
 
 export const getAvailableToConstructLands = (
   gameState: GameState,

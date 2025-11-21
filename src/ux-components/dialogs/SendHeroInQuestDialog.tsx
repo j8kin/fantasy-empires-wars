@@ -5,11 +5,13 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { getLandId } from '../../state/GameState';
+import { getLandId } from '../../state/LandState';
+
 import { HeroUnit, isHero } from '../../types/Army';
+import { getAllQuests, getQuestType } from '../../types/Quest';
+
 import { findHeroByName } from '../../map/utils/findHeroByName';
 import { startQuest } from '../../map/quest/startQuest';
-import { getAllQuests, getQuestType } from '../../types/Quest';
 
 import { getQuestImg } from '../../assets/getQuestImg';
 

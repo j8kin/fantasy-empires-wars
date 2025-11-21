@@ -1,5 +1,8 @@
+import { GameState } from '../../state/GameState';
+import { getLandId } from '../../state/LandState';
+
 import { getSpellById, SpellName } from '../../types/Spell';
-import { getLandId, GameState } from '../../state/GameState';
+
 import { getLands } from '../utils/getLands';
 
 export const getAvailableToCastSpellLands = (gameState: GameState, spellName: SpellName) => {

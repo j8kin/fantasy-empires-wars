@@ -1,10 +1,5 @@
-import {
-  BattlefieldDimensions,
-  getLandId,
-  BattlefieldLands,
-  BattlefieldMap,
-} from '../../state/GameState';
-import { LandPosition, LandState } from '../../state/LandState';
+import { BattlefieldDimensions, BattlefieldLands, BattlefieldMap } from '../../state/GameState';
+import { getLandId, LandPosition, LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
 import {

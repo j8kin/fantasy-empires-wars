@@ -1,5 +1,5 @@
-import { getLandId, GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
-import { LandPosition } from '../../state/LandState';
+import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { getLandId, LandPosition } from '../../state/LandState';
 
 import { Spell } from '../../types/Spell';
 import { TreasureItem } from '../../types/Treasures';

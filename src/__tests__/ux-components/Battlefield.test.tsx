@@ -18,7 +18,7 @@ jest.mock('../../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 
 // Mock HexTile component
 jest.mock('../../ux-components/battlefield/LandTile', () => {
-  const { getLandId } = require('../../state/GameState');
+  const { getLandId } = require('../../state/LandState');
   const { useGameContext } = require('../../contexts/GameContext');
 
   return (props: { battlefieldPosition: LandPosition }) => {

@@ -13,3 +13,6 @@ export interface LandState {
   army: Armies;
   glow?: boolean;
 }
+
+export const getLandId = (landPosition: LandPosition): string =>
+  `${landPosition.row}-${landPosition.col}`;

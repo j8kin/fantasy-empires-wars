@@ -5,8 +5,8 @@ import styles from './css/LandCharacteristicsPopup.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getLandId, getPlayerById } from '../../state/GameState';
-import { LandPosition } from '../../state/LandState';
+import { getPlayerById } from '../../state/GameState';
+import { LandPosition, getLandId } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
 import { getAlignmentColor } from '../../types/Alignment';

@@ -1,12 +1,16 @@
 import { calculateIncome } from '../map/gold/calculateIncome';
-import { getLandId, GameState, TurnPhase } from '../state/GameState';
-import { generateMockMap } from './utils/generateMockMap';
+import { GameState, TurnPhase } from '../state/GameState';
+import { getLandId } from '../state/LandState';
+import { PlayerState } from '../state/PlayerState';
+
 import { BuildingType, getBuilding } from '../types/Building';
 import { getLandById, LandType } from '../types/Land';
-import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
 import { Alignment } from '../types/Alignment';
-import { PlayerState } from '../state/PlayerState';
+
 import { construct } from '../map/building/construct';
+
+import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
+import { generateMockMap } from './utils/generateMockMap';
 
 describe('Calculate Income', () => {
   const gameStateStub: GameState = createGameStateStub({ addPlayersHomeland: false });

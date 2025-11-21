@@ -1,5 +1,5 @@
-import { GameState, getLandId } from '../../state/GameState';
-import { LandPosition, LandState } from '../../state/LandState';
+import { GameState } from '../../state/GameState';
+import { getLandId, LandPosition, LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
 import { Alignment } from '../../types/Alignment';

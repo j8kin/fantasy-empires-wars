@@ -1,6 +1,6 @@
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
-import { getLandId, GameState } from '../state/GameState';
-import { LandPosition } from '../state/LandState';
+import { GameState } from '../state/GameState';
+import { getLandId, LandPosition } from '../state/LandState';
 import { BuildingType } from '../types/Building';
 
 import {

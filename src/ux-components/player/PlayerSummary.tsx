@@ -6,7 +6,9 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { getLandId, getTurnOwner } from '../../state/GameState';
+import { getTurnOwner } from '../../state/GameState';
+import { getLandId } from '../../state/LandState';
+
 import { getLands } from '../../map/utils/getLands';
 
 export interface PlayerSummaryProps {

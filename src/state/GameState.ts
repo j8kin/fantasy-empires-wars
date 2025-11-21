@@ -1,5 +1,5 @@
 import { PlayerState } from './PlayerState';
-import { LandPosition, LandState } from './LandState';
+import { LandState } from './LandState';
 
 export interface BattlefieldDimensions {
   rows: number;
@@ -37,6 +37,3 @@ export const getPlayerById = (
 export const getTurnOwner = (gameState?: GameState): PlayerState | undefined => {
   return getPlayerById(gameState, gameState?.turnOwner);
 };
-
-export const getLandId = (landPosition: LandPosition): string =>
-  `${landPosition.row}-${landPosition.col}`;
