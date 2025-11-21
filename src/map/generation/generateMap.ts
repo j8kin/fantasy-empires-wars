@@ -3,8 +3,10 @@ import {
   getLandId,
   BattlefieldLands,
   BattlefieldMap,
-  LandState,
 } from '../../state/GameState';
+import { LandPosition, LandState } from '../../state/LandState';
+import { NO_PLAYER } from '../../state/PlayerState';
+
 import {
   getLandById,
   getMainSpecialLandTypes,
@@ -14,10 +16,9 @@ import {
   Land,
   LandType,
 } from '../../types/Land';
-import { NO_PLAYER } from '../../state/PlayerState';
-import { LandPosition } from '../utils/getLands';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getRandomElement } from '../../types/getRandomElement';
+
+import { getTilesInRadius } from '../utils/mapAlgorithms';
 
 const calculateBaseLandGold = (land: Land): number => {
   const { min, max } = land?.goldPerTurn;

@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
-import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { GameState } from '../../../state/GameState';
+import { LandPosition } from '../../../state/LandState';
+
 import {
   Unit,
   RegularUnit,
@@ -17,7 +17,11 @@ import {
   getDefaultUnit,
   isHero,
 } from '../../../types/Army';
-import { LandPosition, getLand } from '../../../map/utils/getLands';
+
+import { getLand } from '../../../map/utils/getLands';
+
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 import { startMovement as mockStartMovement } from '../../../map/move-army/startMovement';
 
 // Mock the startMovement function

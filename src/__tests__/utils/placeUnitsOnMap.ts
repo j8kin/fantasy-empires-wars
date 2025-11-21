@@ -1,6 +1,9 @@
-import { Unit } from '../../types/Army';
 import { GameState } from '../../state/GameState';
-import { getLand, LandPosition } from '../../map/utils/getLands';
+import { LandPosition } from '../../state/LandState';
+
+import { Unit } from '../../types/Army';
+
+import { getLand } from '../../map/utils/getLands';
 
 /**
  * test function. Should not be used in integration tests related on TurnManagement

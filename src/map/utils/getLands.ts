@@ -1,10 +1,10 @@
-import { LandState, GameState, getLandId } from '../../state/GameState';
+import { GameState, getLandId } from '../../state/GameState';
+import { LandPosition, LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
+
 import { Alignment } from '../../types/Alignment';
 import { LandType } from '../../types/Land';
 import { BuildingType } from '../../types/Building';
-
-export type LandPosition = { row: number; col: number };
 
 export const getLands = ({
   gameState,

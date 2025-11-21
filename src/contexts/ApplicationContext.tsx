@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { PlayerState, PlayerProfile } from '../state/PlayerState';
+import { LandPosition } from '../state/LandState';
 import { ScreenPosition } from '../ux-components/fantasy-border-frame/FantasyBorderFrame';
-import { LandPosition } from '../map/utils/getLands';
 import { HeroOutcome } from '../types/HeroOutcome';
 
 interface MoveArmyPath {

@@ -1,14 +1,16 @@
 import { BattlefieldDimensions, GameState, TurnPhase } from '../../state/GameState';
 import { PlayerProfile, PREDEFINED_PLAYERS } from '../../state/PlayerState';
-import { toGamePlayer } from './toGamePlayer';
-import { generateMockMap } from './generateMockMap';
-import { construct } from '../../map/building/construct';
+import { LandPosition } from '../../state/LandState';
+
 import { BuildingType } from '../../types/Building';
-import { LandPosition } from '../../map/utils/getLands';
-import { placeUnitsOnMap } from './placeUnitsOnMap';
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
+import { construct } from '../../map/building/construct';
 import { generateMap } from '../../map/generation/generateMap';
 import { levelUpHero } from '../../map/recruiting/levelUpHero';
+
+import { toGamePlayer } from './toGamePlayer';
+import { generateMockMap } from './generateMockMap';
+import { placeUnitsOnMap } from './placeUnitsOnMap';
 
 export const defaultBattlefieldSizeStub = { rows: 10, cols: 20 };
 export const createDefaultGameStateStub = (): GameState => createGameStateStub({});

@@ -4,12 +4,16 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
-import { createGameStateStub } from '../../utils/createGameStateStub';
 import { GameState, TurnPhase } from '../../../state/GameState';
+import { LandPosition } from '../../../state/LandState';
+
 import { BuildingType } from '../../../types/Building';
-import { construct } from '../../../map/building/construct';
 import { UnitType, RegularUnitType, HeroUnitType } from '../../../types/Army';
-import { LandPosition, getLand } from '../../../map/utils/getLands';
+
+import { construct } from '../../../map/building/construct';
+import { getLand } from '../../../map/utils/getLands';
+
+import { createGameStateStub } from '../../utils/createGameStateStub';
 
 // Import the mocked function (will be mocked by jest.mock above)
 import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';

@@ -3,14 +3,18 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import UnitActionControl from '../../../ux-components/game-controls/UnitActionControl';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
-import { ButtonName } from '../../../types/ButtonName';
-import { createGameStateStub } from '../../utils/createGameStateStub';
-import { BuildingType } from '../../../types/Building';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
-import { getDefaultUnit, HeroUnit } from '../../../types/Army';
-import { LandPosition } from '../../../map/utils/getLands';
-import { construct } from '../../../map/building/construct';
+
 import { GameState } from '../../../state/GameState';
+import { LandPosition } from '../../../state/LandState';
+
+import { ButtonName } from '../../../types/ButtonName';
+import { BuildingType } from '../../../types/Building';
+import { getDefaultUnit, HeroUnit } from '../../../types/Army';
+
+import { construct } from '../../../map/building/construct';
+
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { createGameStateStub } from '../../utils/createGameStateStub';
 
 // Mock GameButton component
 jest.mock('../../../ux-components/buttons/GameButton', () => {

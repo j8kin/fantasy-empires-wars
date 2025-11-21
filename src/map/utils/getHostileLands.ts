@@ -1,6 +1,7 @@
-import { getLandId, GameState, getTurnOwner, LandState } from '../../state/GameState';
-import { getLands } from './getLands';
+import { getLandId, GameState, getTurnOwner } from '../../state/GameState';
+import { LandState } from '../../state/LandState';
 import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
+import { getLands } from './getLands';
 import { getRealmLands } from './getRealmLands';
 
 export const getHostileLands = (gameState: GameState): LandState[] => {

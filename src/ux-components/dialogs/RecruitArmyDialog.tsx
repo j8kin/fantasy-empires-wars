@@ -6,7 +6,8 @@ import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { getTurnOwner } from '../../state/GameState';
-import { BuildingType } from '../../types/Building';
+import { LandPosition } from '../../state/LandState';
+
 import {
   getDefaultUnit,
   HeroUnitType,
@@ -17,8 +18,11 @@ import {
   Unit,
   UnitType,
 } from '../../types/Army';
-import { getLand, LandPosition } from '../../map/utils/getLands';
+
+import { BuildingType } from '../../types/Building';
+
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
+import { getLand } from '../../map/utils/getLands';
 
 import { getUnitImg } from '../../assets/getUnitImg';
 

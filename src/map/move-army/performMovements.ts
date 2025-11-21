@@ -1,8 +1,12 @@
 import { getLandId, GameState, TurnPhase } from '../../state/GameState';
-import { mergeArmies } from './mergeArmies';
-import { getLands, LandPosition } from '../utils/getLands';
-import { Army } from '../../types/Army';
+import { LandPosition } from '../../state/LandState';
+
 import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
+import { Army } from '../../types/Army';
+
+import { mergeArmies } from './mergeArmies';
+
+import { getLands } from '../utils/getLands';
 
 export const performMovements = (gameState: GameState): void => {
   if (gameState == null || gameState.turnPhase !== TurnPhase.END) return;

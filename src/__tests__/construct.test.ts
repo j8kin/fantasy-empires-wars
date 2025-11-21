@@ -1,16 +1,19 @@
 import { getLandId, getTurnOwner } from '../state/GameState';
+import { PlayerState } from '../state/PlayerState';
+import { LandPosition } from '../state/LandState';
+
+import { BuildingType, getBuilding } from '../types/Building';
+import { getLand, getLands } from '../map/utils/getLands';
+import { getDefaultUnit, RegularUnitType } from '../types/Army';
+import { relicts, TreasureItem } from '../types/Treasures';
+
 import { generateMockMap } from './utils/generateMockMap';
 import { construct } from '../map/building/construct';
-import { BuildingType, getBuilding } from '../types/Building';
-import { getLand, getLands, LandPosition } from '../map/utils/getLands';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { getDefaultUnit, RegularUnitType } from '../types/Army';
 import {
   createDefaultGameStateStub,
   defaultBattlefieldSizeStub,
 } from './utils/createGameStateStub';
-import { PlayerState } from '../state/PlayerState';
-import { relicts, TreasureItem } from '../types/Treasures';
 
 describe('Construct Buildings', () => {
   let gameStateStub = createDefaultGameStateStub();

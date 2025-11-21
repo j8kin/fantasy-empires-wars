@@ -1,6 +1,7 @@
-import { Spell } from '../../types/Spell';
-import { LandPosition } from '../utils/getLands';
 import { getLandId, GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { LandPosition } from '../../state/LandState';
+
+import { Spell } from '../../types/Spell';
 import { TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
 

@@ -1,14 +1,18 @@
-import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { GameState, getTurnOwner, LandState, TurnPhase } from '../../state/GameState';
-import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
-import { startQuest } from '../../map/quest/startQuest';
-import { HeroUnit, HeroUnitType, isHero, RegularUnitType } from '../../types/Army';
+import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { LandPosition, LandState } from '../../state/LandState';
+
 import { QuestType } from '../../types/Quest';
 import { TreasureItem } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
+import { HeroUnit, HeroUnitType, isHero, RegularUnitType } from '../../types/Army';
+
+import { getLand, getLands } from '../../map/utils/getLands';
+import { startQuest } from '../../map/quest/startQuest';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
+
+import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('Hero Quest', () => {
   const easyQuest: QuestType = 'The Echoing Ruins';

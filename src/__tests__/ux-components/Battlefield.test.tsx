@@ -1,7 +1,9 @@
 import { render, screen, within } from '@testing-library/react';
 import Battlefield from '../../ux-components/battlefield/Battlefield';
+
 import { GameState, BattlefieldDimensions } from '../../state/GameState';
-import { LandPosition } from '../../map/utils/getLands';
+import { LandPosition } from '../../state/LandState';
+
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { createGameStateStub } from '../utils/createGameStateStub';
 

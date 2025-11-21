@@ -1,3 +1,6 @@
+import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { LandPosition } from '../../state/LandState';
+
 import {
   getDefaultUnit,
   HeroUnit,
@@ -7,10 +10,10 @@ import {
   isWarMachine,
   UnitType,
 } from '../../types/Army';
-import { getLand, LandPosition } from '../utils/getLands';
-import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
+
+import { getLand } from '../utils/getLands';
 
 const recruitmentDuration = (unitType: UnitType) => {
   if (isHeroType(unitType)) return 3;

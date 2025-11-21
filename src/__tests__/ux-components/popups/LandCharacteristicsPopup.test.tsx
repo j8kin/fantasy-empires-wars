@@ -2,7 +2,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
-import { getLandId, GameState, LandState } from '../../../state/GameState';
+import { getLandId, GameState } from '../../../state/GameState';
+import { LandState } from '../../../state/LandState';
 import {
   Armies,
   getDefaultUnit,
@@ -11,9 +12,10 @@ import {
   RegularUnit,
   RegularUnitType,
 } from '../../../types/Army';
+import { BuildingType } from '../../../types/Building';
+
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { getLands } from '../../../map/utils/getLands';
-import { BuildingType } from '../../../types/Building';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();

@@ -1,6 +1,8 @@
 import { calculateMaintenance } from '../map/gold/calculateMaintenance';
 import { getLandId, GameState } from '../state/GameState';
-import { generateMockMap } from './utils/generateMockMap';
+import { LandPosition } from '../state/LandState';
+import { BuildingType } from '../types/Building';
+
 import {
   getDefaultUnit,
   HeroUnit,
@@ -9,10 +11,10 @@ import {
   RegularUnitType,
   UnitRank,
 } from '../types/Army';
-import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
+
+import { generateMockMap } from './utils/generateMockMap';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { LandPosition } from '../map/utils/getLands';
 import {
   createDefaultGameStateStub,
   defaultBattlefieldSizeStub,

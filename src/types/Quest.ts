@@ -1,4 +1,5 @@
-import { LandPosition } from '../map/utils/getLands';
+import { LandPosition } from '../state/LandState';
+
 import { HeroUnit } from './Army';
 
 export type QuestType =

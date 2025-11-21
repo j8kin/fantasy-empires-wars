@@ -1,4 +1,4 @@
-import { LandPosition } from '../map/utils/getLands';
+import { LandPosition } from '../state/LandState';
 
 export interface Movements {
   mp: number;

@@ -1,8 +1,5 @@
-import { Land } from '../types/Land';
-import { Building } from '../types/Building';
-import { Armies } from '../types/Army';
 import { PlayerState } from './PlayerState';
-import { LandPosition } from '../map/utils/getLands';
+import { LandPosition, LandState } from './LandState';
 
 export interface BattlefieldDimensions {
   rows: number;
@@ -11,15 +8,6 @@ export interface BattlefieldDimensions {
 
 export type BattlefieldLands = Record<string, LandState>;
 
-export interface LandState {
-  mapPos: LandPosition;
-  land: Land;
-  controlledBy: string;
-  goldPerTurn: number;
-  buildings: Building[];
-  army: Armies;
-  glow?: boolean;
-}
 export type BattlefieldMap = {
   dimensions: BattlefieldDimensions;
   lands: BattlefieldLands;

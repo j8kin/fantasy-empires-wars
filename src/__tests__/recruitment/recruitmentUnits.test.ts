@@ -1,7 +1,10 @@
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { GameState, getTurnOwner, LandState, TurnPhase } from '../../state/GameState';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { LandPosition, LandState } from '../../state/LandState';
+
 import { BuildingType } from '../../types/Building';
+import { relicts, TreasureItem } from '../../types/Treasures';
+
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import {
   getDefaultUnit,
@@ -12,8 +15,10 @@ import {
   UnitType,
 } from '../../types/Army';
 import { construct } from '../../map/building/construct';
-import { getLand, getLands, LandPosition } from '../../map/utils/getLands';
-import { relicts, TreasureItem } from '../../types/Treasures';
+
+import { getLand, getLands } from '../../map/utils/getLands';
+
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('Recruitment', () => {
   let randomSpy: jest.SpyInstance<number, []>;

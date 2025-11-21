@@ -3,24 +3,25 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
+import { getLandId, getPlayerById, getTurnOwner } from '../../state/GameState';
+import { LandPosition } from '../../state/LandState';
+
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
-import { getLandId, getPlayerById, getTurnOwner } from '../../state/GameState';
-import { getLand, LandPosition } from '../../map/utils/getLands';
-
-import { BuildingType, getBuilding } from '../../types/Building';
-import { construct } from '../../map/building/construct';
-
 import { getSpellById, SpellName } from '../../types/Spell';
+import { BuildingType, getBuilding } from '../../types/Building';
+import { isHero, RegularUnit } from '../../types/Army';
+import { getPlayerColorValue } from '../../types/PlayerColors';
+
+import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
+import { calcMaxMove, MAX_MOVE } from '../../map/move-army/calcMaxMove';
+import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
+import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
+import { getRealmLands } from '../../map/utils/getRealmLands';
+import { getLand } from '../../map/utils/getLands';
 
 import { getLandImg } from '../../assets/getLandImg';
-import { getPlayerColorValue } from '../../types/PlayerColors';
-import { getRealmLands } from '../../map/utils/getRealmLands';
-import { calcMaxMove, MAX_MOVE } from '../../map/move-army/calcMaxMove';
-import { isHero, RegularUnit } from '../../types/Army';
-import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
-import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
 
 interface HexTileProps {
   battlefieldPosition: LandPosition;

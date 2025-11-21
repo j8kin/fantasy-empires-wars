@@ -1,13 +1,16 @@
-import { getLandId, GameState, getTurnOwner, LandState } from '../../state/GameState';
+import { getLandId, GameState, getTurnOwner } from '../../state/GameState';
+import { LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
+
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
-import { getLand, getLands } from '../utils/getLands';
-import { construct } from '../building/construct';
 import { BuildingType, getBuilding } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getRandomElement } from '../../types/getRandomElement';
 import { levelUpHero } from '../recruiting/levelUpHero';
+import { construct } from '../building/construct';
+
+import { getRandomElement } from '../../types/getRandomElement';
+import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { getLand, getLands } from '../utils/getLands';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   const player = getTurnOwner(gameState)!;
