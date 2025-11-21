@@ -1,15 +1,16 @@
 import { GameState, getTurnOwner } from '../state/GameState';
-import { calculateIncome } from '../map/gold/calculateIncome';
-import { calculateMaintenance } from '../map/gold/calculateMaintenance';
+
+import { HeroOutcome } from '../types/HeroOutcome';
+import { TreasureItem } from '../types/Treasures';
+
+import { calculatePlayerIncome } from '../map/vault/calculatePlayerIncome';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
 import { completeRecruiting } from '../map/recruiting/completeRecruiting';
-import { HeroOutcome } from '../types/HeroOutcome';
 import { mergeArmies } from '../map/move-army/mergeArmies';
 import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPenalty';
 import { changeOwner } from '../map/move-army/changeOwner';
 import { calculateMana } from '../map/magic/calculateMana';
-import { TreasureItem } from '../types/Treasures';
 
 export const startTurn = (
   gameState: GameState,
@@ -44,27 +45,24 @@ export const startTurn = (
     onQuestResults?.([...questStatus, ...heroRecruitingStatus]);
   }
 
-  // Calculate income based on current player's lands and army's
-  player.income = calculateIncome(gameState) - calculateMaintenance(gameState);
+  // Calculate current player income for vault update and mana conversion
+  const currentIncome = calculatePlayerIncome(gameState);
+
+  // Handle empire treasure effects that have side effects (mana conversion)
   const hasObsidianChalice = player.empireTreasures?.some(
     (t) => t.id === TreasureItem.OBSIDIAN_CHALICE
   );
-  const hasBannerOfUnity = player.empireTreasures?.some(
-    (t) => t.id === TreasureItem.BANNER_OF_UNITY
-  );
 
-  // Empire treasures permanent effects:
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests#-empire-artifacts-permanent
-  player.income = hasBannerOfUnity ? Math.ceil(player.income * 1.25) : player.income;
-  // see OBSIDIAN_CHALICE effect: convert 10% of income to 0.02% of black mana
-  player.mana.black = hasObsidianChalice
-    ? player.mana.black + player.income * 0.02
-    : player.mana.black;
-  player.income = hasObsidianChalice ? Math.ceil(player.income * 0.9) : player.income;
+  // OBSIDIAN_CHALICE effect: convert 10% of income to 0.02% of black mana
+  if (hasObsidianChalice) {
+    // 10% reduction is already applied in `calculatePlayerIncome`
+    player.mana.black = player.mana.black + currentIncome * 0.02;
+  }
 
-  // calculate income and update player#s money and income after turn 2
+  // Update vault with current income after turn 2
   if (gameState.turn > 2) {
-    player.vault += player.income;
+    player.vault += currentIncome;
   }
 
   // calculate Mana

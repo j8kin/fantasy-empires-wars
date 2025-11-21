@@ -1,8 +1,8 @@
 import { render, renderHook, act, screen } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { TurnManager } from '../../turn/TurnManager';
-import { calculateIncome } from '../../map/gold/calculateIncome';
-import { calculateMaintenance } from '../../map/gold/calculateMaintenance';
+import { calculateIncome } from '../../map/vault/calculateIncome';
+import { calculateMaintenance } from '../../map/vault/calculateMaintenance';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 // Mock the mapGeneration module to return empty tiles initially
@@ -11,8 +11,8 @@ jest.mock('../../map/generation/generateMap', () => ({
 }));
 
 // Mock the income calculation functions
-jest.mock('../../map/gold/calculateIncome');
-jest.mock('../../map/gold/calculateMaintenance');
+jest.mock('../../map/vault/calculateIncome');
+jest.mock('../../map/vault/calculateMaintenance');
 
 // Mock TurnManager
 jest.mock('../../turn/TurnManager');

@@ -25,7 +25,6 @@ export interface PlayerState {
 
   mana: Mana;
   vault: number;
-  income: number;
 
   diplomacy: Diplomacy;
   empireTreasures: EmpireTreasure[];
@@ -55,7 +54,6 @@ export const createPlayerState = (
   return {
     diplomacy: {},
     empireTreasures: [],
-    income: 0,
     mana: {
       [ManaType.WHITE]: 0,
       [ManaType.BLACK]: 0,

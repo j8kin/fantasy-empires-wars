@@ -1,4 +1,4 @@
-import { calculateIncome } from '../map/gold/calculateIncome';
+import { calculateIncome } from '../map/vault/calculateIncome';
 import { GameState, getTurnOwner, TurnPhase } from '../state/GameState';
 import { getLandId } from '../state/LandState';
 import { PlayerState } from '../state/PlayerState';

@@ -1,4 +1,4 @@
-import { calculateMaintenance } from '../map/gold/calculateMaintenance';
+import { calculateMaintenance } from '../map/vault/calculateMaintenance';
 import { GameState, getTurnOwner } from '../state/GameState';
 import { getLandId, LandPosition } from '../state/LandState';
 import { BuildingType } from '../types/Building';

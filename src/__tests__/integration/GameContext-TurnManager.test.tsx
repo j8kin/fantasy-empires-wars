@@ -2,8 +2,8 @@ import { act, renderHook } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GameState, TurnPhase } from '../../state/GameState';
 import { TurnManager } from '../../turn/TurnManager';
-import { calculateIncome } from '../../map/gold/calculateIncome';
-import { calculateMaintenance } from '../../map/gold/calculateMaintenance';
+import { calculateIncome } from '../../map/vault/calculateIncome';
+import { calculateMaintenance } from '../../map/vault/calculateMaintenance';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 // Mock TurnManager
@@ -15,8 +15,8 @@ jest.mock('../../turn/endTurn');
 jest.mock('../../turn/mainAiTurn');
 
 // Mock the income calculation functions
-jest.mock('../../map/gold/calculateIncome');
-jest.mock('../../map/gold/calculateMaintenance');
+jest.mock('../../map/vault/calculateIncome');
+jest.mock('../../map/vault/calculateMaintenance');
 
 const mockCalculateIncome = calculateIncome as jest.MockedFunction<typeof calculateIncome>;
 const mockCalculateMaintenance = calculateMaintenance as jest.MockedFunction<

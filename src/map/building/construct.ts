@@ -49,8 +49,4 @@ export const construct = (
   );
 
   owner.vault -= hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;
-  if (gameState.turn > 1) {
-    // on the first turn default buildings are constructed without maintaining them since the real game starts at turn 2
-    owner.income -= building.maintainCost;
-  }
 };

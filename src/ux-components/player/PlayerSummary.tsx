@@ -10,6 +10,7 @@ import { getTurnOwner } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 import { getLands } from '../../map/utils/getLands';
+import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
 
 export interface PlayerSummaryProps {
   avatarSize: number;
@@ -20,6 +21,7 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
   const { gameState } = useGameContext();
 
   const turnOwner = getTurnOwner(gameState);
+  const currentIncome = calculatePlayerIncome(gameState!);
 
   const handleAvatarClick = () => {
     // Find all lands controlled by the selected player
@@ -46,7 +48,9 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
         <div className={styles.playerName}>{turnOwner.getName()}</div>
         <div className={styles.moneyInfo}>
           <div className={styles.moneyItem}>Gold: {turnOwner.vault}</div>
-          <div className={styles.moneyItem}>+{turnOwner.income}/turn</div>
+          <div className={styles.moneyItem}>
+            {currentIncome > 0 ? `+${currentIncome}` : currentIncome}/turn
+          </div>
         </div>
       </div>
     </div>

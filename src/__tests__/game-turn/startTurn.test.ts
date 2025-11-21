@@ -1,5 +1,6 @@
 import { GameState } from '../../state/GameState';
 import { startTurn } from '../../turn/startTurn';
+import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('Start Turn phase', () => {
@@ -9,7 +10,6 @@ describe('Start Turn phase', () => {
     gameStateStub = createDefaultGameStateStub();
     gameStateStub.players.forEach((player) => {
       player.vault = 0;
-      player.income = 0;
     });
   });
 
@@ -24,15 +24,14 @@ describe('Start Turn phase', () => {
     [3, 141, 141],
   ])(
     'Income and Money calculation based on current turn %s',
-    (turn: number, money: number, income: number) => {
+    (turn: number, expectedVault: number, expectedCalculatedIncome: number) => {
       expect(gameStateStub.players[0].vault).toBe(0);
-      expect(gameStateStub.players[0].income).toBe(0);
 
       gameStateStub.turn = turn;
       startTurn(gameStateStub);
 
-      expect(gameStateStub.players[0].vault).toBe(money);
-      expect(gameStateStub.players[0].income).toBe(income);
+      expect(gameStateStub.players[0].vault).toBe(expectedVault);
+      expect(calculatePlayerIncome(gameStateStub)).toBe(expectedCalculatedIncome);
     }
   );
 });
