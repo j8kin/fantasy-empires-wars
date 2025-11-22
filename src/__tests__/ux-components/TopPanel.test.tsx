@@ -87,7 +87,8 @@ describe('TopPanel Component', () => {
       expect(goldElements.length).toBeGreaterThan(0);
 
       // Test that income is displayed (calculated value, so test for pattern)
-      const incomePattern = /\+\d+\/turn/;
+      // Income can be positive (+income/turn), zero (0/turn), or negative (-income/turn)
+      const incomePattern = /[+\-]?\d+\/turn/;
       const incomeElements = await screen.findAllByText(incomePattern);
       expect(incomeElements.length).toBeGreaterThan(0);
     });
@@ -253,7 +254,8 @@ describe('TopPanel Component', () => {
       expect(goldElements.length).toBeGreaterThan(0);
 
       // Verify income is displayed (calculated value)
-      const incomePattern = /\+\d+\/turn/;
+      // Income can be positive (+income/turn), zero (0/turn), or negative (-income/turn)
+      const incomePattern = /[+\-]?\d+\/turn/;
       const incomeElements = await screen.findAllByText(incomePattern);
       expect(incomeElements.length).toBeGreaterThan(0);
 
