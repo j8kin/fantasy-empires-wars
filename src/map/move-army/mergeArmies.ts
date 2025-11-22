@@ -9,8 +9,7 @@ export const mergeArmies = (gameState: GameState): void => {
     .filter(
       (land) =>
         land.army.length > 1 &&
-        land.army.filter((a) => a.controlledBy() === gameState.turnOwner && a.isMoving())
-          .length > 1
+        land.army.filter((a) => a.controlledBy() === gameState.turnOwner && a.isMoving()).length > 1
     )
     .forEach((land) => {
       // merge armies of the same type and turnsUntilReady === 0 in one unit with summary quantity
@@ -42,7 +41,7 @@ export const mergeArmies = (gameState: GameState): void => {
           }
           return acc;
         },
-        createArmy(gameState.turnOwner,[], stationedArmy[0].getLandPosition())
+        createArmy(gameState.turnOwner, [], stationedArmy[0].getLandPosition())
       );
 
       land.army = [mergedRegularUnits, ...movingArmy, ...otherPlayersArmies];

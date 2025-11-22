@@ -114,7 +114,7 @@ const createArmyPosition = (position: LandPosition): ArmyPosition => ({
   movement: undefined,
 });
 
-export const createArmy = ( owner: string, units: Unit[], position: LandPosition): Army => {
+export const createArmy = (owner: string, units: Unit[], position: LandPosition): Army => {
   const armyPosition = createArmyPosition(position);
   const heroes: HeroUnit[] = [];
   const regulars: RegularUnit[] = [];
@@ -124,7 +124,6 @@ export const createArmy = ( owner: string, units: Unit[], position: LandPosition
   );
 
   return {
-
     controlledBy: () => owner,
 
     getLandPosition: function (): LandPosition {
@@ -182,7 +181,7 @@ export const createArmy = ( owner: string, units: Unit[], position: LandPosition
       return newArmy;
     },
 
-    startMoving: function(from:LandPosition, to:LandPosition): void {
+    startMoving: function (from: LandPosition, to: LandPosition): void {
       armyPosition.movement = createMovement(from, to);
     },
 

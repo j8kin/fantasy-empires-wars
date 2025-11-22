@@ -65,7 +65,7 @@ export const performMovements = (gameState: GameState): void => {
   //   const currentLandId = getLandId(currentLandPos);
   //   const nextLandId = getLandId(nextLandPos);
   //
-    // Remove army from current land
+  // Remove army from current land
   //   if (updatedLands[currentLandId]) {
   //     updatedLands[currentLandId] = {
   //       ...updatedLands[currentLandId],
