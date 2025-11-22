@@ -36,12 +36,12 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
       if (gameState.battlefield.lands[getLandId(l)].army.length > 0) {
         // if land has army of non-previous owner then change for a new owner (who owns army on this land)
         if (
-          !gameState.battlefield.lands[getLandId(l)].army.some((a) => a.controlledBy === player)
+          !gameState.battlefield.lands[getLandId(l)].army.some((a) => a.controlledBy() === player)
         ) {
           owner.removeLand(getLandId(l));
           const newLandOwner = getPlayerById(
             gameState,
-            gameState.battlefield.lands[getLandId(l)].army[0].controlledBy
+            gameState.battlefield.lands[getLandId(l)].army[0].controlledBy()
           )!;
           newLandOwner.addLand(getLandId(l));
         }

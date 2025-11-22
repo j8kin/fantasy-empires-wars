@@ -3,6 +3,7 @@ import { Building } from '../types/Building';
 import { Armies } from '../types/Army';
 
 export type LandPosition = { row: number; col: number };
+export const NO_LAND_POSITION: LandPosition = { row: -1, col: -1 };
 
 export interface LandState {
   mapPos: LandPosition;

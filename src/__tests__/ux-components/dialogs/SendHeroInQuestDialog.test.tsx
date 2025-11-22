@@ -8,7 +8,7 @@ import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQues
 import { GameState, getLandOwner, TurnPhase } from '../../../state/GameState';
 import { getLandId } from '../../../state/LandState';
 
-import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
+import { createArmy, getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
 import { Alignment } from '../../../types/Alignment';
 import { getLands } from '../../../map/utils/getLands';
 
@@ -751,10 +751,7 @@ describe('SendHeroInQuestDialog', () => {
           recruitCost: 0,
         };
 
-        currentPlayerLands[1].army.push({
-          units: [secondHero],
-          controlledBy: mockGameState.turnOwner,
-        });
+        currentPlayerLands[1].army.push(createArmy(mockGameState.turnOwner, [secondHero]));
       }
     });
 

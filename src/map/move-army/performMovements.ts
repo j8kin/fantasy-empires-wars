@@ -27,67 +27,69 @@ export const performMovements = (gameState: GameState): void => {
     noArmy: false,
   })
     .filter((land) =>
-      land.army.some((a) => a.controlledBy === gameState.turnOwner && a.movements != null)
+      land.army.some((a) => a.controlledBy() === gameState.turnOwner && a.isMoving())
     )
     .forEach((landState) => {
       landState.army.forEach((army) => {
-        if (army.controlledBy === gameState.turnOwner && army.movements) {
-          // Find current position in the path
-          const currentPos = landState.mapPos;
-          const pathIndex = army.movements.path.findIndex(
-            (pos) => pos.row === currentPos.row && pos.col === currentPos.col
-          );
-
-          if (pathIndex !== -1 && pathIndex < army.movements.path.length - 1) {
-            // There's a next position in the path
-            const nextPos = army.movements.path[pathIndex + 1];
-            const isAtDestination =
-              nextPos.row === army.movements.to.row && nextPos.col === army.movements.to.col;
-
-            armiesToMove.push({
-              army,
-              currentLandPos: currentPos,
-              nextLandPos: nextPos,
-              isAtDestination,
-            });
-          }
+        if (army.controlledBy() === gameState.turnOwner && army.isMoving()) {
+          army.makeMove();
+          // todo remove
+          // // Find current position in the path
+          // const currentPos = landState.mapPos;
+          // const pathIndex = army.movements.path.findIndex(
+          //   (pos) => pos.row === currentPos.row && pos.col === currentPos.col
+          // );
+          //
+          // if (pathIndex !== -1 && pathIndex < army.movements.path.length - 1) {
+          //   // There's a next position in the path
+          //   const nextPos = army.movements.path[pathIndex + 1];
+          //   const isAtDestination =
+          //     nextPos.row === army.movements.to.row && nextPos.col === army.movements.to.col;
+          //
+          //   armiesToMove.push({
+          //     army,
+          //     currentLandPos: currentPos,
+          //     nextLandPos: nextPos,
+          //     isAtDestination,
+          //   });
+          // }
         }
       });
     });
 
   // Create immutable copy of lands to avoid moving armies twice
-  const updatedLands = { ...gameState.battlefield.lands };
-
-  // Process each army movement
-  armiesToMove.forEach(({ army, currentLandPos, nextLandPos, isAtDestination }) => {
-    const currentLandId = getLandId(currentLandPos);
-    const nextLandId = getLandId(nextLandPos);
-
+  // const updatedLands = { ...gameState.battlefield.lands };
+  //
+  // // Process each army movement
+  // armiesToMove.forEach(({ army, currentLandPos, nextLandPos, isAtDestination }) => {
+  //   const currentLandId = getLandId(currentLandPos);
+  //   const nextLandId = getLandId(nextLandPos);
+  //
     // Remove army from current land
-    if (updatedLands[currentLandId]) {
-      updatedLands[currentLandId] = {
-        ...updatedLands[currentLandId],
-        army: updatedLands[currentLandId].army.filter((a) => a !== army),
-      };
-    }
-
-    // Create updated army (remove movements if at destination)
-    const updatedArmy = {
-      ...army,
-      movements: isAtDestination ? undefined : army.movements,
-    };
-
-    // Add army to next land
-    if (updatedLands[nextLandId]) {
-      updatedLands[nextLandId] = {
-        ...updatedLands[nextLandId],
-        army: [...updatedLands[nextLandId].army, updatedArmy],
-      };
-    }
-  });
-
-  // Update gameState with the new lands
-  gameState.battlefield.lands = updatedLands;
+  //   if (updatedLands[currentLandId]) {
+  //     updatedLands[currentLandId] = {
+  //       ...updatedLands[currentLandId],
+  //       army: updatedLands[currentLandId].army.filter((a) => a !== army),
+  //     };
+  //   }
+  //
+  //   // Create updated army (remove movements if at destination)
+  //   const updatedArmy = {
+  //     ...army,
+  //     movements: isAtDestination ? undefined : army.movements,
+  //   };
+  //
+  //   // Add army to next land
+  //   if (updatedLands[nextLandId]) {
+  //     updatedLands[nextLandId] = {
+  //       ...updatedLands[nextLandId],
+  //       army: [...updatedLands[nextLandId].army, updatedArmy],
+  //     };
+  //   }
+  // });
+  //
+  // // Update gameState with the new lands
+  // gameState.battlefield.lands = updatedLands;
 
   // merge armies after all movements are performed
   mergeArmies(gameState);

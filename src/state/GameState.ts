@@ -1,5 +1,6 @@
 import { NO_PLAYER, PlayerState } from './PlayerState';
 import { LandState } from './LandState';
+import { Army } from '../types/Army';
 
 export interface BattlefieldDimensions {
   rows: number;
@@ -25,6 +26,7 @@ export interface GameState {
   turnOwner: string;
   turnPhase: TurnPhase;
   players: PlayerState[];
+  armies: Record<string, Army>;
 }
 
 export const getPlayerById = (gameState?: GameState, id?: string): PlayerState | undefined => {

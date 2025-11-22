@@ -1,7 +1,14 @@
 import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
-import { getDefaultUnit, HeroUnit, HeroUnitType, isHero, RegularUnit } from '../../types/Army';
+import {
+  createArmy,
+  getDefaultUnit,
+  HeroUnit,
+  HeroUnitType,
+  isHero,
+  RegularUnit,
+} from '../../types/Army';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
@@ -51,7 +58,7 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
                 stationedArmy.units.push(unit);
               }
             } else {
-              l.army.push({ units: [unit], controlledBy: gameState.turnOwner });
+              l.army.push(createArmy(gameState.turnOwner, [unit]));
             }
           }
         });

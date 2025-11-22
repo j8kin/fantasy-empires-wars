@@ -2,7 +2,7 @@ import { GameState, getTurnOwner } from '../../state/GameState';
 import { getLandId, LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
-import { getDefaultUnit, HeroUnit } from '../../types/Army';
+import { createArmy, getDefaultUnit, HeroUnit } from '../../types/Army';
 import { BuildingType, getBuilding } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { levelUpHero } from '../recruiting/levelUpHero';
@@ -20,7 +20,7 @@ const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   // increment characteristics
   levelUpHero(hero, player);
   // initial Hero immediately available in normal game it turn 3 turn to recruit#
-  getLand(gameState, homeland.mapPos).army.push({ units: [hero], controlledBy: player.id });
+  getLand(gameState, homeland.mapPos).army.push(createArmy(player.id, [hero]));
 };
 
 export const placeHomeland = (gameState: GameState) => {

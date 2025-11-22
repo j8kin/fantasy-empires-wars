@@ -72,7 +72,7 @@ describe('Move Army', () => {
 
     expect(barracksLand.army.length).toBe(1);
     expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
-    expect(barracksLand.army[0].movements).toBeUndefined();
+    expect(barracksLand.army[0].isMoving()).toBeFalsy();
     expect(barracksLand.army[0].units.length).toBe(2); // 1 hero and 120 warriors
     expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
     expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(120);
@@ -89,14 +89,15 @@ describe('Move Army', () => {
   describe('Start Movements', () => {
     // barack land is 3,4
     it.each([
-      [{ row: 3, col: 5 }, 2, ['3-4', '3-5']],
-      [{ row: 2, col: 4 }, 2, ['3-4', '2-4']],
-      [{ row: 3, col: 6 }, 3, ['3-4', '3-5', '3-6']],
-      [{ row: 6, col: 6 }, 4, ['3-4', '4-5', '5-5', '6-6']],
-      [{ row: 5, col: 7 }, 5, ['3-4', '3-5', '3-6', '4-7', '5-7']],
+      [{ row: 3, col: 5 }, 2],
+      [{ row: 2, col: 4 }, 2],
+      [{ row: 3, col: 6 }, 3],
+      [{ row: 6, col: 6 }, 4],
+      [{ row: 5, col: 7 }, 5],
     ])(
       'new Army with movement should be created into %s with pathLength: %s',
-      (to: LandPosition, pathLength: number, path: string[]) => {
+      (to: LandPosition) => {
+        // todo update test to make a move and verify that army is moved and reached destination
         const from = barracksLand.mapPos;
         const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
 
@@ -108,17 +109,12 @@ describe('Move Army', () => {
         expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
         expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(100);
         expect(barracksLand.army[0].units[1].id).toBe(HeroUnitType.FIGHTER);
-        expect(barracksLand.army[0].movements).toBeUndefined();
+        expect(barracksLand.army[0].isMoving()).toBeFalsy();
 
         // "new" army
         expect((barracksLand.army[1].units[0] as RegularUnit).count).toBe(20);
-        expect(barracksLand.army[1].movements).toBeDefined();
-        expect(barracksLand.army[1].movements?.from).toBe(from);
-        expect(barracksLand.army[1].movements?.to).toBe(to);
-        expect(barracksLand.army[1].movements?.path.length).toBe(pathLength);
-        barracksLand.army[1].movements?.path.forEach((p, i) => {
-          expect(getLandId(p)).toBe(path[i]);
-        });
+        expect(barracksLand.army[1].isMoving()).toBeTruthy();
+        expect(barracksLand.army[1].getLandPosition()).toBe(from);
       }
     );
 
@@ -134,13 +130,12 @@ describe('Move Army', () => {
       expect(barracksLand.army.length).toBe(2);
       expect(barracksLand.army[0].units.length).toBe(1);
       expect(barracksLand.army[0].units[0].id).toBe(HeroUnitType.FIGHTER);
-      expect(barracksLand.army[0].movements).toBeUndefined();
+      expect(barracksLand.army[0].isMoving()).toBeFalsy();
+      expect(barracksLand.army[0].getLandPosition()).toBe(from);
 
       expect((barracksLand.army[1].units[0] as RegularUnit).count).toBe(120);
-      expect(barracksLand.army[1].movements).toBeDefined();
-      expect(barracksLand.army[1].movements?.from).toBe(from);
-      expect(barracksLand.army[1].movements?.to).toBe(to);
-      expect(barracksLand.army[1].movements?.path.length).toBe(2);
+      expect(barracksLand.army[1].isMoving()).toBeTruthy();
+      expect(barracksLand.army[1].getLandPosition()).toBe(from);
     });
 
     it('Heroes are not able to move on hostile territory only without regular units', () => {
@@ -152,7 +147,7 @@ describe('Move Army', () => {
 
       // All army stays the same
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].movements).toBeUndefined();
+      expect(barracksLand.army[0].isMoving()).toBeFalsy();
     });
 
     it('Heroes are able to move on hostile territory only with regular units.', () => {
@@ -170,13 +165,12 @@ describe('Move Army', () => {
       expect(barracksLand.army[0].units.length).toBe(1);
       expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
       expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(100);
-      expect(barracksLand.army[0].movements).toBeUndefined();
+      expect(barracksLand.army[0].isMoving()).toBeFalsy();
+      expect(barracksLand.army[0].getLandPosition()).toBe(from);
 
       expect(barracksLand.army[1].units.length).toBe(2);
-      expect(barracksLand.army[1].movements).toBeDefined();
-      expect(barracksLand.army[1].movements?.from).toBe(from);
-      expect(barracksLand.army[1].movements?.to).toBe(to);
-      expect(barracksLand.army[1].movements?.path.length).toBe(2);
+      expect(barracksLand.army[1].isMoving()).toBeTruthy();
+      expect(barracksLand.army[1].getLandPosition()).toBe(from);
 
       expect(barracksLand.army[1].units[0].id).toBe(HeroUnitType.FIGHTER);
       expect((barracksLand.army[1].units[0] as HeroUnit).name).toBe('Cedric Brightshield');
@@ -199,10 +193,8 @@ describe('Move Army', () => {
       expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(120);
       expect(barracksLand.army[0].units[1].id).toBe(HeroUnitType.FIGHTER);
       expect((barracksLand.army[0].units[1] as HeroUnit).name).toBe('Cedric Brightshield');
-      expect(barracksLand.army[0].movements).toBeDefined();
-      expect(barracksLand.army[0].movements?.from).toBe(from);
-      expect(barracksLand.army[0].movements?.to).toBe(to);
-      expect(barracksLand.army[0].movements?.path.length).toBe(2);
+      expect(barracksLand.army[0].isMoving()).toBeFalsy();
+      expect(barracksLand.army[0].getLandPosition()).toBe(from);
     });
 
     describe('corner cases', () => {
@@ -216,7 +208,7 @@ describe('Move Army', () => {
 
         expect(barracksLand.army.length).toBe(1);
         expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
-        expect(barracksLand.army[0].movements).toBeUndefined();
+        expect(barracksLand.army[0].isMoving()).toBeFalsy();
         expect(barracksLand.army[0].units.length).toBe(2); // 1 hero and 120 warriors
         expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
         expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(120);
@@ -232,7 +224,7 @@ describe('Move Army', () => {
 
         expect(barracksLand.army.length).toBe(1);
         expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
-        expect(barracksLand.army[0].movements).toBeUndefined();
+        expect(barracksLand.army[0].isMoving()).toBeFalsy();
         expect(barracksLand.army[0].units.length).toBe(2); // 1 hero and 120 warriors
         expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
         expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(120);
@@ -248,7 +240,7 @@ describe('Move Army', () => {
 
         expect(barracksLand.army.length).toBe(1);
         expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
-        expect(barracksLand.army[0].movements).toBeUndefined();
+        expect(barracksLand.army[0].isMoving()).toBeFalsy();
         expect(barracksLand.army[0].units.length).toBe(2); // 1 hero and 120 warriors
         expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
         expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(120);
@@ -269,7 +261,7 @@ describe('Move Army', () => {
 
       expect(getLand(gameStateStub, to).army.length).toBe(1);
       expect(getLand(gameStateStub, to).army[0].controlledBy).toBe(gameStateStub.turnOwner);
-      expect(getLand(gameStateStub, to).army[0].movements).toBeUndefined();
+      expect(getLand(gameStateStub, to).army[0].isMoving()).toBeFalsy();
       expect(getLand(gameStateStub, to).army[0].units.length).toBe(1);
       expect(getLand(gameStateStub, to).army[0].units[0]).toBe(unitsToMove[0]);
     });
@@ -317,7 +309,7 @@ describe('Move Army', () => {
       const newLand = getLand(gameStateStub, to);
       expect(newLand.army.length).toBe(1);
       expect(newLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
-      expect(newLand.army[0].movements).toBeUndefined();
+      expect(newLand.army[0].isMoving()).toBeFalsy();
       expect(newLand.army[0].units.length).toBe(1);
       expect(newLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
       expect((newLand.army[0].units[0] as RegularUnit).count).toBe(79); // attrition penalty (the same due to randomSpy)

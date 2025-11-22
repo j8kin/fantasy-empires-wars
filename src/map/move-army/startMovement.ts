@@ -1,9 +1,8 @@
 import { GameState, getLandOwner, TurnPhase } from '../../state/GameState';
 import { getLandId, LandPosition } from '../../state/LandState';
 
-import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Army';
+import { createArmy, HeroUnit, isHero, RegularUnit, Unit } from '../../types/Army';
 
-import { findShortestPath } from '../utils/mapAlgorithms';
 import { getLand } from '../utils/getLands';
 
 export const MIN_HERO_PACKS = 10;
@@ -26,7 +25,7 @@ export const startMovement = (
   }
 
   // expect that there is a stationed army in from land
-  const stationedArmy = getLand(gameState, from).army.filter((a) => a.movements == null);
+  const stationedArmy = getLand(gameState, from).army.filter((a) => !a.isMoving());
   if (stationedArmy.length !== 1) {
     return; // fallback: it should be the only one stationed Army
   }
@@ -74,14 +73,8 @@ export const startMovement = (
   getLand(gameState, from).army = getLand(gameState, from).army.filter((a) => a.units.length !== 0);
 
   // add a new army with movement to the land
-  getLand(gameState, from).army.push({
-    units: units,
-    movements: {
-      from: from,
-      to: to,
-      mp: 6,
-      path: findShortestPath(gameState.battlefield.dimensions, from, to),
-    },
-    controlledBy: gameState.turnOwner,
-  });
+  const newArmy = createArmy(gameState.turnOwner, units, from);
+  newArmy.splitAndMove(from, to);
+
+  getLand(gameState, from).army.push(newArmy);
 };

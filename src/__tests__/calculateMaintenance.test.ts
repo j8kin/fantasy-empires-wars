@@ -4,6 +4,7 @@ import { getLandId, LandPosition } from '../state/LandState';
 import { BuildingType } from '../types/Building';
 
 import {
+  createArmy,
   getDefaultUnit,
   HeroUnit,
   HeroUnitType,
@@ -19,6 +20,7 @@ import {
   createDefaultGameStateStub,
   defaultBattlefieldSizeStub,
 } from './utils/createGameStateStub';
+import { randomUUID } from 'node:crypto';
 
 describe('Calculate Maintenance', () => {
   const gameStateStub: GameState = createDefaultGameStateStub();
@@ -48,10 +50,7 @@ describe('Calculate Maintenance', () => {
       heroUnit.level = level;
 
       gameStateStub.battlefield.lands[getLandId({ row: 0, col: 0 })].army = [
-        {
-          units: [heroUnit],
-          controlledBy: player.id,
-        },
+        createArmy(player.id, [heroUnit]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -79,10 +78,7 @@ describe('Calculate Maintenance', () => {
       regularUnit.count = quantity;
 
       gameStateStub.battlefield.lands[getLandId({ row: 0, col: 0 })].army = [
-        {
-          units: [regularUnit],
-          controlledBy: player.id,
-        },
+        createArmy(player.id, [regularUnit]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -95,22 +91,12 @@ describe('Calculate Maintenance', () => {
 
       getTurnOwner(gameStateStub)!.addLand(getLandId({ row: 0, col: 0 }));
       gameStateStub.battlefield.lands[getLandId({ row: 0, col: 0 })].army = [
-        {
-          units: [getDefaultUnit(HeroUnitType.NECROMANCER)],
-          controlledBy: player.id,
-        },
-        {
-          units: [getDefaultUnit(RegularUnitType.DWARF)],
-          controlledBy: player.id,
-        },
-        {
-          units: [getDefaultUnit(RegularUnitType.BALLISTA)],
-          controlledBy: player.id,
-        },
-        {
-          units: [elitDwarf],
-          controlledBy: player.id,
-        },
+        createArmy(player.id, [
+          getDefaultUnit(HeroUnitType.NECROMANCER),
+          getDefaultUnit(RegularUnitType.DWARF),
+          getDefaultUnit(RegularUnitType.BALLISTA),
+          elitDwarf,
+        ]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(520);

@@ -1,6 +1,9 @@
 import { Artifact } from './Treasures';
 import { Alignment } from './Alignment';
-import { Movements } from './Movements';
+import { createMovement, Movements } from './Movements';
+import { UUID } from './uuid';
+import { randomUUID } from 'node:crypto';
+import { LandPosition } from '../state/LandState';
 
 export enum RegularUnitType {
   WARD_HANDS = 'Ward-hands',
@@ -84,10 +87,123 @@ export interface BaseUnit {
   description: string;
 }
 
-export type Army = {
-  units: Unit[];
-  controlledBy: string;
-  movements?: Movements;
+export interface Army {
+  addUnit(unit: Unit): void;
+  getHeroes(): HeroUnit[];
+  getRegulars(): RegularUnit[];
+  isEmpty(): boolean;
+
+  controlledBy(): string;
+  getLandPosition(): LandPosition;
+  mergeArmy(other: Army): void;
+
+  isMoving(): boolean;
+  split(units: Unit[]): Army;
+  startMoving(from: LandPosition, to: LandPosition): void;
+
+  makeMove(): void;
+}
+
+interface ArmyPosition {
+  position: LandPosition;
+  movement?: Movements;
+}
+
+const createArmyPosition = (position: LandPosition): ArmyPosition => ({
+  position,
+  movement: undefined,
+});
+
+export const createArmy = ( owner: string, units: Unit[], position: LandPosition): Army => {
+  const armyPosition = createArmyPosition(position);
+  const heroes: HeroUnit[] = [];
+  const regulars: RegularUnit[] = [];
+
+  units.forEach((unit) =>
+    isHero(unit) ? heroes.push(unit as HeroUnit) : regulars.push(unit as RegularUnit)
+  );
+
+  return {
+
+    controlledBy: () => owner,
+
+    getLandPosition: function (): LandPosition {
+      return armyPosition.position;
+    },
+
+    isEmpty: function (): boolean {
+      return heroes.length === 0 && regulars.length === 0;
+    },
+
+    getRegulars: function (): RegularUnit[] {
+      return regulars;
+    },
+
+    getHeroes: function (): HeroUnit[] {
+      return heroes;
+    },
+
+    addUnit: function (unit: Unit) {
+      if (isHero(unit)) {
+        heroes.push(unit as HeroUnit);
+      } else {
+        regulars.push(unit as RegularUnit);
+      }
+    },
+
+    mergeArmy: function (other: Army): void {
+      other.getHeroes().forEach((unit) => this.addUnit(unit));
+      other.getRegulars().forEach((unit) => {
+        const existing = regulars.find((u) => u.id === unit.id);
+        if (existing) {
+          existing.count += unit.count;
+        } else {
+          regulars.push(unit);
+        }
+      });
+    },
+
+    split: function (units: Unit[]): Army {
+      const newArmy = createArmy(owner, units, position);
+
+      units.forEach((unit) => {
+        if (isHero(unit)) {
+          heroes.splice(heroes.indexOf(unit as HeroUnit), 1);
+        } else {
+          const idx = regulars.indexOf(unit as RegularUnit);
+          if (idx > 0 && regulars[idx].count > (unit as RegularUnit).count) {
+            regulars[idx].count -= (unit as RegularUnit).count;
+          } else {
+            regulars.splice(idx, 1);
+          }
+        }
+      });
+
+      return newArmy;
+    },
+
+    startMoving: function(from:LandPosition, to:LandPosition): void {
+      armyPosition.movement = createMovement(from, to);
+    },
+
+    makeMove: function (): void {
+      if (!armyPosition.movement) return;
+
+      armyPosition.movement.move();
+      armyPosition.position = armyPosition.movement.position();
+      if (
+        armyPosition.position.col === armyPosition.movement.to().col &&
+        armyPosition.position.row === armyPosition.movement.to().row
+      ) {
+        // complete movements
+        armyPosition.movement = undefined;
+      }
+    },
+
+    isMoving: function (): boolean {
+      return armyPosition.movement !== undefined;
+    },
+  };
 };
 
 export type Armies = Army[];

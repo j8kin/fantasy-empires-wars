@@ -9,6 +9,7 @@ import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritio
 import { getLand } from '../../map/utils/getLands';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { randomUUID } from 'node:crypto';
 
 describe('Calculate Attrition Penalty', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -27,12 +28,14 @@ describe('Calculate Attrition Penalty', () => {
     gameStateStub.turnPhase = TurnPhase.START;
 
     army1 = {
+      id: randomUUID(),
       controlledBy: gameStateStub.turnOwner,
       units: [createRegularUnit(RegularUnitType.WARRIOR, 120)],
       movements: createDummyMovements(),
     };
 
     army2 = {
+      id: randomUUID(),
       controlledBy: gameStateStub.turnOwner,
       units: [createRegularUnit(RegularUnitType.WARRIOR, 120)],
       movements: createDummyMovements(),

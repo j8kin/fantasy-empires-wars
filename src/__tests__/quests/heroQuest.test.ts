@@ -150,7 +150,7 @@ describe('Hero Quest', () => {
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
     expect(heroLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
-    expect(heroLand.army[0].movements).toBeUndefined();
+    expect(heroLand.army[0].isMoving()).toBeFalsy();
     expect(heroLand.army[0].units[0]).toBe(hero);
     expect((heroLand.army[0].units[0] as HeroUnit).artifacts.length).toBe(0);
     expect(getTurnOwner(gameStateStub)?.empireTreasures.length).toBe(1);
@@ -239,7 +239,7 @@ describe('Hero Quest', () => {
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(barracksLand.army.length).toBe(1);
     expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
-    expect(barracksLand.army[0].movements).toBeUndefined();
+    expect(barracksLand.army[0].isMoving()).toBeFalsy();
     expect(barracksLand.army[0].units.length).toBe(3);
 
     barracksLand.army[0].units.forEach((armyUnit) => {
@@ -273,7 +273,7 @@ describe('Hero Quest', () => {
     expect(barracksLand.buildings[0].slots?.length).toBe(0);
     expect(barracksLand.army.length).toBe(1);
     expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
-    expect(barracksLand.army[0].movements).toBeUndefined();
+    expect(barracksLand.army[0].isMoving()).toBeFalsy();
     expect(barracksLand.army[0].units.length).toBe(2);
 
     /* ********************** SEND TO QUEST ******************* */
@@ -289,7 +289,7 @@ describe('Hero Quest', () => {
     expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
     expect(barracksLand.army.length).toBe(1);
     expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
-    expect(barracksLand.army[0].movements).toBeUndefined();
+    expect(barracksLand.army[0].isMoving()).toBeFalsy();
     expect(barracksLand.army[0].units.length).toBe(2);
 
     expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);

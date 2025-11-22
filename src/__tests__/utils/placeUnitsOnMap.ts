@@ -1,8 +1,8 @@
 import { GameState } from '../../state/GameState';
+
 import { LandPosition } from '../../state/LandState';
 
-import { Unit } from '../../types/Army';
-
+import { createArmy, Unit } from '../../types/Army';
 import { getLand } from '../../map/utils/getLands';
 
 /**
@@ -12,5 +12,5 @@ import { getLand } from '../../map/utils/getLands';
  * @param landPos
  */
 export const placeUnitsOnMap = (unit: Unit, gameState: GameState, landPos: LandPosition): void => {
-  getLand(gameState, landPos).army.push({ units: [unit], controlledBy: gameState.turnOwner });
+  getLand(gameState, landPos).army.push(createArmy(gameState.turnOwner, [unit]));
 };

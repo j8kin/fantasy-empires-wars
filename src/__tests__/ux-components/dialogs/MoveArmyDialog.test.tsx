@@ -205,6 +205,7 @@ describe('MoveArmyDialog', () => {
     const allUnits = fromLand.army.flatMap((a) => a.units);
     fromLand.army = [
       {
+        id: 'army-1',
         units: allUnits,
         controlledBy: mockGameState.turnOwner,
         movements: null as any,
@@ -592,6 +593,7 @@ describe('MoveArmyDialog', () => {
 
       fromLand.army = [
         {
+          id: 'hero-1',
           units: [hero1, hero2],
           controlledBy: mockGameState.turnOwner,
           movements: null as any,
@@ -612,6 +614,7 @@ describe('MoveArmyDialog', () => {
 
       fromLand.army = [
         {
+          id: 'army-1',
           units: [warrior],
           controlledBy: mockGameState.turnOwner,
           movements: null as any,
@@ -632,6 +635,7 @@ describe('MoveArmyDialog', () => {
 
       fromLand.army = [
         {
+          id: 'army-1',
           units: [warrior],
           controlledBy: mockGameState.turnOwner,
           movements: null as any,
@@ -666,6 +670,7 @@ describe('MoveArmyDialog', () => {
 
       fromLand.army = [
         {
+          id: 'army-1',
           units: [veteranWarrior, eliteWarrior],
           controlledBy: mockGameState.turnOwner,
           movements: null as any,
@@ -709,6 +714,7 @@ describe('MoveArmyDialog', () => {
       const warrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
       newFromLand.army = [
         {
+          id: 'army-1',
           units: [warrior],
           controlledBy: mockGameState.turnOwner,
           movements: null as any,
