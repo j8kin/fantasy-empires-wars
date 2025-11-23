@@ -49,8 +49,6 @@ describe('Calculate Mana', () => {
         const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
         gameStateStub = createGameStateStub({ gamePlayers: players });
 
-        //        while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
-
         testTurnManagement.setGameState(gameStateStub);
         testTurnManagement.startNewTurn(gameStateStub);
 
@@ -183,7 +181,7 @@ describe('Calculate Mana', () => {
 
   const expectManaOnTurn = (turn: number, base: number[]): void => {
     // verifying mana for all players when player[0] is turnOwner and that is why their mana on the previous turn
-    expectedMana(ManaType.BLACK, base[0] * (turn - 1), 0);
+    expectedMana(ManaType.BLACK, base[0] * turn, 0);
     expectedMana(ManaType.WHITE, base[1] * (turn - 2), 1);
     expectedMana(ManaType.BLUE, base[2] * (turn - 2), 2);
     expectedMana(ManaType.GREEN, base[3] * (turn - 2), 3);
@@ -228,9 +226,13 @@ describe('Calculate Mana', () => {
       battlefieldSize: { rows: 5, cols: 30 },
     });
     // calculate baseMana per turn for each player
-    const basePlayersMana = gameStateStub.allPlayers.map(baseMana);
+    const basePlayersMana = gameStateStub.allPlayers.map((p) => baseMana(p));
 
-    while (gameStateStub.turn < 10) gameStateStub.nextPlayer();
+    testTurnManagement.setGameState(gameStateStub);
+    testTurnManagement.startNewTurn(gameStateStub);
+    testTurnManagement.waitStartPhaseComplete();
+
+    testTurnManagement.makeNTurns(10);
 
     testTurnManagement.setGameState(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);

@@ -76,7 +76,7 @@ export const startRecruiting = (
 
     const turnOwner = gameState.turnOwner;
     const availableGold = turnOwner.vault;
-    if (availableGold != null && availableGold > getDefaultUnit(unitType)!.recruitCost) {
+    if (availableGold != null && availableGold >= getDefaultUnit(unitType)!.recruitCost) {
       const hasCrownOfDominion = turnOwner.empireTreasures?.some(
         (r) => r.id === TreasureItem.CROWN_OF_DOMINION
       );

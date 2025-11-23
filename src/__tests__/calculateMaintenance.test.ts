@@ -14,14 +14,14 @@ import {
 import { construct } from '../map/building/construct';
 
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { createDefaultGameStateStub } from './utils/createGameStateStub';
+import { createGameStateStub } from './utils/createGameStateStub';
 
 describe('Calculate Maintenance', () => {
-  let gameStateStub: GameState = createDefaultGameStateStub();
+  let gameStateStub: GameState;
 
   beforeEach(() => {
     // clear map to remove all armies and buildings
-    gameStateStub = createDefaultGameStateStub();
+    gameStateStub = createGameStateStub({ addPlayersHomeland: false });
   });
 
   describe('Army Maintenance cost', () => {

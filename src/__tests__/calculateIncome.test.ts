@@ -1,7 +1,7 @@
 import { calculateIncome } from '../map/vault/calculateIncome';
 import { createGameState, GameState } from '../state/GameState';
 import { getLandId } from '../state/LandState';
-import { PREDEFINED_PLAYERS } from '../state/PlayerState';
+import { PlayerProfile, PREDEFINED_PLAYERS } from '../state/PlayerState';
 
 import { BuildingType, getBuilding } from '../types/Building';
 import { getLandById, LandType } from '../types/Land';
@@ -14,22 +14,30 @@ import { generateMockMap } from './utils/generateMockMap';
 
 describe('Calculate Income', () => {
   let gameStateStub: GameState;
-  const lawfulPlayer = PREDEFINED_PLAYERS[0];
-  const chaoticPlayer = PREDEFINED_PLAYERS[2];
-  const neutralPlayer = PREDEFINED_PLAYERS[1];
 
+  const getPlayer = (alignment: Alignment): PlayerProfile => {
+    switch (alignment) {
+      case Alignment.LAWFUL:
+        return PREDEFINED_PLAYERS[0]; // Alaric - LAWFUL
+      case Alignment.NEUTRAL:
+        return PREDEFINED_PLAYERS[2]; // Morgana - CHAOTIC
+      case Alignment.CHAOTIC:
+        return PREDEFINED_PLAYERS[1]; // Thorin - NEUTRAL
+    }
+  };
   beforeEach(() => {
     // clear the map before each test
-    gameStateStub = createGameStateStub({ addPlayersHomeland: false });
+    gameStateStub = createGameStateStub({ addPlayersHomeland: false, nPlayers: 0 });
   });
 
   it('No land owned', () => {
+    gameStateStub.addPlayer(PREDEFINED_PLAYERS[0], 'human');
     const income = calculateIncome(gameStateStub);
     expect(income).toBe(0);
   });
 
   it('Corner case: No owned strongholds', () => {
-    gameStateStub.addPlayer(lawfulPlayer, 'human');
+    gameStateStub.addPlayer(PREDEFINED_PLAYERS[0], 'human');
     gameStateStub.turnOwner.addLand(getLandId({ row: 5, col: 5 }));
 
     const income = calculateIncome(gameStateStub);
@@ -49,12 +57,7 @@ describe('Calculate Income', () => {
   ])(
     'Calculate income for player with alignment %s in %s land alignment',
     (playerAlignment: Alignment, allLandsAlignment: Alignment, expectedIncome: number) => {
-      const player =
-        playerAlignment === Alignment.LAWFUL
-          ? PREDEFINED_PLAYERS[0]
-          : playerAlignment === Alignment.NEUTRAL
-            ? PREDEFINED_PLAYERS[2]
-            : PREDEFINED_PLAYERS[1];
+      const player = getPlayer(playerAlignment);
 
       gameStateStub = createGameState(
         generateMockMap(defaultBattlefieldSizeStub, allLandsAlignment, 100)
@@ -80,12 +83,7 @@ describe('Calculate Income', () => {
   ])(
     'Calculate income with penalty (%s) if it is not stronghold land and Player has %s alignment',
     (penalty: string, playerAlignment: Alignment, landCol: number, expected: number) => {
-      const player =
-        playerAlignment === Alignment.LAWFUL
-          ? lawfulPlayer
-          : playerAlignment === Alignment.NEUTRAL
-            ? neutralPlayer
-            : chaoticPlayer;
+      const player = getPlayer(playerAlignment);
 
       gameStateStub.addPlayer(player, 'human');
 
@@ -119,12 +117,7 @@ describe('Calculate Income', () => {
   ])(
     `Calculate income with land alignment penalty based on player's alignment`,
     (playerAlignment: Alignment, land, expected) => {
-      const player =
-        playerAlignment === Alignment.LAWFUL
-          ? lawfulPlayer
-          : playerAlignment === Alignment.NEUTRAL
-            ? neutralPlayer
-            : chaoticPlayer;
+      const player = getPlayer(playerAlignment);
 
       gameStateStub.addPlayer(player, 'human');
 

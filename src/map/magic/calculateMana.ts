@@ -8,6 +8,7 @@ import { TreasureItem } from '../../types/Treasures';
 export const calculateMana = (gameState: GameState): void => {
   if (gameState.turnPhase !== TurnPhase.START) return;
 
+  console.log(`Calculating mana for turnOwner: ${gameState.turnOwner.id}, turn ${gameState.turn}`);
   const turnOwner = gameState.turnOwner;
 
   const allHeroes = getAllHeroes(gameState, true);

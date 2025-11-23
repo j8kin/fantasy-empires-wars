@@ -51,7 +51,7 @@ export const startTurn = (
     (t) => t.id === TreasureItem.OBSIDIAN_CHALICE
   );
 
-  // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests#-empire-artifacts-permanent
+  // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes'-Quests#-empire-artifacts-permanent
   // OBSIDIAN_CHALICE effect: convert 10% of income to 0.02% of black mana
   if (hasObsidianChalice) {
     // 10% reduction is already applied in `calculatePlayerIncome`

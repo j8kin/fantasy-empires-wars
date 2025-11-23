@@ -35,7 +35,6 @@ describe('Recruitment', () => {
     randomSpy = jest.spyOn(Math, 'random');
 
     gameStateStub = createDefaultGameStateStub();
-    while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
 
     testTurnManagement = new TestTurnManagement(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);
@@ -354,6 +353,8 @@ describe('Recruitment', () => {
 
           const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
           constructBuilding(magicTower, mageTowerPos);
+          // Mage towers cost 15000, which exhausts the initial 15000 vault, so add more gold for recruitment
+          gameStateStub.turnOwner.vault += 5000;
           const mageTowerLand = getLand(gameStateStub, mageTowerPos);
 
           // Recruiting heroes in mage tower
@@ -365,7 +366,7 @@ describe('Recruitment', () => {
           expect(mageTowerLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
           expect(mageTowerLand.army.length).toBe(1);
-          expect(mageTowerLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+          expect(mageTowerLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
           expect(mageTowerLand.army[0].movements).toBeUndefined();
           const recruitedUnit = mageTowerLand.army[0].units[0] as HeroUnit;
           expect(recruitedUnit.id).toBe(unitType);
