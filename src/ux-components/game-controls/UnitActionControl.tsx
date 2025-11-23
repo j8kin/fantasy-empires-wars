@@ -6,7 +6,6 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import GameButton from '../buttons/GameButton';
 
-import { getTurnOwner } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 import { ButtonName } from '../../types/ButtonName';
@@ -32,7 +31,7 @@ const UnitActionControl: React.FC = () => {
       const recruitmentLands = (
         getLands({
           gameState: gameState,
-          players: [gameState.turnOwner],
+          players: [gameState.turnOwner.id],
           buildings: [
             BuildingType.BARRACKS,
             BuildingType.WHITE_MAGE_TOWER,
@@ -73,7 +72,7 @@ const UnitActionControl: React.FC = () => {
       const questLands = (
         getLands({
           gameState: gameState,
-          players: [gameState.turnOwner],
+          players: [gameState.turnOwner.id],
           noArmy: false,
         }) || []
       ).filter((l) =>
@@ -103,7 +102,7 @@ const UnitActionControl: React.FC = () => {
       const armyLands = (
         getLands({
           gameState: gameState,
-          players: [gameState.turnOwner],
+          players: [gameState.turnOwner.id],
           noArmy: false,
         }) || []
       ).filter((l) => l.army.some((a) => a.movements == null));
@@ -118,7 +117,7 @@ const UnitActionControl: React.FC = () => {
     [addGlowingTile, clearAllGlow, gameState, setSelectedLandAction]
   );
 
-  if (getTurnOwner(gameState)?.playerType !== 'human') return null;
+  if (gameState?.turnOwner.playerType !== 'human') return null;
 
   return (
     <div className={styles.gameControlContainer} data-testid="game-control-container">

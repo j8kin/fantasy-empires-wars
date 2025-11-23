@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
 
-import { GameState, getLandOwner, TurnPhase } from '../../../state/GameState';
+import { GameState, TurnPhase } from '../../../state/GameState';
 import { getLandId } from '../../../state/LandState';
 
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
@@ -95,7 +95,6 @@ const mockApplicationContext = {
 const mockGameContext = {
   gameState: createDefaultGameStateStub(),
   updateGameState: jest.fn(),
-  getPlayerById: jest.fn(),
 };
 
 jest.mock('../../../contexts/ApplicationContext', () => ({
@@ -173,7 +172,7 @@ describe('SendHeroInQuestDialog', () => {
   const getHeroLands = (gameState: GameState) => {
     return getLands({
       gameState: gameState,
-      players: [gameState.turnOwner],
+      players: [gameState.turnOwner.id],
       noArmy: false,
     }).filter(
       (land) =>
@@ -221,7 +220,7 @@ describe('SendHeroInQuestDialog', () => {
 
     // Create a default game state with heroes
     mockGameState = createDefaultGameStateStub();
-    mockGameState.turnPhase = TurnPhase.MAIN;
+    while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
   });
 
   describe('Dialog Visibility', () => {
@@ -242,7 +241,7 @@ describe('SendHeroInQuestDialog', () => {
 
     it('should not render when no heroes are available', () => {
       // Remove all armies from all lands
-      Object.values(mockGameState.battlefield.lands).forEach((land) => {
+      Object.values(mockGameState.map.lands).forEach((land) => {
         land.army = [];
       });
 
@@ -252,9 +251,9 @@ describe('SendHeroInQuestDialog', () => {
 
     it('should not render when no lands with heroes exist for current player', () => {
       // Remove armies from lands owned by current player but keep armies on other lands
-      const currentPlayerId = mockGameState.turnOwner;
-      Object.values(mockGameState.battlefield.lands).forEach((land) => {
-        if (getLandOwner(mockGameState, getLandId(land.mapPos)) === currentPlayerId) {
+      const currentPlayerId = mockGameState.turnOwner.id;
+      Object.values(mockGameState.map.lands).forEach((land) => {
+        if (mockGameState.getLandOwner(getLandId(land.mapPos)) === currentPlayerId) {
           land.army = [];
         }
       });
@@ -546,10 +545,10 @@ describe('SendHeroInQuestDialog', () => {
 
       // Create new state without heroes
       const emptyHeroesGameState = createDefaultGameStateStub();
-      emptyHeroesGameState.turnPhase = TurnPhase.MAIN;
+      while (emptyHeroesGameState.turnPhase !== TurnPhase.MAIN) emptyHeroesGameState.nextPhase();
 
       // Remove all heroes
-      Object.values(emptyHeroesGameState.battlefield.lands).forEach((land) => {
+      Object.values(emptyHeroesGameState.map.lands).forEach((land) => {
         land.army = [];
       });
 
@@ -605,7 +604,7 @@ describe('SendHeroInQuestDialog', () => {
       // findHeroByName will find the correct hero
       const expectedHeroInGameState = getLands({
         gameState: mockGameState,
-        players: [mockGameState.turnOwner],
+        players: [mockGameState.turnOwner.id],
         noArmy: false,
       })
         .flatMap((land) => land.army)
@@ -648,7 +647,7 @@ describe('SendHeroInQuestDialog', () => {
       // Modify hero to have empty name (edge case)
       const lands = getLands({
         gameState: mockGameState,
-        players: [mockGameState.turnOwner],
+        players: [mockGameState.turnOwner.id],
         noArmy: false,
       });
 
@@ -669,7 +668,7 @@ describe('SendHeroInQuestDialog', () => {
       // Modify hero to have very long name
       const lands = getLands({
         gameState: mockGameState,
-        players: [mockGameState.turnOwner],
+        players: [mockGameState.turnOwner.id],
         noArmy: false,
       });
 
@@ -699,7 +698,7 @@ describe('SendHeroInQuestDialog', () => {
       // Modify hero to have single word name
       const lands = getLands({
         gameState: mockGameState,
-        players: [mockGameState.turnOwner],
+        players: [mockGameState.turnOwner.id],
         noArmy: false,
       });
 
@@ -730,7 +729,7 @@ describe('SendHeroInQuestDialog', () => {
       // Add additional heroes to test multiple hero scenarios
       const currentPlayerLands = getLands({
         gameState: mockGameState,
-        players: [mockGameState.turnOwner],
+        players: [mockGameState.turnOwner.id],
       });
 
       if (currentPlayerLands.length > 1) {
@@ -753,7 +752,7 @@ describe('SendHeroInQuestDialog', () => {
 
         currentPlayerLands[1].army.push({
           units: [secondHero],
-          controlledBy: mockGameState.turnOwner,
+          controlledBy: mockGameState.turnOwner.id,
         });
       }
     });
@@ -772,12 +771,12 @@ describe('SendHeroInQuestDialog', () => {
     it('should handle sending multiple different heroes to different quests', async () => {
       // Create a fresh game state for this test to avoid interference from beforeEach
       const testGameState = createDefaultGameStateStub();
-      testGameState.turnPhase = TurnPhase.MAIN;
+      while (testGameState.turnPhase !== TurnPhase.MAIN) testGameState.nextPhase();
 
       // Add a second hero to the land that the dialog will look at (3, 3)
       const actionLandPosition = { row: 3, col: 3 };
       const landId = `${actionLandPosition.row}-${actionLandPosition.col}`;
-      const land = testGameState.battlefield.lands[landId];
+      const land = testGameState.map.lands[landId];
 
       // Add a second hero directly to the army array
       placeUnitsOnMap(getDefaultUnit(HeroUnitType.FIGHTER), testGameState, land.mapPos);

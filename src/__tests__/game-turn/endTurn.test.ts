@@ -10,18 +10,22 @@ describe('End of Turn Phase', () => {
   });
 
   it('Active player id should be changed to a next one', () => {
-    expect(gameStateStub.turnOwner).toBe(gameStateStub.players[0].id);
+    expect(gameStateStub.turnOwner.id).toBe(gameStateStub.allPlayers[0].id);
 
     endTurn(gameStateStub);
-    expect(gameStateStub.turnOwner).toBe(gameStateStub.players[1].id);
+    expect(gameStateStub.turnOwner.id).toBe(gameStateStub.allPlayers[1].id);
   });
 
   it('Active player id should be changed to the first one when all player and increas turn number', () => {
-    gameStateStub.turnOwner = gameStateStub.players[gameStateStub.players.length - 1].id;
-    expect(gameStateStub.turn).toBe(1);
+    expect(gameStateStub.turn).toBe(2);
+    gameStateStub.nextPlayer();
+    gameStateStub.nextPlayer();
+    expect(gameStateStub.allPlayers.length).toBe(3);
+    expect(gameStateStub.turnOwner.id).toBe(gameStateStub.allPlayers[2].id);
+    expect(gameStateStub.turn).toBe(2);
 
     endTurn(gameStateStub);
-    expect(gameStateStub.turnOwner).toBe(gameStateStub.players[0].id);
-    expect(gameStateStub.turn).toBe(2);
+    expect(gameStateStub.turnOwner.id).toBe(gameStateStub.allPlayers[0].id);
+    expect(gameStateStub.turn).toBe(3);
   });
 });

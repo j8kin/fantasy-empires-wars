@@ -5,23 +5,24 @@ import { Army, isHero, RegularUnit } from '../../types/Army';
 export const mergeArmies = (gameState: GameState): void => {
   if (gameState == null || gameState.turnPhase === TurnPhase.MAIN) return;
 
-  getLands({ gameState: gameState, players: [gameState.turnOwner], noArmy: false })
+  const turnOwner = gameState.turnOwner.id;
+
+  getLands({ gameState: gameState, players: [turnOwner], noArmy: false })
     .filter(
       (land) =>
         land.army.length > 1 &&
-        land.army.filter((a) => a.controlledBy === gameState.turnOwner && a.movements == null)
-          .length > 1
+        land.army.filter((a) => a.controlledBy === turnOwner && a.movements == null).length > 1
     )
     .forEach((land) => {
       // merge armies of the same type and turnsUntilReady === 0 in one unit with summary quantity
       // Heroes should never be merged since they are unique individuals
       const stationedArmy = land.army.filter(
-        (a) => a.movements == null && a.controlledBy === gameState.turnOwner
+        (a) => a.movements == null && a.controlledBy === turnOwner
       );
       const movingArmy = land.army.filter(
-        (a) => a.movements != null && a.controlledBy === gameState.turnOwner
+        (a) => a.movements != null && a.controlledBy === turnOwner
       );
-      const otherPlayersArmies = land.army.filter((a) => a.controlledBy !== gameState.turnOwner);
+      const otherPlayersArmies = land.army.filter((a) => a.controlledBy !== turnOwner);
 
       const mergedRegularUnits = stationedArmy.reduce(
         (acc: Army, army) => {
@@ -42,7 +43,7 @@ export const mergeArmies = (gameState: GameState): void => {
           }
           return acc;
         },
-        { units: [], controlledBy: gameState.turnOwner }
+        { units: [], controlledBy: turnOwner }
       );
 
       land.army = [mergedRegularUnits, ...movingArmy, ...otherPlayersArmies];

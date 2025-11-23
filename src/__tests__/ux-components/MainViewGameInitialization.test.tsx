@@ -11,43 +11,35 @@
  */
 
 import { GameState } from '../../state/GameState';
-import { createPlayerState, PREDEFINED_PLAYERS } from '../../state/PlayerState';
+import { PREDEFINED_PLAYERS } from '../../state/PlayerState';
+import { createGameStateStub } from '../utils/createGameStateStub';
 
 describe('MainView Game Initialization Logic', () => {
   // Test the game identification logic that's used in MainView
   const createGameId = (gameState: GameState): string => {
-    return `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.id}`;
+    return `${gameState.nPlayers}-${gameState.map.dimensions.rows}-${gameState.map.dimensions.cols}-${gameState.turnOwner.id}`;
   };
 
   it('should generate unique identifiers for different games', () => {
     // Mock game states with different configurations
-    const game1: Partial<GameState> = {
-      players: [
-        createPlayerState(PREDEFINED_PLAYERS[0], 'human'),
-        createPlayerState(PREDEFINED_PLAYERS[1], 'computer'),
-      ],
-      battlefield: { dimensions: { rows: 9, cols: 18 } } as any,
-    };
+    const game1: GameState = createGameStateStub({
+      gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
+      battlefieldSize: { rows: 9, cols: 18 },
+    });
 
-    const game2: Partial<GameState> = {
-      players: [
-        createPlayerState(PREDEFINED_PLAYERS[0], 'human'),
-        createPlayerState(PREDEFINED_PLAYERS[1], 'computer'),
-      ],
-      battlefield: { dimensions: { rows: 11, cols: 23 } } as any,
-    };
+    const game2: GameState = createGameStateStub({
+      gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
+      battlefieldSize: { rows: 11, cols: 23 }, // different map size
+    });
 
-    const game3: Partial<GameState> = {
-      players: [
-        createPlayerState(PREDEFINED_PLAYERS[2], 'human'), // Different first player
-        createPlayerState(PREDEFINED_PLAYERS[3], 'computer'),
-      ],
-      battlefield: { dimensions: { rows: 9, cols: 18 } } as any,
-    };
+    const game3: GameState = createGameStateStub({
+      gamePlayers: [PREDEFINED_PLAYERS[2], PREDEFINED_PLAYERS[3]], // Different first player
+      battlefieldSize: { rows: 9, cols: 18 },
+    });
 
-    const id1 = createGameId(game1 as GameState);
-    const id2 = createGameId(game2 as GameState);
-    const id3 = createGameId(game3 as GameState);
+    const id1 = createGameId(game1);
+    const id2 = createGameId(game2);
+    const id3 = createGameId(game3);
 
     // Different map sizes should have different IDs
     expect(id1).not.toBe(id2);
@@ -57,7 +49,7 @@ describe('MainView Game Initialization Logic', () => {
 
     // Same game should have same ID
     const game1Copy = { ...game1 };
-    const id1Copy = createGameId(game1Copy as GameState);
+    const id1Copy = createGameId(game1Copy);
     expect(id1).toBe(id1Copy);
   });
 
@@ -89,27 +81,21 @@ describe('MainView Game Initialization Logic', () => {
     };
 
     // First game - medium map
-    const game1 = {
-      turn: 1,
-      players: [
-        createPlayerState(PREDEFINED_PLAYERS[0], 'human'),
-        createPlayerState(PREDEFINED_PLAYERS[1], 'computer'),
-      ],
-      battlefield: { dimensions: { rows: 9, cols: 18 } } as any,
-    } as GameState;
+    const game1 = createGameStateStub({
+      gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
+      battlefieldSize: { rows: 9, cols: 18 },
+      addPlayersHomeland: false, // Don't add homeland to keep turn at 1
+    });
 
     // Should start turn for first game
     expect(simulateMainViewLogic(game1, true)).toBe(true);
 
     // Second game - large map (this was the problematic case)
-    const game2 = {
-      turn: 1,
-      players: [
-        createPlayerState(PREDEFINED_PLAYERS[0], 'human'),
-        createPlayerState(PREDEFINED_PLAYERS[1], 'computer'),
-      ],
-      battlefield: { dimensions: { rows: 11, cols: 23 } } as any,
-    } as GameState;
+    const game2 = createGameStateStub({
+      gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
+      battlefieldSize: { rows: 11, cols: 23 },
+      addPlayersHomeland: false, // Don't add homeland to keep turn at 1
+    });
 
     // Should start turn for second game because it's different
     expect(simulateMainViewLogic(game2, true)).toBe(true);

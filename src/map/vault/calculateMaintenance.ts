@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 
 import { getLands } from '../utils/getLands';
 
@@ -23,13 +23,12 @@ const unitMaintenanceCost = (unit: Unit): number => {
 };
 
 export const calculateMaintenance = (gameState: GameState): number => {
-  const player = getTurnOwner(gameState);
-  if (player == null) return 0;
+  const turnOwner = gameState.turnOwner.id;
 
   // building maintenance
   const buildingMaintenance = getLands({
     gameState: gameState,
-    players: [gameState.turnOwner],
+    players: [turnOwner],
     buildings: Object.values(BuildingType),
   }).reduce((acc, land) => {
     return acc + land.buildings.reduce((acc, building) => acc + building.maintainCost, 0);
@@ -38,7 +37,7 @@ export const calculateMaintenance = (gameState: GameState): number => {
   // army maintenance
   const armyMaintenance = getLands({
     gameState: gameState,
-    players: [gameState.turnOwner],
+    players: [turnOwner],
     noArmy: false,
   }).reduce((acc, land) => {
     return (

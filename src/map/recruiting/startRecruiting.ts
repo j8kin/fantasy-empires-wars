@@ -1,4 +1,4 @@
-import { GameState, getLandOwner, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { getLandId, LandPosition } from '../../state/LandState';
 
 import {
@@ -28,7 +28,7 @@ export const startRecruiting = (
   gameState: GameState
 ): void => {
   if (
-    getLandOwner(gameState, getLandId(landPos)) !== gameState.turnOwner &&
+    gameState.getLandOwner(getLandId(landPos)) !== gameState.turnOwner.id &&
     gameState.turnPhase !== TurnPhase.MAIN
   ) {
     return; // fallback: a wrong Land Owner should never happen on real game
@@ -74,12 +74,13 @@ export const startRecruiting = (
       return; // fallback: wrong building type for regular units
     }
 
-    const availableGold = getTurnOwner(gameState)!.vault;
-    if (availableGold != null && availableGold > getDefaultUnit(unitType)!.recruitCost) {
-      const hasCrownOfDominion = getTurnOwner(gameState)!.empireTreasures?.some(
+    const turnOwner = gameState.turnOwner;
+    const availableGold = turnOwner.vault;
+    if (availableGold != null && availableGold >= getDefaultUnit(unitType)!.recruitCost) {
+      const hasCrownOfDominion = turnOwner.empireTreasures?.some(
         (r) => r.id === TreasureItem.CROWN_OF_DOMINION
       );
-      getTurnOwner(gameState)!.vault -= hasCrownOfDominion
+      turnOwner.vault -= hasCrownOfDominion
         ? Math.ceil(getDefaultUnit(unitType).recruitCost * 0.85)
         : getDefaultUnit(unitType).recruitCost;
       building[0].slots!.push({

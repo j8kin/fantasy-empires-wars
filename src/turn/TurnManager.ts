@@ -1,4 +1,4 @@
-import { GameState, TurnPhase, getTurnOwner } from '../state/GameState';
+import { GameState, TurnPhase } from '../state/GameState';
 import { startTurn } from './startTurn';
 import { endTurn } from './endTurn';
 import { mainAiTurn } from './mainAiTurn';
@@ -32,7 +32,7 @@ export class TurnManager {
     gameState.turnPhase = TurnPhase.START;
     this.callbacks.onTurnPhaseChange(gameState, TurnPhase.START);
 
-    const player = getTurnOwner(gameState);
+    const player = gameState.turnOwner;
     if (!player) {
       this.callbacks.onGameOver('No valid player found for turn');
       return;
@@ -64,8 +64,9 @@ export class TurnManager {
     gameState.turnPhase = TurnPhase.MAIN;
     this.callbacks.onTurnPhaseChange(gameState, TurnPhase.MAIN);
 
-    const player = getTurnOwner(gameState);
+    const player = gameState.turnOwner;
     if (!player) {
+      // todo handle this case better
       this.callbacks.onGameOver('No valid player found for main phase');
       return;
     }
@@ -96,8 +97,9 @@ export class TurnManager {
 
     // Check for game over conditions
     if (gameState.turn > 1) {
-      const humanPlayers = gameState.players.filter((p) => p.playerType === 'human');
-      const computerPlayers = gameState.players.filter((p) => p.playerType === 'computer');
+      // todo check if this is correct logic and add remove player logic
+      const humanPlayers = gameState.allPlayers.filter((p) => p.playerType === 'human');
+      const computerPlayers = gameState.allPlayers.filter((p) => p.playerType === 'computer');
 
       if (humanPlayers.length === 0) {
         this.callbacks.onGameOver('Game Over: No human players remaining');
@@ -119,7 +121,6 @@ export class TurnManager {
   }
 
   public canEndTurn(gameState: GameState): boolean {
-    const player = getTurnOwner(gameState);
-    return gameState.turnPhase === TurnPhase.MAIN && player?.playerType === 'human';
+    return gameState.turnPhase === TurnPhase.MAIN && gameState.turnOwner.playerType === 'human';
   }
 }

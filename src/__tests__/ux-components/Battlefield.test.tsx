@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import Battlefield from '../../ux-components/battlefield/Battlefield';
 
-import { GameState, BattlefieldDimensions } from '../../state/GameState';
+import { GameState, BattlefieldDimensions, createGameState } from '../../state/GameState';
 import { LandPosition } from '../../state/LandState';
 
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
@@ -20,14 +20,13 @@ jest.mock('../../ux-components/battlefield/css/Hexagonal.module.css', () => ({
 jest.mock('../../ux-components/battlefield/LandTile', () => {
   const { getLandId } = require('../../state/LandState');
   const { useGameContext } = require('../../contexts/GameContext');
-  const { getLandOwner } = require('../../state/GameState');
 
   return (props: { battlefieldPosition: LandPosition }) => {
     const { battlefieldPosition } = props;
     const tileId: string = getLandId(battlefieldPosition);
     const { gameState } = useGameContext();
-    const tile = gameState.battlefield.lands[tileId];
-    const controlledBy = tile ? getLandOwner(gameState, tileId) : undefined;
+    const tile = gameState.map.lands[tileId];
+    const controlledBy = tile ? gameState.getLandOwner(tileId) : undefined;
 
     return (
       <div
@@ -250,10 +249,11 @@ describe('Battlefield Component', () => {
       expect(hexTiles.filter((tile) => tile.getAttribute('data-row')).length).toBe(158); // see createMockGameState for map size
       expect(hexTiles.filter((tile) => tile.getAttribute('data-col')).length).toBe(158); // see createMockGameState for map size
     });
+  });
 
+  describe('Edge Cases', () => {
     it('handles missing tile states gracefully', () => {
-      mockGameState = createMockGameState({ rows: 11, cols: 23 });
-      mockGameState.battlefield.lands = {}; // Empty tiles object
+      mockGameState = createGameState({ dimensions: { rows: 0, cols: 0 }, lands: {} }); // Empty tiles object
 
       expect(() => {
         render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
@@ -262,9 +262,7 @@ describe('Battlefield Component', () => {
       const battlefield = screen.getByTestId('Battlefield');
       expect(battlefield).toBeInTheDocument();
     });
-  });
 
-  describe('Edge Cases', () => {
     it('handles zero top position', () => {
       mockGameState = createMockGameState({ rows: 9, cols: 18 });
       render(<Battlefield topPanelHeight={0} tileSize={testTileDimensions} />);

@@ -33,7 +33,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const createDefaultCallbacks = useCallback((): TurnManagerCallbacks => {
     return {
       onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
-        setGameState({ ...gameState });
+        setGameState(gameState);
       },
       onGameOver: (message: string) => {
         turnManagerCallbacksRef.current.onGameOver?.(message);

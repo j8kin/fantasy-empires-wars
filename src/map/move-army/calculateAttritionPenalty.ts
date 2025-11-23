@@ -1,4 +1,4 @@
-import { GameState } from '../../state/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { isHero, isWarMachine, RegularUnit, RegularUnitType, UnitRank } from '../../types/Army';
 import { getHostileLands } from '../utils/getHostileLands';
 
@@ -27,7 +27,7 @@ const WAR_MACHINE_PER_UNIT = 20;
  */
 export const calculateAttritionPenalty = (gameState: GameState): void => {
   if (gameState == null) return; // fallback should never happen
-  if (gameState.turnPhase !== 'START') return; // apply only at the start of the turn
+  if (gameState.turnPhase !== TurnPhase.START) return; // apply only at the start of the turn
 
   getHostileLands(gameState).forEach((land) => {
     // get all units from the land

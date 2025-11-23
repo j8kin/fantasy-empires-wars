@@ -1,4 +1,4 @@
-import { GameState, getLandOwner, TurnPhase } from '../../state/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { getLandId, LandPosition } from '../../state/LandState';
 
 import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Army';
@@ -18,7 +18,7 @@ export const startMovement = (
 
   // Hero units could move on hostile territories only with Regular units or if there are move then 10 heroes are moved
   if (
-    getLandOwner(gameState, getLandId(to)) !== gameState.turnOwner &&
+    gameState.getLandOwner(getLandId(to)) !== gameState.turnOwner.id &&
     units.every(isHero) &&
     units.length < MIN_HERO_PACKS
   ) {
@@ -80,8 +80,8 @@ export const startMovement = (
       from: from,
       to: to,
       mp: 6,
-      path: findShortestPath(gameState.battlefield.dimensions, from, to),
+      path: findShortestPath(gameState.map.dimensions, from, to),
     },
-    controlledBy: gameState.turnOwner,
+    controlledBy: gameState.turnOwner.id,
   });
 };

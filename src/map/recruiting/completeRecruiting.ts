@@ -8,9 +8,11 @@ import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 
 export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
   const heroesRecruited: HeroOutcome[] = [];
+  const turnOwner = gameState.turnOwner.id;
+
   getLands({
     gameState: gameState,
-    players: [gameState.turnOwner],
+    players: [turnOwner],
     buildings: [
       BuildingType.BARRACKS,
       BuildingType.WHITE_MAGE_TOWER,
@@ -35,7 +37,7 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
               });
             }
             const stationedArmy = l.army.find(
-              (a) => a.movements == null && a.controlledBy === gameState.turnOwner
+              (a) => a.movements == null && a.controlledBy === turnOwner
             );
             if (stationedArmy) {
               if (!isHero(unit)) {
@@ -51,7 +53,7 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
                 stationedArmy.units.push(unit);
               }
             } else {
-              l.army.push({ units: [unit], controlledBy: gameState.turnOwner });
+              l.army.push({ units: [unit], controlledBy: turnOwner });
             }
           }
         });

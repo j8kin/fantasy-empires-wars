@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../state/GameState';
+import { GameState } from '../state/GameState';
 
 import { HeroOutcome } from '../types/HeroOutcome';
 import { TreasureItem } from '../types/Treasures';
@@ -16,15 +16,13 @@ export const startTurn = (
   gameState: GameState,
   onQuestResults?: (results: HeroOutcome[]) => void
 ) => {
-  if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
-
   if (gameState.turn === 1) {
     // on first turn place players randomly on a map
     placeHomeland(gameState);
     return;
   }
 
-  const player = getTurnOwner(gameState)!;
+  const player = gameState.turnOwner;
   // recruit units
   const heroRecruitingStatus = completeRecruiting(gameState);
 
@@ -53,18 +51,19 @@ export const startTurn = (
     (t) => t.id === TreasureItem.OBSIDIAN_CHALICE
   );
 
-  // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests#-empire-artifacts-permanent
+  // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes'-Quests#-empire-artifacts-permanent
   // OBSIDIAN_CHALICE effect: convert 10% of income to 0.02% of black mana
   if (hasObsidianChalice) {
     // 10% reduction is already applied in `calculatePlayerIncome`
     player.mana.black = player.mana.black + currentIncome * 0.02;
   }
 
-  // Update vault with current income after turn 2
+  // Update vault and mana after turn 2
   if (gameState.turn > 2) {
     player.vault += currentIncome;
+    // calculate Mana
+    calculateMana(gameState);
   }
 
-  // calculate Mana
-  calculateMana(gameState);
+  //  gameState.nextPhase();
 };

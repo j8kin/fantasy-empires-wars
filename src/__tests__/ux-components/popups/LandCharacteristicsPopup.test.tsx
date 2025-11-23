@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
-import { GameState, getLandOwner } from '../../../state/GameState';
+import { GameState } from '../../../state/GameState';
 import { getLandId, LandState } from '../../../state/LandState';
 import {
   Armies,
@@ -60,14 +60,13 @@ describe('LandCharacteristicsPopup', () => {
   beforeEach(() => {
     // Create fresh game state with real battlefield for each test
     gameStateStub = createGameStateStub({
-      turnOwner: 1,
       realBattlefield: true,
     });
 
     // Find a tile that's controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getLands({
       gameState: gameStateStub,
-      players: [gameStateStub.players[1].id],
+      players: [gameStateStub.allPlayers[1].id],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 
@@ -99,8 +98,8 @@ describe('LandCharacteristicsPopup', () => {
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(getLandOwner(gameStateStub, getLandId(mockTileState.mapPos))).toBe(
-      gameStateStub.players[1].id
+    expect(gameStateStub.getLandOwner(getLandId(mockTileState.mapPos))).toBe(
+      gameStateStub.allPlayers[1].id
     );
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
@@ -156,8 +155,11 @@ describe('LandCharacteristicsPopup', () => {
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(HeroUnitType.FIGHTER)], controlledBy: gameStateStub.turnOwner },
-        { units: [getDefaultUnit(HeroUnitType.PYROMANCER)], controlledBy: gameStateStub.turnOwner },
+        { units: [getDefaultUnit(HeroUnitType.FIGHTER)], controlledBy: gameStateStub.turnOwner.id },
+        {
+          units: [getDefaultUnit(HeroUnitType.PYROMANCER)],
+          controlledBy: gameStateStub.turnOwner.id,
+        },
       ];
 
       const tileWithHeroes = {
@@ -168,10 +170,10 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
+        map: {
+          ...gameStateStub.map,
           lands: {
-            ...gameStateStub.battlefield.lands,
+            ...gameStateStub.map.lands,
             [tileId]: tileWithHeroes,
           },
         },
@@ -201,9 +203,9 @@ describe('LandCharacteristicsPopup', () => {
       fighter3.name = 'Gareth Dawnhart';
 
       const mockArmy: Armies = [
-        { units: [fighter1], controlledBy: gameStateStub.turnOwner },
-        { units: [fighter2], controlledBy: gameStateStub.turnOwner },
-        { units: [fighter3], controlledBy: gameStateStub.turnOwner },
+        { units: [fighter1], controlledBy: gameStateStub.turnOwner.id },
+        { units: [fighter2], controlledBy: gameStateStub.turnOwner.id },
+        { units: [fighter3], controlledBy: gameStateStub.turnOwner.id },
       ];
 
       const tileWithHeroes = {
@@ -214,10 +216,10 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
+        map: {
+          ...gameStateStub.map,
           lands: {
-            ...gameStateStub.battlefield.lands,
+            ...gameStateStub.map.lands,
             [tileId]: tileWithHeroes,
           },
         },
@@ -239,8 +241,14 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays units when tile has non-hero units', () => {
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(RegularUnitType.WARRIOR)], controlledBy: gameStateStub.turnOwner },
-        { units: [getDefaultUnit(RegularUnitType.DWARF)], controlledBy: gameStateStub.turnOwner },
+        {
+          units: [getDefaultUnit(RegularUnitType.WARRIOR)],
+          controlledBy: gameStateStub.turnOwner.id,
+        },
+        {
+          units: [getDefaultUnit(RegularUnitType.DWARF)],
+          controlledBy: gameStateStub.turnOwner.id,
+        },
       ];
 
       const tileWithUnits = {
@@ -251,10 +259,10 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
+        map: {
+          ...gameStateStub.map,
           lands: {
-            ...gameStateStub.battlefield.lands,
+            ...gameStateStub.map.lands,
             [tileId]: tileWithUnits,
           },
         },
@@ -278,8 +286,8 @@ describe('LandCharacteristicsPopup', () => {
       regularWarriors.count = 5;
 
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(HeroUnitType.FIGHTER)], controlledBy: gameStateStub.turnOwner },
-        { units: [regularWarriors], controlledBy: gameStateStub.turnOwner },
+        { units: [getDefaultUnit(HeroUnitType.FIGHTER)], controlledBy: gameStateStub.turnOwner.id },
+        { units: [regularWarriors], controlledBy: gameStateStub.turnOwner.id },
         {
           units: [getDefaultUnit(RegularUnitType.DWARF)],
           movements: {
@@ -288,10 +296,10 @@ describe('LandCharacteristicsPopup', () => {
             mp: 0,
             path: [],
           },
-          controlledBy: gameStateStub.turnOwner,
+          controlledBy: gameStateStub.turnOwner.id,
         }, // moving army should also be displayed
-        { units: [getDefaultUnit(HeroUnitType.CLERIC)], controlledBy: gameStateStub.turnOwner },
-        { units: [getDefaultUnit(RegularUnitType.ELF)], controlledBy: gameStateStub.turnOwner },
+        { units: [getDefaultUnit(HeroUnitType.CLERIC)], controlledBy: gameStateStub.turnOwner.id },
+        { units: [getDefaultUnit(RegularUnitType.ELF)], controlledBy: gameStateStub.turnOwner.id },
       ];
 
       const tileWithMixedArmy = {
@@ -302,10 +310,10 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
+        map: {
+          ...gameStateStub.map,
           lands: {
-            ...gameStateStub.battlefield.lands,
+            ...gameStateStub.map.lands,
             [tileId]: tileWithMixedArmy,
           },
         },
@@ -340,10 +348,10 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithoutArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
+        map: {
+          ...gameStateStub.map,
           lands: {
-            ...gameStateStub.battlefield.lands,
+            ...gameStateStub.map.lands,
             [tileId]: tileWithoutArmy,
           },
         },
@@ -363,10 +371,10 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only heroes section when tile has only heroes', () => {
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(HeroUnitType.RANGER)], controlledBy: gameStateStub.turnOwner },
+        { units: [getDefaultUnit(HeroUnitType.RANGER)], controlledBy: gameStateStub.turnOwner.id },
         {
           units: [getDefaultUnit(HeroUnitType.NECROMANCER)],
-          controlledBy: gameStateStub.turnOwner,
+          controlledBy: gameStateStub.turnOwner.id,
         },
       ];
 
@@ -378,10 +386,10 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
+        map: {
+          ...gameStateStub.map,
           lands: {
-            ...gameStateStub.battlefield.lands,
+            ...gameStateStub.map.lands,
             [tileId]: tileWithHeroesOnly,
           },
         },
@@ -403,10 +411,10 @@ describe('LandCharacteristicsPopup', () => {
 
     it('displays only units section when tile has only non-hero units', () => {
       const mockArmy: Armies = [
-        { units: [getDefaultUnit(RegularUnitType.ORC)], controlledBy: gameStateStub.turnOwner },
+        { units: [getDefaultUnit(RegularUnitType.ORC)], controlledBy: gameStateStub.turnOwner.id },
         {
           units: [getDefaultUnit(RegularUnitType.BALLISTA)],
-          controlledBy: gameStateStub.turnOwner,
+          controlledBy: gameStateStub.turnOwner.id,
         },
       ];
 
@@ -418,10 +426,10 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
+        map: {
+          ...gameStateStub.map,
           lands: {
-            ...gameStateStub.battlefield.lands,
+            ...gameStateStub.map.lands,
             [tileId]: tileWithUnitsOnly,
           },
         },

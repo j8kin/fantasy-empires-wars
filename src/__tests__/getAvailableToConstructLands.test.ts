@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../state/GameState';
+import { GameState } from '../state/GameState';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { BuildingType } from '../types/Building';
 import { construct } from '../map/building/construct';
@@ -10,8 +10,7 @@ describe('getAvailableLands', () => {
   let gameStateStub: GameState;
 
   beforeEach(() => {
-    gameStateStub = createGameStateStub({ addPlayersHomeland: false });
-    gameStateStub.turnOwner = gameStateStub.players[0].id;
+    gameStateStub = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
   });
 
   it('should return no available lands for non-stronghold building when player has no lands under control', () => {
@@ -48,7 +47,7 @@ describe('getAvailableLands', () => {
   it('should return all available lands for stronghold building which controlled by army', () => {
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
     placeUnitsOnMap(getDefaultUnit(HeroUnitType.FIGHTER), gameStateStub, { row: 3, col: 5 });
-    getTurnOwner(gameStateStub)!.addLand('3-5');
+    gameStateStub.turnOwner.addLand('3-5');
     //gameStateStub.battlefield.lands['3-5'].controlledBy = gameStateStub.turnOwner;
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.STRONGHOLD);
@@ -83,7 +82,7 @@ describe('getAvailableLands', () => {
 
     expect(availableLands.length).toBe(6); // number of border lands
     // row 1
-    expect(gameStateStub.battlefield.lands['2-3'].buildings[0].id).toEqual(BuildingType.BARRACKS);
+    expect(gameStateStub.map.lands['2-3'].buildings[0].id).toEqual(BuildingType.BARRACKS);
     expect(availableLands).toContain('2-3');
     expect(availableLands).toContain('2-4');
     // row 2
@@ -104,8 +103,8 @@ describe('getAvailableLands', () => {
 
     expect(availableLands.length).toBe(5); // number of lands outside radius 1 from stronghold
     // row 1
-    expect(gameStateStub.battlefield.lands['2-3'].buildings[0].id).toEqual(BuildingType.BARRACKS);
-    expect(gameStateStub.battlefield.lands['2-3'].buildings[1].id).toEqual(BuildingType.WALL);
+    expect(gameStateStub.map.lands['2-3'].buildings[0].id).toEqual(BuildingType.BARRACKS);
+    expect(gameStateStub.map.lands['2-3'].buildings[1].id).toEqual(BuildingType.WALL);
     // land 2-3 is not available for construction
     expect(availableLands).toContain('2-4');
     // row 2
@@ -119,10 +118,10 @@ describe('getAvailableLands', () => {
 
   it('should return all border lands when have a border with other player', () => {
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
-    gameStateStub.turnOwner = gameStateStub.players[1].id;
+    gameStateStub.nextPlayer();
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 6 }); // other player
 
-    gameStateStub.turnOwner = gameStateStub.players[0].id;
+    gameStateStub.nextPlayer();
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.WALL);
 
     expect(availableLands.length).toBe(6); // number of lands outside radius 1 from stronghold
@@ -147,7 +146,7 @@ describe('getAvailableLands', () => {
     expect(availableLands.length).toBe(6); // number of lands without stronghold
     // row 1
     // border land with wall should be also available for construction
-    expect(gameStateStub.battlefield.lands['2-3'].buildings[0].id).toEqual(BuildingType.WALL);
+    expect(gameStateStub.map.lands['2-3'].buildings[0].id).toEqual(BuildingType.WALL);
     expect(availableLands).toContain('2-3');
     expect(availableLands).toContain('2-4');
     // row 2

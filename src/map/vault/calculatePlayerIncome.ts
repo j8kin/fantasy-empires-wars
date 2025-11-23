@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { TreasureItem } from '../../types/Treasures';
 import { calculateIncome } from './calculateIncome';
 import { calculateMaintenance } from './calculateMaintenance';
@@ -12,8 +12,7 @@ import { calculateMaintenance } from './calculateMaintenance';
  * @returns The net income per turn for the current player, or 0 if no player is found
  */
 export const calculatePlayerIncome = (gameState: GameState): number => {
-  const player = getTurnOwner(gameState);
-  if (!player) return 0;
+  const turnOwner = gameState.turnOwner;
 
   // On turn 1, no income is calculated (players just place homeland)
   if (gameState.turn === 1) {
@@ -24,10 +23,10 @@ export const calculatePlayerIncome = (gameState: GameState): number => {
   let netIncome = calculateIncome(gameState) - calculateMaintenance(gameState);
 
   // Apply empire treasure effects
-  const hasObsidianChalice = player.empireTreasures?.some(
+  const hasObsidianChalice = turnOwner.empireTreasures?.some(
     (t) => t.id === TreasureItem.OBSIDIAN_CHALICE
   );
-  const hasBannerOfUnity = player.empireTreasures?.some(
+  const hasBannerOfUnity = turnOwner.empireTreasures?.some(
     (t) => t.id === TreasureItem.BANNER_OF_UNITY
   );
 

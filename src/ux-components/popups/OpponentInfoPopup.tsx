@@ -10,7 +10,6 @@ import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
 import { PlayerState } from '../../state/PlayerState';
-import { getTurnOwner } from '../../state/GameState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { getPlayerColorValue } from '../../types/PlayerColors';
 
@@ -24,7 +23,7 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
 
   if (opponent == null || gameState == null) return null;
 
-  const selectedPlayer = getTurnOwner(gameState);
+  const selectedPlayer = gameState.turnOwner;
   const diplomacyStatus = selectedPlayer?.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {

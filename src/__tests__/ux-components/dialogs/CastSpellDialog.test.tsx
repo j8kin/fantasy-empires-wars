@@ -1,16 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import CastSpellDialog from '../../../ux-components/dialogs/CastSpellDialog';
-import { GameProvider, useGameContext } from '../../../contexts/GameContext';
+import { GameProvider } from '../../../contexts/GameContext';
 import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../../contexts/ApplicationContext';
 import { AllSpells } from '../../../types/Spell';
-import { ManaType } from '../../../types/Mana';
-import { PlayerState, PREDEFINED_PLAYERS } from '../../../state/PlayerState';
-import { toGamePlayer } from '../../utils/toGamePlayer';
-import { TurnPhase } from '../../../state/GameState';
 
 // Mock CSS modules
 jest.mock(
@@ -98,53 +94,40 @@ const TestComponentWithDialog: React.FC = () => {
 
 const renderWithApplicationContext = () => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { updateGameState, gameState } = useGameContext();
-    React.useEffect(() => {
-      const selectedPlayer: PlayerState = toGamePlayer(PREDEFINED_PLAYERS[0]);
-      selectedPlayer.mana = {
-        [ManaType.WHITE]: 1000,
-        [ManaType.BLACK]: 1000,
-        [ManaType.RED]: 1000,
-        [ManaType.GREEN]: 1000,
-        [ManaType.BLUE]: 1000,
-      };
-
-      if (gameState) {
-        updateGameState({
-          ...gameState,
-          players: [
-            selectedPlayer,
-            toGamePlayer(PREDEFINED_PLAYERS[1]),
-            toGamePlayer(PREDEFINED_PLAYERS[2]),
-          ],
-        });
-      } else {
-        updateGameState({
-          battlefield: {
-            dimensions: { rows: 9, cols: 18 },
-            lands: {},
-          },
-          turn: 0,
-          turnOwner: selectedPlayer.id,
-          players: [
-            selectedPlayer,
-            toGamePlayer(PREDEFINED_PLAYERS[1]),
-            toGamePlayer(PREDEFINED_PLAYERS[2]),
-          ],
-          turnPhase: TurnPhase.START,
-        });
-      }
-    }, []);
     return <>{children}</>;
   };
 
+  // Mock the useGameContext to provide a proper gameState
+  const mockGameContext = {
+    gameState: {
+      turnOwner: {
+        id: 'test-player',
+        mana: {
+          white: 200,
+          black: 200,
+          green: 200,
+          blue: 200,
+          red: 200,
+        },
+      },
+    },
+    updateGameState: jest.fn(),
+    startNewGame: jest.fn(),
+    startNewTurn: jest.fn(),
+    endCurrentTurn: jest.fn(),
+    setTurnManagerCallbacks: jest.fn(),
+  };
+
+  // Mock useGameContext before rendering
+  jest
+    .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
+    .mockReturnValue(mockGameContext);
+
   return render(
     <ApplicationContextProvider>
-      <GameProvider>
-        <Bootstrapper>
-          <TestComponentWithDialog />
-        </Bootstrapper>
-      </GameProvider>
+      <Bootstrapper>
+        <TestComponentWithDialog />
+      </Bootstrapper>
     </ApplicationContextProvider>
   );
 };

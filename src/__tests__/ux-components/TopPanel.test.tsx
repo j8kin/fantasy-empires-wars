@@ -5,43 +5,42 @@ import TopPanel from '../../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { PlayerState, PREDEFINED_PLAYERS } from '../../state/PlayerState';
+import { PREDEFINED_PLAYERS } from '../../state/PlayerState';
 import { ManaType } from '../../types/Mana';
-import { TurnPhase } from '../../state/GameState';
-import { toGamePlayer } from '../utils/toGamePlayer';
+import { createGameState, TurnPhase } from '../../state/GameState';
+import { generateMockMap } from '../utils/generateMockMap';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { updateGameState, gameState } = useGameContext();
     React.useEffect(() => {
-      const selectedPlayer: PlayerState = toGamePlayer(PREDEFINED_PLAYERS[0]);
-      selectedPlayer.vault = 1500;
-      selectedPlayer.mana = {
-        [ManaType.WHITE]: 100,
-        [ManaType.BLACK]: 100,
-        [ManaType.RED]: 100,
-        [ManaType.GREEN]: 100,
-        [ManaType.BLUE]: 100,
-      };
+      if (!gameState) {
+        // Create a new GameState using the createGameState function
+        const map = generateMockMap({ rows: 9, cols: 18 });
+        const newGameState = createGameState(map);
 
-      if (gameState) {
-        updateGameState({
-          ...gameState,
-          players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map((p) => toGamePlayer(p))],
+        // Add players to the game
+        PREDEFINED_PLAYERS.slice(0, 3).forEach((player, index) => {
+          newGameState.addPlayer(player, index === 0 ? 'human' : 'computer');
         });
-      } else {
-        updateGameState({
-          battlefield: {
-            dimensions: { rows: 9, cols: 18 },
-            lands: {},
-          },
-          turn: 0,
-          turnPhase: TurnPhase.MAIN,
-          turnOwner: selectedPlayer.id,
-          players: [selectedPlayer, ...PREDEFINED_PLAYERS.slice(1, 3).map((p) => toGamePlayer(p))],
-        });
+
+        // Set up the first player with test data
+        const firstPlayer = newGameState.getPlayer(PREDEFINED_PLAYERS[0].id);
+        firstPlayer.vault = 1500;
+        firstPlayer.mana = {
+          [ManaType.WHITE]: 100,
+          [ManaType.BLACK]: 100,
+          [ManaType.RED]: 100,
+          [ManaType.GREEN]: 100,
+          [ManaType.BLUE]: 100,
+        };
+
+        // Set turn phase to MAIN
+        newGameState.turnPhase = TurnPhase.MAIN;
+
+        updateGameState(newGameState);
       }
-    }, []);
+    }, [gameState, updateGameState]);
     return <>{children}</>;
   };
 
@@ -88,7 +87,7 @@ describe('TopPanel Component', () => {
 
       // Test that income is displayed (calculated value, so test for pattern)
       // Income can be positive (+income/turn), zero (0/turn), or negative (-income/turn)
-      const incomePattern = /[+\-]?\d+\/turn/;
+      const incomePattern = /[+-]?\d+\/turn/;
       const incomeElements = await screen.findAllByText(incomePattern);
       expect(incomeElements.length).toBeGreaterThan(0);
     });
@@ -179,24 +178,20 @@ describe('TopPanel Component', () => {
       }) => {
         const { updateGameState, gameState } = useGameContext();
         React.useEffect(() => {
-          if (gameState) {
-            updateGameState({
-              ...gameState,
-              players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
-            });
-          } else {
-            updateGameState({
-              battlefield: {
-                dimensions: { rows: 9, cols: 18 },
-                lands: {},
-              },
-              turn: 0,
-              turnPhase: TurnPhase.MAIN,
-              turnOwner: PREDEFINED_PLAYERS[0].id,
-              players: [toGamePlayer(PREDEFINED_PLAYERS[0])],
-            });
+          if (!gameState) {
+            // Create a new GameState using the createGameState function
+            const map = generateMockMap({ rows: 9, cols: 18 });
+            const newGameState = createGameState(map);
+
+            // Add only one player
+            newGameState.addPlayer(PREDEFINED_PLAYERS[0], 'human');
+
+            // Set turn phase to MAIN
+            newGameState.turnPhase = TurnPhase.MAIN;
+
+            updateGameState(newGameState);
           }
-        }, []);
+        }, [gameState, updateGameState]);
         return <>{children}</>;
       };
 
@@ -255,7 +250,7 @@ describe('TopPanel Component', () => {
 
       // Verify income is displayed (calculated value)
       // Income can be positive (+income/turn), zero (0/turn), or negative (-income/turn)
-      const incomePattern = /[+\-]?\d+\/turn/;
+      const incomePattern = /[+-]?\d+\/turn/;
       const incomeElements = await screen.findAllByText(incomePattern);
       expect(incomeElements.length).toBeGreaterThan(0);
 

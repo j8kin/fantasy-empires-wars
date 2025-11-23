@@ -10,6 +10,7 @@ import { getLands } from '../utils/getLands';
 
 export const performMovements = (gameState: GameState): void => {
   if (gameState == null || gameState.turnPhase !== TurnPhase.END) return;
+  const turnOwner = gameState.turnOwner.id;
 
   // Find all armies of the current turn owner that have movements
   const armiesToMove: Array<{
@@ -23,15 +24,13 @@ export const performMovements = (gameState: GameState): void => {
 
   getLands({
     gameState: gameState,
-    players: [gameState.turnOwner, ...allies],
+    players: [turnOwner, ...allies],
     noArmy: false,
   })
-    .filter((land) =>
-      land.army.some((a) => a.controlledBy === gameState.turnOwner && a.movements != null)
-    )
+    .filter((land) => land.army.some((a) => a.controlledBy === turnOwner && a.movements != null))
     .forEach((landState) => {
       landState.army.forEach((army) => {
-        if (army.controlledBy === gameState.turnOwner && army.movements) {
+        if (army.controlledBy === turnOwner && army.movements) {
           // Find current position in the path
           const currentPos = landState.mapPos;
           const pathIndex = army.movements.path.findIndex(
@@ -56,7 +55,7 @@ export const performMovements = (gameState: GameState): void => {
     });
 
   // Create immutable copy of lands to avoid moving armies twice
-  const updatedLands = { ...gameState.battlefield.lands };
+  const updatedLands = { ...gameState.map.lands };
 
   // Process each army movement
   armiesToMove.forEach(({ army, currentLandPos, nextLandPos, isAtDestination }) => {
@@ -87,7 +86,7 @@ export const performMovements = (gameState: GameState): void => {
   });
 
   // Update gameState with the new lands
-  gameState.battlefield.lands = updatedLands;
+  gameState.map.lands = updatedLands;
 
   // merge armies after all movements are performed
   mergeArmies(gameState);

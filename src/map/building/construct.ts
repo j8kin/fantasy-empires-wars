@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { getLandId, LandPosition } from '../../state/LandState';
 
 import { TreasureItem } from '../../types/Treasures';
@@ -7,17 +7,18 @@ import { BuildingType, getBuilding } from '../../types/Building';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 
 import { destroyBuilding } from './destroyBuilding';
+import { NO_PLAYER } from '../../state/PlayerState';
 
 export const construct = (
   gameState: GameState,
   buildingType: BuildingType,
   position: LandPosition
 ) => {
-  const { battlefield } = gameState;
-  const owner = getTurnOwner(gameState)!;
+  const map = gameState.map;
+  const owner = gameState.turnOwner;
   const mapPosition = getLandId(position);
   const building = getBuilding(buildingType);
-  if (owner.vault < building.buildCost) {
+  if (owner.vault < building.buildCost && gameState.turn > 1) {
     return;
   }
   switch (buildingType) {
@@ -26,19 +27,19 @@ export const construct = (
       break;
 
     case BuildingType.STRONGHOLD:
-      battlefield.lands[mapPosition].buildings.push(building);
+      map.lands[mapPosition].buildings.push(building);
       owner.addLand(mapPosition);
-      const newLandsCandidates = getTilesInRadius(battlefield.dimensions, position, 1, true);
+      const newLandsCandidates = getTilesInRadius(map.dimensions, position, 1, true);
       newLandsCandidates.forEach((land) => {
         // if the land is not controlled by any player, it becomes controlled by the player
-        if (!gameState.players.some((p) => p.hasLand(getLandId(land)))) {
+        if (gameState.getLandOwner(getLandId(land)) === NO_PLAYER.id) {
           owner.addLand(getLandId(land));
         }
       });
       break;
 
     default:
-      battlefield.lands[mapPosition].buildings.push(building);
+      map.lands[mapPosition].buildings.push(building);
       break;
   }
 
@@ -48,5 +49,7 @@ export const construct = (
     (t) => t.id === TreasureItem.CROWN_OF_DOMINION
   );
 
-  owner.vault -= hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;
+  if (gameState.turn > 1) {
+    owner.vault -= hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;
+  }
 };
