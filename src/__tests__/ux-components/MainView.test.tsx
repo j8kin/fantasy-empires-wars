@@ -81,7 +81,7 @@ jest.mock('../../ux-components/popups/OpponentInfoPopup', () => {
 
     return props.opponent ? (
       <div data-testid="OpponentInfoPopup">
-        <span>{props.opponent.name}</span>
+        <span>{props.opponent.getName()}</span>
         <button onClick={handleClose}>Close</button>
       </div>
     ) : null;

@@ -1,9 +1,9 @@
-import { GameState, getTurnOwner } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { getLandId, LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
 import { getDefaultUnit, HeroUnit } from '../../types/Army';
-import { BuildingType, getBuilding } from '../../types/Building';
+import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { levelUpHero } from '../recruiting/levelUpHero';
 import { construct } from '../building/construct';
@@ -13,7 +13,7 @@ import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getLand, getLands } from '../utils/getLands';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
-  const player = getTurnOwner(gameState)!;
+  const player = gameState.turnOwner;
   const hero = getDefaultUnit(player.getType()) as HeroUnit;
   hero.name = player.getName();
   hero.level = player.getLevel() - 1; // levelUpHero will increment level
@@ -24,7 +24,7 @@ const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
 };
 
 export const placeHomeland = (gameState: GameState) => {
-  const owner = getTurnOwner(gameState)!;
+  const owner = gameState.turnOwner;
 
   let homeland: LandState;
 
@@ -34,41 +34,41 @@ export const placeHomeland = (gameState: GameState) => {
   });
 
   // get all lands which are not in radius 4 from any player's homeland'
-  let freeToBuildLands = Object.keys(gameState.battlefield.lands).filter(
+  let freeToBuildLands = Object.keys(gameState.map.lands).filter(
     (landId) =>
       // exclude border lands
       !landId.startsWith('0-') &&
       !landId.startsWith('1-') &&
-      !landId.startsWith(`${gameState.battlefield.dimensions.rows - 1}-`) &&
-      !landId.startsWith(`${gameState.battlefield.dimensions.rows - 2}-`) &&
+      !landId.startsWith(`${gameState.map.dimensions.rows - 1}-`) &&
+      !landId.startsWith(`${gameState.map.dimensions.rows - 2}-`) &&
       !existingPlayersHomelands
-        .flatMap((h) => getTilesInRadius(gameState.battlefield.dimensions, h.mapPos, 4, false))
+        .flatMap((h) => getTilesInRadius(gameState.map.dimensions, h.mapPos, 4, false))
         .map((tola) => getLandId(tola))
         .includes(landId)
   );
 
   if (freeToBuildLands.length === 0) {
-    freeToBuildLands = Object.keys(gameState.battlefield.lands).filter(
+    freeToBuildLands = Object.keys(gameState.map.lands).filter(
       (landId) =>
         // exclude border lands
         !landId.startsWith('0-') &&
         !landId.startsWith('1-') &&
-        !landId.startsWith(`${gameState.battlefield.dimensions.rows - 1}-`) &&
-        !landId.startsWith(`${gameState.battlefield.dimensions.rows - 2}-`) &&
+        !landId.startsWith(`${gameState.map.dimensions.rows - 1}-`) &&
+        !landId.startsWith(`${gameState.map.dimensions.rows - 2}-`) &&
         !existingPlayersHomelands
-          .flatMap((h) => getTilesInRadius(gameState.battlefield.dimensions, h.mapPos, 3, false))
+          .flatMap((h) => getTilesInRadius(gameState.map.dimensions, h.mapPos, 3, false))
           .map((tola) => getLandId(tola))
           .includes(landId)
     );
   }
 
   let possibleHomelands = freeToBuildLands
-    .map((key) => gameState.battlefield.lands[key])
+    .map((key) => gameState.map.lands[key])
     .filter((land) => land.land.alignment === owner.getAlignment());
 
   if (possibleHomelands.length === 0) {
     possibleHomelands = freeToBuildLands
-      .map((key) => gameState.battlefield.lands[key])
+      .map((key) => gameState.map.lands[key])
       .filter((land) => land.land.alignment === Alignment.NEUTRAL);
   }
 
@@ -83,22 +83,19 @@ export const placeHomeland = (gameState: GameState) => {
         })
       );
     } else {
-      homeland = gameState.battlefield.lands[getRandomElement(freeToBuildLands)];
+      homeland = gameState.map.lands[getRandomElement(freeToBuildLands)];
     }
   } else {
     homeland = getRandomElement(possibleHomelands);
   }
 
-  // add money to able construct base STRONGHOLD and BARRACKS
-  getTurnOwner(gameState)!.vault +=
-    getBuilding(BuildingType.STRONGHOLD).buildCost + getBuilding(BuildingType.BARRACKS).buildCost;
   // Place Strong into homeland first
   construct(gameState, BuildingType.STRONGHOLD, homeland.mapPos);
 
   // Place Barracks on the same alignment land except homeland
   let possibleBarracksLands = getLands({
     gameState: gameState,
-    players: [gameState.turnOwner],
+    players: [gameState.turnOwner.id],
     landAlignment: owner.getAlignment(),
     buildings: [],
   });
@@ -106,7 +103,7 @@ export const placeHomeland = (gameState: GameState) => {
     // fall back to any land if no alignment match
     possibleBarracksLands = getLands({
       gameState: gameState,
-      players: [gameState.turnOwner],
+      players: [gameState.turnOwner.id],
       buildings: [],
     });
   }

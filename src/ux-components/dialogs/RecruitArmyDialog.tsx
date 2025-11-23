@@ -5,7 +5,6 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { getTurnOwner } from '../../state/GameState';
 import { LandPosition } from '../../state/LandState';
 
 import {
@@ -136,7 +135,7 @@ const RecruitArmyDialog: React.FC = () => {
           !isMage(u) &&
           // The players, who reject magic, should be able to recruit their owned special heroes
           (u !== HeroUnitType.WARSMITH ||
-            getTurnOwner(gameState)?.getType() === HeroUnitType.WARSMITH)) ||
+            gameState?.turnOwner.getType() === HeroUnitType.WARSMITH)) ||
         // mage Heroes should be recruited in related towers only
         (u === HeroUnitType.CLERIC && recruitBuilding.id === BuildingType.WHITE_MAGE_TOWER) ||
         (u === HeroUnitType.ENCHANTER && recruitBuilding.id === BuildingType.BLUE_MAGE_TOWER) ||

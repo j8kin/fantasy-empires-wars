@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../state/GameState';
+import { GameState } from '../state/GameState';
 
 import { HeroOutcome } from '../types/HeroOutcome';
 import { TreasureItem } from '../types/Treasures';
@@ -16,15 +16,13 @@ export const startTurn = (
   gameState: GameState,
   onQuestResults?: (results: HeroOutcome[]) => void
 ) => {
-  if (!gameState.players.some((p) => p.id === gameState.turnOwner)) return;
-
   if (gameState.turn === 1) {
     // on first turn place players randomly on a map
     placeHomeland(gameState);
     return;
   }
 
-  const player = getTurnOwner(gameState)!;
+  const player = gameState.turnOwner;
   // recruit units
   const heroRecruitingStatus = completeRecruiting(gameState);
 
@@ -67,4 +65,6 @@ export const startTurn = (
 
   // calculate Mana
   calculateMana(gameState);
+
+  //  gameState.nextPhase();
 };

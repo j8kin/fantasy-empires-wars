@@ -1,5 +1,5 @@
 import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
-import { BattlefieldDimensions, TurnPhase } from '../state/GameState';
+import { BattlefieldDimensions } from '../state/GameState';
 import { getLands } from '../map/utils/getLands';
 import { BuildingType } from '../types/Building';
 import { startTurn } from '../turn/startTurn';
@@ -8,7 +8,6 @@ import { endTurn } from '../turn/endTurn';
 describe('Game Start: add player to map', () => {
   it('turnOwner should be placed on map on Turn 0', () => {
     const gameState = createGameStateStub({
-      turnPhase: TurnPhase.START,
       realBattlefield: true,
       addPlayersHomeland: false,
     });
@@ -22,7 +21,6 @@ describe('Game Start: add player to map', () => {
 
   it('all players should be placed on map on Turn 1', () => {
     const gameState = createGameStateStub({
-      turnPhase: TurnPhase.START,
       realBattlefield: true,
       addPlayersHomeland: false,
     });
@@ -33,7 +31,7 @@ describe('Game Start: add player to map', () => {
     }
 
     expect(getLands({ gameState: gameState, buildings: [BuildingType.STRONGHOLD] }).length).toBe(
-      gameState.players.length
+      gameState.allPlayers.length
     );
   });
 
@@ -48,7 +46,6 @@ describe('Game Start: add player to map', () => {
     (size: string, dimensions: BattlefieldDimensions, maxPlayerNumber: number) => {
       const gameState = createGameStateStub({
         nPlayers: maxPlayerNumber,
-        turnPhase: TurnPhase.START,
         realBattlefield: true,
         battlefieldSize: dimensions,
         addPlayersHomeland: false,
@@ -60,7 +57,7 @@ describe('Game Start: add player to map', () => {
       }
 
       expect(getLands({ gameState: gameState, buildings: [BuildingType.STRONGHOLD] }).length).toBe(
-        gameState.players.length
+        gameState.allPlayers.length
       );
     }
   );

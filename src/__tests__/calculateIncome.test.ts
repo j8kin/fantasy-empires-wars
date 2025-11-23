@@ -1,7 +1,7 @@
 import { calculateIncome } from '../map/vault/calculateIncome';
-import { GameState, getTurnOwner, TurnPhase } from '../state/GameState';
+import { createGameState, GameState } from '../state/GameState';
 import { getLandId } from '../state/LandState';
-import { PlayerState } from '../state/PlayerState';
+import { PREDEFINED_PLAYERS } from '../state/PlayerState';
 
 import { BuildingType, getBuilding } from '../types/Building';
 import { getLandById, LandType } from '../types/Land';
@@ -14,17 +14,13 @@ import { generateMockMap } from './utils/generateMockMap';
 
 describe('Calculate Income', () => {
   let gameStateStub: GameState;
-  let lawfulPlayer: PlayerState;
-  let chaoticPlayer: PlayerState;
-  let neutralPlayer: PlayerState;
+  const lawfulPlayer = PREDEFINED_PLAYERS[0];
+  const chaoticPlayer = PREDEFINED_PLAYERS[2];
+  const neutralPlayer = PREDEFINED_PLAYERS[1];
 
   beforeEach(() => {
     // clear the map before each test
     gameStateStub = createGameStateStub({ addPlayersHomeland: false });
-
-    lawfulPlayer = gameStateStub.players[0];
-    chaoticPlayer = gameStateStub.players[1];
-    neutralPlayer = gameStateStub.players[2];
   });
 
   it('No land owned', () => {
@@ -33,7 +29,8 @@ describe('Calculate Income', () => {
   });
 
   it('Corner case: No owned strongholds', () => {
-    lawfulPlayer.addLand(getLandId({ row: 5, col: 5 }));
+    gameStateStub.addPlayer(lawfulPlayer, 'human');
+    gameStateStub.turnOwner.addLand(getLandId({ row: 5, col: 5 }));
 
     const income = calculateIncome(gameStateStub);
     expect(income).toBe(0);
@@ -54,18 +51,15 @@ describe('Calculate Income', () => {
     (playerAlignment: Alignment, allLandsAlignment: Alignment, expectedIncome: number) => {
       const player =
         playerAlignment === Alignment.LAWFUL
-          ? lawfulPlayer
+          ? PREDEFINED_PLAYERS[0]
           : playerAlignment === Alignment.NEUTRAL
-            ? neutralPlayer
-            : chaoticPlayer;
+            ? PREDEFINED_PLAYERS[2]
+            : PREDEFINED_PLAYERS[1];
 
-      gameStateStub.battlefield = generateMockMap(
-        defaultBattlefieldSizeStub,
-        allLandsAlignment,
-        100
+      gameStateStub = createGameState(
+        generateMockMap(defaultBattlefieldSizeStub, allLandsAlignment, 100)
       );
-      gameStateStub.turnPhase = TurnPhase.MAIN;
-      gameStateStub.turnOwner = player.id;
+      gameStateStub.addPlayer(player, 'human');
       // add stronghold
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
       const income = calculateIncome(gameStateStub);
@@ -93,17 +87,19 @@ describe('Calculate Income', () => {
             ? neutralPlayer
             : chaoticPlayer;
 
-      gameStateStub.turnOwner = player.id;
+      gameStateStub = createGameState(generateMockMap(defaultBattlefieldSizeStub));
+      gameStateStub.addPlayer(player, 'human');
+
       // stronghold
-      getTurnOwner(gameStateStub)!.addLand(getLandId({ row: 5, col: 5 }));
-      gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
-      gameStateStub.battlefield.lands[getLandId({ row: 5, col: 5 })].buildings = [
+      gameStateStub.turnOwner.addLand(getLandId({ row: 5, col: 5 }));
+      gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
+      gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
       ];
 
       // additional land (should be calculated with penalty
-      player.addLand(getLandId({ row: 5, col: landCol }));
-      gameStateStub.battlefield.lands[getLandId({ row: 5, col: landCol })].goldPerTurn = 100;
+      gameStateStub.turnOwner.addLand(getLandId({ row: 5, col: landCol }));
+      gameStateStub.map.lands[getLandId({ row: 5, col: landCol })].goldPerTurn = 100;
 
       const income = calculateIncome(gameStateStub);
 
@@ -131,13 +127,14 @@ describe('Calculate Income', () => {
             ? neutralPlayer
             : chaoticPlayer;
 
-      gameStateStub.turnOwner = player.id;
+      gameStateStub = createGameState(generateMockMap(defaultBattlefieldSizeStub));
+      gameStateStub.addPlayer(player, 'human');
 
       // add different type land in the stronghold radius to demonstrate different income calculations
-      gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].land = getLandById(land);
-      player.addLand(getLandId({ row: 4, col: 4 }));
-      gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
-      gameStateStub.battlefield.lands[getLandId({ row: 4, col: 4 })].buildings = [
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(land);
+      gameStateStub.turnOwner.addLand(getLandId({ row: 4, col: 4 }));
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
       ];
 

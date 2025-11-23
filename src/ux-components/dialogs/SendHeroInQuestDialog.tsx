@@ -39,7 +39,7 @@ const SendHeroInQuestDialog: React.FC = () => {
   useEffect(() => {
     if (!gameState || !showSendHeroInQuestDialog || !actionLandPosition) return;
 
-    const land = gameState.battlefield.lands[getLandId(actionLandPosition)];
+    const land = gameState.map.lands[getLandId(actionLandPosition)];
     if (!land || land.army.length === 0) {
       handleClose();
       return;
@@ -81,7 +81,7 @@ const SendHeroInQuestDialog: React.FC = () => {
 
   if (!gameState || !showSendHeroInQuestDialog || !actionLandPosition) return undefined;
 
-  const land = gameState.battlefield.lands[getLandId(actionLandPosition)];
+  const land = gameState.map.lands[getLandId(actionLandPosition)];
 
   // If no land with heroes is available, don't render content
   if (!land || land.army.length === 0) {

@@ -21,7 +21,7 @@ export interface PlayerProfile {
 
 export interface PlayerState {
   id: string; // link to PlayerProfile.id
-  playerType: 'human' | 'computer';
+  playerType: 'human' | 'computer'; // todo convert into isHuman() and make invisible
 
   mana: Mana;
   vault: number;
@@ -47,7 +47,8 @@ export interface PlayerState {
 
 export const createPlayerState = (
   profile: PlayerProfile,
-  playerType: 'human' | 'computer'
+  playerType: 'human' | 'computer',
+  vault: number = 0
 ): PlayerState => {
   const controlledLands: string[] = [];
 
@@ -64,7 +65,7 @@ export const createPlayerState = (
     id: profile.id, // Fixed: was empty string before
     playerType: playerType,
     quests: [],
-    vault: 0,
+    vault: vault,
     color: profile.color,
 
     // land control methods

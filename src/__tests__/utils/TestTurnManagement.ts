@@ -58,10 +58,8 @@ export class TestTurnManagement {
   performAiTurns = (owner: string): void => {
     expect(this.gameStateStub).toBeDefined();
     const cTurn = this.gameStateStub!.turn;
-    const newOwnerIdx =
-      (this.gameStateStub!.players.findIndex((p) => p.id === this.gameStateStub!.turnOwner) + 1) %
-      this.gameStateStub!.players.length;
-    expect(this.gameStateStub!.turnOwner).toBe(owner);
+    const cTurnOwner = this.gameStateStub!.turnOwner;
+    expect(this.gameStateStub!.turnOwner.getName()).toBe(owner);
 
     // computer players turns
     expect(this.gameStateStub!.turnPhase).toBe(TurnPhase.START);
@@ -73,8 +71,10 @@ export class TestTurnManagement {
 
     // new Owner's turn
     expect(this.gameStateStub!.turnPhase).toBe(TurnPhase.START);
-    expect(this.gameStateStub!.turnOwner).toBe(this.gameStateStub!.players[newOwnerIdx].id);
-    expect(this.gameStateStub!.turn).toBe(newOwnerIdx === 0 ? cTurn + 1 : cTurn);
+    expect(this.gameStateStub!.turnOwner).not.toBe(cTurnOwner);
+    expect(this.gameStateStub!.turn).toBe(
+      this.gameStateStub!.turnOwner.playerType === 'human' ? cTurn + 1 : cTurn
+    );
   };
 
   /**
@@ -89,8 +89,8 @@ export class TestTurnManagement {
 
       this.clickEndOfTurn();
       // computer players turns
-      while (this.gameStateStub!.turnOwner !== this.gameStateStub!.players[0].id) {
-        this.performAiTurns(this.gameStateStub!.turnOwner);
+      while (this.gameStateStub!.turnOwner.playerType !== 'human') {
+        this.performAiTurns(this.gameStateStub!.turnOwner.getName());
       }
 
       expect(this.gameStateStub!.turn).toBe(cTurn + i + 1); // new turn

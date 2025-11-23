@@ -2,7 +2,6 @@ import React from 'react';
 import styles from './css/VialPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
-import { getTurnOwner } from '../../state/GameState';
 
 import ManaVial from './ManaVial';
 
@@ -11,7 +10,7 @@ import { getMinManaCost } from '../../types/Spell';
 
 const VialPanel: React.FC = () => {
   const { gameState } = useGameContext();
-  const turnOwner = getTurnOwner(gameState);
+  const turnOwner = gameState?.turnOwner;
 
   // do not show mana vials for AI players
   if (turnOwner?.playerType !== 'human') return null;

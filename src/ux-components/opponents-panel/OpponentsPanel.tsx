@@ -7,7 +7,6 @@ import { useGameContext } from '../../contexts/GameContext';
 import Avatar from '../avatars/Avatar';
 
 import { PlayerState } from '../../state/PlayerState';
-import { getTurnOwner } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 import { getPlayerColorValue } from '../../types/PlayerColors';
@@ -32,8 +31,9 @@ const OpponentsPanel: React.FC = () => {
   );
 
   // Get all players except the selected player (opponents)
-  const selectedPlayer = getTurnOwner(gameState);
-  const opponents = gameState?.players?.filter((player) => player.id !== selectedPlayer?.id) || [];
+  const selectedPlayer = gameState?.turnOwner;
+  const opponents =
+    gameState?.allPlayers?.filter((player) => player.id !== selectedPlayer?.id) || [];
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {

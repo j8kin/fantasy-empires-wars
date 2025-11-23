@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { LandPosition, LandState } from '../../state/LandState';
 
 import { QuestType } from '../../types/Quest';
@@ -33,7 +33,7 @@ describe('Hero Quest', () => {
     randomSpy = jest.spyOn(Math, 'random');
 
     gameStateStub = createDefaultGameStateStub();
-    gameStateStub.turn = 2;
+    while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
 
     testTurnManagement = new TestTurnManagement(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);
@@ -41,7 +41,7 @@ describe('Hero Quest', () => {
     // the game always starts with 1 hero on the first turn on homeland
     heroLand = getLands({
       gameState: gameStateStub,
-      players: [gameStateStub.turnOwner],
+      players: [gameStateStub.turnOwner.id],
       noArmy: false,
     })[0];
 
@@ -61,16 +61,16 @@ describe('Hero Quest', () => {
     expectedLand: LandPosition,
     expectedRemainTurns: number
   ): void => {
-    expect(getTurnOwner(gameStateStub)?.quests.length).toBe(1);
-    expect(getTurnOwner(gameStateStub)?.quests[0].quest.id).toBe(questId);
-    expect(getTurnOwner(gameStateStub)?.quests[0].hero).toBe(expectedHero);
-    expect(getTurnOwner(gameStateStub)?.quests[0].land).toBe(expectedLand);
-    expect(getTurnOwner(gameStateStub)?.quests[0].remainTurnsInQuest).toBe(expectedRemainTurns); // counter should be decreased during start phase
+    expect(gameStateStub.turnOwner.quests.length).toBe(1);
+    expect(gameStateStub.turnOwner.quests[0].quest.id).toBe(questId);
+    expect(gameStateStub.turnOwner.quests[0].hero).toBe(expectedHero);
+    expect(gameStateStub.turnOwner.quests[0].land).toBe(expectedLand);
+    expect(gameStateStub.turnOwner.quests[0].remainTurnsInQuest).toBe(expectedRemainTurns); // counter should be decreased during start phase
   };
 
   it('When player send hero to Quest it should "disappear" from Battlefield', () => {
     expect(gameStateStub.turn).toBe(2);
-    expect(getTurnOwner(gameStateStub)?.quests.length).toBe(0); // no quests at the game start
+    expect(gameStateStub.turnOwner.quests.length).toBe(0); // no quests at the game start
 
     // all action could be done only on main phase on other phases all actions are performed automatically
     testTurnManagement.waitStartPhaseComplete();
@@ -106,7 +106,7 @@ describe('Hero Quest', () => {
 
     testTurnManagement.makeNTurns(4);
 
-    expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
+    expect(gameStateStub.turnOwner.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
     expect(heroLand.army[0].units[0]).toBe(hero);
     expect(hero.level).toBe(heroLevel); // hero level not incremented since his level is 8 and he goes into easy quest for level 1-5 heroes
@@ -123,12 +123,12 @@ describe('Hero Quest', () => {
 
     testTurnManagement.makeNTurns(5);
 
-    expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
+    expect(gameStateStub.turnOwner.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(0); // hero is dead not returned to the map
     expect(
       getLands({
         gameState: gameStateStub,
-        players: [gameStateStub.turnOwner],
+        players: [gameStateStub.turnOwner.id],
         noArmy: false,
       }).length
     ).toBe(0); // not returned to map at all
@@ -147,14 +147,14 @@ describe('Hero Quest', () => {
 
     testTurnManagement.makeNTurns(5);
 
-    expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
+    expect(gameStateStub.turnOwner.quests.length).toBe(0);
     expect(heroLand.army.length).toBe(1);
     expect(heroLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
     expect(heroLand.army[0].movements).toBeUndefined();
     expect(heroLand.army[0].units[0]).toBe(hero);
     expect((heroLand.army[0].units[0] as HeroUnit).artifacts.length).toBe(0);
-    expect(getTurnOwner(gameStateStub)?.empireTreasures.length).toBe(1);
-    expect(getTurnOwner(gameStateStub)?.empireTreasures[0].id).toBe(TreasureItem.WAND_TURN_UNDEAD); // quest reward
+    expect(gameStateStub.turnOwner.empireTreasures.length).toBe(1);
+    expect(gameStateStub.turnOwner.empireTreasures[0].id).toBe(TreasureItem.WAND_TURN_UNDEAD); // quest reward
     expect(hero.level).toBe(heroLevel + 1);
 
     // verify that hero stats are incremented exact new stats calculation verified separately
@@ -188,7 +188,7 @@ describe('Hero Quest', () => {
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getLands({
       gameState: gameStateStub,
-      players: [gameStateStub.turnOwner],
+      players: [gameStateStub.turnOwner.id],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 
@@ -223,8 +223,8 @@ describe('Hero Quest', () => {
           startQuest(unit as HeroUnit, easyQuest, gameStateStub);
         });
     });
-    expect(getTurnOwner(gameStateStub)!.quests.length).toBe(3);
-    getTurnOwner(gameStateStub)!.quests.forEach((quest) => {
+    expect(gameStateStub.turnOwner.quests.length).toBe(3);
+    gameStateStub.turnOwner.quests.forEach((quest) => {
       expect(quest.land).toBe(barracksLand.mapPos);
       expect(quest.remainTurnsInQuest).toBe(4);
       expect(quest.hero).toBeDefined();
@@ -236,7 +236,7 @@ describe('Hero Quest', () => {
 
     testTurnManagement.makeNTurns(4);
 
-    expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
+    expect(gameStateStub.turnOwner.quests.length).toBe(0);
     expect(barracksLand.army.length).toBe(1);
     expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
     expect(barracksLand.army[0].movements).toBeUndefined();
@@ -254,7 +254,7 @@ describe('Hero Quest', () => {
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getLands({
       gameState: gameStateStub,
-      players: [gameStateStub.turnOwner],
+      players: [gameStateStub.turnOwner.id],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 
@@ -286,7 +286,7 @@ describe('Hero Quest', () => {
 
     testTurnManagement.makeNTurns(4);
 
-    expect(getTurnOwner(gameStateStub)!.quests.length).toBe(0);
+    expect(gameStateStub.turnOwner.quests.length).toBe(0);
     expect(barracksLand.army.length).toBe(1);
     expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
     expect(barracksLand.army[0].movements).toBeUndefined();

@@ -1,4 +1,4 @@
-import { GameState, getLandOwner, getPlayerById, getTurnOwner } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
@@ -10,7 +10,7 @@ import { getRealmLands } from '../utils/getRealmLands';
 
 export const changeOwner = (gameState: GameState): void => {
   // find all lands where turnOwner army is present and not controlled by the player or Ally
-  const turnOwner = getTurnOwner(gameState)!;
+  const turnOwner = gameState.turnOwner;
   const hostileLands = getHostileLands(gameState);
   hostileLands.forEach((land) => turnOwner.addLand(getLandId(land.mapPos)));
 
@@ -19,7 +19,7 @@ export const changeOwner = (gameState: GameState): void => {
   const allControlledLands = getLands({
     // todo replace with turnOwner.getAllLands();
     gameState: gameState,
-    players: [gameState.turnOwner],
+    players: [gameState.turnOwner.id],
     noArmy: true,
   });
 
@@ -29,13 +29,13 @@ export const changeOwner = (gameState: GameState): void => {
       const landPos = getLandId(land.mapPos);
       turnOwner.removeLand(landPos);
       // trying to find any other owners
-      const neighbourLands = getTilesInRadius(gameState.battlefield.dimensions, land.mapPos, 1);
+      const neighbourLands = getTilesInRadius(gameState.map.dimensions, land.mapPos, 1);
       const nearestStronghold = neighbourLands.find((l) =>
         getLand(gameState, l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
       );
       if (nearestStronghold) {
-        const newLandOwner = getLandOwner(gameState, getLandId(nearestStronghold));
-        getPlayerById(gameState, newLandOwner)!.addLand(landPos);
+        const newLandOwner = gameState.getLandOwner(getLandId(nearestStronghold));
+        gameState.getPlayer(newLandOwner).addLand(landPos);
       }
     });
 };

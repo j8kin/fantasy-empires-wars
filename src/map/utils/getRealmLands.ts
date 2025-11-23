@@ -8,11 +8,9 @@ import { getTilesInRadius } from './mapAlgorithms';
 export const getRealmLands = (gameState: GameState) => {
   return getLands({
     gameState: gameState,
-    players: [gameState.turnOwner],
+    players: [gameState.turnOwner.id],
     buildings: [BuildingType.STRONGHOLD],
   }).flatMap((s) =>
-    getTilesInRadius(gameState.battlefield.dimensions, s.mapPos, 1).map((lPos) =>
-      getLand(gameState, lPos)
-    )
+    getTilesInRadius(gameState.map.dimensions, s.mapPos, 1).map((lPos) => getLand(gameState, lPos))
   );
 };

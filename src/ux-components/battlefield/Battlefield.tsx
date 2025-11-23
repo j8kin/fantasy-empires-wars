@@ -8,7 +8,7 @@ import { FrameSize } from '../../contexts/ApplicationContext';
 import LandTile from './LandTile';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 
-import { BattlefieldDimensions, getTurnOwner } from '../../state/GameState';
+import { BattlefieldDimensions } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 export interface BattlefieldProps {
@@ -45,7 +45,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
   const { gameState } = useGameContext();
 
   // Battlefield generated at application startup, but gameState is not initialized yet - use dummy map size
-  const { rows, cols } = gameState?.battlefield.dimensions || { rows: 1, cols: 1 };
+  const { rows, cols } = gameState?.map.dimensions || { rows: 1, cols: 1 };
   const availableArea = {
     width: window.innerWidth,
     height: window.innerHeight - topPanelHeight,
@@ -97,7 +97,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
         }
       >
         {/* Draw map if game started */}
-        {getTurnOwner(gameState) && <div className={styles.battlefieldContent}>{hexGrid}</div>}
+        {gameState?.turnOwner && <div className={styles.battlefieldContent}>{hexGrid}</div>}
       </div>
     </FantasyBorderFrame>
   );

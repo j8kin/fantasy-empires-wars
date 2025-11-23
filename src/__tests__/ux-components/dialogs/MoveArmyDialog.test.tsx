@@ -100,7 +100,6 @@ const mockApplicationContext = {
 const mockGameContext = {
   gameState: null as GameState | null,
   updateGameState: jest.fn(),
-  getPlayerById: jest.fn(),
   recalculateActivePlayerIncome: jest.fn(),
 };
 
@@ -206,7 +205,7 @@ describe('MoveArmyDialog', () => {
     fromLand.army = [
       {
         units: allUnits,
-        controlledBy: mockGameState.turnOwner,
+        controlledBy: mockGameState.turnOwner.id,
         movements: null as any,
       },
     ];
@@ -593,7 +592,7 @@ describe('MoveArmyDialog', () => {
       fromLand.army = [
         {
           units: [hero1, hero2],
-          controlledBy: mockGameState.turnOwner,
+          controlledBy: mockGameState.turnOwner.id,
           movements: null as any,
         },
       ];
@@ -613,7 +612,7 @@ describe('MoveArmyDialog', () => {
       fromLand.army = [
         {
           units: [warrior],
-          controlledBy: mockGameState.turnOwner,
+          controlledBy: mockGameState.turnOwner.id,
           movements: null as any,
         },
       ];
@@ -633,7 +632,7 @@ describe('MoveArmyDialog', () => {
       fromLand.army = [
         {
           units: [warrior],
-          controlledBy: mockGameState.turnOwner,
+          controlledBy: mockGameState.turnOwner.id,
           movements: null as any,
         },
       ];
@@ -667,7 +666,7 @@ describe('MoveArmyDialog', () => {
       fromLand.army = [
         {
           units: [veteranWarrior, eliteWarrior],
-          controlledBy: mockGameState.turnOwner,
+          controlledBy: mockGameState.turnOwner.id,
           movements: null as any,
         },
       ];
@@ -710,7 +709,7 @@ describe('MoveArmyDialog', () => {
       newFromLand.army = [
         {
           units: [warrior],
-          controlledBy: mockGameState.turnOwner,
+          controlledBy: mockGameState.turnOwner.id,
           movements: null as any,
         },
       ];

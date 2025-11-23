@@ -6,7 +6,7 @@ import { isHero } from '../../types/Army';
 export const findHeroByName = (name: string, gameState: GameState): HeroUnit | undefined => {
   const lands = getLands({
     gameState: gameState,
-    players: [gameState.turnOwner],
+    players: [gameState.turnOwner.id],
     noArmy: false,
   });
 

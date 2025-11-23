@@ -40,8 +40,9 @@ describe('GameContext-TurnManager Integration', () => {
     turnPhase: TurnPhase = TurnPhase.MAIN
   ): GameState => {
     const gameStateStub = createDefaultGameStateStub();
-    gameStateStub.turnOwner = gameStateStub.players[turnOwner].id;
-    gameStateStub.turnPhase = turnPhase;
+    while (gameStateStub.turnOwner.id !== gameStateStub.allPlayers[turnOwner].id)
+      gameStateStub.nextPlayer();
+    while (gameStateStub.turnPhase === turnPhase) gameStateStub.nextPhase();
 
     return gameStateStub;
   };

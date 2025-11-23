@@ -8,7 +8,7 @@ import { GameState, TurnPhase } from '../../../state/GameState';
 import { LandPosition } from '../../../state/LandState';
 
 import { BuildingType } from '../../../types/Building';
-import { UnitType, RegularUnitType, HeroUnitType } from '../../../types/Army';
+import { HeroUnitType, RegularUnitType, UnitType } from '../../../types/Army';
 
 import { construct } from '../../../map/building/construct';
 import { getLand } from '../../../map/utils/getLands';
@@ -17,6 +17,7 @@ import { createGameStateStub } from '../../utils/createGameStateStub';
 
 // Import the mocked function (will be mocked by jest.mock above)
 import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';
+import { PREDEFINED_PLAYERS } from '../../../state/PlayerState';
 
 // Mock modules
 jest.mock('../../../map/recruiting/startRecruiting', () => ({
@@ -96,7 +97,6 @@ const mockApplicationContext = {
 const mockGameContext = {
   gameState: null as GameState | null,
   updateGameState: jest.fn(),
-  getPlayerById: jest.fn(),
   recalculateActivePlayerIncome: jest.fn(),
 };
 
@@ -196,9 +196,8 @@ describe('RecruitArmyDialog', () => {
     // Create a game state with a barracks that has available slots
     mockGameState = createGameStateStub({
       nPlayers: 2,
-      turnOwner: 0,
-      turnPhase: TurnPhase.MAIN,
     });
+    while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
     // Add a barracks with available slots to the first player's land
     const landPos: LandPosition = { row: 3, col: 3 };
@@ -594,12 +593,10 @@ describe('RecruitArmyDialog', () => {
   describe('Player Type Restrictions', () => {
     it('should allow WARSMITH recruitment for WARSMITH players', () => {
       // Set turn owner to WARSMITH player
-      const warsmithPlayer = mockGameState.players.find(
-        (p) => p.getType() === HeroUnitType.WARSMITH
-      );
-      if (warsmithPlayer) {
-        mockGameState.turnOwner = warsmithPlayer.id;
-      }
+      mockGameState = createGameStateStub({
+        gamePlayers: [PREDEFINED_PLAYERS[3], PREDEFINED_PLAYERS[4]],
+      });
+      expect(mockGameState.turnOwner.id).toBe(PREDEFINED_PLAYERS[3].id);
 
       renderWithProviders(<RecruitArmyDialog />);
       // Check that the dialog renders (meaning the player can recruit something)
@@ -610,12 +607,10 @@ describe('RecruitArmyDialog', () => {
 
     it('should not allow WARSMITH recruitment for non-WARSMITH players', () => {
       // Set turn owner to a different type
-      const nonWarsmithPlayer = mockGameState.players.find(
-        (p) => p.getType() !== HeroUnitType.WARSMITH
-      );
-      if (nonWarsmithPlayer) {
-        mockGameState.turnOwner = nonWarsmithPlayer.id;
-      }
+      mockGameState = createGameStateStub({
+        gamePlayers: [PREDEFINED_PLAYERS[3], PREDEFINED_PLAYERS[4]],
+      });
+      expect(mockGameState.turnOwner.id).toBe(PREDEFINED_PLAYERS[3].id);
 
       // Remove WARSMITH from available units to test the filter
       const landPos: LandPosition = { row: 3, col: 3 };

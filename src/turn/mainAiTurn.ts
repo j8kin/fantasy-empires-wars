@@ -15,4 +15,6 @@ export const mainAiTurn = (gameState: GameState): void => {
   // - Managing resources
 
   // The computer turn will automatically end after a delay in the TurnManager
+
+  gameState.nextPhase();
 };

@@ -14,7 +14,6 @@ describe('Turn Mechanics with Different Map Sizes', () => {
     return createGameStateStub({
       nPlayers: 2,
       battlefieldSize: dimensions[mapSize],
-      turnPhase: TurnPhase.START,
     });
   };
 
@@ -52,13 +51,13 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       expect(gameOverCalled).toBe(false);
 
       // Game state should have the correct dimensions
-      expect(gameState.battlefield.dimensions).toBeDefined();
-      expect(gameState.battlefield.lands).toBeDefined();
-      expect(Object.keys(gameState.battlefield.lands).length).toBeGreaterThan(0);
+      expect(gameState.map.dimensions).toBeDefined();
+      expect(gameState.map.lands).toBeDefined();
+      expect(Object.keys(gameState.map.lands).length).toBeGreaterThan(0);
 
       // Turn owner should be set correctly
-      expect(gameState.turnOwner).toBe('alaric');
-      expect(gameState.turn).toBe(1);
+      expect(gameState.turnOwner.id).toBe('alaric');
+      expect(gameState.turn).toBe(2);
     }
   );
 
@@ -84,7 +83,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       });
 
       // Set to MAIN phase first
-      gameState.turnPhase = TurnPhase.MAIN;
+      while (gameState.turnPhase !== TurnPhase.MAIN) gameState.nextPhase();
 
       // End the current turn
       turnManager.endCurrentTurn(gameState);
@@ -95,7 +94,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       expect(gameOverCalled).toBe(false);
 
       // Turn should advance to next player
-      expect(gameState.turnOwner).toBe('morgana');
+      expect(gameState.turnOwner.id).toBe('morgana');
     }
   );
 
@@ -106,9 +105,9 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       const gameState = createGameState(mapSize);
 
       // Check battlefield is properly initialized
-      expect(gameState.battlefield).toBeDefined();
-      expect(gameState.battlefield.dimensions).toBeDefined();
-      expect(gameState.battlefield.lands).toBeDefined();
+      expect(gameState.map).toBeDefined();
+      expect(gameState.map.dimensions).toBeDefined();
+      expect(gameState.map.lands).toBeDefined();
 
       // Check dimensions are correct
       const expectedDimensions = {
@@ -118,10 +117,10 @@ describe('Turn Mechanics with Different Map Sizes', () => {
         huge: { rows: 15, cols: 31 },
       };
 
-      expect(gameState.battlefield.dimensions).toEqual(expectedDimensions[mapSize]);
+      expect(gameState.map.dimensions).toEqual(expectedDimensions[mapSize]);
 
       // Check that lands were generated
-      const actualLandCount = Object.keys(gameState.battlefield.lands).length;
+      const actualLandCount = Object.keys(gameState.map.lands).length;
 
       // Account for hexagonal map structure (odd rows have one less column)
       const oddRows = Math.ceil(expectedDimensions[mapSize].rows / 2);
@@ -133,9 +132,9 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       expect(actualLandCount).toBe(expectedHexLandCount);
 
       // Check players are properly set
-      expect(gameState.players).toHaveLength(2);
-      expect(gameState.turnOwner).toBe('alaric');
-      expect(gameState.turn).toBe(1);
+      expect(gameState.allPlayers).toHaveLength(2);
+      expect(gameState.turnOwner.id).toBe('alaric');
+      expect(gameState.turn).toBe(2);
     });
   });
 });

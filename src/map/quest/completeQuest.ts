@@ -1,4 +1,4 @@
-import { GameState, getLandOwner, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { getQuest, HeroQuest, QuestType } from '../../types/Quest';
 import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
@@ -28,7 +28,7 @@ const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState)
     };
   }
   const treasureType = Math.random();
-  const player = getTurnOwner(gameState)!;
+  const player = gameState.turnOwner;
 
   switch (quest.quest.id) {
     case 'The Echoing Ruins':
@@ -46,9 +46,7 @@ const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState)
         return gainArtifact(hero, quest.quest.id);
       }
     case 'The Shattered Sky':
-      return treasureType <= 0.4
-        ? gainRelic(gameState, hero)
-        : gainItem(getTurnOwner(gameState)!, hero);
+      return treasureType <= 0.4 ? gainRelic(gameState, hero) : gainItem(player, hero);
   }
 };
 
@@ -81,37 +79,39 @@ const gainItem = (player: PlayerState, hero: HeroUnit): HeroOutcome => {
 };
 
 const gainRelic = (gameState: GameState, hero: HeroUnit): HeroOutcome => {
-  const relicInPlay = gameState.players.flatMap((p) => p.empireTreasures);
+  const relicInPlay = gameState.allPlayers.flatMap((p) => p.empireTreasures);
+  const turnOwner = gameState.turnOwner;
   const availableRelics = relicts
-    .filter((a) => a.alignment == null || a.alignment === getTurnOwner(gameState)?.getAlignment())
+    .filter((a) => a.alignment == null || a.alignment === turnOwner.getAlignment())
     .filter((a) => !relicInPlay.some((r) => r.id === a.id));
 
   if (availableRelics.length > 0) {
     const relic = getRandomElement(availableRelics);
-    getTurnOwner(gameState)?.empireTreasures.push(relic);
+    turnOwner.empireTreasures.push(relic);
 
     return {
       status: HeroOutcomeType.Legendary,
       message: heroGainRelic(hero.name, relic),
     };
   } else {
-    return gainItem(getTurnOwner(gameState)!, hero);
+    return gainItem(turnOwner, hero);
   }
 };
 
 const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
   let questOutcome: HeroOutcome;
+  const turnOwner = gameState.turnOwner;
 
   if (
     // player survived quest
     surviveInQuest(quest) &&
     // and player still controls the land where quest is
-    getLandOwner(gameState, getLandId(quest.land)) === gameState.turnOwner
+    gameState.getLandOwner(getLandId(quest.land)) === turnOwner.id
   ) {
     const hero = quest.hero;
 
     if (hero.level < quest.quest.level * 5) {
-      levelUpHero(hero, getTurnOwner(gameState)!);
+      levelUpHero(hero, turnOwner);
     }
 
     questOutcome = calculateReward(hero, quest, gameState);
@@ -125,7 +125,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
       // no valid army found, create new one
       getLand(gameState, quest.land).army.push({
         units: [hero],
-        controlledBy: gameState.turnOwner,
+        controlledBy: turnOwner.id,
       });
     }
   } else {
@@ -140,21 +140,19 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
 
 export const completeQuest = (gameState: GameState): HeroOutcome[] => {
   if (gameState.turnPhase !== TurnPhase.START) return [];
-
+  const turnOwner = gameState.turnOwner;
   // decrease turnsByQuest counter
-  getTurnOwner(gameState)?.quests.forEach((quest) => {
+  turnOwner.quests.forEach((quest) => {
     quest.remainTurnsInQuest--;
   });
 
   // complete quests
-  const status = getTurnOwner(gameState)!
-    .quests.filter((quest) => quest.remainTurnsInQuest === 0)
+  const status = turnOwner.quests
+    .filter((quest) => quest.remainTurnsInQuest === 0)
     .map((q) => questResults(q, gameState));
 
   // remove completed quests from quests array
-  getTurnOwner(gameState)!.quests = getTurnOwner(gameState)!.quests.filter(
-    (quest) => quest.remainTurnsInQuest > 0
-  );
+  turnOwner.quests = turnOwner.quests.filter((quest) => quest.remainTurnsInQuest > 0);
 
   return status;
 };

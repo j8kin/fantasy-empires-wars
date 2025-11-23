@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 
 import { getLands } from '../utils/getLands';
 
@@ -7,23 +7,20 @@ import { Alignment } from '../../types/Alignment';
 import { calculateHexDistance } from '../utils/mapAlgorithms';
 
 export const calculateIncome = (gameState: GameState): number => {
-  const { battlefield } = gameState;
-  const player = getTurnOwner(gameState);
+  const { map, turnOwner } = gameState;
 
-  if (player == null) return 0;
-
-  const playerLands = getLands({ gameState: gameState, players: [gameState.turnOwner] });
+  const playerLands = getLands({ gameState: gameState, players: [turnOwner.id] });
 
   return playerLands.reduce((acc, land) => {
     const playerStrongholds = getLands({
       gameState: gameState,
-      players: [gameState.turnOwner],
+      players: [turnOwner.id],
       buildings: [BuildingType.STRONGHOLD],
     }).map((land) => land.mapPos);
 
     const distanceToStronghold = Math.min(
       ...playerStrongholds.map((stronghold) =>
-        calculateHexDistance(battlefield.dimensions, land.mapPos, stronghold)
+        calculateHexDistance(map.dimensions, land.mapPos, stronghold)
       )
     );
 
@@ -39,13 +36,13 @@ export const calculateIncome = (gameState: GameState): number => {
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Buildings#stronghold
     if (
       !land.buildings.some((b) => b.id === BuildingType.STRONGHOLD) &&
-      player.getAlignment() === Alignment.CHAOTIC
+      turnOwner.getAlignment() === Alignment.CHAOTIC
     ) {
       landIncome = land.goldPerTurn * 0.8;
     }
 
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
-    if (player.getAlignment() === Alignment.LAWFUL) {
+    if (turnOwner.getAlignment() === Alignment.LAWFUL) {
       if (land.land.alignment === Alignment.LAWFUL) {
         landIncome = landIncome * 1.3;
       }
@@ -53,7 +50,7 @@ export const calculateIncome = (gameState: GameState): number => {
         landIncome = landIncome * 0.8;
       }
     }
-    if (player.getAlignment() === Alignment.CHAOTIC) {
+    if (turnOwner.getAlignment() === Alignment.CHAOTIC) {
       if (land.land.alignment === Alignment.CHAOTIC) {
         landIncome = landIncome * 2;
       }

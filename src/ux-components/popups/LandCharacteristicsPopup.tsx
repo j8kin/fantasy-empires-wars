@@ -5,7 +5,6 @@ import styles from './css/LandCharacteristicsPopup.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getLandOwner, getPlayerById } from '../../state/GameState';
 import { LandPosition, getLandId } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
@@ -24,7 +23,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 }) => {
   const { hideLandPopup } = useApplicationContext();
   const { gameState } = useGameContext();
-  const land = gameState!.battlefield.lands[getLandId(battlefieldPosition)];
+  const land = gameState!.map.lands[getLandId(battlefieldPosition)];
 
   // Calculate dynamic size based on content type
   // MANUAL ADJUSTMENT POINT 1: Base heights and row spacing
@@ -131,9 +130,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
                 <span className={commonStyles.value}>
                   {(() => {
-                    const player = getPlayerById(
-                      gameState,
-                      getLandOwner(gameState!, getLandId(land.mapPos))
+                    const player = gameState?.getPlayer(
+                      gameState.getLandOwner(getLandId(land.mapPos))
                     );
                     return player ? player.getName() : NO_PLAYER.name;
                   })()}

@@ -3,10 +3,9 @@ import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import OpponentsPanel from '../../ux-components/opponents-panel/OpponentsPanel';
 import { PREDEFINED_PLAYERS, NO_PLAYER, PlayerState } from '../../state/PlayerState';
-import { GameProvider, useGameContext } from '../../contexts/GameContext';
+import { GameProvider } from '../../contexts/GameContext';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { toGamePlayer } from '../utils/toGamePlayer';
-import { TurnPhase } from '../../state/GameState';
 
 // Test wrapper that provides GameContext and ApplicationContext and allows updating game state
 const TestWrapper: React.FC<{
@@ -15,21 +14,6 @@ const TestWrapper: React.FC<{
   selectedPlayer?: PlayerState;
 }> = ({ children, opponents, selectedPlayer = toGamePlayer(PREDEFINED_PLAYERS[0]) }) => {
   const TestComponent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { updateGameState } = useGameContext();
-
-    React.useEffect(() => {
-      updateGameState({
-        turnOwner: selectedPlayer.id,
-        players: [selectedPlayer, ...opponents],
-        battlefield: {
-          dimensions: { rows: 1, cols: 1 },
-          lands: {},
-        },
-        turn: 1,
-        turnPhase: TurnPhase.START,
-      });
-    }, [updateGameState]);
-
     return <>{children}</>;
   };
 

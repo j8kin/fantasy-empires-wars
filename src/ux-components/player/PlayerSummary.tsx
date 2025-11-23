@@ -6,7 +6,6 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { getTurnOwner } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 import { getLands } from '../../map/utils/getLands';
@@ -20,8 +19,10 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
   const { addGlowingTile } = useApplicationContext();
   const { gameState } = useGameContext();
 
-  const turnOwner = getTurnOwner(gameState);
-  const currentIncome = calculatePlayerIncome(gameState!);
+  if (gameState == null) return null;
+
+  const turnOwner = gameState?.turnOwner;
+  const currentIncome = calculatePlayerIncome(gameState);
 
   const handleAvatarClick = () => {
     // Find all lands controlled by the selected player

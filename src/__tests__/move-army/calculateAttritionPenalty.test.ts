@@ -1,4 +1,4 @@
-import { GameState, getLandOwner, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 import { Army, getDefaultUnit, RegularUnit, RegularUnitType, UnitRank } from '../../types/Army';
@@ -24,16 +24,16 @@ describe('Calculate Attrition Penalty', () => {
     gameStateStub = createDefaultGameStateStub();
 
     // calculate attrition penalty for each land works only on START phase
-    gameStateStub.turnPhase = TurnPhase.START;
+    while (gameStateStub.turnPhase !== TurnPhase.START) gameStateStub.nextPhase();
 
     army1 = {
-      controlledBy: gameStateStub.turnOwner,
+      controlledBy: gameStateStub.turnOwner.id,
       units: [createRegularUnit(RegularUnitType.WARRIOR, 120)],
       movements: createDummyMovements(),
     };
 
     army2 = {
-      controlledBy: gameStateStub.turnOwner,
+      controlledBy: gameStateStub.turnOwner.id,
       units: [createRegularUnit(RegularUnitType.WARRIOR, 120)],
       movements: createDummyMovements(),
     };
@@ -68,19 +68,16 @@ describe('Calculate Attrition Penalty', () => {
 
   it('armies on lands owned by player should not be affected', () => {
     const armyLand = getLand(gameStateStub, { row: 3, col: 4 });
-    expect(getTurnOwner(gameStateStub)!.hasLand(getLandId(armyLand.mapPos))).toBeTruthy();
+    expect(gameStateStub.turnOwner.hasLand(getLandId(armyLand.mapPos))).toBeTruthy();
 
     // place army on land owned by player
-    gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)] = {
+    gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
       ...armyLand,
       army: [army1, army2],
     };
     calculateAttritionPenalty(gameStateStub);
 
-    expect(gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)].army).toEqual([
-      army1,
-      army2,
-    ]);
+    expect(gameStateStub.map.lands[getLandId(armyLand.mapPos)].army).toEqual([army1, army2]);
   });
 
   it.each([
@@ -119,20 +116,20 @@ describe('Calculate Attrition Penalty', () => {
       randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
       const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
-      expect(getLandOwner(gameStateStub, getLandId(armyLand.mapPos))).not.toBe(
-        getTurnOwner(gameStateStub)
+      expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
+        gameStateStub.turnOwner.id
       );
 
       army1.units = [createRegularUnit(RegularUnitType.WARRIOR, army1Initial, rank)];
       army2.units = [createRegularUnit(RegularUnitType.WARRIOR, army2Initial, rank)];
       // place army on land owned by player
-      gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)] = {
+      gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
         ...armyLand,
         army: [army1, army2],
       };
       calculateAttritionPenalty(gameStateStub);
 
-      const currentArmies = gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)].army;
+      const currentArmies = gameStateStub.map.lands[getLandId(armyLand.mapPos)].army;
       expect(currentArmies.length).toBe(2);
       expect(currentArmies[0].units.length).toBe(1);
       expect(currentArmies[0].units[0].id).toBe(RegularUnitType.WARRIOR);
@@ -148,8 +145,8 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
-    expect(getLandOwner(gameStateStub, getLandId(armyLand.mapPos))).not.toBe(
-      getTurnOwner(gameStateStub)
+    expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
+      gameStateStub.turnOwner.id
     );
 
     army1.units = [
@@ -157,13 +154,13 @@ describe('Calculate Attrition Penalty', () => {
       createRegularUnit(RegularUnitType.BALLISTA, 1, UnitRank.REGULAR),
     ];
     // place army on land owned by player
-    gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)] = {
+    gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
       ...armyLand,
       army: [army1],
     };
     calculateAttritionPenalty(gameStateStub);
 
-    const currentArmies = gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)].army;
+    const currentArmies = gameStateStub.map.lands[getLandId(armyLand.mapPos)].army;
     expect(currentArmies.length).toBe(1);
     expect(currentArmies[0].units.length).toBe(1); // no ballista unit in the army
     expect(currentArmies[0].units[0].id).toBe(RegularUnitType.WARRIOR);
@@ -174,8 +171,8 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
-    expect(getLandOwner(gameStateStub, getLandId(armyLand.mapPos))).not.toBe(
-      getTurnOwner(gameStateStub)
+    expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
+      gameStateStub.turnOwner.id
     );
 
     army1.units = [
@@ -184,13 +181,13 @@ describe('Calculate Attrition Penalty', () => {
       createRegularUnit(RegularUnitType.CATAPULT, 2, UnitRank.REGULAR),
     ];
     // place army on land owned by player
-    gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)] = {
+    gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
       ...armyLand,
       army: [army1],
     };
     calculateAttritionPenalty(gameStateStub);
 
-    const currentArmies = gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)].army;
+    const currentArmies = gameStateStub.map.lands[getLandId(armyLand.mapPos)].army;
     expect(currentArmies.length).toBe(1);
     expect(currentArmies[0].units.length).toBe(2); // no ballista unit in the army
     expect(currentArmies[0].units[0].id).toBe(RegularUnitType.WARRIOR);
@@ -204,20 +201,20 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
-    expect(getLandOwner(gameStateStub, getLandId(armyLand.mapPos))).not.toBe(
-      getTurnOwner(gameStateStub)
+    expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
+      gameStateStub.turnOwner.id
     );
 
     // 40-60 minimum should be killed it means army will be destroyed
     army1.units = [createRegularUnit(RegularUnitType.WARRIOR, 30, UnitRank.REGULAR)];
     // place army on land owned by player
-    gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)] = {
+    gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
       ...armyLand,
       army: [army1],
     };
     calculateAttritionPenalty(gameStateStub);
 
-    const currentArmies = gameStateStub.battlefield.lands[getLandId(armyLand.mapPos)].army;
+    const currentArmies = gameStateStub.map.lands[getLandId(armyLand.mapPos)].army;
     expect(currentArmies.length).toBe(0);
   });
 });

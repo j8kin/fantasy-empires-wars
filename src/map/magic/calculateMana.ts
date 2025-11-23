@@ -1,4 +1,4 @@
-import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { getAllHeroes } from '../utils/getAllHeroes';
 import { getManaSource } from '../../types/Mana';
 import { getLands } from '../utils/getLands';
@@ -8,7 +8,7 @@ import { TreasureItem } from '../../types/Treasures';
 export const calculateMana = (gameState: GameState): void => {
   if (gameState.turnPhase !== TurnPhase.START) return;
 
-  const turnOwner = getTurnOwner(gameState)!;
+  const turnOwner = gameState.turnOwner;
 
   const allHeroes = getAllHeroes(gameState, true);
 

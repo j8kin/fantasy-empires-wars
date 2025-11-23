@@ -1,5 +1,5 @@
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { GameState, getTurnOwner, TurnPhase } from '../../state/GameState';
+import { GameState, TurnPhase } from '../../state/GameState';
 import { LandPosition, LandState } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
@@ -35,7 +35,7 @@ describe('Recruitment', () => {
     randomSpy = jest.spyOn(Math, 'random');
 
     gameStateStub = createDefaultGameStateStub();
-    gameStateStub.turn = 2;
+    while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
 
     testTurnManagement = new TestTurnManagement(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);
@@ -44,7 +44,7 @@ describe('Recruitment', () => {
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getLands({
       gameState: gameStateStub,
-      players: [gameStateStub.turnOwner],
+      players: [gameStateStub.turnOwner.id],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
   });
@@ -72,7 +72,7 @@ describe('Recruitment', () => {
   };
 
   it('Recruitment cost less when player has TreasureItem.CROWN_OF_DOMINION', () => {
-    const player = getTurnOwner(gameStateStub)!;
+    const player = gameStateStub.turnOwner;
     // add  TreasureItem.CROWN_OF_DOMINION to player treasury
     player.empireTreasures.push(relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!);
 
@@ -281,7 +281,7 @@ describe('Recruitment', () => {
       });
 
       it('regular units could not be recruited when not enough gold in vault', () => {
-        getTurnOwner(gameStateStub)!.vault = 100;
+        gameStateStub.turnOwner.vault = 100;
 
         startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
         expect(barracksLand.buildings[0].slots?.length).toBe(0);
@@ -449,7 +449,7 @@ describe('Recruitment', () => {
         const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
         constructBuilding(BuildingType.BARRACKS, barracksPos);
 
-        getTurnOwner(gameStateStub)!.vault = 100;
+        gameStateStub.turnOwner.vault = 100;
 
         const barracksLand = getLand(gameStateStub, barracksPos);
 

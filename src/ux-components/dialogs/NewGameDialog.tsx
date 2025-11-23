@@ -11,16 +11,9 @@ import PlayerSelection from '../player-selection/PlayerSelection';
 
 import { generateMap } from '../../map/generation/generateMap';
 import { ButtonName } from '../../types/ButtonName';
-import {
-  PlayerState,
-  NO_PLAYER,
-  PlayerProfile,
-  PREDEFINED_PLAYERS,
-  createPlayerState,
-} from '../../state/PlayerState';
-import { DiplomacyStatus } from '../../types/Diplomacy';
+import { NO_PLAYER, PlayerProfile, PREDEFINED_PLAYERS } from '../../state/PlayerState';
 import { getPlayerColorValue, PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
-import { BattlefieldDimensions, GameState, TurnPhase } from '../../state/GameState';
+import { BattlefieldDimensions, createGameState, GameState } from '../../state/GameState';
 
 // Local map size type for this dialog only
 type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';
@@ -241,51 +234,18 @@ const NewGameDialog: React.FC = () => {
   const handleStartGame = useCallback(() => {
     const opponents =
       opponentSelectionMode === 'random'
-        ? selectedOpponents.filter((o) => o != null).map((o) => createPlayerState(o, 'computer'))
-        : selectedOpponents
-            .filter((o) => o != null)
-            .filter((o) => o.id !== NO_PLAYER.id)
-            .map((opponent) => createPlayerState(opponent, 'computer'));
-
-    const initialMoney = 15000;
-
-    const createdOpponents: PlayerState[] = opponents.map((opponent) => {
-      return {
-        ...opponent,
-        diplomacy: {
-          ...Object.fromEntries(
-            opponents
-              .filter((o) => o.id !== opponent.id)
-              .map((op) => [op.id, DiplomacyStatus.NO_TREATY])
-          ),
-          [selectedPlayer.id]: DiplomacyStatus.NO_TREATY,
-        },
-        vault: initialMoney,
-        income: 0, // will calculate on game start on the first turn
-        playerType: 'computer', // all opponents for now are computer players
-        quests: [], // no heroes are send to quests at game start
-        empireTreasures: [], // no treasures at game start
-      } as PlayerState;
-    });
-
-    const createdPlayer: PlayerState = createPlayerState(selectedPlayer, 'human');
-    createdPlayer.diplomacy = Object.fromEntries(
-      opponents.map((op) => [op.id, DiplomacyStatus.NO_TREATY])
-    );
-    createdPlayer.vault = initialMoney;
+        ? selectedOpponents.filter((o) => o != null)
+        : selectedOpponents.filter((o) => o != null).filter((o) => o.id !== NO_PLAYER.id);
 
     setShowStartWindow(false);
     setProgressMessage('Creating new game...');
     setShowProgressPopup(true);
 
     setTimeout(() => {
-      const gameState: GameState = {
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
-        turn: 1,
-        turnOwner: createdPlayer.id,
-        turnPhase: TurnPhase.START,
-        players: [createdPlayer, ...createdOpponents],
-      };
+      const map = generateMap(getBattlefieldDimensions(mapSize));
+      const gameState: GameState = createGameState(map);
+      gameState.addPlayer(selectedPlayer, 'human');
+      opponents.forEach((o) => gameState.addPlayer(o, 'computer'));
 
       startNewGame(gameState);
       setGameStarted(true);

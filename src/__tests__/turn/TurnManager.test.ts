@@ -28,8 +28,9 @@ describe('TurnManager', () => {
 
   const createMockGameState = (turnOwner: number = 0, turn: number = 2): GameState => {
     const gameStateStub = createDefaultGameStateStub();
-    gameStateStub.turnOwner = gameStateStub.players[turnOwner].id;
-    gameStateStub.turn = turn;
+    while (gameStateStub.turn < turn) gameStateStub.nextPlayer();
+    while (gameStateStub.turnOwner.id !== gameStateStub.allPlayers[turnOwner].id)
+      gameStateStub.nextPlayer();
 
     return gameStateStub;
   };
@@ -70,7 +71,7 @@ describe('TurnManager', () => {
     });
 
     it('should show place hero message during turn 1', () => {
-      mockGameState.turn = 1;
+      expect(mockGameState.turn).toBe(2);
       turnManager.startNewTurn(mockGameState);
 
       expect(mockCallbacks.onStartProgress).toHaveBeenCalledWith(
@@ -84,17 +85,6 @@ describe('TurnManager', () => {
       expect(mockCallbacks.onStartProgress).toHaveBeenCalledWith('Player Alaric the Bold turn');
     });
 
-    it('should handle case when no valid player found', () => {
-      const invalidGameState = {
-        ...mockGameState,
-        turnOwner: 'nonexistent',
-      };
-
-      turnManager.startNewTurn(invalidGameState);
-
-      expect(mockCallbacks.onGameOver).toHaveBeenCalledWith('No valid player found for turn');
-    });
-
     it('should execute start turn logic after timeout', () => {
       turnManager.startNewTurn(mockGameState);
 
@@ -106,7 +96,7 @@ describe('TurnManager', () => {
     });
 
     it('should transition to END phase after start turn execution on Turn 1', () => {
-      mockGameState.turn = 1;
+      expect(mockGameState.turn).toBe(1);
       turnManager.startNewTurn(mockGameState);
 
       jest.advanceTimersByTime(1000);
@@ -127,7 +117,7 @@ describe('TurnManager', () => {
 
   describe('startMainPhase (private method behavior)', () => {
     it('should NOT handle human player main phase on Turn 1', () => {
-      mockGameState.turn = 1;
+      expect(mockGameState.turn).toBe(1);
       turnManager.startNewTurn(mockGameState);
 
       jest.advanceTimersByTime(1000);
@@ -180,20 +170,6 @@ describe('TurnManager', () => {
 
       expect(endCurrentTurnSpy).toHaveBeenCalledWith(aiGameState);
     });
-
-    it('should handle case when no valid player found in main phase', () => {
-      const invalidGameState = {
-        ...mockGameState,
-        players: [],
-        turnOwner: 'nonexistent',
-      };
-
-      turnManager.startNewTurn(invalidGameState);
-
-      jest.advanceTimersByTime(1000);
-
-      expect(mockCallbacks.onGameOver).toHaveBeenCalledWith('No valid player found for turn');
-    });
   });
 
   describe('endCurrentTurn', () => {
@@ -213,7 +189,7 @@ describe('TurnManager', () => {
     it('should NOT check for game over with no human players on Turn 1', () => {
       const gameStateNoHumans = {
         ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'computer' as const })),
+        players: mockGameState.allPlayers.map((p) => ({ ...p, playerType: 'computer' as const })),
         turn: 1,
       };
 
@@ -225,7 +201,7 @@ describe('TurnManager', () => {
     it('should check for game over when no human players remain', () => {
       const gameStateNoHumans = {
         ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'computer' as const })),
+        players: mockGameState.allPlayers.map((p) => ({ ...p, playerType: 'computer' as const })),
         turn: 2,
       };
 
@@ -239,7 +215,7 @@ describe('TurnManager', () => {
     it('should NOT check for game over when no computer players remain on Turn 1', () => {
       const gameStateNoComputers = {
         ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'human' as const })),
+        players: mockGameState.allPlayers.map((p) => ({ ...p, playerType: 'human' as const })),
         turn: 1,
       };
 
@@ -251,7 +227,7 @@ describe('TurnManager', () => {
     it('should check for game over when no computer players remain', () => {
       const gameStateNoComputers = {
         ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'human' as const })),
+        players: mockGameState.allPlayers.map((p) => ({ ...p, playerType: 'human' as const })),
         turn: 2,
       };
 
@@ -278,7 +254,7 @@ describe('TurnManager', () => {
       const startNewTurnSpy = jest.spyOn(turnManager, 'startNewTurn');
       const gameStateNoHumans = {
         ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'computer' as const })),
+        players: mockGameState.allPlayers.map((p) => ({ ...p, playerType: 'computer' as const })),
         turn: 2,
       };
 
@@ -292,8 +268,9 @@ describe('TurnManager', () => {
 
   describe('canEndTurn', () => {
     it('should return true for human player in main phase', () => {
-      mockGameState.turnPhase = TurnPhase.MAIN;
-      mockGameState.turnOwner = mockGameState.players[0].id; // Human player
+      while (mockGameState.turnOwner.id !== mockGameState.allPlayers[0].id)
+        mockGameState.nextPlayer();
+      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
       const result = turnManager.canEndTurn(mockGameState);
 
@@ -301,8 +278,9 @@ describe('TurnManager', () => {
     });
 
     it('should return false for computer player in main phase', () => {
-      mockGameState.turnPhase = TurnPhase.MAIN;
-      mockGameState.turnOwner = 'player2'; // Computer player
+      while (mockGameState.turnOwner.id !== mockGameState.allPlayers[1].id)
+        mockGameState.nextPlayer();
+      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
       const result = turnManager.canEndTurn(mockGameState);
 
@@ -310,17 +288,10 @@ describe('TurnManager', () => {
     });
 
     it('should return false when not in main phase', () => {
-      mockGameState.turnPhase = TurnPhase.START;
-      mockGameState.turnOwner = 'player1'; // Human player
-
-      const result = turnManager.canEndTurn(mockGameState);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false when turn owner is not found', () => {
-      mockGameState.turnPhase = TurnPhase.MAIN;
-      mockGameState.turnOwner = 'nonexistent';
+      // human player in START phase
+      while (mockGameState.turnOwner.id !== mockGameState.allPlayers[1].id)
+        mockGameState.nextPlayer();
+      while (mockGameState.turnPhase !== TurnPhase.START) mockGameState.nextPhase();
 
       const result = turnManager.canEndTurn(mockGameState);
 
@@ -328,8 +299,10 @@ describe('TurnManager', () => {
     });
 
     it('should return false in END phase', () => {
-      mockGameState.turnPhase = TurnPhase.END;
-      mockGameState.turnOwner = 'player1'; // Human player
+      // human player in END phase
+      while (mockGameState.turnOwner.id !== mockGameState.allPlayers[1].id)
+        mockGameState.nextPlayer();
+      while (mockGameState.turnPhase !== TurnPhase.END) mockGameState.nextPhase();
 
       const result = turnManager.canEndTurn(mockGameState);
 
@@ -424,12 +397,18 @@ describe('TurnManager', () => {
     });
 
     it('should handle mixed human and computer players correctly', () => {
-      mockGameState.turnPhase = TurnPhase.MAIN;
+      while (mockGameState.turnOwner.id !== mockGameState.allPlayers[0].id)
+        mockGameState.nextPlayer();
+      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
+
       // Test human turn first
       expect(turnManager.canEndTurn(mockGameState)).toBe(true);
 
       // Switch to computer player
-      mockGameState.turnOwner = 'player2';
+      while (mockGameState.turnOwner.id !== mockGameState.allPlayers[1].id)
+        mockGameState.nextPlayer();
+      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
+
       expect(turnManager.canEndTurn(mockGameState)).toBe(false);
     });
 

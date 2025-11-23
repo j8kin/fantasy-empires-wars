@@ -2,7 +2,7 @@ import { getLands } from '../map/utils/getLands';
 import { construct } from '../map/building/construct';
 import { PlayerState, PREDEFINED_PLAYERS } from '../state/PlayerState';
 import { BuildingType } from '../types/Building';
-import { BattlefieldMap, GameState, BattlefieldDimensions, getTurnOwner } from '../state/GameState';
+import { BattlefieldMap, GameState, BattlefieldDimensions } from '../state/GameState';
 import { getLandById, LandType } from '../types/Land';
 import { Alignment } from '../types/Alignment';
 import { toGamePlayer } from './utils/toGamePlayer';
@@ -38,11 +38,11 @@ describe('MapLands', () => {
           nPlayers: 1,
           addPlayersHomeland: false,
         });
-        const mockMap: BattlefieldMap = gameStateStub.battlefield;
+        const mockMap: BattlefieldMap = gameStateStub.map;
 
         mockMap.lands['0-0'].land = getLandById(LandType.VOLCANO);
         mockMap.lands['0-1'].land = getLandById(LandType.LAVA);
-        getTurnOwner(gameStateStub)!.addLand('0-1');
+        gameStateStub.turnOwner.addLand('0-1');
         //mockMap.lands['0-1'].controlledBy = gameStateStub.turnOwner;
         expect(getLands({ gameState: gameStateStub, landTypes: [LandType.VOLCANO] }).length).toBe(
           1
@@ -60,7 +60,7 @@ describe('MapLands', () => {
         expect(
           getLands({
             gameState: gameStateStub,
-            players: [gameStateStub.turnOwner],
+            players: [gameStateStub.turnOwner.id],
             landTypes: [LandType.PLAINS],
           }).length
         ).toBe(0);
@@ -73,7 +73,7 @@ describe('MapLands', () => {
           battlefieldSize: battlefieldSize,
           nPlayers: 1,
         });
-        const mockMap: BattlefieldMap = gameStateStub.battlefield;
+        const mockMap: BattlefieldMap = gameStateStub.map;
 
         mockMap.lands['0-0'].land = getLandById(LandType.VOLCANO);
         mockMap.lands['0-1'].land = getLandById(LandType.LAVA);

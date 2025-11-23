@@ -6,7 +6,6 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import GameButton from '../buttons/GameButton';
 import { ButtonName } from '../../types/ButtonName';
-import { getTurnOwner } from '../../state/GameState';
 
 const GameControl: React.FC = () => {
   const { setShowStartWindow, setShowSaveDialog } = useApplicationContext();
@@ -20,7 +19,7 @@ const GameControl: React.FC = () => {
     setShowSaveDialog(true);
   }, [setShowSaveDialog]);
 
-  if (getTurnOwner(gameState)?.playerType !== 'human') return null;
+  if (gameState?.turnOwner.playerType !== 'human') return null;
 
   return (
     <div className={styles.gameControlContainer}>

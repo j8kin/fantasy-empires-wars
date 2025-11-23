@@ -1,5 +1,5 @@
 import { BuildingType } from '../../types/Building';
-import { GameState, getLandOwner, getTurnOwner } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
@@ -9,10 +9,10 @@ export const getAvailableToConstructLands = (
   gameState: GameState,
   buildingType: BuildingType
 ): string[] => {
-  const owner = getTurnOwner(gameState)!;
+  const owner = gameState.turnOwner;
   const playerLands = getLands({
     gameState: gameState,
-    players: [gameState.turnOwner],
+    players: [gameState.turnOwner.id],
   });
 
   switch (buildingType) {
@@ -23,8 +23,8 @@ export const getAvailableToConstructLands = (
           (land) =>
             (land.buildings.length === 0 ||
               !land.buildings?.some((b) => b.id === BuildingType.WALL)) &&
-            getTilesInRadius(gameState.battlefield.dimensions, land.mapPos, 1, true).some(
-              (tile) => getLandOwner(gameState, getLandId(tile)) !== owner.id
+            getTilesInRadius(gameState.map.dimensions, land.mapPos, 1, true).some(
+              (tile) => gameState.getLandOwner(getLandId(tile)) !== owner.id
             )
         )
         .map((l) => getLandId(l.mapPos));
@@ -35,8 +35,8 @@ export const getAvailableToConstructLands = (
         buildings: [BuildingType.STRONGHOLD],
       });
       const strongholdsExcludedArea = allStrongholds.flatMap((stronghold) =>
-        getTilesInRadius(gameState.battlefield.dimensions, stronghold.mapPos, 1, false).map(
-          (tile) => getLandId(tile)
+        getTilesInRadius(gameState.map.dimensions, stronghold.mapPos, 1, false).map((tile) =>
+          getLandId(tile)
         )
       );
 
