@@ -68,18 +68,18 @@ describe('Calculate Income', () => {
   );
 
   it.each([
-    ['100%', 5, 100, Alignment.LAWFUL], // only one land
-    ['100%', 6, 200, Alignment.LAWFUL], // the second land with 10% penalty
-    ['0%', 7, 100, Alignment.LAWFUL], // the second land with 0% penalty
-    ['100%', 5, 100, Alignment.NEUTRAL], // only one land
-    ['100%', 6, 200, Alignment.NEUTRAL], // the second land with 0% penalty
-    ['0%', 7, 100, Alignment.NEUTRAL], // the second land with 100% penalty
-    ['100%', 5, 100, Alignment.CHAOTIC], // only one land
-    ['80%', 6, 180, Alignment.CHAOTIC], // the second land with 20% penalty
-    ['0%', 7, 100, Alignment.CHAOTIC], // the second land with 100% penalty
+    ['100%', Alignment.LAWFUL, 5, 100], // only one land
+    ['100%', Alignment.LAWFUL, 6, 200], // the second land with 10% penalty
+    ['0%', Alignment.LAWFUL, 7, 100], // the second land with 0% penalty
+    ['100%', Alignment.NEUTRAL, 5, 100], // only one land
+    ['100%', Alignment.NEUTRAL, 6, 200], // the second land with 0% penalty
+    ['0%', Alignment.NEUTRAL, 7, 100], // the second land with 100% penalty
+    ['100%', Alignment.CHAOTIC, 5, 100], // only one land
+    ['80%', Alignment.CHAOTIC, 6, 180], // the second land with 20% penalty
+    ['0%', Alignment.CHAOTIC, 7, 100], // the second land with 100% penalty
   ])(
-    'Calculate income with penalty if it is not stronghold land (%s)',
-    (penalty, landCol, expected, playerAlignment) => {
+    'Calculate income with penalty (%s) if it is not stronghold land and Player has %s alignment',
+    (penalty: string, playerAlignment: Alignment, landCol: number, expected: number) => {
       const player =
         playerAlignment === Alignment.LAWFUL
           ? lawfulPlayer
@@ -87,7 +87,6 @@ describe('Calculate Income', () => {
             ? neutralPlayer
             : chaoticPlayer;
 
-      gameStateStub = createGameState(generateMockMap(defaultBattlefieldSizeStub));
       gameStateStub.addPlayer(player, 'human');
 
       // stronghold
@@ -127,7 +126,6 @@ describe('Calculate Income', () => {
             ? neutralPlayer
             : chaoticPlayer;
 
-      gameStateStub = createGameState(generateMockMap(defaultBattlefieldSizeStub));
       gameStateStub.addPlayer(player, 'human');
 
       // add different type land in the stronghold radius to demonstrate different income calculations

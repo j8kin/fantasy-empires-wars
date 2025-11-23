@@ -170,7 +170,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
+        map: {
           ...gameStateStub.map,
           lands: {
             ...gameStateStub.map.lands,
@@ -216,7 +216,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
+        map: {
           ...gameStateStub.map,
           lands: {
             ...gameStateStub.map.lands,
@@ -259,7 +259,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
+        map: {
           ...gameStateStub.map,
           lands: {
             ...gameStateStub.map.lands,
@@ -310,7 +310,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
+        map: {
           ...gameStateStub.map,
           lands: {
             ...gameStateStub.map.lands,
@@ -348,7 +348,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithoutArmy = {
         ...gameStateStub,
-        battlefield: {
+        map: {
           ...gameStateStub.map,
           lands: {
             ...gameStateStub.map.lands,
@@ -386,7 +386,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
+        map: {
           ...gameStateStub.map,
           lands: {
             ...gameStateStub.map.lands,
@@ -426,7 +426,7 @@ describe('LandCharacteristicsPopup', () => {
       const tileId = getLandId(mockTileState.mapPos);
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
+        map: {
           ...gameStateStub.map,
           lands: {
             ...gameStateStub.map.lands,

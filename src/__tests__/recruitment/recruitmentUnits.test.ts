@@ -150,7 +150,7 @@ describe('Recruitment', () => {
         // check that all units are placed on the map
         expect(barracksLand.army.length).toBe(1);
         expect(barracksLand.army[0].units.length).toBe(1);
-        expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+        expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
         expect(barracksLand.army[0].movements).toBeUndefined();
         expect(barracksLand.army[0].units[0].id).toBe(unitType);
 
@@ -193,7 +193,7 @@ describe('Recruitment', () => {
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
       expect(barracksLand.army[0].movements).toBeUndefined();
       expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
 
@@ -223,7 +223,7 @@ describe('Recruitment', () => {
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
       expect(barracksLand.army[0].movements).toBeUndefined();
       expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
       expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(60);
@@ -238,7 +238,7 @@ describe('Recruitment', () => {
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
       expect(barracksLand.army[0].movements).toBeUndefined();
       expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
       expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(20);
@@ -251,7 +251,7 @@ describe('Recruitment', () => {
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
       expect(barracksLand.army[0].movements).toBeUndefined();
       expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
       expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(40); // verify that units are merged
@@ -330,7 +330,7 @@ describe('Recruitment', () => {
           expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
           expect(barracksLand.army.length).toBe(1);
-          expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+          expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
           expect(barracksLand.army[0].movements).toBeUndefined();
           const recruitedUnit = barracksLand.army[0].units[0] as HeroUnit;
           expect(recruitedUnit.id).toBe(unitType);
@@ -397,7 +397,7 @@ describe('Recruitment', () => {
         expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
         expect(barracksLand.army.length).toBe(1);
-        expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+        expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
         expect(barracksLand.army[0].movements).toBeUndefined();
         expect(barracksLand.army[0].units.length).toBe(3);
       });

@@ -97,13 +97,37 @@ const renderWithApplicationContext = () => {
     return <>{children}</>;
   };
 
+  // Mock the useGameContext to provide a proper gameState
+  const mockGameContext = {
+    gameState: {
+      turnOwner: {
+        id: 'test-player',
+        mana: {
+          white: 200,
+          black: 200,
+          green: 200,
+          blue: 200,
+          red: 200,
+        },
+      },
+    },
+    updateGameState: jest.fn(),
+    startNewGame: jest.fn(),
+    startNewTurn: jest.fn(),
+    endCurrentTurn: jest.fn(),
+    setTurnManagerCallbacks: jest.fn(),
+  };
+
+  // Mock useGameContext before rendering
+  jest
+    .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
+    .mockReturnValue(mockGameContext);
+
   return render(
     <ApplicationContextProvider>
-      <GameProvider>
-        <Bootstrapper>
-          <TestComponentWithDialog />
-        </Bootstrapper>
-      </GameProvider>
+      <Bootstrapper>
+        <TestComponentWithDialog />
+      </Bootstrapper>
     </ApplicationContextProvider>
   );
 };

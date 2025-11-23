@@ -71,7 +71,7 @@ describe('Move Army', () => {
     testTurnManagement.makeNTurns(1);
 
     expect(barracksLand.army.length).toBe(1);
-    expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner);
+    expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
     expect(barracksLand.army[0].movements).toBeUndefined();
     expect(barracksLand.army[0].units.length).toBe(2); // 1 hero and 120 warriors
     expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);

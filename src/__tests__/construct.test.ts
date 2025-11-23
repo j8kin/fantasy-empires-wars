@@ -75,7 +75,9 @@ describe('Construct Buildings', () => {
     });
 
     it('Construction cost 15% less if player has TreasureItem.CROWN_OF_DOMINION', () => {
-      expect(gameStateStub.turnOwner.id).toBe(player1.id);
+      while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
+      while (gameStateStub.turnOwner.id !== player1.id) gameStateStub.nextPlayer();
+
       gameStateStub.turnOwner.empireTreasures.push(
         relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!
       );
@@ -192,11 +194,11 @@ describe('Construct Buildings', () => {
     });
 
     it('When stronghold destroyed land could change owner', () => {
-      expect(gameStateStub.turnOwner).toBe(player1.id);
+      expect(gameStateStub.turnOwner.id).toBe(player1.id);
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);
 
       gameStateStub.nextPlayer();
-      expect(gameStateStub.turnOwner).toBe(player2.id);
+      expect(gameStateStub.turnOwner.id).toBe(player2.id);
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 5 });
 
       expectLands(player1, getLandsInRadius(homeLand1).map(getLandId));
@@ -220,12 +222,12 @@ describe('Construct Buildings', () => {
     });
 
     it('When stronghold destroyed land not change owner if another stronghold of the same owner is near', () => {
-      expect(gameStateStub.turnOwner).toBe(player1.id);
+      expect(gameStateStub.turnOwner.id).toBe(player1.id);
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 2, col: 5 }); // stronghold of player 1 near destroyed land
 
       gameStateStub.nextPlayer();
-      expect(gameStateStub.turnOwner).toBe(player2.id);
+      expect(gameStateStub.turnOwner.id).toBe(player2.id);
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 4, col: 5 });
 
       expect(player1.nLands()).toBe(12);
@@ -258,6 +260,8 @@ describe('Construct Buildings', () => {
         buildings: [],
       })[0];
       gameStateStub.turnOwner.vault = 0; // vault is empty
+
+      while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
 
       expect(emptyLand).toBeDefined();
       expect(emptyLand.buildings.length).toBe(0);

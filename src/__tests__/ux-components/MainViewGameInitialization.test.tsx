@@ -84,6 +84,7 @@ describe('MainView Game Initialization Logic', () => {
     const game1 = createGameStateStub({
       gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
       battlefieldSize: { rows: 9, cols: 18 },
+      addPlayersHomeland: false, // Don't add homeland to keep turn at 1
     });
 
     // Should start turn for first game
@@ -93,6 +94,7 @@ describe('MainView Game Initialization Logic', () => {
     const game2 = createGameStateStub({
       gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
       battlefieldSize: { rows: 11, cols: 23 },
+      addPlayersHomeland: false, // Don't add homeland to keep turn at 1
     });
 
     // Should start turn for second game because it's different
