@@ -11,6 +11,9 @@ import fertileLandsImg from './spells/green/fertile-lands.png';
 import entangledRootsImg from './spells/green/entangled-roots.png';
 import beastAttachImg from './spells/green/beast-attack.png';
 import earthquakeImg from './spells/green/earthquake.png';
+import emberRaidImg from './spells/red/ember-raid.png';
+import forgeOfWarImg from './spells/red/forge-of-war.png';
+import fireStormImg from './spells/red/firestorm.png';
 
 import summonUndeadImg from './spells/black/summon-undead.png';
 
@@ -42,7 +45,12 @@ export const getSpellImg = (spell: Spell) => {
     case SpellName.EARTHQUAKE:
       return earthquakeImg;
     // red spells
-
+    case SpellName.EMBER_RAID:
+      return emberRaidImg;
+    case SpellName.FORGE_OF_WAR:
+      return forgeOfWarImg;
+    case SpellName.FIRESTORM:
+      return fireStormImg;
     // black spells
     case SpellName.SUMMON_UNDEAD:
       return summonUndeadImg;
