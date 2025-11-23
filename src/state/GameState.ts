@@ -110,6 +110,7 @@ export const createGameState = (map: BattlefieldMap): GameState => {
           break;
         case TurnPhase.END:
           this.nextPlayer();
+          turnPhase = TurnPhase.START;
           break;
       }
     },

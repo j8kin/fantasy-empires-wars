@@ -36,7 +36,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
         };
 
         // Set turn phase to MAIN
-        newGameState.turnPhase = TurnPhase.MAIN;
+        while (newGameState.turnPhase !== TurnPhase.MAIN) newGameState.nextPhase();
 
         updateGameState(newGameState);
       }
@@ -187,7 +187,7 @@ describe('TopPanel Component', () => {
             newGameState.addPlayer(PREDEFINED_PLAYERS[0], 'human');
 
             // Set turn phase to MAIN
-            newGameState.turnPhase = TurnPhase.MAIN;
+            while (newGameState.turnPhase !== TurnPhase.MAIN) newGameState.nextPhase();
 
             updateGameState(newGameState);
           }

@@ -28,9 +28,8 @@ export class TurnManager {
   }
 
   public startNewTurn(gameState: GameState): void {
-    // Set turn phase to START
-    gameState.turnPhase = TurnPhase.START;
-    this.callbacks.onTurnPhaseChange(gameState, TurnPhase.START);
+    // GameState should already be in START phase when this is called
+    this.callbacks.onTurnPhaseChange(gameState, gameState.turnPhase);
 
     const player = gameState.turnOwner;
     if (!player) {
@@ -50,9 +49,14 @@ export class TurnManager {
       this.activeTimers.delete(timer);
       startTurn(gameState, this.callbacks.onHeroOutcomeResult);
       if (gameState.turn === 1) {
-        // on first turn place players randomly on a map
+        // on first turn place players randomly on a map, go directly to END phase
+        gameState.nextPhase();
+        this.callbacks.onTurnPhaseChange(gameState, gameState.turnPhase);
         this.endCurrentTurn(gameState);
       } else {
+        // nextPhase() will transition from START to MAIN
+        gameState.nextPhase();
+        this.callbacks.onTurnPhaseChange(gameState, gameState.turnPhase);
         this.startMainPhase(gameState);
       }
     }, 1000); // Show progress for 1 second
@@ -60,10 +64,7 @@ export class TurnManager {
   }
 
   private startMainPhase(gameState: GameState): void {
-    // Set turn phase to MAIN
-    gameState.turnPhase = TurnPhase.MAIN;
-    this.callbacks.onTurnPhaseChange(gameState, TurnPhase.MAIN);
-
+    // GameState should already be in MAIN phase when this is called
     const player = gameState.turnOwner;
     if (!player) {
       // todo handle this case better
@@ -88,7 +89,7 @@ export class TurnManager {
   }
 
   public endCurrentTurn(gameState: GameState): void {
-    // Set turn phase to END
+    // For endCurrentTurn, we need to go directly to END phase regardless of current phase
     gameState.turnPhase = TurnPhase.END;
     this.callbacks.onTurnPhaseChange(gameState, TurnPhase.END);
 
@@ -115,6 +116,8 @@ export class TurnManager {
     // Start the next turn
     const nextTurnTimer = setTimeout(() => {
       this.activeTimers.delete(nextTurnTimer);
+      // Reset to START phase for the new player (player was already advanced by endTurn())
+      gameState.turnPhase = TurnPhase.START;
       this.startNewTurn(gameState);
     }, 500); // Brief delay before starting next turn
     this.activeTimers.add(nextTurnTimer);
