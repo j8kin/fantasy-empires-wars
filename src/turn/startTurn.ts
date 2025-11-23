@@ -58,13 +58,12 @@ export const startTurn = (
     player.mana.black = player.mana.black + currentIncome * 0.02;
   }
 
-  // Update vault with current income after turn 2
+  // Update vault and mana after turn 2
   if (gameState.turn > 2) {
     player.vault += currentIncome;
+    // calculate Mana
+    calculateMana(gameState);
   }
-
-  // calculate Mana
-  calculateMana(gameState);
 
   //  gameState.nextPhase();
 };

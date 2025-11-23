@@ -51,14 +51,20 @@ describe('Calculate Mana', () => {
 
         testTurnManagement.setGameState(gameStateStub);
         testTurnManagement.startNewTurn(gameStateStub);
-
         testTurnManagement.waitStartPhaseComplete();
+
+        expect(gameStateStub.turn).toBe(2);
+        gameStateStub.allPlayers.forEach((p) =>
+          Object.values(p.mana).forEach((m) => expect(m).toBe(0))
+        );
+
+        testTurnManagement.makeNTurns(1);
 
         expectedMana(manaType, inc);
 
         testTurnManagement.makeNTurns(1);
 
-        expectedMana(manaType, (gameStateStub.turn - 1) * inc);
+        expectedMana(manaType, (gameStateStub.turn - 2) * inc);
       }
     );
 
@@ -84,17 +90,22 @@ describe('Calculate Mana', () => {
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 2 }; // outside player land
           getLand(gameStateStub, specialLand).land = getLandById(landType);
 
-          while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
-
           testTurnManagement.setGameState(gameStateStub);
           testTurnManagement.startNewTurn(gameStateStub);
           testTurnManagement.waitStartPhaseComplete();
+
+          expect(gameStateStub.turn).toBe(2);
+          gameStateStub.allPlayers.forEach((p) =>
+            Object.values(p.mana).forEach((m) => expect(m).toBe(0))
+          );
+
+          testTurnManagement.makeNTurns(1);
 
           expectedMana(manaType, inc);
 
           testTurnManagement.makeNTurns(1);
 
-          expectedMana(manaType, (gameStateStub.turn - 1) * inc);
+          expectedMana(manaType, (gameStateStub.turn - 2) * inc);
         });
       }
     );
@@ -130,11 +141,18 @@ describe('Calculate Mana', () => {
           testTurnManagement.startNewTurn(gameStateStub);
           testTurnManagement.waitStartPhaseComplete();
 
+          expect(gameStateStub.turn).toBe(2);
+          gameStateStub.allPlayers.forEach((p) =>
+            Object.values(p.mana).forEach((m) => expect(m).toBe(0))
+          );
+
+          testTurnManagement.makeNTurns(1);
+
           expectedMana(manaType, inc);
 
           testTurnManagement.makeNTurns(1);
 
-          expectedMana(manaType, (gameStateStub.turn - 1) * inc);
+          expectedMana(manaType, (gameStateStub.turn - 2) * inc);
         });
       }
     );
@@ -169,11 +187,18 @@ describe('Calculate Mana', () => {
           testTurnManagement.startNewTurn(gameStateStub);
           testTurnManagement.waitStartPhaseComplete();
 
+          expect(gameStateStub.turn).toBe(2);
+          gameStateStub.allPlayers.forEach((p) =>
+            Object.values(p.mana).forEach((m) => expect(m).toBe(0))
+          );
+
+          testTurnManagement.makeNTurns(1);
+
           expectedMana(manaType, inc + (hasEffect ? 1 : 0));
 
           testTurnManagement.makeNTurns(1);
 
-          expectedMana(manaType, (gameStateStub.turn - 1) * (inc + (hasEffect ? 1 : 0)));
+          expectedMana(manaType, (gameStateStub.turn - 2) * (inc + (hasEffect ? 1 : 0)));
         });
       }
     );
@@ -181,11 +206,11 @@ describe('Calculate Mana', () => {
 
   const expectManaOnTurn = (turn: number, base: number[]): void => {
     // verifying mana for all players when player[0] is turnOwner and that is why their mana on the previous turn
-    expectedMana(ManaType.BLACK, base[0] * turn, 0);
-    expectedMana(ManaType.WHITE, base[1] * (turn - 2), 1);
-    expectedMana(ManaType.BLUE, base[2] * (turn - 2), 2);
-    expectedMana(ManaType.GREEN, base[3] * (turn - 2), 3);
-    expectedMana(ManaType.RED, base[4] * (turn - 2), 4);
+    expectedMana(ManaType.BLACK, base[0] * (turn - 2), 0);
+    expectedMana(ManaType.WHITE, base[1] * (turn - 3), 1);
+    expectedMana(ManaType.BLUE, base[2] * (turn - 3), 2);
+    expectedMana(ManaType.GREEN, base[3] * (turn - 3), 3);
+    expectedMana(ManaType.RED, base[4] * (turn - 3), 4);
   };
 
   const baseMana = (player: PlayerState) => {
@@ -234,10 +259,6 @@ describe('Calculate Mana', () => {
 
     testTurnManagement.makeNTurns(10);
 
-    testTurnManagement.setGameState(gameStateStub);
-    testTurnManagement.startNewTurn(gameStateStub);
-    testTurnManagement.waitStartPhaseComplete();
-
     expectManaOnTurn(gameStateStub.turn, basePlayersMana);
 
     for (let i = 0; i < 10; i++) {
@@ -260,11 +281,16 @@ describe('Calculate Mana', () => {
 
     getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandType.VOLCANO); // this should add red mana to player 0
 
-    while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
-
     testTurnManagement.setGameState(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);
     testTurnManagement.waitStartPhaseComplete();
+
+    expect(gameStateStub.turn).toBe(2);
+    gameStateStub.allPlayers.forEach((p) =>
+      Object.values(p.mana).forEach((m) => expect(m).toBe(0))
+    );
+
+    testTurnManagement.makeNTurns(1);
 
     expect(gameStateStub.allPlayers[0].mana[ManaType.RED]).toBe(1);
     expect(gameStateStub.allPlayers[0].mana[ManaType.BLACK]).toBe(7);

@@ -1,16 +1,16 @@
-import { calculateIncome } from '../map/vault/calculateIncome';
-import { createGameState, GameState } from '../state/GameState';
-import { getLandId } from '../state/LandState';
-import { PlayerProfile, PREDEFINED_PLAYERS } from '../state/PlayerState';
+import { calculateIncome } from '../../map/vault/calculateIncome';
+import { createGameState, GameState } from '../../state/GameState';
+import { getLandId } from '../../state/LandState';
+import { PlayerProfile, PREDEFINED_PLAYERS } from '../../state/PlayerState';
 
-import { BuildingType, getBuilding } from '../types/Building';
-import { getLandById, LandType } from '../types/Land';
-import { Alignment } from '../types/Alignment';
+import { BuildingType, getBuilding } from '../../types/Building';
+import { getLandById, LandType } from '../../types/Land';
+import { Alignment } from '../../types/Alignment';
 
-import { construct } from '../map/building/construct';
+import { construct } from '../../map/building/construct';
 
-import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
-import { generateMockMap } from './utils/generateMockMap';
+import { createGameStateStub, defaultBattlefieldSizeStub } from '../utils/createGameStateStub';
+import { generateMockMap } from '../utils/generateMockMap';
 
 describe('Calculate Income', () => {
   let gameStateStub: GameState;
