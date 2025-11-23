@@ -20,7 +20,7 @@ describe('calculatePlayerIncome', () => {
     expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
   });
 
-  it ('income should be calculated correctly each turn', () => {
+  it('income should be calculated correctly each turn', () => {
     expect(gameStateStub.turnOwner.vault).toBe(15000);
 
     testTurnManagement.makeNTurns(1);
@@ -29,5 +29,5 @@ describe('calculatePlayerIncome', () => {
 
     testTurnManagement.makeNTurns(1);
     expect(gameStateStub.turnOwner.vault).toBe(15000 + income * 2);
-  })
+  });
 });
