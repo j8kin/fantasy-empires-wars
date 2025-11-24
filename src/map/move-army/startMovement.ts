@@ -1,9 +1,10 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/LandState';
 
-import { RegularUnit, Unit } from '../../types/RegularUnit';
+import { RegularUnit } from '../../types/RegularUnit';
 import { HeroUnit } from '../../types/HeroUnit';
 import { isHeroType } from '../../types/UnitType';
+import { Unit } from '../../types/BaseUnit';
 
 import { findShortestPath } from '../utils/mapAlgorithms';
 

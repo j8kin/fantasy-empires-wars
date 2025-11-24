@@ -2,7 +2,7 @@ import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
 import { isHeroType } from '../../types/UnitType';
-import { createRegularUnit, isHero, RegularUnit } from '../../types/RegularUnit';
+import { createRegularUnit, RegularUnit } from '../../types/RegularUnit';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 import { createHeroUnit, HeroUnit } from '../../types/HeroUnit';
 import { generateHeroName } from './heroNameGeneration';
@@ -43,7 +43,7 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
               (a) => a.movements == null && a.controlledBy === turnOwner
             );
             if (stationedArmy) {
-              if (!isHero(unit)) {
+              if (!isHeroType(unit.id)) {
                 const existing = stationedArmy.units.find(
                   (u) => u.id === unit.id && u.level === unit.level
                 );

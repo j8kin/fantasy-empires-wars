@@ -7,7 +7,6 @@ import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQues
 
 import { GameState } from '../../../state/GameState';
 
-import { isHero } from '../../../types/RegularUnit';
 import { HeroUnitType, isHeroType } from '../../../types/UnitType';
 import { Alignment } from '../../../types/Alignment';
 import { getLands } from '../../../map/utils/getLands';
@@ -178,7 +177,7 @@ describe('SendHeroInQuestDialog', () => {
     }).filter(
       (land) =>
         land.army.length > 0 &&
-        land.army.some((armyUnit) => armyUnit.units.some((unit) => isHero(unit)))
+        land.army.some((armyUnit) => armyUnit.units.some((unit) => isHeroType(unit.id)))
     );
   };
 
@@ -317,7 +316,7 @@ describe('SendHeroInQuestDialog', () => {
       expect(lands.length).toBeGreaterThan(0);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) =>
-        armyUnit.units.some((unit) => isHero(unit))
+        armyUnit.units.some((unit) => isHeroType(unit.id))
       );
       expect(heroArmyUnit).toBeDefined();
 
@@ -342,9 +341,9 @@ describe('SendHeroInQuestDialog', () => {
       expect(lands.length).toBeGreaterThan(0);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) =>
-        armyUnit.units.some((unit) => isHero(unit))
+        armyUnit.units.some((unit) => isHeroType(unit.id))
       );
-      const hero = heroArmyUnit!.units.find((unit) => isHero(unit)) as HeroUnit;
+      const hero = heroArmyUnit!.units.find((unit) => isHeroType(unit.id)) as HeroUnit;
 
       // The slot ID should be the full hero name, which is what findHeroByName expects
       // Hero appears on all 4 quest pages, so get the first occurrence
@@ -366,7 +365,7 @@ describe('SendHeroInQuestDialog', () => {
       let totalHeroes = 0;
       heroLands.forEach((land) => {
         totalHeroes += land.army.reduce(
-          (count, armyUnit) => count + armyUnit.units.filter((unit) => isHero(unit)).length,
+          (count, armyUnit) => count + armyUnit.units.filter((unit) => isHeroType(unit.id)).length,
           0
         );
       });
@@ -388,9 +387,9 @@ describe('SendHeroInQuestDialog', () => {
       expect(lands.length).toBeGreaterThan(0);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) =>
-        armyUnit.units.some((unit) => isHero(unit))
+        armyUnit.units.some((unit) => isHeroType(unit.id))
       );
-      const hero = heroArmyUnit!.units.find((unit) => isHero(unit)) as HeroUnit;
+      const hero = heroArmyUnit!.units.find((unit) => isHeroType(unit.id)) as HeroUnit;
 
       // Click on the hero slot in the first quest (The Echoing Ruins)
       // Hero appears on all 4 quest pages, so get the first occurrence
@@ -418,9 +417,9 @@ describe('SendHeroInQuestDialog', () => {
       const lands = getHeroLands(mockGameState);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) =>
-        armyUnit.units.some((unit) => isHero(unit))
+        armyUnit.units.some((unit) => isHeroType(unit.id))
       );
-      const hero = heroArmyUnit!.units.find((unit) => isHero(unit)) as HeroUnit;
+      const hero = heroArmyUnit!.units.find((unit) => isHeroType(unit.id)) as HeroUnit;
 
       // Click on hero slot in first quest
       const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
@@ -443,7 +442,7 @@ describe('SendHeroInQuestDialog', () => {
       let allHeroes: HeroUnit[] = [];
       heroLands.forEach((land) => {
         const landHeroes = land.army
-          .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHero(unit)))
+          .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHeroType(unit.id)))
           .map((unit) => unit as HeroUnit);
         allHeroes = allHeroes.concat(landHeroes);
       });
@@ -474,9 +473,9 @@ describe('SendHeroInQuestDialog', () => {
       const lands = getHeroLands(mockGameState);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) =>
-        armyUnit.units.some((unit) => isHero(unit))
+        armyUnit.units.some((unit) => isHeroType(unit.id))
       );
-      const hero = heroArmyUnit!.units.find((unit) => isHero(unit)) as HeroUnit;
+      const hero = heroArmyUnit!.units.find((unit) => isHeroType(unit.id)) as HeroUnit;
 
       // Click hero slot on different quest pages
       const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
@@ -587,9 +586,9 @@ describe('SendHeroInQuestDialog', () => {
       expect(lands.length).toBeGreaterThan(0);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) =>
-        armyUnit.units.some((unit) => isHero(unit))
+        armyUnit.units.some((unit) => isHeroType(unit.id))
       );
-      const hero = heroArmyUnit!.units.find((unit) => isHero(unit)) as HeroUnit;
+      const hero = heroArmyUnit!.units.find((unit) => isHeroType(unit.id)) as HeroUnit;
 
       // The slot should be created with hero.name as the id
       // Hero appears on all 4 quest pages, so get the first occurrence
@@ -608,7 +607,9 @@ describe('SendHeroInQuestDialog', () => {
       })
         .flatMap((land) => land.army)
         .find((armyUnit) =>
-          armyUnit.units.some((unit) => isHero(unit) && (unit as HeroUnit).name === hero.name)
+          armyUnit.units.some(
+            (unit) => isHeroType(unit.id) && (unit as HeroUnit).name === hero.name
+          )
         );
 
       expect(expectedHeroInGameState).toBeDefined();
@@ -622,7 +623,7 @@ describe('SendHeroInQuestDialog', () => {
 
       heroLands.forEach((land) => {
         land.army
-          .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHero(unit)))
+          .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHeroType(unit.id)))
           .forEach((unit) => {
             const hero = unit as HeroUnit;
 
@@ -674,7 +675,7 @@ describe('SendHeroInQuestDialog', () => {
       const longName = 'VeryLongHeroNameThatExceedsNormalLimits AndHasMultipleWords';
       lands[0].army[0].units.push(createHeroUnit(mockGameState.turnOwner.getType(), longName));
       const heroArmyUnit = lands[0].army.find((a) =>
-        a.units.some((unit) => isHero(unit) && (unit as HeroUnit).name === longName)
+        a.units.some((unit) => isHeroType(unit.id) && (unit as HeroUnit).name === longName)
       );
       renderWithProviders(<SendHeroInQuestDialog />);
 
@@ -685,7 +686,7 @@ describe('SendHeroInQuestDialog', () => {
       expect(heroSlot).toBeInTheDocument();
 
       // Display name should use first word only
-      const expectedDisplayName = `VeryLongHeroNameThatExceedsNormalLimits Lvl: ${(heroArmyUnit!.units.find((unit) => isHero(unit) && (unit as HeroUnit).name === longName) as HeroUnit).level}`;
+      const expectedDisplayName = `VeryLongHeroNameThatExceedsNormalLimits Lvl: ${(heroArmyUnit!.units.find((unit) => isHeroType(unit.id) && (unit as HeroUnit).name === longName) as HeroUnit).level}`;
       expect(heroSlot).toHaveTextContent(expectedDisplayName);
     });
 
@@ -700,7 +701,9 @@ describe('SendHeroInQuestDialog', () => {
       expect(lands.length).toBeGreaterThan(0);
       lands[0].army[0].units.push(createHeroUnit(mockGameState.turnOwner.getType(), 'SingleName'));
       const heroArmyUnit = lands[0].army.find((armyUnit) =>
-        armyUnit.units.some((unit) => isHero(unit) && (unit as HeroUnit).name === 'SingleName')
+        armyUnit.units.some(
+          (unit) => isHeroType(unit.id) && (unit as HeroUnit).name === 'SingleName'
+        )
       );
 
       expect(heroArmyUnit).toBeDefined();
@@ -714,7 +717,7 @@ describe('SendHeroInQuestDialog', () => {
       expect(heroSlot).toBeInTheDocument();
 
       // Display name should be the single word + level
-      const expectedDisplayName = `SingleName Lvl: ${(heroArmyUnit!.units.find((unit) => isHero(unit) && (unit as HeroUnit).name === 'SingleName') as HeroUnit).level}`;
+      const expectedDisplayName = `SingleName Lvl: ${(heroArmyUnit!.units.find((unit) => isHeroType(unit.id) && (unit as HeroUnit).name === 'SingleName') as HeroUnit).level}`;
       expect(heroSlot).toHaveTextContent(expectedDisplayName);
     });
   });

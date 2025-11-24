@@ -1,6 +1,6 @@
 import { GameState } from '../../state/GameState';
-import { isHero, RegularUnit, UnitRank } from '../../types/RegularUnit';
-import { isWarMachine } from '../../types/UnitType';
+import { RegularUnit, UnitRank } from '../../types/RegularUnit';
+import { isHeroType, isWarMachine } from '../../types/UnitType';
 
 import { getHostileLands } from '../utils/getHostileLands';
 import { RegularUnitType } from '../../types/UnitType';
@@ -32,12 +32,12 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
   getHostileLands(gameState).forEach((land) => {
     // get all units from the land
     const units = land.army.flatMap((a) => a.units);
-    const loss = rollAttritionLoss(units.filter((u) => !isHero(u)) as RegularUnit[]);
+    const loss = rollAttritionLoss(units.filter((u) => !isHeroType(u.id)) as RegularUnit[]);
 
     land.army.forEach((army) => {
       Object.values(UnitRank).forEach((rank) => {
         const nUnits = calculateNumberOfRegularUnits(
-          army.units.filter((u) => !isHero(u)) as RegularUnit[],
+          army.units.filter((u) => !isHeroType(u.id)) as RegularUnit[],
           rank
         );
         // Apply deaths to units
@@ -45,7 +45,7 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
 
         // First, handle war machines (ballista and catapult)
         const warMachines = army.units.filter(
-          (unit) => !isHero(unit) && unit.level === rank && isWarMachine(unit.id)
+          (unit) => !isHeroType(unit.id) && unit.level === rank && isWarMachine(unit.id)
         );
 
         remainingToDie = warMachines.reduce((remaining, warMachine) => {
@@ -63,7 +63,7 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
         // Then handle regular units
         const regularUnits = army.units.filter(
           (unit) =>
-            !isHero(unit) &&
+            !isHeroType(unit.id) &&
             unit.level === rank &&
             unit.id !== RegularUnitType.BALLISTA &&
             unit.id !== RegularUnitType.CATAPULT
@@ -78,7 +78,9 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
         }, remainingToDie);
 
         // Remove units with zero units count
-        army.units = army.units.filter((unit) => isHero(unit) || (unit as RegularUnit).count > 0);
+        army.units = army.units.filter(
+          (unit) => isHeroType(unit.id) || (unit as RegularUnit).count > 0
+        );
       });
     });
 

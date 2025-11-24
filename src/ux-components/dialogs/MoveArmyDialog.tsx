@@ -8,11 +8,12 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 
 import { ButtonName } from '../../types/ButtonName';
-import { RegularUnit, Unit, UnitRank } from '../../types/RegularUnit';
+import { RegularUnit, UnitRank } from '../../types/RegularUnit';
 
 import { startMovement } from '../../map/move-army/startMovement';
-import { isHeroType } from '../../types/UnitType';
+import { Unit } from '../../types/BaseUnit';
 import { HeroUnit } from '../../types/HeroUnit';
+import { isHeroType } from '../../types/UnitType';
 
 const MoveArmyDialog: React.FC = () => {
   const { setMoveArmyPath, moveArmyPath } = useApplicationContext();

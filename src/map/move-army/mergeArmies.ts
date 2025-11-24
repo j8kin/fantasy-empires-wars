@@ -1,7 +1,8 @@
 import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 import { Army } from '../../types/Army';
-import { isHero, RegularUnit } from '../../types/RegularUnit';
+import { RegularUnit } from '../../types/RegularUnit';
+import { isHeroType } from '../../types/UnitType';
 
 export const mergeArmies = (gameState: GameState): void => {
   const turnOwner = gameState.turnOwner.id;
@@ -26,10 +27,10 @@ export const mergeArmies = (gameState: GameState): void => {
       const mergedRegularUnits = stationedArmy.reduce(
         (acc: Army, army) => {
           for (const unit of army.units) {
-            if (!isHero(unit)) {
+            if (!isHeroType(unit.id)) {
               const existing = acc.units.find(
                 // merge units the same type and level (regular/veteran and elite units should not merge with each other)
-                (a) => !isHero(a) && a.id === unit.id && a.level === unit.level
+                (a) => !isHeroType(a.id) && a.id === unit.id && a.level === unit.level
               );
               if (existing) {
                 (existing as RegularUnit).count += (unit as RegularUnit).count;

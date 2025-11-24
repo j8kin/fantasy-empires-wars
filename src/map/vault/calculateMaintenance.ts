@@ -3,12 +3,14 @@ import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 
 import { BuildingType } from '../../types/Building';
-import { isHero, Unit, UnitRank } from '../../types/RegularUnit';
+import { UnitRank } from '../../types/RegularUnit';
 import { HeroUnit } from '../../types/HeroUnit';
+import { isHeroType } from '../../types/UnitType';
+import { Unit } from '../../types/BaseUnit';
 
 // todo move to HeroUnit and RegularUnit into levelUp functions
 const unitMaintenanceCost = (unit: Unit): number => {
-  if (isHero(unit)) {
+  if (isHeroType(unit.id)) {
     return unit.maintainCost * (Math.floor((unit as HeroUnit).level / 4) + 1);
   }
 

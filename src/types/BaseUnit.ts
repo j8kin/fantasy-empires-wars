@@ -1,5 +1,9 @@
 import { HeroUnitType, isHeroType, RegularUnitType, UnitType } from './UnitType';
 import { Alignment } from './Alignment';
+import { HeroUnit } from './HeroUnit';
+import { RegularUnit } from './RegularUnit';
+
+export type Unit = HeroUnit | RegularUnit;
 
 interface BaseUnitStats {
   attack: number;

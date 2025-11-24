@@ -10,7 +10,7 @@ import { getLandId } from '../../state/LandState';
 
 import { ButtonName } from '../../types/ButtonName';
 import { BuildingType } from '../../types/Building';
-import { isHero } from '../../types/RegularUnit';
+import { isHeroType } from '../../types/UnitType';
 
 import { getLands } from '../../map/utils/getLands';
 
@@ -76,7 +76,7 @@ const UnitActionControl: React.FC = () => {
           noArmy: false,
         }) || []
       ).filter((l) =>
-        l.army.some((u) => u.movements == null && u.units.some((unit) => isHero(unit)))
+        l.army.some((u) => u.movements == null && u.units.some((unit) => isHeroType(unit.id)))
       );
 
       setSelectedLandAction('Quest');
