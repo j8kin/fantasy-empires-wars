@@ -7,8 +7,8 @@ import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage
 
 import { LandPosition } from '../../state/LandState';
 
-import { getDefaultUnit, isHero, isMage, isWarMachine, Unit } from '../../types/Unit';
-import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
+import { getDefaultUnit, isHero, isMage, Unit } from '../../types/Unit';
+import { isWarMachine, HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
 
 import { BuildingType } from '../../types/Building';
 

@@ -28,3 +28,10 @@ export enum HeroUnitType {
 }
 
 export type UnitType = RegularUnitType | HeroUnitType;
+
+export const isHeroType = (unitType: UnitType): unitType is HeroUnitType => {
+  return Object.values(HeroUnitType).includes(unitType as HeroUnitType);
+};
+
+export const isWarMachine = (unitType: UnitType): boolean =>
+  unitType === RegularUnitType.BALLISTA || unitType === RegularUnitType.CATAPULT;

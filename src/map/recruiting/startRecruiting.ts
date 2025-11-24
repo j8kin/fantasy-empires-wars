@@ -3,8 +3,8 @@ import { LandPosition } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
-import { getDefaultUnit, HeroUnit, isHeroType, isRange, isWarMachine } from '../../types/Unit';
-import { HeroUnitType, UnitType } from '../../types/UnitType';
+import { getDefaultUnit, isRange, HeroUnit } from '../../types/Unit';
+import { isHeroType, isWarMachine, HeroUnitType, UnitType } from '../../types/UnitType';
 
 const recruitmentDuration = (unitType: UnitType) => {
   if (isHeroType(unitType)) return 3;
