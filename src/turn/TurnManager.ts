@@ -13,12 +13,62 @@ export interface TurnManagerCallbacks {
   onHeroOutcomeResult: (results: HeroOutcome[]) => void;
 }
 
+/**
+ * TurnManager is responsible for managing the complete turn lifecycle and phase transitions.
+ *
+ * This class centralizes all turn phase logic, ensuring consistent phase transitions
+ * and proper callback handling. It manages:
+ * - Phase transitions (START -> MAIN -> END -> next player's START)
+ * - Special turn 1 logic (START -> END, skipping MAIN phase)
+ * - Turn timing and delays
+ * - Computer AI turn handling
+ * - Game over conditions
+ *
+ * @since Refactored to centralize phase management - all phase transitions now go through TurnManager
+ */
 export class TurnManager {
   private callbacks: TurnManagerCallbacks;
   private activeTimers: Set<NodeJS.Timeout> = new Set();
 
   constructor(callbacks: TurnManagerCallbacks) {
     this.callbacks = callbacks;
+  }
+
+  /**
+   * Centralized phase transition logic - handles all phase changes through TurnManager.
+   * This is the single source of truth for phase changes, ensuring consistent
+   * state updates and callback notifications.
+   *
+   * @param gameState The game state to update
+   * @param phase The phase to transition to
+   */
+  private transitionToPhase(gameState: GameState, phase: TurnPhase): void {
+    gameState.turnPhase = phase;
+    this.callbacks.onTurnPhaseChange(gameState, phase);
+  }
+
+  /**
+   * Advances to the next phase based on current phase and game rules.
+   * Encapsulates all the phase transition logic including special rules for turn 1.
+   *
+   * @param gameState The game state to advance
+   */
+  private advanceToNextPhase(gameState: GameState): void {
+    switch (gameState.turnPhase) {
+      case TurnPhase.START:
+        // Special rule: Turn 1 goes START -> END (skip MAIN), Turn >1 goes START -> MAIN
+        const nextPhase = gameState.turn === 1 ? TurnPhase.END : TurnPhase.MAIN;
+        this.transitionToPhase(gameState, nextPhase);
+        break;
+      case TurnPhase.MAIN:
+        this.transitionToPhase(gameState, TurnPhase.END);
+        break;
+      case TurnPhase.END:
+        // END phase leads to next player's START phase
+        gameState.nextPlayer();
+        this.transitionToPhase(gameState, TurnPhase.START);
+        break;
+    }
   }
 
   public cleanup(): void {
@@ -28,8 +78,8 @@ export class TurnManager {
   }
 
   public startNewTurn(gameState: GameState): void {
-    // GameState should already be in START phase when this is called
-    this.callbacks.onTurnPhaseChange(gameState, gameState.turnPhase);
+    // Ensure we're in START phase and notify callbacks
+    this.transitionToPhase(gameState, TurnPhase.START);
 
     const player = gameState.turnOwner;
     if (!player) {
@@ -48,15 +98,14 @@ export class TurnManager {
     const timer = setTimeout(() => {
       this.activeTimers.delete(timer);
       startTurn(gameState, this.callbacks.onHeroOutcomeResult);
+
       if (gameState.turn === 1) {
-        // on first turn place players randomly on a map, go directly to END phase
-        gameState.nextPhase();
-        this.callbacks.onTurnPhaseChange(gameState, gameState.turnPhase);
+        // On first turn, advance to END phase and end immediately
+        this.advanceToNextPhase(gameState); // START -> END
         this.endCurrentTurn(gameState);
       } else {
-        // nextPhase() will transition from START to MAIN
-        gameState.nextPhase();
-        this.callbacks.onTurnPhaseChange(gameState, gameState.turnPhase);
+        // Normal turn: advance to MAIN phase
+        this.advanceToNextPhase(gameState); // START -> MAIN
         this.startMainPhase(gameState);
       }
     }, 1000); // Show progress for 1 second
@@ -89,9 +138,8 @@ export class TurnManager {
   }
 
   public endCurrentTurn(gameState: GameState): void {
-    // For endCurrentTurn, we need to go directly to END phase regardless of current phase
-    gameState.turnPhase = TurnPhase.END;
-    this.callbacks.onTurnPhaseChange(gameState, TurnPhase.END);
+    // Transition to END phase regardless of current phase
+    this.transitionToPhase(gameState, TurnPhase.END);
 
     // Execute end turn logic
     endTurn(gameState);
@@ -113,11 +161,11 @@ export class TurnManager {
       }
     }
 
-    // Start the next turn
+    // Start the next turn after brief delay
     const nextTurnTimer = setTimeout(() => {
       this.activeTimers.delete(nextTurnTimer);
-      // Reset to START phase for the new player (player was already advanced by endTurn())
-      gameState.turnPhase = TurnPhase.START;
+      // Note: endTurn() already called gameState.nextPlayer(), so we just need to transition to START phase
+      this.transitionToPhase(gameState, TurnPhase.START);
       this.startNewTurn(gameState);
     }, 500); // Brief delay before starting next turn
     this.activeTimers.add(nextTurnTimer);

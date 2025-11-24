@@ -159,8 +159,6 @@ describe('Calculate Maintenance', () => {
 
       placeUnitsOnMap(getDefaultUnit(RegularUnitType.DWARF), gameStateStub, barracksPos);
 
-      while (gameStateStub.turn < 2) gameStateStub.nextPhase(); // income calculated on turn > 2
-
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(1000 + 20 * 5);
     });

@@ -1,4 +1,4 @@
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { getQuest, HeroQuest, QuestType } from '../../types/Quest';
 import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';

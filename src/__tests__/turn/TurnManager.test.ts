@@ -299,7 +299,6 @@ describe('TurnManager', () => {
     it('should return false for computer player in main phase', () => {
       while (mockGameState.turnOwner.id !== mockGameState.allPlayers[1].id)
         mockGameState.nextPlayer();
-      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
       const result = turnManager.canEndTurn(mockGameState);
 
@@ -310,7 +309,6 @@ describe('TurnManager', () => {
       // human player in START phase
       while (mockGameState.turnOwner.id !== mockGameState.allPlayers[1].id)
         mockGameState.nextPlayer();
-      while (mockGameState.turnPhase !== TurnPhase.START) mockGameState.nextPhase();
 
       const result = turnManager.canEndTurn(mockGameState);
 
@@ -321,7 +319,6 @@ describe('TurnManager', () => {
       // human player in END phase
       while (mockGameState.turnOwner.id !== mockGameState.allPlayers[1].id)
         mockGameState.nextPlayer();
-      while (mockGameState.turnPhase !== TurnPhase.END) mockGameState.nextPhase();
 
       const result = turnManager.canEndTurn(mockGameState);
 
@@ -426,7 +423,6 @@ describe('TurnManager', () => {
       // Switch to computer player
       while (mockGameState.turnOwner.id !== mockGameState.allPlayers[1].id)
         mockGameState.nextPlayer();
-      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
       expect(turnManager.canEndTurn(mockGameState)).toBe(false);
     });

@@ -100,6 +100,10 @@ export const createGameState = (map: BattlefieldMap): GameState => {
       turnPhase = newTurnPhase;
     },
 
+    /**
+     * @deprecated Use TurnManager for phase transitions instead of calling this directly.
+     * This method is kept for backward compatibility with tests and legacy code.
+     */
     nextPhase: function (): void {
       switch (turnPhase) {
         case TurnPhase.START:
