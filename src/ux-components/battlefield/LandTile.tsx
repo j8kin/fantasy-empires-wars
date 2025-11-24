@@ -9,7 +9,7 @@ import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
 import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType, getBuilding } from '../../types/Building';
-import { isHero, RegularUnit } from '../../types/Unit';
+import { isHero, RegularUnit } from '../../types/RegularUnit';
 
 import { getPlayerColorValue } from '../../types/PlayerColors';
 

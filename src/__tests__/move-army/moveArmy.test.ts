@@ -2,7 +2,8 @@ import { GameState } from '../../state/GameState';
 import { getLandId, LandPosition, LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
-import { getDefaultUnit, HeroUnit, RegularUnit, Unit } from '../../types/Unit';
+import { createRegularUnit, RegularUnit, Unit } from '../../types/RegularUnit';
+import { createHeroUnit, HeroUnit } from '../../types/HeroUnit';
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { BuildingType } from '../../types/Building';
 
@@ -96,7 +97,7 @@ describe('Move Army', () => {
       'new Army with movement should be created into %s with pathLength: %s',
       (to: LandPosition, pathLength: number, path: string[]) => {
         const from = barracksLand.mapPos;
-        const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
+        const unitsToMove = [createRegularUnit(RegularUnitType.WARRIOR)];
 
         startMovement(from, to, unitsToMove, gameStateStub);
 
@@ -123,8 +124,8 @@ describe('Move Army', () => {
     it('move all regular units', () => {
       const from = barracksLand.mapPos;
       const to = { row: 3, col: 5 };
-      const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
-      (unitsToMove[0] as RegularUnit).count = 120;
+      const unitsToMove = [createRegularUnit(RegularUnitType.WARRIOR)];
+      unitsToMove[0].count = 120;
 
       startMovement(from, to, unitsToMove, gameStateStub);
 
@@ -158,7 +159,7 @@ describe('Move Army', () => {
       const to = { row: 3, col: 5 };
       const unitsToMove: Unit[] = [
         barracksLand.army[0].units[1],
-        getDefaultUnit(RegularUnitType.WARRIOR),
+        createRegularUnit(RegularUnitType.WARRIOR),
       ];
 
       startMovement(from, to, unitsToMove, gameStateStub);
@@ -185,7 +186,7 @@ describe('Move Army', () => {
     it('move all units', () => {
       const from = barracksLand.mapPos;
       const to = { row: 3, col: 5 };
-      const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
+      const unitsToMove: Unit[] = [createRegularUnit(RegularUnitType.WARRIOR)];
       (unitsToMove[0] as RegularUnit).count = 120;
       unitsToMove.push(barracksLand.army[0].units[1]);
 
@@ -206,7 +207,7 @@ describe('Move Army', () => {
     describe('corner cases', () => {
       it('empty army', () => {
         const emptyLand = gameStateStub.getLand({ row: 1, col: 1 });
-        const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
+        const unitsToMove = [createRegularUnit(RegularUnitType.WARRIOR)];
 
         expect(emptyLand.army.length).toBe(0);
 
@@ -223,8 +224,8 @@ describe('Move Army', () => {
       it('not enough units to move', () => {
         const from = barracksLand.mapPos;
         const to = { row: 3, col: 5 };
-        const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
-        (unitsToMove[0] as RegularUnit).count = 1000;
+        const unitsToMove = [createRegularUnit(RegularUnitType.WARRIOR)];
+        unitsToMove[0].count = 1000;
 
         startMovement(from, to, unitsToMove, gameStateStub);
 
@@ -240,7 +241,7 @@ describe('Move Army', () => {
       it('No expected hero', () => {
         const from = barracksLand.mapPos;
         const to = { row: 3, col: 5 };
-        const unitsToMove: Unit[] = [getDefaultUnit(HeroUnitType.FIGHTER)];
+        const unitsToMove = [createHeroUnit(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER)];
 
         startMovement(from, to, unitsToMove, gameStateStub);
 
@@ -303,8 +304,8 @@ describe('Move Army', () => {
       const to = { row: 3, col: 5 };
       expect(gameStateStub.getLandOwner(to)).toBe(NO_PLAYER.id);
 
-      const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
-      (unitsToMove[0] as RegularUnit).count = 120;
+      const unitsToMove = [createRegularUnit(RegularUnitType.WARRIOR)];
+      unitsToMove[0].count = 120;
 
       startMovement(from, to, unitsToMove, gameStateStub);
       expect(gameStateStub.getLand(from).army.length).toBe(2);
@@ -333,8 +334,8 @@ describe('Move Army', () => {
       const to = { row: 3, col: 5 };
       expect(gameStateStub.getLandOwner(to)).toBe(NO_PLAYER.id);
 
-      const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
-      (unitsToMove[0] as RegularUnit).count = 20; // 20 regular units is not enough to conquer the new territory
+      const unitsToMove = [createRegularUnit(RegularUnitType.WARRIOR)];
+      unitsToMove[0].count = 20; // 20 regular units is not enough to conquer the new territory
 
       startMovement(from, to, unitsToMove, gameStateStub);
       fromLand = gameStateStub.getLand(from);
@@ -362,7 +363,7 @@ describe('Move Army', () => {
       expect(gameStateStub.getLandOwner(to)).toBe(NO_PLAYER.id);
 
       // first army is moved to new territory
-      const unitsToMove1: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
+      const unitsToMove1: Unit[] = [createRegularUnit(RegularUnitType.WARRIOR)];
       (unitsToMove1[0] as RegularUnit).count = 35; // 35 regular units is not enough to conquer the new territory
 
       startMovement(from, to, unitsToMove1, gameStateStub);
@@ -370,7 +371,7 @@ describe('Move Army', () => {
       expect(fromLand.army.length).toBe(2);
 
       // second army is moved to the same territory
-      const unitsToMove2: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
+      const unitsToMove2: Unit[] = [createRegularUnit(RegularUnitType.WARRIOR)];
       (unitsToMove1[0] as RegularUnit).count = 35; // 35 regular units is not enough to conquer the new territory
 
       startMovement(from, to, unitsToMove2, gameStateStub);

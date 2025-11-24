@@ -1,4 +1,4 @@
-import { RegularUnit, UnitRank } from '../../types/Unit';
+import { RegularUnit, UnitRank } from '../../types/RegularUnit';
 import { isWarMachine } from '../../types/UnitType';
 
 export const MAX_MOVE = 4;

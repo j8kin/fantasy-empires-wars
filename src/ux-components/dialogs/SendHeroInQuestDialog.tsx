@@ -7,8 +7,9 @@ import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage
 
 import { getLandId } from '../../state/LandState';
 
-import { HeroUnit, isHero } from '../../types/Unit';
 import { getAllQuests, getQuestType } from '../../types/Quest';
+import { HeroUnit } from '../../types/HeroUnit';
+import { isHeroType } from '../../types/UnitType';
 
 import { findHeroByName } from '../../map/utils/findHeroByName';
 import { startQuest } from '../../map/quest/startQuest';
@@ -46,7 +47,7 @@ const SendHeroInQuestDialog: React.FC = () => {
     }
 
     const availableUnits = land.army
-      .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHero(unit)))
+      .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHeroType(unit.id)))
       .map((unit) => unit as HeroUnit);
 
     if (availableUnits.length === 0) {
@@ -89,7 +90,7 @@ const SendHeroInQuestDialog: React.FC = () => {
   }
 
   const availableUnits = land.army
-    .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHero(unit)))
+    .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHeroType(unit.id)))
     .map((unit) => unit as HeroUnit);
 
   // If no heroes are available, don't render content

@@ -1,7 +1,7 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/LandState';
 
-import { Unit } from '../../types/Unit';
+import { Unit } from '../../types/RegularUnit';
 
 /**
  * test function. Should not be used in integration tests related on TurnManagement

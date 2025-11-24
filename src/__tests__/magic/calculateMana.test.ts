@@ -4,7 +4,7 @@ import { PlayerState, PlayerProfile, PREDEFINED_PLAYERS } from '../../state/Play
 import { relicts, TreasureItem } from '../../types/Treasures';
 import { getManaSource, ManaType } from '../../types/Mana';
 import { HeroUnitType } from '../../types/UnitType';
-import { HeroUnit } from '../../types/Unit';
+import { HeroUnit } from '../../types/HeroUnit';
 import { getLandById, getSpecialLandTypes, LandType } from '../../types/Land';
 
 import { BuildingType } from '../../types/Building';

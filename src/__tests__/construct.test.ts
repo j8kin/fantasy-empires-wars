@@ -4,11 +4,10 @@ import { getLandId, LandPosition } from '../state/LandState';
 
 import { BuildingType, getBuilding } from '../types/Building';
 import { RegularUnitType } from '../types/UnitType';
-import { getDefaultUnit } from '../types/Unit';
 import { relicts, TreasureItem } from '../types/Treasures';
+import { createRegularUnit } from '../types/RegularUnit';
 
 import { construct } from '../map/building/construct';
-
 import { getLands } from '../map/utils/getLands';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { createGameStateStub } from './utils/createGameStateStub';
@@ -177,7 +176,7 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingType.STRONGHOLD, strongholdPos);
       construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
 
-      placeUnitsOnMap(getDefaultUnit(RegularUnitType.WARRIOR), gameStateStub, buildingPos);
+      placeUnitsOnMap(createRegularUnit(RegularUnitType.WARRIOR), gameStateStub, buildingPos);
       construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       // stronghold is destroyed

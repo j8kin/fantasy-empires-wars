@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -7,8 +7,10 @@ import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
 import { GameState } from '../../../state/GameState';
 import { LandPosition } from '../../../state/LandState';
 
-import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
-import { getDefaultUnit, HeroUnit, isHero, RegularUnit, Unit, UnitRank } from '../../../types/Unit';
+import { HeroUnitType, isHeroType, RegularUnitType } from '../../../types/UnitType';
+import { createRegularUnit, RegularUnit, Unit, UnitRank } from '../../../types/RegularUnit';
+import { createHeroUnit, HeroUnit } from '../../../types/HeroUnit';
+import { Alignment } from '../../../types/Alignment';
 
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
@@ -135,15 +137,14 @@ describe('MoveArmyDialog', () => {
   let toPosition: LandPosition;
 
   const createMockUnits = () => {
-    const warrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
+    const warrior = createRegularUnit(RegularUnitType.WARRIOR);
     warrior.count = 10;
 
-    const dwarf = getDefaultUnit(RegularUnitType.DWARF) as RegularUnit;
+    const dwarf = createRegularUnit(RegularUnitType.DWARF);
     dwarf.count = 5;
 
-    const hero = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
-    hero.name = 'TestHero';
-    hero.level = 2;
+    const hero = createHeroUnit(HeroUnitType.FIGHTER, 'TestHero');
+    hero.levelUp(Alignment.LAWFUL);
 
     return { warrior, dwarf, hero };
   };
@@ -550,7 +551,7 @@ describe('MoveArmyDialog', () => {
       const [, , selectedUnits] = moveCall;
 
       const heroInSelected = selectedUnits.find(
-        (unit: Unit) => isHero(unit) && (unit as HeroUnit).name === 'TestHero'
+        (unit: Unit) => isHeroType(unit.id) && (unit as HeroUnit).name === 'TestHero'
       );
       expect(heroInSelected).toBeTruthy();
     });
@@ -574,10 +575,8 @@ describe('MoveArmyDialog', () => {
     it('should handle when only heroes are present', () => {
       // Create army with only heroes
       const fromLand = mockGameState.getLand(fromPosition);
-      const hero1 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
-      hero1.name = 'Hero1';
-      const hero2 = getDefaultUnit(HeroUnitType.CLERIC) as HeroUnit;
-      hero2.name = 'Hero2';
+      const hero1 = createHeroUnit(HeroUnitType.FIGHTER, 'Hero1') as HeroUnit;
+      const hero2 = createHeroUnit(HeroUnitType.CLERIC, 'Hero2') as HeroUnit;
 
       fromLand.army = [
         {
@@ -596,7 +595,7 @@ describe('MoveArmyDialog', () => {
     it('should handle when only regular units are present', () => {
       // Create army with only regular units
       const fromLand = mockGameState.getLand(fromPosition);
-      const warrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
+      const warrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
       warrior.count = 15;
 
       fromLand.army = [
@@ -616,7 +615,7 @@ describe('MoveArmyDialog', () => {
     it('should handle units with count of 1', async () => {
       // Create army with single count units
       const fromLand = mockGameState.getLand(fromPosition);
-      const warrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
+      const warrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
       warrior.count = 1;
 
       fromLand.army = [
@@ -645,12 +644,15 @@ describe('MoveArmyDialog', () => {
     it('should handle different unit ranks', () => {
       // Create army with different ranked units
       const fromLand = mockGameState.getLand(fromPosition);
-      const veteranWarrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
-      veteranWarrior.level = UnitRank.VETERAN;
+      const veteranWarrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
+      veteranWarrior.levelUp();
+      expect(veteranWarrior.level).toBe(UnitRank.VETERAN);
       veteranWarrior.count = 8;
 
-      const eliteWarrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
-      eliteWarrior.level = UnitRank.ELITE;
+      const eliteWarrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
+      eliteWarrior.levelUp();
+      eliteWarrior.levelUp();
+      expect(eliteWarrior.level).toBe(UnitRank.ELITE);
       eliteWarrior.count = 3;
 
       fromLand.army = [
@@ -695,7 +697,7 @@ describe('MoveArmyDialog', () => {
 
       // Add army to new position
       const newFromLand = mockGameState.getLand({ row: 5, col: 5 });
-      const warrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
+      const warrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
       newFromLand.army = [
         {
           units: [warrior],

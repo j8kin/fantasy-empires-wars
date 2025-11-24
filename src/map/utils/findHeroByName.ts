@@ -1,6 +1,8 @@
 import { GameState } from '../../state/GameState';
+import { isHeroType } from '../../types/UnitType';
+import { HeroUnit } from '../../types/HeroUnit';
+
 import { getLands } from './getLands';
-import { HeroUnit, isHero } from '../../types/Unit';
 
 export const findHeroByName = (name: string, gameState: GameState): HeroUnit | undefined => {
   const lands = getLands({
@@ -12,7 +14,7 @@ export const findHeroByName = (name: string, gameState: GameState): HeroUnit | u
   for (const land of lands) {
     for (const army of land.army) {
       const hero = army.units.find(
-        (unit) => isHero(unit) && (unit as HeroUnit).name === name
+        (unit) => isHeroType(unit.id) && (unit as HeroUnit).name === name
       ) as HeroUnit;
       if (hero) {
         return hero;

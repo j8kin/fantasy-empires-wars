@@ -4,8 +4,10 @@ import { LandPosition, LandState } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
 import { relicts, TreasureItem } from '../../types/Treasures';
-import { getDefaultUnit, HeroUnit, RegularUnit } from '../../types/Unit';
+import { RegularUnit } from '../../types/RegularUnit';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
+import { getBaseUnitStats } from '../../types/BaseUnit';
+import { HeroUnit } from '../../types/HeroUnit';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
@@ -76,14 +78,14 @@ describe('Recruitment', () => {
     startRecruiting(RegularUnitType.WARRIOR, barracksPos, gameStateStub);
     // artifact has effect on regular units
     expect(player.vault).toBe(
-      vault - Math.ceil(getDefaultUnit(RegularUnitType.WARRIOR).recruitCost * 0.85)
+      vault - Math.ceil(getBaseUnitStats(RegularUnitType.WARRIOR).recruitCost * 0.85)
     );
 
     // artifact has effect on hero units
     vault = player.vault;
     startRecruiting(HeroUnitType.FIGHTER, barracksPos, gameStateStub);
     expect(player.vault).toBe(
-      vault - Math.ceil(getDefaultUnit(HeroUnitType.FIGHTER).recruitCost * 0.85)
+      vault - Math.ceil(getBaseUnitStats(HeroUnitType.FIGHTER).recruitCost * 0.85)
     );
   });
 

@@ -1,11 +1,11 @@
 import { GameState } from '../state/GameState';
 import { BuildingType } from '../types/Building';
 import { HeroUnitType } from '../types/UnitType';
-import { getDefaultUnit } from '../types/Unit';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { construct } from '../map/building/construct';
 import { createGameStateStub } from './utils/createGameStateStub';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
+import { createHeroUnit } from '../types/HeroUnit';
 
 describe('getAvailableLands', () => {
   let gameStateStub: GameState;
@@ -47,7 +47,10 @@ describe('getAvailableLands', () => {
 
   it('should return all available lands for stronghold building which controlled by army', () => {
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
-    placeUnitsOnMap(getDefaultUnit(HeroUnitType.FIGHTER), gameStateStub, { row: 3, col: 5 });
+    placeUnitsOnMap(createHeroUnit(HeroUnitType.FIGHTER, 'Hero 1'), gameStateStub, {
+      row: 3,
+      col: 5,
+    });
     gameStateStub.turnOwner.addLand('3-5');
     //gameStateStub.battlefield.lands['3-5'].controlledBy = gameStateStub.turnOwner;
 

@@ -4,8 +4,8 @@ import { LandPosition, LandState } from '../../state/LandState';
 import { QuestType } from '../../types/Quest';
 import { TreasureItem } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
-import { HeroUnit, isHero } from '../../types/Unit';
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import { HeroUnitType, isHeroType, RegularUnitType } from '../../types/UnitType';
+import { HeroUnit } from '../../types/HeroUnit';
 
 import { getLands } from '../../map/utils/getLands';
 import { startQuest } from '../../map/quest/startQuest';
@@ -218,7 +218,7 @@ describe('Hero Quest', () => {
     randomSpy.mockReturnValue(0); // always survive (to successfully return all 3 heroes to the same land)
     barracksLand.army.forEach((armyUnit) => {
       armyUnit.units
-        .filter((unit) => isHero(unit))
+        .filter((unit) => isHeroType(unit.id))
         .forEach((unit) => {
           startQuest(unit as HeroUnit, easyQuest, gameStateStub);
         });
@@ -278,7 +278,7 @@ describe('Hero Quest', () => {
 
     /* ********************** SEND TO QUEST ******************* */
     randomSpy.mockReturnValue(0.01); // always survive (to successfully return all 3 heroes to the same land)
-    const hero = barracksLand.army[0].units.find((unit) => isHero(unit)) as HeroUnit;
+    const hero = barracksLand.army[0].units.find((unit) => isHeroType(unit.id)) as HeroUnit;
     startQuest(hero, easyQuest, gameStateStub);
 
     expect(barracksLand.army.length).toBe(1);

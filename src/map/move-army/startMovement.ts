@@ -1,7 +1,9 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/LandState';
 
-import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Unit';
+import { RegularUnit, Unit } from '../../types/RegularUnit';
+import { HeroUnit } from '../../types/HeroUnit';
+import { isHeroType } from '../../types/UnitType';
 
 import { findShortestPath } from '../utils/mapAlgorithms';
 
@@ -16,7 +18,7 @@ export const startMovement = (
   // Hero units could move on hostile territories only with Regular units or if there are move then 10 heroes are moved
   if (
     gameState.getLandOwner(to) !== gameState.turnOwner.id &&
-    units.every(isHero) &&
+    units.every((u) => isHeroType(u.id)) &&
     units.length < MIN_HERO_PACKS
   ) {
     return;
@@ -29,7 +31,7 @@ export const startMovement = (
   }
   // expect that there are enough units in stationed army to move
   for (const unit of units) {
-    if (isHero(unit)) {
+    if (isHeroType(unit.id)) {
       if (!stationedArmy[0].units.some((u) => (u as HeroUnit).name === (unit as HeroUnit).name)) {
         return; // fallback: hero is not in the stationed army
       }
@@ -43,19 +45,21 @@ export const startMovement = (
 
   // update stationed army: remove moved heroes and decrement regular units
   // 1) Remove all heroes from stationedArmy[0].units that have the same name as heroes in units
-  const heroesToMove = new Set(units.filter((u) => isHero(u)).map((u) => (u as HeroUnit).name));
+  const heroesToMove = new Set(
+    units.filter((u) => isHeroType(u.id)).map((u) => (u as HeroUnit).name)
+  );
   if (heroesToMove.size > 0) {
     stationedArmy[0].units = stationedArmy[0].units.filter(
-      (u) => !isHero(u) || !heroesToMove.has((u as HeroUnit).name)
+      (u) => !isHeroType(u.id) || !heroesToMove.has((u as HeroUnit).name)
     );
   }
 
   // 2) For regular units: decrement count by the count in units; if becomes 0, remove the unit
   units.forEach((unit) => {
-    if (!isHero(unit)) {
+    if (!isHeroType(unit.id)) {
       const reg = unit as RegularUnit;
       const idx = stationedArmy[0].units.findIndex(
-        (u) => !isHero(u) && (u as RegularUnit).id === reg.id
+        (u) => !isHeroType(u.id) && (u as RegularUnit).id === reg.id
       );
       const stationedReg = stationedArmy[0].units[idx] as RegularUnit;
       const newCount = stationedReg.count - reg.count;

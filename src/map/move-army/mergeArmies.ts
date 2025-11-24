@@ -1,7 +1,7 @@
 import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 import { Army } from '../../types/Army';
-import { isHero, RegularUnit } from '../../types/Unit';
+import { isHero, RegularUnit } from '../../types/RegularUnit';
 
 export const mergeArmies = (gameState: GameState): void => {
   const turnOwner = gameState.turnOwner.id;

@@ -1,4 +1,4 @@
-import { HeroUnit } from '../../types/Unit';
+import { HeroUnit } from '../../types/HeroUnit';
 import { getRandomElement } from '../../types/getRandomElement';
 
 export const heroRecruitingMessage = (heroUnit: HeroUnit): string => {

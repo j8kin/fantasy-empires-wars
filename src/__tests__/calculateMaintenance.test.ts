@@ -3,13 +3,15 @@ import { GameState } from '../state/GameState';
 import { getLandId, LandPosition } from '../state/LandState';
 import { BuildingType } from '../types/Building';
 
-import { getDefaultUnit, HeroUnit, RegularUnit, UnitRank } from '../types/Unit';
+import { createRegularUnit, UnitRank } from '../types/RegularUnit';
 import { HeroUnitType, RegularUnitType } from '../types/UnitType';
 
 import { construct } from '../map/building/construct';
 
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { createGameStateStub } from './utils/createGameStateStub';
+import { createHeroUnit } from '../types/HeroUnit';
+import { Alignment } from '../types/Alignment';
 
 describe('Calculate Maintenance', () => {
   let gameStateStub: GameState;
@@ -34,8 +36,10 @@ describe('Calculate Maintenance', () => {
       [HeroUnitType.NECROMANCER, 1, 100],
     ])('Hero %s maintenance level %s', (hero, level, expected) => {
       gameStateStub.turnOwner.addLand(getLandId({ row: 0, col: 0 }));
-      const heroUnit = getDefaultUnit(hero) as HeroUnit;
-      heroUnit.level = level;
+      const heroUnit = createHeroUnit(hero, hero);
+      while (heroUnit.level < level) {
+        heroUnit.levelUp(Alignment.LAWFUL);
+      }
 
       gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [
         {
@@ -62,10 +66,12 @@ describe('Calculate Maintenance', () => {
       [RegularUnitType.DARK_ELF, UnitRank.REGULAR, 1, 5],
       [RegularUnitType.BALLISTA, UnitRank.REGULAR, 1, 150],
       [RegularUnitType.CATAPULT, UnitRank.REGULAR, 1, 50],
-    ])('Unit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
+    ])('RegularUnit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
       gameStateStub.turnOwner.addLand(getLandId({ row: 0, col: 0 }));
-      const regularUnit = getDefaultUnit(regular) as RegularUnit;
-      regularUnit.level = level;
+      const regularUnit = createRegularUnit(regular);
+      while (regularUnit.level !== level) {
+        regularUnit.levelUp();
+      }
       regularUnit.count = quantity;
 
       gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [
@@ -79,22 +85,24 @@ describe('Calculate Maintenance', () => {
     });
 
     it('Multiple units in one army', () => {
-      const elitDwarf = getDefaultUnit(RegularUnitType.DWARF) as RegularUnit;
-      elitDwarf.level = UnitRank.ELITE;
+      const elitDwarf = createRegularUnit(RegularUnitType.DWARF);
+      elitDwarf.levelUp();
+      elitDwarf.levelUp();
+      expect(elitDwarf.level).toBe(UnitRank.ELITE);
       elitDwarf.count = 17;
 
       gameStateStub.turnOwner.addLand(getLandId({ row: 0, col: 0 }));
       gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [
         {
-          units: [getDefaultUnit(HeroUnitType.NECROMANCER)],
+          units: [createHeroUnit(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER)],
           controlledBy: gameStateStub.turnOwner.id,
         },
         {
-          units: [getDefaultUnit(RegularUnitType.DWARF)],
+          units: [createRegularUnit(RegularUnitType.DWARF)],
           controlledBy: gameStateStub.turnOwner.id,
         },
         {
-          units: [getDefaultUnit(RegularUnitType.BALLISTA)],
+          units: [createRegularUnit(RegularUnitType.BALLISTA)],
           controlledBy: gameStateStub.turnOwner.id,
         },
         {
@@ -152,7 +160,7 @@ describe('Calculate Maintenance', () => {
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 5, col: 5 });
       construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
 
-      placeUnitsOnMap(getDefaultUnit(RegularUnitType.DWARF), gameStateStub, barracksPos);
+      placeUnitsOnMap(createRegularUnit(RegularUnitType.DWARF), gameStateStub, barracksPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(1000 + 20 * 5);

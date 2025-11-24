@@ -7,14 +7,26 @@ import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage
 
 import { LandPosition } from '../../state/LandState';
 
-import { getDefaultUnit, isHero, isMage, Unit } from '../../types/Unit';
-import { isWarMachine, HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
-
+import {
+  isWarMachine,
+  isMageType,
+  HeroUnitType,
+  RegularUnitType,
+  UnitType,
+  isHeroType,
+} from '../../types/UnitType';
 import { BuildingType } from '../../types/Building';
+import { getBaseUnitStats } from '../../types/BaseUnit';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 
 import { getUnitImg } from '../../assets/getUnitImg';
+
+interface RecruitUnitProps {
+  id: UnitType;
+  recruitCost: number;
+  description: string;
+}
 
 const RecruitArmyDialog: React.FC = () => {
   const {
@@ -111,19 +123,27 @@ const RecruitArmyDialog: React.FC = () => {
     return null;
   }
 
-  const sortArmyUnits = (unit: Unit): number => {
+  const sortArmyUnits = (unit: RecruitUnitProps): number => {
     if (unit.id === RegularUnitType.WARD_HANDS) return 0;
     if (isWarMachine(unit.id)) return 2;
-    if (isHero(unit)) return 3;
+    if (isHeroType(unit.id)) return 3;
     return 1;
   };
 
-  const availableUnits = land.land.unitsToRecruit
+  const typeToRecruitProps = (unitType: UnitType): RecruitUnitProps => {
+    const baseUnitStats = getBaseUnitStats(unitType);
+    return {
+      id: unitType,
+      recruitCost: baseUnitStats.recruitCost,
+      description: baseUnitStats.description,
+    };
+  };
+  const availableUnits: RecruitUnitProps[] = land.land.unitsToRecruit
     .filter(
       (u) =>
         // non-mages should be recruited in BARRACKS only
         (recruitBuilding.id === BuildingType.BARRACKS &&
-          !isMage(u) &&
+          !isMageType(u) &&
           // The players, who reject magic, should be able to recruit their owned special heroes
           (u !== HeroUnitType.WARSMITH ||
             gameState?.turnOwner.getType() === HeroUnitType.WARSMITH)) ||
@@ -134,7 +154,7 @@ const RecruitArmyDialog: React.FC = () => {
         (u === HeroUnitType.PYROMANCER && recruitBuilding.id === BuildingType.RED_MAGE_TOWER) ||
         (u === HeroUnitType.NECROMANCER && recruitBuilding.id === BuildingType.BLACK_MAGE_TOWER)
     )
-    .map((unit) => getDefaultUnit(unit))
+    .map((unit) => typeToRecruitProps(unit))
     .sort((a, b) => sortArmyUnits(a) - sortArmyUnits(b));
 
   const slots: Slot[] = [];

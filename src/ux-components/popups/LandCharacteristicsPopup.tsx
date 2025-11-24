@@ -9,7 +9,9 @@ import { LandPosition, getLandId } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { HeroUnit, isHero, RegularUnit } from '../../types/Unit';
+import { RegularUnit } from '../../types/RegularUnit';
+import { isHeroType } from '../../types/UnitType';
+import { HeroUnit } from '../../types/HeroUnit';
 
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
@@ -43,11 +45,11 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 
   // Army rows - separate heroes and units
   const heroes = land.army
-    .filter(({ units }) => units.some((unit) => isHero(unit)))
-    .flatMap((a) => a.units.filter((unit) => isHero(unit)).map((u) => u as HeroUnit));
+    .filter(({ units }) => units.some((unit) => isHeroType(unit.id)))
+    .flatMap((a) => a.units.filter((unit) => isHeroType(unit.id)).map((u) => u as HeroUnit));
   const units = land.army
-    .filter(({ units }) => units.some((unit) => !isHero(unit)))
-    .flatMap((a) => a.units.filter((unit) => !isHero(unit)).map((u) => u as RegularUnit));
+    .filter(({ units }) => units.some((unit) => !isHeroType(unit.id)))
+    .flatMap((a) => a.units.filter((unit) => !isHeroType(unit.id)).map((u) => u as RegularUnit));
 
   if (heroes.length > 0) {
     calculatedHeight += heroes.length * armyRowHeight;

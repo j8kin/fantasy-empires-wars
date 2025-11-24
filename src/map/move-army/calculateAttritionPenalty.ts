@@ -1,5 +1,5 @@
 import { GameState } from '../../state/GameState';
-import { isHero, RegularUnit, UnitRank } from '../../types/Unit';
+import { isHero, RegularUnit, UnitRank } from '../../types/RegularUnit';
 import { isWarMachine } from '../../types/UnitType';
 
 import { getHostileLands } from '../utils/getHostileLands';
@@ -13,7 +13,7 @@ const WAR_MACHINE_PER_UNIT = 20;
  *   out of radius 1 from any owner stronghold or not in ally's land
  *
  * Attrition penalty:
- * | Unit Type        | Attrition Penalty                           |
+ * | RegularUnit Type        | Attrition Penalty                           |
  * |------------------|---------------------------------------------|
  * | Regular          | 8-10%, not less than 40-60 units            |
  * | Veteran          | 5-7%, not less than 20-40 units             |

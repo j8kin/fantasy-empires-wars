@@ -261,7 +261,7 @@ describe('RecruitArmyDialog', () => {
     });
   });
 
-  describe('Unit Display', () => {
+  describe('RegularUnit Display', () => {
     it('should display available non-mage units for recruitment in barracks', () => {
       renderWithProviders(<RecruitArmyDialog />);
 

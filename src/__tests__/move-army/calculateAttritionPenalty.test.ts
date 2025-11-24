@@ -3,13 +3,12 @@ import { getLandId } from '../../state/LandState';
 
 import { Army } from '../../types/Army';
 import { RegularUnitType } from '../../types/UnitType';
-
+import { createRegularUnit, RegularUnit, UnitRank } from '../../types/RegularUnit';
 import { Movements } from '../../types/Movements';
 
 import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { getDefaultUnit, RegularUnit, UnitRank } from '../../types/Unit';
 
 describe('Calculate Attrition Penalty', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -26,13 +25,13 @@ describe('Calculate Attrition Penalty', () => {
 
     army1 = {
       controlledBy: gameStateStub.turnOwner.id,
-      units: [createRegularUnit(RegularUnitType.WARRIOR, 120)],
+      units: [testCreateRegularUnit(RegularUnitType.WARRIOR, 120)],
       movements: createDummyMovements(),
     };
 
     army2 = {
       controlledBy: gameStateStub.turnOwner.id,
-      units: [createRegularUnit(RegularUnitType.WARRIOR, 120)],
+      units: [testCreateRegularUnit(RegularUnitType.WARRIOR, 120)],
       movements: createDummyMovements(),
     };
   });
@@ -41,12 +40,12 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockRestore();
   });
 
-  const createRegularUnit = (
+  const testCreateRegularUnit = (
     unit: RegularUnitType,
     count: number = 20,
     level: UnitRank = UnitRank.REGULAR
   ): RegularUnit => ({
-    ...(getDefaultUnit(unit) as RegularUnit),
+    ...createRegularUnit(unit),
     level,
     count,
   });
@@ -116,8 +115,8 @@ describe('Calculate Attrition Penalty', () => {
       const armyLand = gameStateStub.getLand({ row: 3, col: 5 });
       expect(gameStateStub.getLandOwner(armyLand.mapPos)).not.toBe(gameStateStub.turnOwner.id);
 
-      army1.units = [createRegularUnit(RegularUnitType.WARRIOR, army1Initial, rank)];
-      army2.units = [createRegularUnit(RegularUnitType.WARRIOR, army2Initial, rank)];
+      army1.units = [testCreateRegularUnit(RegularUnitType.WARRIOR, army1Initial, rank)];
+      army2.units = [testCreateRegularUnit(RegularUnitType.WARRIOR, army2Initial, rank)];
       // place army on land owned by player
       gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
         ...armyLand,
@@ -144,8 +143,8 @@ describe('Calculate Attrition Penalty', () => {
     expect(gameStateStub.getLandOwner(armyLand.mapPos)).not.toBe(gameStateStub.turnOwner.id);
 
     army1.units = [
-      createRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR),
-      createRegularUnit(RegularUnitType.BALLISTA, 1, UnitRank.REGULAR),
+      testCreateRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR),
+      testCreateRegularUnit(RegularUnitType.BALLISTA, 1, UnitRank.REGULAR),
     ];
     // place army on land owned by player
     gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
@@ -168,9 +167,9 @@ describe('Calculate Attrition Penalty', () => {
     expect(gameStateStub.getLandOwner(armyLand.mapPos)).not.toBe(gameStateStub.turnOwner.id);
 
     army1.units = [
-      createRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR),
-      createRegularUnit(RegularUnitType.BALLISTA, 1, UnitRank.REGULAR),
-      createRegularUnit(RegularUnitType.CATAPULT, 2, UnitRank.REGULAR),
+      testCreateRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR),
+      testCreateRegularUnit(RegularUnitType.BALLISTA, 1, UnitRank.REGULAR),
+      testCreateRegularUnit(RegularUnitType.CATAPULT, 2, UnitRank.REGULAR),
     ];
     // place army on land owned by player
     gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
@@ -196,7 +195,7 @@ describe('Calculate Attrition Penalty', () => {
     expect(gameStateStub.getLandOwner(armyLand.mapPos)).not.toBe(gameStateStub.turnOwner.id);
 
     // 40-60 minimum should be killed it means army will be destroyed
-    army1.units = [createRegularUnit(RegularUnitType.WARRIOR, 30, UnitRank.REGULAR)];
+    army1.units = [testCreateRegularUnit(RegularUnitType.WARRIOR, 30, UnitRank.REGULAR)];
     // place army on land owned by player
     gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
       ...armyLand,

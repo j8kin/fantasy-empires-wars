@@ -8,8 +8,11 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 
 import { ButtonName } from '../../types/ButtonName';
-import { HeroUnit, isHero, RegularUnit, Unit, UnitRank } from '../../types/Unit';
+import { RegularUnit, Unit, UnitRank } from '../../types/RegularUnit';
+
 import { startMovement } from '../../map/move-army/startMovement';
+import { isHeroType } from '../../types/UnitType';
+import { HeroUnit } from '../../types/HeroUnit';
 
 const MoveArmyDialog: React.FC = () => {
   const { setMoveArmyPath, moveArmyPath } = useApplicationContext();
@@ -95,7 +98,7 @@ const MoveArmyDialog: React.FC = () => {
 
   // Helper function to get unit CSS class based on type and rank
   const getUnitColorClass = (unit: Unit): string => {
-    if (isHero(unit)) {
+    if (isHeroType(unit.id)) {
       return styles.heroUnit;
     }
     const regularUnit = unit as RegularUnit;
@@ -125,7 +128,7 @@ const MoveArmyDialog: React.FC = () => {
     const remainingUnits: Unit[] = [];
 
     fromUnits.forEach((unit) => {
-      if (isHero(unit)) {
+      if (isHeroType(unit.id)) {
         unitsToMove.push(unit);
       } else {
         const regularUnit = unit as RegularUnit;
@@ -148,7 +151,7 @@ const MoveArmyDialog: React.FC = () => {
     const remainingUnits: Unit[] = [];
 
     toUnits.forEach((unit) => {
-      if (isHero(unit)) {
+      if (isHeroType(unit.id)) {
         unitsToMove.push(unit);
       } else {
         const regularUnit = unit as RegularUnit;
@@ -175,7 +178,7 @@ const MoveArmyDialog: React.FC = () => {
     const unit = fromArray[unitIndex];
     if (!unit) return;
 
-    if (isHero(unit)) {
+    if (isHeroType(unit.id)) {
       // Move entire hero
       const newFromArray = fromArray.filter((_, index) => index !== unitIndex);
       const newToArray = [...toArray, unit];
@@ -208,7 +211,7 @@ const MoveArmyDialog: React.FC = () => {
         );
         const existingUnitIndex = toArray.findIndex(
           (u) =>
-            !isHero(u) &&
+            !isHeroType(u.id) &&
             (u as RegularUnit).id === regularUnit.id &&
             (u as RegularUnit).level === regularUnit.level
         );
@@ -252,16 +255,19 @@ const MoveArmyDialog: React.FC = () => {
     const findCurrentIndex = (): number => {
       const arr = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
       if (!selectedUnit) return -1;
-      if (isHero(selectedUnit)) {
+      if (isHeroType(selectedUnit.id)) {
         const hero = selectedUnit as HeroUnit;
         return arr.findIndex(
-          (u) => isHero(u) && (u as HeroUnit).name === hero.name && (u as HeroUnit).id === hero.id
+          (u) =>
+            isHeroType(u.id) && (u as HeroUnit).name === hero.name && (u as HeroUnit).id === hero.id
         );
       } else {
         const reg = selectedUnit as RegularUnit;
         return arr.findIndex(
           (u) =>
-            !isHero(u) && (u as RegularUnit).id === reg.id && (u as RegularUnit).level === reg.level
+            !isHeroType(u.id) &&
+            (u as RegularUnit).id === reg.id &&
+            (u as RegularUnit).level === reg.level
         );
       }
     };
@@ -313,7 +319,7 @@ const MoveArmyDialog: React.FC = () => {
     direction: 'right' | 'left'
   ) => {
     const colorClass = getUnitColorClass(unit);
-    const isHeroUnit = isHero(unit);
+    const isHeroUnit = isHeroType(unit.id);
     const regularUnit = unit as RegularUnit;
     const heroUnit = unit as HeroUnit;
 

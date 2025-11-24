@@ -35,3 +35,13 @@ export const isHeroType = (unitType: UnitType): unitType is HeroUnitType => {
 
 export const isWarMachine = (unitType: UnitType): boolean =>
   unitType === RegularUnitType.BALLISTA || unitType === RegularUnitType.CATAPULT;
+
+export const isMageType = (unitType: UnitType): boolean => {
+  return (
+    unitType === HeroUnitType.PYROMANCER ||
+    unitType === HeroUnitType.DRUID ||
+    unitType === HeroUnitType.ENCHANTER ||
+    unitType === HeroUnitType.CLERIC ||
+    unitType === HeroUnitType.NECROMANCER
+  );
+};

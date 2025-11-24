@@ -1,11 +1,12 @@
 import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
-import { HeroUnitType } from '../../types/UnitType';
-import { getDefaultUnit, HeroUnit, isHero, RegularUnit } from '../../types/Unit';
+import { isHeroType } from '../../types/UnitType';
+import { createRegularUnit, isHero, RegularUnit } from '../../types/RegularUnit';
+import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
+import { createHeroUnit, HeroUnit } from '../../types/HeroUnit';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
-import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 
 export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
   const heroesRecruited: HeroOutcome[] = [];
@@ -28,10 +29,11 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
         b.slots.forEach((s) => {
           s.turnsRemaining--;
           if (s.turnsRemaining === 0) {
-            const unit = getDefaultUnit(s.unit);
-            if (isHero(unit)) {
+            const unit = isHeroType(s.unit)
+              ? createHeroUnit(s.unit, generateHeroName(s.unit))
+              : createRegularUnit(s.unit);
+            if (isHeroType(unit.id)) {
               // generate uniq name for hero
-              (unit as HeroUnit).name = generateHeroName(unit.id as HeroUnitType);
               heroesRecruited.push({
                 status: HeroOutcomeType.Success,
                 message: heroRecruitingMessage(unit as HeroUnit),

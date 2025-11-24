@@ -1,10 +1,9 @@
 import { PlayerProfile, PREDEFINED_PLAYERS } from '../../state/PlayerState';
-import { getDefaultUnit, HeroUnit } from '../../types/Unit';
 import { HeroUnitType } from '../../types/UnitType';
 
-import { levelUpHero } from '../../map/recruiting/levelUpHero';
 import { toGamePlayer } from '../utils/toGamePlayer';
 import { artifacts, TreasureItem } from '../../types/Treasures';
+import { createHeroUnit } from '../../types/HeroUnit';
 
 describe('level up hero', () => {
   it.each([
@@ -69,14 +68,15 @@ describe('level up hero', () => {
       { attack: 45, defense: 15, range: 30, rangeDamage: 85, speed: 2, mana: 16 },
     ],
   ])(
-    'should increase characteristics when hero (%s) gain level %s',
+    'should increase characteristics when hero (%s) level %s gain new level',
     (playerType: HeroUnitType, initLevel: number, player: PlayerProfile, expected) => {
       expect(player.type).toBe(playerType);
 
-      const hero = getDefaultUnit(player.type) as HeroUnit;
-      hero.level = initLevel;
+      const hero = createHeroUnit(player.type, player.name);
 
-      levelUpHero(hero, toGamePlayer(player));
+      while (hero.level < initLevel) hero.levelUp(player.alignment); // set initial level
+
+      hero.levelUp(player.alignment); // increase level
 
       expect(hero.level).toBe(initLevel + 1);
       expect(hero.attack).toBe(expected.attack);
@@ -90,14 +90,12 @@ describe('level up hero', () => {
 
   it('Ring of the Ascendant (RING_OF_EXPERIENCE) artifact increment level by 2', () => {
     const player = toGamePlayer(PREDEFINED_PLAYERS[0]);
-    const hero1 = getDefaultUnit(player.getType()) as HeroUnit;
-    hero1.level = 1;
-    const hero2 = getDefaultUnit(player.getType()) as HeroUnit;
-    hero2.level = 1;
-    hero2.artifacts.push(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
+    const hero1 = createHeroUnit(player.getType(), 'Hero 1');
+    const hero2 = createHeroUnit(player.getType(), 'Hero 2');
+    hero2.gainArtifact(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
 
-    levelUpHero(hero1, player);
-    levelUpHero(hero2, player);
+    hero1.levelUp(player.getAlignment());
+    hero2.levelUp(player.getAlignment());
 
     expect(hero1.level).toBe(2);
     expect(hero2.level).toBe(3);
@@ -105,14 +103,16 @@ describe('level up hero', () => {
 
   it('level up after 32 is not possible', () => {
     const player = toGamePlayer(PREDEFINED_PLAYERS[0]);
-    const hero1 = getDefaultUnit(player.getType()) as HeroUnit;
-    hero1.level = 32;
-    const hero2 = getDefaultUnit(player.getType()) as HeroUnit;
-    hero2.level = 31;
-    hero2.artifacts.push(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
+    const hero1 = createHeroUnit(player.getType(), 'Hero 1');
+    while (hero1.level < 32) hero1.levelUp(player.getAlignment()); // gain initial level: 32
+    expect(hero1.level).toBe(32);
+    const hero2 = createHeroUnit(player.getType(), 'Hero 2');
+    while (hero2.level < 31) hero2.levelUp(player.getAlignment()); // gain initial level: 31
+    expect(hero2.level).toBe(31);
+    hero2.gainArtifact(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
 
-    levelUpHero(hero1, player);
-    levelUpHero(hero2, player);
+    hero1.levelUp(player.getAlignment());
+    hero2.levelUp(player.getAlignment());
 
     expect(hero1.level).toBe(32);
     expect(hero2.level).toBe(32);

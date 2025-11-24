@@ -1,5 +1,5 @@
 import { Movements } from './Movements';
-import { Unit } from './Unit';
+import { Unit } from './RegularUnit';
 
 export type Army = {
   units: Unit[];

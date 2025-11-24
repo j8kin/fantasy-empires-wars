@@ -1,6 +1,7 @@
 import { GameState } from '../../state/GameState';
-import { HeroUnit, isHero } from '../../types/Unit';
 import { getQuest, QuestType } from '../../types/Quest';
+import { HeroUnit } from '../../types/HeroUnit';
+import { isHeroType } from '../../types/UnitType';
 import { getLands } from '../utils/getLands';
 
 export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: GameState) => {
@@ -12,7 +13,7 @@ export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: Game
     noArmy: false,
   }).find((land) =>
     land.army.find((army) =>
-      army.units.some((unit) => isHero(unit) && (unit as HeroUnit).name === hero.name)
+      army.units.some((unit) => isHeroType(unit.id) && (unit as HeroUnit).name === hero.name)
     )
   );
 
@@ -22,7 +23,7 @@ export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: Game
       .map((army) => ({
         ...army,
         units: army.units.filter(
-          (unit) => !(isHero(unit) && (unit as HeroUnit).name === hero.name)
+          (unit) => !(isHeroType(unit.id) && (unit as HeroUnit).name === hero.name)
         ),
       }))
       .filter((army) => army.units.length > 0);

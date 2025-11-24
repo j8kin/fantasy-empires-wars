@@ -2,6 +2,8 @@ import { GameState } from '../../state/GameState';
 import { getQuest, HeroQuest, QuestType } from '../../types/Quest';
 import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
+import { HeroUnit } from '../../types/HeroUnit';
+import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 import {
   emptyHanded,
   heroDieMessage,
@@ -9,10 +11,7 @@ import {
   heroGainItem,
   heroGainRelic,
 } from './questCompleteMessages';
-import { HeroUnit } from '../../types/Unit';
 import { PlayerState } from '../../state/PlayerState';
-import { levelUpHero } from '../recruiting/levelUpHero';
-import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
@@ -109,7 +108,8 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
     const hero = quest.hero;
 
     if (hero.level < quest.quest.level * 5) {
-      levelUpHero(hero, turnOwner);
+      hero.levelUp(turnOwner.getAlignment());
+      //levelUpHero(hero, turnOwner);
     }
 
     questOutcome = calculateReward(hero, quest, gameState);

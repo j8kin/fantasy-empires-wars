@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import UnitActionControl from '../../../ux-components/game-controls/UnitActionControl';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
@@ -9,11 +9,13 @@ import { LandPosition } from '../../../state/LandState';
 
 import { ButtonName } from '../../../types/ButtonName';
 import { BuildingType } from '../../../types/Building';
-import { getDefaultUnit, HeroUnit } from '../../../types/Unit';
 
 import { construct } from '../../../map/building/construct';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { createGameStateStub } from '../../utils/createGameStateStub';
+import { createHeroUnit } from '../../../types/HeroUnit';
+import { createRegularUnit } from '../../../types/RegularUnit';
+import { RegularUnitType } from '../../../types/UnitType';
 
 // Mock GameButton component
 jest.mock('../../../ux-components/buttons/GameButton', () => {
@@ -185,8 +187,7 @@ describe('UnitActionControl', () => {
       const heroPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a hero to a land owned by the turn owner
-      const hero = getDefaultUnit(gameState.turnOwner.getType()) as HeroUnit;
-      hero.name = 'Test Hero';
+      const hero = createHeroUnit(gameState.turnOwner.getType(), 'Test Hero');
       placeUnitsOnMap(hero, gameState, heroPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -203,8 +204,7 @@ describe('UnitActionControl', () => {
       const heroPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a hero with movements
-      const hero = getDefaultUnit(gameState.turnOwner.getType()) as HeroUnit;
-      hero.name = 'Test Hero';
+      const hero = createHeroUnit(gameState.turnOwner.getType(), 'Test Hero');
       placeUnitsOnMap(hero, gameState, heroPosition);
 
       // Assign movements to the hero
@@ -232,10 +232,7 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a non-hero unit
-      const nonHeroUnit = getDefaultUnit(gameState.turnOwner.getType());
-      // Ensure it's not a hero by removing hero-specific properties
-      delete (nonHeroUnit as any).experience;
-      delete (nonHeroUnit as any).level;
+      const nonHeroUnit = createRegularUnit(RegularUnitType.WARRIOR);
       placeUnitsOnMap(nonHeroUnit, gameState, armyPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -294,7 +291,7 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add army with movements
-      const unit = getDefaultUnit(gameState.turnOwner.getType());
+      const unit = createRegularUnit(RegularUnitType.WARRIOR);
       placeUnitsOnMap(unit, gameState, armyPosition);
 
       // Assign movements

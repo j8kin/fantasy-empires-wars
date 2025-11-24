@@ -1,5 +1,5 @@
 import { RegularUnitType } from '../../types/UnitType';
-import { getDefaultUnit, RegularUnit, UnitRank } from '../../types/Unit';
+import { createRegularUnit, UnitRank } from '../../types/RegularUnit';
 import { calcMaxMove } from '../../map/move-army/calcMaxMove';
 
 describe('calcMaxMove', () => {
@@ -20,8 +20,8 @@ describe('calcMaxMove', () => {
     [UnitRank.ELITE, 110, 4],
     [UnitRank.ELITE, 140, 4],
   ])('%s units: %s -> %s moves', (unitRank: UnitRank, num: number, expTurns: number) => {
-    const unit = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
-    unit.level = unitRank;
+    const unit = createRegularUnit(RegularUnitType.WARRIOR);
+    while (unit.level !== unitRank) unit.levelUp();
     unit.count = num;
 
     const moves = calcMaxMove([unit]);

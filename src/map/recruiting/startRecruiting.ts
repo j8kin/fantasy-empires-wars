@@ -3,15 +3,8 @@ import { LandPosition } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
-import { getDefaultUnit, isRange, HeroUnit } from '../../types/Unit';
-import { isHeroType, isWarMachine, HeroUnitType, UnitType } from '../../types/UnitType';
-
-const recruitmentDuration = (unitType: UnitType) => {
-  if (isHeroType(unitType)) return 3;
-  if (isWarMachine(unitType)) return 3;
-  if (isRange(unitType)) return 2;
-  return 1;
-};
+import { isHeroType, HeroUnitType, UnitType, isMageType } from '../../types/UnitType';
+import { getBaseUnitStats, getRecruitDuration } from '../../types/BaseUnit';
 
 export const startRecruiting = (
   unitType: UnitType,
@@ -28,7 +21,7 @@ export const startRecruiting = (
   if (building.length === 1) {
     // additionally verify that regular units and non-magic heroes are recruited in BARRACKS and mages are in mage tower
     if (isHeroType(unitType)) {
-      if ((getDefaultUnit(unitType) as HeroUnit).mana == null) {
+      if (!isMageType(unitType)) {
         if (building[0].id !== BuildingType.BARRACKS) {
           return; // fallback: wrong building type for non-magic heroes
         }
@@ -64,16 +57,16 @@ export const startRecruiting = (
 
     const turnOwner = gameState.turnOwner;
     const availableGold = turnOwner.vault;
-    if (availableGold != null && availableGold >= getDefaultUnit(unitType)!.recruitCost) {
+    if (availableGold != null && availableGold >= getBaseUnitStats(unitType).recruitCost) {
       const hasCrownOfDominion = turnOwner.empireTreasures?.some(
         (r) => r.id === TreasureItem.CROWN_OF_DOMINION
       );
       turnOwner.vault -= hasCrownOfDominion
-        ? Math.ceil(getDefaultUnit(unitType).recruitCost * 0.85)
-        : getDefaultUnit(unitType).recruitCost;
+        ? Math.ceil(getBaseUnitStats(unitType).recruitCost * 0.85)
+        : getBaseUnitStats(unitType).recruitCost;
       building[0].slots!.push({
         unit: unitType,
-        turnsRemaining: recruitmentDuration(unitType),
+        turnsRemaining: getRecruitDuration(unitType),
       });
     }
   }
