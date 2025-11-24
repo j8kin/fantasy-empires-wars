@@ -1,10 +1,8 @@
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 import { Army, isHero, RegularUnit } from '../../types/Army';
 
 export const mergeArmies = (gameState: GameState): void => {
-  if (gameState == null || gameState.turnPhase === TurnPhase.MAIN) return;
-
   const turnOwner = gameState.turnOwner.id;
 
   getLands({ gameState: gameState, players: [turnOwner], noArmy: false })

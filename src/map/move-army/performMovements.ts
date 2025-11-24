@@ -1,4 +1,4 @@
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { getLandId, LandPosition } from '../../state/LandState';
 
 import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
@@ -9,7 +9,6 @@ import { mergeArmies } from './mergeArmies';
 import { getLands } from '../utils/getLands';
 
 export const performMovements = (gameState: GameState): void => {
-  if (gameState == null || gameState.turnPhase !== TurnPhase.END) return;
   const turnOwner = gameState.turnOwner.id;
 
   // Find all armies of the current turn owner that have movements

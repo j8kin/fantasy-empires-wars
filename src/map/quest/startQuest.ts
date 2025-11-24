@@ -1,10 +1,9 @@
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { HeroUnit, isHero } from '../../types/Army';
 import { getQuest, QuestType } from '../../types/Quest';
 import { getLands } from '../utils/getLands';
 
 export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: GameState) => {
-  if (gameState.turnPhase !== TurnPhase.MAIN) return;
   const turnOwner = gameState.turnOwner;
 
   const heroLand = getLands({

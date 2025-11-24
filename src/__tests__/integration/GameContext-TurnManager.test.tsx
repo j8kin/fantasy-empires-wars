@@ -37,12 +37,10 @@ jest.useFakeTimers();
 describe('GameContext-TurnManager Integration', () => {
   const createMockGameState = (
     turnOwner: number = 0,
-    turnPhase: TurnPhase = TurnPhase.MAIN
   ): GameState => {
     const gameStateStub = createDefaultGameStateStub();
     while (gameStateStub.turnOwner.id !== gameStateStub.allPlayers[turnOwner].id)
       gameStateStub.nextPlayer();
-    while (gameStateStub.turnPhase === turnPhase) gameStateStub.nextPhase();
 
     return gameStateStub;
   };
@@ -161,7 +159,7 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState(0, TurnPhase.MAIN);
+      const mockGameState = createMockGameState(0);
 
       act(() => {
         result.current.updateGameState(mockGameState);
@@ -186,7 +184,7 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState(1, TurnPhase.MAIN); // Computer player
+      const mockGameState = createMockGameState(1); // Computer player
 
       act(() => {
         result.current.updateGameState(mockGameState);

@@ -1,4 +1,4 @@
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { getLandId, LandPosition } from '../../state/LandState';
 
 import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Army';
@@ -14,8 +14,6 @@ export const startMovement = (
   units: Unit[],
   gameState: GameState
 ) => {
-  if (gameState == null || gameState.turnPhase !== TurnPhase.MAIN) return;
-
   // Hero units could move on hostile territories only with Regular units or if there are move then 10 heroes are moved
   if (
     gameState.getLandOwner(getLandId(to)) !== gameState.turnOwner.id &&

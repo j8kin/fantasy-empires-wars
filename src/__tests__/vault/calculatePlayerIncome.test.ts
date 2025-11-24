@@ -1,5 +1,5 @@
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('calculatePlayerIncome', () => {
@@ -14,10 +14,8 @@ describe('calculatePlayerIncome', () => {
     testTurnManagement = new TestTurnManagement(gameStateStub);
 
     expect(gameStateStub.turn).toBe(2);
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
     testTurnManagement.startNewTurn(gameStateStub);
     testTurnManagement.waitStartPhaseComplete();
-    expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
   });
 
   it('income should be calculated correctly each turn', () => {

@@ -35,9 +35,6 @@ const renderWithProvider = (ui: React.ReactElement) => {
           [ManaType.BLUE]: 100,
         };
 
-        // Set turn phase to MAIN
-        while (newGameState.turnPhase !== TurnPhase.MAIN) newGameState.nextPhase();
-
         updateGameState(newGameState);
       }
     }, [gameState, updateGameState]);
@@ -185,9 +182,6 @@ describe('TopPanel Component', () => {
 
             // Add only one player
             newGameState.addPlayer(PREDEFINED_PLAYERS[0], 'human');
-
-            // Set turn phase to MAIN
-            while (newGameState.turnPhase !== TurnPhase.MAIN) newGameState.nextPhase();
 
             updateGameState(newGameState);
           }

@@ -13,8 +13,6 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import PlayerSummary from '../player/PlayerSummary';
 import UnitActionControl from '../game-controls/UnitActionControl';
 
-import { TurnPhase } from '../../state/GameState';
-
 import { ButtonName } from '../../types/ButtonName';
 
 export interface TopPanelProps {
@@ -23,17 +21,11 @@ export interface TopPanelProps {
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
-  const { endCurrentTurn, gameState } = useGameContext();
+  const { endCurrentTurn } = useGameContext();
 
   const avatarSize = height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10;
 
-  const handleEndTurn = () => {
-    if (gameState?.turnPhase === TurnPhase.MAIN) {
-      endCurrentTurn();
-    }
-  };
-
-  const endTurnButton = <GameButton buttonName={ButtonName.TURN} onClick={handleEndTurn} />;
+  const endTurnButton = <GameButton buttonName={ButtonName.TURN} onClick={endCurrentTurn} />;
 
   return (
     <FantasyBorderFrame

@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
 
-import { GameState, TurnPhase } from '../../../state/GameState';
+import { GameState } from '../../../state/GameState';
 import { getLandId } from '../../../state/LandState';
 
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
@@ -220,7 +220,6 @@ describe('SendHeroInQuestDialog', () => {
 
     // Create a default game state with heroes
     mockGameState = createDefaultGameStateStub();
-    while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
   });
 
   describe('Dialog Visibility', () => {
@@ -545,7 +544,6 @@ describe('SendHeroInQuestDialog', () => {
 
       // Create new state without heroes
       const emptyHeroesGameState = createDefaultGameStateStub();
-      while (emptyHeroesGameState.turnPhase !== TurnPhase.MAIN) emptyHeroesGameState.nextPhase();
 
       // Remove all heroes
       Object.values(emptyHeroesGameState.map.lands).forEach((land) => {
@@ -771,7 +769,6 @@ describe('SendHeroInQuestDialog', () => {
     it('should handle sending multiple different heroes to different quests', async () => {
       // Create a fresh game state for this test to avoid interference from beforeEach
       const testGameState = createDefaultGameStateStub();
-      while (testGameState.turnPhase !== TurnPhase.MAIN) testGameState.nextPhase();
 
       // Add a second hero to the land that the dialog will look at (3, 3)
       const actionLandPosition = { row: 3, col: 3 };

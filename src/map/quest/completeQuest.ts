@@ -139,7 +139,6 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
 };
 
 export const completeQuest = (gameState: GameState): HeroOutcome[] => {
-  if (gameState.turnPhase !== TurnPhase.START) return [];
   const turnOwner = gameState.turnOwner;
   // decrease turnsByQuest counter
   turnOwner.quests.forEach((quest) => {

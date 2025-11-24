@@ -1,4 +1,4 @@
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { getLandId } from '../../state/LandState';
 
 import { Army, getDefaultUnit, RegularUnit, RegularUnitType, UnitRank } from '../../types/Army';
@@ -22,9 +22,6 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy = jest.spyOn(Math, 'random');
 
     gameStateStub = createDefaultGameStateStub();
-
-    // calculate attrition penalty for each land works only on START phase
-    while (gameStateStub.turnPhase !== TurnPhase.START) gameStateStub.nextPhase();
 
     army1 = {
       controlledBy: gameStateStub.turnOwner.id,

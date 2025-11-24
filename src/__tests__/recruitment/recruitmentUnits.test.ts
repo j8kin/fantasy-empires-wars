@@ -1,5 +1,5 @@
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { LandPosition, LandState } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
@@ -102,7 +102,6 @@ describe('Recruitment', () => {
       barracksLand = getLand(gameStateStub, barracksPos);
 
       expect(gameStateStub.turn).toBe(2);
-      expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
 
       expect(barracksLand).toBeDefined();
       expect(barracksLand.army.length).toBe(0);
@@ -295,7 +294,6 @@ describe('Recruitment', () => {
       const barracksLand = getLand(gameStateStub, pos);
 
       expect(gameStateStub.turn).toBe(2);
-      expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
 
       expect(barracksLand).toBeDefined();
       expect(barracksLand.army.length).toBe(0);

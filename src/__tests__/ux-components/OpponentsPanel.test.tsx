@@ -5,7 +5,7 @@ import OpponentsPanel from '../../ux-components/opponents-panel/OpponentsPanel';
 import { PREDEFINED_PLAYERS, NO_PLAYER, PlayerProfile } from '../../state/PlayerState';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
-import { createGameState, TurnPhase } from '../../state/GameState';
+import { createGameState } from '../../state/GameState';
 import { generateMockMap } from '../utils/generateMockMap';
 
 // Test wrapper that provides GameContext and ApplicationContext and allows updating game state
@@ -29,9 +29,6 @@ const TestWrapper: React.FC<{
       opponents.forEach((opponent) => {
         newGameState.addPlayer(opponent, 'computer');
       });
-
-      // Set turn phase to MAIN
-      newGameState.turnPhase = TurnPhase.MAIN;
 
       updateGameState(newGameState);
     }, [updateGameState]);

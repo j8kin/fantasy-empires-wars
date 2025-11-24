@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
-import { GameState, TurnPhase } from '../../../state/GameState';
+import { GameState } from '../../../state/GameState';
 import { LandPosition } from '../../../state/LandState';
 
 import { BuildingType } from '../../../types/Building';
@@ -197,7 +197,6 @@ describe('RecruitArmyDialog', () => {
     mockGameState = createGameStateStub({
       nPlayers: 2,
     });
-    while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
     // Add a barracks with available slots to the first player's land
     const landPos: LandPosition = { row: 3, col: 3 };
@@ -484,9 +483,6 @@ describe('RecruitArmyDialog', () => {
       const land = getLand(mockGameState, landPos);
       land.buildings = [];
 
-      // Make sure we're in MAIN phase and have correct turn owner
-      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
-
       // Make sure the current player owns this land
       const landId = `${landPos.row}-${landPos.col}`;
       mockGameState.turnOwner.addLand(landId);
@@ -520,9 +516,6 @@ describe('RecruitArmyDialog', () => {
       const land = getLand(mockGameState, landPos);
       land.buildings = [];
 
-      // Make sure we're in MAIN phase and have correct turn owner
-      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
-
       // Make sure the current player owns this land
       const landId = `${landPos.row}-${landPos.col}`;
       mockGameState.turnOwner.addLand(landId);
@@ -550,9 +543,6 @@ describe('RecruitArmyDialog', () => {
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(mockGameState, landPos);
       land.buildings = [];
-
-      // Make sure we're in MAIN phase and have correct turn owner
-      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
       // Make sure the current player owns this land
       const landId = `${landPos.row}-${landPos.col}`;
@@ -582,9 +572,6 @@ describe('RecruitArmyDialog', () => {
       const land = getLand(mockGameState, landPos);
       land.buildings = [];
 
-      // Make sure we're in MAIN phase and have correct turn owner
-      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
-
       // Make sure the current player owns this land
       const landId = `${landPos.row}-${landPos.col}`;
       mockGameState.turnOwner.addLand(landId);
@@ -612,9 +599,6 @@ describe('RecruitArmyDialog', () => {
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(mockGameState, landPos);
       land.buildings = [];
-
-      // Make sure we're in MAIN phase and have correct turn owner
-      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
       // Make sure the current player owns this land
       const landId = `${landPos.row}-${landPos.col}`;
@@ -647,9 +631,6 @@ describe('RecruitArmyDialog', () => {
         gamePlayers: [PREDEFINED_PLAYERS[3], PREDEFINED_PLAYERS[4]],
       });
       expect(mockGameState.turnOwner.id).toBe(PREDEFINED_PLAYERS[3].id);
-
-      // Make sure we're in MAIN phase
-      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
       // Add a barracks with available slots to the first player's land
       const landPos: LandPosition = { row: 3, col: 3 };
@@ -684,9 +665,6 @@ describe('RecruitArmyDialog', () => {
         gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
       });
       expect(mockGameState.turnOwner.id).toBe(PREDEFINED_PLAYERS[0].id);
-
-      // Make sure we're in MAIN phase
-      while (mockGameState.turnPhase !== TurnPhase.MAIN) mockGameState.nextPhase();
 
       // Add a barracks with available slots to the first player's land
       const landPos: LandPosition = { row: 3, col: 3 };
