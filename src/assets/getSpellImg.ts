@@ -14,7 +14,7 @@ import earthquakeImg from './spells/green/earthquake.png';
 import emberRaidImg from './spells/red/ember-raid.png';
 import forgeOfWarImg from './spells/red/forge-of-war.png';
 import fireStormImg from './spells/red/firestorm.png';
-
+import meteorShowerImg from './spells/red/meteor-shower.png';
 import summonUndeadImg from './spells/black/summon-undead.png';
 
 export const getSpellImg = (spell: Spell) => {
@@ -51,6 +51,8 @@ export const getSpellImg = (spell: Spell) => {
       return forgeOfWarImg;
     case SpellName.FIRESTORM:
       return fireStormImg;
+    case SpellName.METEOR_SHOWER:
+      return meteorShowerImg;
     // black spells
     case SpellName.SUMMON_UNDEAD:
       return summonUndeadImg;

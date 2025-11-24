@@ -151,7 +151,7 @@ const RedMagicSpells: Spell[] = [
     id: SpellName.METEOR_SHOWER,
     description:
       'Kills 35–45% of all troops, 50% chance to destroy a building (heroes may be killed based on level)',
-    manaCost: 120,
+    manaCost: 200,
     apply: 'opponent',
     manaType: ManaType.RED,
   },
