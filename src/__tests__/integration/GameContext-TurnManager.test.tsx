@@ -35,9 +35,7 @@ MockedTurnManager.mockImplementation(() => mockTurnManager as any);
 jest.useFakeTimers();
 
 describe('GameContext-TurnManager Integration', () => {
-  const createMockGameState = (
-    turnOwner: number = 0,
-  ): GameState => {
+  const createMockGameState = (turnOwner: number = 0): GameState => {
     const gameStateStub = createDefaultGameStateStub();
     while (gameStateStub.turnOwner.id !== gameStateStub.allPlayers[turnOwner].id)
       gameStateStub.nextPlayer();
