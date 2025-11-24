@@ -16,6 +16,7 @@ import forgeOfWarImg from './spells/red/forge-of-war.png';
 import fireStormImg from './spells/red/firestorm.png';
 import meteorShowerImg from './spells/red/meteor-shower.png';
 import summonUndeadImg from './spells/black/summon-undead.png';
+import raiseDeadHeroImg from './spells/black/raise-dead-hero.png';
 
 export const getSpellImg = (spell: Spell) => {
   switch (spell.id) {
@@ -56,6 +57,8 @@ export const getSpellImg = (spell: Spell) => {
     // black spells
     case SpellName.SUMMON_UNDEAD:
       return summonUndeadImg;
+    case SpellName.RAISE_DEAD_HERO:
+      return raiseDeadHeroImg;
     default:
       return undefined;
   }
