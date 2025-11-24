@@ -1,5 +1,5 @@
 import { GameState } from '../../state/GameState';
-import { getLandId, LandPosition } from '../../state/LandState';
+import { LandPosition } from '../../state/LandState';
 
 import {
   getDefaultUnit,
@@ -25,7 +25,7 @@ export const startRecruiting = (
   landPos: LandPosition,
   gameState: GameState
 ): void => {
-  if (gameState.getLandOwner(getLandId(landPos)) !== gameState.turnOwner.id) {
+  if (gameState.getLandOwner(landPos) !== gameState.turnOwner.id) {
     return; // fallback: a wrong Land Owner should never happen on real game
   }
   // recruitment available only in MAIN phase if there is a slot available

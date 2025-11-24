@@ -12,8 +12,8 @@ import { getTilesInRadius } from '../utils/mapAlgorithms';
  * @param gameState - Game State (income and player lands could be updated)
  */
 export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => {
+  const player = gameState.getLandOwner(landPos);
   const landId = getLandId(landPos);
-  const player = gameState.getLandOwner(landId);
   const isStronghold = gameState.map.lands[landId].buildings.some(
     (b) => b.id === BuildingType.STRONGHOLD
   );
@@ -48,7 +48,7 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
         );
         if (nearestStrongholds && nearestStrongholds.length > 0) {
           if (!nearestStrongholds.some((s) => owner.hasLand(getLandId(s)))) {
-            const newOwner = gameState.getLandOwner(getLandId(nearestStrongholds[0]));
+            const newOwner = gameState.getLandOwner(nearestStrongholds[0]);
             gameState.getPlayer(newOwner).addLand(getLandId(l));
 
             owner.removeLand(getLandId(l));

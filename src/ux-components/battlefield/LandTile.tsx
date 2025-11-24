@@ -59,9 +59,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
   // Get the controlling player's color or default to white if not controlled
   const getBackgroundColor = (): string => {
     if (gameState == null) return 'white';
-    const controllingPlayer = gameState.getPlayer(
-      gameState.getLandOwner(getLandId(battlefieldTile.mapPos))
-    );
+    const controllingPlayer = gameState.getPlayer(gameState.getLandOwner(battlefieldTile.mapPos));
     return getPlayerColorValue(controllingPlayer?.color ?? 'white');
   };
 

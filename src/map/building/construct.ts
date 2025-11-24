@@ -32,7 +32,7 @@ export const construct = (
       const newLandsCandidates = getTilesInRadius(map.dimensions, position, 1, true);
       newLandsCandidates.forEach((land) => {
         // if the land is not controlled by any player, it becomes controlled by the player
-        if (gameState.getLandOwner(getLandId(land)) === NO_PLAYER.id) {
+        if (gameState.getLandOwner(land) === NO_PLAYER.id) {
           owner.addLand(getLandId(land));
         }
       });

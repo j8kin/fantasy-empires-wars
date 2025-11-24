@@ -34,7 +34,7 @@ export const changeOwner = (gameState: GameState): void => {
         gameState.getLand(l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
       );
       if (nearestStronghold) {
-        const newLandOwner = gameState.getLandOwner(getLandId(nearestStronghold));
+        const newLandOwner = gameState.getLandOwner(nearestStronghold);
         gameState.getPlayer(newLandOwner).addLand(landPos);
       }
     });

@@ -29,7 +29,7 @@ export interface GameState {
 
   get map(): BattlefieldMap;
   getLand(landPos: LandPosition): LandState;
-  getLandOwner(landId: string): string;
+  getLandOwner(landPos: LandPosition): string;
 
   get turn(): number;
   get turnOwner(): PlayerState;
@@ -57,8 +57,8 @@ export const createGameState = (map: BattlefieldMap): GameState => {
     getLand: function (landPos: LandPosition): LandState {
       return battlefield.lands[getLandId(landPos)];
     },
-    getLandOwner: function (landId: string): string {
-      return players.find((p) => p.hasLand(landId))?.id || NO_PLAYER.id;
+    getLandOwner: function (landPos: LandPosition): string {
+      return players.find((p) => p.hasLand(getLandId(landPos)))?.id || NO_PLAYER.id;
     },
 
     /**** Players related methods *****/

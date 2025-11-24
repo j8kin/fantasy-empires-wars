@@ -24,7 +24,7 @@ export const getAvailableToConstructLands = (
             (land.buildings.length === 0 ||
               !land.buildings?.some((b) => b.id === BuildingType.WALL)) &&
             getTilesInRadius(gameState.map.dimensions, land.mapPos, 1, true).some(
-              (tile) => gameState.getLandOwner(getLandId(tile)) !== owner.id
+              (tile) => gameState.getLandOwner(tile) !== owner.id
             )
         )
         .map((l) => getLandId(l.mapPos));

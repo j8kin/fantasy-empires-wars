@@ -130,9 +130,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
                 <span className={commonStyles.value}>
                   {(() => {
-                    const player = gameState?.getPlayer(
-                      gameState.getLandOwner(getLandId(land.mapPos))
-                    );
+                    const player = gameState?.getPlayer(gameState.getLandOwner(land.mapPos));
                     return player ? player.getName() : NO_PLAYER.name;
                   })()}
                 </span>

@@ -6,7 +6,6 @@ import '@testing-library/jest-dom';
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
 
 import { GameState } from '../../../state/GameState';
-import { getLandId } from '../../../state/LandState';
 
 import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
 import { Alignment } from '../../../types/Alignment';
@@ -252,7 +251,7 @@ describe('SendHeroInQuestDialog', () => {
       // Remove armies from lands owned by current player but keep armies on other lands
       const currentPlayerId = mockGameState.turnOwner.id;
       Object.values(mockGameState.map.lands).forEach((land) => {
-        if (mockGameState.getLandOwner(getLandId(land.mapPos)) === currentPlayerId) {
+        if (mockGameState.getLandOwner(land.mapPos) === currentPlayerId) {
           land.army = [];
         }
       });

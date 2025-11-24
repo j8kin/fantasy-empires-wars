@@ -111,9 +111,7 @@ describe('Calculate Attrition Penalty', () => {
       randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
       const armyLand = gameStateStub.getLand({ row: 3, col: 5 });
-      expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
-        gameStateStub.turnOwner.id
-      );
+      expect(gameStateStub.getLandOwner(armyLand.mapPos)).not.toBe(gameStateStub.turnOwner.id);
 
       army1.units = [createRegularUnit(RegularUnitType.WARRIOR, army1Initial, rank)];
       army2.units = [createRegularUnit(RegularUnitType.WARRIOR, army2Initial, rank)];
@@ -140,9 +138,7 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = gameStateStub.getLand({ row: 3, col: 5 });
-    expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
-      gameStateStub.turnOwner.id
-    );
+    expect(gameStateStub.getLandOwner(armyLand.mapPos)).not.toBe(gameStateStub.turnOwner.id);
 
     army1.units = [
       createRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR),
@@ -166,9 +162,7 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = gameStateStub.getLand({ row: 3, col: 5 });
-    expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
-      gameStateStub.turnOwner.id
-    );
+    expect(gameStateStub.getLandOwner(armyLand.mapPos)).not.toBe(gameStateStub.turnOwner.id);
 
     army1.units = [
       createRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR),
@@ -196,9 +190,7 @@ describe('Calculate Attrition Penalty', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = gameStateStub.getLand({ row: 3, col: 5 });
-    expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
-      gameStateStub.turnOwner.id
-    );
+    expect(gameStateStub.getLandOwner(armyLand.mapPos)).not.toBe(gameStateStub.turnOwner.id);
 
     // 40-60 minimum should be killed it means army will be destroyed
     army1.units = [createRegularUnit(RegularUnitType.WARRIOR, 30, UnitRank.REGULAR)];

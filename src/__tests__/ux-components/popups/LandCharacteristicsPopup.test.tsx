@@ -98,9 +98,7 @@ describe('LandCharacteristicsPopup', () => {
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(gameStateStub.getLandOwner(getLandId(mockTileState.mapPos))).toBe(
-      gameStateStub.allPlayers[1].id
-    );
+    expect(gameStateStub.getLandOwner(mockTileState.mapPos)).toBe(gameStateStub.allPlayers[1].id);
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
 

@@ -17,7 +17,7 @@ export const getHostileLands = (gameState: GameState): LandState[] => {
     (land) =>
       !(
         realmLands.includes(getLandId(land.mapPos)) ||
-        allies.includes(gameState.getLandOwner(getLandId(land.mapPos)))
+        allies.includes(gameState.getLandOwner(land.mapPos))
       ) && land.army.some((a) => a.controlledBy === turnOwner.id)
   );
 };

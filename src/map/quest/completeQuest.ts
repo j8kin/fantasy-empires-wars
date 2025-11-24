@@ -13,7 +13,6 @@ import { HeroUnit } from '../../types/Army';
 import { PlayerState } from '../../state/PlayerState';
 import { levelUpHero } from '../recruiting/levelUpHero';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
-import { getLandId } from '../../state/LandState';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
@@ -105,7 +104,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
     // player survived quest
     surviveInQuest(quest) &&
     // and player still controls the land where quest is
-    gameState.getLandOwner(getLandId(quest.land)) === turnOwner.id
+    gameState.getLandOwner(quest.land) === turnOwner.id
   ) {
     const hero = quest.hero;
 
