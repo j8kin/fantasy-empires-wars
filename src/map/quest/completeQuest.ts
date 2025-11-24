@@ -11,7 +11,6 @@ import {
 } from './questCompleteMessages';
 import { HeroUnit } from '../../types/Army';
 import { PlayerState } from '../../state/PlayerState';
-import { getLand } from '../utils/getLands';
 import { levelUpHero } from '../recruiting/levelUpHero';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 import { getLandId } from '../../state/LandState';
@@ -117,13 +116,13 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
     questOutcome = calculateReward(hero, quest, gameState);
 
     // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
-    const stationedArmy = getLand(gameState, quest.land).army.find((a) => a.movements == null);
+    const stationedArmy = gameState.getLand(quest.land).army.find((a) => a.movements == null);
     if (stationedArmy) {
       // add into the existing stationed Army
       stationedArmy.units.push(hero);
     } else {
       // no valid army found, create new one
-      getLand(gameState, quest.land).army.push({
+      gameState.getLand(quest.land).army.push({
         units: [hero],
         controlledBy: turnOwner.id,
       });

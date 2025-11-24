@@ -1,5 +1,5 @@
 import { createPlayerState, NO_PLAYER, PlayerProfile, PlayerState } from './PlayerState';
-import { LandState } from './LandState';
+import { getLandId, LandPosition, LandState } from './LandState';
 
 export interface BattlefieldDimensions {
   rows: number;
@@ -28,7 +28,7 @@ export interface GameState {
   get nPlayers(): number; // todo investigate and remove if necessary
 
   get map(): BattlefieldMap;
-  getLand(landId: string): LandState;
+  getLand(landPos: LandPosition): LandState;
   getLandOwner(landId: string): string;
 
   get turn(): number;
@@ -54,8 +54,8 @@ export const createGameState = (map: BattlefieldMap): GameState => {
     get map() {
       return battlefield;
     },
-    getLand: function (landId: string): LandState {
-      return battlefield.lands[landId];
+    getLand: function (landPos: LandPosition): LandState {
+      return battlefield.lands[getLandId(landPos)];
     },
     getLandOwner: function (landId: string): string {
       return players.find((p) => p.hasLand(landId))?.id || NO_PLAYER.id;

@@ -4,7 +4,6 @@ import { getLandId, LandPosition } from '../../state/LandState';
 import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Army';
 
 import { findShortestPath } from '../utils/mapAlgorithms';
-import { getLand } from '../utils/getLands';
 
 export const MIN_HERO_PACKS = 10;
 
@@ -24,7 +23,7 @@ export const startMovement = (
   }
 
   // expect that there is a stationed army in from land
-  const stationedArmy = getLand(gameState, from).army.filter((a) => a.movements == null);
+  const stationedArmy = gameState.getLand(from).army.filter((a) => a.movements == null);
   if (stationedArmy.length !== 1) {
     return; // fallback: it should be the only one stationed Army
   }
@@ -69,10 +68,10 @@ export const startMovement = (
   });
 
   // remove stationed army from the land if it is empty
-  getLand(gameState, from).army = getLand(gameState, from).army.filter((a) => a.units.length !== 0);
+  gameState.getLand(from).army = gameState.getLand(from).army.filter((a) => a.units.length !== 0);
 
   // add a new army with movement to the land
-  getLand(gameState, from).army.push({
+  gameState.getLand(from).army.push({
     units: units,
     movements: {
       from: from,

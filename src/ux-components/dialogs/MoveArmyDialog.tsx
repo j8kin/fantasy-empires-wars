@@ -9,7 +9,6 @@ import GameButton from '../buttons/GameButton';
 
 import { ButtonName } from '../../types/ButtonName';
 import { HeroUnit, isHero, RegularUnit, Unit, UnitRank } from '../../types/Army';
-import { getLand } from '../../map/utils/getLands';
 import { startMovement } from '../../map/move-army/startMovement';
 
 const MoveArmyDialog: React.FC = () => {
@@ -34,7 +33,7 @@ const MoveArmyDialog: React.FC = () => {
       return;
     }
 
-    const fromLand = getLand(gameState, moveArmyPath.from);
+    const fromLand = gameState.getLand(moveArmyPath.from);
     const stationedArmy = fromLand.army.filter((a) => a.movements == null);
 
     if (stationedArmy == null || stationedArmy.length === 0) {
@@ -77,9 +76,9 @@ const MoveArmyDialog: React.FC = () => {
 
   if (!moveArmyPath || !gameState) return null;
 
-  const stationedArmy = getLand(gameState, moveArmyPath.from).army.filter(
-    (a) => a.movements == null
-  );
+  const stationedArmy = gameState
+    .getLand(moveArmyPath.from)
+    .army.filter((a) => a.movements == null);
 
   if (stationedArmy == null || stationedArmy.length === 0) return null;
 

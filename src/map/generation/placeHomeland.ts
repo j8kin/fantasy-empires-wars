@@ -10,7 +10,7 @@ import { construct } from '../building/construct';
 
 import { getRandomElement } from '../../types/getRandomElement';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getLand, getLands } from '../utils/getLands';
+import { getLands } from '../utils/getLands';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   const player = gameState.turnOwner;
@@ -20,7 +20,7 @@ const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   // increment characteristics
   levelUpHero(hero, player);
   // initial Hero immediately available in normal game it turn 3 turn to recruit#
-  getLand(gameState, homeland.mapPos).army.push({ units: [hero], controlledBy: player.id });
+  gameState.getLand(homeland.mapPos).army.push({ units: [hero], controlledBy: player.id });
 };
 
 export const placeHomeland = (gameState: GameState) => {

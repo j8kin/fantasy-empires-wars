@@ -6,7 +6,7 @@ import { TreasureItem } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
 import { HeroUnit, HeroUnitType, isHero, RegularUnitType } from '../../types/Army';
 
-import { getLand, getLands } from '../../map/utils/getLands';
+import { getLands } from '../../map/utils/getLands';
 import { startQuest } from '../../map/quest/startQuest';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
@@ -170,7 +170,7 @@ describe('Hero Quest', () => {
 
   const constructBuilding = (buildingType: BuildingType, pos: LandPosition): void => {
     construct(gameStateStub, buildingType, pos);
-    const barracksLand = getLand(gameStateStub, pos);
+    const barracksLand = gameStateStub.getLand(pos);
 
     expect(gameStateStub.turn).toBe(2);
 
@@ -194,7 +194,7 @@ describe('Hero Quest', () => {
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     constructBuilding(BuildingType.BARRACKS, barracksPos);
 
-    const barracksLand = getLand(gameStateStub, barracksPos);
+    const barracksLand = gameStateStub.getLand(barracksPos);
     expect(barracksLand.army.length).toBe(0);
 
     // Recruiting 3 heroes of the same type in barracks
@@ -260,7 +260,7 @@ describe('Hero Quest', () => {
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     constructBuilding(BuildingType.BARRACKS, barracksPos);
 
-    const barracksLand = getLand(gameStateStub, barracksPos);
+    const barracksLand = gameStateStub.getLand(barracksPos);
     expect(barracksLand.army.length).toBe(0);
 
     // Recruit one regular and one hero unit

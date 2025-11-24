@@ -13,8 +13,6 @@ import {
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
 
-import { getLand } from '../utils/getLands';
-
 const recruitmentDuration = (unitType: UnitType) => {
   if (isHeroType(unitType)) return 3;
   if (isWarMachine(unitType)) return 3;
@@ -31,9 +29,9 @@ export const startRecruiting = (
     return; // fallback: a wrong Land Owner should never happen on real game
   }
   // recruitment available only in MAIN phase if there is a slot available
-  const building = getLand(gameState, landPos).buildings.filter(
-    (b) => b.slots != null && b.slots.length < b.numberOfSlots
-  );
+  const building = gameState
+    .getLand(landPos)
+    .buildings.filter((b) => b.slots != null && b.slots.length < b.numberOfSlots);
   if (building.length === 1) {
     // additionally verify that regular units and non-magic heroes are recruited in BARRACKS and mages are in mage tower
     if (isHeroType(unitType)) {

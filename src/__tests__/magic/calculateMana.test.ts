@@ -4,7 +4,7 @@ import { getManaSource, ManaType } from '../../types/Mana';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { HeroUnit, HeroUnitType } from '../../types/Army';
 import { getLandById, getSpecialLandTypes, LandType } from '../../types/Land';
-import { getLand, getLands } from '../../map/utils/getLands';
+import { getLands } from '../../map/utils/getLands';
 import { BuildingType } from '../../types/Building';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { relicts, TreasureItem } from '../../types/Treasures';
@@ -88,7 +88,7 @@ describe('Calculate Mana', () => {
             buildings: [BuildingType.STRONGHOLD],
           })[0];
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 2 }; // outside player land
-          getLand(gameStateStub, specialLand).land = getLandById(landType);
+          gameStateStub.getLand(specialLand).land = getLandById(landType);
 
           testTurnManagement.setGameState(gameStateStub);
           testTurnManagement.startNewTurn(gameStateStub);
@@ -133,7 +133,7 @@ describe('Calculate Mana', () => {
             row: homeLandPlayer2.mapPos.row,
             col: homeLandPlayer2.mapPos.col + 1,
           }; // player 2 land
-          getLand(gameStateStub, specialLand).land = getLandById(landType);
+          gameStateStub.getLand(specialLand).land = getLandById(landType);
 
           while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
 
@@ -179,7 +179,7 @@ describe('Calculate Mana', () => {
             buildings: [BuildingType.STRONGHOLD],
           })[0];
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
-          getLand(gameStateStub, specialLand).land = getLandById(landType);
+          gameStateStub.getLand(specialLand).land = getLandById(landType);
 
           while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
 
@@ -279,7 +279,7 @@ describe('Calculate Mana', () => {
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 
-    getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandType.VOLCANO); // this should add red mana to player 0
+    gameStateStub.getLand(homeLand.mapPos).land = getLandById(LandType.VOLCANO); // this should add red mana to player 0
 
     testTurnManagement.setGameState(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);

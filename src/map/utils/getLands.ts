@@ -42,6 +42,3 @@ export const getLands = ({
       (noArmy == null || (noArmy ? landState.army.length === 0 : landState.army.length > 0))
   );
 };
-
-export const getLand = (gameState: GameState, landPos: LandPosition): LandState =>
-  gameState.map.lands[getLandId(landPos)];

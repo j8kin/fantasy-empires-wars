@@ -3,8 +3,6 @@ import { LandPosition } from '../../state/LandState';
 
 import { Unit } from '../../types/Army';
 
-import { getLand } from '../../map/utils/getLands';
-
 /**
  * test function. Should not be used in integration tests related on TurnManagement
  * @param unit
@@ -12,5 +10,5 @@ import { getLand } from '../../map/utils/getLands';
  * @param landPos
  */
 export const placeUnitsOnMap = (unit: Unit, gameState: GameState, landPos: LandPosition): void => {
-  getLand(gameState, landPos).army.push({ units: [unit], controlledBy: gameState.turnOwner.id });
+  gameState.getLand(landPos).army.push({ units: [unit], controlledBy: gameState.turnOwner.id });
 };

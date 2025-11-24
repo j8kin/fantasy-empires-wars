@@ -18,8 +18,6 @@ import {
   isHero,
 } from '../../../types/Army';
 
-import { getLand } from '../../../map/utils/getLands';
-
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 import { startMovement as mockStartMovement } from '../../../map/move-army/startMovement';
@@ -200,7 +198,7 @@ describe('MoveArmyDialog', () => {
     placeUnitsOnMap(hero, mockGameState, fromPosition);
 
     // Merge all units into a single army (as the component expects)
-    const fromLand = getLand(mockGameState, fromPosition);
+    const fromLand = mockGameState.getLand(fromPosition);
     const allUnits = fromLand.army.flatMap((a) => a.units);
     fromLand.army = [
       {
@@ -223,7 +221,7 @@ describe('MoveArmyDialog', () => {
     });
 
     it('should not render when no stationed army exists', () => {
-      const fromLand = getLand(mockGameState, fromPosition);
+      const fromLand = mockGameState.getLand(fromPosition);
       fromLand.army = [];
 
       renderWithProviders(<MoveArmyDialog />);
@@ -231,7 +229,7 @@ describe('MoveArmyDialog', () => {
     });
 
     it('should not render when stationed army has movements (is already moving)', () => {
-      const fromLand = getLand(mockGameState, fromPosition);
+      const fromLand = mockGameState.getLand(fromPosition);
       fromLand.army[0].movements = {
         from: fromPosition,
         to: toPosition,
@@ -583,7 +581,7 @@ describe('MoveArmyDialog', () => {
   describe('Edge Cases', () => {
     it('should handle when only heroes are present', () => {
       // Create army with only heroes
-      const fromLand = getLand(mockGameState, fromPosition);
+      const fromLand = mockGameState.getLand(fromPosition);
       const hero1 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
       hero1.name = 'Hero1';
       const hero2 = getDefaultUnit(HeroUnitType.CLERIC) as HeroUnit;
@@ -605,7 +603,7 @@ describe('MoveArmyDialog', () => {
 
     it('should handle when only regular units are present', () => {
       // Create army with only regular units
-      const fromLand = getLand(mockGameState, fromPosition);
+      const fromLand = mockGameState.getLand(fromPosition);
       const warrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
       warrior.count = 15;
 
@@ -625,7 +623,7 @@ describe('MoveArmyDialog', () => {
 
     it('should handle units with count of 1', async () => {
       // Create army with single count units
-      const fromLand = getLand(mockGameState, fromPosition);
+      const fromLand = mockGameState.getLand(fromPosition);
       const warrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
       warrior.count = 1;
 
@@ -654,7 +652,7 @@ describe('MoveArmyDialog', () => {
 
     it('should handle different unit ranks', () => {
       // Create army with different ranked units
-      const fromLand = getLand(mockGameState, fromPosition);
+      const fromLand = mockGameState.getLand(fromPosition);
       const veteranWarrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
       veteranWarrior.level = UnitRank.VETERAN;
       veteranWarrior.count = 8;
@@ -704,7 +702,7 @@ describe('MoveArmyDialog', () => {
       };
 
       // Add army to new position
-      const newFromLand = getLand(mockGameState, { row: 5, col: 5 });
+      const newFromLand = mockGameState.getLand({ row: 5, col: 5 });
       const warrior = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
       newFromLand.army = [
         {

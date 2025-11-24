@@ -16,7 +16,7 @@ import {
 } from '../../types/Army';
 import { construct } from '../../map/building/construct';
 
-import { getLand, getLands } from '../../map/utils/getLands';
+import { getLands } from '../../map/utils/getLands';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
@@ -62,7 +62,7 @@ describe('Recruitment', () => {
     unitType: UnitType,
     remainTurns: number
   ): void => {
-    const land = getLand(gameStateStub, landPos);
+    const land = gameStateStub.getLand(landPos);
 
     expect(land).toBeDefined();
     expect(land!.buildings[0].slots?.length).toBe(usedSlots);
@@ -99,7 +99,7 @@ describe('Recruitment', () => {
     beforeEach(() => {
       const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
       construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
-      barracksLand = getLand(gameStateStub, barracksPos);
+      barracksLand = gameStateStub.getLand(barracksPos);
 
       expect(gameStateStub.turn).toBe(2);
 
@@ -267,7 +267,7 @@ describe('Recruitment', () => {
 
       it('regular units could not be recruited in land without buildings', () => {
         const emptyLandPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col - 1 };
-        const emptyLand = getLand(gameStateStub, emptyLandPos);
+        const emptyLand = gameStateStub.getLand(emptyLandPos);
         expect(emptyLand.buildings.length).toBe(0);
         expect(emptyLand.army.length).toBe(0);
 
@@ -291,7 +291,7 @@ describe('Recruitment', () => {
   describe('Recruit Hero units', () => {
     const constructBuilding = (buildingType: BuildingType, pos: LandPosition): void => {
       construct(gameStateStub, buildingType, pos);
-      const barracksLand = getLand(gameStateStub, pos);
+      const barracksLand = gameStateStub.getLand(pos);
 
       expect(gameStateStub.turn).toBe(2);
 
@@ -316,7 +316,7 @@ describe('Recruitment', () => {
           const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
           constructBuilding(BuildingType.BARRACKS, barracksPos);
 
-          const barracksLand = getLand(gameStateStub, barracksPos);
+          const barracksLand = gameStateStub.getLand(barracksPos);
 
           // Recruiting heroes in barracks
           startRecruiting(unitType, barracksLand.mapPos, gameStateStub);
@@ -353,7 +353,7 @@ describe('Recruitment', () => {
           constructBuilding(magicTower, mageTowerPos);
           // Mage towers cost 15000, which exhausts the initial 15000 vault, so add more gold for recruitment
           gameStateStub.turnOwner.vault += 5000;
-          const mageTowerLand = getLand(gameStateStub, mageTowerPos);
+          const mageTowerLand = gameStateStub.getLand(mageTowerPos);
 
           // Recruiting heroes in mage tower
           startRecruiting(unitType, mageTowerLand.mapPos, gameStateStub);
@@ -380,7 +380,7 @@ describe('Recruitment', () => {
         const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
         constructBuilding(BuildingType.BARRACKS, barracksPos);
 
-        const barracksLand = getLand(gameStateStub, barracksPos);
+        const barracksLand = gameStateStub.getLand(barracksPos);
         expect(barracksLand.army.length).toBe(0);
 
         // Recruiting 3 heroes of the same type in barracks
@@ -406,7 +406,7 @@ describe('Recruitment', () => {
       it('mages should not recruit in barracks', () => {
         const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
         constructBuilding(BuildingType.BARRACKS, barracksPos);
-        const barracksLand = getLand(gameStateStub, barracksPos);
+        const barracksLand = gameStateStub.getLand(barracksPos);
 
         startRecruiting(HeroUnitType.FIGHTER, barracksPos, gameStateStub);
         expect(barracksLand.buildings[0].slots?.length).toBe(1); // hero recruited
@@ -424,7 +424,7 @@ describe('Recruitment', () => {
       ])('non-mage heroes should not recruit in mage towers', (mageTower: BuildingType) => {
         const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
         constructBuilding(mageTower, mageTowerPos);
-        const barracksLand = getLand(gameStateStub, mageTowerPos);
+        const barracksLand = gameStateStub.getLand(mageTowerPos);
 
         startRecruiting(HeroUnitType.FIGHTER, mageTowerPos, gameStateStub);
         expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero not recruited
@@ -432,7 +432,7 @@ describe('Recruitment', () => {
 
       it('hero units could not be recruited in land without buildings', () => {
         const emptyLandPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col - 1 };
-        const emptyLand = getLand(gameStateStub, emptyLandPos);
+        const emptyLand = gameStateStub.getLand(emptyLandPos);
         expect(emptyLand.buildings.length).toBe(0);
         expect(emptyLand.army.length).toBe(0);
 
@@ -450,7 +450,7 @@ describe('Recruitment', () => {
 
         gameStateStub.turnOwner.vault = 100;
 
-        const barracksLand = getLand(gameStateStub, barracksPos);
+        const barracksLand = gameStateStub.getLand(barracksPos);
 
         startRecruiting(HeroUnitType.FIGHTER, barracksPos, gameStateStub);
         expect(barracksLand.army.length).toBe(0);

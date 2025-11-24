@@ -3,7 +3,7 @@ import { PlayerState } from '../state/PlayerState';
 import { getLandId, LandPosition } from '../state/LandState';
 
 import { BuildingType, getBuilding } from '../types/Building';
-import { getLand, getLands } from '../map/utils/getLands';
+import { getLands } from '../map/utils/getLands';
 import { getDefaultUnit, RegularUnitType } from '../types/Army';
 import { relicts, TreasureItem } from '../types/Treasures';
 
@@ -111,10 +111,10 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingType.DEMOLITION, buildingPos);
 
       // stronghold is not destroyed
-      expect(getLand(gameStateStub, strongholdPos).buildings[0].id).toBe(BuildingType.STRONGHOLD);
+      expect(gameStateStub.getLand(strongholdPos).buildings[0].id).toBe(BuildingType.STRONGHOLD);
 
       // barracks is destroyed
-      expect(getLand(gameStateStub, buildingPos).buildings.length).toBe(0);
+      expect(gameStateStub.getLand(buildingPos).buildings.length).toBe(0);
 
       // no player lands destroyed
       expectLands(player1, getLandsInRadius(strongholdPos).map(getLandId));
@@ -162,11 +162,11 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingType.DEMOLITION, strongholdPos);
 
       // stronghold 1 is destroyed
-      expect(getLand(gameStateStub, strongholdPos).buildings.length).toBe(0);
+      expect(gameStateStub.getLand(strongholdPos).buildings.length).toBe(0);
       // barracks and stronghold are not destroyed
 
-      expect(getLand(gameStateStub, buildingPos).buildings[0].id).toBe(BuildingType.BARRACKS);
-      expect(getLand(gameStateStub, strongholdPos2).buildings.length).toBe(1);
+      expect(gameStateStub.getLand(buildingPos).buildings[0].id).toBe(BuildingType.BARRACKS);
+      expect(gameStateStub.getLand(strongholdPos2).buildings.length).toBe(1);
 
       expectLands(player1, getLandsInRadius(strongholdPos2).map(getLandId));
     });

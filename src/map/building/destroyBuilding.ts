@@ -4,7 +4,6 @@ import { getLandId, LandPosition } from '../../state/LandState';
 import { BuildingType } from '../../types/Building';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getLand } from '../utils/getLands';
 
 /**
  * Player could destroy the building as Demolition before construction of a new one
@@ -45,7 +44,7 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
       } else {
         // no army look for nearest stronghold
         const nearestStrongholds = getTilesInRadius(gameState.map.dimensions, l, 1).filter((l) =>
-          getLand(gameState, l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
+          gameState.getLand(l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
         );
         if (nearestStrongholds && nearestStrongholds.length > 0) {
           if (!nearestStrongholds.some((s) => owner.hasLand(getLandId(s)))) {

@@ -5,7 +5,7 @@ import { BuildingType } from '../../types/Building';
 
 import { getHostileLands } from '../utils/getHostileLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getLand, getLands } from '../utils/getLands';
+import { getLands } from '../utils/getLands';
 import { getRealmLands } from '../utils/getRealmLands';
 
 export const changeOwner = (gameState: GameState): void => {
@@ -31,7 +31,7 @@ export const changeOwner = (gameState: GameState): void => {
       // trying to find any other owners
       const neighbourLands = getTilesInRadius(gameState.map.dimensions, land.mapPos, 1);
       const nearestStronghold = neighbourLands.find((l) =>
-        getLand(gameState, l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
+        gameState.getLand(l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
       );
       if (nearestStronghold) {
         const newLandOwner = gameState.getLandOwner(getLandId(nearestStronghold));

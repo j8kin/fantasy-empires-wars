@@ -21,7 +21,6 @@ import {
 import { BuildingType } from '../../types/Building';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
-import { getLand } from '../../map/utils/getLands';
 
 import { getUnitImg } from '../../assets/getUnitImg';
 
@@ -41,7 +40,7 @@ const RecruitArmyDialog: React.FC = () => {
   const initialSlotCount = useMemo(() => {
     if (!gameState || !actionLandPosition) return 0;
 
-    const land = getLand(gameState, actionLandPosition);
+    const land = gameState.getLand(actionLandPosition);
     if (!land) return 0;
 
     const recruitBuilding = land.buildings.filter(
@@ -63,7 +62,7 @@ const RecruitArmyDialog: React.FC = () => {
   useEffect(() => {
     if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return;
 
-    const land = getLand(gameState, actionLandPosition);
+    const land = gameState.getLand(actionLandPosition);
     if (!land) return;
 
     const recruitBuilding = land.buildings.filter(
@@ -89,7 +88,7 @@ const RecruitArmyDialog: React.FC = () => {
   const createRecruitClickHandler = useCallback(
     (unitType: UnitType, landPos: LandPosition) => {
       return () => {
-        const building = getLand(gameState!, landPos).buildings.find((b) => b.slots != null)!;
+        const building = gameState!.getLand(landPos).buildings.find((b) => b.slots != null)!;
         const availableSlots = building.numberOfSlots - (building.slots?.length ?? 0);
         // recruit the same unit for all available slots
         for (let i = 0; i < availableSlots; i++) {
@@ -109,7 +108,7 @@ const RecruitArmyDialog: React.FC = () => {
     return undefined;
   }
 
-  const land = getLand(gameState, actionLandPosition);
+  const land = gameState.getLand(actionLandPosition);
 
   const recruitBuilding = land.buildings.filter(
     (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots

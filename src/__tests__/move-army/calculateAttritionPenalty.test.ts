@@ -6,8 +6,6 @@ import { Movements } from '../../types/Movements';
 
 import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
 
-import { getLand } from '../../map/utils/getLands';
-
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('Calculate Attrition Penalty', () => {
@@ -64,7 +62,7 @@ describe('Calculate Attrition Penalty', () => {
   });
 
   it('armies on lands owned by player should not be affected', () => {
-    const armyLand = getLand(gameStateStub, { row: 3, col: 4 });
+    const armyLand = gameStateStub.getLand({ row: 3, col: 4 });
     expect(gameStateStub.turnOwner.hasLand(getLandId(armyLand.mapPos))).toBeTruthy();
 
     // place army on land owned by player
@@ -112,7 +110,7 @@ describe('Calculate Attrition Penalty', () => {
     ) => {
       randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
-      const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
+      const armyLand = gameStateStub.getLand({ row: 3, col: 5 });
       expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
         gameStateStub.turnOwner.id
       );
@@ -141,7 +139,7 @@ describe('Calculate Attrition Penalty', () => {
   it('War-machines counted as 20 units', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
-    const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
+    const armyLand = gameStateStub.getLand({ row: 3, col: 5 });
     expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
       gameStateStub.turnOwner.id
     );
@@ -167,7 +165,7 @@ describe('Calculate Attrition Penalty', () => {
   it('War-machines counted as 20 units, 3 war-machines totally on land', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
-    const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
+    const armyLand = gameStateStub.getLand({ row: 3, col: 5 });
     expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
       gameStateStub.turnOwner.id
     );
@@ -197,7 +195,7 @@ describe('Calculate Attrition Penalty', () => {
   it('Army destroyed if all units killed', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
-    const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
+    const armyLand = gameStateStub.getLand({ row: 3, col: 5 });
     expect(gameStateStub.getLandOwner(getLandId(armyLand.mapPos))).not.toBe(
       gameStateStub.turnOwner.id
     );

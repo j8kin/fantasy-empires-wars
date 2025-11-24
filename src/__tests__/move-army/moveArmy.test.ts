@@ -12,7 +12,7 @@ import {
 } from '../../types/Army';
 import { BuildingType } from '../../types/Building';
 
-import { getLand, getLands } from '../../map/utils/getLands';
+import { getLands } from '../../map/utils/getLands';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
@@ -54,7 +54,7 @@ describe('Move Army', () => {
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
-    barracksLand = getLand(gameStateStub, barracksPos);
+    barracksLand = gameStateStub.getLand(barracksPos);
 
     startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
     startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
@@ -211,7 +211,7 @@ describe('Move Army', () => {
 
     describe('corner cases', () => {
       it('empty army', () => {
-        const emptyLand = getLand(gameStateStub, { row: 1, col: 1 });
+        const emptyLand = gameStateStub.getLand({ row: 1, col: 1 });
         const unitsToMove: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
 
         expect(emptyLand.army.length).toBe(0);
@@ -264,32 +264,32 @@ describe('Move Army', () => {
   describe('Perform movements', () => {
     it('Hero allowed to move without regular units only on owned territories', () => {
       const to = { row: homeLand.mapPos.row + 1, col: homeLand.mapPos.col };
-      const unitsToMove = getLand(gameStateStub, homeLand.mapPos).army[0].units; // initial hero in homeland
+      const unitsToMove = gameStateStub.getLand(homeLand.mapPos).army[0].units; // initial hero in homeland
 
       startMovement(homeLand.mapPos, to, unitsToMove, gameStateStub);
       testTurnManagement.makeNTurns(1);
 
-      expect(getLand(gameStateStub, homeLand.mapPos).army.length).toBe(0);
-
-      expect(getLand(gameStateStub, to).army.length).toBe(1);
-      expect(getLand(gameStateStub, to).army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-      expect(getLand(gameStateStub, to).army[0].movements).toBeUndefined();
-      expect(getLand(gameStateStub, to).army[0].units.length).toBe(1);
-      expect(getLand(gameStateStub, to).army[0].units[0]).toBe(unitsToMove[0]);
+      expect(gameStateStub.getLand(homeLand.mapPos).army.length).toBe(0);
+      const landTo = gameStateStub.getLand(to);
+      expect(landTo.army.length).toBe(1);
+      expect(landTo.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
+      expect(landTo.army[0].movements).toBeUndefined();
+      expect(landTo.army[0].units.length).toBe(1);
+      expect(landTo.army[0].units[0]).toBe(unitsToMove[0]);
     });
 
     it('Army which complete the movements merged with Stationed Army', () => {
-      const unitsToMove = getLand(gameStateStub, homeLand.mapPos).army[0].units; // initial hero in homeland
-      expect(getLand(gameStateStub, homeLand.mapPos).army.length).toBe(1);
-      expect(getLand(gameStateStub, barracksLand.mapPos).army.length).toBe(1);
+      const unitsToMove = gameStateStub.getLand(homeLand.mapPos).army[0].units; // initial hero in homeland
+      expect(gameStateStub.getLand(homeLand.mapPos).army.length).toBe(1);
+      expect(gameStateStub.getLand(barracksLand.mapPos).army.length).toBe(1);
 
       startMovement(homeLand.mapPos, barracksLand.mapPos, unitsToMove, gameStateStub);
 
       testTurnManagement.makeNTurns(1);
-      expect(getLand(gameStateStub, homeLand.mapPos).army.length).toBe(0);
-      expect(getLand(gameStateStub, barracksLand.mapPos).army.length).toBe(1); // Stationed Army
+      expect(gameStateStub.getLand(homeLand.mapPos).army.length).toBe(0);
+      expect(gameStateStub.getLand(barracksLand.mapPos).army.length).toBe(1); // Stationed Army
 
-      const stationedArmy = getLand(gameStateStub, barracksLand.mapPos).army[0];
+      const stationedArmy = gameStateStub.getLand(barracksLand.mapPos).army[0];
       expect(stationedArmy.units.length).toBe(3);
       expect(stationedArmy.units[0].id).toBe(RegularUnitType.WARRIOR);
       expect((stationedArmy.units[0] as RegularUnit).count).toBe(120);
@@ -300,10 +300,11 @@ describe('Move Army', () => {
 
     it('move on neutral territory perform Attrition Penalty and change ownership', () => {
       const from = barracksLand.mapPos;
-      expect(getLand(gameStateStub, from).army.length).toBe(1);
-      expect(getLand(gameStateStub, from).army[0].units.length).toBe(2);
-      expect(getLand(gameStateStub, from).army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
-      expect((getLand(gameStateStub, from).army[0].units[0] as RegularUnit).count).toBe(120);
+      const fromLand = gameStateStub.getLand(from);
+      expect(fromLand.army.length).toBe(1);
+      expect(fromLand.army[0].units.length).toBe(2);
+      expect(fromLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((fromLand.army[0].units[0] as RegularUnit).count).toBe(120);
 
       const to = { row: 3, col: 5 };
       expect(gameStateStub.getLandOwner(getLandId(to))).toBe(NO_PLAYER.id);
@@ -312,13 +313,13 @@ describe('Move Army', () => {
       (unitsToMove[0] as RegularUnit).count = 120;
 
       startMovement(from, to, unitsToMove, gameStateStub);
-      expect(getLand(gameStateStub, from).army.length).toBe(2);
+      expect(gameStateStub.getLand(from).army.length).toBe(2);
 
       testTurnManagement.makeNTurns(1);
 
-      expect(getLand(gameStateStub, from).army.length).toBe(1); // hero stay in barracks land
+      expect(gameStateStub.getLand(from).army.length).toBe(1); // hero stay in barracks land
 
-      const newLand = getLand(gameStateStub, to);
+      const newLand = gameStateStub.getLand(to);
       expect(newLand.army.length).toBe(1);
       expect(newLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
       expect(newLand.army[0].movements).toBeUndefined();
@@ -329,10 +330,11 @@ describe('Move Army', () => {
 
     it('All army die on new territory', () => {
       const from = barracksLand.mapPos;
-      expect(getLand(gameStateStub, from).army.length).toBe(1);
-      expect(getLand(gameStateStub, from).army[0].units.length).toBe(2);
-      expect(getLand(gameStateStub, from).army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
-      expect((getLand(gameStateStub, from).army[0].units[0] as RegularUnit).count).toBe(120);
+      let fromLand = gameStateStub.getLand(from);
+      expect(fromLand.army.length).toBe(1);
+      expect(fromLand.army[0].units.length).toBe(2);
+      expect(fromLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((fromLand.army[0].units[0] as RegularUnit).count).toBe(120);
 
       const to = { row: 3, col: 5 };
       expect(gameStateStub.getLandOwner(getLandId(to))).toBe(NO_PLAYER.id);
@@ -341,23 +343,26 @@ describe('Move Army', () => {
       (unitsToMove[0] as RegularUnit).count = 20; // 20 regular units is not enough to conquer the new territory
 
       startMovement(from, to, unitsToMove, gameStateStub);
-      expect(getLand(gameStateStub, from).army.length).toBe(2);
+      fromLand = gameStateStub.getLand(from);
+      expect(fromLand.army.length).toBe(2);
 
       testTurnManagement.makeNTurns(1);
 
-      expect(getLand(gameStateStub, from).army.length).toBe(1); // hero and the rest of the warriors
+      fromLand = gameStateStub.getLand(from);
+      expect(fromLand.army.length).toBe(1); // hero and the rest of the warriors
 
-      const newLand = getLand(gameStateStub, to);
+      const newLand = gameStateStub.getLand(to);
       expect(gameStateStub.getLandOwner(getLandId(newLand.mapPos))).toBe(NO_PLAYER.id); // new territory owner is not changed
       expect(newLand.army.length).toBe(0);
     });
 
-    it('when 2 armies are reach uncontroled land they merge in one and then attrition penalty calculated', () => {
+    it('when 2 armies are reach uncontrolled land they merge in one and then attrition penalty calculated', () => {
       const from = barracksLand.mapPos;
-      expect(getLand(gameStateStub, from).army.length).toBe(1);
-      expect(getLand(gameStateStub, from).army[0].units.length).toBe(2);
-      expect(getLand(gameStateStub, from).army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
-      expect((getLand(gameStateStub, from).army[0].units[0] as RegularUnit).count).toBe(120);
+      let fromLand = gameStateStub.getLand(from);
+      expect(fromLand.army.length).toBe(1);
+      expect(fromLand.army[0].units.length).toBe(2);
+      expect(fromLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((fromLand.army[0].units[0] as RegularUnit).count).toBe(120);
 
       const to = { row: 3, col: 5 };
       expect(gameStateStub.getLandOwner(getLandId(to))).toBe(NO_PLAYER.id);
@@ -367,20 +372,23 @@ describe('Move Army', () => {
       (unitsToMove1[0] as RegularUnit).count = 35; // 35 regular units is not enough to conquer the new territory
 
       startMovement(from, to, unitsToMove1, gameStateStub);
-      expect(getLand(gameStateStub, from).army.length).toBe(2);
+      fromLand = gameStateStub.getLand(from);
+      expect(fromLand.army.length).toBe(2);
 
       // second army is moved to the same territory
       const unitsToMove2: Unit[] = [getDefaultUnit(RegularUnitType.WARRIOR)];
       (unitsToMove1[0] as RegularUnit).count = 35; // 35 regular units is not enough to conquer the new territory
 
       startMovement(from, to, unitsToMove2, gameStateStub);
-      expect(getLand(gameStateStub, from).army.length).toBe(3);
+      fromLand = gameStateStub.getLand(from);
+      expect(fromLand.army.length).toBe(3);
 
       testTurnManagement.makeNTurns(1);
 
-      expect(getLand(gameStateStub, from).army.length).toBe(1); // hero and the rest of the warriors
+      fromLand = gameStateStub.getLand(from);
+      expect(fromLand.army.length).toBe(1); // hero and the rest of the warriors
 
-      const newLand = getLand(gameStateStub, to);
+      const newLand = gameStateStub.getLand(to);
       expect(gameStateStub.getLandOwner(getLandId(newLand.mapPos))).toBe(
         gameStateStub.turnOwner.id
       ); // new territory owner is not changed

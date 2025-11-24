@@ -18,7 +18,6 @@ import { calcMaxMove, MAX_MOVE } from '../../map/move-army/calcMaxMove';
 import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
 import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
 import { getRealmLands } from '../../map/utils/getRealmLands';
-import { getLand } from '../../map/utils/getLands';
 
 import { getLandImg } from '../../assets/getLandImg';
 
@@ -112,14 +111,13 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
         const realmLands = getRealmLands(gameState!).map((l) => l.mapPos);
         const maxMovements = calcMaxMove(
-          getLand(gameState!, battlefieldPosition).army.flatMap(
-            (a) => a.units.filter((u) => !isHero(u)) as RegularUnit[]
-          )
+          gameState!
+            .getLand(battlefieldPosition)
+            .army.flatMap((a) => a.units.filter((u) => !isHero(u)) as RegularUnit[])
         );
-        const nHeroes = getLand(gameState!, battlefieldPosition).army.reduce(
-          (acc, army) => acc + army.units.filter(isHero).length,
-          0
-        );
+        const nHeroes = gameState!
+          .getLand(battlefieldPosition)
+          .army.reduce((acc, army) => acc + army.units.filter(isHero).length, 0);
         const landsInRadius = getTilesInRadius(
           gameState!.map.dimensions,
           battlefieldPosition,
