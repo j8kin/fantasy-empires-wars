@@ -1,4 +1,4 @@
-import { HeroUnit, isHero, isMage } from '../../types/Army';
+import { HeroUnit, isHero, isMage } from '../../types/Unit';
 import { getLands } from './getLands';
 import { GameState } from '../../state/GameState';
 

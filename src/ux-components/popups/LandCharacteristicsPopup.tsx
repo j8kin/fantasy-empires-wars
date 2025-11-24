@@ -9,7 +9,7 @@ import { LandPosition, getLandId } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { HeroUnit, isHero, RegularUnit } from '../../types/Army';
+import { HeroUnit, isHero, RegularUnit } from '../../types/Unit';
 
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 

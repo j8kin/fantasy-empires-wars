@@ -1,17 +1,10 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/LandState';
 
-import {
-  getDefaultUnit,
-  HeroUnit,
-  HeroUnitType,
-  isHeroType,
-  isRange,
-  isWarMachine,
-  UnitType,
-} from '../../types/Army';
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
+import { getDefaultUnit, HeroUnit, isHeroType, isRange, isWarMachine } from '../../types/Unit';
+import { HeroUnitType, UnitType } from '../../types/UnitType';
 
 const recruitmentDuration = (unitType: UnitType) => {
   if (isHeroType(unitType)) return 3;

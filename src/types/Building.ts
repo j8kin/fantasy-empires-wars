@@ -1,5 +1,5 @@
 import { Alignment } from './Alignment';
-import { HeroUnitType, UnitType } from './Army';
+import { HeroUnitType, UnitType } from './UnitType';
 import { PlayerState } from '../state/PlayerState';
 
 export enum BuildingType {

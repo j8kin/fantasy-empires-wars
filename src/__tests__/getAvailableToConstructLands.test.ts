@@ -1,10 +1,11 @@
 import { GameState } from '../state/GameState';
-import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { BuildingType } from '../types/Building';
+import { HeroUnitType } from '../types/UnitType';
+import { getDefaultUnit } from '../types/Unit';
+import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { construct } from '../map/building/construct';
 import { createGameStateStub } from './utils/createGameStateStub';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { getDefaultUnit, HeroUnitType } from '../types/Army';
 
 describe('getAvailableLands', () => {
   let gameStateStub: GameState;

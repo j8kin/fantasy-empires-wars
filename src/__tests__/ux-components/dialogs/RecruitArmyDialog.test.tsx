@@ -8,7 +8,7 @@ import { GameState } from '../../../state/GameState';
 import { LandPosition } from '../../../state/LandState';
 
 import { BuildingType } from '../../../types/Building';
-import { HeroUnitType, RegularUnitType, UnitType } from '../../../types/Army';
+import { HeroUnitType, RegularUnitType, UnitType } from '../../../types/UnitType';
 
 import { construct } from '../../../map/building/construct';
 

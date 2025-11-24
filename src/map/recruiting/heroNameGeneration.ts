@@ -1,4 +1,4 @@
-import { HeroUnitType } from '../../types/Army';
+import { HeroUnitType } from '../../types/UnitType';
 import { getRandomElement } from '../../types/getRandomElement';
 
 const humanMaleNames: string[] = [

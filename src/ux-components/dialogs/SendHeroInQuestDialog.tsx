@@ -7,7 +7,7 @@ import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage
 
 import { getLandId } from '../../state/LandState';
 
-import { HeroUnit, isHero } from '../../types/Army';
+import { HeroUnit, isHero } from '../../types/Unit';
 import { getAllQuests, getQuestType } from '../../types/Quest';
 
 import { findHeroByName } from '../../map/utils/findHeroByName';

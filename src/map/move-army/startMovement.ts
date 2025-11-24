@@ -1,7 +1,7 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/LandState';
 
-import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Army';
+import { HeroUnit, isHero, RegularUnit, Unit } from '../../types/Unit';
 
 import { findShortestPath } from '../utils/mapAlgorithms';
 

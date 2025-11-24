@@ -7,16 +7,8 @@ import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
 import { GameState } from '../../../state/GameState';
 import { LandPosition } from '../../../state/LandState';
 
-import {
-  Unit,
-  RegularUnit,
-  HeroUnit,
-  RegularUnitType,
-  HeroUnitType,
-  UnitRank,
-  getDefaultUnit,
-  isHero,
-} from '../../../types/Army';
+import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
+import { getDefaultUnit, HeroUnit, isHero, RegularUnit, Unit, UnitRank } from '../../../types/Unit';
 
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';

@@ -1,4 +1,5 @@
-import { getDefaultUnit, RegularUnit, RegularUnitType, UnitRank } from '../../types/Army';
+import { RegularUnitType } from '../../types/UnitType';
+import { getDefaultUnit, RegularUnit, UnitRank } from '../../types/Unit';
 import { calcMaxMove } from '../../map/move-army/calcMaxMove';
 
 describe('calcMaxMove', () => {

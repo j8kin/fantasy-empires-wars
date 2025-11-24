@@ -9,7 +9,7 @@ import {
   heroGainItem,
   heroGainRelic,
 } from './questCompleteMessages';
-import { HeroUnit } from '../../types/Army';
+import { HeroUnit } from '../../types/Unit';
 import { PlayerState } from '../../state/PlayerState';
 import { levelUpHero } from '../recruiting/levelUpHero';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';

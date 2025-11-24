@@ -1,6 +1,6 @@
 import { LandPosition } from '../state/LandState';
 
-import { HeroUnit } from './Army';
+import { HeroUnit } from './Unit';
 
 export type QuestType =
   | 'The Echoing Ruins'

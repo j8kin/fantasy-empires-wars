@@ -7,7 +7,8 @@ import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQues
 
 import { GameState } from '../../../state/GameState';
 
-import { getDefaultUnit, HeroUnit, HeroUnitType, isHero } from '../../../types/Army';
+import { getDefaultUnit, HeroUnit, isHero } from '../../../types/Unit';
+import { HeroUnitType } from '../../../types/UnitType';
 import { Alignment } from '../../../types/Alignment';
 import { getLands } from '../../../map/utils/getLands';
 

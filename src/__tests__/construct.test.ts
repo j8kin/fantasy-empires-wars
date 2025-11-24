@@ -3,11 +3,13 @@ import { PlayerState } from '../state/PlayerState';
 import { getLandId, LandPosition } from '../state/LandState';
 
 import { BuildingType, getBuilding } from '../types/Building';
-import { getLands } from '../map/utils/getLands';
-import { getDefaultUnit, RegularUnitType } from '../types/Army';
+import { RegularUnitType } from '../types/UnitType';
+import { getDefaultUnit } from '../types/Unit';
 import { relicts, TreasureItem } from '../types/Treasures';
 
 import { construct } from '../map/building/construct';
+
+import { getLands } from '../map/utils/getLands';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { createGameStateStub } from './utils/createGameStateStub';
 import { getTilesInRadius } from '../map/utils/mapAlgorithms';

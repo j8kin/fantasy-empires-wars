@@ -1,6 +1,6 @@
 import { PlayerColorName } from '../types/PlayerColors';
 import { Alignment } from '../types/Alignment';
-import { HeroUnitType } from '../types/Army';
+import { HeroUnitType } from '../types/UnitType';
 import { Mana, ManaType } from '../types/Mana';
 import { HeroQuest } from '../types/Quest';
 import { EmpireTreasure } from '../types/Treasures';

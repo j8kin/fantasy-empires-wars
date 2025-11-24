@@ -10,7 +10,7 @@ import { getLandId } from '../../state/LandState';
 
 import { ButtonName } from '../../types/ButtonName';
 import { BuildingType } from '../../types/Building';
-import { isHero } from '../../types/Army';
+import { isHero } from '../../types/Unit';
 
 import { getLands } from '../../map/utils/getLands';
 

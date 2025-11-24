@@ -1,4 +1,4 @@
-import { HeroUnitType, RegularUnitType, UnitType } from '../types/Army';
+import { HeroUnitType, RegularUnitType, UnitType } from '../types/UnitType';
 
 import wardHandsImg from './army/ward-hands.png';
 import warriorImg from './army/warrior.png';

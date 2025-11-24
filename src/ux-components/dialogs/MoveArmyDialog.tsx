@@ -8,7 +8,7 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 
 import { ButtonName } from '../../types/ButtonName';
-import { HeroUnit, isHero, RegularUnit, Unit, UnitRank } from '../../types/Army';
+import { HeroUnit, isHero, RegularUnit, Unit, UnitRank } from '../../types/Unit';
 import { startMovement } from '../../map/move-army/startMovement';
 
 const MoveArmyDialog: React.FC = () => {

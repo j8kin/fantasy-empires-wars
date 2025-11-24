@@ -1,5 +1,7 @@
 import { PlayerProfile, PREDEFINED_PLAYERS } from '../../state/PlayerState';
-import { getDefaultUnit, HeroUnit, HeroUnitType } from '../../types/Army';
+import { getDefaultUnit, HeroUnit } from '../../types/Unit';
+import { HeroUnitType } from '../../types/UnitType';
+
 import { levelUpHero } from '../../map/recruiting/levelUpHero';
 import { toGamePlayer } from '../utils/toGamePlayer';
 import { artifacts, TreasureItem } from '../../types/Treasures';

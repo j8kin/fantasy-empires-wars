@@ -3,7 +3,7 @@ import { PlayerProfile, PREDEFINED_PLAYERS } from '../../state/PlayerState';
 import { LandPosition } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
-import { getDefaultUnit, HeroUnit } from '../../types/Army';
+import { getDefaultUnit, HeroUnit } from '../../types/Unit';
 import { construct } from '../../map/building/construct';
 import { generateMap } from '../../map/generation/generateMap';
 import { levelUpHero } from '../../map/recruiting/levelUpHero';

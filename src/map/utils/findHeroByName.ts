@@ -1,7 +1,6 @@
 import { GameState } from '../../state/GameState';
 import { getLands } from './getLands';
-import { HeroUnit } from '../../types/Army';
-import { isHero } from '../../types/Army';
+import { HeroUnit, isHero } from '../../types/Unit';
 
 export const findHeroByName = (name: string, gameState: GameState): HeroUnit | undefined => {
   const lands = getLands({

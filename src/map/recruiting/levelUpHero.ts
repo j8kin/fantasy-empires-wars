@@ -1,4 +1,5 @@
-import { getDefaultUnit, HeroUnit, HeroUnitType } from '../../types/Army';
+import { getDefaultUnit, HeroUnit } from '../../types/Unit';
+import { HeroUnitType } from '../../types/UnitType';
 import { TreasureItem } from '../../types/Treasures';
 import { Alignment } from '../../types/Alignment';
 import { PlayerState } from '../../state/PlayerState';

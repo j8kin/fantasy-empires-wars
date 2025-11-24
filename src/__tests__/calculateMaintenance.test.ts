@@ -3,14 +3,9 @@ import { GameState } from '../state/GameState';
 import { getLandId, LandPosition } from '../state/LandState';
 import { BuildingType } from '../types/Building';
 
-import {
-  getDefaultUnit,
-  HeroUnit,
-  HeroUnitType,
-  RegularUnit,
-  RegularUnitType,
-  UnitRank,
-} from '../types/Army';
+import { getDefaultUnit, HeroUnit, RegularUnit, UnitRank } from '../types/Unit';
+import { HeroUnitType, RegularUnitType } from '../types/UnitType';
+
 import { construct } from '../map/building/construct';
 
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';

@@ -4,16 +4,10 @@ import { LandPosition, LandState } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
 import { relicts, TreasureItem } from '../../types/Treasures';
+import { getDefaultUnit, HeroUnit, RegularUnit } from '../../types/Unit';
+import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
-import {
-  getDefaultUnit,
-  HeroUnit,
-  HeroUnitType,
-  RegularUnit,
-  RegularUnitType,
-  UnitType,
-} from '../../types/Army';
 import { construct } from '../../map/building/construct';
 
 import { getLands } from '../../map/utils/getLands';

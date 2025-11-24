@@ -9,7 +9,8 @@ import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
 import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType, getBuilding } from '../../types/Building';
-import { isHero, RegularUnit } from '../../types/Army';
+import { isHero, RegularUnit } from '../../types/Unit';
+
 import { getPlayerColorValue } from '../../types/PlayerColors';
 
 import { construct } from '../../map/building/construct';

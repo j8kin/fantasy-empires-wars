@@ -4,13 +4,14 @@ import { LandPosition, LandState } from '../../state/LandState';
 import { QuestType } from '../../types/Quest';
 import { TreasureItem } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
-import { HeroUnit, HeroUnitType, isHero, RegularUnitType } from '../../types/Army';
+import { HeroUnit, isHero } from '../../types/Unit';
+import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 
 import { getLands } from '../../map/utils/getLands';
 import { startQuest } from '../../map/quest/startQuest';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
-import { construct } from '../../map/building/construct';
 
+import { construct } from '../../map/building/construct';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 

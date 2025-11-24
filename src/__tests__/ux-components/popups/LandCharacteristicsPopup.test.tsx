@@ -4,14 +4,9 @@ import { ApplicationContextProvider } from '../../../contexts/ApplicationContext
 import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
 import { GameState } from '../../../state/GameState';
 import { getLandId, LandState } from '../../../state/LandState';
-import {
-  Armies,
-  getDefaultUnit,
-  HeroUnit,
-  HeroUnitType,
-  RegularUnit,
-  RegularUnitType,
-} from '../../../types/Army';
+import { Armies } from '../../../types/Army';
+import { getDefaultUnit, HeroUnit, RegularUnit } from '../../../types/Unit';
+import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
 import { BuildingType } from '../../../types/Building';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';

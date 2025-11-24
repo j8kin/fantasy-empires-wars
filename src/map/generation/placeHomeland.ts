@@ -2,7 +2,7 @@ import { GameState } from '../../state/GameState';
 import { getLandId, LandState } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
-import { getDefaultUnit, HeroUnit } from '../../types/Army';
+import { getDefaultUnit, HeroUnit } from '../../types/Unit';
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { levelUpHero } from '../recruiting/levelUpHero';

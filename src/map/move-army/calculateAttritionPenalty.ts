@@ -1,6 +1,8 @@
 import { GameState } from '../../state/GameState';
-import { isHero, isWarMachine, RegularUnit, RegularUnitType, UnitRank } from '../../types/Army';
+import { isHero, isWarMachine, RegularUnit, UnitRank } from '../../types/Unit';
+
 import { getHostileLands } from '../utils/getHostileLands';
+import { RegularUnitType } from '../../types/UnitType';
 
 // The equivalent number of units per war machine to calculate the attrition penalty.
 const WAR_MACHINE_PER_UNIT = 20;

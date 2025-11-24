@@ -3,7 +3,7 @@ import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 
 import { BuildingType } from '../../types/Building';
-import { HeroUnit, isHero, Unit, UnitRank } from '../../types/Army';
+import { HeroUnit, isHero, Unit, UnitRank } from '../../types/Unit';
 
 const unitMaintenanceCost = (unit: Unit): number => {
   if (isHero(unit)) {

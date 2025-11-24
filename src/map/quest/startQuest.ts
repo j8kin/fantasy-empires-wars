@@ -1,5 +1,5 @@
 import { GameState } from '../../state/GameState';
-import { HeroUnit, isHero } from '../../types/Army';
+import { HeroUnit, isHero } from '../../types/Unit';
 import { getQuest, QuestType } from '../../types/Quest';
 import { getLands } from '../utils/getLands';
 

@@ -9,10 +9,9 @@ import { LandPosition } from '../../../state/LandState';
 
 import { ButtonName } from '../../../types/ButtonName';
 import { BuildingType } from '../../../types/Building';
-import { getDefaultUnit, HeroUnit } from '../../../types/Army';
+import { getDefaultUnit, HeroUnit } from '../../../types/Unit';
 
 import { construct } from '../../../map/building/construct';
-
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { createGameStateStub } from '../../utils/createGameStateStub';
 

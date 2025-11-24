@@ -1,7 +1,8 @@
 import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
-import { getDefaultUnit, HeroUnit, HeroUnitType, isHero, RegularUnit } from '../../types/Army';
+import { HeroUnitType } from '../../types/UnitType';
+import { getDefaultUnit, HeroUnit, isHero, RegularUnit } from '../../types/Unit';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
