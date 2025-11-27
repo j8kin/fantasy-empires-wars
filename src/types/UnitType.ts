@@ -8,6 +8,7 @@ export enum RegularUnitType {
   DARK_ELF = 'Dark-Elf',
   BALLISTA = 'Ballista',
   CATAPULT = 'Catapult',
+  UNDEAD = 'Undead',
 }
 
 export enum HeroUnitType {

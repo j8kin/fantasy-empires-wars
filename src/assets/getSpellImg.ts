@@ -17,6 +17,8 @@ import fireStormImg from './spells/red/firestorm.png';
 import meteorShowerImg from './spells/red/meteor-shower.png';
 import summonUndeadImg from './spells/black/summon-undead.png';
 import raiseDeadHeroImg from './spells/black/raise-dead-hero.png';
+import plagueImg from './spells/black/plague.png';
+import corruptionImg from './spells/black/corruption.png';
 
 export const getSpellImg = (spell: Spell) => {
   switch (spell.id) {
@@ -59,6 +61,10 @@ export const getSpellImg = (spell: Spell) => {
       return summonUndeadImg;
     case SpellName.RAISE_DEAD_HERO:
       return raiseDeadHeroImg;
+    case SpellName.PLAGUE:
+      return plagueImg;
+    case SpellName.CORRUPTION:
+      return corruptionImg;
     default:
       return undefined;
   }

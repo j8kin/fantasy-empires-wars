@@ -72,6 +72,18 @@ export const getBaseUnitStats = (unitType: UnitType): BaseUnitStats => {
         description:
           'Clad in runed steel and bound by oath, Dwarves hold the line like mountains given form—unyielding, proud, and slow to fall.',
       };
+    case RegularUnitType.UNDEAD:
+      return {
+        attack: 25,
+        defense: 50,
+        health: 10,
+        speed: 5,
+        alignment: Alignment.CHAOTIC,
+        recruitCost: 800,
+        maintainCost: 7,
+        description:
+          'Raised beyond fear and freed from breath, the Undead march in silence—enduring not by life, but refusal to fall.',
+      };
     case RegularUnitType.ORC:
       return {
         attack: 10,
