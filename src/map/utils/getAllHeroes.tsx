@@ -21,12 +21,10 @@ export const getAllHeroes = (gameState: GameState, isMageUnit?: boolean): HeroUn
   const allHeroes: HeroUnit[] =
     getLands({ gameState: gameState, noArmy: false }).flatMap((land) =>
       land.army
-        .filter(
-          (army) => army.controlledBy === turnOwner.id && army.units.some((u) => isHeroType(u.id))
-        )
+        .filter((army) => army.controlledBy === turnOwner.id)
         .flatMap(
           (army) =>
-            army.units.filter((u) =>
+            army.heroes.filter((u) =>
               isMageUnit == null
                 ? isHeroType(u.id)
                 : isMageUnit

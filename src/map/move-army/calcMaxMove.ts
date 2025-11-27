@@ -24,7 +24,7 @@ export const calcMaxMove = (army: RegularUnit[]): number => {
   if (army.length === 0) return 0; // probably only heroes in army move only on player owner lands
   const fullArmy = Object.values(UnitRank).map((r) => ({
     rank: r,
-    num: nUnits(army.filter((u) => u.level === r)),
+    num: nUnits(army.filter((u) => u.rank === r)),
   }));
 
   const acc = fullArmy.map((a) => ({ ...a }));

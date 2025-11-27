@@ -1,89 +1,63 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/LandState';
 
-import { RegularUnit } from '../../types/RegularUnit';
-import { HeroUnit } from '../../types/HeroUnit';
-import { isHeroType } from '../../types/UnitType';
-import { Unit } from '../../types/BaseUnit';
-
-import { findShortestPath } from '../utils/mapAlgorithms';
+import { ArmyBriefInfo, createArmy } from '../../types/Army';
 
 export const MIN_HERO_PACKS = 10;
 
 export const startMovement = (
   from: LandPosition,
   to: LandPosition,
-  units: Unit[],
+  units: ArmyBriefInfo,
   gameState: GameState
 ) => {
   // Hero units could move on hostile territories only with Regular units or if there are move then 10 heroes are moved
   if (
     gameState.getLandOwner(to) !== gameState.turnOwner.id &&
-    units.every((u) => isHeroType(u.id)) &&
-    units.length < MIN_HERO_PACKS
+    units.regulars.length === 0 &&
+    units.heroes.length < MIN_HERO_PACKS
   ) {
     return;
   }
 
   // expect that there is a stationed army in from land
-  const stationedArmy = gameState.getLand(from).army.filter((a) => a.movements == null);
+  const stationedArmy = gameState.getLand(from).army.filter((a) => !a.isMoving);
   if (stationedArmy.length !== 1) {
     return; // fallback: it should be the only one stationed Army
   }
   // expect that there are enough units in stationed army to move
-  for (const unit of units) {
-    if (isHeroType(unit.id)) {
-      if (!stationedArmy[0].units.some((u) => (u as HeroUnit).name === (unit as HeroUnit).name)) {
-        return; // fallback: hero is not in the stationed army
-      }
-    } else {
-      const regUnit = stationedArmy[0].units.find((u) => u.id === unit.id) as RegularUnit;
-      if (regUnit == null || regUnit.count < (unit as RegularUnit).count) {
-        return; // fallback: not enough units in the stationed army
-      }
+  for (let i = 0; i < units.heroes.length; i++) {
+    const hero = units.heroes[i];
+    if (!stationedArmy[0].heroes.some((h) => h.name === hero.name)) {
+      return; // fallback: hero is not in the stationed army
+    }
+  }
+
+  for (let i = 0; i < units.regulars.length; i++) {
+    const regular = units.regulars[i];
+    if (
+      !stationedArmy[0].regulars.some(
+        (u) => u.id === regular.id && u.rank === regular.rank && u.count >= regular.count
+      )
+    ) {
+      return; // fallback: not enough units in the stationed army
     }
   }
 
   // update stationed army: remove moved heroes and decrement regular units
-  // 1) Remove all heroes from stationedArmy[0].units that have the same name as heroes in units
-  const heroesToMove = new Set(
-    units.filter((u) => isHeroType(u.id)).map((u) => (u as HeroUnit).name)
+  const movingArmy = createArmy(gameState.turnOwner.id, stationedArmy[0].position);
+  units.heroes.forEach((hero) => movingArmy.addHero(stationedArmy[0].getHero(hero.name)!));
+  units.regulars.forEach((regular) =>
+    movingArmy.addRegulars(stationedArmy[0].getRegulars(regular.id, regular.rank, regular.count)!)
   );
-  if (heroesToMove.size > 0) {
-    stationedArmy[0].units = stationedArmy[0].units.filter(
-      (u) => !isHeroType(u.id) || !heroesToMove.has((u as HeroUnit).name)
-    );
-  }
 
-  // 2) For regular units: decrement count by the count in units; if becomes 0, remove the unit
-  units.forEach((unit) => {
-    if (!isHeroType(unit.id)) {
-      const reg = unit as RegularUnit;
-      const idx = stationedArmy[0].units.findIndex(
-        (u) => !isHeroType(u.id) && (u as RegularUnit).id === reg.id
-      );
-      const stationedReg = stationedArmy[0].units[idx] as RegularUnit;
-      const newCount = stationedReg.count - reg.count;
-      if (newCount <= 0) {
-        stationedArmy[0].units.splice(idx, 1);
-      } else {
-        stationedArmy[0].units[idx] = { ...stationedReg, count: newCount } as RegularUnit;
-      }
-    }
-  });
+  movingArmy.startMoving(from, to);
 
   // remove stationed army from the land if it is empty
-  gameState.getLand(from).army = gameState.getLand(from).army.filter((a) => a.units.length !== 0);
+  gameState.getLand(from).army = gameState
+    .getLand(from)
+    .army.filter((a) => a.regulars.length !== 0 || a.heroes.length !== 0);
 
   // add a new army with movement to the land
-  gameState.getLand(from).army.push({
-    units: units,
-    movements: {
-      from: from,
-      to: to,
-      mp: 6,
-      path: findShortestPath(gameState.map.dimensions, from, to),
-    },
-    controlledBy: gameState.turnOwner.id,
-  });
+  gameState.getLand(from).army.push(movingArmy);
 };

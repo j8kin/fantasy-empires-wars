@@ -1,7 +1,7 @@
 import { HeroUnitType, isMageType } from './UnitType';
 import { Artifact, TreasureItem } from './Treasures';
 import { Alignment } from './Alignment';
-import { getBaseUnitStats, getRecruitDuration } from './BaseUnit';
+import { BaseUnitStats, getBaseUnitStats, getRecruitDuration } from './BaseUnit';
 
 export interface HeroUnit {
   get id(): HeroUnitType;
@@ -9,13 +9,8 @@ export interface HeroUnit {
   get level(): number;
   get artifacts(): Artifact[]; // for now, it is planned to have only one artifact per hero
   get mana(): number | undefined; // how many mana produced per turn, undefined for non-magic heroes
-  // get BaseUnitStats(): BaseUnitStats;
-  get attack(): number;
-  get defense(): number;
-  get range(): number | undefined;
-  get rangeDamage(): number | undefined;
-  get health(): number;
-  get speed(): number;
+  /** return immutable copy of base stats */
+  get baseStats(): BaseUnitStats;
   get alignment(): Alignment;
   get recruitCost(): number;
   get maintainCost(): number;
@@ -44,23 +39,8 @@ export const createHeroUnit = (heroType: HeroUnitType, name: string): HeroUnit =
     get artifacts(): Artifact[] {
       return artifacts;
     },
-    get attack(): number {
-      return baseUnitStats.attack;
-    },
-    get defense(): number {
-      return baseUnitStats.defense;
-    },
-    get range(): number | undefined {
-      return baseUnitStats.range;
-    },
-    get rangeDamage(): number | undefined {
-      return baseUnitStats.rangeDamage;
-    },
-    get health(): number {
-      return baseUnitStats.health;
-    },
-    get speed(): number {
-      return baseUnitStats.speed;
+    get baseStats(): BaseUnitStats {
+      return { ...baseUnitStats };
     },
     get alignment(): Alignment {
       return baseUnitStats.alignment;

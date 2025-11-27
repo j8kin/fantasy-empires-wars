@@ -12,6 +12,7 @@ import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { createGameStateStub } from './utils/createGameStateStub';
 import { createHeroUnit } from '../types/HeroUnit';
 import { Alignment } from '../types/Alignment';
+import { createArmy } from '../types/Army';
 
 describe('Calculate Maintenance', () => {
   let gameStateStub: GameState;
@@ -42,10 +43,7 @@ describe('Calculate Maintenance', () => {
       }
 
       gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [
-        {
-          units: [heroUnit],
-          controlledBy: gameStateStub.turnOwner.id,
-        },
+        createArmy(gameStateStub.turnOwner.id, { row: 0, col: 0 }, [heroUnit]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -69,16 +67,13 @@ describe('Calculate Maintenance', () => {
     ])('RegularUnit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
       gameStateStub.turnOwner.addLand(getLandId({ row: 0, col: 0 }));
       const regularUnit = createRegularUnit(regular);
-      while (regularUnit.level !== level) {
+      while (regularUnit.rank !== level) {
         regularUnit.levelUp();
       }
       regularUnit.count = quantity;
 
       gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [
-        {
-          units: [regularUnit],
-          controlledBy: gameStateStub.turnOwner.id,
-        },
+        createArmy(gameStateStub.turnOwner.id, { row: 0, col: 0 }, undefined, [regularUnit]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -88,28 +83,18 @@ describe('Calculate Maintenance', () => {
       const elitDwarf = createRegularUnit(RegularUnitType.DWARF);
       elitDwarf.levelUp();
       elitDwarf.levelUp();
-      expect(elitDwarf.level).toBe(UnitRank.ELITE);
+      expect(elitDwarf.rank).toBe(UnitRank.ELITE);
       elitDwarf.count = 17;
 
       gameStateStub.turnOwner.addLand(getLandId({ row: 0, col: 0 }));
-      gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [
-        {
-          units: [createHeroUnit(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER)],
-          controlledBy: gameStateStub.turnOwner.id,
-        },
-        {
-          units: [createRegularUnit(RegularUnitType.DWARF)],
-          controlledBy: gameStateStub.turnOwner.id,
-        },
-        {
-          units: [createRegularUnit(RegularUnitType.BALLISTA)],
-          controlledBy: gameStateStub.turnOwner.id,
-        },
-        {
-          units: [elitDwarf],
-          controlledBy: gameStateStub.turnOwner.id,
-        },
-      ];
+      const army = createArmy(gameStateStub.turnOwner.id, { row: 0, col: 0 }, [
+        createHeroUnit(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+      ]);
+      army.addRegulars(createRegularUnit(RegularUnitType.DWARF));
+      army.addRegulars(createRegularUnit(RegularUnitType.BALLISTA));
+      army.addRegulars(elitDwarf);
+
+      gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [army];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(520);
     });

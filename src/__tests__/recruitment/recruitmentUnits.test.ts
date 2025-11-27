@@ -4,10 +4,9 @@ import { LandPosition, LandState } from '../../state/LandState';
 
 import { BuildingType } from '../../types/Building';
 import { relicts, TreasureItem } from '../../types/Treasures';
-import { RegularUnit } from '../../types/RegularUnit';
+import { RegularUnit, UnitRank } from '../../types/RegularUnit';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
 import { getBaseUnitStats } from '../../types/BaseUnit';
-import { HeroUnit } from '../../types/HeroUnit';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
@@ -143,15 +142,15 @@ describe('Recruitment', () => {
 
         // check that all units are placed on the map
         expect(barracksLand.army.length).toBe(1);
-        expect(barracksLand.army[0].units.length).toBe(1);
+        expect(barracksLand.army[0].regulars.length).toBe(1);
         expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-        expect(barracksLand.army[0].movements).toBeUndefined();
-        expect(barracksLand.army[0].units[0].id).toBe(unitType);
+        expect(barracksLand.army[0].isMoving).toBeFalsy();
+        expect(barracksLand.army[0].regulars[0].id).toBe(unitType);
 
-        const recruitedUnit = barracksLand.army[0].units[0] as RegularUnit;
+        const recruitedUnit = barracksLand.army[0].regulars[0];
         expect(recruitedUnit.id).toBe(unitType);
         expect(recruitedUnit.count).toBe(nUnits);
-        expect(recruitedUnit.level).toBe('regular');
+        expect(recruitedUnit.rank).toBe(UnitRank.REGULAR);
       }
     );
 
@@ -175,12 +174,12 @@ describe('Recruitment', () => {
 
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
 
-      let recruitedUnit = barracksLand.army[0].units[0] as RegularUnit;
+      let recruitedUnit = barracksLand.army[0].regulars[0] as RegularUnit;
       expect(recruitedUnit.id).toBe(RegularUnitType.WARRIOR);
       expect(recruitedUnit.count).toBe(20);
-      expect(recruitedUnit.level).toBe('regular');
+      expect(recruitedUnit.rank).toBe(UnitRank.REGULAR);
 
       testTurnManagement.makeNTurns(1);
 
@@ -188,20 +187,20 @@ describe('Recruitment', () => {
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
       expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-      expect(barracksLand.army[0].movements).toBeUndefined();
-      expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
+      expect(barracksLand.army[0].isMoving).toBeFalsy();
+      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
 
-      recruitedUnit = barracksLand.army[0].units[0] as RegularUnit;
+      recruitedUnit = barracksLand.army[0].regulars[0] as RegularUnit;
       expect(recruitedUnit.id).toBe(RegularUnitType.WARRIOR);
       expect(recruitedUnit.count).toBe(20);
-      expect(recruitedUnit.level).toBe('regular');
+      expect(recruitedUnit.rank).toBe(UnitRank.REGULAR);
 
-      expect(barracksLand.army[0].units[1].id).toBe(RegularUnitType.BALLISTA);
+      expect(barracksLand.army[0].regulars[1].id).toBe(RegularUnitType.BALLISTA);
 
-      recruitedUnit = barracksLand.army[0].units[1] as RegularUnit;
+      recruitedUnit = barracksLand.army[0].regulars[1] as RegularUnit;
       expect(recruitedUnit.id).toBe(RegularUnitType.BALLISTA);
       expect(recruitedUnit.count).toBe(1);
-      expect(recruitedUnit.level).toBe('regular');
+      expect(recruitedUnit.rank).toBe(UnitRank.REGULAR);
     });
 
     it('When more then 1 slot recruit the same unit type they should be merged when recruited', () => {
@@ -218,9 +217,9 @@ describe('Recruitment', () => {
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
       expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-      expect(barracksLand.army[0].movements).toBeUndefined();
-      expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
-      expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(60);
+      expect(barracksLand.army[0].isMoving).toBeFalsy();
+      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
+      expect((barracksLand.army[0].regulars[0] as RegularUnit).count).toBe(60);
     });
 
     it('When units are recruited and the same type of units are exist on Land they merged', () => {
@@ -233,9 +232,9 @@ describe('Recruitment', () => {
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
       expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-      expect(barracksLand.army[0].movements).toBeUndefined();
-      expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
-      expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(20);
+      expect(barracksLand.army[0].isMoving).toBeFalsy();
+      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
+      expect(barracksLand.army[0].regulars[0].count).toBe(20);
 
       startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub); // recruit more warrior
       verifyRecruitSlot(barracksLand.mapPos, 0, 1, RegularUnitType.WARRIOR, 1);
@@ -246,9 +245,9 @@ describe('Recruitment', () => {
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
       expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-      expect(barracksLand.army[0].movements).toBeUndefined();
-      expect(barracksLand.army[0].units[0].id).toBe(RegularUnitType.WARRIOR);
-      expect((barracksLand.army[0].units[0] as RegularUnit).count).toBe(40); // verify that units are merged
+      expect(barracksLand.army[0].isMoving).toBeFalsy();
+      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
+      expect(barracksLand.army[0].regulars[0].count).toBe(40); // verify that units are merged
     });
 
     describe('Corner cases', () => {
@@ -324,8 +323,8 @@ describe('Recruitment', () => {
 
           expect(barracksLand.army.length).toBe(1);
           expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-          expect(barracksLand.army[0].movements).toBeUndefined();
-          const recruitedUnit = barracksLand.army[0].units[0] as HeroUnit;
+          expect(barracksLand.army[0].isMoving).toBeFalsy();
+          const recruitedUnit = barracksLand.army[0].heroes[0];
           expect(recruitedUnit.id).toBe(unitType);
           expect(recruitedUnit.name).toBe(name);
           expect(recruitedUnit.level).toBe(1);
@@ -361,8 +360,8 @@ describe('Recruitment', () => {
 
           expect(mageTowerLand.army.length).toBe(1);
           expect(mageTowerLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-          expect(mageTowerLand.army[0].movements).toBeUndefined();
-          const recruitedUnit = mageTowerLand.army[0].units[0] as HeroUnit;
+          expect(mageTowerLand.army[0].isMoving).toBeFalsy();
+          const recruitedUnit = mageTowerLand.army[0].heroes[0];
           expect(recruitedUnit.id).toBe(unitType);
           expect(recruitedUnit.name).toBe(name);
           expect(recruitedUnit.level).toBe(1);
@@ -393,8 +392,8 @@ describe('Recruitment', () => {
 
         expect(barracksLand.army.length).toBe(1);
         expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-        expect(barracksLand.army[0].movements).toBeUndefined();
-        expect(barracksLand.army[0].units.length).toBe(3);
+        expect(barracksLand.army[0].isMoving).toBeFalsy();
+        expect(barracksLand.army[0].heroes.length).toBe(3);
       });
     });
 

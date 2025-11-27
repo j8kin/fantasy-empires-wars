@@ -210,12 +210,7 @@ describe('UnitActionControl', () => {
       // Assign movements to the hero
       const land = gameState.map.lands[`${heroPosition.row}-${heroPosition.col}`];
       if (land.army[0]) {
-        land.army[0].movements = {
-          mp: 0,
-          from: heroPosition,
-          to: { row: 4, col: 4 },
-          path: [heroPosition, { row: 4, col: 4 }],
-        };
+        land.army[0].startMoving(heroPosition, { row: 4, col: 4 });
       }
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -297,12 +292,7 @@ describe('UnitActionControl', () => {
       // Assign movements
       const land = gameState.map.lands[`${armyPosition.row}-${armyPosition.col}`];
       if (land.army[0]) {
-        land.army[0].movements = {
-          mp: 0,
-          from: armyPosition,
-          to: { row: 4, col: 4 },
-          path: [armyPosition, { row: 4, col: 4 }],
-        };
+        land.army[0].startMoving(armyPosition, { row: 4, col: 4 });
       }
 
       renderWithProviders(<UnitActionControl />, gameState);

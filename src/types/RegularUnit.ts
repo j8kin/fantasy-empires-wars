@@ -1,6 +1,6 @@
 import { Alignment } from './Alignment';
 import { RegularUnitType } from './UnitType';
-import { getBaseUnitStats, getRecruitDuration } from './BaseUnit';
+import { BaseUnitStats, getBaseUnitStats, getRecruitDuration } from './BaseUnit';
 
 export enum UnitRank {
   REGULAR = 'regular',
@@ -10,16 +10,11 @@ export enum UnitRank {
 
 export interface RegularUnit {
   get id(): RegularUnitType;
-  get level(): UnitRank;
+  get rank(): UnitRank;
   get count(): number;
   set count(newCount: number);
-  // get BaseUnitStats(): BaseUnitStats;
-  get attack(): number;
-  get defense(): number;
-  get range(): number | undefined;
-  get rangeDamage(): number | undefined;
-  get health(): number;
-  get speed(): number;
+  /** return immutable copy of base stats */
+  get baseStats(): BaseUnitStats;
   get alignment(): Alignment;
   get recruitCost(): number;
   get recruitDuration(): number;
@@ -29,15 +24,18 @@ export interface RegularUnit {
   levelUp(): void;
 }
 
-export const createRegularUnit = (unitType: RegularUnitType): RegularUnit => {
+export const createRegularUnit = (
+  unitType: RegularUnitType,
+  initialCount: number | undefined = undefined
+): RegularUnit => {
   const baseUnitStats = getBaseUnitStats(unitType);
   let level = UnitRank.REGULAR;
-  let count = getRegularUnitCount(unitType);
+  let count = initialCount == null ? getRegularUnitCount(unitType) : initialCount;
   return {
     get id(): RegularUnitType {
       return unitType;
     },
-    get level(): UnitRank {
+    get rank(): UnitRank {
       return level;
     },
     get count(): number {
@@ -46,23 +44,9 @@ export const createRegularUnit = (unitType: RegularUnitType): RegularUnit => {
     set count(newCount) {
       count = newCount;
     },
-    get attack(): number {
-      return baseUnitStats.attack;
-    },
-    get defense(): number {
-      return baseUnitStats.defense;
-    },
-    get range(): number | undefined {
-      return baseUnitStats.range;
-    },
-    get rangeDamage(): number | undefined {
-      return baseUnitStats.rangeDamage;
-    },
-    get health(): number {
-      return baseUnitStats.health;
-    },
-    get speed(): number {
-      return baseUnitStats.speed;
+    /** return immutable copy of base stats */
+    get baseStats(): BaseUnitStats {
+      return { ...baseUnitStats };
     },
     get alignment(): Alignment {
       return baseUnitStats.alignment;

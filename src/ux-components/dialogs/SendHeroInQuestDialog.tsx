@@ -9,7 +9,6 @@ import { getLandId } from '../../state/LandState';
 
 import { getAllQuests, getQuestType } from '../../types/Quest';
 import { HeroUnit } from '../../types/HeroUnit';
-import { isHeroType } from '../../types/UnitType';
 
 import { findHeroByName } from '../../map/utils/findHeroByName';
 import { startQuest } from '../../map/quest/startQuest';
@@ -46,9 +45,7 @@ const SendHeroInQuestDialog: React.FC = () => {
       return;
     }
 
-    const availableUnits = land.army
-      .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHeroType(unit.id)))
-      .map((unit) => unit as HeroUnit);
+    const availableUnits = land.army.flatMap((armyUnit) => armyUnit.heroes);
 
     if (availableUnits.length === 0) {
       handleClose();
@@ -89,9 +86,7 @@ const SendHeroInQuestDialog: React.FC = () => {
     return null;
   }
 
-  const availableUnits = land.army
-    .flatMap((armyUnit) => armyUnit.units.filter((unit) => isHeroType(unit.id)))
-    .map((unit) => unit as HeroUnit);
+  const availableUnits = land.army.flatMap((armyUnit) => armyUnit.heroes);
 
   // If no heroes are available, don't render content
   if (availableUnits.length === 0) {

@@ -9,9 +9,6 @@ import { LandPosition, getLandId } from '../../state/LandState';
 import { NO_PLAYER } from '../../state/PlayerState';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { RegularUnit } from '../../types/RegularUnit';
-import { isHeroType } from '../../types/UnitType';
-import { HeroUnit } from '../../types/HeroUnit';
 
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
@@ -28,7 +25,7 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   const land = gameState!.map.lands[getLandId(battlefieldPosition)];
 
   // Calculate dynamic size based on content type
-  // MANUAL ADJUSTMENT POINT 1: Base heights and row spacing
+  //  Base heights and row spacing
   const headerHeight = 34; // Header with title (6px padding * 2 + 20px content)
   const standardRowHeight = 21; // Height per standard data row (Alignment, ControlledBy etc) (12px font + 6px margin)
   const buildingRowHeight = 24; // Height for building rows (includes building chip padding + gaps)
@@ -44,12 +41,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   }
 
   // Army rows - separate heroes and units
-  const heroes = land.army
-    .filter(({ units }) => units.some((unit) => isHeroType(unit.id)))
-    .flatMap((a) => a.units.filter((unit) => isHeroType(unit.id)).map((u) => u as HeroUnit));
-  const units = land.army
-    .filter(({ units }) => units.some((unit) => !isHeroType(unit.id)))
-    .flatMap((a) => a.units.filter((unit) => !isHeroType(unit.id)).map((u) => u as RegularUnit));
+  const heroes = land.army.flatMap((a) => a.heroes);
+  const units = land.army.flatMap((a) => a.regulars);
 
   if (heroes.length > 0) {
     calculatedHeight += heroes.length * armyRowHeight;
@@ -59,8 +52,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
     calculatedHeight += units.length * armyRowHeight;
   }
 
-  // MANUAL ADJUSTMENT POINT 2: Final height calculation
-  const dynamicHeight = Math.min(calculatedHeight, 270); // MANUAL ADJUSTMENT POINT 3: Max height limit
+  //  Final height calculation
+  const dynamicHeight = Math.min(calculatedHeight, 270); // Max height limit
   const dynamicWidth = 320;
 
   // Calculate adjusted screen position to keep popup within window bounds

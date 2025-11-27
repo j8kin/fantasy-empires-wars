@@ -5,7 +5,7 @@ import { RegularUnit } from './RegularUnit';
 
 export type Unit = HeroUnit | RegularUnit;
 
-interface BaseUnitStats {
+export interface BaseUnitStats {
   attack: number;
   defense: number;
   range?: number;

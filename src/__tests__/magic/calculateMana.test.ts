@@ -238,7 +238,7 @@ describe('Calculate Mana', () => {
       gameState: gameStateStub,
       players: [player.id],
       noArmy: false,
-    })[0].army[0].units[0] as HeroUnit;
+    })[0].army[0].heroes[0];
     return (playerHero.mana || 0) + playerSpecialLands;
   };
   it('on real map with 5 mage players and verify no mana calculation deviations', () => {

@@ -5,18 +5,19 @@ import { NO_PLAYER } from '../../state/PlayerState';
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { construct } from '../building/construct';
+import { createHeroUnit } from '../../types/HeroUnit';
+import { createArmy } from '../../types/Army';
 
 import { getRandomElement } from '../../types/getRandomElement';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getLands } from '../utils/getLands';
-import { createHeroUnit } from '../../types/HeroUnit';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   const player = gameState.turnOwner;
   const hero = createHeroUnit(player.getType(), player.getName());
   while (hero.level < player.getLevel()) hero.levelUp(player.getAlignment());
   // initial Hero immediately available in normal game it turn 3 turn to recruit#
-  gameState.getLand(homeland.mapPos).army.push({ units: [hero], controlledBy: player.id });
+  gameState.getLand(homeland.mapPos).army.push(createArmy(player.id, homeland.mapPos, [hero]));
 };
 
 export const placeHomeland = (gameState: GameState) => {

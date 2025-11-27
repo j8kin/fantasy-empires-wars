@@ -10,7 +10,6 @@ import { getLandId } from '../../state/LandState';
 
 import { ButtonName } from '../../types/ButtonName';
 import { BuildingType } from '../../types/Building';
-import { isHeroType } from '../../types/UnitType';
 
 import { getLands } from '../../map/utils/getLands';
 
@@ -75,9 +74,7 @@ const UnitActionControl: React.FC = () => {
           players: [gameState.turnOwner.id],
           noArmy: false,
         }) || []
-      ).filter((l) =>
-        l.army.some((u) => u.movements == null && u.units.some((unit) => isHeroType(unit.id)))
-      );
+      ).filter((l) => l.army.some((u) => !u.isMoving && u.heroes.length > 0));
 
       setSelectedLandAction('Quest');
       // Add glowing to all quest lands
@@ -105,7 +102,7 @@ const UnitActionControl: React.FC = () => {
           players: [gameState.turnOwner.id],
           noArmy: false,
         }) || []
-      ).filter((l) => l.army.some((a) => a.movements == null));
+      ).filter((l) => l.army.some((a) => !a.isMoving));
 
       setSelectedLandAction('MoveArmyFrom');
       // Add glowing to all army lands

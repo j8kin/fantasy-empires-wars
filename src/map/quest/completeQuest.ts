@@ -1,8 +1,11 @@
 import { GameState } from '../../state/GameState';
+import { PlayerState } from '../../state/PlayerState';
+
 import { getQuest, HeroQuest, QuestType } from '../../types/Quest';
 import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
 import { HeroUnit } from '../../types/HeroUnit';
+import { createArmy } from '../../types/Army';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 import {
   emptyHanded,
@@ -11,7 +14,6 @@ import {
   heroGainItem,
   heroGainRelic,
 } from './questCompleteMessages';
-import { PlayerState } from '../../state/PlayerState';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
@@ -115,16 +117,13 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
     questOutcome = calculateReward(hero, quest, gameState);
 
     // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
-    const stationedArmy = gameState.getLand(quest.land).army.find((a) => a.movements == null);
+    const stationedArmy = gameState.getLand(quest.land).army.find((a) => !a.isMoving);
     if (stationedArmy) {
       // add into the existing stationed Army
-      stationedArmy.units.push(hero);
+      stationedArmy.heroes.push(hero);
     } else {
       // no valid army found, create new one
-      gameState.getLand(quest.land).army.push({
-        units: [hero],
-        controlledBy: turnOwner.id,
-      });
+      gameState.getLand(quest.land).army.push(createArmy(turnOwner.id, quest.land, [hero]));
     }
   } else {
     questOutcome = {

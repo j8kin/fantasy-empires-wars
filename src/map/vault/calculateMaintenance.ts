@@ -3,7 +3,7 @@ import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 
 import { BuildingType } from '../../types/Building';
-import { UnitRank } from '../../types/RegularUnit';
+import { RegularUnit, UnitRank } from '../../types/RegularUnit';
 import { HeroUnit } from '../../types/HeroUnit';
 import { isHeroType } from '../../types/UnitType';
 import { Unit } from '../../types/BaseUnit';
@@ -14,13 +14,14 @@ const unitMaintenanceCost = (unit: Unit): number => {
     return unit.maintainCost * (Math.floor((unit as HeroUnit).level / 4) + 1);
   }
 
-  switch (unit.level) {
+  const regularUnit = unit as RegularUnit;
+  switch (regularUnit.rank) {
     case UnitRank.VETERAN:
-      return unit.maintainCost * (unit.count ?? 0) * 1.5;
+      return regularUnit.maintainCost * regularUnit.count * 1.5;
     case UnitRank.ELITE:
-      return unit.maintainCost * (unit.count ?? 0) * 2;
+      return regularUnit.maintainCost * regularUnit.count * 2;
     case UnitRank.REGULAR:
-      return unit.maintainCost * (unit.count ?? 0);
+      return regularUnit.maintainCost * regularUnit.count;
     default:
       return 0; // fallback should never happen
   }
@@ -47,7 +48,11 @@ export const calculateMaintenance = (gameState: GameState): number => {
     return (
       acc +
       land.army.reduce((acc, army) => {
-        return acc + army.units.reduce((acc, unit) => acc + unitMaintenanceCost(unit), 0);
+        return (
+          acc +
+          army.heroes.reduce((acc, unit) => acc + unitMaintenanceCost(unit), 0) +
+          army.regulars.reduce((acc, unit) => acc + unitMaintenanceCost(unit), 0)
+        );
       }, 0)
     );
   }, 0);

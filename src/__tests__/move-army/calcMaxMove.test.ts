@@ -21,7 +21,7 @@ describe('calcMaxMove', () => {
     [UnitRank.ELITE, 140, 4],
   ])('%s units: %s -> %s moves', (unitRank: UnitRank, num: number, expTurns: number) => {
     const unit = createRegularUnit(RegularUnitType.WARRIOR);
-    while (unit.level !== unitRank) unit.levelUp();
+    while (unit.rank !== unitRank) unit.levelUp();
     unit.count = num;
 
     const moves = calcMaxMove([unit]);

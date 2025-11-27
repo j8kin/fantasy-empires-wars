@@ -8,19 +8,18 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 
 import { ButtonName } from '../../types/ButtonName';
-import { RegularUnit, UnitRank } from '../../types/RegularUnit';
+import { UnitRank } from '../../types/RegularUnit';
 
 import { startMovement } from '../../map/move-army/startMovement';
-import { Unit } from '../../types/BaseUnit';
-import { HeroUnit } from '../../types/HeroUnit';
-import { isHeroType } from '../../types/UnitType';
+import { ArmyBriefInfo } from '../../types/Army';
+import { HeroUnitType } from '../../types/UnitType';
 
 const MoveArmyDialog: React.FC = () => {
   const { setMoveArmyPath, moveArmyPath } = useApplicationContext();
   const { gameState } = useGameContext();
 
-  const fromUnitsRef = useRef<Unit[]>([]);
-  const toUnitsRef = useRef<Unit[]>([]);
+  const fromUnitsRef = useRef<ArmyBriefInfo | undefined>(undefined);
+  const toUnitsRef = useRef<ArmyBriefInfo | undefined>(undefined);
   const [, forceUpdate] = useState({});
 
   // Force component re-render
@@ -31,26 +30,29 @@ const MoveArmyDialog: React.FC = () => {
 
   React.useEffect(() => {
     if (!moveArmyPath || !gameState) {
-      fromUnitsRef.current = [];
-      toUnitsRef.current = [];
+      fromUnitsRef.current = undefined;
+      toUnitsRef.current = undefined;
       triggerUpdate();
       return;
     }
 
     const fromLand = gameState.getLand(moveArmyPath.from);
-    const stationedArmy = fromLand.army.filter((a) => a.movements == null);
+    const stationedArmy = fromLand.army.filter((a) => !a.isMoving);
 
     if (stationedArmy == null || stationedArmy.length === 0) {
-      fromUnitsRef.current = [];
-      toUnitsRef.current = [];
+      fromUnitsRef.current = undefined;
+      toUnitsRef.current = undefined;
       triggerUpdate();
       return;
     }
 
     // Initialize using refs - completely bypass React state
     // Combine all units from all stationed armies on the land
-    fromUnitsRef.current = stationedArmy.flatMap((a) => a.units);
-    toUnitsRef.current = [];
+    fromUnitsRef.current = {
+      heroes: stationedArmy.flatMap((a) => a.briefInfo.heroes),
+      regulars: stationedArmy.flatMap((a) => a.briefInfo.regulars),
+    };
+    toUnitsRef.current = undefined;
     triggerUpdate();
   }, [moveArmyPath, gameState]);
 
@@ -59,12 +61,12 @@ const MoveArmyDialog: React.FC = () => {
   const toUnits = toUnitsRef.current;
 
   // Helper functions to update refs and trigger re-render
-  const updateFromUnits = (units: Unit[]) => {
+  const updateFromUnits = (units?: ArmyBriefInfo) => {
     fromUnitsRef.current = units;
     triggerUpdate();
   };
 
-  const updateToUnits = (units: Unit[]) => {
+  const updateToUnits = (units?: ArmyBriefInfo) => {
     toUnitsRef.current = units;
     triggerUpdate();
   };
@@ -80,14 +82,12 @@ const MoveArmyDialog: React.FC = () => {
 
   if (!moveArmyPath || !gameState) return null;
 
-  const stationedArmy = gameState
-    .getLand(moveArmyPath.from)
-    .army.filter((a) => a.movements == null);
+  const stationedArmy = gameState.getLand(moveArmyPath.from).army.filter((a) => !a.isMoving);
 
   if (stationedArmy == null || stationedArmy.length === 0) return null;
 
   const handleMove = () => {
-    if (!moveArmyPath) return;
+    if (!moveArmyPath || !toUnits) return;
 
     startMovement(moveArmyPath.from, moveArmyPath.to, toUnits, gameState);
     setMoveArmyPath(undefined);
@@ -98,12 +98,8 @@ const MoveArmyDialog: React.FC = () => {
   };
 
   // Helper function to get unit CSS class based on type and rank
-  const getUnitColorClass = (unit: Unit): string => {
-    if (isHeroType(unit.id)) {
-      return styles.heroUnit;
-    }
-    const regularUnit = unit as RegularUnit;
-    switch (regularUnit.level) {
+  const getUnitColorClass = (rank: UnitRank): string => {
+    switch (rank) {
       case UnitRank.REGULAR:
         return styles.regularUnit;
       case UnitRank.VETERAN:
@@ -114,168 +110,136 @@ const MoveArmyDialog: React.FC = () => {
   };
 
   // Transfer functions
-  const moveAllToRight = () => {
-    updateToUnits([...toUnits, ...fromUnits]);
-    updateFromUnits([]);
+  const moveAll = (direction: 'left' | 'right') => {
+    const newToUnits: ArmyBriefInfo = {
+      heroes: [...(toUnits?.heroes ?? []), ...(fromUnits?.heroes ?? [])],
+      regulars: [...(toUnits?.regulars ?? []), ...(fromUnits?.regulars ?? [])],
+    };
+
+    updateToUnits(direction === 'right' ? newToUnits : undefined);
+    updateFromUnits(direction === 'right' ? undefined : newToUnits);
   };
 
-  const moveAllToLeft = () => {
-    updateFromUnits([...fromUnits, ...toUnits]);
-    updateToUnits([]);
-  };
+  const moveHalf = (direction: 'left' | 'right') => {
+    const ArmyBriefInfo: ArmyBriefInfo = { heroes: [...(fromUnits?.heroes ?? [])], regulars: [] };
+    const remainingUnits: ArmyBriefInfo = { heroes: [], regulars: [] };
 
-  const moveHalfToRight = () => {
-    const unitsToMove: Unit[] = [];
-    const remainingUnits: Unit[] = [];
-
-    fromUnits.forEach((unit) => {
-      if (isHeroType(unit.id)) {
-        unitsToMove.push(unit);
+    fromUnits?.regulars?.forEach((unit) => {
+      const halfCount = Math.ceil(unit.count / 2);
+      if (halfCount === unit.count) {
+        ArmyBriefInfo.regulars.push(unit);
       } else {
-        const regularUnit = unit as RegularUnit;
-        const halfCount = Math.ceil(regularUnit.count / 2);
-        if (halfCount === regularUnit.count) {
-          unitsToMove.push(unit);
-        } else {
-          unitsToMove.push({ ...regularUnit, count: halfCount });
-          remainingUnits.push({ ...regularUnit, count: regularUnit.count - halfCount });
-        }
+        ArmyBriefInfo.regulars.push({ ...unit, count: halfCount });
+        remainingUnits.regulars.push({ ...unit, count: unit.count - halfCount });
       }
     });
 
-    updateToUnits([...toUnits, ...unitsToMove]);
-    updateFromUnits(remainingUnits);
-  };
-
-  const moveHalfToLeft = () => {
-    const unitsToMove: Unit[] = [];
-    const remainingUnits: Unit[] = [];
-
-    toUnits.forEach((unit) => {
-      if (isHeroType(unit.id)) {
-        unitsToMove.push(unit);
-      } else {
-        const regularUnit = unit as RegularUnit;
-        const halfCount = Math.ceil(regularUnit.count / 2);
-        if (halfCount === regularUnit.count) {
-          unitsToMove.push(unit);
-        } else {
-          unitsToMove.push({ ...regularUnit, count: halfCount });
-          remainingUnits.push({ ...regularUnit, count: regularUnit.count - halfCount });
-        }
-      }
-    });
-
-    updateFromUnits([...fromUnits, ...unitsToMove]);
-    updateToUnits(remainingUnits);
+    updateToUnits(direction === 'right' ? ArmyBriefInfo : remainingUnits);
+    updateFromUnits(direction === 'right' ? remainingUnits : ArmyBriefInfo);
   };
 
   const moveOneUnit = (
-    fromArray: Unit[],
-    toArray: Unit[],
+    fromArray: ArmyBriefInfo,
+    toArray: ArmyBriefInfo,
     unitIndex: number,
+    type: 'hero' | 'regular',
     direction: 'right' | 'left'
   ) => {
-    const unit = fromArray[unitIndex];
-    if (!unit) return;
+    if (type === 'hero') {
+      const unit = fromArray.heroes[unitIndex];
+      if (!unit) return;
 
-    if (isHeroType(unit.id)) {
-      // Move entire hero
-      const newFromArray = fromArray.filter((_, index) => index !== unitIndex);
-      const newToArray = [...toArray, unit];
+      // Move hero
+      const newFromHeroes = fromArray.heroes.filter((_, index) => index !== unitIndex);
+      const newToHeroes = [...toArray.heroes, unit];
+
+      const newFrom = { ...fromArray, heroes: newFromHeroes };
+      const newTo = { ...toArray, heroes: newToHeroes };
 
       if (direction === 'right') {
-        updateFromUnits(newFromArray);
-        updateToUnits(newToArray);
+        updateFromUnits(newFrom);
+        updateToUnits(newTo);
       } else {
-        updateToUnits(newFromArray);
-        updateFromUnits(newToArray);
+        updateToUnits(newFrom);
+        updateFromUnits(newTo);
       }
     } else {
-      const regularUnit = unit as RegularUnit;
+      const regularUnit = fromArray.regulars[unitIndex];
+      if (!regularUnit) return;
+
+      // Remove/Decrement from source
+      let newFromRegulars;
       if (regularUnit.count === 1) {
-        // Move the last unit
-        const newFromArray = fromArray.filter((_, index) => index !== unitIndex);
-        const newToArray = [...toArray, unit];
-
-        if (direction === 'right') {
-          updateFromUnits(newFromArray);
-          updateToUnits(newToArray);
-        } else {
-          updateToUnits(newFromArray);
-          updateFromUnits(newToArray);
-        }
+        newFromRegulars = fromArray.regulars.filter((_, index) => index !== unitIndex);
       } else {
-        // Move one unit, reduce count
-        const newFromArray = fromArray.map((u, index) =>
-          index === unitIndex ? { ...regularUnit, count: regularUnit.count - 1 } : u
+        newFromRegulars = fromArray.regulars.map((u, index) =>
+          index === unitIndex ? { ...u, count: u.count - 1 } : u
         );
-        const existingUnitIndex = toArray.findIndex(
-          (u) =>
-            !isHeroType(u.id) &&
-            (u as RegularUnit).id === regularUnit.id &&
-            (u as RegularUnit).level === regularUnit.level
+      }
+
+      // Add/Increment to destination
+      const existingUnitIndex = toArray.regulars.findIndex(
+        (u) => u.id === regularUnit.id && u.rank === regularUnit.rank
+      );
+
+      let newToRegulars;
+      if (existingUnitIndex >= 0) {
+        newToRegulars = toArray.regulars.map((u, index) =>
+          index === existingUnitIndex ? { ...u, count: u.count + 1 } : u
         );
+      } else {
+        newToRegulars = [...toArray.regulars, { ...regularUnit, count: 1 }];
+      }
 
-        let newToArray: Unit[];
-        if (existingUnitIndex >= 0) {
-          // Add to existing unit stack
-          newToArray = toArray.map((u, index) =>
-            index === existingUnitIndex
-              ? { ...(u as RegularUnit), count: (u as RegularUnit).count + 1 }
-              : u
-          );
-        } else {
-          // Create new unit with count 1
-          newToArray = [...toArray, { ...regularUnit, count: 1 }];
-        }
+      const newFrom = { ...fromArray, regulars: newFromRegulars };
+      const newTo = { ...toArray, regulars: newToRegulars };
 
-        if (direction === 'right') {
-          updateFromUnits(newFromArray);
-          updateToUnits(newToArray);
-        } else {
-          updateToUnits(newFromArray);
-          updateFromUnits(newToArray);
-        }
+      if (direction === 'right') {
+        updateFromUnits(newFrom);
+        updateToUnits(newTo);
+      } else {
+        updateToUnits(newFrom);
+        updateFromUnits(newTo);
       }
     }
   };
 
-  const handleMouseDown = (fromArray: Unit[], unitIndex: number, direction: 'right' | 'left') => {
+  const handleMouseDown = (
+    fromArray: ArmyBriefInfo,
+    unitIndex: number,
+    type: 'hero' | 'regular',
+    direction: 'right' | 'left'
+  ) => {
     // Clear any existing interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
 
-    // Snapshot the selected unit identity to handle dynamic arrays
-    const selectedUnit = fromArray[unitIndex];
+    // Snapshot the selected unit identity
+    const selectedUnit =
+      type === 'hero' ? fromArray.heroes[unitIndex] : fromArray.regulars[unitIndex];
+
+    if (!selectedUnit) return;
+
     // Move one unit immediately using current refs
     const currentFrom = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
     const currentTo = direction === 'right' ? toUnitsRef.current : fromUnitsRef.current;
 
     const findCurrentIndex = (): number => {
       const arr = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
-      if (!selectedUnit) return -1;
-      if (isHeroType(selectedUnit.id)) {
-        const hero = selectedUnit as HeroUnit;
-        return arr.findIndex(
-          (u) =>
-            isHeroType(u.id) && (u as HeroUnit).name === hero.name && (u as HeroUnit).id === hero.id
-        );
+      if (!arr) return -1;
+
+      if (type === 'hero') {
+        return arr.heroes.findIndex((h) => h === selectedUnit);
       } else {
-        const reg = selectedUnit as RegularUnit;
-        return arr.findIndex(
-          (u) =>
-            !isHeroType(u.id) &&
-            (u as RegularUnit).id === reg.id &&
-            (u as RegularUnit).level === reg.level
-        );
+        const reg = selectedUnit as { id: string; rank: UnitRank };
+        return arr.regulars.findIndex((u) => u.id === reg.id && u.rank === reg.rank);
       }
     };
 
     const initialIndex = findCurrentIndex();
-    if (initialIndex >= 0) {
-      moveOneUnit(currentFrom, currentTo, initialIndex, direction);
+    if (currentFrom != null && currentTo != null && initialIndex >= 0) {
+      moveOneUnit(currentFrom, currentTo, initialIndex, type, direction);
     }
 
     // Start interval for continuous movement
@@ -291,7 +255,8 @@ const MoveArmyDialog: React.FC = () => {
       }
       const liveFrom = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
       const liveTo = direction === 'right' ? toUnitsRef.current : fromUnitsRef.current;
-      moveOneUnit(liveFrom, liveTo, idx, direction);
+      if (!liveFrom || !liveTo) return;
+      moveOneUnit(liveFrom, liveTo, idx, type, direction);
     }, 200); // Move one unit every 200ms
   };
 
@@ -313,41 +278,53 @@ const MoveArmyDialog: React.FC = () => {
   const y = (window.innerHeight - dialogHeight) / 2;
 
   // Unit rendering component
-  const renderUnit = (
-    unit: Unit,
+  const renderHeroUnit = (
+    hero: { name: string; type: HeroUnitType; level: number },
     index: number,
-    fromArray: Unit[],
+    fromArray: ArmyBriefInfo,
     direction: 'right' | 'left'
   ) => {
-    const colorClass = getUnitColorClass(unit);
-    const isHeroUnit = isHeroType(unit.id);
-    const regularUnit = unit as RegularUnit;
-    const heroUnit = unit as HeroUnit;
-
     return (
       <div
-        data-testid={`${isHeroUnit ? heroUnit.name : regularUnit.id}-${index}`}
-        key={`${isHeroUnit ? heroUnit.name : regularUnit.id}-${index}`}
-        className={`${styles.unitItem} ${colorClass}`}
-        onMouseDown={() => handleMouseDown(fromArray, index, direction)}
+        data-testid={`${hero}-${index}`}
+        key={`${hero}-${index}`}
+        className={`${styles.unitItem} ${styles.heroUnit}`}
+        onMouseDown={() => handleMouseDown(fromArray, index, 'hero', direction)}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
       >
-        {isHeroUnit ? (
-          <div>
-            <div className={styles.unitName}>{heroUnit.name}</div>
-            <div className={styles.unitDetails}>
-              {heroUnit.id} - Level {heroUnit.level}
-            </div>
+        <div>
+          <div className={styles.unitName}>{hero.name}</div>
+          <div className={styles.unitDetails}>
+            {hero.type} - Level {hero.level}
           </div>
-        ) : (
-          <div>
-            <div className={styles.unitName}>{regularUnit.id}</div>
-            <div className={styles.unitDetails}>
-              Count: {regularUnit.count} ({regularUnit.level})
-            </div>
+        </div>
+      </div>
+    );
+  };
+  const renderRegularUnit = (
+    unit: { id: string; rank: UnitRank; count: number },
+    index: number,
+    fromArray: ArmyBriefInfo,
+    direction: 'right' | 'left'
+  ) => {
+    const colorClass = getUnitColorClass(unit.rank);
+
+    return (
+      <div
+        data-testid={`${unit.id}-${index}`}
+        key={`${unit.id}-${index}`}
+        className={`${styles.unitItem} ${colorClass}`}
+        onMouseDown={() => handleMouseDown(fromArray, index, 'regular', direction)}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div>
+          <div className={styles.unitName}>{unit.id}</div>
+          <div className={styles.unitDetails}>
+            Count: {unit.count} ({unit.rank})
           </div>
-        )}
+        </div>
       </div>
     );
   };
@@ -373,10 +350,17 @@ const MoveArmyDialog: React.FC = () => {
             <div className={styles.panel}>
               <div className={styles.panelTitle}>Available Units</div>
               <div className={styles.panelContent}>
-                {fromUnits.length === 0 ? (
-                  <div className={styles.emptyMessage}>No units available</div>
+                {fromUnits == null ? (
+                  <div className={styles.emptyMessage}>No units selected</div>
                 ) : (
-                  fromUnits.map((unit, index) => renderUnit(unit, index, fromUnits, 'right'))
+                  <>
+                    {fromUnits.heroes.map((hero, index) =>
+                      renderHeroUnit(hero, index, fromUnits, 'right')
+                    )}
+                    {fromUnits.regulars.map((unit, index) =>
+                      renderRegularUnit(unit, index, fromUnits, 'right')
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -385,32 +369,32 @@ const MoveArmyDialog: React.FC = () => {
             <div className={styles.transferButtons}>
               <button
                 className={styles.transferButton}
-                onClick={moveAllToRight}
-                disabled={fromUnits.length === 0}
+                onClick={() => moveAll('right')}
+                disabled={fromUnits == null}
               >
                 Move All →
               </button>
 
               <button
                 className={styles.transferButton}
-                onClick={moveHalfToRight}
-                disabled={fromUnits.length === 0}
+                onClick={() => moveHalf('right')}
+                disabled={fromUnits == null}
               >
                 Move Half →
               </button>
 
               <button
                 className={styles.transferButton}
-                onClick={moveHalfToLeft}
-                disabled={toUnits.length === 0}
+                onClick={() => moveHalf('left')}
+                disabled={toUnits == null}
               >
                 ← Move Half
               </button>
 
               <button
                 className={styles.transferButton}
-                onClick={moveAllToLeft}
-                disabled={toUnits.length === 0}
+                onClick={() => moveAll('left')}
+                disabled={toUnits == null}
               >
                 ← Move All
               </button>
@@ -420,10 +404,17 @@ const MoveArmyDialog: React.FC = () => {
             <div className={styles.panel}>
               <div className={styles.panelTitle}>Units to Move</div>
               <div className={styles.panelContent}>
-                {toUnits.length === 0 ? (
+                {toUnits == null ? (
                   <div className={styles.emptyMessage}>No units selected</div>
                 ) : (
-                  toUnits.map((unit, index) => renderUnit(unit, index, toUnits, 'left'))
+                  <>
+                    {toUnits.heroes.map((hero, index) =>
+                      renderHeroUnit(hero, index, toUnits, 'left')
+                    )}
+                    {toUnits.regulars.map((unit, index) =>
+                      renderRegularUnit(unit, index, toUnits, 'left')
+                    )}
+                  </>
                 )}
               </div>
             </div>

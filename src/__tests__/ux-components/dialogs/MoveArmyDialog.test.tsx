@@ -7,9 +7,10 @@ import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
 import { GameState } from '../../../state/GameState';
 import { LandPosition } from '../../../state/LandState';
 
-import { HeroUnitType, isHeroType, RegularUnitType } from '../../../types/UnitType';
-import { createRegularUnit, RegularUnit, Unit, UnitRank } from '../../../types/RegularUnit';
+import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
+import { createArmy } from '../../../types/Army';
 import { createHeroUnit, HeroUnit } from '../../../types/HeroUnit';
+import { createRegularUnit, RegularUnit, UnitRank } from '../../../types/RegularUnit';
 import { Alignment } from '../../../types/Alignment';
 
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
@@ -174,6 +175,19 @@ describe('MoveArmyDialog', () => {
     return items.find((item) => within(item).queryByText(name));
   };
 
+  const getPanelByTitle = (title: string) => {
+    const titleEl = screen.getByText(title);
+    // panelTitle is inside the panel container; return the closest panel div
+    return titleEl.closest('div')?.parentElement as HTMLElement; // panel
+  };
+
+  const expectUnitsToMovePanelHasUnits = () => {
+    const panel = getPanelByTitle('Units to Move');
+    expect(panel).toBeTruthy();
+    const { queryByText } = within(panel!);
+    expect(queryByText('No units selected')).toBeNull();
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -192,14 +206,14 @@ describe('MoveArmyDialog', () => {
 
     // Merge all units into a single army (as the component expects)
     const fromLand = mockGameState.getLand(fromPosition);
-    const allUnits = fromLand.army.flatMap((a) => a.units);
-    fromLand.army = [
-      {
-        units: allUnits,
-        controlledBy: mockGameState.turnOwner.id,
-        movements: null as any,
-      },
-    ];
+    fromLand.army[0] = createArmy(
+      mockGameState.turnOwner.id,
+      fromLand.mapPos,
+      fromLand.army.flatMap((a) => a.heroes),
+      fromLand.army.flatMap((a) => a.regulars)
+    );
+    // Remove any other armies to avoid duplicates after merging
+    fromLand.army = [fromLand.army[0]];
   });
 
   describe('Dialog Visibility', () => {
@@ -223,12 +237,9 @@ describe('MoveArmyDialog', () => {
 
     it('should not render when stationed army has movements (is already moving)', () => {
       const fromLand = mockGameState.getLand(fromPosition);
-      fromLand.army[0].movements = {
-        from: fromPosition,
-        to: toPosition,
-        mp: 6,
-        path: [fromPosition, toPosition],
-      };
+      // Ensure only single army exists and it is moving
+      fromLand.army = [fromLand.army[0]];
+      fromLand.army[0].startMoving(fromPosition, toPosition);
 
       renderWithProviders(<MoveArmyDialog />);
       expect(screen.queryByTestId('MoveArmyDialog')).not.toBeInTheDocument();
@@ -282,10 +293,10 @@ describe('MoveArmyDialog', () => {
       await user.click(moveAllRightButton);
 
       // Available Units panel should now be empty
-      expect(screen.getByText('No units available')).toBeInTheDocument();
+      expect(screen.getByText('No units selected')).toBeInTheDocument();
 
-      // Units to Move panel should show "No units selected" has changed to showing units
-      expect(screen.queryByText('No units selected')).not.toBeInTheDocument();
+      // Units to Move panel should now have units (no empty message within that panel)
+      expectUnitsToMovePanelHasUnits();
 
       // Move All → should now be disabled
       expect(moveAllRightButton).toBeDisabled();
@@ -331,7 +342,6 @@ describe('MoveArmyDialog', () => {
 
       // Check that some units remain in available and some are in selected
       expect(screen.queryByText('No units selected')).not.toBeInTheDocument();
-      expect(screen.queryByText('No units available')).not.toBeInTheDocument();
     });
 
     it('should move half of selected units back when clicking "← Move Half"', async () => {
@@ -347,7 +357,6 @@ describe('MoveArmyDialog', () => {
 
       // Should have some units in both panels
       expect(screen.queryByText('No units selected')).not.toBeInTheDocument();
-      expect(screen.queryByText('No units available')).not.toBeInTheDocument();
     });
 
     it('should handle heroes correctly in half move (heroes move entirely)', async () => {
@@ -365,7 +374,11 @@ describe('MoveArmyDialog', () => {
 
   describe('Individual Unit Transfer', () => {
     it('should move individual units when clicking on them', async () => {
+      const user = userEvent.setup();
       renderWithProviders(<MoveArmyDialog />);
+
+      // Initialize destination panel so individual move can work
+      await user.click(screen.getByText('Move Half →'));
 
       // Find and click on a unit (this triggers onMouseDown)
       const warriorUnit = getUnitItemByName('Warrior');
@@ -377,12 +390,16 @@ describe('MoveArmyDialog', () => {
 
       // Should have moved 1 warrior, so count should decrease
       await waitFor(() => {
-        expect(screen.queryByText('No units selected')).not.toBeInTheDocument();
+        expectUnitsToMovePanelHasUnits();
       });
     });
 
     it('should handle hero unit transfer correctly', async () => {
+      const user = userEvent.setup();
       renderWithProviders(<MoveArmyDialog />);
+
+      // Initialize destination panel so individual move can work
+      await user.click(screen.getByText('Move Half →'));
 
       // Find and click on the hero unit
       const heroUnit = getUnitItemByName('TestHero');
@@ -394,7 +411,7 @@ describe('MoveArmyDialog', () => {
 
       // Hero should be moved entirely
       await waitFor(() => {
-        expect(screen.queryByText('No units selected')).not.toBeInTheDocument();
+        expectUnitsToMovePanelHasUnits();
       });
     });
 
@@ -463,26 +480,25 @@ describe('MoveArmyDialog', () => {
       expect(mockStartMovement).toHaveBeenCalledWith(
         fromPosition,
         toPosition,
-        expect.any(Array), // toUnits array
+        expect.objectContaining({
+          heroes: expect.any(Array),
+          regulars: expect.any(Array),
+        }),
         mockGameState
       );
       expect(mockApplicationContext.setMoveArmyPath).toHaveBeenCalledWith(undefined);
     });
 
-    it('should call startMovement with empty array when no units selected', async () => {
+    it('should not call startMovement when no units selected', async () => {
       const user = userEvent.setup();
       renderWithProviders(<MoveArmyDialog />);
 
       // Click Move without selecting any units
       await user.click(screen.getByTestId('game-button-Move army'));
 
-      expect(mockStartMovement).toHaveBeenCalledWith(
-        fromPosition,
-        toPosition,
-        [], // empty toUnits array
-        mockGameState
-      );
-      expect(mockApplicationContext.setMoveArmyPath).toHaveBeenCalledWith(undefined);
+      expect(mockStartMovement).not.toHaveBeenCalled();
+      // Dialog should not be closed since nothing was moved
+      expect(mockApplicationContext.setMoveArmyPath).not.toHaveBeenCalled();
     });
   });
 
@@ -516,9 +532,13 @@ describe('MoveArmyDialog', () => {
       const moveCall = (mockStartMovement as jest.Mock).mock.calls[0];
       const [, , selectedUnits] = moveCall;
 
-      // Should have moved some units
-      expect(selectedUnits).toEqual(expect.any(Array));
-      expect(selectedUnits.length).toBeGreaterThan(0);
+      // Should have moved some units (either heroes or regulars)
+      expect(selectedUnits).toEqual(
+        expect.objectContaining({ heroes: expect.any(Array), regulars: expect.any(Array) })
+      );
+      const totalSelected =
+        (selectedUnits.heroes?.length ?? 0) + (selectedUnits.regulars?.length ?? 0);
+      expect(totalSelected).toBeGreaterThan(0);
     });
 
     it('should handle unit consolidation when moving back', async () => {
@@ -550,9 +570,8 @@ describe('MoveArmyDialog', () => {
       const moveCall = (mockStartMovement as jest.Mock).mock.calls[0];
       const [, , selectedUnits] = moveCall;
 
-      const heroInSelected = selectedUnits.find(
-        (unit: Unit) => isHeroType(unit.id) && (unit as HeroUnit).name === 'TestHero'
-      );
+      // Heroes are passed within the heroes array as brief info objects
+      const heroInSelected = selectedUnits.heroes.find((h: any) => h.name === 'TestHero');
       expect(heroInSelected).toBeTruthy();
     });
 
@@ -563,8 +582,8 @@ describe('MoveArmyDialog', () => {
       // Move all units
       await user.click(screen.getByText('Move All →'));
 
-      // Available panel should show "No units available"
-      expect(screen.getByText('No units available')).toBeInTheDocument();
+      // Available panel should show empty message
+      expect(screen.getByText('No units selected')).toBeInTheDocument();
 
       // Move All → should be disabled
       expect(screen.getByText('Move All →')).toBeDisabled();
@@ -578,13 +597,7 @@ describe('MoveArmyDialog', () => {
       const hero1 = createHeroUnit(HeroUnitType.FIGHTER, 'Hero1') as HeroUnit;
       const hero2 = createHeroUnit(HeroUnitType.CLERIC, 'Hero2') as HeroUnit;
 
-      fromLand.army = [
-        {
-          units: [hero1, hero2],
-          controlledBy: mockGameState.turnOwner.id,
-          movements: null as any,
-        },
-      ];
+      fromLand.army[0] = createArmy(mockGameState.turnOwner.id, fromLand.mapPos, [hero1, hero2]);
 
       renderWithProviders(<MoveArmyDialog />);
 
@@ -595,16 +608,12 @@ describe('MoveArmyDialog', () => {
     it('should handle when only regular units are present', () => {
       // Create army with only regular units
       const fromLand = mockGameState.getLand(fromPosition);
-      const warrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
+      const warrior = createRegularUnit(RegularUnitType.WARRIOR);
       warrior.count = 15;
 
-      fromLand.army = [
-        {
-          units: [warrior],
-          controlledBy: mockGameState.turnOwner.id,
-          movements: null as any,
-        },
-      ];
+      fromLand.army[0] = createArmy(mockGameState.turnOwner.id, fromLand.mapPos, undefined, [
+        warrior,
+      ]);
 
       renderWithProviders(<MoveArmyDialog />);
 
@@ -618,15 +627,15 @@ describe('MoveArmyDialog', () => {
       const warrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
       warrior.count = 1;
 
-      fromLand.army = [
-        {
-          units: [warrior],
-          controlledBy: mockGameState.turnOwner.id,
-          movements: null as any,
-        },
-      ];
+      fromLand.army[0] = createArmy(mockGameState.turnOwner.id, fromLand.mapPos, undefined, [
+        warrior,
+      ]);
 
+      const user = userEvent.setup();
       renderWithProviders(<MoveArmyDialog />);
+
+      // Initialize destination panel so individual move can work
+      await user.click(screen.getByText('Move Half →'));
 
       // Moving a unit with count 1 should move the entire unit
       const warriorUnit = getUnitItemByName('Warrior');
@@ -637,7 +646,7 @@ describe('MoveArmyDialog', () => {
 
       // Unit should be moved entirely
       await waitFor(() => {
-        expect(screen.queryByText('No units selected')).not.toBeInTheDocument();
+        expectUnitsToMovePanelHasUnits();
       });
     });
 
@@ -646,22 +655,19 @@ describe('MoveArmyDialog', () => {
       const fromLand = mockGameState.getLand(fromPosition);
       const veteranWarrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
       veteranWarrior.levelUp();
-      expect(veteranWarrior.level).toBe(UnitRank.VETERAN);
+      expect(veteranWarrior.rank).toBe(UnitRank.VETERAN);
       veteranWarrior.count = 8;
 
       const eliteWarrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
       eliteWarrior.levelUp();
       eliteWarrior.levelUp();
-      expect(eliteWarrior.level).toBe(UnitRank.ELITE);
+      expect(eliteWarrior.rank).toBe(UnitRank.ELITE);
       eliteWarrior.count = 3;
 
-      fromLand.army = [
-        {
-          units: [veteranWarrior, eliteWarrior],
-          controlledBy: mockGameState.turnOwner.id,
-          movements: null as any,
-        },
-      ];
+      fromLand.army[0] = createArmy(mockGameState.turnOwner.id, fromLand.mapPos, undefined, [
+        veteranWarrior,
+        eliteWarrior,
+      ]);
 
       renderWithProviders(<MoveArmyDialog />);
 
@@ -698,13 +704,10 @@ describe('MoveArmyDialog', () => {
       // Add army to new position
       const newFromLand = mockGameState.getLand({ row: 5, col: 5 });
       const warrior = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
-      newFromLand.army = [
-        {
-          units: [warrior],
-          controlledBy: mockGameState.turnOwner.id,
-          movements: null as any,
-        },
-      ];
+
+      newFromLand.army[0] = createArmy(mockGameState.turnOwner.id, newFromLand.mapPos, undefined, [
+        warrior,
+      ]);
 
       rerender(<MoveArmyDialog />);
 

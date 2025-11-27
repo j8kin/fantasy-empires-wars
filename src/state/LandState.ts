@@ -2,6 +2,7 @@ import { Land } from '../types/Land';
 import { Building } from '../types/Building';
 import { Armies } from '../types/Army';
 
+export const INVALID = { row: -1, col: -1 };
 export type LandPosition = { row: number; col: number };
 
 export interface LandState {

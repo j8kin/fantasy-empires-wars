@@ -1,12 +1,14 @@
 import { GameState } from '../../state/GameState';
-import { getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
 import { isHeroType } from '../../types/UnitType';
-import { createRegularUnit, RegularUnit } from '../../types/RegularUnit';
+import { createArmy } from '../../types/Army';
+import { createHeroUnit } from '../../types/HeroUnit';
+import { createRegularUnit } from '../../types/RegularUnit';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
-import { createHeroUnit, HeroUnit } from '../../types/HeroUnit';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
+
+import { getLands } from '../utils/getLands';
 
 export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
   const heroesRecruited: HeroOutcome[] = [];
@@ -25,38 +27,30 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
     ],
   }).forEach((l) =>
     l.buildings.forEach((b) => {
-      if (b.slots) {
+      if (b.slots && b.slots.length > 0) {
         b.slots.forEach((s) => {
           s.turnsRemaining--;
           if (s.turnsRemaining === 0) {
-            const unit = isHeroType(s.unit)
-              ? createHeroUnit(s.unit, generateHeroName(s.unit))
-              : createRegularUnit(s.unit);
-            if (isHeroType(unit.id)) {
-              // generate uniq name for hero
+            const stationedArmy = l.army.find((a) => !a.isMoving && a.controlledBy === turnOwner);
+            if (isHeroType(s.unit)) {
+              const newHero = createHeroUnit(s.unit, generateHeroName(s.unit));
+              // create a message for hero recruiting
               heroesRecruited.push({
                 status: HeroOutcomeType.Success,
-                message: heroRecruitingMessage(unit as HeroUnit),
+                message: heroRecruitingMessage(newHero),
               });
-            }
-            const stationedArmy = l.army.find(
-              (a) => a.movements == null && a.controlledBy === turnOwner
-            );
-            if (stationedArmy) {
-              if (!isHeroType(unit.id)) {
-                const existing = stationedArmy.units.find(
-                  (u) => u.id === unit.id && u.level === unit.level
-                );
-                if (existing) {
-                  (existing as RegularUnit).count += (unit as RegularUnit).count;
-                } else {
-                  stationedArmy.units.push(unit);
-                }
+              if (stationedArmy) {
+                stationedArmy.addHero(newHero);
               } else {
-                stationedArmy.units.push(unit);
+                l.army.push(createArmy(turnOwner, l.mapPos, [newHero]));
               }
             } else {
-              l.army.push({ units: [unit], controlledBy: turnOwner });
+              const newRegulars = createRegularUnit(s.unit);
+              if (stationedArmy) {
+                stationedArmy.addRegulars(newRegulars);
+              } else {
+                l.army.push(createArmy(turnOwner, l.mapPos, undefined, [newRegulars]));
+              }
             }
           }
         });

@@ -1,7 +1,6 @@
 import { GameState } from '../../state/GameState';
 import { getQuest, QuestType } from '../../types/Quest';
 import { HeroUnit } from '../../types/HeroUnit';
-import { isHeroType } from '../../types/UnitType';
 import { getLands } from '../utils/getLands';
 
 export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: GameState) => {
@@ -11,28 +10,24 @@ export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: Game
     gameState: gameState,
     players: [turnOwner.id],
     noArmy: false,
-  }).find((land) =>
-    land.army.find((army) =>
-      army.units.some((unit) => isHeroType(unit.id) && (unit as HeroUnit).name === hero.name)
-    )
-  );
+  }).find((land) => land.army.find((army) => army.heroes.some((unit) => unit.name === hero.name)));
 
   if (heroLand != null) {
     // remove hero from the battlefield
-    heroLand.army = [...heroLand.army]
-      .map((army) => ({
-        ...army,
-        units: army.units.filter(
-          (unit) => !(isHeroType(unit.id) && (unit as HeroUnit).name === hero.name)
-        ),
-      }))
-      .filter((army) => army.units.length > 0);
+    const heroToQuest = heroLand.army
+      .find((army) => army.heroes.some((unit) => unit.name === hero.name))!
+      .getHero(hero.name)!;
+
+    // Remove armies with no units
+    heroLand.army = heroLand.army.filter(
+      (army) => army.regulars.length > 0 || army.heroes.length > 0
+    );
 
     // send hero to quest
     turnOwner.quests.push({
       quest: getQuest(questType),
       land: heroLand.mapPos, // hero Start Quest land position (it will return at the same position if survive)
-      hero: hero,
+      hero: heroToQuest,
       remainTurnsInQuest: getQuest(questType).length,
     });
   }

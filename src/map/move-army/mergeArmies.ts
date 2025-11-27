@@ -1,8 +1,5 @@
 import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
-import { Army } from '../../types/Army';
-import { RegularUnit } from '../../types/RegularUnit';
-import { isHeroType } from '../../types/UnitType';
 
 export const mergeArmies = (gameState: GameState): void => {
   const turnOwner = gameState.turnOwner.id;
@@ -11,41 +8,23 @@ export const mergeArmies = (gameState: GameState): void => {
     .filter(
       (land) =>
         land.army.length > 1 &&
-        land.army.filter((a) => a.controlledBy === turnOwner && a.movements == null).length > 1
+        land.army.filter((a) => a.controlledBy === turnOwner && !a.isMoving).length > 1
     )
     .forEach((land) => {
       // merge armies of the same type and turnsUntilReady === 0 in one unit with summary quantity
       // Heroes should never be merged since they are unique individuals
-      const stationedArmy = land.army.filter(
-        (a) => a.movements == null && a.controlledBy === turnOwner
-      );
-      const movingArmy = land.army.filter(
-        (a) => a.movements != null && a.controlledBy === turnOwner
-      );
+      const stationedArmies = land.army.filter((a) => !a.isMoving && a.controlledBy === turnOwner);
+      if (stationedArmies.length < 2) return; // no armies to merge
+
+      const movingArmies = land.army.filter((a) => a.isMoving && a.controlledBy === turnOwner);
       const otherPlayersArmies = land.army.filter((a) => a.controlledBy !== turnOwner);
 
-      const mergedRegularUnits = stationedArmy.reduce(
-        (acc: Army, army) => {
-          for (const unit of army.units) {
-            if (!isHeroType(unit.id)) {
-              const existing = acc.units.find(
-                // merge units the same type and level (regular/veteran and elite units should not merge with each other)
-                (a) => !isHeroType(a.id) && a.id === unit.id && a.level === unit.level
-              );
-              if (existing) {
-                (existing as RegularUnit).count += (unit as RegularUnit).count;
-              } else {
-                acc.units.push(unit);
-              }
-            } else {
-              acc.units.push(unit);
-            }
-          }
-          return acc;
-        },
-        { units: [], controlledBy: turnOwner }
-      );
+      const mainArmy = stationedArmies.pop()!;
+      while (stationedArmies.length > 0) {
+        const armyToMerge = stationedArmies.pop()!;
+        mainArmy.merge(armyToMerge);
+      }
 
-      land.army = [mergedRegularUnits, ...movingArmy, ...otherPlayersArmies];
+      land.army = [mainArmy, ...movingArmies, ...otherPlayersArmies];
     });
 };

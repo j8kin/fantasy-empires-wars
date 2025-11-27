@@ -9,8 +9,6 @@ import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
 import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType, getBuilding } from '../../types/Building';
-import { RegularUnit } from '../../types/RegularUnit';
-import { isHeroType } from '../../types/UnitType';
 import { getPlayerColorValue } from '../../types/PlayerColors';
 
 import { construct } from '../../map/building/construct';
@@ -110,13 +108,11 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
         const realmLands = getRealmLands(gameState!).map((l) => l.mapPos);
         const maxMovements = calcMaxMove(
-          gameState!
-            .getLand(battlefieldPosition)
-            .army.flatMap((a) => a.units.filter((u) => !isHeroType(u.id)) as RegularUnit[])
+          gameState!.getLand(battlefieldPosition).army.flatMap((a) => a.regulars)
         );
         const nHeroes = gameState!
           .getLand(battlefieldPosition)
-          .army.reduce((acc, army) => acc + army.units.filter((u) => isHeroType(u.id)).length, 0);
+          .army.reduce((acc, army) => acc + army.heroes.length, 0);
         const landsInRadius = getTilesInRadius(
           gameState!.map.dimensions,
           battlefieldPosition,

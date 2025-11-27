@@ -1,91 +1,42 @@
 import { GameState } from '../../state/GameState';
-import { getLandId, LandPosition } from '../../state/LandState';
 
 import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
-import { Army } from '../../types/Army';
 
 import { mergeArmies } from './mergeArmies';
-
 import { getLands } from '../utils/getLands';
+import { LandState } from '../../state/LandState';
 
 export const performMovements = (gameState: GameState): void => {
   const turnOwner = gameState.turnOwner.id;
 
-  // Find all armies of the current turn owner that have movements
-  const armiesToMove: Array<{
-    army: Army;
-    currentLandPos: LandPosition;
-    nextLandPos: LandPosition;
-    isAtDestination: boolean;
-  }> = [];
-
   const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map((p) => p.id);
 
+  const landsToBeModified: LandState[] = [];
   getLands({
     gameState: gameState,
     players: [turnOwner, ...allies],
     noArmy: false,
   })
-    .filter((land) => land.army.some((a) => a.controlledBy === turnOwner && a.movements != null))
+    .filter((land) => land.army.some((a) => a.controlledBy === turnOwner && a.isMoving))
     .forEach((landState) => {
       landState.army.forEach((army) => {
-        if (army.controlledBy === turnOwner && army.movements) {
-          // Find current position in the path
-          const currentPos = landState.mapPos;
-          const pathIndex = army.movements.path.findIndex(
-            (pos) => pos.row === currentPos.row && pos.col === currentPos.col
-          );
-
-          if (pathIndex !== -1 && pathIndex < army.movements.path.length - 1) {
-            // There's a next position in the path
-            const nextPos = army.movements.path[pathIndex + 1];
-            const isAtDestination =
-              nextPos.row === army.movements.to.row && nextPos.col === army.movements.to.col;
-
-            armiesToMove.push({
-              army,
-              currentLandPos: currentPos,
-              nextLandPos: nextPos,
-              isAtDestination,
-            });
-          }
+        if (army.controlledBy === turnOwner && army.isMoving) {
+          army.move();
+          landsToBeModified.push(landState);
         }
       });
     });
 
-  // Create immutable copy of lands to avoid moving armies twice
-  const updatedLands = { ...gameState.map.lands };
-
-  // Process each army movement
-  armiesToMove.forEach(({ army, currentLandPos, nextLandPos, isAtDestination }) => {
-    const currentLandId = getLandId(currentLandPos);
-    const nextLandId = getLandId(nextLandPos);
-
-    // Remove army from current land
-    if (updatedLands[currentLandId]) {
-      updatedLands[currentLandId] = {
-        ...updatedLands[currentLandId],
-        army: updatedLands[currentLandId].army.filter((a) => a !== army),
-      };
-    }
-
-    // Create updated army (remove movements if at destination)
-    const updatedArmy = {
-      ...army,
-      movements: isAtDestination ? undefined : army.movements,
-    };
-
-    // Add army to next land
-    if (updatedLands[nextLandId]) {
-      updatedLands[nextLandId] = {
-        ...updatedLands[nextLandId],
-        army: [...updatedLands[nextLandId].army, updatedArmy],
-      };
-    }
+  // todo refactor after Army moved into GameState from LandState
+  landsToBeModified.forEach((landState) => {
+    const armyToMove = landState.army.filter(
+      (a) => a.controlledBy === turnOwner && a.position !== landState.mapPos
+    );
+    landState.army = landState.army.filter(
+      (a) => a.controlledBy === turnOwner && a.position === landState.mapPos
+    );
+    armyToMove.forEach((a) => gameState.getLand(a.position).army.push(a));
   });
-
-  // Update gameState with the new lands
-  gameState.map.lands = updatedLands;
 
   // merge armies after all movements are performed
   mergeArmies(gameState);
