@@ -3,7 +3,7 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getLandId, LandPosition } from '../../state/LandState';
+import { getLand, getLandOwner } from '../../selectors/landSelectors';
 
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
@@ -19,6 +19,9 @@ import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
 import { getRealmLands } from '../../map/utils/getRealmLands';
 
 import { getLandImg } from '../../assets/getLandImg';
+import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
 
 interface HexTileProps {
   battlefieldPosition: LandPosition;
@@ -58,7 +61,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
   // Get the controlling player's color or default to white if not controlled
   const getBackgroundColor = (): string => {
     if (gameState == null) return 'white';
-    const controllingPlayer = gameState.getPlayer(gameState.getLandOwner(battlefieldTile.mapPos));
+    const controllingPlayer = getPlayer(gameState, getLandOwner(gameState, battlefieldTile.mapPos));
     return getPlayerColorValue(controllingPlayer?.color ?? 'white');
   };
 
@@ -71,7 +74,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
   const isGlowing = glowingTiles.has(tileId) || battlefieldTile.glow;
 
   const handleClick = (event: React.MouseEvent) => {
-    if (isGlowing) {
+    if (gameState && isGlowing) {
       event.preventDefault();
       event.stopPropagation(); // Prevent the battlefield click handler from firing
 
@@ -87,7 +90,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         }
       } else if (selectedLandAction?.startsWith('Building: ')) {
         const buildingToConstruct = selectedLandAction?.substring(10) as BuildingType;
-        const selectedPlayer = gameState?.turnOwner;
+        const selectedPlayer = getTurnOwner(gameState);
         if (selectedPlayer && selectedPlayer.vault! >= getBuilding(buildingToConstruct).buildCost) {
           // todo add animation for building
           construct(gameState!, buildingToConstruct, battlefieldPosition);
@@ -108,11 +111,12 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
         const realmLands = getRealmLands(gameState!).map((l) => l.mapPos);
         const maxMovements = calcMaxMove(
-          gameState!.getLand(battlefieldPosition).army.flatMap((a) => a.regulars)
+          getLand(gameState!, battlefieldPosition).army.flatMap((a) => a.regulars)
         );
-        const nHeroes = gameState!
-          .getLand(battlefieldPosition)
-          .army.reduce((acc, army) => acc + army.heroes.length, 0);
+        const nHeroes = getLand(gameState!, battlefieldPosition).army.reduce(
+          (acc, army) => acc + army.heroes.length,
+          0
+        );
         const landsInRadius = getTilesInRadius(
           gameState!.map.dimensions,
           battlefieldPosition,

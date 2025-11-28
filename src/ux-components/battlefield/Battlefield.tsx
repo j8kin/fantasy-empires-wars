@@ -8,8 +8,8 @@ import { FrameSize } from '../../contexts/ApplicationContext';
 import LandTile from './LandTile';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 
-import { BattlefieldDimensions } from '../../state/GameState';
-import { getLandId } from '../../state/LandState';
+import { getLandId } from '../../state/map/land/LandId';
+import { MapDimensions } from '../../state/map/MapDimensions';
 
 export interface BattlefieldProps {
   topPanelHeight: number;
@@ -17,7 +17,7 @@ export interface BattlefieldProps {
 }
 
 const getHexTileSize = (
-  battlefieldDimensions: BattlefieldDimensions,
+  battlefieldDimensions: MapDimensions,
   availableArea: FrameSize
 ): FrameSize => {
   const defaultWidth = 100;

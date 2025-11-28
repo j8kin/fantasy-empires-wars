@@ -1,5 +1,5 @@
 import { GameState } from '../state/GameState';
-import { PlayerState } from '../state/PlayerState';
+import { PlayerState } from '../state/player/PlayerState';
 
 export enum DiplomacyStatus {
   NO_TREATY = 'No Treaty',
@@ -13,7 +13,9 @@ export type Diplomacy = Record<string, DiplomacyStatus>;
 export const getPlayersByDiplomacy = (
   gameState: GameState,
   statuses: DiplomacyStatus[]
-): PlayerState[] =>
-  gameState.allPlayers.filter(
-    (p) => p.id !== gameState.turnOwner.id && statuses.includes(p.diplomacy[gameState.turnOwner.id])
+): PlayerState[] => {
+  const { turnOwner } = gameState;
+  return gameState.players.filter(
+    (p) => p.id !== turnOwner && statuses.includes(p.diplomacy[turnOwner])
   );
+};

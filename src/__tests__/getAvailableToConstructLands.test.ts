@@ -1,11 +1,13 @@
 import { GameState } from '../state/GameState';
+import { getTurnOwner } from '../selectors/playerSelectors';
 import { BuildingType } from '../types/Building';
 import { HeroUnitType } from '../types/UnitType';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { construct } from '../map/building/construct';
 import { createGameStateStub } from './utils/createGameStateStub';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { createHeroUnit } from '../types/HeroUnit';
+import { addLand, nextPlayer } from '../systems/playerActions';
+import { heroFactory } from '../factories/heroFactory';
 
 describe('getAvailableLands', () => {
   let gameStateStub: GameState;
@@ -47,11 +49,11 @@ describe('getAvailableLands', () => {
 
   it('should return all available lands for stronghold building which controlled by army', () => {
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
-    placeUnitsOnMap(createHeroUnit(HeroUnitType.FIGHTER, 'Hero 1'), gameStateStub, {
+    placeUnitsOnMap(heroFactory(HeroUnitType.FIGHTER, 'Hero 1'), gameStateStub, {
       row: 3,
       col: 5,
     });
-    gameStateStub.turnOwner.addLand('3-5');
+    addLand(getTurnOwner(gameStateStub), { row: 3, col: 5 });
     //gameStateStub.battlefield.lands['3-5'].controlledBy = gameStateStub.turnOwner;
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.STRONGHOLD);
@@ -122,10 +124,10 @@ describe('getAvailableLands', () => {
 
   it('should return all border lands when have a border with other player', () => {
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
-    gameStateStub.nextPlayer();
+    nextPlayer(gameStateStub);
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 6 }); // other player
 
-    gameStateStub.nextPlayer();
+    nextPlayer(gameStateStub);
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.WALL);
 
     expect(availableLands.length).toBe(6); // number of lands outside radius 1 from stronghold

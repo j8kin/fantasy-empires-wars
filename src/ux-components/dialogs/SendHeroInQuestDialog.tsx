@@ -5,15 +5,14 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { getLandId } from '../../state/LandState';
-
 import { getAllQuests, getQuestType } from '../../types/Quest';
-import { HeroUnit } from '../../types/HeroUnit';
+import { HeroState } from '../../state/army/HeroState';
 
 import { findHeroByName } from '../../map/utils/findHeroByName';
 import { startQuest } from '../../map/quest/startQuest';
 
 import { getQuestImg } from '../../assets/getQuestImg';
+import { getLandId } from '../../state/map/land/LandId';
 
 const SendHeroInQuestDialog: React.FC = () => {
   const {
@@ -68,7 +67,7 @@ const SendHeroInQuestDialog: React.FC = () => {
   );
 
   const createQuestClickHandler = useCallback(
-    (questLvl: number, units: HeroUnit[]) => {
+    (questLvl: number, units: HeroState[]) => {
       return () => {
         units.forEach((hero) => startQuest(hero, getQuestType(questLvl + 1), gameState!));
         handleClose();

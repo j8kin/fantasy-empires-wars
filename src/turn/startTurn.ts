@@ -1,5 +1,7 @@
 import { GameState } from '../state/GameState';
 
+import { getTurnOwner } from '../selectors/playerSelectors';
+
 import { HeroOutcome } from '../types/HeroOutcome';
 import { TreasureItem } from '../types/Treasures';
 
@@ -7,7 +9,7 @@ import { calculatePlayerIncome } from '../map/vault/calculatePlayerIncome';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
 import { completeRecruiting } from '../map/recruiting/completeRecruiting';
-import { mergeArmies } from '../map/move-army/mergeArmies';
+import { mergeArmiesOld } from '../map/move-army/mergeArmiesOld';
 import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPenalty';
 import { changeOwner } from '../map/move-army/changeOwner';
 import { calculateMana } from '../map/magic/calculateMana';
@@ -22,12 +24,12 @@ export const startTurn = (
     return;
   }
 
-  const player = gameState.turnOwner;
+  const player = getTurnOwner(gameState);
   // recruit units
   const heroRecruitingStatus = completeRecruiting(gameState);
 
   // merge armies after recruiting since after recruiting the army it could be on the same land as just arrived army
-  mergeArmies(gameState);
+  mergeArmiesOld(gameState);
 
   // calculate attrition penalty after merge armies and player receive turn and all battles are ower and all movements are done
   calculateAttritionPenalty(gameState);

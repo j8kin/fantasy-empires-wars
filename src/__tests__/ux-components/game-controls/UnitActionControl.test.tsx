@@ -5,7 +5,8 @@ import { ApplicationContextProvider } from '../../../contexts/ApplicationContext
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
 
 import { GameState } from '../../../state/GameState';
-import { LandPosition } from '../../../state/LandState';
+
+import { getTurnOwner } from '../../../selectors/playerSelectors';
 
 import { ButtonName } from '../../../types/ButtonName';
 import { BuildingType } from '../../../types/Building';
@@ -13,9 +14,11 @@ import { BuildingType } from '../../../types/Building';
 import { construct } from '../../../map/building/construct';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { createGameStateStub } from '../../utils/createGameStateStub';
-import { createHeroUnit } from '../../../types/HeroUnit';
-import { createRegularUnit } from '../../../types/RegularUnit';
 import { RegularUnitType } from '../../../types/UnitType';
+import { LandPosition } from '../../../state/map/land/LandPosition';
+import { startMoving } from '../../../systems/armyActions';
+import { heroFactory } from '../../../factories/heroFactory';
+import { regularsFactory } from '../../../factories/regularsFactory';
 
 // Mock GameButton component
 jest.mock('../../../ux-components/buttons/GameButton', () => {
@@ -135,7 +138,7 @@ describe('UnitActionControl', () => {
         // Fill all slots to max capacity
         while (barracks.slots.length < barracks.numberOfSlots) {
           barracks.slots.push({
-            unit: gameState.turnOwner.getType(),
+            unit: getTurnOwner(gameState).playerProfile.type,
             turnsRemaining: 1,
           });
         }
@@ -187,7 +190,7 @@ describe('UnitActionControl', () => {
       const heroPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a hero to a land owned by the turn owner
-      const hero = createHeroUnit(gameState.turnOwner.getType(), 'Test Hero');
+      const hero = heroFactory(getTurnOwner(gameState).playerProfile.type, 'Test Hero');
       placeUnitsOnMap(hero, gameState, heroPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -204,13 +207,13 @@ describe('UnitActionControl', () => {
       const heroPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a hero with movements
-      const hero = createHeroUnit(gameState.turnOwner.getType(), 'Test Hero');
+      const hero = heroFactory(getTurnOwner(gameState).playerProfile.type, 'Test Hero');
       placeUnitsOnMap(hero, gameState, heroPosition);
 
       // Assign movements to the hero
       const land = gameState.map.lands[`${heroPosition.row}-${heroPosition.col}`];
       if (land.army[0]) {
-        land.army[0].startMoving(heroPosition, { row: 4, col: 4 });
+        startMoving(land.army[0], { row: 4, col: 4 });
       }
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -227,7 +230,7 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a non-hero unit
-      const nonHeroUnit = createRegularUnit(RegularUnitType.WARRIOR);
+      const nonHeroUnit = regularsFactory(RegularUnitType.WARRIOR);
       placeUnitsOnMap(nonHeroUnit, gameState, armyPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -286,13 +289,13 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add army with movements
-      const unit = createRegularUnit(RegularUnitType.WARRIOR);
+      const unit = regularsFactory(RegularUnitType.WARRIOR);
       placeUnitsOnMap(unit, gameState, armyPosition);
 
       // Assign movements
       const land = gameState.map.lands[`${armyPosition.row}-${armyPosition.col}`];
       if (land.army[0]) {
-        land.army[0].startMoving(armyPosition, { row: 4, col: 4 });
+        startMoving(land.army[0], { row: 4, col: 4 });
       }
 
       renderWithProviders(<UnitActionControl />, gameState);

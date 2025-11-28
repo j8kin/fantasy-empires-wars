@@ -2,9 +2,9 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../../../ux-components/dialogs/NewGameDialog';
-import { PREDEFINED_PLAYERS } from '../../../state/PlayerState';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { GameProvider } from '../../../contexts/GameContext';
+import { PREDEFINED_PLAYERS } from '../../../data/players/predefinedPlayers';
 
 const renderNewGameDialog = () => {
   render(

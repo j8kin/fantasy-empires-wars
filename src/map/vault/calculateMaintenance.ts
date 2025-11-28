@@ -3,32 +3,32 @@ import { GameState } from '../../state/GameState';
 import { getLands } from '../utils/getLands';
 
 import { BuildingType } from '../../types/Building';
-import { RegularUnit, UnitRank } from '../../types/RegularUnit';
-import { HeroUnit } from '../../types/HeroUnit';
+import { RegularsState, UnitRank } from '../../state/army/RegularsState';
+import { HeroState } from '../../state/army/HeroState';
 import { isHeroType } from '../../types/UnitType';
 import { Unit } from '../../types/BaseUnit';
 
 // todo move to HeroUnit and RegularUnit into levelUp functions
 const unitMaintenanceCost = (unit: Unit): number => {
-  if (isHeroType(unit.id)) {
-    return unit.maintainCost * (Math.floor((unit as HeroUnit).level / 4) + 1);
+  if (isHeroType(unit.type)) {
+    return unit.baseStats.maintainCost * (Math.floor((unit as HeroState).level / 4) + 1);
   }
 
-  const regularUnit = unit as RegularUnit;
+  const regularUnit = unit as RegularsState;
   switch (regularUnit.rank) {
     case UnitRank.VETERAN:
-      return regularUnit.maintainCost * regularUnit.count * 1.5;
+      return regularUnit.baseStats.maintainCost * regularUnit.count * 1.5;
     case UnitRank.ELITE:
-      return regularUnit.maintainCost * regularUnit.count * 2;
+      return regularUnit.baseStats.maintainCost * regularUnit.count * 2;
     case UnitRank.REGULAR:
-      return regularUnit.maintainCost * regularUnit.count;
+      return regularUnit.baseStats.maintainCost * regularUnit.count;
     default:
       return 0; // fallback should never happen
   }
 };
 
 export const calculateMaintenance = (gameState: GameState): number => {
-  const turnOwner = gameState.turnOwner.id;
+  const { turnOwner } = gameState;
 
   // building maintenance
   const buildingMaintenance = getLands({

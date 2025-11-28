@@ -1,6 +1,6 @@
-import { BattlefieldDimensions, createGameState, GameState } from '../../state/GameState';
-import { PlayerProfile, PREDEFINED_PLAYERS } from '../../state/PlayerState';
-import { LandPosition } from '../../state/LandState';
+import { GameState } from '../../state/GameState';
+
+import { addPlayer, nextPlayer } from '../../systems/playerActions';
 
 import { BuildingType } from '../../types/Building';
 
@@ -9,7 +9,14 @@ import { generateMap } from '../../map/generation/generateMap';
 
 import { generateMockMap } from './generateMockMap';
 import { placeUnitsOnMap } from './placeUnitsOnMap';
-import { createHeroUnit } from '../../types/HeroUnit';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { MapDimensions } from '../../state/map/MapDimensions';
+import { gameStateFactory } from '../../factories/gameStateFactory';
+import { levelUpHero } from '../../systems/unitsActions';
+import { heroFactory } from '../../factories/heroFactory';
 
 export const defaultBattlefieldSizeStub = { rows: 10, cols: 20 };
 export const createDefaultGameStateStub = (): GameState => createGameStateStub({});
@@ -23,27 +30,28 @@ export const createGameStateStub = ({
 }: {
   nPlayers?: number;
   gamePlayers?: PlayerProfile[];
-  battlefieldSize?: BattlefieldDimensions;
+  battlefieldSize?: MapDimensions;
   realBattlefield?: boolean;
   addPlayersHomeland?: boolean;
 }): GameState => {
   const playersProfile = gamePlayers ?? PREDEFINED_PLAYERS.slice(0, nPlayers);
 
   const map = realBattlefield ? generateMap(battlefieldSize) : generateMockMap(battlefieldSize);
-  const stubGameState: GameState = createGameState(map);
-  playersProfile.forEach((p, idx) => stubGameState.addPlayer(p, idx === 0 ? 'human' : 'computer'));
+  const stubGameState: GameState = gameStateFactory(map);
+  playersProfile.forEach((p, idx) => addPlayer(stubGameState, p, idx === 0 ? 'human' : 'computer'));
 
   if (addPlayersHomeland) {
     for (let i = 0; i < playersProfile.length; i++) {
-      const turnOwner = stubGameState.turnOwner;
+      const turnOwner = getTurnOwner(stubGameState);
       const homeland: LandPosition = { row: 3 + (i % 2), col: 3 + i * 5 };
       construct(stubGameState, BuildingType.STRONGHOLD, homeland);
 
-      const hero = createHeroUnit(turnOwner.getType(), turnOwner.getName());
-      while (hero.level < turnOwner.getLevel()) hero.levelUp(turnOwner.getAlignment());
+      const playerProfile = turnOwner.playerProfile;
+      const hero = heroFactory(playerProfile.type, playerProfile.name);
+      while (hero.level < playerProfile.level) levelUpHero(hero, playerProfile.alignment);
       placeUnitsOnMap(hero, stubGameState, homeland);
 
-      stubGameState.nextPlayer();
+      nextPlayer(stubGameState);
     }
   }
   return stubGameState;

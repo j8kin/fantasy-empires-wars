@@ -1,8 +1,9 @@
-import { BattlefieldDimensions } from '../../state/GameState';
-import { getLandId, LandPosition } from '../../state/LandState';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+import { MapDimensions } from '../../state/map/MapDimensions';
 
 export const calculateHexDistance = (
-  dimensions: BattlefieldDimensions,
+  dimensions: MapDimensions,
   startPoint: LandPosition,
   endPoint: LandPosition
 ): number => {
@@ -32,7 +33,7 @@ export const calculateHexDistance = (
 };
 
 export const findShortestPath = (
-  dimensions: BattlefieldDimensions,
+  dimensions: MapDimensions,
   startPosition: LandPosition,
   endPosition: LandPosition
 ): LandPosition[] => {
@@ -82,7 +83,7 @@ const excludePosition = (arr: LandPosition[], exclude: LandPosition): LandPositi
 };
 
 export const getTilesInRadius = (
-  dimensions: BattlefieldDimensions,
+  dimensions: MapDimensions,
   center: LandPosition,
   radius: number,
   excludeCenter: boolean = false
@@ -119,17 +120,14 @@ export const getTilesInRadius = (
   }
   return excludeCenter ? excludePosition(tilesInRadius, center) : tilesInRadius;
 };
-const isValidPosition = (dimensions: BattlefieldDimensions, pos: LandPosition): boolean => {
+const isValidPosition = (dimensions: MapDimensions, pos: LandPosition): boolean => {
   const { rows, cols } = dimensions;
   if (pos.row < 0 || pos.row >= rows) return false;
   const colsInRow = pos.row % 2 === 0 ? cols : cols - 1;
   return pos.col >= 0 && pos.col < colsInRow;
 };
 
-const getValidNeighbors = (
-  dimensions: BattlefieldDimensions,
-  pos: LandPosition
-): LandPosition[] => {
+const getValidNeighbors = (dimensions: MapDimensions, pos: LandPosition): LandPosition[] => {
   return getHexNeighbors(pos).filter((pos) => isValidPosition(dimensions, pos));
 };
 

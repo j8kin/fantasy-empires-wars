@@ -6,9 +6,14 @@ import '@testing-library/jest-dom';
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
 
 import { GameState } from '../../../state/GameState';
+import { getTurnOwner } from '../../../selectors/playerSelectors';
+import { getLandOwner } from '../../../selectors/landSelectors';
+import { armyFactory } from '../../../factories/armyFactory';
+import { addHero } from '../../../systems/armyActions';
+import { levelUpHero } from '../../../systems/unitsActions';
 
-import { createArmy } from '../../../types/Army';
 import { HeroUnitType } from '../../../types/UnitType';
+import { HeroState } from '../../../state/army/HeroState';
 import { Alignment } from '../../../types/Alignment';
 import { getLands } from '../../../map/utils/getLands';
 
@@ -17,7 +22,7 @@ import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 
 // Import the mocked function (will be the mocked version due to jest.mock above)
 import { startQuest as mockStartQuest } from '../../../map/quest/startQuest';
-import { createHeroUnit, HeroUnit } from '../../../types/HeroUnit';
+import { heroFactory } from '../../../factories/heroFactory';
 
 // Mock modules
 jest.mock('../../../map/quest/startQuest', () => ({
@@ -167,13 +172,13 @@ jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', ()
 });
 
 describe('SendHeroInQuestDialog', () => {
-  let mockGameState: GameState;
+  let gameStateStub: GameState;
 
   // Helper function to get hero lands for current player
   const getHeroLands = (gameState: GameState) => {
     return getLands({
       gameState: gameState,
-      players: [gameState.turnOwner.id],
+      players: [gameState.turnOwner],
       noArmy: false,
     }).filter(
       (land) => land.army.length > 0 && land.army.some((armyUnit) => armyUnit.heroes.length > 0)
@@ -189,7 +194,7 @@ describe('SendHeroInQuestDialog', () => {
     }
   ) => {
     // Handle defaults without destructuring to preserve undefined/null values
-    const gameState = options?.hasOwnProperty('gameState') ? options.gameState! : mockGameState;
+    const gameState = options?.hasOwnProperty('gameState') ? options.gameState! : gameStateStub;
     const showSendHeroInQuestDialog = options?.showSendHeroInQuestDialog ?? true;
     const actionLandPosition = options?.hasOwnProperty('actionLandPosition')
       ? options.actionLandPosition
@@ -218,7 +223,7 @@ describe('SendHeroInQuestDialog', () => {
     mockApplicationContext.actionLandPosition = { row: 3, col: 3 };
 
     // Create a default game state with heroes
-    mockGameState = createDefaultGameStateStub();
+    gameStateStub = createDefaultGameStateStub();
   });
 
   describe('Dialog Visibility', () => {
@@ -239,7 +244,7 @@ describe('SendHeroInQuestDialog', () => {
 
     it('should not render when no heroes are available', () => {
       // Remove all armies from all lands
-      Object.values(mockGameState.map.lands).forEach((land) => {
+      Object.values(gameStateStub.map.lands).forEach((land) => {
         land.army = [];
       });
 
@@ -249,9 +254,9 @@ describe('SendHeroInQuestDialog', () => {
 
     it('should not render when no lands with heroes exist for current player', () => {
       // Remove armies from lands owned by current player but keep armies on other lands
-      const currentPlayerId = mockGameState.turnOwner.id;
-      Object.values(mockGameState.map.lands).forEach((land) => {
-        if (mockGameState.getLandOwner(land.mapPos) === currentPlayerId) {
+      const currentPlayerId = getTurnOwner(gameStateStub).id;
+      Object.values(gameStateStub.map.lands).forEach((land) => {
+        if (getLandOwner(gameStateStub, land.mapPos) === currentPlayerId) {
           land.army = [];
         }
       });
@@ -311,7 +316,7 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get the first hero from the game state using helper function
-      const lands = getHeroLands(mockGameState);
+      const lands = getHeroLands(gameStateStub);
       expect(lands.length).toBeGreaterThan(0);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
@@ -334,7 +339,7 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get the first hero from the game state using helper function
-      const lands = getHeroLands(mockGameState);
+      const lands = getHeroLands(gameStateStub);
       expect(lands.length).toBeGreaterThan(0);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
@@ -355,7 +360,7 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Count all heroes from all lands owned by current player
-      const heroLands = getHeroLands(mockGameState);
+      const heroLands = getHeroLands(gameStateStub);
 
       let totalHeroes = 0;
       heroLands.forEach((land) => {
@@ -375,7 +380,7 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get the first hero from the game state using helper function
-      const lands = getHeroLands(mockGameState);
+      const lands = getHeroLands(gameStateStub);
       expect(lands.length).toBeGreaterThan(0);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
@@ -395,7 +400,7 @@ describe('SendHeroInQuestDialog', () => {
       expect(mockStartQuest).toHaveBeenCalledWith(
         hero,
         'The Echoing Ruins', // First quest type
-        mockGameState
+        gameStateStub
       );
     });
 
@@ -404,7 +409,7 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get the first hero
-      const lands = getHeroLands(mockGameState);
+      const lands = getHeroLands(gameStateStub);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
       const hero = heroArmyUnit!.heroes[0];
@@ -425,9 +430,9 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get all heroes from game state
-      const heroLands = getHeroLands(mockGameState);
+      const heroLands = getHeroLands(gameStateStub);
 
-      let allHeroes: HeroUnit[] = [];
+      let allHeroes: HeroState[] = [];
       heroLands.forEach((land) => {
         const landHeroes = land.army.flatMap((armyUnit) => armyUnit.heroes);
         allHeroes = allHeroes.concat(landHeroes);
@@ -444,7 +449,7 @@ describe('SendHeroInQuestDialog', () => {
 
       // Verify each hero was sent to the correct quest
       allHeroes.forEach((hero) => {
-        expect(mockStartQuest).toHaveBeenCalledWith(hero, 'The Echoing Ruins', mockGameState);
+        expect(mockStartQuest).toHaveBeenCalledWith(hero, 'The Echoing Ruins', gameStateStub);
       });
 
       // Should close dialog after sending all heroes
@@ -456,7 +461,7 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get the first hero
-      const lands = getHeroLands(mockGameState);
+      const lands = getHeroLands(gameStateStub);
 
       const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
       const hero = heroArmyUnit!.heroes[0];
@@ -467,17 +472,17 @@ describe('SendHeroInQuestDialog', () => {
       // Click on second quest (The Whispering Grove)
       await user.click(heroSlots[1]);
 
-      expect(mockStartQuest).toHaveBeenCalledWith(hero, 'The Whispering Grove', mockGameState);
+      expect(mockStartQuest).toHaveBeenCalledWith(hero, 'The Whispering Grove', gameStateStub);
 
       // Click on third quest (The Abyssal Crypt)
       await user.click(heroSlots[2]);
 
-      expect(mockStartQuest).toHaveBeenCalledWith(hero, 'The Abyssal Crypt', mockGameState);
+      expect(mockStartQuest).toHaveBeenCalledWith(hero, 'The Abyssal Crypt', gameStateStub);
 
       // Click on fourth quest (The Shattered Sky)
       await user.click(heroSlots[3]);
 
-      expect(mockStartQuest).toHaveBeenCalledWith(hero, 'The Shattered Sky', mockGameState);
+      expect(mockStartQuest).toHaveBeenCalledWith(hero, 'The Shattered Sky', gameStateStub);
 
       expect(mockStartQuest).toHaveBeenCalledTimes(3);
     });
@@ -565,7 +570,7 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get heroes from the actual game state
-      const lands = getHeroLands(mockGameState);
+      const lands = getHeroLands(gameStateStub);
 
       expect(lands.length).toBeGreaterThan(0);
 
@@ -583,8 +588,8 @@ describe('SendHeroInQuestDialog', () => {
       // This ensures that when createSlotClickHandler uses slot.id,
       // findHeroByName will find the correct hero
       const expectedHeroInGameState = getLands({
-        gameState: mockGameState,
-        players: [mockGameState.turnOwner.id],
+        gameState: gameStateStub,
+        players: [getTurnOwner(gameStateStub).id],
         noArmy: false,
       })
         .flatMap((land) => land.army)
@@ -597,13 +602,13 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get all heroes from game state
-      const heroLands = getHeroLands(mockGameState);
+      const heroLands = getHeroLands(gameStateStub);
 
       heroLands.forEach((land) => {
         land.army
           .flatMap((armyUnit) => armyUnit.heroes)
           .forEach((unit) => {
-            const hero = unit as HeroUnit;
+            const hero = unit as HeroState;
 
             // Check slot exists with hero name as ID
             // Hero appears on all 4 quest pages, so get the first occurrence
@@ -624,16 +629,15 @@ describe('SendHeroInQuestDialog', () => {
     it('should handle empty hero names gracefully', () => {
       // Modify hero to have empty name (edge case)
       const lands = getLands({
-        gameState: mockGameState,
-        players: [mockGameState.turnOwner.id],
+        gameState: gameStateStub,
+        players: [getTurnOwner(gameStateStub).id],
         noArmy: false,
       });
 
       expect(lands.length).toBeGreaterThan(0);
-      const heroArmyUnit = lands[0].army[0].heroes.push(
-        createHeroUnit(mockGameState.turnOwner.getType(), '')
-      );
-      expect(heroArmyUnit).toBeDefined();
+      expect(lands[0].army[0].heroes.length).toBeGreaterThan(0);
+      addHero(lands[0].army[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, ''));
+      expect(lands[0].army[0].heroes.length).toBeGreaterThan(1);
 
       renderWithProviders(<SendHeroInQuestDialog />);
 
@@ -644,14 +648,17 @@ describe('SendHeroInQuestDialog', () => {
     it('should handle heroes with very long names', () => {
       // Modify hero to have very long name
       const lands = getLands({
-        gameState: mockGameState,
-        players: [mockGameState.turnOwner.id],
+        gameState: gameStateStub,
+        players: [getTurnOwner(gameStateStub).id],
         noArmy: false,
       });
 
       expect(lands.length).toBeGreaterThan(0);
       const longName = 'VeryLongHeroNameThatExceedsNormalLimits AndHasMultipleWords';
-      lands[0].army[0].heroes.push(createHeroUnit(mockGameState.turnOwner.getType(), longName));
+      addHero(
+        lands[0].army[0],
+        heroFactory(getTurnOwner(gameStateStub).playerProfile.type, longName)
+      );
       const heroArmyUnit = lands[0].army.find((a) =>
         a.heroes.some((unit) => unit.name === longName)
       );
@@ -671,13 +678,16 @@ describe('SendHeroInQuestDialog', () => {
     it('should handle heroes with single word names', () => {
       // Modify hero to have single word name
       const lands = getLands({
-        gameState: mockGameState,
-        players: [mockGameState.turnOwner.id],
+        gameState: gameStateStub,
+        players: [getTurnOwner(gameStateStub).id],
         noArmy: false,
       });
 
       expect(lands.length).toBeGreaterThan(0);
-      lands[0].army[0].heroes.push(createHeroUnit(mockGameState.turnOwner.getType(), 'SingleName'));
+      addHero(
+        lands[0].army[0],
+        heroFactory(getTurnOwner(gameStateStub).playerProfile.type, 'SingleName')
+      );
       const heroArmyUnit = lands[0].army.find((armyUnit) =>
         armyUnit.heroes.some((unit) => unit.name === 'SingleName')
       );
@@ -702,17 +712,17 @@ describe('SendHeroInQuestDialog', () => {
     beforeEach(() => {
       // Add additional heroes to test multiple hero scenarios
       const currentPlayerLands = getLands({
-        gameState: mockGameState,
-        players: [mockGameState.turnOwner.id],
+        gameState: gameStateStub,
+        players: [getTurnOwner(gameStateStub).id],
       });
 
       if (currentPlayerLands.length > 1) {
         // Add a second hero to another land
-        const secondHero: HeroUnit = createHeroUnit(HeroUnitType.FIGHTER, 'Additional Hero');
-        secondHero.levelUp(Alignment.LAWFUL);
+        const secondHero: HeroState = heroFactory(HeroUnitType.FIGHTER, 'Additional Hero');
+        levelUpHero(secondHero, Alignment.LAWFUL);
 
         currentPlayerLands[1].army.push(
-          createArmy(mockGameState.turnOwner.id, currentPlayerLands[1].mapPos, [secondHero])
+          armyFactory(getTurnOwner(gameStateStub).id, currentPlayerLands[1].mapPos, [secondHero])
         );
       }
     });
@@ -739,7 +749,7 @@ describe('SendHeroInQuestDialog', () => {
 
       // Add a second hero directly to the army array
       placeUnitsOnMap(
-        createHeroUnit(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
+        heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
         testGameState,
         land.mapPos
       );

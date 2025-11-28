@@ -1,7 +1,8 @@
+import { GameState } from '../../state/GameState';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { isHeroType, isMageType } from '../../types/UnitType';
 import { getLands } from './getLands';
-import { GameState } from '../../state/GameState';
-import { HeroUnit } from '../../types/HeroUnit';
+import { HeroState } from '../../state/army/HeroState';
 
 /**
  * Retrieves a list of all hero units in the game include heroes in Quest.
@@ -12,13 +13,13 @@ import { HeroUnit } from '../../types/HeroUnit';
  *    If true, only mage units are retrieved.
  *    If false, then non-mage units returned
  *    If not specified, all units are returned.
- * @returns {HeroUnit[]} An array of hero units. The array can be empty if no heroes are available or match the specified criteria.
+ * @returns {HeroState[]} An array of hero units. The array can be empty if no heroes are available or match the specified criteria.
  */
-export const getAllHeroes = (gameState: GameState, isMageUnit?: boolean): HeroUnit[] => {
-  const turnOwner = gameState.turnOwner;
+export const getAllHeroes = (gameState: GameState, isMageUnit?: boolean): HeroState[] => {
+  const turnOwner = getTurnOwner(gameState);
 
   // get all heroes in the battlefield
-  const allHeroes: HeroUnit[] =
+  const allHeroes: HeroState[] =
     getLands({ gameState: gameState, noArmy: false }).flatMap((land) =>
       land.army
         .filter((army) => army.controlledBy === turnOwner.id)
@@ -26,19 +27,23 @@ export const getAllHeroes = (gameState: GameState, isMageUnit?: boolean): HeroUn
           (army) =>
             army.heroes.filter((u) =>
               isMageUnit == null
-                ? isHeroType(u.id)
+                ? isHeroType(u.type)
                 : isMageUnit
-                  ? isMageType(u.id)
-                  : !isMageType(u.id)
-            ) as HeroUnit[]
+                  ? isMageType(u.type)
+                  : !isMageType(u.type)
+            ) as HeroState[]
         )
     ) || [];
   // add all heroes in a quest
-  const heroesInQuest: HeroUnit[] =
+  const heroesInQuest: HeroState[] =
     turnOwner?.quests
       .map((q) => q.hero)
       .filter((h) =>
-        isMageUnit == null ? isHeroType(h.id) : isMageUnit ? isMageType(h.id) : !isMageType(h.id)
+        isMageUnit == null
+          ? isHeroType(h.type)
+          : isMageUnit
+            ? isMageType(h.type)
+            : !isMageType(h.type)
       ) || [];
 
   allHeroes.push(...heroesInQuest);

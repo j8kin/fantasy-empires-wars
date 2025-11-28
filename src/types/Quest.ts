@@ -1,5 +1,5 @@
-import { LandPosition } from '../state/LandState';
-import { HeroUnit } from './HeroUnit';
+import { HeroState } from '../state/army/HeroState';
+import { LandPosition } from '../state/map/land/LandPosition';
 
 export type QuestType =
   | 'The Echoing Ruins'
@@ -16,7 +16,7 @@ export interface Quest {
 
 export interface HeroQuest {
   quest: Quest;
-  hero: HeroUnit;
+  hero: HeroState;
   land: LandPosition;
   remainTurnsInQuest: number;
 }

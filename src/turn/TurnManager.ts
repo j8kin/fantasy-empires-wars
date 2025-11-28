@@ -1,8 +1,11 @@
-import { GameState, TurnPhase } from '../state/GameState';
+import { GameState } from '../state/GameState';
+import { getTurnOwner } from '../selectors/playerSelectors';
+import { nextPlayer } from '../systems/playerActions';
+import { HeroOutcome } from '../types/HeroOutcome';
+import { TurnPhase } from './TurnPhase';
 import { startTurn } from './startTurn';
 import { endTurn } from './endTurn';
 import { mainAiTurn } from './mainAiTurn';
-import { HeroOutcome } from '../types/HeroOutcome';
 
 export interface TurnManagerCallbacks {
   onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => void;
@@ -65,7 +68,7 @@ export class TurnManager {
         break;
       case TurnPhase.END:
         // END phase leads to next player's START phase
-        gameState.nextPlayer();
+        nextPlayer(gameState);
         this.transitionToPhase(gameState, TurnPhase.START);
         break;
     }
@@ -81,7 +84,7 @@ export class TurnManager {
     // Ensure we're in START phase and notify callbacks
     this.transitionToPhase(gameState, TurnPhase.START);
 
-    const player = gameState.turnOwner;
+    const player = getTurnOwner(gameState);
     if (!player) {
       this.callbacks.onGameOver('No valid player found for turn');
       return;
@@ -90,8 +93,8 @@ export class TurnManager {
     // Show progress popup with turn message
     const message =
       gameState.turn === 1
-        ? `The banners of ${player.getName()} rise over a new realm!`
-        : `Player ${player.getName()} turn`;
+        ? `The banners of ${player.playerProfile.name} rise over a new realm!`
+        : `Player ${player.playerProfile.name} turn`;
     this.callbacks.onStartProgress(message);
 
     // Execute start turn logic
@@ -114,7 +117,7 @@ export class TurnManager {
 
   private startMainPhase(gameState: GameState): void {
     // GameState should already be in MAIN phase when this is called
-    const player = gameState.turnOwner;
+    const player = getTurnOwner(gameState);
     if (!player) {
       // todo handle this case better
       this.callbacks.onGameOver('No valid player found for main phase');
@@ -147,8 +150,8 @@ export class TurnManager {
     // Check for game over conditions
     if (gameState.turn > 1) {
       // todo check if this is correct logic and add remove player logic
-      const humanPlayers = gameState.allPlayers.filter((p) => p.playerType === 'human');
-      const computerPlayers = gameState.allPlayers.filter((p) => p.playerType === 'computer');
+      const humanPlayers = gameState.players.filter((p) => p.playerType === 'human');
+      const computerPlayers = gameState.players.filter((p) => p.playerType === 'computer');
 
       if (humanPlayers.length === 0) {
         this.callbacks.onGameOver('Game Over: No human players remaining');
@@ -164,7 +167,7 @@ export class TurnManager {
     // Start the next turn after brief delay
     const nextTurnTimer = setTimeout(() => {
       this.activeTimers.delete(nextTurnTimer);
-      // Note: endTurn() already called gameState.nextPlayer(), so we just need to transition to START phase
+      // Note: endTurn() already called nextPlayer(gameState), so we just need to transition to START phase
       this.transitionToPhase(gameState, TurnPhase.START);
       this.startNewTurn(gameState);
     }, 500); // Brief delay before starting next turn
@@ -172,6 +175,6 @@ export class TurnManager {
   }
 
   public canEndTurn(gameState: GameState): boolean {
-    return gameState.turnPhase === TurnPhase.MAIN && gameState.turnOwner.playerType === 'human';
+    return gameState.turnPhase === TurnPhase.MAIN && getTurnOwner(gameState).playerType === 'human';
   }
 }

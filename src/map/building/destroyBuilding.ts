@@ -1,9 +1,14 @@
 import { GameState } from '../../state/GameState';
-import { getLandId, LandPosition } from '../../state/LandState';
+
+import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
+import { addLand, hasLand, removeLand } from '../../systems/playerActions';
 
 import { BuildingType } from '../../types/Building';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
 
 /**
  * Player could destroy the building as Demolition before construction of a new one
@@ -12,7 +17,7 @@ import { getTilesInRadius } from '../utils/mapAlgorithms';
  * @param gameState - Game State (income and player lands could be updated)
  */
 export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => {
-  const player = gameState.getLandOwner(landPos);
+  const player = getLandOwner(gameState, landPos);
   const landId = getLandId(landPos);
   const isStronghold = gameState.map.lands[landId].buildings.some(
     (b) => b.id === BuildingType.STRONGHOLD
@@ -31,30 +36,31 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
     );
 
     previousControlledLands.forEach((l) => {
-      const owner = gameState.turnOwner;
+      const owner = getTurnOwner(gameState);
       if (gameState.map.lands[getLandId(l)].army.length > 0) {
         // if land has army of non-previous owner then change for a new owner (who owns army on this land)
         if (!gameState.map.lands[getLandId(l)].army.some((a) => a.controlledBy === player)) {
-          owner.removeLand(getLandId(l));
-          const newLandOwner = gameState.getPlayer(
+          removeLand(owner, l);
+          const newLandOwner = getPlayer(
+            gameState,
             gameState.map.lands[getLandId(l)].army[0].controlledBy
           );
-          newLandOwner.addLand(getLandId(l));
+          addLand(newLandOwner, l);
         }
       } else {
         // no army look for nearest stronghold
         const nearestStrongholds = getTilesInRadius(gameState.map.dimensions, l, 1).filter((l) =>
-          gameState.getLand(l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
+          getLand(gameState, l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
         );
         if (nearestStrongholds && nearestStrongholds.length > 0) {
-          if (!nearestStrongholds.some((s) => owner.hasLand(getLandId(s)))) {
-            const newOwner = gameState.getLandOwner(nearestStrongholds[0]);
-            gameState.getPlayer(newOwner).addLand(getLandId(l));
+          if (!nearestStrongholds.some((s) => hasLand(owner, s))) {
+            const newOwner = getPlayer(gameState, getLandOwner(gameState, nearestStrongholds[0]));
+            addLand(newOwner, l);
 
-            owner.removeLand(getLandId(l));
+            removeLand(owner, l);
           }
         } else {
-          owner.removeLand(getLandId(l));
+          removeLand(owner, l);
         }
       }
     });

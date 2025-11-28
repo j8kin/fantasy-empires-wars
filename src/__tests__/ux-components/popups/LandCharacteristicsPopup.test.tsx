@@ -3,15 +3,20 @@ import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
 import { GameState } from '../../../state/GameState';
-import { getLandId, LandState } from '../../../state/LandState';
-import { Armies, createArmy } from '../../../types/Army';
+import { getLandOwner } from '../../../selectors/landSelectors';
+import { LandState } from '../../../state/map/land/LandState';
+import { Armies } from '../../../state/army/ArmyState';
 import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
-import { createRegularUnit, RegularUnit } from '../../../types/RegularUnit';
-import { createHeroUnit } from '../../../types/HeroUnit';
+import { RegularsState } from '../../../state/army/RegularsState';
 import { BuildingType } from '../../../types/Building';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { getLands } from '../../../map/utils/getLands';
+import { getLandId } from '../../../state/map/land/LandId';
+import { startMoving } from '../../../systems/armyActions';
+import { armyFactory } from '../../../factories/armyFactory';
+import { heroFactory } from '../../../factories/heroFactory';
+import { regularsFactory } from '../../../factories/regularsFactory';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
@@ -62,7 +67,7 @@ describe('LandCharacteristicsPopup', () => {
     // Find a tile that's controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getLands({
       gameState: gameStateStub,
-      players: [gameStateStub.allPlayers[1].id],
+      players: [gameStateStub.players[1].id],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 
@@ -94,7 +99,7 @@ describe('LandCharacteristicsPopup', () => {
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(gameStateStub.getLandOwner(mockTileState.mapPos)).toBe(gameStateStub.allPlayers[1].id);
+    expect(getLandOwner(gameStateStub, mockTileState.mapPos)).toBe(gameStateStub.players[1].id);
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
 
@@ -148,11 +153,11 @@ describe('LandCharacteristicsPopup', () => {
 
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
-      const army1 = createArmy(gameStateStub.turnOwner.id, mockTileState.mapPos, [
-        createHeroUnit(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
+      const army1 = armyFactory(gameStateStub.turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
       ]);
-      const army2 = createArmy(gameStateStub.turnOwner.id, mockTileState.mapPos, [
-        createHeroUnit(HeroUnitType.PYROMANCER, HeroUnitType.PYROMANCER),
+      const army2 = armyFactory(gameStateStub.turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.PYROMANCER, HeroUnitType.PYROMANCER),
       ]);
       const mockArmy: Armies = [army1, army2];
 
@@ -187,17 +192,17 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays multiple heroes of same type with different names', () => {
-      const turnOwner = gameStateStub.turnOwner.id;
-      const fighter1 = createArmy(turnOwner, mockTileState.mapPos, [
-        createHeroUnit(HeroUnitType.FIGHTER, 'Cedric Brightshield'),
+      const turnOwner = gameStateStub.turnOwner;
+      const fighter1 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, 'Cedric Brightshield'),
       ]);
 
-      const fighter2 = createArmy(turnOwner, mockTileState.mapPos, [
-        createHeroUnit(HeroUnitType.FIGHTER, 'Rowan Ashborne'),
+      const fighter2 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, 'Rowan Ashborne'),
       ]);
 
-      const fighter3 = createArmy(turnOwner, mockTileState.mapPos, [
-        createHeroUnit(HeroUnitType.FIGHTER, 'Gareth Dawnhart'),
+      const fighter3 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, 'Gareth Dawnhart'),
       ]);
 
       const mockArmy: Armies = [fighter1, fighter2, fighter3];
@@ -234,12 +239,12 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays units when tile has non-hero units', () => {
-      const turnOwner = gameStateStub.turnOwner.id;
-      const army1 = createArmy(turnOwner, mockTileState.mapPos, undefined, [
-        createRegularUnit(RegularUnitType.WARRIOR),
+      const turnOwner = gameStateStub.turnOwner;
+      const army1 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.WARRIOR),
       ]);
-      const army2 = createArmy(turnOwner, mockTileState.mapPos, undefined, [
-        createRegularUnit(RegularUnitType.DWARF),
+      const army2 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.DWARF),
       ]);
 
       const mockArmy: Armies = [army1, army2];
@@ -275,23 +280,23 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays both heroes and units when tile has mixed army', () => {
-      const regularWarriors = createRegularUnit(RegularUnitType.WARRIOR) as RegularUnit;
+      const regularWarriors = regularsFactory(RegularUnitType.WARRIOR) as RegularsState;
       regularWarriors.count = 5;
 
-      const turnOwner = gameStateStub.turnOwner.id;
-      const army1 = createArmy(turnOwner, mockTileState.mapPos, [
-        createHeroUnit(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
+      const turnOwner = gameStateStub.turnOwner;
+      const army1 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
       ]);
-      const army2 = createArmy(turnOwner, mockTileState.mapPos, undefined, [regularWarriors]);
-      const army3 = createArmy(turnOwner, mockTileState.mapPos, undefined, [
-        createRegularUnit(RegularUnitType.DWARF),
+      const army2 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [regularWarriors]);
+      const army3 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.DWARF),
       ]);
-      army3.startMoving({ row: 0, col: 0 }, { row: 1, col: 1 });
-      const army4 = createArmy(turnOwner, mockTileState.mapPos, [
-        createHeroUnit(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+      startMoving(army3, { row: 1, col: 1 });
+      const army4 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
       ]);
-      const army5 = createArmy(turnOwner, mockTileState.mapPos, undefined, [
-        createRegularUnit(RegularUnitType.ELF),
+      const army5 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.ELF),
       ]);
 
       const mockArmy: Armies = [army1, army2, army3, army4, army5];
@@ -364,12 +369,12 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays only heroes section when tile has only heroes', () => {
-      const turnOwner = gameStateStub.turnOwner.id;
-      const army1 = createArmy(turnOwner, mockTileState.mapPos, [
-        createHeroUnit(HeroUnitType.RANGER, HeroUnitType.RANGER),
+      const turnOwner = gameStateStub.turnOwner;
+      const army1 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.RANGER, HeroUnitType.RANGER),
       ]);
-      const army2 = createArmy(turnOwner, mockTileState.mapPos, [
-        createHeroUnit(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+      const army2 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
       ]);
 
       const mockArmy: Armies = [army1, army2];
@@ -406,12 +411,12 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays only units section when tile has only non-hero units', () => {
-      const turnOwner = gameStateStub.turnOwner.id;
-      const army1 = createArmy(turnOwner, mockTileState.mapPos, undefined, [
-        createRegularUnit(RegularUnitType.ORC),
+      const turnOwner = gameStateStub.turnOwner;
+      const army1 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.ORC),
       ]);
-      const army2 = createArmy(turnOwner, mockTileState.mapPos, undefined, [
-        createRegularUnit(RegularUnitType.BALLISTA),
+      const army2 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.BALLISTA),
       ]);
 
       const mockArmy: Armies = [army1, army2];

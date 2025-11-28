@@ -1,6 +1,7 @@
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { TurnManager } from '../../turn/TurnManager';
 import { createGameStateStub } from '../utils/createGameStateStub';
+import { TurnPhase } from '../../turn/TurnPhase';
 
 describe('Turn Mechanics with Different Map Sizes', () => {
   const createGameState = (mapSize: 'small' | 'medium' | 'large' | 'huge'): GameState => {
@@ -55,7 +56,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       expect(Object.keys(gameState.map.lands).length).toBeGreaterThan(0);
 
       // Turn owner should be set correctly
-      expect(gameState.turnOwner.id).toBe('alaric');
+      expect(gameState.turnOwner).toBe('alaric');
       expect(gameState.turn).toBe(2);
     }
   );
@@ -89,7 +90,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       expect(gameOverCalled).toBe(false);
 
       // Turn should advance to next player
-      expect(gameState.turnOwner.id).toBe('morgana');
+      expect(gameState.turnOwner).toBe('morgana');
     }
   );
 
@@ -127,8 +128,8 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       expect(actualLandCount).toBe(expectedHexLandCount);
 
       // Check players are properly set
-      expect(gameState.allPlayers).toHaveLength(2);
-      expect(gameState.turnOwner.id).toBe('alaric');
+      expect(gameState.players).toHaveLength(2);
+      expect(gameState.turnOwner).toBe('alaric');
       expect(gameState.turn).toBe(2);
     });
   });

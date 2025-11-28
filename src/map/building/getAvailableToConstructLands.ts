@@ -1,18 +1,19 @@
 import { BuildingType } from '../../types/Building';
 import { GameState } from '../../state/GameState';
-import { getLandId } from '../../state/LandState';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getLands } from '../utils/getLands';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { getLandId } from '../../state/map/land/LandId';
 
 export const getAvailableToConstructLands = (
   gameState: GameState,
   buildingType: BuildingType
 ): string[] => {
-  const owner = gameState.turnOwner;
+  const { turnOwner } = gameState;
   const playerLands = getLands({
     gameState: gameState,
-    players: [gameState.turnOwner.id],
+    players: [turnOwner],
   });
 
   switch (buildingType) {
@@ -24,7 +25,7 @@ export const getAvailableToConstructLands = (
             (land.buildings.length === 0 ||
               !land.buildings?.some((b) => b.id === BuildingType.WALL)) &&
             getTilesInRadius(gameState.map.dimensions, land.mapPos, 1, true).some(
-              (tile) => gameState.getLandOwner(tile) !== owner.id
+              (tile) => getLandOwner(gameState, tile) !== turnOwner
             )
         )
         .map((l) => getLandId(l.mapPos));

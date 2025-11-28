@@ -1,16 +1,18 @@
 import { GameState } from '../../state/GameState';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { startTurn } from '../../turn/startTurn';
-import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
-import { createGameStateStub } from '../utils/createGameStateStub';
-import { construct } from '../../map/building/construct';
 import { BuildingType } from '../../types/Building';
+import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
+import { construct } from '../../map/building/construct';
+import { createGameStateStub } from '../utils/createGameStateStub';
+import { nextPlayer } from '../../systems/playerActions';
 
 describe('Start Turn phase', () => {
   let gameStateStub: GameState;
 
   beforeEach(() => {
     gameStateStub = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-    gameStateStub.allPlayers.forEach((player) => {
+    gameStateStub.players.forEach((player) => {
       player.vault = 0;
     });
     construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
@@ -28,15 +30,15 @@ describe('Start Turn phase', () => {
   ])(
     'Income and Money calculation based on current turn %s',
     (turn: number, expectedVault: number, expectedCalculatedIncome: number) => {
-      expect(gameStateStub.allPlayers[0].vault).toBe(0);
-      expect(gameStateStub.turnOwner.nLands()).toBe(7);
+      expect(gameStateStub.players[0].vault).toBe(0);
+      expect(getTurnOwner(gameStateStub).landsOwned.size).toBe(7);
 
-      while (gameStateStub.turn < turn) gameStateStub.nextPlayer();
+      while (gameStateStub.turn < turn) nextPlayer(gameStateStub);
 
       expect(gameStateStub.turn).toBe(turn);
       startTurn(gameStateStub);
 
-      expect(gameStateStub.allPlayers[0].vault).toBe(expectedVault);
+      expect(gameStateStub.players[0].vault).toBe(expectedVault);
       expect(calculatePlayerIncome(gameStateStub)).toBe(expectedCalculatedIncome);
     }
   );

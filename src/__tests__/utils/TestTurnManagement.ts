@@ -1,5 +1,7 @@
-import { GameState, TurnPhase } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { TurnPhase } from '../../turn/TurnPhase';
 
 export class TestTurnManagement {
   private turnManager: TurnManager;
@@ -59,7 +61,7 @@ export class TestTurnManagement {
     expect(this.gameStateStub).toBeDefined();
     const cTurn = this.gameStateStub!.turn;
     const cTurnOwner = this.gameStateStub!.turnOwner;
-    expect(this.gameStateStub!.turnOwner.getName()).toBe(owner);
+    expect(getTurnOwner(this.gameStateStub!).playerProfile.name).toBe(owner);
 
     // computer players turns
     expect(this.gameStateStub!.turnPhase).toBe(TurnPhase.START);
@@ -73,7 +75,7 @@ export class TestTurnManagement {
     expect(this.gameStateStub!.turnPhase).toBe(TurnPhase.START);
     expect(this.gameStateStub!.turnOwner).not.toBe(cTurnOwner);
     expect(this.gameStateStub!.turn).toBe(
-      this.gameStateStub!.turnOwner.playerType === 'human' ? cTurn + 1 : cTurn
+      getTurnOwner(this.gameStateStub!).playerType === 'human' ? cTurn + 1 : cTurn
     );
   };
 
@@ -89,8 +91,8 @@ export class TestTurnManagement {
 
       this.clickEndOfTurn();
       // computer players turns
-      while (this.gameStateStub!.turnOwner.playerType !== 'human') {
-        this.performAiTurns(this.gameStateStub!.turnOwner.getName());
+      while (getTurnOwner(this.gameStateStub!).playerType !== 'human') {
+        this.performAiTurns(getTurnOwner(this.gameStateStub!).playerProfile.name);
       }
 
       expect(this.gameStateStub!.turn).toBe(cTurn + i + 1); // new turn

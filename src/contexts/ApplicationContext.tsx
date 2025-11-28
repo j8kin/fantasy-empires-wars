@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { PlayerState, PlayerProfile } from '../state/PlayerState';
-import { LandPosition } from '../state/LandState';
+import { PlayerState } from '../state/player/PlayerState';
 import { HeroOutcome } from '../types/HeroOutcome';
+import { PlayerProfile } from '../state/player/PlayerProfile';
+import { LandPosition } from '../state/map/land/LandPosition';
 
 /**
  * Top Left position of the window/dialog/popup

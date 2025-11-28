@@ -1,8 +1,10 @@
-import { BattlefieldMap, BattlefieldDimensions } from '../../state/GameState';
-import { getLandId, LandPosition } from '../../state/LandState';
+import { MapState } from '../../state/map/MapState';
 
 import { getLandById, Land, LandType } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+import { MapDimensions } from '../../state/map/MapDimensions';
 
 const genLand = (alignment: Alignment | undefined): Land => {
   switch (alignment) {
@@ -17,11 +19,11 @@ const genLand = (alignment: Alignment | undefined): Land => {
   }
 };
 export const generateMockMap = (
-  dimensions: BattlefieldDimensions,
+  dimensions: MapDimensions,
   alignment: Alignment | undefined = undefined,
   income: number | undefined = undefined
-): BattlefieldMap => {
-  const result: BattlefieldMap = {
+): MapState => {
+  const result: MapState = {
     dimensions: dimensions,
     lands: {},
   };

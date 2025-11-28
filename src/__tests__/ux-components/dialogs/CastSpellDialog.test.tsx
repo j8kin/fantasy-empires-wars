@@ -7,6 +7,8 @@ import {
   useApplicationContext,
 } from '../../../contexts/ApplicationContext';
 import { AllSpells } from '../../../types/Spell';
+import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
+import { GameState } from '../../../state/GameState';
 
 // Mock CSS modules
 jest.mock(
@@ -96,21 +98,16 @@ const renderWithApplicationContext = () => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return <>{children}</>;
   };
-
+  const gameStateWithMana = (): GameState => {
+    const gameStateStub = createDefaultGameStateStub();
+    gameStateStub.players.forEach(
+      (player) => (player.mana = { white: 200, green: 200, red: 200, black: 200, blue: 200 })
+    );
+    return gameStateStub;
+  };
   // Mock the useGameContext to provide a proper gameState
   const mockGameContext = {
-    gameState: {
-      turnOwner: {
-        id: 'test-player',
-        mana: {
-          white: 200,
-          black: 200,
-          green: 200,
-          blue: 200,
-          red: 200,
-        },
-      },
-    },
+    gameState: gameStateWithMana(),
     updateGameState: jest.fn(),
     startNewGame: jest.fn(),
     startNewTurn: jest.fn(),

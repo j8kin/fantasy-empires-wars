@@ -1,6 +1,9 @@
 import { GameState } from '../../state/GameState';
-import { RegularUnit, UnitRank } from '../../types/RegularUnit';
-import { Army } from '../../types/Army';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getRegulars } from '../../systems/armyActions';
+
+import { RegularsState, UnitRank } from '../../state/army/RegularsState';
+import { ArmyState } from '../../state/army/ArmyState';
 import { isWarMachine } from '../../types/UnitType';
 
 import { getHostileLands } from '../utils/getHostileLands';
@@ -30,7 +33,7 @@ const WARMACHINE_TO_UNIT = 20;
  */
 export const calculateAttritionPenalty = (gameState: GameState): void => {
   getHostileLands(gameState).forEach((land) => {
-    const allArmies = land.army.filter((a) => a.controlledBy === gameState.turnOwner.id);
+    const allArmies = land.army.filter((a) => a.controlledBy === getTurnOwner(gameState).id);
     const unitsPerArmyNormalized = allArmies.map((a) => normalizeArmyUnits(a.regulars));
     const loss = rollAttritionLoss(unitsPerArmyNormalized);
 
@@ -56,10 +59,12 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
   });
 };
 
-const attritionPenalty = (army: Army, unitsToLoss: Record<UnitRank, number>): void => {
+const attritionPenalty = (army: ArmyState, unitsToLoss: Record<UnitRank, number>): void => {
   Object.values(UnitRank).forEach((rank) => {
-    const regUnitsWithRank = army.regulars.filter((u) => u.rank === rank && !isWarMachine(u.id));
-    const warMachUnitsWithRank = army.regulars.filter((u) => u.rank === rank && isWarMachine(u.id));
+    const regUnitsWithRank = army.regulars.filter((u) => u.rank === rank && !isWarMachine(u.type));
+    const warMachUnitsWithRank = army.regulars.filter(
+      (u) => u.rank === rank && isWarMachine(u.type)
+    );
     const toKill = unitsToLoss[rank];
     const maxWarmachinesToKill = Math.min(
       warMachUnitsWithRank.reduce((acc, m) => acc + m.count, 0),
@@ -73,7 +78,7 @@ const attritionPenalty = (army: Army, unitsToLoss: Record<UnitRank, number>): vo
       for (let i = 0; i < warMachUnitsWithRank.length && rest > 0; i++) {
         if (rest > 0) {
           const toDelete = Math.min(warMachUnitsWithRank[i].count, rest);
-          army.getRegulars(warMachUnitsWithRank[i].id, warMachUnitsWithRank[i].rank, toDelete);
+          getRegulars(army, warMachUnitsWithRank[i].type, warMachUnitsWithRank[i].rank, toDelete);
           rest -= toDelete;
         }
       }
@@ -83,7 +88,7 @@ const attritionPenalty = (army: Army, unitsToLoss: Record<UnitRank, number>): vo
       for (let i = 0; i < regUnitsWithRank.length && rest > 0; i++) {
         if (rest > 0) {
           const toDelete = Math.min(regUnitsWithRank[i].count, rest);
-          army.getRegulars(regUnitsWithRank[i].id, regUnitsWithRank[i].rank, toDelete);
+          getRegulars(army, regUnitsWithRank[i].type, regUnitsWithRank[i].rank, toDelete);
           rest -= toDelete;
         }
       }
@@ -91,7 +96,7 @@ const attritionPenalty = (army: Army, unitsToLoss: Record<UnitRank, number>): vo
   });
 };
 
-const normalizeArmyUnits = (units: RegularUnit[]): Record<UnitRank, number> => {
+const normalizeArmyUnits = (units: RegularsState[]): Record<UnitRank, number> => {
   const packs: Record<UnitRank, number> = {
     [UnitRank.REGULAR]: 0,
     [UnitRank.VETERAN]: 0,
@@ -101,10 +106,10 @@ const normalizeArmyUnits = (units: RegularUnit[]): Record<UnitRank, number> => {
   Object.values(UnitRank).forEach((rank) => {
     const rankUnits = units.filter((u) => u.rank === rank);
     const warMachines = rankUnits
-      .filter((u) => isWarMachine(u.id))
+      .filter((u) => isWarMachine(u.type))
       .reduce((acc, unit) => acc + unit.count, 0);
     const regularUnits = rankUnits
-      .filter((u) => !isWarMachine(u.id))
+      .filter((u) => !isWarMachine(u.type))
       .reduce((acc, unit) => acc + unit.count, 0);
     packs[rank] = warMachines * WARMACHINE_TO_UNIT + regularUnits;
   });

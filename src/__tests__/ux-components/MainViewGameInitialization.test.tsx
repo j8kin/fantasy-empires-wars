@@ -11,13 +11,13 @@
  */
 
 import { GameState } from '../../state/GameState';
-import { PREDEFINED_PLAYERS } from '../../state/PlayerState';
 import { createGameStateStub } from '../utils/createGameStateStub';
+import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
 
 describe('MainView Game Initialization Logic', () => {
   // Test the game identification logic that's used in MainView
   const createGameId = (gameState: GameState): string => {
-    return `${gameState.nPlayers}-${gameState.map.dimensions.rows}-${gameState.map.dimensions.cols}-${gameState.turnOwner.id}`;
+    return `${gameState.players.length}-${gameState.map.dimensions.rows}-${gameState.map.dimensions.cols}-${gameState.turnOwner}`;
   };
 
   it('should generate unique identifiers for different games', () => {

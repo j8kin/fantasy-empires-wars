@@ -1,9 +1,9 @@
 import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
-import { BattlefieldDimensions } from '../state/GameState';
 import { getLands } from '../map/utils/getLands';
 import { BuildingType } from '../types/Building';
 import { startTurn } from '../turn/startTurn';
 import { endTurn } from '../turn/endTurn';
+import { MapDimensions } from '../state/map/MapDimensions';
 
 describe('Game Start: add player to map', () => {
   it('turnOwner should be placed on map on Turn 0', () => {
@@ -31,7 +31,7 @@ describe('Game Start: add player to map', () => {
     }
 
     expect(getLands({ gameState: gameState, buildings: [BuildingType.STRONGHOLD] }).length).toBe(
-      gameState.allPlayers.length
+      gameState.players.length
     );
   });
 
@@ -43,7 +43,7 @@ describe('Game Start: add player to map', () => {
     ['test default', defaultBattlefieldSizeStub, 8],
   ])(
     'max players should be placed on real map %s size',
-    (size: string, dimensions: BattlefieldDimensions, maxPlayerNumber: number) => {
+    (size: string, dimensions: MapDimensions, maxPlayerNumber: number) => {
       const gameState = createGameStateStub({
         nPlayers: maxPlayerNumber,
         realBattlefield: true,
@@ -57,7 +57,7 @@ describe('Game Start: add player to map', () => {
       }
 
       expect(getLands({ gameState: gameState, buildings: [BuildingType.STRONGHOLD] }).length).toBe(
-        gameState.allPlayers.length
+        gameState.players.length
       );
     }
   );

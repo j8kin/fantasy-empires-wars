@@ -84,13 +84,13 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createDefaultGameStateStub();
+      const gameStateStub = createDefaultGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
-      expect(result.current.gameState).toEqual(mockGameState);
+      expect(result.current.gameState).toEqual(gameStateStub);
       expect(MockedTurnManager).toHaveBeenCalledWith(
         expect.objectContaining({
           onTurnPhaseChange: expect.any(Function),
@@ -107,17 +107,17 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createDefaultGameStateStub();
+      const gameStateStub = createDefaultGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       const firstCallCount = (TurnManager as jest.MockedClass<typeof TurnManager>).mock.calls
         .length;
 
       act(() => {
-        result.current.updateGameState({ ...mockGameState, turn: 2 });
+        result.current.updateGameState({ ...gameStateStub, turn: 2 });
       });
 
       expect(MockedTurnManager.mock.calls.length).toBe(firstCallCount);
@@ -130,10 +130,10 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createDefaultGameStateStub();
+      const gameStateStub = createDefaultGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       act(() => {
@@ -148,10 +148,10 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createDefaultGameStateStub();
+      const gameStateStub = createDefaultGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       act(() => {
@@ -192,9 +192,9 @@ describe('GameContext', () => {
       });
 
       // Callbacks should be stored internally (tested via TurnManager initialization)
-      const mockGameState = createDefaultGameStateStub();
+      const gameStateStub = createDefaultGameStateStub();
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       expect(TurnManager).toHaveBeenCalled();

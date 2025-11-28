@@ -1,4 +1,5 @@
 import { GameState } from '../state/GameState';
+import { nextPlayer } from '../systems/playerActions';
 import { performMovements } from '../map/move-army/performMovements';
 import { changeOwner } from '../map/move-army/changeOwner';
 
@@ -13,5 +14,5 @@ export const endTurn = (gameState: GameState) => {
   changeOwner(gameState);
 
   // change active player
-  gameState.nextPlayer();
+  nextPlayer(gameState);
 };

@@ -1,6 +1,6 @@
 import { Alignment } from './Alignment';
 import { HeroUnitType, UnitType } from './UnitType';
-import { PlayerState } from '../state/PlayerState';
+import { PlayerState } from '../state/player/PlayerState';
 
 export enum BuildingType {
   STRONGHOLD = 'Stronghold',
@@ -99,21 +99,25 @@ export const getBuilding = (building: BuildingType): Building => {
 };
 
 export const getAllBuildings = (player: PlayerState): Building[] => {
-  const playerType = player.getType();
-  const playerAlignment = player.getAlignment();
+  const playerProfile = player.playerProfile;
   return Object.values(BuildingType)
     .map(getBuilding)
     .filter(
       (building) =>
         !building.id.toString().includes('Mage Tower') ||
         building.id === BuildingType.BLUE_MAGE_TOWER ||
-        (building.id === BuildingType.WHITE_MAGE_TOWER && playerType === HeroUnitType.CLERIC) ||
-        (building.id === BuildingType.WHITE_MAGE_TOWER && playerAlignment === Alignment.LAWFUL) ||
+        (building.id === BuildingType.WHITE_MAGE_TOWER &&
+          playerProfile.type === HeroUnitType.CLERIC) ||
+        (building.id === BuildingType.WHITE_MAGE_TOWER &&
+          playerProfile.alignment === Alignment.LAWFUL) ||
         (building.id === BuildingType.BLACK_MAGE_TOWER &&
-          playerType === HeroUnitType.NECROMANCER) ||
-        (building.id === BuildingType.BLACK_MAGE_TOWER && playerAlignment === Alignment.CHAOTIC) ||
-        (building.id === BuildingType.GREEN_MAGE_TOWER && playerAlignment !== Alignment.CHAOTIC) ||
-        (building.id === BuildingType.RED_MAGE_TOWER && playerAlignment !== Alignment.LAWFUL)
+          playerProfile.type === HeroUnitType.NECROMANCER) ||
+        (building.id === BuildingType.BLACK_MAGE_TOWER &&
+          playerProfile.alignment === Alignment.CHAOTIC) ||
+        (building.id === BuildingType.GREEN_MAGE_TOWER &&
+          playerProfile.alignment !== Alignment.CHAOTIC) ||
+        (building.id === BuildingType.RED_MAGE_TOWER &&
+          playerProfile.alignment !== Alignment.LAWFUL)
     );
 };
 

@@ -1,10 +1,14 @@
 import { GameState } from '../../state/GameState';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getHero } from '../../systems/armyActions';
+
 import { getQuest, QuestType } from '../../types/Quest';
-import { HeroUnit } from '../../types/HeroUnit';
+import { HeroState } from '../../state/army/HeroState';
+
 import { getLands } from '../utils/getLands';
 
-export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: GameState) => {
-  const turnOwner = gameState.turnOwner;
+export const startQuest = (hero: HeroState, questType: QuestType, gameState: GameState) => {
+  const turnOwner = getTurnOwner(gameState);
 
   const heroLand = getLands({
     gameState: gameState,
@@ -14,9 +18,10 @@ export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: Game
 
   if (heroLand != null) {
     // remove hero from the battlefield
-    const heroToQuest = heroLand.army
-      .find((army) => army.heroes.some((unit) => unit.name === hero.name))!
-      .getHero(hero.name)!;
+    const heroToQuest = getHero(
+      heroLand.army.find((army) => army.heroes.some((unit) => unit.name === hero.name))!,
+      hero.name
+    )!;
 
     // Remove armies with no units
     heroLand.army = heroLand.army.filter(

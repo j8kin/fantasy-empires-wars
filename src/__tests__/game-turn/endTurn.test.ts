@@ -1,6 +1,8 @@
 import { GameState } from '../../state/GameState';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { endTurn } from '../../turn/endTurn';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { nextPlayer } from '../../systems/playerActions';
 
 describe('End of Turn Phase', () => {
   let gameStateStub: GameState;
@@ -10,22 +12,22 @@ describe('End of Turn Phase', () => {
   });
 
   it('Active player id should be changed to a next one', () => {
-    expect(gameStateStub.turnOwner.id).toBe(gameStateStub.allPlayers[0].id);
+    expect(getTurnOwner(gameStateStub).id).toBe(gameStateStub.players[0].id);
 
     endTurn(gameStateStub);
-    expect(gameStateStub.turnOwner.id).toBe(gameStateStub.allPlayers[1].id);
+    expect(getTurnOwner(gameStateStub).id).toBe(gameStateStub.players[1].id);
   });
 
   it('Active player id should be changed to the first one when all player and increas turn number', () => {
     expect(gameStateStub.turn).toBe(2);
-    gameStateStub.nextPlayer();
-    gameStateStub.nextPlayer();
-    expect(gameStateStub.allPlayers.length).toBe(3);
-    expect(gameStateStub.turnOwner.id).toBe(gameStateStub.allPlayers[2].id);
+    nextPlayer(gameStateStub);
+    nextPlayer(gameStateStub);
+    expect(gameStateStub.players.length).toBe(3);
+    expect(getTurnOwner(gameStateStub).id).toBe(gameStateStub.players[2].id);
     expect(gameStateStub.turn).toBe(2);
 
     endTurn(gameStateStub);
-    expect(gameStateStub.turnOwner.id).toBe(gameStateStub.allPlayers[0].id);
+    expect(getTurnOwner(gameStateStub).id).toBe(gameStateStub.players[0].id);
     expect(gameStateStub.turn).toBe(3);
   });
 });

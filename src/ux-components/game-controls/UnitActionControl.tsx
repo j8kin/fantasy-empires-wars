@@ -6,12 +6,13 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import GameButton from '../buttons/GameButton';
 
-import { getLandId } from '../../state/LandState';
-
 import { ButtonName } from '../../types/ButtonName';
 import { BuildingType } from '../../types/Building';
 
 import { getLands } from '../../map/utils/getLands';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getLandId } from '../../state/map/land/LandId';
+import { isMoving } from '../../selectors/armySelectors';
 
 const UnitActionControl: React.FC = () => {
   const { addGlowingTile, clearAllGlow, setSelectedLandAction } = useApplicationContext();
@@ -30,7 +31,7 @@ const UnitActionControl: React.FC = () => {
       const recruitmentLands = (
         getLands({
           gameState: gameState,
-          players: [gameState.turnOwner.id],
+          players: [gameState.turnOwner],
           buildings: [
             BuildingType.BARRACKS,
             BuildingType.WHITE_MAGE_TOWER,
@@ -71,10 +72,10 @@ const UnitActionControl: React.FC = () => {
       const questLands = (
         getLands({
           gameState: gameState,
-          players: [gameState.turnOwner.id],
+          players: [gameState.turnOwner],
           noArmy: false,
         }) || []
-      ).filter((l) => l.army.some((u) => !u.isMoving && u.heroes.length > 0));
+      ).filter((l) => l.army.some((u) => !isMoving(u) && u.heroes.length > 0));
 
       setSelectedLandAction('Quest');
       // Add glowing to all quest lands
@@ -99,10 +100,10 @@ const UnitActionControl: React.FC = () => {
       const armyLands = (
         getLands({
           gameState: gameState,
-          players: [gameState.turnOwner.id],
+          players: [gameState.turnOwner],
           noArmy: false,
         }) || []
-      ).filter((l) => l.army.some((a) => !a.isMoving));
+      ).filter((l) => l.army.some((a) => !isMoving(a)));
 
       setSelectedLandAction('MoveArmyFrom');
       // Add glowing to all army lands
@@ -114,7 +115,7 @@ const UnitActionControl: React.FC = () => {
     [addGlowingTile, clearAllGlow, gameState, setSelectedLandAction]
   );
 
-  if (gameState?.turnOwner.playerType !== 'human') return null;
+  if (gameState == null || getTurnOwner(gameState).playerType !== 'human') return null;
 
   return (
     <div className={styles.gameControlContainer} data-testid="game-control-container">

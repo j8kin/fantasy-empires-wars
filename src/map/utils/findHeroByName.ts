@@ -1,18 +1,18 @@
 import { GameState } from '../../state/GameState';
-import { HeroUnit } from '../../types/HeroUnit';
+import { HeroState } from '../../state/army/HeroState';
 
 import { getLands } from './getLands';
 
-export const findHeroByName = (name: string, gameState: GameState): HeroUnit | undefined => {
+export const findHeroByName = (name: string, gameState: GameState): HeroState | undefined => {
   const lands = getLands({
     gameState: gameState,
-    players: [gameState.turnOwner.id],
+    players: [gameState.turnOwner],
     noArmy: false,
   });
 
   for (const land of lands) {
     for (const army of land.army) {
-      const hero = army.heroes.find((unit) => unit.name === name) as HeroUnit;
+      const hero = army.heroes.find((unit) => unit.name === name) as HeroState;
       if (hero) {
         return hero;
       }

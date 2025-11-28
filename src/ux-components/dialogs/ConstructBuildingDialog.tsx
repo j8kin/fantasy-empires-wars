@@ -2,14 +2,16 @@ import React, { useCallback, useEffect } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
+import { getTurnOwner } from '../../selectors/playerSelectors';
+
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { BuildingType, getAllBuildings } from '../../types/Building';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
+import { getLands } from '../../map/utils/getLands';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
-import { getLands } from '../../map/utils/getLands';
 
 const ConstructBuildingDialog: React.FC = () => {
   const {
@@ -42,8 +44,8 @@ const ConstructBuildingDialog: React.FC = () => {
   );
 
   useEffect(() => {
-    if (selectedLandAction && showConstructBuildingDialog) {
-      const selectedPlayer = gameState?.turnOwner;
+    if (selectedLandAction && showConstructBuildingDialog && gameState != null) {
+      const selectedPlayer = getTurnOwner(gameState);
       if (selectedPlayer) {
         const building = getAllBuildings(selectedPlayer).find((s) => s.id === selectedLandAction);
         if (building) {
@@ -62,7 +64,7 @@ const ConstructBuildingDialog: React.FC = () => {
 
   const landsWithoutBuildings = getLands({
     gameState: gameState,
-    players: [gameState.turnOwner.id],
+    players: [getTurnOwner(gameState).id],
     buildings: [],
   });
   if (landsWithoutBuildings.length === 0) {
@@ -77,7 +79,7 @@ const ConstructBuildingDialog: React.FC = () => {
   const isStrongholdAllowed =
     getAvailableToConstructLands(gameState!, BuildingType.STRONGHOLD).length > 0;
 
-  const selectedPlayer = gameState.turnOwner;
+  const selectedPlayer = getTurnOwner(gameState);
   const availableBuildings = selectedPlayer
     ? getAllBuildings(selectedPlayer).filter(
         (building) =>

@@ -1,5 +1,6 @@
-import { BattlefieldDimensions, BattlefieldLands, BattlefieldMap } from '../../state/GameState';
-import { getLandId, LandPosition, LandState } from '../../state/LandState';
+import { MapState } from '../../state/map/MapState';
+import { MapLands } from '../../state/map/MapState';
+import { LandState } from '../../state/map/land/LandState';
 
 import {
   getLandById,
@@ -13,28 +14,28 @@ import {
 import { getRandomElement } from '../../types/getRandomElement';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+import { MapDimensions } from '../../state/map/MapDimensions';
 
 const calculateBaseLandGold = (land: Land): number => {
   const { min, max } = land?.goldPerTurn;
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const getRandomEmptyLand = (tiles: BattlefieldLands): LandState | undefined => {
+const getRandomEmptyLand = (tiles: MapLands): LandState | undefined => {
   const emptyLands = Object.values(tiles).filter((tile) => tile.land.id === LandType.NONE);
   if (emptyLands.length === 0) return undefined;
   return getRandomElement(emptyLands);
 };
 
-const getEmptyNeighbors = (battlefield: BattlefieldMap, position: LandPosition): LandState[] => {
+const getEmptyNeighbors = (battlefield: MapState, position: LandPosition): LandState[] => {
   return getTilesInRadius(battlefield.dimensions, position, 1)
     .map((pos) => battlefield.lands[getLandId(pos)])
     .filter((tile) => tile.land.id === LandType.NONE);
 };
 
-const getRandomNoneNeighbor = (
-  battlefield: BattlefieldMap,
-  pos: LandPosition
-): LandState | undefined => {
+const getRandomNoneNeighbor = (battlefield: MapState, pos: LandPosition): LandState | undefined => {
   const noneNeighbors = getEmptyNeighbors(battlefield, pos);
 
   if (noneNeighbors.length === 0) return undefined;
@@ -42,8 +43,8 @@ const getRandomNoneNeighbor = (
   return getRandomElement(noneNeighbors);
 };
 
-const createEmptyBattlefield = (dimensions: BattlefieldDimensions): BattlefieldLands => {
-  const battlefield: BattlefieldLands = {};
+const createEmptyBattlefield = (dimensions: MapDimensions): MapLands => {
+  const battlefield: MapLands = {};
   for (let row = 0; row < dimensions.rows; row++) {
     const colsInRow = row % 2 === 0 ? dimensions.cols : dimensions.cols - 1;
 
@@ -62,7 +63,7 @@ const createEmptyBattlefield = (dimensions: BattlefieldDimensions): BattlefieldL
   return battlefield;
 };
 
-const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
+const placeSpecialLand = (battlefield: MapState, landType: LandType) => {
   const placedSpecialLands = Object.values(battlefield.lands).filter((land) =>
     getMainSpecialLandTypes().includes(land.land.id)
   );
@@ -110,8 +111,8 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
   });
 };
 
-export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap => {
-  const battlefield: BattlefieldMap = {
+export const generateMap = (dimensions: MapDimensions): MapState => {
+  const battlefield: MapState = {
     dimensions: dimensions,
     lands: createEmptyBattlefield(dimensions),
   };

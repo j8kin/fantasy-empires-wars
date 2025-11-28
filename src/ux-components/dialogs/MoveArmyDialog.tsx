@@ -4,15 +4,18 @@ import styles from './css/MoveArmyDialog.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
+import { getLand } from '../../selectors/landSelectors';
+import { briefInfo, isMoving } from '../../selectors/armySelectors';
+
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 
 import { ButtonName } from '../../types/ButtonName';
-import { UnitRank } from '../../types/RegularUnit';
+import { UnitRank } from '../../state/army/RegularsState';
+import { ArmyBriefInfo } from '../../state/army/ArmyState';
+import { HeroUnitType } from '../../types/UnitType';
 
 import { startMovement } from '../../map/move-army/startMovement';
-import { ArmyBriefInfo } from '../../types/Army';
-import { HeroUnitType } from '../../types/UnitType';
 
 const MoveArmyDialog: React.FC = () => {
   const { setMoveArmyPath, moveArmyPath } = useApplicationContext();
@@ -36,8 +39,8 @@ const MoveArmyDialog: React.FC = () => {
       return;
     }
 
-    const fromLand = gameState.getLand(moveArmyPath.from);
-    const stationedArmy = fromLand.army.filter((a) => !a.isMoving);
+    const fromLand = getLand(gameState, moveArmyPath.from);
+    const stationedArmy = fromLand.army.filter((a) => !isMoving(a));
 
     if (stationedArmy == null || stationedArmy.length === 0) {
       fromUnitsRef.current = undefined;
@@ -49,8 +52,8 @@ const MoveArmyDialog: React.FC = () => {
     // Initialize using refs - completely bypass React state
     // Combine all units from all stationed armies on the land
     fromUnitsRef.current = {
-      heroes: stationedArmy.flatMap((a) => a.briefInfo.heroes),
-      regulars: stationedArmy.flatMap((a) => a.briefInfo.regulars),
+      heroes: stationedArmy.flatMap((a) => briefInfo(a).heroes),
+      regulars: stationedArmy.flatMap((a) => briefInfo(a).regulars),
     };
     toUnitsRef.current = undefined;
     triggerUpdate();
@@ -82,7 +85,7 @@ const MoveArmyDialog: React.FC = () => {
 
   if (!moveArmyPath || !gameState) return null;
 
-  const stationedArmy = gameState.getLand(moveArmyPath.from).army.filter((a) => !a.isMoving);
+  const stationedArmy = getLand(gameState, moveArmyPath.from).army.filter((a) => !isMoving(a));
 
   if (stationedArmy == null || stationedArmy.length === 0) return null;
 

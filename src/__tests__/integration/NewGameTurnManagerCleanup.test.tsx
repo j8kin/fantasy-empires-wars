@@ -51,7 +51,7 @@ describe('NewGame TurnManager Cleanup Integration', () => {
 
     // Verify the new game state is correct
     expect(result.current.gameState?.map.dimensions).toEqual({ rows: 11, cols: 23 });
-    expect(result.current.gameState?.allPlayers).toHaveLength(2);
+    expect(result.current.gameState?.players).toHaveLength(2);
     expect(result.current.gameState?.turn).toBe(2);
 
     // Start third game with small map
@@ -62,7 +62,7 @@ describe('NewGame TurnManager Cleanup Integration', () => {
 
     // Verify the third game state is correct
     expect(result.current.gameState?.map.dimensions).toEqual({ rows: 6, cols: 13 });
-    expect(result.current.gameState?.allPlayers).toHaveLength(2);
+    expect(result.current.gameState?.players).toHaveLength(2);
     expect(result.current.gameState?.turn).toBe(2);
   });
 

@@ -1,12 +1,14 @@
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { GameState } from '../../state/GameState';
-import { LandPosition, LandState } from '../../state/LandState';
+import { LandState } from '../../state/map/land/LandState';
+
+import { getLand } from '../../selectors/landSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 
 import { BuildingType } from '../../types/Building';
 import { relicts, TreasureItem } from '../../types/Treasures';
-import { RegularUnit, UnitRank } from '../../types/RegularUnit';
+import { RegularsState, UnitRank } from '../../state/army/RegularsState';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
-import { getBaseUnitStats } from '../../types/BaseUnit';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
@@ -14,6 +16,9 @@ import { construct } from '../../map/building/construct';
 import { getLands } from '../../map/utils/getLands';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { isMoving } from '../../selectors/armySelectors';
+import { unitsBaseStats } from '../../data/units/unitsBaseStats';
 
 describe('Recruitment', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -38,7 +43,7 @@ describe('Recruitment', () => {
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getLands({
       gameState: gameStateStub,
-      players: [gameStateStub.turnOwner.id],
+      players: [gameStateStub.turnOwner],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
   });
@@ -57,7 +62,7 @@ describe('Recruitment', () => {
     unitType: UnitType,
     remainTurns: number
   ): void => {
-    const land = gameStateStub.getLand(landPos);
+    const land = getLand(gameStateStub, landPos);
 
     expect(land).toBeDefined();
     expect(land!.buildings[0].slots?.length).toBe(usedSlots);
@@ -66,7 +71,7 @@ describe('Recruitment', () => {
   };
 
   it('Recruitment cost less when player has TreasureItem.CROWN_OF_DOMINION', () => {
-    const player = gameStateStub.turnOwner;
+    const player = getTurnOwner(gameStateStub);
     // add  TreasureItem.CROWN_OF_DOMINION to player treasury
     player.empireTreasures.push(relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!);
 
@@ -77,14 +82,14 @@ describe('Recruitment', () => {
     startRecruiting(RegularUnitType.WARRIOR, barracksPos, gameStateStub);
     // artifact has effect on regular units
     expect(player.vault).toBe(
-      vault - Math.ceil(getBaseUnitStats(RegularUnitType.WARRIOR).recruitCost * 0.85)
+      vault - Math.ceil(unitsBaseStats(RegularUnitType.WARRIOR).recruitCost * 0.85)
     );
 
     // artifact has effect on hero units
     vault = player.vault;
     startRecruiting(HeroUnitType.FIGHTER, barracksPos, gameStateStub);
     expect(player.vault).toBe(
-      vault - Math.ceil(getBaseUnitStats(HeroUnitType.FIGHTER).recruitCost * 0.85)
+      vault - Math.ceil(unitsBaseStats(HeroUnitType.FIGHTER).recruitCost * 0.85)
     );
   });
 
@@ -94,7 +99,7 @@ describe('Recruitment', () => {
     beforeEach(() => {
       const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
       construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
-      barracksLand = gameStateStub.getLand(barracksPos);
+      barracksLand = getLand(gameStateStub, barracksPos);
 
       expect(gameStateStub.turn).toBe(2);
 
@@ -143,12 +148,12 @@ describe('Recruitment', () => {
         // check that all units are placed on the map
         expect(barracksLand.army.length).toBe(1);
         expect(barracksLand.army[0].regulars.length).toBe(1);
-        expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-        expect(barracksLand.army[0].isMoving).toBeFalsy();
-        expect(barracksLand.army[0].regulars[0].id).toBe(unitType);
+        expect(barracksLand.army[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+        expect(isMoving(barracksLand.army[0])).toBeFalsy();
+        expect(barracksLand.army[0].regulars[0].type).toBe(unitType);
 
         const recruitedUnit = barracksLand.army[0].regulars[0];
-        expect(recruitedUnit.id).toBe(unitType);
+        expect(recruitedUnit.type).toBe(unitType);
         expect(recruitedUnit.count).toBe(nUnits);
         expect(recruitedUnit.rank).toBe(UnitRank.REGULAR);
       }
@@ -174,10 +179,10 @@ describe('Recruitment', () => {
 
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
+      expect(barracksLand.army[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
 
-      let recruitedUnit = barracksLand.army[0].regulars[0] as RegularUnit;
-      expect(recruitedUnit.id).toBe(RegularUnitType.WARRIOR);
+      let recruitedUnit = barracksLand.army[0].regulars[0] as RegularsState;
+      expect(recruitedUnit.type).toBe(RegularUnitType.WARRIOR);
       expect(recruitedUnit.count).toBe(20);
       expect(recruitedUnit.rank).toBe(UnitRank.REGULAR);
 
@@ -186,19 +191,19 @@ describe('Recruitment', () => {
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-      expect(barracksLand.army[0].isMoving).toBeFalsy();
-      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
+      expect(barracksLand.army[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(barracksLand.army[0])).toBeFalsy();
+      expect(barracksLand.army[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
 
-      recruitedUnit = barracksLand.army[0].regulars[0] as RegularUnit;
-      expect(recruitedUnit.id).toBe(RegularUnitType.WARRIOR);
+      recruitedUnit = barracksLand.army[0].regulars[0] as RegularsState;
+      expect(recruitedUnit.type).toBe(RegularUnitType.WARRIOR);
       expect(recruitedUnit.count).toBe(20);
       expect(recruitedUnit.rank).toBe(UnitRank.REGULAR);
 
-      expect(barracksLand.army[0].regulars[1].id).toBe(RegularUnitType.BALLISTA);
+      expect(barracksLand.army[0].regulars[1].type).toBe(RegularUnitType.BALLISTA);
 
-      recruitedUnit = barracksLand.army[0].regulars[1] as RegularUnit;
-      expect(recruitedUnit.id).toBe(RegularUnitType.BALLISTA);
+      recruitedUnit = barracksLand.army[0].regulars[1] as RegularsState;
+      expect(recruitedUnit.type).toBe(RegularUnitType.BALLISTA);
       expect(recruitedUnit.count).toBe(1);
       expect(recruitedUnit.rank).toBe(UnitRank.REGULAR);
     });
@@ -216,10 +221,10 @@ describe('Recruitment', () => {
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-      expect(barracksLand.army[0].isMoving).toBeFalsy();
-      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
-      expect((barracksLand.army[0].regulars[0] as RegularUnit).count).toBe(60);
+      expect(barracksLand.army[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(barracksLand.army[0])).toBeFalsy();
+      expect(barracksLand.army[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect((barracksLand.army[0].regulars[0] as RegularsState).count).toBe(60);
     });
 
     it('When units are recruited and the same type of units are exist on Land they merged', () => {
@@ -231,9 +236,9 @@ describe('Recruitment', () => {
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-      expect(barracksLand.army[0].isMoving).toBeFalsy();
-      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
+      expect(barracksLand.army[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(barracksLand.army[0])).toBeFalsy();
+      expect(barracksLand.army[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
       expect(barracksLand.army[0].regulars[0].count).toBe(20);
 
       startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub); // recruit more warrior
@@ -244,9 +249,9 @@ describe('Recruitment', () => {
       expect(barracksLand.buildings[0].slots?.length).toBe(0); // all units are recruited
       // check that all units are placed on the map
       expect(barracksLand.army.length).toBe(1);
-      expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-      expect(barracksLand.army[0].isMoving).toBeFalsy();
-      expect(barracksLand.army[0].regulars[0].id).toBe(RegularUnitType.WARRIOR);
+      expect(barracksLand.army[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(barracksLand.army[0])).toBeFalsy();
+      expect(barracksLand.army[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
       expect(barracksLand.army[0].regulars[0].count).toBe(40); // verify that units are merged
     });
 
@@ -262,7 +267,7 @@ describe('Recruitment', () => {
 
       it('regular units could not be recruited in land without buildings', () => {
         const emptyLandPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col - 1 };
-        const emptyLand = gameStateStub.getLand(emptyLandPos);
+        const emptyLand = getLand(gameStateStub, emptyLandPos);
         expect(emptyLand.buildings.length).toBe(0);
         expect(emptyLand.army.length).toBe(0);
 
@@ -274,7 +279,7 @@ describe('Recruitment', () => {
       });
 
       it('regular units could not be recruited when not enough gold in vault', () => {
-        gameStateStub.turnOwner.vault = 100;
+        getTurnOwner(gameStateStub).vault = 100;
 
         startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
         expect(barracksLand.buildings[0].slots?.length).toBe(0);
@@ -286,7 +291,7 @@ describe('Recruitment', () => {
   describe('Recruit Hero units', () => {
     const constructBuilding = (buildingType: BuildingType, pos: LandPosition): void => {
       construct(gameStateStub, buildingType, pos);
-      const barracksLand = gameStateStub.getLand(pos);
+      const barracksLand = getLand(gameStateStub, pos);
 
       expect(gameStateStub.turn).toBe(2);
 
@@ -311,7 +316,7 @@ describe('Recruitment', () => {
           const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
           constructBuilding(BuildingType.BARRACKS, barracksPos);
 
-          const barracksLand = gameStateStub.getLand(barracksPos);
+          const barracksLand = getLand(gameStateStub, barracksPos);
 
           // Recruiting heroes in barracks
           startRecruiting(unitType, barracksLand.mapPos, gameStateStub);
@@ -322,10 +327,10 @@ describe('Recruitment', () => {
           expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
           expect(barracksLand.army.length).toBe(1);
-          expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-          expect(barracksLand.army[0].isMoving).toBeFalsy();
+          expect(barracksLand.army[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+          expect(isMoving(barracksLand.army[0])).toBeFalsy();
           const recruitedUnit = barracksLand.army[0].heroes[0];
-          expect(recruitedUnit.id).toBe(unitType);
+          expect(recruitedUnit.type).toBe(unitType);
           expect(recruitedUnit.name).toBe(name);
           expect(recruitedUnit.level).toBe(1);
           expect(recruitedUnit.mana).not.toBeDefined(); // non magic unit does not have mana
@@ -347,8 +352,8 @@ describe('Recruitment', () => {
           const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
           constructBuilding(magicTower, mageTowerPos);
           // Mage towers cost 15000, which exhausts the initial 15000 vault, so add more gold for recruitment
-          gameStateStub.turnOwner.vault += 5000;
-          const mageTowerLand = gameStateStub.getLand(mageTowerPos);
+          getTurnOwner(gameStateStub).vault += 5000;
+          const mageTowerLand = getLand(gameStateStub, mageTowerPos);
 
           // Recruiting heroes in mage tower
           startRecruiting(unitType, mageTowerLand.mapPos, gameStateStub);
@@ -359,10 +364,10 @@ describe('Recruitment', () => {
           expect(mageTowerLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
           expect(mageTowerLand.army.length).toBe(1);
-          expect(mageTowerLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-          expect(mageTowerLand.army[0].isMoving).toBeFalsy();
+          expect(mageTowerLand.army[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+          expect(isMoving(mageTowerLand.army[0])).toBeFalsy();
           const recruitedUnit = mageTowerLand.army[0].heroes[0];
-          expect(recruitedUnit.id).toBe(unitType);
+          expect(recruitedUnit.type).toBe(unitType);
           expect(recruitedUnit.name).toBe(name);
           expect(recruitedUnit.level).toBe(1);
           expect(recruitedUnit.mana).toBeDefined(); // magic units have mana
@@ -375,7 +380,7 @@ describe('Recruitment', () => {
         const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
         constructBuilding(BuildingType.BARRACKS, barracksPos);
 
-        const barracksLand = gameStateStub.getLand(barracksPos);
+        const barracksLand = getLand(gameStateStub, barracksPos);
         expect(barracksLand.army.length).toBe(0);
 
         // Recruiting 3 heroes of the same type in barracks
@@ -391,8 +396,8 @@ describe('Recruitment', () => {
         expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
 
         expect(barracksLand.army.length).toBe(1);
-        expect(barracksLand.army[0].controlledBy).toBe(gameStateStub.turnOwner.id);
-        expect(barracksLand.army[0].isMoving).toBeFalsy();
+        expect(barracksLand.army[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+        expect(isMoving(barracksLand.army[0])).toBeFalsy();
         expect(barracksLand.army[0].heroes.length).toBe(3);
       });
     });
@@ -401,7 +406,7 @@ describe('Recruitment', () => {
       it('mages should not recruit in barracks', () => {
         const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
         constructBuilding(BuildingType.BARRACKS, barracksPos);
-        const barracksLand = gameStateStub.getLand(barracksPos);
+        const barracksLand = getLand(gameStateStub, barracksPos);
 
         startRecruiting(HeroUnitType.FIGHTER, barracksPos, gameStateStub);
         expect(barracksLand.buildings[0].slots?.length).toBe(1); // hero recruited
@@ -419,7 +424,7 @@ describe('Recruitment', () => {
       ])('non-mage heroes should not recruit in mage towers', (mageTower: BuildingType) => {
         const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
         constructBuilding(mageTower, mageTowerPos);
-        const barracksLand = gameStateStub.getLand(mageTowerPos);
+        const barracksLand = getLand(gameStateStub, mageTowerPos);
 
         startRecruiting(HeroUnitType.FIGHTER, mageTowerPos, gameStateStub);
         expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero not recruited
@@ -427,7 +432,7 @@ describe('Recruitment', () => {
 
       it('hero units could not be recruited in land without buildings', () => {
         const emptyLandPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col - 1 };
-        const emptyLand = gameStateStub.getLand(emptyLandPos);
+        const emptyLand = getLand(gameStateStub, emptyLandPos);
         expect(emptyLand.buildings.length).toBe(0);
         expect(emptyLand.army.length).toBe(0);
 
@@ -443,9 +448,9 @@ describe('Recruitment', () => {
         const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
         constructBuilding(BuildingType.BARRACKS, barracksPos);
 
-        gameStateStub.turnOwner.vault = 100;
+        getTurnOwner(gameStateStub).vault = 100;
 
-        const barracksLand = gameStateStub.getLand(barracksPos);
+        const barracksLand = getLand(gameStateStub, barracksPos);
 
         startRecruiting(HeroUnitType.FIGHTER, barracksPos, gameStateStub);
         expect(barracksLand.army.length).toBe(0);

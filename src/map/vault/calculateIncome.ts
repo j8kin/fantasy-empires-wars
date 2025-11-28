@@ -5,9 +5,12 @@ import { getLands } from '../utils/getLands';
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { calculateHexDistance } from '../utils/mapAlgorithms';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 
 export const calculateIncome = (gameState: GameState): number => {
-  const { map, turnOwner } = gameState;
+  const map = gameState.map;
+  const turnOwner = getTurnOwner(gameState);
+  const playerProfile = turnOwner.playerProfile;
 
   const playerLands = getLands({ gameState: gameState, players: [turnOwner.id] });
 
@@ -36,13 +39,13 @@ export const calculateIncome = (gameState: GameState): number => {
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Buildings#stronghold
     if (
       !land.buildings.some((b) => b.id === BuildingType.STRONGHOLD) &&
-      turnOwner.getAlignment() === Alignment.CHAOTIC
+      playerProfile.alignment === Alignment.CHAOTIC
     ) {
       landIncome = land.goldPerTurn * 0.8;
     }
 
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
-    if (turnOwner.getAlignment() === Alignment.LAWFUL) {
+    if (playerProfile.alignment === Alignment.LAWFUL) {
       if (land.land.alignment === Alignment.LAWFUL) {
         landIncome = landIncome * 1.3;
       }
@@ -50,7 +53,7 @@ export const calculateIncome = (gameState: GameState): number => {
         landIncome = landIncome * 0.8;
       }
     }
-    if (turnOwner.getAlignment() === Alignment.CHAOTIC) {
+    if (playerProfile.alignment === Alignment.CHAOTIC) {
       if (land.land.alignment === Alignment.CHAOTIC) {
         landIncome = landIncome * 2;
       }

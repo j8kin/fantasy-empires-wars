@@ -4,12 +4,13 @@ import styles from './css/Player.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import Avatar from '../avatars/Avatar';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 
-import { getLandId } from '../../state/LandState';
+import Avatar from '../avatars/Avatar';
 
 import { getLands } from '../../map/utils/getLands';
 import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
+import { getLandId } from '../../state/map/land/LandId';
 
 export interface PlayerSummaryProps {
   avatarSize: number;
@@ -21,13 +22,13 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
 
   if (gameState == null) return null;
 
-  const turnOwner = gameState?.turnOwner;
+  const turnOwner = getTurnOwner(gameState);
   const currentIncome = calculatePlayerIncome(gameState);
 
   const handleAvatarClick = () => {
     // Find all lands controlled by the selected player
     setTimeout(() => {
-      getLands({ gameState: gameState!, players: [turnOwner!.id] }).forEach((land) => {
+      getLands({ gameState: gameState!, players: [turnOwner.id] }).forEach((land) => {
         addGlowingTile(getLandId(land.mapPos));
       });
     }, 0);
@@ -39,14 +40,14 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
     <div className={styles.playerContainer}>
       <div onClick={handleAvatarClick} className={styles.clickableAvatar}>
         <Avatar
-          player={turnOwner.getProfile()}
+          player={turnOwner.playerProfile}
           size={avatarSize}
           shape="rectangle"
           borderColor={turnOwner.color}
         />
       </div>
       <div className={styles.playerDetails}>
-        <div className={styles.playerName}>{turnOwner.getName()}</div>
+        <div className={styles.playerName}>{turnOwner.playerProfile.name}</div>
         <div className={styles.moneyInfo}>
           <div className={styles.moneyItem}>Gold: {turnOwner.vault}</div>
           <div className={styles.moneyItem}>

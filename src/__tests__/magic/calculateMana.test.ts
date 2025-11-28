@@ -1,10 +1,12 @@
 import { GameState } from '../../state/GameState';
-import { PlayerState, PlayerProfile, PREDEFINED_PLAYERS } from '../../state/PlayerState';
+import { PlayerState } from '../../state/player/PlayerState';
+
+import { getLand } from '../../selectors/landSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 
 import { relicts, TreasureItem } from '../../types/Treasures';
 import { getManaSource, ManaType } from '../../types/Mana';
 import { HeroUnitType } from '../../types/UnitType';
-import { HeroUnit } from '../../types/HeroUnit';
 import { getLandById, getSpecialLandTypes, LandType } from '../../types/Land';
 
 import { BuildingType } from '../../types/Building';
@@ -12,6 +14,9 @@ import { BuildingType } from '../../types/Building';
 import { getLands } from '../../map/utils/getLands';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { nextPlayer } from '../../systems/playerActions';
+import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
 
 describe('Calculate Mana', () => {
   let testTurnManagement: TestTurnManagement;
@@ -30,11 +35,11 @@ describe('Calculate Mana', () => {
   });
 
   const expectedMana = (manaType: ManaType, mana: number, playerId: number = 0): void => {
-    expect(gameStateStub.allPlayers[playerId].mana[manaType]).toBe(mana);
+    expect(gameStateStub.players[playerId].mana[manaType]).toBe(mana);
     Object.values(ManaType)
       .filter((m) => m !== manaType)
       .forEach((m) => {
-        expect(gameStateStub.allPlayers[playerId].mana[m]).toBe(0);
+        expect(gameStateStub.players[playerId].mana[m]).toBe(0);
       });
   };
 
@@ -58,7 +63,7 @@ describe('Calculate Mana', () => {
         testTurnManagement.waitStartPhaseComplete();
 
         expect(gameStateStub.turn).toBe(2);
-        gameStateStub.allPlayers.forEach((p) =>
+        gameStateStub.players.forEach((p) =>
           Object.values(p.mana).forEach((m) => expect(m).toBe(0))
         );
 
@@ -88,18 +93,18 @@ describe('Calculate Mana', () => {
           gameStateStub = createGameStateStub({ gamePlayers: players });
           const homeLand = getLands({
             gameState: gameStateStub,
-            players: [gameStateStub.turnOwner.id],
+            players: [getTurnOwner(gameStateStub).id],
             buildings: [BuildingType.STRONGHOLD],
           })[0];
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 2 }; // outside player land
-          gameStateStub.getLand(specialLand).land = getLandById(landType);
+          getLand(gameStateStub, specialLand).land = getLandById(landType);
 
           testTurnManagement.setGameState(gameStateStub);
           testTurnManagement.startNewTurn(gameStateStub);
           testTurnManagement.waitStartPhaseComplete();
 
           expect(gameStateStub.turn).toBe(2);
-          gameStateStub.allPlayers.forEach((p) =>
+          gameStateStub.players.forEach((p) =>
             Object.values(p.mana).forEach((m) => expect(m).toBe(0))
           );
 
@@ -137,16 +142,16 @@ describe('Calculate Mana', () => {
             row: homeLandPlayer2.mapPos.row,
             col: homeLandPlayer2.mapPos.col + 1,
           }; // player 2 land
-          gameStateStub.getLand(specialLand).land = getLandById(landType);
+          getLand(gameStateStub, specialLand).land = getLandById(landType);
 
-          while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
+          while (gameStateStub.turn < 2) nextPlayer(gameStateStub);
 
           testTurnManagement.setGameState(gameStateStub);
           testTurnManagement.startNewTurn(gameStateStub);
           testTurnManagement.waitStartPhaseComplete();
 
           expect(gameStateStub.turn).toBe(2);
-          gameStateStub.allPlayers.forEach((p) =>
+          gameStateStub.players.forEach((p) =>
             Object.values(p.mana).forEach((m) => expect(m).toBe(0))
           );
 
@@ -179,20 +184,20 @@ describe('Calculate Mana', () => {
           gameStateStub = createGameStateStub({ gamePlayers: players });
           const homeLand = getLands({
             gameState: gameStateStub,
-            players: [gameStateStub.turnOwner.id],
+            players: [getTurnOwner(gameStateStub).id],
             buildings: [BuildingType.STRONGHOLD],
           })[0];
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
-          gameStateStub.getLand(specialLand).land = getLandById(landType);
+          getLand(gameStateStub, specialLand).land = getLandById(landType);
 
-          while (gameStateStub.turn < 2) gameStateStub.nextPlayer();
+          while (gameStateStub.turn < 2) nextPlayer(gameStateStub);
 
           testTurnManagement.setGameState(gameStateStub);
           testTurnManagement.startNewTurn(gameStateStub);
           testTurnManagement.waitStartPhaseComplete();
 
           expect(gameStateStub.turn).toBe(2);
-          gameStateStub.allPlayers.forEach((p) =>
+          gameStateStub.players.forEach((p) =>
             Object.values(p.mana).forEach((m) => expect(m).toBe(0))
           );
 
@@ -223,15 +228,15 @@ describe('Calculate Mana', () => {
       players: [player.id],
     }).filter(
       (l) =>
-        (player.getType() === HeroUnitType.NECROMANCER &&
+        (player.playerProfile.type === HeroUnitType.NECROMANCER &&
           (l.land.id === LandType.BLIGHTED_FEN || l.land.id === LandType.SHADOW_MIRE)) ||
-        (player.getType() === HeroUnitType.CLERIC &&
+        (player.playerProfile.type === HeroUnitType.CLERIC &&
           (l.land.id === LandType.SUN_SPIRE_PEAKS || l.land.id === LandType.GOLDEN_PLAINS)) ||
-        (player.getType() === HeroUnitType.ENCHANTER &&
+        (player.playerProfile.type === HeroUnitType.ENCHANTER &&
           (l.land.id === LandType.CRISTAL_BASIN || l.land.id === LandType.MISTY_GLADES)) ||
-        (player.getType() === HeroUnitType.DRUID &&
+        (player.playerProfile.type === HeroUnitType.DRUID &&
           (l.land.id === LandType.HEARTWOOD_COVE || l.land.id === LandType.VERDANT_GLADE)) ||
-        (player.getType() === HeroUnitType.PYROMANCER &&
+        (player.playerProfile.type === HeroUnitType.PYROMANCER &&
           (l.land.id === LandType.VOLCANO || l.land.id === LandType.LAVA))
     ).length;
     const playerHero = getLands({
@@ -255,7 +260,7 @@ describe('Calculate Mana', () => {
       battlefieldSize: { rows: 5, cols: 30 },
     });
     // calculate baseMana per turn for each player
-    const basePlayersMana = gameStateStub.allPlayers.map((p) => baseMana(p));
+    const basePlayersMana = gameStateStub.players.map((p) => baseMana(p));
 
     testTurnManagement.setGameState(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);
@@ -274,32 +279,30 @@ describe('Calculate Mana', () => {
   it('mana increased by 1 per each specific land even if no such hero type when player have TreasureItem.HEARTSTONE_OF_ORRIVANE', () => {
     const players = [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]];
     gameStateStub = createGameStateStub({ gamePlayers: players });
-    gameStateStub.allPlayers[0].empireTreasures.push(
+    gameStateStub.players[0].empireTreasures.push(
       relicts.find((r) => r.id === TreasureItem.HEARTSTONE_OF_ORRIVANE)!
     );
     const homeLand = getLands({
       gameState: gameStateStub,
-      players: [gameStateStub.turnOwner.id],
+      players: [getTurnOwner(gameStateStub).id],
       buildings: [BuildingType.STRONGHOLD],
     })[0];
 
-    gameStateStub.getLand(homeLand.mapPos).land = getLandById(LandType.VOLCANO); // this should add red mana to player 0
+    getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandType.VOLCANO); // this should add red mana to player 0
 
     testTurnManagement.setGameState(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);
     testTurnManagement.waitStartPhaseComplete();
 
     expect(gameStateStub.turn).toBe(2);
-    gameStateStub.allPlayers.forEach((p) =>
-      Object.values(p.mana).forEach((m) => expect(m).toBe(0))
-    );
+    gameStateStub.players.forEach((p) => Object.values(p.mana).forEach((m) => expect(m).toBe(0)));
 
     testTurnManagement.makeNTurns(1);
 
-    expect(gameStateStub.allPlayers[0].mana[ManaType.RED]).toBe(1);
-    expect(gameStateStub.allPlayers[0].mana[ManaType.BLACK]).toBe(7);
-    expect(gameStateStub.allPlayers[0].mana[ManaType.WHITE]).toBe(0);
-    expect(gameStateStub.allPlayers[0].mana[ManaType.BLUE]).toBe(0);
-    expect(gameStateStub.allPlayers[0].mana[ManaType.GREEN]).toBe(0);
+    expect(gameStateStub.players[0].mana[ManaType.RED]).toBe(1);
+    expect(gameStateStub.players[0].mana[ManaType.BLACK]).toBe(7);
+    expect(gameStateStub.players[0].mana[ManaType.WHITE]).toBe(0);
+    expect(gameStateStub.players[0].mana[ManaType.BLUE]).toBe(0);
+    expect(gameStateStub.players[0].mana[ManaType.GREEN]).toBe(0);
   });
 });

@@ -1,8 +1,10 @@
 import { GameState } from '../../state/GameState';
-import { getLandId, LandState } from '../../state/LandState';
+import { LandState } from '../../state/map/land/LandState';
+import { getLandOwner } from '../../selectors/landSelectors';
 import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
 import { getLands } from './getLands';
 import { getRealmLands } from './getRealmLands';
+import { getLandId } from '../../state/map/land/LandId';
 
 export const getHostileLands = (gameState: GameState): LandState[] => {
   const turnOwner = gameState.turnOwner;
@@ -17,7 +19,7 @@ export const getHostileLands = (gameState: GameState): LandState[] => {
     (land) =>
       !(
         realmLands.includes(getLandId(land.mapPos)) ||
-        allies.includes(gameState.getLandOwner(land.mapPos))
-      ) && land.army.some((a) => a.controlledBy === turnOwner.id)
+        allies.includes(getLandOwner(gameState, land.mapPos))
+      ) && land.army.some((a) => a.controlledBy === turnOwner)
   );
 };

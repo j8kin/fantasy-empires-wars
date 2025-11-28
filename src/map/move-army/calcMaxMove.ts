@@ -1,4 +1,4 @@
-import { RegularUnit, UnitRank } from '../../types/RegularUnit';
+import { RegularsState, UnitRank } from '../../state/army/RegularsState';
 import { isWarMachine } from '../../types/UnitType';
 
 export const MAX_MOVE = 4;
@@ -14,13 +14,13 @@ const maxKill = (n: number, rank: UnitRank) => {
   }
 };
 
-const nUnits = (units: RegularUnit[]) =>
+const nUnits = (units: RegularsState[]) =>
   units.reduce(
-    (acc, unit) => (isWarMachine(unit.id) ? acc + unit.count * 20 : acc + unit.count),
+    (acc, unit) => (isWarMachine(unit.type) ? acc + unit.count * 20 : acc + unit.count),
     0
   );
 
-export const calcMaxMove = (army: RegularUnit[]): number => {
+export const calcMaxMove = (army: RegularsState[]): number => {
   if (army.length === 0) return 0; // probably only heroes in army move only on player owner lands
   const fullArmy = Object.values(UnitRank).map((r) => ({
     rank: r,

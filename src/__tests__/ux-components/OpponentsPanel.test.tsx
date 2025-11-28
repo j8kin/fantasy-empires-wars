@@ -2,11 +2,13 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import OpponentsPanel from '../../ux-components/opponents-panel/OpponentsPanel';
-import { PREDEFINED_PLAYERS, NO_PLAYER, PlayerProfile } from '../../state/PlayerState';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
-import { createGameState } from '../../state/GameState';
+import { addPlayer } from '../../systems/playerActions';
 import { generateMockMap } from '../utils/generateMockMap';
+import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { gameStateFactory } from '../../factories/gameStateFactory';
 
 // Test wrapper that provides GameContext and ApplicationContext and allows updating game state
 const TestWrapper: React.FC<{
@@ -20,14 +22,14 @@ const TestWrapper: React.FC<{
     React.useEffect(() => {
       // Always create a new GameState when opponents or selectedPlayer change
       const map = generateMockMap({ rows: 9, cols: 18 });
-      const newGameState = createGameState(map);
+      const newGameState = gameStateFactory(map);
 
       // Add the selected player first
-      newGameState.addPlayer(selectedPlayer, 'human');
+      addPlayer(newGameState, selectedPlayer, 'human');
 
       // Add all opponents to the game
       opponents.forEach((opponent) => {
-        newGameState.addPlayer(opponent, 'computer');
+        addPlayer(newGameState, opponent, 'computer');
       });
 
       updateGameState(newGameState);

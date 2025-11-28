@@ -4,6 +4,8 @@ import styles from './css/NewGameDialog.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
+import { addPlayer } from '../../systems/playerActions';
+
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import Avatar from '../avatars/Avatar';
 import GameButton from '../buttons/GameButton';
@@ -11,14 +13,17 @@ import PlayerSelection from '../player-selection/PlayerSelection';
 
 import { generateMap } from '../../map/generation/generateMap';
 import { ButtonName } from '../../types/ButtonName';
-import { NO_PLAYER, PlayerProfile, PREDEFINED_PLAYERS } from '../../state/PlayerState';
 import { getPlayerColorValue, PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
-import { BattlefieldDimensions, createGameState, GameState } from '../../state/GameState';
+import { GameState } from '../../state/GameState';
+import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { MapDimensions } from '../../state/map/MapDimensions';
+import { gameStateFactory } from '../../factories/gameStateFactory';
 
 // Local map size type for this dialog only
 type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';
 
-const getBattlefieldDimensions = (selectedMapSize: DialogMapSize): BattlefieldDimensions => {
+const getBattlefieldDimensions = (selectedMapSize: DialogMapSize): MapDimensions => {
   switch (selectedMapSize) {
     case 'small':
       return { rows: 6, cols: 13 };
@@ -243,9 +248,9 @@ const NewGameDialog: React.FC = () => {
 
     setTimeout(() => {
       const map = generateMap(getBattlefieldDimensions(mapSize));
-      const gameState: GameState = createGameState(map);
-      gameState.addPlayer(selectedPlayer, 'human');
-      opponents.forEach((o) => gameState.addPlayer(o, 'computer'));
+      const gameState: GameState = gameStateFactory(map);
+      addPlayer(gameState, selectedPlayer, 'human');
+      opponents.forEach((o) => addPlayer(gameState, o, 'computer'));
 
       startNewGame(gameState);
       setGameStarted(true);

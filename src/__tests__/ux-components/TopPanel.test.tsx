@@ -5,10 +5,13 @@ import TopPanel from '../../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { PREDEFINED_PLAYERS } from '../../state/PlayerState';
 import { ManaType } from '../../types/Mana';
-import { createGameState, TurnPhase } from '../../state/GameState';
 import { generateMockMap } from '../utils/generateMockMap';
+import { addPlayer } from '../../systems/playerActions';
+
+import { getPlayer } from '../../selectors/playerSelectors';
+import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
+import { gameStateFactory } from '../../factories/gameStateFactory';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -17,15 +20,15 @@ const renderWithProvider = (ui: React.ReactElement) => {
       if (!gameState) {
         // Create a new GameState using the createGameState function
         const map = generateMockMap({ rows: 9, cols: 18 });
-        const newGameState = createGameState(map);
+        const newGameState = gameStateFactory(map);
 
         // Add players to the game
         PREDEFINED_PLAYERS.slice(0, 3).forEach((player, index) => {
-          newGameState.addPlayer(player, index === 0 ? 'human' : 'computer');
+          addPlayer(newGameState, player, index === 0 ? 'human' : 'computer');
         });
 
         // Set up the first player with test data
-        const firstPlayer = newGameState.getPlayer(PREDEFINED_PLAYERS[0].id);
+        const firstPlayer = getPlayer(newGameState, PREDEFINED_PLAYERS[0].id);
         firstPlayer.vault = 1500;
         firstPlayer.mana = {
           [ManaType.WHITE]: 100,
@@ -178,10 +181,10 @@ describe('TopPanel Component', () => {
           if (!gameState) {
             // Create a new GameState using the createGameState function
             const map = generateMockMap({ rows: 9, cols: 18 });
-            const newGameState = createGameState(map);
+            const newGameState = gameStateFactory(map);
 
             // Add only one player
-            newGameState.addPlayer(PREDEFINED_PLAYERS[0], 'human');
+            addPlayer(newGameState, PREDEFINED_PLAYERS[0], 'human');
 
             updateGameState(newGameState);
           }

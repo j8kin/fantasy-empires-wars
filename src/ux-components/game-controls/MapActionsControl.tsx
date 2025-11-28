@@ -8,6 +8,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getAllBuildings } from '../../types/Building';
 import { ButtonName } from '../../types/ButtonName';
 import { AllSpells, SpellName } from '../../types/Spell';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 
 const MapActionsControl: React.FC = () => {
   const {
@@ -20,7 +21,7 @@ const MapActionsControl: React.FC = () => {
 
   const handleShowCastSpellDialog = useCallback(() => {
     if (gameState == null) return;
-    const selectedPlayer = gameState.turnOwner;
+    const selectedPlayer = getTurnOwner(gameState);
     if (!selectedPlayer) return;
     const playerMana = selectedPlayer.mana!;
     if (
@@ -43,7 +44,7 @@ const MapActionsControl: React.FC = () => {
 
   const handleShowConstructBuildingDialog = useCallback(() => {
     if (gameState == null) return;
-    const selectedPlayer = gameState.turnOwner;
+    const selectedPlayer = getTurnOwner(gameState);
     if (!selectedPlayer) return;
     if (
       getAllBuildings(selectedPlayer).some(
@@ -64,7 +65,7 @@ const MapActionsControl: React.FC = () => {
     setShowErrorMessagePopup,
   ]);
 
-  if (gameState?.turnOwner.playerType !== 'human') return null;
+  if (gameState == null || getTurnOwner(gameState).playerType !== 'human') return null;
 
   return (
     <div className={styles.gameControlContainer}>

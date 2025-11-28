@@ -9,9 +9,10 @@ import Avatar from '../avatars/Avatar';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { getAlignmentColor } from '../../types/Alignment';
-import { PlayerState } from '../../state/PlayerState';
+import { PlayerState } from '../../state/player/PlayerState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { getPlayerColorValue } from '../../types/PlayerColors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 
 export interface OpponentInfoProps extends PopupProps {
   opponent?: PlayerState;
@@ -23,8 +24,8 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
 
   if (opponent == null || gameState == null) return null;
 
-  const selectedPlayer = gameState.turnOwner;
-  const diplomacyStatus = selectedPlayer?.diplomacy![opponent.id] || DiplomacyStatus.NO_TREATY;
+  const selectedPlayer = getTurnOwner(gameState);
+  const diplomacyStatus = selectedPlayer.diplomacy[opponent.id] || DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {
     hideOpponentInfo();
@@ -51,13 +52,13 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
     >
       <div className={commonStyles.popupContent}>
         <div className={`${commonStyles.header} ${styles.header}`}>
-          <h3 className={`${commonStyles.title} ${styles.title}`}>{opponent.getName()}</h3>
+          <h3 className={`${commonStyles.title} ${styles.title}`}>{opponent.playerProfile.name}</h3>
         </div>
 
         <div className={commonStyles.characteristics}>
           <div className={styles.avatarSection}>
             <Avatar
-              player={opponent.getProfile()}
+              player={opponent.playerProfile}
               size={55}
               shape="rectangle"
               borderColor={getPlayerColorValue(opponent.color)}
@@ -67,20 +68,24 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
 
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Race:</span>
-            <span className={`${commonStyles.value} ${styles.value}`}>{opponent.getRace()}</span>
+            <span className={`${commonStyles.value} ${styles.value}`}>
+              {opponent.playerProfile.race}
+            </span>
           </div>
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Alignment:</span>
             <span
               className={`${commonStyles.value} ${styles.value}`}
-              style={{ color: getAlignmentColor(opponent.getAlignment()) }}
+              style={{ color: getAlignmentColor(opponent.playerProfile.alignment) }}
             >
-              {opponent.getAlignment()}
+              {opponent.playerProfile.alignment}
             </span>
           </div>
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Level:</span>
-            <span className={`${commonStyles.value} ${styles.value}`}>{opponent.getLevel()}</span>
+            <span className={`${commonStyles.value} ${styles.value}`}>
+              {opponent.playerProfile.level}
+            </span>
           </div>
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Diplomatic Relations:</span>

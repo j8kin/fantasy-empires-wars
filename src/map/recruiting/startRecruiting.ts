@@ -1,23 +1,27 @@
 import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/LandState';
+
+import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
 import { isHeroType, HeroUnitType, UnitType, isMageType } from '../../types/UnitType';
-import { getBaseUnitStats, getRecruitDuration } from '../../types/BaseUnit';
+import { getRecruitDuration } from '../../types/BaseUnit';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { unitsBaseStats } from '../../data/units/unitsBaseStats';
 
 export const startRecruiting = (
   unitType: UnitType,
   landPos: LandPosition,
   gameState: GameState
 ): void => {
-  if (gameState.getLandOwner(landPos) !== gameState.turnOwner.id) {
+  if (getLandOwner(gameState, landPos) !== gameState.turnOwner) {
     return; // fallback: a wrong Land Owner should never happen on real game
   }
   // recruitment available only in MAIN phase if there is a slot available
-  const building = gameState
-    .getLand(landPos)
-    .buildings.filter((b) => b.slots != null && b.slots.length < b.numberOfSlots);
+  const building = getLand(gameState, landPos).buildings.filter(
+    (b) => b.slots != null && b.slots.length < b.numberOfSlots
+  );
   if (building.length === 1) {
     // additionally verify that regular units and non-magic heroes are recruited in BARRACKS and mages are in mage tower
     if (isHeroType(unitType)) {
@@ -55,15 +59,15 @@ export const startRecruiting = (
       return; // fallback: wrong building type for regular units
     }
 
-    const turnOwner = gameState.turnOwner;
+    const turnOwner = getTurnOwner(gameState);
     const availableGold = turnOwner.vault;
-    if (availableGold != null && availableGold >= getBaseUnitStats(unitType).recruitCost) {
+    if (availableGold != null && availableGold >= unitsBaseStats(unitType).recruitCost) {
       const hasCrownOfDominion = turnOwner.empireTreasures?.some(
         (r) => r.id === TreasureItem.CROWN_OF_DOMINION
       );
       turnOwner.vault -= hasCrownOfDominion
-        ? Math.ceil(getBaseUnitStats(unitType).recruitCost * 0.85)
-        : getBaseUnitStats(unitType).recruitCost;
+        ? Math.ceil(unitsBaseStats(unitType).recruitCost * 0.85)
+        : unitsBaseStats(unitType).recruitCost;
       building[0].slots!.push({
         unit: unitType,
         turnsRemaining: getRecruitDuration(unitType),

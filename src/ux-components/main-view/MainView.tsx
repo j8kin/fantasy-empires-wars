@@ -89,7 +89,7 @@ const MainViewContent: React.FC = () => {
   useEffect(() => {
     if (gameStarted && gameState && gameState.turn === 1) {
       // Create a unique identifier for this game state to detect new games todo use UUID instead of string concatenation
-      const currentGameId = `${gameState.allPlayers.length}-${gameState.map.dimensions.rows}-${gameState.map.dimensions.cols}-${gameState.allPlayers[0]?.id}`;
+      const currentGameId = `${gameState.players.length}-${gameState.map.dimensions.rows}-${gameState.map.dimensions.cols}-${gameState.players[0]?.id}`;
 
       // Check if this is a different game than the last one
       if (lastGameStateRef.current !== currentGameId) {

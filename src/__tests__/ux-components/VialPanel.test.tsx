@@ -5,9 +5,11 @@ import '@testing-library/jest-dom';
 import VialPanel from '../../ux-components/vial-panel/VialPanel';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GameState } from '../../state/GameState';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { nextPlayer } from '../../systems/playerActions';
+
 import { ManaType } from '../../types/Mana';
 import { getMinManaCost } from '../../types/Spell';
-
 import { createGameStateStub } from '../utils/createGameStateStub';
 
 // Mock the image import
@@ -56,7 +58,7 @@ describe('VialPanel Integration Test', () => {
   describe('Human player scenarios', () => {
     it('should render mana vials for human player with sufficient mana', () => {
       // Set mana values above minimum thresholds
-      gameState.turnOwner.mana = {
+      getTurnOwner(gameState).mana = {
         [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
         [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) + 15,
         [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) + 20,
@@ -83,7 +85,7 @@ describe('VialPanel Integration Test', () => {
 
     it('should only render vials for mana types with sufficient mana', () => {
       // Set only some mana types above minimum thresholds
-      gameState.turnOwner.mana = {
+      getTurnOwner(gameState).mana = {
         [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10, // Above threshold
         [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) - 5, // Below threshold
         [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) + 20, // Above threshold
@@ -103,7 +105,7 @@ describe('VialPanel Integration Test', () => {
 
     it('should render no vials when all mana is below minimum thresholds', () => {
       // Set all mana types below minimum thresholds
-      gameState.turnOwner.mana = {
+      getTurnOwner(gameState).mana = {
         [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) - 1,
         [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) - 1,
         [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) - 1,
@@ -124,9 +126,9 @@ describe('VialPanel Integration Test', () => {
 
   describe('AI player scenarios', () => {
     it('should not render for AI player turn', () => {
-      gameState.nextPlayer(); // Switch to AI player
+      nextPlayer(gameState); // Switch to AI player
       // Set mana values above minimum thresholds for AI player
-      gameState.turnOwner.mana = {
+      getTurnOwner(gameState).mana = {
         [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
         [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) + 15,
         [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) + 20,
@@ -148,7 +150,7 @@ describe('VialPanel Integration Test', () => {
   describe('ManaVial component integration', () => {
     it('should properly render ManaVial with different mana amounts', () => {
       // Set specific mana amounts to test ManaVial rendering
-      gameState.turnOwner.mana = {
+      getTurnOwner(gameState).mana = {
         [ManaType.WHITE]: 50, // Low mana
         [ManaType.BLUE]: 100, // Medium mana
         [ManaType.GREEN]: 200, // Max mana
@@ -181,7 +183,7 @@ describe('VialPanel Integration Test', () => {
 
     it('should handle edge case when mana is exactly at minimum threshold', () => {
       // Set mana exactly at minimum thresholds
-      gameState.turnOwner.mana = {
+      getTurnOwner(gameState).mana = {
         [ManaType.WHITE]: getMinManaCost(ManaType.WHITE), // Exactly at threshold (won't render)
         [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) + 1, // Just above threshold (will render)
         [ManaType.GREEN]: getMinManaCost(ManaType.GREEN),
@@ -201,7 +203,7 @@ describe('VialPanel Integration Test', () => {
 
     it('should handle null/undefined mana values gracefully', () => {
       // Set mana to undefined/null to test ManaVial null handling
-      const humanPlayer = gameState.turnOwner;
+      const humanPlayer = getTurnOwner(gameState);
       humanPlayer.mana = {
         [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
         [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) + 15,
@@ -242,7 +244,7 @@ describe('VialPanel Integration Test', () => {
 
   describe('Component structure and styling', () => {
     it('should render with correct CSS classes and structure', () => {
-      gameState.turnOwner.mana = {
+      getTurnOwner(gameState).mana = {
         [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
         [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) - 1, // Won't render
         [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) + 20,

@@ -1,19 +1,24 @@
 import { getLands } from '../map/utils/getLands';
 import { construct } from '../map/building/construct';
-import { PlayerState, PREDEFINED_PLAYERS } from '../state/PlayerState';
+import { PlayerState } from '../state/player/PlayerState';
 import { BuildingType } from '../types/Building';
-import { BattlefieldMap, GameState, BattlefieldDimensions } from '../state/GameState';
+import { GameState } from '../state/GameState';
+import { MapState } from '../state/map/MapState';
+import { getTurnOwner } from '../selectors/playerSelectors';
 import { getLandById, LandType } from '../types/Land';
 import { Alignment } from '../types/Alignment';
-import { toGamePlayer } from './utils/toGamePlayer';
 import { createDefaultGameStateStub, createGameStateStub } from './utils/createGameStateStub';
+import { addLand } from '../systems/playerActions';
+import { playerFactory } from '../factories/playerFactory';
+import { PREDEFINED_PLAYERS } from '../data/players/predefinedPlayers';
+import { MapDimensions } from '../state/map/MapDimensions';
 
 describe('MapLands', () => {
   const nTiles10x20 = 5 * 20 + 5 * 19;
   const nTiles5x5 = 5 * 3 + 4 * 2;
   const nTilesInRadius1 = 2 * 2 + 3;
-  const player: PlayerState = toGamePlayer(PREDEFINED_PLAYERS[0]);
-  const battlefieldSize: BattlefieldDimensions = { rows: 5, cols: 5 };
+  const player: PlayerState = playerFactory(PREDEFINED_PLAYERS[0], 'human', 200000);
+  const battlefieldSize: MapDimensions = { rows: 5, cols: 5 };
 
   describe('Get lands', () => {
     it('should return all lands', () => {
@@ -38,11 +43,11 @@ describe('MapLands', () => {
           nPlayers: 1,
           addPlayersHomeland: false,
         });
-        const mockMap: BattlefieldMap = gameStateStub.map;
+        const mockMap: MapState = gameStateStub.map;
 
         mockMap.lands['0-0'].land = getLandById(LandType.VOLCANO);
         mockMap.lands['0-1'].land = getLandById(LandType.LAVA);
-        gameStateStub.turnOwner.addLand('0-1');
+        addLand(getTurnOwner(gameStateStub), { row: 0, col: 1 });
         //mockMap.lands['0-1'].controlledBy = gameStateStub.turnOwner;
         expect(getLands({ gameState: gameStateStub, landTypes: [LandType.VOLCANO] }).length).toBe(
           1
@@ -60,7 +65,7 @@ describe('MapLands', () => {
         expect(
           getLands({
             gameState: gameStateStub,
-            players: [gameStateStub.turnOwner.id],
+            players: [getTurnOwner(gameStateStub).id],
             landTypes: [LandType.PLAINS],
           }).length
         ).toBe(0);
@@ -73,7 +78,7 @@ describe('MapLands', () => {
           battlefieldSize: battlefieldSize,
           nPlayers: 1,
         });
-        const mockMap: BattlefieldMap = gameStateStub.map;
+        const mockMap: MapState = gameStateStub.map;
 
         mockMap.lands['0-0'].land = getLandById(LandType.VOLCANO);
         mockMap.lands['0-1'].land = getLandById(LandType.LAVA);

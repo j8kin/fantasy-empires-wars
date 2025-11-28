@@ -1,11 +1,17 @@
 import { GameState } from '../../state/GameState';
-import { PlayerState } from '../../state/PlayerState';
+import { PlayerState } from '../../state/player/PlayerState';
+
+import { armyFactory } from '../../factories/armyFactory';
+import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { isMoving } from '../../selectors/armySelectors';
+import { addHero } from '../../systems/armyActions';
+import { levelUpHero } from '../../systems/unitsActions';
 
 import { getQuest, HeroQuest, QuestType } from '../../types/Quest';
 import { getRandomElement } from '../../types/getRandomElement';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
-import { HeroUnit } from '../../types/HeroUnit';
-import { createArmy } from '../../types/Army';
+import { HeroState } from '../../state/army/HeroState';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 import {
   emptyHanded,
@@ -19,7 +25,7 @@ const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
 };
 
-const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState): HeroOutcome => {
+const calculateReward = (hero: HeroState, quest: HeroQuest, gameState: GameState): HeroOutcome => {
   if (Math.random() > 0.55 - 0.05 * (quest.quest.level - 1)) {
     return {
       status: HeroOutcomeType.Neutral,
@@ -27,7 +33,7 @@ const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState)
     };
   }
   const treasureType = Math.random();
-  const player = gameState.turnOwner;
+  const player = getTurnOwner(gameState);
 
   switch (quest.quest.id) {
     case 'The Echoing Ruins':
@@ -49,7 +55,7 @@ const calculateReward = (hero: HeroUnit, quest: HeroQuest, gameState: GameState)
   }
 };
 
-const gainArtifact = (hero: HeroUnit, questType: QuestType): HeroOutcome => {
+const gainArtifact = (hero: HeroState, questType: QuestType): HeroOutcome => {
   const baseArtifactLevel = getQuest(questType).level;
   const heroArtifact: Artifact = {
     ...getRandomElement(artifacts),
@@ -64,7 +70,7 @@ const gainArtifact = (hero: HeroUnit, questType: QuestType): HeroOutcome => {
   };
 };
 
-const gainItem = (player: PlayerState, hero: HeroUnit): HeroOutcome => {
+const gainItem = (player: PlayerState, hero: HeroState): HeroOutcome => {
   const item = getRandomElement(items);
   if (item.charge == null) {
     item.charge = getRandomElement([7, 10, 15]);
@@ -77,11 +83,11 @@ const gainItem = (player: PlayerState, hero: HeroUnit): HeroOutcome => {
   };
 };
 
-const gainRelic = (gameState: GameState, hero: HeroUnit): HeroOutcome => {
-  const relicInPlay = gameState.allPlayers.flatMap((p) => p.empireTreasures);
-  const turnOwner = gameState.turnOwner;
+const gainRelic = (gameState: GameState, hero: HeroState): HeroOutcome => {
+  const relicInPlay = gameState.players.flatMap((p) => p.empireTreasures);
+  const turnOwner = getTurnOwner(gameState);
   const availableRelics = relicts
-    .filter((a) => a.alignment == null || a.alignment === turnOwner.getAlignment())
+    .filter((a) => a.alignment == null || a.alignment === turnOwner.playerProfile.alignment)
     .filter((a) => !relicInPlay.some((r) => r.id === a.id));
 
   if (availableRelics.length > 0) {
@@ -99,31 +105,31 @@ const gainRelic = (gameState: GameState, hero: HeroUnit): HeroOutcome => {
 
 const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
   let questOutcome: HeroOutcome;
-  const turnOwner = gameState.turnOwner;
+  const turnOwner = getTurnOwner(gameState);
 
   if (
     // player survived quest
     surviveInQuest(quest) &&
     // and player still controls the land where quest is
-    gameState.getLandOwner(quest.land) === turnOwner.id
+    getLandOwner(gameState, quest.land) === turnOwner.id
   ) {
     const hero = quest.hero;
 
     if (hero.level < quest.quest.level * 5) {
-      hero.levelUp(turnOwner.getAlignment());
+      levelUpHero(hero, turnOwner.playerProfile.alignment);
       //levelUpHero(hero, turnOwner);
     }
 
     questOutcome = calculateReward(hero, quest, gameState);
 
     // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
-    const stationedArmy = gameState.getLand(quest.land).army.find((a) => !a.isMoving);
+    const stationedArmy = getLand(gameState, quest.land).army.find((a) => !isMoving(a));
     if (stationedArmy) {
       // add into the existing stationed Army
-      stationedArmy.heroes.push(hero);
+      addHero(stationedArmy, hero);
     } else {
       // no valid army found, create new one
-      gameState.getLand(quest.land).army.push(createArmy(turnOwner.id, quest.land, [hero]));
+      getLand(gameState, quest.land).army.push(armyFactory(turnOwner.id, quest.land, [hero]));
     }
   } else {
     questOutcome = {
@@ -136,7 +142,7 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
 };
 
 export const completeQuest = (gameState: GameState): HeroOutcome[] => {
-  const turnOwner = gameState.turnOwner;
+  const turnOwner = getTurnOwner(gameState);
   // decrease turnsByQuest counter
   turnOwner.quests.forEach((quest) => {
     quest.remainTurnsInQuest--;

@@ -1,4 +1,5 @@
 import { GameState } from '../../state/GameState';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { TreasureItem } from '../../types/Treasures';
 import { calculateIncome } from './calculateIncome';
 import { calculateMaintenance } from './calculateMaintenance';
@@ -12,7 +13,7 @@ import { calculateMaintenance } from './calculateMaintenance';
  * @returns The net income per turn for the current player, or 0 if no player is found
  */
 export const calculatePlayerIncome = (gameState: GameState): number => {
-  const turnOwner = gameState.turnOwner;
+  const turnOwner = getTurnOwner(gameState);
 
   // On turn 1, no income is calculated (players just place homeland)
   if (gameState.turn === 1) {

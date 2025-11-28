@@ -5,12 +5,15 @@ import styles from './css/LandCharacteristicsPopup.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { LandPosition, getLandId } from '../../state/LandState';
-import { NO_PLAYER } from '../../state/PlayerState';
+import { getLandOwner } from '../../selectors/landSelectors';
 
 import { getAlignmentColor } from '../../types/Alignment';
 
 import PopupWrapper, { PopupProps } from './PopupWrapper';
+import { getPlayer } from '../../selectors/playerSelectors';
+import { NO_PLAYER } from '../../data/players/predefinedPlayers';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
 
 interface LandCharacteristicsPopupProps extends PopupProps {
   battlefieldPosition: LandPosition;
@@ -125,8 +128,9 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
                 <span className={commonStyles.value}>
                   {(() => {
-                    const player = gameState?.getPlayer(gameState.getLandOwner(land.mapPos));
-                    return player ? player.getName() : NO_PLAYER.name;
+                    if (!gameState) return NO_PLAYER.name;
+                    return getPlayer(gameState, getLandOwner(gameState, land.mapPos)).playerProfile
+                      .name;
                   })()}
                 </span>
               </div>
@@ -161,8 +165,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                       <span className={`${commonStyles.label} ${styles.label}`}>Units:</span>
                       <div className={styles.buildingsList}>
                         {units.map((unit) => (
-                          <span key={unit.id} className={commonStyles.value}>
-                            {unit.id} ({unit.count})
+                          <span key={unit.type} className={commonStyles.value}>
+                            {unit.type} ({unit.count})
                           </span>
                         ))}
                       </div>

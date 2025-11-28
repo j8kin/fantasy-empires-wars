@@ -6,12 +6,13 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { PlayerState } from '../../state/PlayerState';
-import { getLandId } from '../../state/LandState';
+import { PlayerState } from '../../state/player/PlayerState';
 
 import { getPlayerColorValue } from '../../types/PlayerColors';
 
 import { getLands } from '../../map/utils/getLands';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getLandId } from '../../state/map/land/LandId';
 
 const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameContext();
@@ -30,10 +31,10 @@ const OpponentsPanel: React.FC = () => {
     [showOpponentInfo, addGlowingTile, gameState]
   );
 
+  if (gameState == null) return null;
   // Get all players except the selected player (opponents)
-  const selectedPlayer = gameState?.turnOwner;
-  const opponents =
-    gameState?.allPlayers?.filter((player) => player.id !== selectedPlayer?.id) || [];
+  const selectedPlayer = getTurnOwner(gameState);
+  const opponents = gameState.players?.filter((player) => player.id !== selectedPlayer?.id) || [];
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {
@@ -60,7 +61,7 @@ const OpponentsPanel: React.FC = () => {
           }}
         >
           <Avatar
-            player={opponent.getProfile()}
+            player={opponent.playerProfile}
             size={opponents.length <= 4 ? 120 : 90}
             shape="circle"
             borderColor={getPlayerColorValue(opponent.color)}

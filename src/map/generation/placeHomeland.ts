@@ -1,27 +1,34 @@
 import { GameState } from '../../state/GameState';
-import { getLandId, LandState } from '../../state/LandState';
-import { NO_PLAYER } from '../../state/PlayerState';
+import { LandState } from '../../state/map/land/LandState';
+
+import { getLand } from '../../selectors/landSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { construct } from '../building/construct';
-import { createHeroUnit } from '../../types/HeroUnit';
-import { createArmy } from '../../types/Army';
 
 import { getRandomElement } from '../../types/getRandomElement';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getLands } from '../utils/getLands';
+import { NO_PLAYER } from '../../data/players/predefinedPlayers';
+import { getLandId } from '../../state/map/land/LandId';
+import { armyFactory } from '../../factories/armyFactory';
+import { levelUpHero } from '../../systems/unitsActions';
+import { heroFactory } from '../../factories/heroFactory';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
-  const player = gameState.turnOwner;
-  const hero = createHeroUnit(player.getType(), player.getName());
-  while (hero.level < player.getLevel()) hero.levelUp(player.getAlignment());
+  const player = getTurnOwner(gameState);
+  const playerProfile = player.playerProfile;
+  const hero = heroFactory(playerProfile.type, playerProfile.name);
+  while (hero.level < playerProfile.level) levelUpHero(hero, playerProfile.alignment);
   // initial Hero immediately available in normal game it turn 3 turn to recruit#
-  gameState.getLand(homeland.mapPos).army.push(createArmy(player.id, homeland.mapPos, [hero]));
+  getLand(gameState, homeland.mapPos).army.push(armyFactory(player.id, homeland.mapPos, [hero]));
 };
 
 export const placeHomeland = (gameState: GameState) => {
-  const owner = gameState.turnOwner;
+  const turnOwner = getTurnOwner(gameState);
+  const playerProfile = turnOwner.playerProfile;
 
   let homeland: LandState;
 
@@ -61,7 +68,7 @@ export const placeHomeland = (gameState: GameState) => {
 
   let possibleHomelands = freeToBuildLands
     .map((key) => gameState.map.lands[key])
-    .filter((land) => land.land.alignment === owner.getAlignment());
+    .filter((land) => land.land.alignment === playerProfile.alignment);
 
   if (possibleHomelands.length === 0) {
     possibleHomelands = freeToBuildLands
@@ -76,7 +83,7 @@ export const placeHomeland = (gameState: GameState) => {
         getLands({
           gameState: gameState,
           players: [NO_PLAYER.id],
-          landAlignment: owner.getAlignment(),
+          landAlignment: playerProfile.alignment,
         })
       );
     } else {
@@ -92,15 +99,15 @@ export const placeHomeland = (gameState: GameState) => {
   // Place Barracks on the same alignment land except homeland
   let possibleBarracksLands = getLands({
     gameState: gameState,
-    players: [gameState.turnOwner.id],
-    landAlignment: owner.getAlignment(),
+    players: [getTurnOwner(gameState).id],
+    landAlignment: playerProfile.alignment,
     buildings: [],
   });
   if (possibleBarracksLands.length === 0) {
     // fall back to any land if no alignment match
     possibleBarracksLands = getLands({
       gameState: gameState,
-      players: [gameState.turnOwner.id],
+      players: [getTurnOwner(gameState).id],
       buildings: [],
     });
   }

@@ -1,7 +1,7 @@
 import { generateMap } from '../map/generation/generateMap';
 import { getMainSpecialLandTypes, getNearSpecialLandTypes, LandType } from '../types/Land';
-import { BattlefieldDimensions } from '../state/GameState';
 import { defaultBattlefieldSizeStub } from './utils/createGameStateStub';
+import { MapDimensions } from '../state/map/MapDimensions';
 
 describe('Map Generation', () => {
   it.each([
@@ -10,7 +10,7 @@ describe('Map Generation', () => {
     ['large', { rows: 11, cols: 23 }],
     ['huge', { rows: 15, cols: 31 }],
     ['test default', defaultBattlefieldSizeStub],
-  ])('should generate map for %s size', (size: string, dimensions: BattlefieldDimensions) => {
+  ])('should generate map for %s size', (size: string, dimensions: MapDimensions) => {
     const lands = generateMap(dimensions);
 
     // Should generate tiles

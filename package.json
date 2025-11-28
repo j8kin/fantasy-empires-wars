@@ -15,6 +15,7 @@
     "react-pageflip": "^2.0.3",
     "react-scripts": "5.0.1",
     "typescript": "^5.9.3",
+    "uuid": "^13.0.0",
     "web-vitals": "^5.1.0"
   },
   "scripts": {
@@ -39,8 +40,8 @@
     "husky": "^9.1.7",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.2.0",
-    "ts-jest": "^29.4.5",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "ts-jest": "^29.4.5"
   },
   "eslintConfig": {
     "extends": [
@@ -52,6 +53,9 @@
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.(test|spec).(js|jsx|ts|tsx)",
       "<rootDir>/src/**/?(*.)(test|spec).(js|jsx|ts|tsx)"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(uuid)/)"
     ]
   },
   "browserslist": {

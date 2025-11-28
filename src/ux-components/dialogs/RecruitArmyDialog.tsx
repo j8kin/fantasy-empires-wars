@@ -5,7 +5,8 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { LandPosition } from '../../state/LandState';
+import { getLand } from '../../selectors/landSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 
 import {
   isWarMachine,
@@ -16,11 +17,12 @@ import {
   isHeroType,
 } from '../../types/UnitType';
 import { BuildingType } from '../../types/Building';
-import { getBaseUnitStats } from '../../types/BaseUnit';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 
 import { getUnitImg } from '../../assets/getUnitImg';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { unitsBaseStats } from '../../data/units/unitsBaseStats';
 
 interface RecruitUnitProps {
   id: UnitType;
@@ -44,7 +46,7 @@ const RecruitArmyDialog: React.FC = () => {
   const initialSlotCount = useMemo(() => {
     if (!gameState || !actionLandPosition) return 0;
 
-    const land = gameState.getLand(actionLandPosition);
+    const land = getLand(gameState, actionLandPosition);
     if (!land) return 0;
 
     const recruitBuilding = land.buildings.filter(
@@ -66,7 +68,7 @@ const RecruitArmyDialog: React.FC = () => {
   useEffect(() => {
     if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return;
 
-    const land = gameState.getLand(actionLandPosition);
+    const land = getLand(gameState, actionLandPosition);
     if (!land) return;
 
     const recruitBuilding = land.buildings.filter(
@@ -92,7 +94,7 @@ const RecruitArmyDialog: React.FC = () => {
   const createRecruitClickHandler = useCallback(
     (unitType: UnitType, landPos: LandPosition) => {
       return () => {
-        const building = gameState!.getLand(landPos).buildings.find((b) => b.slots != null)!;
+        const building = getLand(gameState!, landPos).buildings.find((b) => b.slots != null)!;
         const availableSlots = building.numberOfSlots - (building.slots?.length ?? 0);
         // recruit the same unit for all available slots
         for (let i = 0; i < availableSlots; i++) {
@@ -112,7 +114,7 @@ const RecruitArmyDialog: React.FC = () => {
     return undefined;
   }
 
-  const land = gameState.getLand(actionLandPosition);
+  const land = getLand(gameState, actionLandPosition);
 
   const recruitBuilding = land.buildings.filter(
     (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots
@@ -131,7 +133,7 @@ const RecruitArmyDialog: React.FC = () => {
   };
 
   const typeToRecruitProps = (unitType: UnitType): RecruitUnitProps => {
-    const baseUnitStats = getBaseUnitStats(unitType);
+    const baseUnitStats = unitsBaseStats(unitType);
     return {
       id: unitType,
       recruitCost: baseUnitStats.recruitCost,
@@ -146,7 +148,7 @@ const RecruitArmyDialog: React.FC = () => {
           !isMageType(u) &&
           // The players, who reject magic, should be able to recruit their owned special heroes
           (u !== HeroUnitType.WARSMITH ||
-            gameState?.turnOwner.getType() === HeroUnitType.WARSMITH)) ||
+            getTurnOwner(gameState).playerProfile.type === HeroUnitType.WARSMITH)) ||
         // mage Heroes should be recruited in related towers only
         (u === HeroUnitType.CLERIC && recruitBuilding.id === BuildingType.WHITE_MAGE_TOWER) ||
         (u === HeroUnitType.ENCHANTER && recruitBuilding.id === BuildingType.BLUE_MAGE_TOWER) ||
