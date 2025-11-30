@@ -1,19 +1,20 @@
 import { GameState } from '../../state/GameState';
-import { getLandId } from '../../state/map/land/LandId';
+import { RegularsState, UnitRank } from '../../state/army/RegularsState';
+import { ArmyState } from '../../state/army/ArmyState';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { hasLand } from '../../systems/playerActions';
 import { addRegulars } from '../../systems/armyActions';
+import { getArmiesAtPosition, addArmyToGameState } from '../../map/utils/armyUtils';
 
-import { ArmyState } from '../../state/army/ArmyState';
+import { armyFactory } from '../../factories/armyFactory';
+import { regularsFactory } from '../../factories/regularsFactory';
+
 import { RegularUnitType } from '../../types/UnitType';
-import { RegularsState, UnitRank } from '../../state/army/RegularsState';
 
 import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { armyFactory } from '../../factories/armyFactory';
-import { regularsFactory } from '../../factories/regularsFactory';
 
 describe('Calculate Attrition Penalty', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -51,14 +52,18 @@ describe('Calculate Attrition Penalty', () => {
     const armyLand = getLand(gameStateStub, { row: 3, col: 4 });
     expect(hasLand(getTurnOwner(gameStateStub), armyLand.mapPos)).toBeTruthy();
 
-    // place army on land owned by player
-    gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
-      ...armyLand,
-      army: [army1, army2],
-    };
+    // Create armies at the actual test position
+    const testArmy1 = armyFactory(getTurnOwner(gameStateStub).id, armyLand.mapPos);
+    const testArmy2 = armyFactory(getTurnOwner(gameStateStub).id, armyLand.mapPos);
+
+    // place army on land owned by player using centralized system
+    Object.assign(gameStateStub, addArmyToGameState(gameStateStub, testArmy1));
+    Object.assign(gameStateStub, addArmyToGameState(gameStateStub, testArmy2));
+
     calculateAttritionPenalty(gameStateStub);
 
-    expect(gameStateStub.map.lands[getLandId(armyLand.mapPos)].army).toEqual([army1, army2]);
+    const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
+    expect(currentArmies).toEqual([testArmy1, testArmy2]);
   });
 
   it.each([
@@ -101,22 +106,22 @@ describe('Calculate Attrition Penalty', () => {
 
       addRegulars(army1, testCreateRegularUnit(RegularUnitType.WARRIOR, army1Initial, rank));
       addRegulars(army2, testCreateRegularUnit(RegularUnitType.WARRIOR, army2Initial, rank));
-      // place army on land owned by player
-      gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
-        ...armyLand,
-        army: [army1, army2],
-      };
+
+      // place armies using centralized system
+      Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army1));
+      Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army2));
+
       calculateAttritionPenalty(gameStateStub);
 
-      const currentArmies = gameStateStub.map.lands[getLandId(armyLand.mapPos)].army;
+      const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
       expect(currentArmies.length).toBe(2);
       expect(currentArmies[0].regulars.length).toBe(1);
       expect(currentArmies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
-      expect((currentArmies[0].regulars[0] as RegularsState).count).toBe(army1Initial - army1Loss);
+      expect(currentArmies[0].regulars[0].count).toBe(army1Initial - army1Loss);
 
       expect(currentArmies[1].regulars.length).toBe(1);
       expect(currentArmies[1].regulars[0].type).toBe(RegularUnitType.WARRIOR);
-      expect((currentArmies[1].regulars[0] as RegularsState).count).toBe(army2Initial - army2Loss);
+      expect(currentArmies[1].regulars[0].count).toBe(army2Initial - army2Loss);
     }
   );
 
@@ -129,18 +134,16 @@ describe('Calculate Attrition Penalty', () => {
     addRegulars(army1, testCreateRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR));
     addRegulars(army1, testCreateRegularUnit(RegularUnitType.BALLISTA, 1, UnitRank.REGULAR));
 
-    // place army on land owned by player
-    gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
-      ...armyLand,
-      army: [army1],
-    };
+    // place army using centralized system
+    Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army1));
+
     calculateAttritionPenalty(gameStateStub);
 
-    const currentArmies = gameStateStub.map.lands[getLandId(armyLand.mapPos)].army;
+    const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
     expect(currentArmies.length).toBe(1);
     expect(currentArmies[0].regulars.length).toBe(1); // no ballista unit in the army
     expect(currentArmies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
-    expect((currentArmies[0].regulars[0] as RegularsState).count).toBe(100 - 30); // -30 instead of 50 because of the ballista
+    expect(currentArmies[0].regulars[0].count).toBe(100 - 30); // -30 instead of 50 because of the ballista
   });
 
   it('War-machines counted as 20 units, 3 war-machines totally on land', () => {
@@ -153,21 +156,19 @@ describe('Calculate Attrition Penalty', () => {
     addRegulars(army1, testCreateRegularUnit(RegularUnitType.BALLISTA, 1, UnitRank.REGULAR));
     addRegulars(army1, testCreateRegularUnit(RegularUnitType.CATAPULT, 2, UnitRank.REGULAR));
 
-    // place army on land owned by player
-    gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
-      ...armyLand,
-      army: [army1],
-    };
+    // place army using centralized system
+    Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army1));
+
     calculateAttritionPenalty(gameStateStub);
 
-    const currentArmies = gameStateStub.map.lands[getLandId(armyLand.mapPos)].army;
+    const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
     expect(currentArmies.length).toBe(1);
     expect(currentArmies[0].regulars.length).toBe(2); // no ballista unit in the army
     expect(currentArmies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
-    expect((currentArmies[0].regulars[0] as RegularsState).count).toBe(100 - 10); // -30 instead of 50 because of the ballista and catapult
+    expect(currentArmies[0].regulars[0].count).toBe(100 - 10); // -30 instead of 50 because of the ballista and catapult
 
     expect(currentArmies[0].regulars[1].type).toBe(RegularUnitType.CATAPULT);
-    expect((currentArmies[0].regulars[1] as RegularsState).count).toBe(1); // 2 catapults are destroyed
+    expect(currentArmies[0].regulars[1].count).toBe(1); // 2 catapults are destroyed
   });
 
   it('Army destroyed if all units killed', () => {
@@ -178,14 +179,13 @@ describe('Calculate Attrition Penalty', () => {
 
     // 40-60 minimum should be killed it means army will be destroyed
     addRegulars(army1, testCreateRegularUnit(RegularUnitType.WARRIOR, 30, UnitRank.REGULAR));
-    // place army on land owned by player
-    gameStateStub.map.lands[getLandId(armyLand.mapPos)] = {
-      ...armyLand,
-      army: [army1],
-    };
+
+    // place army using centralized system
+    Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army1));
+
     calculateAttritionPenalty(gameStateStub);
 
-    const currentArmies = gameStateStub.map.lands[getLandId(armyLand.mapPos)].army;
+    const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
     expect(currentArmies.length).toBe(0);
   });
 });

@@ -3,6 +3,7 @@ import { GameState } from '../../state/GameState';
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
 import { addLand, hasLand, removeLand } from '../../systems/playerActions';
+import { getArmiesAtPosition } from '../utils/armyUtils';
 
 import { BuildingType } from '../../types/Building';
 
@@ -37,14 +38,13 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
 
     previousControlledLands.forEach((l) => {
       const owner = getTurnOwner(gameState);
-      if (gameState.map.lands[getLandId(l)].army.length > 0) {
+      const armiesAtPosition = getArmiesAtPosition(gameState, l);
+
+      if (armiesAtPosition.length > 0) {
         // if land has army of non-previous owner then change for a new owner (who owns army on this land)
-        if (!gameState.map.lands[getLandId(l)].army.some((a) => a.controlledBy === player)) {
+        if (!armiesAtPosition.some((a) => a.controlledBy === player)) {
           removeLand(owner, l);
-          const newLandOwner = getPlayer(
-            gameState,
-            gameState.map.lands[getLandId(l)].army[0].controlledBy
-          );
+          const newLandOwner = getPlayer(gameState, armiesAtPosition[0].controlledBy);
           addLand(newLandOwner, l);
         }
       } else {

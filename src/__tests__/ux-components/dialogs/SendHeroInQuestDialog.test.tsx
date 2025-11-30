@@ -6,23 +6,23 @@ import '@testing-library/jest-dom';
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
 
 import { GameState } from '../../../state/GameState';
-import { getTurnOwner } from '../../../selectors/playerSelectors';
-import { getLandOwner } from '../../../selectors/landSelectors';
-import { armyFactory } from '../../../factories/armyFactory';
+import { HeroState } from '../../../state/army/HeroState';
+
+import { getPlayerLands, getTurnOwner } from '../../../selectors/playerSelectors';
 import { addHero } from '../../../systems/armyActions';
 import { levelUpHero } from '../../../systems/unitsActions';
+import { armyFactory } from '../../../factories/armyFactory';
+import { heroFactory } from '../../../factories/heroFactory';
 
 import { HeroUnitType } from '../../../types/UnitType';
-import { HeroState } from '../../../state/army/HeroState';
 import { Alignment } from '../../../types/Alignment';
-import { getLands } from '../../../map/utils/getLands';
+import { getArmiesAtPosition } from '../../../map/utils/armyUtils';
 
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 
 // Import the mocked function (will be the mocked version due to jest.mock above)
 import { startQuest as mockStartQuest } from '../../../map/quest/startQuest';
-import { heroFactory } from '../../../factories/heroFactory';
 
 // Mock modules
 jest.mock('../../../map/quest/startQuest', () => ({
@@ -176,13 +176,10 @@ describe('SendHeroInQuestDialog', () => {
 
   // Helper function to get hero lands for current player
   const getHeroLands = (gameState: GameState) => {
-    return getLands({
-      gameState: gameState,
-      players: [gameState.turnOwner],
-      noArmy: false,
-    }).filter(
-      (land) => land.army.length > 0 && land.army.some((armyUnit) => armyUnit.heroes.length > 0)
-    );
+    return getPlayerLands(gameState).filter((land) => {
+      const armies = getArmiesAtPosition(gameState, land.mapPos);
+      return armies.length > 0 && armies.some((army) => army.heroes.length > 0);
+    });
   };
 
   const renderWithProviders = (
@@ -243,10 +240,8 @@ describe('SendHeroInQuestDialog', () => {
     });
 
     it('should not render when no heroes are available', () => {
-      // Remove all armies from all lands
-      Object.values(gameStateStub.map.lands).forEach((land) => {
-        land.army = [];
-      });
+      // Remove all armies from centralized system
+      gameStateStub.armies = [];
 
       renderWithProviders(<SendHeroInQuestDialog />);
       expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
@@ -255,11 +250,10 @@ describe('SendHeroInQuestDialog', () => {
     it('should not render when no lands with heroes exist for current player', () => {
       // Remove armies from lands owned by current player but keep armies on other lands
       const currentPlayerId = getTurnOwner(gameStateStub).id;
-      Object.values(gameStateStub.map.lands).forEach((land) => {
-        if (getLandOwner(gameStateStub, land.mapPos) === currentPlayerId) {
-          land.army = [];
-        }
-      });
+      // Filter out armies belonging to current player
+      gameStateStub.armies = gameStateStub.armies.filter(
+        (army) => army.controlledBy !== currentPlayerId
+      );
 
       renderWithProviders(<SendHeroInQuestDialog />);
       expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
@@ -319,10 +313,11 @@ describe('SendHeroInQuestDialog', () => {
       const lands = getHeroLands(gameStateStub);
       expect(lands.length).toBeGreaterThan(0);
 
-      const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
-      expect(heroArmyUnit).toBeDefined();
+      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
+      const heroArmy = armies.find((army) => army.heroes.length > 0);
+      expect(heroArmy).toBeDefined();
 
-      const hero = heroArmyUnit!.heroes[0];
+      const hero = heroArmy!.heroes[0];
 
       // Check that hero slot is displayed with correct ID (full name) and display name (first name + level)
       // Hero appears on all 4 quest pages, so get the first occurrence
@@ -342,8 +337,9 @@ describe('SendHeroInQuestDialog', () => {
       const lands = getHeroLands(gameStateStub);
       expect(lands.length).toBeGreaterThan(0);
 
-      const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
-      const hero = heroArmyUnit!.heroes[0];
+      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
+      const heroArmy = armies.find((army) => army.heroes.length > 0);
+      const hero = heroArmy!.heroes[0];
 
       // The slot ID should be the full hero name, which is what findHeroByName expects
       // Hero appears on all 4 quest pages, so get the first occurrence
@@ -364,7 +360,8 @@ describe('SendHeroInQuestDialog', () => {
 
       let totalHeroes = 0;
       heroLands.forEach((land) => {
-        totalHeroes += land.army.reduce((count, armyUnit) => count + armyUnit.heroes.length, 0);
+        const armies = getArmiesAtPosition(gameStateStub, land.mapPos);
+        totalHeroes += armies.reduce((count, army) => count + army.heroes.length, 0);
       });
 
       // Should show slot buttons for all heroes across all quest pages
@@ -383,8 +380,9 @@ describe('SendHeroInQuestDialog', () => {
       const lands = getHeroLands(gameStateStub);
       expect(lands.length).toBeGreaterThan(0);
 
-      const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
-      const hero = heroArmyUnit!.heroes[0];
+      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
+      const heroArmy = armies.find((army) => army.heroes.length > 0);
+      const hero = heroArmy!.heroes[0];
 
       // Click on the hero slot in the first quest (The Echoing Ruins)
       // Hero appears on all 4 quest pages, so get the first occurrence
@@ -411,8 +409,9 @@ describe('SendHeroInQuestDialog', () => {
       // Get the first hero
       const lands = getHeroLands(gameStateStub);
 
-      const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
-      const hero = heroArmyUnit!.heroes[0];
+      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
+      const heroArmy = armies.find((army) => army.heroes.length > 0);
+      const hero = heroArmy!.heroes[0];
 
       // Click on hero slot in first quest
       const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
@@ -434,7 +433,8 @@ describe('SendHeroInQuestDialog', () => {
 
       let allHeroes: HeroState[] = [];
       heroLands.forEach((land) => {
-        const landHeroes = land.army.flatMap((armyUnit) => armyUnit.heroes);
+        const armies = getArmiesAtPosition(gameStateStub, land.mapPos);
+        const landHeroes = armies.flatMap((army) => army.heroes);
         allHeroes = allHeroes.concat(landHeroes);
       });
 
@@ -463,8 +463,9 @@ describe('SendHeroInQuestDialog', () => {
       // Get the first hero
       const lands = getHeroLands(gameStateStub);
 
-      const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
-      const hero = heroArmyUnit!.heroes[0];
+      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
+      const heroArmy = armies.find((army) => army.heroes.length > 0);
+      const hero = heroArmy!.heroes[0];
 
       // Click hero slot on different quest pages
       const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
@@ -534,10 +535,8 @@ describe('SendHeroInQuestDialog', () => {
       // Create new state without heroes
       const emptyHeroesGameState = createDefaultGameStateStub();
 
-      // Remove all heroes
-      Object.values(emptyHeroesGameState.map.lands).forEach((land) => {
-        land.army = [];
-      });
+      // Remove all armies (and thus all heroes) from centralized system
+      emptyHeroesGameState.armies = [];
 
       // Render with empty heroes state - should not render
       renderWithProviders(<SendHeroInQuestDialog />, { gameState: emptyHeroesGameState });
@@ -574,8 +573,9 @@ describe('SendHeroInQuestDialog', () => {
 
       expect(lands.length).toBeGreaterThan(0);
 
-      const heroArmyUnit = lands[0].army.find((armyUnit) => armyUnit.heroes.length > 0);
-      const hero = heroArmyUnit!.heroes[0];
+      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
+      const heroArmy = armies.find((army) => army.heroes.length > 0);
+      const hero = heroArmy!.heroes[0];
 
       // The slot should be created with hero.name as the id
       // Hero appears on all 4 quest pages, so get the first occurrence
@@ -587,13 +587,9 @@ describe('SendHeroInQuestDialog', () => {
       // Verify the hero name matches what's in the game state
       // This ensures that when createSlotClickHandler uses slot.id,
       // findHeroByName will find the correct hero
-      const expectedHeroInGameState = getLands({
-        gameState: gameStateStub,
-        players: [getTurnOwner(gameStateStub).id],
-        noArmy: false,
-      })
-        .flatMap((land) => land.army)
-        .find((armyUnit) => armyUnit.heroes.some((unit) => unit.name === hero.name));
+      const expectedHeroInGameState = getPlayerLands(gameStateStub)
+        .flatMap((land) => getArmiesAtPosition(gameStateStub, land.mapPos))
+        .find((army) => army.heroes.some((unit) => unit.name === hero.name));
 
       expect(expectedHeroInGameState).toBeDefined();
     });
@@ -605,8 +601,8 @@ describe('SendHeroInQuestDialog', () => {
       const heroLands = getHeroLands(gameStateStub);
 
       heroLands.forEach((land) => {
-        land.army
-          .flatMap((armyUnit) => armyUnit.heroes)
+        getArmiesAtPosition(gameStateStub, land.mapPos)
+          .flatMap((army) => army.heroes)
           .forEach((unit) => {
             const hero = unit as HeroState;
 
@@ -628,16 +624,13 @@ describe('SendHeroInQuestDialog', () => {
   describe('Edge Cases', () => {
     it('should handle empty hero names gracefully', () => {
       // Modify hero to have empty name (edge case)
-      const lands = getLands({
-        gameState: gameStateStub,
-        players: [getTurnOwner(gameStateStub).id],
-        noArmy: false,
-      });
+      const lands = getPlayerLands(gameStateStub);
 
       expect(lands.length).toBeGreaterThan(0);
-      expect(lands[0].army[0].heroes.length).toBeGreaterThan(0);
-      addHero(lands[0].army[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, ''));
-      expect(lands[0].army[0].heroes.length).toBeGreaterThan(1);
+      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
+      expect(armies[0].heroes.length).toBeGreaterThan(0);
+      addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, ''));
+      expect(armies[0].heroes.length).toBeGreaterThan(1);
 
       renderWithProviders(<SendHeroInQuestDialog />);
 
@@ -647,21 +640,13 @@ describe('SendHeroInQuestDialog', () => {
 
     it('should handle heroes with very long names', () => {
       // Modify hero to have very long name
-      const lands = getLands({
-        gameState: gameStateStub,
-        players: [getTurnOwner(gameStateStub).id],
-        noArmy: false,
-      });
+      const lands = getPlayerLands(gameStateStub);
 
       expect(lands.length).toBeGreaterThan(0);
       const longName = 'VeryLongHeroNameThatExceedsNormalLimits AndHasMultipleWords';
-      addHero(
-        lands[0].army[0],
-        heroFactory(getTurnOwner(gameStateStub).playerProfile.type, longName)
-      );
-      const heroArmyUnit = lands[0].army.find((a) =>
-        a.heroes.some((unit) => unit.name === longName)
-      );
+      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
+      addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, longName));
+      const heroArmy = armies.find((army) => army.heroes.some((unit) => unit.name === longName));
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Hero appears on all 4 quest pages, so get the first occurrence
@@ -671,28 +656,22 @@ describe('SendHeroInQuestDialog', () => {
       expect(heroSlot).toBeInTheDocument();
 
       // Display name should use first word only
-      const expectedDisplayName = `VeryLongHeroNameThatExceedsNormalLimits Lvl: ${heroArmyUnit!.heroes.find((unit) => unit.name === longName)?.level}`;
+      const expectedDisplayName = `VeryLongHeroNameThatExceedsNormalLimits Lvl: ${heroArmy!.heroes.find((unit) => unit.name === longName)?.level}`;
       expect(heroSlot).toHaveTextContent(expectedDisplayName);
     });
 
     it('should handle heroes with single word names', () => {
       // Modify hero to have single word name
-      const lands = getLands({
-        gameState: gameStateStub,
-        players: [getTurnOwner(gameStateStub).id],
-        noArmy: false,
-      });
+      const lands = getPlayerLands(gameStateStub);
 
       expect(lands.length).toBeGreaterThan(0);
-      addHero(
-        lands[0].army[0],
-        heroFactory(getTurnOwner(gameStateStub).playerProfile.type, 'SingleName')
-      );
-      const heroArmyUnit = lands[0].army.find((armyUnit) =>
-        armyUnit.heroes.some((unit) => unit.name === 'SingleName')
+      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
+      addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, 'SingleName'));
+      const heroArmy = armies.find((army) =>
+        army.heroes.some((unit) => unit.name === 'SingleName')
       );
 
-      expect(heroArmyUnit).toBeDefined();
+      expect(heroArmy).toBeDefined();
 
       renderWithProviders(<SendHeroInQuestDialog />);
 
@@ -703,7 +682,7 @@ describe('SendHeroInQuestDialog', () => {
       expect(heroSlot).toBeInTheDocument();
 
       // Display name should be the single word + level
-      const expectedDisplayName = `SingleName Lvl: ${heroArmyUnit!.heroes.find((unit) => unit.name === 'SingleName')?.level}`;
+      const expectedDisplayName = `SingleName Lvl: ${heroArmy!.heroes.find((unit) => unit.name === 'SingleName')?.level}`;
       expect(heroSlot).toHaveTextContent(expectedDisplayName);
     });
   });
@@ -711,17 +690,15 @@ describe('SendHeroInQuestDialog', () => {
   describe('Multiple Heroes Scenario', () => {
     beforeEach(() => {
       // Add additional heroes to test multiple hero scenarios
-      const currentPlayerLands = getLands({
-        gameState: gameStateStub,
-        players: [getTurnOwner(gameStateStub).id],
-      });
+      const currentPlayerLands = getPlayerLands(gameStateStub);
 
       if (currentPlayerLands.length > 1) {
         // Add a second hero to another land
         const secondHero: HeroState = heroFactory(HeroUnitType.FIGHTER, 'Additional Hero');
         levelUpHero(secondHero, Alignment.LAWFUL);
 
-        currentPlayerLands[1].army.push(
+        // Add army to centralized system
+        gameStateStub.armies.push(
           armyFactory(getTurnOwner(gameStateStub).id, currentPlayerLands[1].mapPos, [secondHero])
         );
       }

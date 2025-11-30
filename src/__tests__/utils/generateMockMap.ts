@@ -38,7 +38,6 @@ export const generateMockMap = (
         land: genLand(alignment),
         buildings: [],
         goldPerTurn: income != null ? income : landNumber,
-        army: [],
       };
       landNumber++;
     }

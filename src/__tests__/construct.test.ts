@@ -2,14 +2,13 @@ import { GameState } from '../state/GameState';
 import { PlayerState } from '../state/player/PlayerState';
 
 import { getLand } from '../selectors/landSelectors';
-import { getTurnOwner } from '../selectors/playerSelectors';
+import { getPlayerLands, getTurnOwner } from '../selectors/playerSelectors';
 
 import { BuildingType, getBuilding } from '../types/Building';
 import { RegularUnitType } from '../types/UnitType';
 import { relicts, TreasureItem } from '../types/Treasures';
 
 import { construct } from '../map/building/construct';
-import { getLands } from '../map/utils/getLands';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { createGameStateStub } from './utils/createGameStateStub';
 import { getTilesInRadius } from '../map/utils/mapAlgorithms';
@@ -17,6 +16,7 @@ import { hasLand, nextPlayer } from '../systems/playerActions';
 import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
 import { regularsFactory } from '../factories/regularsFactory';
+import { getArmiesAtPosition } from '../map/utils/armyUtils';
 
 describe('Construct Buildings', () => {
   const homeLand1: LandPosition = { row: 3, col: 3 };
@@ -188,7 +188,8 @@ describe('Construct Buildings', () => {
       // the barracks is not destroyed
       expect(getLand(gameStateStub, buildingPos).buildings[0].id).toBe(BuildingType.BARRACKS);
       // army is not lost
-      expect(getLand(gameStateStub, buildingPos).army.length).toBe(1);
+      const armies = getArmiesAtPosition(gameStateStub, buildingPos);
+      expect(armies.length).toBe(1);
 
       // only one land still under control (with army)
       expect(player1.landsOwned.size).toBe(1);
@@ -254,11 +255,7 @@ describe('Construct Buildings', () => {
     it('Building should not constructed if not enough money in vault', () => {
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);
 
-      const emptyLand = getLands({
-        gameState: gameStateStub,
-        players: [getTurnOwner(gameStateStub).id],
-        buildings: [],
-      })[0];
+      const emptyLand = getPlayerLands(gameStateStub).filter((l) => l.buildings.length === 0)[0];
       getTurnOwner(gameStateStub).vault = 0; // vault is empty
 
       while (gameStateStub.turn < 2) nextPlayer(gameStateStub);

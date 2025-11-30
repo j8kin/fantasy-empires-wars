@@ -1,5 +1,4 @@
 import { GameState } from '../state/GameState';
-import { getLandId } from '../state/map/land/LandId';
 import { LandPosition } from '../state/map/land/LandPosition';
 
 import { getTurnOwner } from '../selectors/playerSelectors';
@@ -50,7 +49,7 @@ describe('Calculate Maintenance', () => {
         levelUpHero(heroUnit, Alignment.LAWFUL);
       }
 
-      gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [
+      gameStateStub.armies = [
         armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, [heroUnit]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
@@ -80,7 +79,7 @@ describe('Calculate Maintenance', () => {
       }
       regularUnit.count = quantity;
 
-      gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [
+      gameStateStub.armies = [
         armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, undefined, [regularUnit]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
@@ -102,7 +101,7 @@ describe('Calculate Maintenance', () => {
       addRegulars(army, regularsFactory(RegularUnitType.BALLISTA));
       addRegulars(army, elitDwarf);
 
-      gameStateStub.map.lands[getLandId({ row: 0, col: 0 })].army = [army];
+      gameStateStub.armies = [army];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(520);
     });

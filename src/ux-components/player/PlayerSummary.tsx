@@ -4,13 +4,12 @@ import styles from './css/Player.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getLandId } from '../../state/map/land/LandId';
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 
 import Avatar from '../avatars/Avatar';
 
-import { getLands } from '../../map/utils/getLands';
 import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
-import { getLandId } from '../../state/map/land/LandId';
 
 export interface PlayerSummaryProps {
   avatarSize: number;
@@ -28,9 +27,7 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
   const handleAvatarClick = () => {
     // Find all lands controlled by the selected player
     setTimeout(() => {
-      getLands({ gameState: gameState!, players: [turnOwner.id] }).forEach((land) => {
-        addGlowingTile(getLandId(land.mapPos));
-      });
+      getPlayerLands(gameState).forEach((land) => addGlowingTile(getLandId(land.mapPos)));
     }, 0);
   };
 

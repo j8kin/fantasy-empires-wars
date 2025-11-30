@@ -2,14 +2,13 @@ import React, { useCallback, useEffect } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { BuildingType, getAllBuildings } from '../../types/Building';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
-import { getLands } from '../../map/utils/getLands';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
 
@@ -62,11 +61,8 @@ const ConstructBuildingDialog: React.FC = () => {
 
   if (!gameState || !showConstructBuildingDialog) return null;
 
-  const landsWithoutBuildings = getLands({
-    gameState: gameState,
-    players: [getTurnOwner(gameState).id],
-    buildings: [],
-  });
+  const landsWithoutBuildings = getPlayerLands(gameState).filter((l) => l.buildings.length === 0);
+
   if (landsWithoutBuildings.length === 0) {
     // trying to allocate lands where only WALLS are constructed (if barracks allowed then other buildings are allowed)
     if (getAvailableToConstructLands(gameState!, BuildingType.BARRACKS).length === 0) {

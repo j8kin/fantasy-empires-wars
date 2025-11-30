@@ -1,26 +1,23 @@
 import { GameState } from '../../state/GameState';
 
-import { getLands } from '../utils/getLands';
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
+
 import { calculateHexDistance } from '../utils/mapAlgorithms';
-import { getTurnOwner } from '../../selectors/playerSelectors';
 
 export const calculateIncome = (gameState: GameState): number => {
   const map = gameState.map;
   const turnOwner = getTurnOwner(gameState);
   const playerProfile = turnOwner.playerProfile;
 
-  const playerLands = getLands({ gameState: gameState, players: [turnOwner.id] });
+  const playerLands = getPlayerLands(gameState);
+  const playerStrongholds = playerLands
+    .filter((l) => l.buildings.some((b) => b.id === BuildingType.STRONGHOLD))
+    .map((land) => land.mapPos);
 
   return playerLands.reduce((acc, land) => {
-    const playerStrongholds = getLands({
-      gameState: gameState,
-      players: [turnOwner.id],
-      buildings: [BuildingType.STRONGHOLD],
-    }).map((land) => land.mapPos);
-
     const distanceToStronghold = Math.min(
       ...playerStrongholds.map((stronghold) =>
         calculateHexDistance(map.dimensions, land.mapPos, stronghold)

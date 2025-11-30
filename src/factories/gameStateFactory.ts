@@ -7,6 +7,7 @@ export const gameStateFactory = (map: MapState): GameState => {
   return {
     map: map,
     players: [],
+    armies: [],
     turnOwner: NO_PLAYER.id,
     turn: 1,
     turnPhase: TurnPhase.START,

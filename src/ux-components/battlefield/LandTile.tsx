@@ -3,9 +3,15 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getLand, getLandOwner } from '../../selectors/landSelectors';
-
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
+
+import { LandPosition } from '../../state/map/land/LandPosition';
+
+import { getLandId } from '../../state/map/land/LandId';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { getPlayer, getRealmLands, getTurnOwner } from '../../selectors/playerSelectors';
+
+import { getArmiesAtPosition } from '../../map/utils/armyUtils';
 
 import { getSpellById, SpellName } from '../../types/Spell';
 import { BuildingType, getBuilding } from '../../types/Building';
@@ -16,12 +22,8 @@ import { castSpell } from '../../map/magic/castSpell';
 import { calcMaxMove, MAX_MOVE } from '../../map/move-army/calcMaxMove';
 import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
 import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
-import { getRealmLands } from '../../map/utils/getRealmLands';
 
 import { getLandImg } from '../../assets/getLandImg';
-import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { getLandId } from '../../state/map/land/LandId';
 
 interface HexTileProps {
   battlefieldPosition: LandPosition;
@@ -110,13 +112,9 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         setSelectedLandAction('MoveArmyTo');
 
         const realmLands = getRealmLands(gameState!).map((l) => l.mapPos);
-        const maxMovements = calcMaxMove(
-          getLand(gameState!, battlefieldPosition).army.flatMap((a) => a.regulars)
-        );
-        const nHeroes = getLand(gameState!, battlefieldPosition).army.reduce(
-          (acc, army) => acc + army.heroes.length,
-          0
-        );
+        const armiesAtPosition = getArmiesAtPosition(gameState!, battlefieldPosition);
+        const maxMovements = calcMaxMove(armiesAtPosition.flatMap((a) => a.regulars));
+        const nHeroes = armiesAtPosition.reduce((acc, army) => acc + army.heroes.length, 0);
         const landsInRadius = getTilesInRadius(
           gameState!.map.dimensions,
           battlefieldPosition,

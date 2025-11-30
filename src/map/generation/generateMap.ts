@@ -56,7 +56,6 @@ const createEmptyBattlefield = (dimensions: MapDimensions): MapLands => {
         land: getLandById(LandType.NONE), // Temporary, will be overwritten
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
-        army: [],
       };
     }
   }

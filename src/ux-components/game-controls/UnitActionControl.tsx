@@ -7,12 +7,11 @@ import { useGameContext } from '../../contexts/GameContext';
 import GameButton from '../buttons/GameButton';
 
 import { ButtonName } from '../../types/ButtonName';
-import { BuildingType } from '../../types/Building';
 
-import { getLands } from '../../map/utils/getLands';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getPosition, isMoving } from '../../selectors/armySelectors';
 import { getLandId } from '../../state/map/land/LandId';
-import { isMoving } from '../../selectors/armySelectors';
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { findAllHeroesOnMap, getArmiesByPlayer } from '../../map/utils/armyUtils';
 
 const UnitActionControl: React.FC = () => {
   const { addGlowingTile, clearAllGlow, setSelectedLandAction } = useApplicationContext();
@@ -28,26 +27,9 @@ const UnitActionControl: React.FC = () => {
       event.stopPropagation();
 
       // Get all lands owned by current player with BARRACKS or Mage Towers
-      const recruitmentLands = (
-        getLands({
-          gameState: gameState,
-          players: [gameState.turnOwner],
-          buildings: [
-            BuildingType.BARRACKS,
-            BuildingType.WHITE_MAGE_TOWER,
-            BuildingType.BLACK_MAGE_TOWER,
-            BuildingType.BLUE_MAGE_TOWER,
-            BuildingType.GREEN_MAGE_TOWER,
-            BuildingType.RED_MAGE_TOWER,
-          ],
-        }) || []
-      ).filter((land) => {
-        // Only show lands with buildings that have available slots
-        return land.buildings.some(
-          (building) =>
-            building.numberOfSlots > 0 && building.slots!.length < building.numberOfSlots
-        );
-      });
+      const recruitmentLands = getPlayerLands(gameState).filter((l) =>
+        l.buildings.some((b) => b.slots && b.numberOfSlots > 0 && b.slots.length < b.numberOfSlots)
+      );
 
       setSelectedLandAction('Recruit');
       // Add glowing to all recruitment lands
@@ -69,20 +51,11 @@ const UnitActionControl: React.FC = () => {
       event.stopPropagation();
 
       // Get all lands owned by current player that have heroes
-      const questLands = (
-        getLands({
-          gameState: gameState,
-          players: [gameState.turnOwner],
-          noArmy: false,
-        }) || []
-      ).filter((l) => l.army.some((u) => !isMoving(u) && u.heroes.length > 0));
+      const questLands = findAllHeroesOnMap(gameState).map((r) => r.position);
 
       setSelectedLandAction('Quest');
       // Add glowing to all quest lands
-      questLands.forEach((land) => {
-        const tileId = getLandId(land.mapPos);
-        addGlowingTile(tileId);
-      });
+      questLands.forEach((land) => addGlowingTile(getLandId(land)));
     },
     [gameState, clearAllGlow, setSelectedLandAction, addGlowingTile]
   );
@@ -95,20 +68,15 @@ const UnitActionControl: React.FC = () => {
       // Prevent event bubbling to parent elements (MainView)
       event.stopPropagation();
 
-      // Get all lands owned by current player that have army
-      // todo probably for change order we should get all lands with army owned by current player
-      const armyLands = (
-        getLands({
-          gameState: gameState,
-          players: [gameState.turnOwner],
-          noArmy: false,
-        }) || []
-      ).filter((l) => l.army.some((a) => !isMoving(a)));
+      // Get all lands owned by current player that have a non-moving army
+      const armyLands = getArmiesByPlayer(gameState)
+        .filter((army) => !isMoving(army))
+        .flatMap(getPosition);
 
       setSelectedLandAction('MoveArmyFrom');
       // Add glowing to all army lands
       armyLands.forEach((land) => {
-        const tileId = getLandId(land.mapPos);
+        const tileId = getLandId(land);
         addGlowingTile(tileId);
       });
     },

@@ -10,8 +10,7 @@ import { PlayerState } from '../../state/player/PlayerState';
 
 import { getPlayerColorValue } from '../../types/PlayerColors';
 
-import { getLands } from '../../map/utils/getLands';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getLandId } from '../../state/map/land/LandId';
 
 const OpponentsPanel: React.FC = () => {
@@ -23,9 +22,9 @@ const OpponentsPanel: React.FC = () => {
       showOpponentInfo(opponent, screenPosition);
 
       setTimeout(() => {
-        getLands({ gameState: gameState!, players: [opponent.id] }).forEach((land) => {
-          addGlowingTile(getLandId(land.mapPos));
-        });
+        getPlayerLands(gameState!, opponent.id).forEach((land) =>
+          addGlowingTile(getLandId(land.mapPos))
+        );
       }, 0);
     },
     [showOpponentInfo, addGlowingTile, gameState]

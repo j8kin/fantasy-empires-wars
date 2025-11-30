@@ -7,12 +7,11 @@ import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage
 
 import { getAllQuests, getQuestType } from '../../types/Quest';
 import { HeroState } from '../../state/army/HeroState';
+import { findHeroAndLand, getArmiesAtPosition } from '../../map/utils/armyUtils';
 
-import { findHeroByName } from '../../map/utils/findHeroByName';
 import { startQuest } from '../../map/quest/startQuest';
 
 import { getQuestImg } from '../../assets/getQuestImg';
-import { getLandId } from '../../state/map/land/LandId';
 
 const SendHeroInQuestDialog: React.FC = () => {
   const {
@@ -38,13 +37,13 @@ const SendHeroInQuestDialog: React.FC = () => {
   useEffect(() => {
     if (!gameState || !showSendHeroInQuestDialog || !actionLandPosition) return;
 
-    const land = gameState.map.lands[getLandId(actionLandPosition)];
-    if (!land || land.army.length === 0) {
+    const armiesAtPosition = getArmiesAtPosition(gameState, actionLandPosition);
+    if (armiesAtPosition.length === 0) {
       handleClose();
       return;
     }
 
-    const availableUnits = land.army.flatMap((armyUnit) => armyUnit.heroes);
+    const availableUnits = armiesAtPosition.flatMap((armyUnit) => armyUnit.heroes);
 
     if (availableUnits.length === 0) {
       handleClose();
@@ -55,7 +54,7 @@ const SendHeroInQuestDialog: React.FC = () => {
     (questLvl: number) => {
       return (slot: Slot) => {
         // slot.id contain uniq Hero name, and slot name contains what is displayed in the dialog, e.g. "Alaric Lvl: 1"
-        const hero = findHeroByName(slot.id, gameState!);
+        const hero = findHeroAndLand(gameState!, slot.id, gameState?.turnOwner)?.hero;
         if (hero) {
           startQuest(hero, getQuestType(questLvl + 1), gameState!);
           // Mark the slot as used across all pages
@@ -78,14 +77,14 @@ const SendHeroInQuestDialog: React.FC = () => {
 
   if (!gameState || !showSendHeroInQuestDialog || !actionLandPosition) return undefined;
 
-  const land = gameState.map.lands[getLandId(actionLandPosition)];
+  const armiesAtPosition = getArmiesAtPosition(gameState, actionLandPosition);
 
-  // If no land with heroes is available, don't render content
-  if (!land || land.army.length === 0) {
+  // If no armies with heroes are available, don't render content
+  if (armiesAtPosition.length === 0) {
     return null;
   }
 
-  const availableUnits = land.army.flatMap((armyUnit) => armyUnit.heroes);
+  const availableUnits = armiesAtPosition.flatMap((armyUnit) => armyUnit.heroes);
 
   // If no heroes are available, don't render content
   if (availableUnits.length === 0) {

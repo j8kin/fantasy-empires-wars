@@ -1,10 +1,10 @@
 import { GameState } from '../../state/GameState';
-
-import { getLands } from '../utils/getLands';
-
-import { BuildingType } from '../../types/Building';
 import { RegularsState, UnitRank } from '../../state/army/RegularsState';
 import { HeroState } from '../../state/army/HeroState';
+
+import { getPlayerLands } from '../../selectors/playerSelectors';
+import { getArmiesByPlayer } from '../utils/armyUtils';
+
 import { isHeroType } from '../../types/UnitType';
 import { Unit } from '../../types/BaseUnit';
 
@@ -31,29 +31,18 @@ export const calculateMaintenance = (gameState: GameState): number => {
   const { turnOwner } = gameState;
 
   // building maintenance
-  const buildingMaintenance = getLands({
-    gameState: gameState,
-    players: [turnOwner],
-    buildings: Object.values(BuildingType),
-  }).reduce((acc, land) => {
-    return acc + land.buildings.reduce((acc, building) => acc + building.maintainCost, 0);
-  }, 0);
+  const buildingMaintenance = getPlayerLands(gameState)
+    .filter((l) => l.buildings.length > 0)
+    .reduce((acc, land) => {
+      return acc + land.buildings.reduce((acc, building) => acc + building.maintainCost, 0);
+    }, 0);
 
   // army maintenance
-  const armyMaintenance = getLands({
-    gameState: gameState,
-    players: [turnOwner],
-    noArmy: false,
-  }).reduce((acc, land) => {
+  const armyMaintenance = getArmiesByPlayer(gameState, turnOwner).reduce((acc, army) => {
     return (
       acc +
-      land.army.reduce((acc, army) => {
-        return (
-          acc +
-          army.heroes.reduce((acc, unit) => acc + unitMaintenanceCost(unit), 0) +
-          army.regulars.reduce((acc, unit) => acc + unitMaintenanceCost(unit), 0)
-        );
-      }, 0)
+      army.heroes.reduce((acc, unit) => acc + unitMaintenanceCost(unit), 0) +
+      army.regulars.reduce((acc, unit) => acc + unitMaintenanceCost(unit), 0)
     );
   }, 0);
 

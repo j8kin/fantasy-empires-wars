@@ -2,7 +2,7 @@ import { GameState } from '../../state/GameState';
 import { PlayerState } from '../../state/player/PlayerState';
 
 import { getLand } from '../../selectors/landSelectors';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayerLands } from '../../selectors/playerSelectors';
 
 import { relicts, TreasureItem } from '../../types/Treasures';
 import { getManaSource, ManaType } from '../../types/Mana';
@@ -11,12 +11,13 @@ import { getLandById, getSpecialLandTypes, LandType } from '../../types/Land';
 
 import { BuildingType } from '../../types/Building';
 
-import { getLands } from '../../map/utils/getLands';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { nextPlayer } from '../../systems/playerActions';
 import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
 import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { LandState } from '../../state/map/land/LandState';
+import { getArmiesByPlayer } from '../../map/utils/armyUtils';
 
 describe('Calculate Mana', () => {
   let testTurnManagement: TestTurnManagement;
@@ -91,11 +92,9 @@ describe('Calculate Mana', () => {
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
-          const homeLand = getLands({
-            gameState: gameStateStub,
-            players: [getTurnOwner(gameStateStub).id],
-            buildings: [BuildingType.STRONGHOLD],
-          })[0];
+          const homeLand = getPlayerLands(gameStateStub).find((l) =>
+            l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+          )!;
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 2 }; // outside player land
           getLand(gameStateStub, specialLand).land = getLandById(landType);
 
@@ -133,11 +132,9 @@ describe('Calculate Mana', () => {
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
-          const homeLandPlayer2 = getLands({
-            gameState: gameStateStub,
-            players: [PREDEFINED_PLAYERS[13].id],
-            buildings: [BuildingType.STRONGHOLD],
-          })[0];
+          const homeLandPlayer2 = getPlayerLands(gameStateStub, PREDEFINED_PLAYERS[13].id).find(
+            (l) => l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+          )!;
           const specialLand = {
             row: homeLandPlayer2.mapPos.row,
             col: homeLandPlayer2.mapPos.col + 1,
@@ -182,11 +179,11 @@ describe('Calculate Mana', () => {
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
-          const homeLand = getLands({
-            gameState: gameStateStub,
-            players: [getTurnOwner(gameStateStub).id],
-            buildings: [BuildingType.STRONGHOLD],
-          })[0];
+
+          const homeLand = getPlayerLands(gameStateStub).find((l) =>
+            l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+          )!;
+
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
           getLand(gameStateStub, specialLand).land = getLandById(landType);
 
@@ -223,10 +220,10 @@ describe('Calculate Mana', () => {
   };
 
   const baseMana = (player: PlayerState) => {
-    const playerSpecialLands = getLands({
-      gameState: gameStateStub,
-      players: [player.id],
-    }).filter(
+    const realmLands: LandState[] = [];
+    player.landsOwned.forEach((l) => realmLands.push(gameStateStub.map.lands[l]));
+
+    const playerSpecialLands = realmLands.filter(
       (l) =>
         (player.playerProfile.type === HeroUnitType.NECROMANCER &&
           (l.land.id === LandType.BLIGHTED_FEN || l.land.id === LandType.SHADOW_MIRE)) ||
@@ -239,13 +236,10 @@ describe('Calculate Mana', () => {
         (player.playerProfile.type === HeroUnitType.PYROMANCER &&
           (l.land.id === LandType.VOLCANO || l.land.id === LandType.LAVA))
     ).length;
-    const playerHero = getLands({
-      gameState: gameStateStub,
-      players: [player.id],
-      noArmy: false,
-    })[0].army[0].heroes[0];
+    const playerHero = getArmiesByPlayer(gameStateStub, player.id)[0].heroes[0];
     return (playerHero.mana || 0) + playerSpecialLands;
   };
+
   it('on real map with 5 mage players and verify no mana calculation deviations', () => {
     const players = [
       PREDEFINED_PLAYERS[1],
@@ -282,11 +276,10 @@ describe('Calculate Mana', () => {
     gameStateStub.players[0].empireTreasures.push(
       relicts.find((r) => r.id === TreasureItem.HEARTSTONE_OF_ORRIVANE)!
     );
-    const homeLand = getLands({
-      gameState: gameStateStub,
-      players: [getTurnOwner(gameStateStub).id],
-      buildings: [BuildingType.STRONGHOLD],
-    })[0];
+
+    const homeLand = getPlayerLands(gameStateStub).find((l) =>
+      l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+    )!;
 
     getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandType.VOLCANO); // this should add red mana to player 0
 

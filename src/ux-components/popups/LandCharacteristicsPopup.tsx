@@ -6,6 +6,7 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
 import { getLandOwner } from '../../selectors/landSelectors';
+import { getArmiesAtPosition } from '../../map/utils/armyUtils';
 
 import { getAlignmentColor } from '../../types/Alignment';
 
@@ -44,8 +45,9 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   }
 
   // Army rows - separate heroes and units
-  const heroes = land.army.flatMap((a) => a.heroes);
-  const units = land.army.flatMap((a) => a.regulars);
+  const armiesAtPosition = getArmiesAtPosition(gameState!, battlefieldPosition);
+  const heroes = armiesAtPosition.flatMap((a) => a.heroes);
+  const units = armiesAtPosition.flatMap((a) => a.regulars);
 
   if (heroes.length > 0) {
     calculatedHeight += heroes.length * armyRowHeight;

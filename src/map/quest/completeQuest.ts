@@ -2,8 +2,9 @@ import { GameState } from '../../state/GameState';
 import { PlayerState } from '../../state/player/PlayerState';
 
 import { armyFactory } from '../../factories/armyFactory';
-import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getArmiesAtPosition, addArmyToGameState, updateArmyInGameState } from '../utils/armyUtils';
 import { isMoving } from '../../selectors/armySelectors';
 import { addHero } from '../../systems/armyActions';
 import { levelUpHero } from '../../systems/unitsActions';
@@ -123,13 +124,18 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
     questOutcome = calculateReward(hero, quest, gameState);
 
     // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
-    const stationedArmy = getLand(gameState, quest.land).army.find((a) => !isMoving(a));
+    const armiesAtPosition = getArmiesAtPosition(gameState, quest.land);
+    const stationedArmy = armiesAtPosition.find(
+      (a) => !isMoving(a) && a.controlledBy === turnOwner.id
+    );
     if (stationedArmy) {
       // add into the existing stationed Army
       addHero(stationedArmy, hero);
+      Object.assign(gameState, updateArmyInGameState(gameState, stationedArmy));
     } else {
       // no valid army found, create new one
-      getLand(gameState, quest.land).army.push(armyFactory(turnOwner.id, quest.land, [hero]));
+      const newArmy = armyFactory(turnOwner.id, quest.land, [hero]);
+      Object.assign(gameState, addArmyToGameState(gameState, newArmy));
     }
   } else {
     questOutcome = {

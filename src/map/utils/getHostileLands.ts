@@ -1,25 +1,33 @@
 import { GameState } from '../../state/GameState';
 import { LandState } from '../../state/map/land/LandState';
-import { getLandOwner } from '../../selectors/landSelectors';
+import { getLand } from '../../selectors/landSelectors';
 import { DiplomacyStatus, getPlayersByDiplomacy } from '../../types/Diplomacy';
-import { getLands } from './getLands';
-import { getRealmLands } from './getRealmLands';
+import { getArmiesByPlayer } from './armyUtils';
 import { getLandId } from '../../state/map/land/LandId';
+import { getPlayerLands, getRealmLands } from '../../selectors/playerSelectors';
+import { getPosition } from '../../selectors/armySelectors';
 
 export const getHostileLands = (gameState: GameState): LandState[] => {
-  const turnOwner = gameState.turnOwner;
+  const hostileLands = new Set<LandState>();
 
   const realmLands = getRealmLands(gameState).flatMap((l) => getLandId(l.mapPos));
-  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map((p) => p.id);
 
-  return getLands({
-    gameState: gameState,
-    noArmy: false,
-  }).filter(
-    (land) =>
-      !(
-        realmLands.includes(getLandId(land.mapPos)) ||
-        allies.includes(getLandOwner(gameState, land.mapPos))
-      ) && land.army.some((a) => a.controlledBy === turnOwner)
-  );
+  // get lands controlled by players but far from strongholds
+  getPlayerLands(gameState)
+    .filter((land) => !realmLands.includes(getLandId(land.mapPos)))
+    .forEach((land) => hostileLands.add(land));
+
+  // add lands far from strongholds but with an army but not controlled by player
+  getArmiesByPlayer(gameState)
+    .filter((a) => !realmLands.includes(getLandId(getPosition(a))))
+    .map((a) => getLand(gameState, getPosition(a)))
+    .forEach((land) => hostileLands.add(land));
+
+  // get allies lands
+  const allies = getPlayersByDiplomacy(gameState, [DiplomacyStatus.ALLIANCE]).map((p) => p.id);
+  const alliesLands = allies.flatMap((p) => getPlayerLands(gameState, p));
+
+  // return all hostile lands that are not controlled by player or allies
+  alliesLands.forEach((land) => hostileLands.delete(land));
+  return hostileLands.values().toArray();
 };

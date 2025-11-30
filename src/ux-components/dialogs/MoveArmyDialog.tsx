@@ -4,7 +4,7 @@ import styles from './css/MoveArmyDialog.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getLand } from '../../selectors/landSelectors';
+import { getArmiesAtPosition } from '../../map/utils/armyUtils';
 import { briefInfo, isMoving } from '../../selectors/armySelectors';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
@@ -39,8 +39,9 @@ const MoveArmyDialog: React.FC = () => {
       return;
     }
 
-    const fromLand = getLand(gameState, moveArmyPath.from);
-    const stationedArmy = fromLand.army.filter((a) => !isMoving(a));
+    const stationedArmy = getArmiesAtPosition(gameState, moveArmyPath.from).filter(
+      (a) => !isMoving(a)
+    );
 
     if (stationedArmy == null || stationedArmy.length === 0) {
       fromUnitsRef.current = undefined;
@@ -85,7 +86,9 @@ const MoveArmyDialog: React.FC = () => {
 
   if (!moveArmyPath || !gameState) return null;
 
-  const stationedArmy = getLand(gameState, moveArmyPath.from).army.filter((a) => !isMoving(a));
+  const stationedArmy = getArmiesAtPosition(gameState, moveArmyPath.from).filter(
+    (a) => !isMoving(a)
+  );
 
   if (stationedArmy == null || stationedArmy.length === 0) return null;
 

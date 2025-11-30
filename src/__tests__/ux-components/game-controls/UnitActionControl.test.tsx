@@ -19,21 +19,13 @@ import { LandPosition } from '../../../state/map/land/LandPosition';
 import { startMoving } from '../../../systems/armyActions';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
+import { getArmiesAtPosition } from '../../../map/utils/armyUtils';
 
 // Mock GameButton component
 jest.mock('../../../ux-components/buttons/GameButton', () => {
   return ({ buttonName, onClick }: any) => (
     <img data-testid={`game-button-${buttonName}`} alt={buttonName} onClick={onClick} />
   );
-});
-
-// Mock getLands utility
-jest.mock('../../../map/utils/getLands', () => {
-  const actual = jest.requireActual('../../../map/utils/getLands');
-  return {
-    ...actual,
-    getLands: jest.fn(actual.getLands),
-  };
 });
 
 const renderWithProviders = (
@@ -211,10 +203,10 @@ describe('UnitActionControl', () => {
       placeUnitsOnMap(hero, gameState, heroPosition);
 
       // Assign movements to the hero
-      const land = gameState.map.lands[`${heroPosition.row}-${heroPosition.col}`];
-      if (land.army[0]) {
-        startMoving(land.army[0], { row: 4, col: 4 });
-      }
+      const armies = getArmiesAtPosition(gameState, heroPosition);
+      expect(armies).toHaveLength(1);
+
+      startMoving(armies[0], { row: 4, col: 4 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -292,11 +284,10 @@ describe('UnitActionControl', () => {
       const unit = regularsFactory(RegularUnitType.WARRIOR);
       placeUnitsOnMap(unit, gameState, armyPosition);
 
+      const armies = getArmiesAtPosition(gameState, armyPosition);
+      expect(armies).toHaveLength(1);
       // Assign movements
-      const land = gameState.map.lands[`${armyPosition.row}-${armyPosition.col}`];
-      if (land.army[0]) {
-        startMoving(land.army[0], { row: 4, col: 4 });
-      }
+      startMoving(armies[0], { row: 4, col: 4 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 

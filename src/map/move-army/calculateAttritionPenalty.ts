@@ -1,6 +1,11 @@
 import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getRegulars } from '../../systems/armyActions';
+import {
+  getArmiesAtPositionByPlayers,
+  updateArmyInGameState,
+  removeArmyFromGameState,
+} from '../utils/armyUtils';
 
 import { RegularsState, UnitRank } from '../../state/army/RegularsState';
 import { ArmyState } from '../../state/army/ArmyState';
@@ -32,14 +37,16 @@ const WARMACHINE_TO_UNIT = 20;
  * @param gameState
  */
 export const calculateAttritionPenalty = (gameState: GameState): void => {
+  const turnOwnerId = getTurnOwner(gameState).id;
+
   getHostileLands(gameState).forEach((land) => {
-    const allArmies = land.army.filter((a) => a.controlledBy === getTurnOwner(gameState).id);
+    const allArmies = getArmiesAtPositionByPlayers(gameState, land.mapPos, [turnOwnerId]);
     const unitsPerArmyNormalized = allArmies.map((a) => normalizeArmyUnits(a.regulars));
     const loss = rollAttritionLoss(unitsPerArmyNormalized);
 
-    allArmies.forEach((a) => {
-      const normNumUnits = normalizeArmyUnits(a.regulars);
-      attritionPenalty(a, {
+    allArmies.forEach((army) => {
+      const normNumUnits = normalizeArmyUnits(army.regulars);
+      attritionPenalty(army, {
         [UnitRank.REGULAR]:
           loss.regular.total !== 0
             ? Math.ceil((normNumUnits.regular * loss.regular.loss) / loss.regular.total)
@@ -53,9 +60,14 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
             ? Math.ceil((normNumUnits.elite * loss.elite.loss) / loss.elite.total)
             : 0,
       });
+
+      // Remove armies with no units or update them in GameState
+      if (army.regulars.length === 0 && army.heroes.length === 0) {
+        Object.assign(gameState, removeArmyFromGameState(gameState, army.id));
+      } else {
+        Object.assign(gameState, updateArmyInGameState(gameState, army));
+      }
     });
-    // Remove armies with no units
-    land.army = land.army.filter((army) => army.regulars.length > 0 || army.heroes.length > 0);
   });
 };
 
