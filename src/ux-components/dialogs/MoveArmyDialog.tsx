@@ -16,6 +16,37 @@ import { HeroUnitType } from '../../types/UnitType';
 
 import { startMovement } from '../../map/move-army/startMovement';
 
+// Consolidate units of the same type and rank
+const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {
+  // Heroes don't need consolidation as they are unique
+  const consolidatedHeroes = [...army.heroes];
+
+  // Consolidate regulars by type and rank
+  const consolidatedRegulars: { id: any; rank: UnitRank; count: number }[] = [];
+
+  army.regulars.forEach((unit) => {
+    const existingIdx = consolidatedRegulars.findIndex(
+      (u) => u.id === unit.id && u.rank === unit.rank
+    );
+
+    if (existingIdx !== -1) {
+      // Merge with existing unit
+      consolidatedRegulars[existingIdx] = {
+        ...consolidatedRegulars[existingIdx],
+        count: consolidatedRegulars[existingIdx].count + unit.count,
+      };
+    } else {
+      // Add new unit
+      consolidatedRegulars.push({ ...unit });
+    }
+  });
+
+  return {
+    heroes: consolidatedHeroes,
+    regulars: consolidatedRegulars,
+  };
+};
+
 const MoveArmyDialog: React.FC = () => {
   const { setMoveArmyPath, moveArmyPath } = useApplicationContext();
   const { gameState } = useGameContext();
@@ -25,7 +56,7 @@ const MoveArmyDialog: React.FC = () => {
   const [, forceUpdate] = useState({});
 
   // Force component re-render
-  const triggerUpdate = () => forceUpdate({});
+  const triggerUpdate = () => forceUpdate(Math.random());
 
   // Refs for click-and-hold functionality
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -121,26 +152,61 @@ const MoveArmyDialog: React.FC = () => {
       regulars: [...(toUnits?.regulars ?? []), ...(fromUnits?.regulars ?? [])],
     };
 
-    updateToUnits(direction === 'right' ? newToUnits : undefined);
-    updateFromUnits(direction === 'right' ? undefined : newToUnits);
+    // Consolidate units of the same type and rank
+    const consolidatedUnits = consolidateArmyBriefInfo(newToUnits);
+
+    updateToUnits(direction === 'right' ? consolidatedUnits : undefined);
+    updateFromUnits(direction === 'right' ? undefined : consolidatedUnits);
   };
 
   const moveHalf = (direction: 'left' | 'right') => {
-    const ArmyBriefInfo: ArmyBriefInfo = { heroes: [...(fromUnits?.heroes ?? [])], regulars: [] };
-    const remainingUnits: ArmyBriefInfo = { heroes: [], regulars: [] };
+    // Determine source and destination based on direction
+    const sourceUnits = direction === 'right' ? fromUnits : toUnits;
+    const destinationUnits = direction === 'right' ? toUnits : fromUnits;
 
-    fromUnits?.regulars?.forEach((unit) => {
+    // Units to move (including all heroes from source)
+    const unitsToMove: ArmyBriefInfo = {
+      heroes: [...(sourceUnits?.heroes ?? [])],
+      regulars: [],
+    };
+
+    // Units remaining in source
+    const remainingUnits: ArmyBriefInfo = {
+      heroes: [], // Heroes move completely
+      regulars: [],
+    };
+
+    // Handle regulars - split them in half
+    sourceUnits?.regulars?.forEach((unit) => {
       const halfCount = Math.ceil(unit.count / 2);
       if (halfCount === unit.count) {
-        ArmyBriefInfo.regulars.push(unit);
+        // Move entire unit if it can't be split
+        unitsToMove.regulars.push(unit);
       } else {
-        ArmyBriefInfo.regulars.push({ ...unit, count: halfCount });
+        // Split the unit
+        unitsToMove.regulars.push({ ...unit, count: halfCount });
         remainingUnits.regulars.push({ ...unit, count: unit.count - halfCount });
       }
     });
 
-    updateToUnits(direction === 'right' ? ArmyBriefInfo : remainingUnits);
-    updateFromUnits(direction === 'right' ? remainingUnits : ArmyBriefInfo);
+    // Combine moved units with existing destination units
+    const newDestination: ArmyBriefInfo = {
+      heroes: [...(destinationUnits?.heroes ?? []), ...unitsToMove.heroes],
+      regulars: [...(destinationUnits?.regulars ?? []), ...unitsToMove.regulars],
+    };
+
+    // Consolidate units of the same type and rank
+    const consolidatedDestination = consolidateArmyBriefInfo(newDestination);
+    const consolidatedRemaining = consolidateArmyBriefInfo(remainingUnits);
+
+    // Update the refs based on direction
+    if (direction === 'right') {
+      updateFromUnits(consolidatedRemaining);
+      updateToUnits(consolidatedDestination);
+    } else {
+      updateToUnits(consolidatedRemaining);
+      updateFromUnits(consolidatedDestination);
+    }
   };
 
   const moveOneUnit = (
@@ -227,6 +293,11 @@ const MoveArmyDialog: React.FC = () => {
     if (!selectedUnit) return;
 
     // Move one unit immediately using current refs
+    // Initialize toUnitsRef if it's undefined
+    if (toUnitsRef.current === undefined) {
+      toUnitsRef.current = { heroes: [], regulars: [] };
+    }
+
     const currentFrom = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
     const currentTo = direction === 'right' ? toUnitsRef.current : fromUnitsRef.current;
 
@@ -235,7 +306,10 @@ const MoveArmyDialog: React.FC = () => {
       if (!arr) return -1;
 
       if (type === 'hero') {
-        return arr.heroes.findIndex((h) => h === selectedUnit);
+        const heroUnit = selectedUnit as { name: string; type: HeroUnitType; level: number };
+        return arr.heroes.findIndex(
+          (h) => h.name === heroUnit.name && h.type === heroUnit.type && h.level === heroUnit.level
+        );
       } else {
         const reg = selectedUnit as { id: string; rank: UnitRank };
         return arr.regulars.findIndex((u) => u.id === reg.id && u.rank === reg.rank);
@@ -291,8 +365,8 @@ const MoveArmyDialog: React.FC = () => {
   ) => {
     return (
       <div
-        data-testid={`${hero}-${index}`}
-        key={`${hero}-${index}`}
+        data-testid={`${hero.name}-${index}`}
+        key={`${hero.name}-${hero.type}-${hero.level}-${index}`}
         className={`${styles.unitItem} ${styles.heroUnit}`}
         onMouseDown={() => handleMouseDown(fromArray, index, 'hero', direction)}
         onMouseUp={handleMouseUp}
