@@ -7,7 +7,7 @@ import * as mainAiTurnModule from '../../turn/mainAiTurn';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
 import { createDefaultGameStateStub, createGameStateStub } from '../utils/createGameStateStub';
 import { TurnPhase } from '../../turn/TurnPhase';
-import {nextTurnPhase} from "../utils/TestTurnManagement";
+import { nextTurnPhase } from '../utils/TestTurnManagement';
 
 // Mock the turn modules
 jest.mock('../../turn/startTurn');
