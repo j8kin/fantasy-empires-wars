@@ -6,12 +6,16 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import GameButton from '../buttons/GameButton';
 
-import { ButtonName } from '../../types/ButtonName';
-
-import { getPosition, isMoving } from '../../selectors/armySelectors';
 import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { findAllHeroesOnMap, getArmiesByPlayer } from '../../map/utils/armyUtils';
+import {
+  getPosition,
+  isMoving,
+  findAllHeroesOnMap,
+  getArmiesByPlayer,
+} from '../../selectors/armySelectors';
+
+import { ButtonName } from '../../types/ButtonName';
 
 const UnitActionControl: React.FC = () => {
   const { addGlowingTile, clearAllGlow, setSelectedLandAction } = useApplicationContext();

@@ -196,20 +196,3 @@ export const AllSpells: Spell[] = [
   ...RedMagicSpells,
   ...BlackMagicSpells,
 ];
-
-export const getSpellById = (id: SpellName): Spell => AllSpells.find((spell) => spell.id === id)!;
-
-export const getMinManaCost = (mana: ManaType): number => {
-  switch (mana) {
-    case ManaType.WHITE:
-      return Math.max(5, Math.min(...WhiteMagicSpells.map((spell) => spell.manaCost)));
-    case ManaType.BLUE:
-      return Math.max(5, Math.min(...BlueMagicSpells.map((spell) => spell.manaCost)));
-    case ManaType.GREEN:
-      return Math.max(5, Math.min(...GreenMagicSpells.map((spell) => spell.manaCost)));
-    case ManaType.RED:
-      return Math.max(5, Math.min(...RedMagicSpells.map((spell) => spell.manaCost)));
-    case ManaType.BLACK:
-      return Math.max(5, Math.min(...BlackMagicSpells.map((spell) => spell.manaCost)));
-  }
-};

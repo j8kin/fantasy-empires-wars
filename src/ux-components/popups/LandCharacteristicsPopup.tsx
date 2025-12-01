@@ -5,16 +5,17 @@ import styles from './css/LandCharacteristicsPopup.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
+import PopupWrapper, { PopupProps } from './PopupWrapper';
+
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
 import { getLandOwner } from '../../selectors/landSelectors';
-import { getArmiesAtPosition } from '../../map/utils/armyUtils';
+import { getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getPlayer } from '../../selectors/playerSelectors';
 
 import { getAlignmentColor } from '../../types/Alignment';
 
-import PopupWrapper, { PopupProps } from './PopupWrapper';
-import { getPlayer } from '../../selectors/playerSelectors';
 import { NO_PLAYER } from '../../data/players/predefinedPlayers';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { getLandId } from '../../state/map/land/LandId';
 
 interface LandCharacteristicsPopupProps extends PopupProps {
   battlefieldPosition: LandPosition;

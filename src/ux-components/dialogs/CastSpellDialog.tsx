@@ -2,11 +2,12 @@ import React, { useCallback, useEffect } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getSpellById } from '../../selectors/spellSelectors';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { AllSpells, getSpellById, SpellName } from '../../types/Spell';
+import { AllSpells, SpellName } from '../../types/Spell';
 import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCastSpellLands';
 
 import { getSpellImg } from '../../assets/getSpellImg';

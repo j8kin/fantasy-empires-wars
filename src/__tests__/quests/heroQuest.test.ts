@@ -4,13 +4,13 @@ import { HeroState } from '../../state/army/HeroState';
 
 import { getLand } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { isMoving } from '../../selectors/armySelectors';
-import { nextPlayer } from '../../systems/playerActions';
 import {
+  isMoving,
   findHeroAndLand,
   findLandByHeroName,
   getArmiesAtPosition,
-} from '../../map/utils/armyUtils';
+} from '../../selectors/armySelectors';
+import { nextPlayer } from '../../systems/playerActions';
 
 import { QuestType } from '../../types/Quest';
 import { TreasureItem } from '../../types/Treasures';

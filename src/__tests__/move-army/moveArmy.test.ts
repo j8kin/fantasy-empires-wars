@@ -7,9 +7,8 @@ import { getLandId } from '../../state/map/land/LandId';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { briefInfo, isMoving } from '../../selectors/armySelectors';
+import { briefInfo, isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 import { addLand } from '../../systems/playerActions';
-import { getArmiesAtPosition } from '../../map/utils/armyUtils';
 
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { BuildingType } from '../../types/Building';

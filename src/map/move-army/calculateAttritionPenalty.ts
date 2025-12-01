@@ -1,11 +1,8 @@
 import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getRegulars } from '../../systems/armyActions';
-import {
-  getArmiesAtPositionByPlayers,
-  updateArmyInGameState,
-  removeArmyFromGameState,
-} from '../utils/armyUtils';
+import { getArmiesAtPositionByPlayers } from '../../selectors/armySelectors';
+import { updateArmyInGameState, removeArmyFromGameState } from '../utils/armyUtils';
 
 import { RegularsState, UnitRank } from '../../state/army/RegularsState';
 import { ArmyState } from '../../state/army/ArmyState';

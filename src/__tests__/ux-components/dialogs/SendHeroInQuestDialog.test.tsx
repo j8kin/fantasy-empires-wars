@@ -16,7 +16,7 @@ import { heroFactory } from '../../../factories/heroFactory';
 
 import { HeroUnitType } from '../../../types/UnitType';
 import { Alignment } from '../../../types/Alignment';
-import { getArmiesAtPosition } from '../../../map/utils/armyUtils';
+import { getArmiesAtPosition } from '../../../selectors/armySelectors';
 
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';

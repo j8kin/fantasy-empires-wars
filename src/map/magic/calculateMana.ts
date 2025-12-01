@@ -1,6 +1,6 @@
 import { GameState } from '../../state/GameState';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { getAllHeroes } from '../utils/armyUtils';
+import { getAllHeroes } from '../../selectors/armySelectors';
 import { getManaSource } from '../../types/Mana';
 import { getSpecialLandTypes } from '../../types/Land';
 import { TreasureItem } from '../../types/Treasures';

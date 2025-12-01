@@ -4,11 +4,10 @@ import styles from './css/MoveArmyDialog.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getArmiesAtPosition } from '../../map/utils/armyUtils';
-import { briefInfo, isMoving } from '../../selectors/armySelectors';
-
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
+
+import { briefInfo, isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 
 import { ButtonName } from '../../types/ButtonName';
 import { UnitRank } from '../../state/army/RegularsState';

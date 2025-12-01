@@ -2,13 +2,15 @@ import React, { useCallback } from 'react';
 import styles from './css/GameControl.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import GameButton from '../buttons/GameButton';
-import { useGameContext } from '../../contexts/GameContext';
-import { getAllBuildings } from '../../types/Building';
+
+import { getAllBuildings } from '../../selectors/buildingSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+
 import { ButtonName } from '../../types/ButtonName';
 import { AllSpells, SpellName } from '../../types/Spell';
-import { getTurnOwner } from '../../selectors/playerSelectors';
 
 const MapActionsControl: React.FC = () => {
   const {

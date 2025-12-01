@@ -6,8 +6,7 @@ import { UnitRank } from '../../state/army/RegularsState';
 
 import { getLand } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { isMoving } from '../../selectors/armySelectors';
-import { getArmiesAtPosition } from '../../map/utils/armyUtils';
+import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 
 import { BuildingType } from '../../types/Building';
 import { relicts, TreasureItem } from '../../types/Treasures';

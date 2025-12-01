@@ -4,9 +4,10 @@ import { ArmyState } from '../../state/army/ArmyState';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { hasLand } from '../../systems/playerActions';
 import { addRegulars } from '../../systems/armyActions';
-import { getArmiesAtPosition, addArmyToGameState } from '../../map/utils/armyUtils';
+import { addArmyToGameState } from '../../map/utils/armyUtils';
 
 import { armyFactory } from '../../factories/armyFactory';
 import { regularsFactory } from '../../factories/regularsFactory';

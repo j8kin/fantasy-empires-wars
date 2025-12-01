@@ -2,10 +2,11 @@ import { GameState } from '../../state/GameState';
 
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getLandOwner } from '../../selectors/landSelectors';
+import { getBuilding } from '../../selectors/buildingSelectors';
 import { addLand } from '../../systems/playerActions';
 
 import { TreasureItem } from '../../types/Treasures';
-import { BuildingType, getBuilding } from '../../types/Building';
+import { BuildingType } from '../../types/Building';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 

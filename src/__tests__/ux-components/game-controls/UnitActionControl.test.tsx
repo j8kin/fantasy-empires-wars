@@ -5,21 +5,22 @@ import { ApplicationContextProvider } from '../../../contexts/ApplicationContext
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
 
 import { GameState } from '../../../state/GameState';
+import { LandPosition } from '../../../state/map/land/LandPosition';
 
 import { getTurnOwner } from '../../../selectors/playerSelectors';
-
-import { ButtonName } from '../../../types/ButtonName';
-import { BuildingType } from '../../../types/Building';
-
-import { construct } from '../../../map/building/construct';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
-import { createGameStateStub } from '../../utils/createGameStateStub';
-import { RegularUnitType } from '../../../types/UnitType';
-import { LandPosition } from '../../../state/map/land/LandPosition';
+import { getArmiesAtPosition } from '../../../selectors/armySelectors';
 import { startMoving } from '../../../systems/armyActions';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
-import { getArmiesAtPosition } from '../../../map/utils/armyUtils';
+
+import { ButtonName } from '../../../types/ButtonName';
+import { BuildingType } from '../../../types/Building';
+import { RegularUnitType } from '../../../types/UnitType';
+
+import { construct } from '../../../map/building/construct';
+
+import { createGameStateStub } from '../../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 
 // Mock GameButton component
 jest.mock('../../../ux-components/buttons/GameButton', () => {

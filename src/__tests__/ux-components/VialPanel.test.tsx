@@ -2,14 +2,16 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import VialPanel from '../../ux-components/vial-panel/VialPanel';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
+
+import VialPanel from '../../ux-components/vial-panel/VialPanel';
+
 import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getMinManaCost } from '../../selectors/spellSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 
 import { ManaType } from '../../types/Mana';
-import { getMinManaCost } from '../../types/Spell';
 import { createGameStateStub } from '../utils/createGameStateStub';
 
 // Mock the image import

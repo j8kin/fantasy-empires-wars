@@ -7,7 +7,7 @@ import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage
 
 import { getAllQuests, getQuestType } from '../../types/Quest';
 import { HeroState } from '../../state/army/HeroState';
-import { findHeroAndLand, getArmiesAtPosition } from '../../map/utils/armyUtils';
+import { findHeroAndLand, getArmiesAtPosition } from '../../selectors/armySelectors';
 
 import { startQuest } from '../../map/quest/startQuest';
 

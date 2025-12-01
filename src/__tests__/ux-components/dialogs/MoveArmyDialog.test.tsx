@@ -5,20 +5,21 @@ import '@testing-library/jest-dom';
 
 import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
 import { GameState } from '../../../state/GameState';
+import { LandPosition } from '../../../state/map/land/LandPosition';
+import { UnitRank } from '../../../state/army/RegularsState';
+
+import { getArmiesAtPosition } from '../../../selectors/armySelectors';
+import { startMoving } from '../../../systems/armyActions';
+import { levelUpHero, levelUpRegulars } from '../../../systems/unitsActions';
+import { armyFactory } from '../../../factories/armyFactory';
+import { heroFactory } from '../../../factories/heroFactory';
+import { regularsFactory } from '../../../factories/regularsFactory';
 
 import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
-import { UnitRank } from '../../../state/army/RegularsState';
 import { Alignment } from '../../../types/Alignment';
 
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 import { startMovement as mockStartMovement } from '../../../map/move-army/startMovement';
-import { LandPosition } from '../../../state/map/land/LandPosition';
-import { startMoving } from '../../../systems/armyActions';
-import { armyFactory } from '../../../factories/armyFactory';
-import { levelUpHero, levelUpRegulars } from '../../../systems/unitsActions';
-import { heroFactory } from '../../../factories/heroFactory';
-import { regularsFactory } from '../../../factories/regularsFactory';
-import { getArmiesAtPosition } from '../../../map/utils/armyUtils';
 
 // Mock the startMovement function
 jest.mock('../../../map/move-army/startMovement', () => ({

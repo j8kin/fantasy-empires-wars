@@ -17,7 +17,7 @@ import { nextPlayer } from '../../systems/playerActions';
 import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
 import { PlayerProfile } from '../../state/player/PlayerProfile';
 import { LandState } from '../../state/map/land/LandState';
-import { getArmiesByPlayer } from '../../map/utils/armyUtils';
+import { getArmiesByPlayer } from '../../selectors/armySelectors';
 
 describe('Calculate Mana', () => {
   let testTurnManagement: TestTurnManagement;

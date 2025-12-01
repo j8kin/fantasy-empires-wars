@@ -1,10 +1,16 @@
 import { GameState } from '../state/GameState';
 import { PlayerState } from '../state/player/PlayerState';
+import { LandPosition } from '../state/map/land/LandPosition';
+import { getLandId } from '../state/map/land/LandId';
 
 import { getLand } from '../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../selectors/playerSelectors';
+import { getBuilding } from '../selectors/buildingSelectors';
+import { getArmiesAtPosition } from '../selectors/armySelectors';
+import { hasLand, nextPlayer } from '../systems/playerActions';
+import { regularsFactory } from '../factories/regularsFactory';
 
-import { BuildingType, getBuilding } from '../types/Building';
+import { BuildingType } from '../types/Building';
 import { RegularUnitType } from '../types/UnitType';
 import { relicts, TreasureItem } from '../types/Treasures';
 
@@ -12,11 +18,6 @@ import { construct } from '../map/building/construct';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { createGameStateStub } from './utils/createGameStateStub';
 import { getTilesInRadius } from '../map/utils/mapAlgorithms';
-import { hasLand, nextPlayer } from '../systems/playerActions';
-import { LandPosition } from '../state/map/land/LandPosition';
-import { getLandId } from '../state/map/land/LandId';
-import { regularsFactory } from '../factories/regularsFactory';
-import { getArmiesAtPosition } from '../map/utils/armyUtils';
 
 describe('Construct Buildings', () => {
   const homeLand1: LandPosition = { row: 3, col: 3 };

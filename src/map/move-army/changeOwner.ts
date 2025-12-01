@@ -3,7 +3,7 @@ import { GameState } from '../../state/GameState';
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { addLand, removeLand } from '../../systems/playerActions';
 import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
-import { hasArmiesAtPositionByPlayer } from '../utils/armyUtils';
+import { hasArmiesAtPositionByPlayer } from '../../selectors/armySelectors';
 
 import { BuildingType } from '../../types/Building';
 

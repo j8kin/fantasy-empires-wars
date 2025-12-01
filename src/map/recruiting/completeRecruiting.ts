@@ -1,6 +1,6 @@
 import { GameState } from '../../state/GameState';
 import { addHero, addRegulars } from '../../systems/armyActions';
-import { isMoving } from '../../selectors/armySelectors';
+import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getPlayerLands } from '../../selectors/playerSelectors';
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
@@ -12,7 +12,7 @@ import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 
-import { getArmiesAtPosition, addArmyToGameState, updateArmyInGameState } from '../utils/armyUtils';
+import { addArmyToGameState, updateArmyInGameState } from '../utils/armyUtils';
 
 export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
   const heroesRecruited: HeroOutcome[] = [];

@@ -3,8 +3,9 @@ import { GameState } from '../../state/GameState';
 
 import { addLand, addPlayer } from '../../systems/playerActions';
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getBuilding } from '../../selectors/buildingSelectors';
 
-import { BuildingType, getBuilding } from '../../types/Building';
+import { BuildingType } from '../../types/Building';
 import { getLandById, LandType } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 

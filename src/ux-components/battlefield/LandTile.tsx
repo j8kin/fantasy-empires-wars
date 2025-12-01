@@ -6,15 +6,15 @@ import { useGameContext } from '../../contexts/GameContext';
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
 import { LandPosition } from '../../state/map/land/LandPosition';
-
 import { getLandId } from '../../state/map/land/LandId';
 import { getLandOwner } from '../../selectors/landSelectors';
 import { getPlayer, getRealmLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getSpellById } from '../../selectors/spellSelectors';
+import { getBuilding } from '../../selectors/buildingSelectors';
 
-import { getArmiesAtPosition } from '../../map/utils/armyUtils';
-
-import { getSpellById, SpellName } from '../../types/Spell';
-import { BuildingType, getBuilding } from '../../types/Building';
+import { SpellName } from '../../types/Spell';
+import { BuildingType } from '../../types/Building';
 import { getPlayerColorValue } from '../../types/PlayerColors';
 
 import { construct } from '../../map/building/construct';

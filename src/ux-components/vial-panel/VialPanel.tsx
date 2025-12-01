@@ -5,9 +5,10 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import ManaVial from './ManaVial';
 
-import { ManaType } from '../../types/Mana';
-import { getMinManaCost } from '../../types/Spell';
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getMinManaCost } from '../../selectors/spellSelectors';
+
+import { ManaType } from '../../types/Mana';
 
 const VialPanel: React.FC = () => {
   const { gameState } = useGameContext();
