@@ -116,8 +116,14 @@ describe('Hero Quest', () => {
     expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
     const armies = getArmiesAtPosition(gameStateStub, heroLandPos);
     expect(armies.length).toBe(1);
-    expect(armies[0].heroes[0]).toBe(hero);
-    expect(hero.level).toBe(heroLevel); // hero level not incremented since his level is 8 and he goes into easy quest for level 1-5 heroes
+    expect(armies[0].heroes[0]).toEqual(
+      expect.objectContaining({
+        name: hero.name,
+        type: hero.type,
+        level: hero.level,
+      })
+    );
+    expect(armies[0].heroes[0].level).toBe(heroLevel); // hero level not incremented since his level is 8 and he goes into easy quest for level 1-5 heroes
   });
 
   it('When hero Quest is complete and hero die it should not be placed back on the map', () => {
@@ -183,7 +189,7 @@ describe('Hero Quest', () => {
     expect(barracksLand.buildings[0].numberOfSlots).toBe(
       buildingType === BuildingType.BARRACKS ? 3 : 1
     );
-    expect(barracksLand.buildings[0].slots?.length).toBe(0);
+    expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0);
   };
 
   it('Couple heroes returned from quest at the same time should be placed on the same land', () => {
@@ -210,7 +216,7 @@ describe('Hero Quest', () => {
 
     testTurnManagement.makeNTurns(3);
 
-    expect(barracksLand.buildings[0].slots?.length).toBe(0); // hero recruited
+    expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // hero recruited
 
     // heroes recruited and available for quests
     const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -270,7 +276,7 @@ describe('Hero Quest', () => {
 
     testTurnManagement.makeNTurns(3);
 
-    expect(barracksLand.buildings[0].slots?.length).toBe(0);
+    expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0);
     const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
     expect(armiesRecruited.length).toBe(1);
     expect(armiesRecruited[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);

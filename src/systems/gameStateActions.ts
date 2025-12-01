@@ -389,3 +389,96 @@ export const removeCompletedRecruitmentSlots = (
     },
   };
 };
+
+/**
+ * Decrement recruitment slots turns remaining for a specific player's lands
+ */
+export const decrementPlayerRecruitmentSlots = (
+  gameState: GameState,
+  playerId: string
+): GameState => {
+  const player = gameState.players.find((p) => p.id === playerId);
+  if (!player) return gameState;
+
+  const updatedLands = { ...gameState.map.lands };
+
+  // Only iterate through lands owned by the specific player
+  Array.from(player.landsOwned).forEach((landId) => {
+    const land = updatedLands[landId];
+    if (!land) return;
+
+    const updatedBuildings = land.buildings.map((building) => {
+      if (!building.slots || building.slots.length === 0) {
+        return building;
+      }
+
+      const updatedSlots = building.slots.map((slot) => ({
+        ...slot,
+        turnsRemaining: slot.turnsRemaining - 1,
+      }));
+
+      return {
+        ...building,
+        slots: updatedSlots,
+      };
+    });
+
+    updatedLands[landId] = {
+      ...land,
+      buildings: updatedBuildings,
+    };
+  });
+
+  return {
+    ...gameState,
+    map: {
+      ...gameState.map,
+      lands: updatedLands,
+    },
+  };
+};
+
+/**
+ * Remove all completed recruitment slots (turns remaining === 0) from a specific player's buildings
+ */
+export const removePlayerCompletedRecruitmentSlots = (
+  gameState: GameState,
+  playerId: string
+): GameState => {
+  const player = gameState.players.find((p) => p.id === playerId);
+  if (!player) return gameState;
+
+  const updatedLands = { ...gameState.map.lands };
+
+  // Only iterate through lands owned by the specific player
+  Array.from(player.landsOwned).forEach((landId) => {
+    const land = updatedLands[landId];
+    if (!land) return;
+
+    const updatedBuildings = land.buildings.map((building) => {
+      if (!building.slots || building.slots.length === 0) {
+        return building;
+      }
+
+      const activeSlots = building.slots.filter((slot) => slot.turnsRemaining > 0);
+
+      return {
+        ...building,
+        slots: activeSlots,
+      };
+    });
+
+    updatedLands[landId] = {
+      ...land,
+      buildings: updatedBuildings,
+    };
+  });
+
+  return {
+    ...gameState,
+    map: {
+      ...gameState.map,
+      lands: updatedLands,
+    },
+  };
+};
