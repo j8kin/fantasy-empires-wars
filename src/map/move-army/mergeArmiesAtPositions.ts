@@ -6,7 +6,7 @@ import {
   getArmiesAtPosition,
   getArmiesByPlayer,
 } from '../../selectors/armySelectors';
-import { removeArmyFromGameState, updateArmyInGameState } from '../utils/armyUtils';
+import { removeArmyFromGameState, updateArmyInGameState } from '../../systems/armyActions';
 import { LandPosition } from '../../state/map/land/LandPosition';
 
 export const mergeArmiesAtPositions = (gameState: GameState): void => {

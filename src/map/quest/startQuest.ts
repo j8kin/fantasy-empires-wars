@@ -8,7 +8,7 @@ import { getQuest } from '../../domain/quest/questRepository';
 
 import { QuestType } from '../../types/Quest';
 
-import { updateArmyInGameState, removeArmyFromGameState } from '../utils/armyUtils';
+import { updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
 
 export const startQuest = (hero: HeroState, questType: QuestType, gameState: GameState) => {
   const turnOwner = getTurnOwner(gameState);

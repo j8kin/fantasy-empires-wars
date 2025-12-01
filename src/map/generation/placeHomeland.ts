@@ -6,7 +6,7 @@ import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { hasLand } from '../../systems/playerActions';
 import { levelUpHero } from '../../systems/unitsActions';
-import { addArmyToGameState } from '../utils/armyUtils';
+import { addArmyToGameState } from '../../systems/armyActions';
 
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';

@@ -12,7 +12,7 @@ import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 
-import { addArmyToGameState, updateArmyInGameState } from '../utils/armyUtils';
+import { addArmyToGameState, updateArmyInGameState } from '../../systems/armyActions';
 
 export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
   const heroesRecruited: HeroOutcome[] = [];

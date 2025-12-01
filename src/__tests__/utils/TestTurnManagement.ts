@@ -2,6 +2,7 @@ import { GameState } from '../../state/GameState';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { TurnPhase } from '../../turn/TurnPhase';
+import { nextPlayer } from '../../systems/playerActions';
 
 export class TestTurnManagement {
   private turnManager: TurnManager;
@@ -105,3 +106,17 @@ export class TestTurnManagement {
     this.turnManager.startNewTurn(gameState);
   };
 }
+export const nextTurnPhase = (state: GameState): void => {
+  switch (state.turnPhase) {
+    case TurnPhase.START:
+      state.turnPhase = state.turn === 1 ? TurnPhase.END : TurnPhase.MAIN;
+      break;
+    case TurnPhase.MAIN:
+      state.turnPhase = TurnPhase.END;
+      break;
+    case TurnPhase.END:
+      nextPlayer(state);
+      state.turnPhase = TurnPhase.START;
+      break;
+  }
+};

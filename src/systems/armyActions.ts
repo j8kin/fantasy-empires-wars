@@ -3,6 +3,7 @@ import { HeroState } from '../state/army/HeroState';
 import { RegularsState, UnitRank } from '../state/army/RegularsState';
 import { RegularUnitType } from '../types/UnitType';
 import { LandPosition } from '../state/map/land/LandPosition';
+import { GameState } from '../state/GameState';
 import { startMovement } from './moveActions';
 import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
@@ -72,4 +73,35 @@ export const startMoving = (state: ArmyState, to: LandPosition): void => {
 
 export const moveArmy = (state: ArmyState): void => {
   move(state.movement);
+};
+
+// GameState-level army operations
+/**
+ * Add an army to GameState
+ */
+export const addArmyToGameState = (gameState: GameState, army: ArmyState): GameState => {
+  return {
+    ...gameState,
+    armies: [...gameState.armies, army],
+  };
+};
+
+/**
+ * Remove an army from GameState by ID
+ */
+export const removeArmyFromGameState = (gameState: GameState, armyId: string): GameState => {
+  return {
+    ...gameState,
+    armies: gameState.armies.filter((army) => army.id !== armyId),
+  };
+};
+
+/**
+ * Update an army in GameState
+ */
+export const updateArmyInGameState = (gameState: GameState, updatedArmy: ArmyState): GameState => {
+  return {
+    ...gameState,
+    armies: gameState.armies.map((army) => (army.id === updatedArmy.id ? updatedArmy : army)),
+  };
 };

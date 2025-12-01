@@ -7,7 +7,7 @@ import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { hasLand } from '../../systems/playerActions';
 import { addRegulars } from '../../systems/armyActions';
-import { addArmyToGameState } from '../../map/utils/armyUtils';
+import { addArmyToGameState } from '../../systems/armyActions';
 
 import { armyFactory } from '../../factories/armyFactory';
 import { regularsFactory } from '../../factories/regularsFactory';

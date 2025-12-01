@@ -9,7 +9,7 @@ import {
   addArmyToGameState,
   updateArmyInGameState,
   removeArmyFromGameState,
-} from '../utils/armyUtils';
+} from '../../systems/armyActions';
 
 import { armyFactory } from '../../factories/armyFactory';
 

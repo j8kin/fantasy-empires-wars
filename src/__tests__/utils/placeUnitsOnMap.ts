@@ -8,7 +8,7 @@ import { armyFactory } from '../../factories/armyFactory';
 import { isHeroType } from '../../domain/unit/unitTypeChecks';
 import { Unit } from '../../types/BaseUnit';
 
-import { addArmyToGameState } from '../../map/utils/armyUtils';
+import { addArmyToGameState } from '../../systems/armyActions';
 
 /**
  * test function. Should not be used in integration tests related on TurnManagement

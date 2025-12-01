@@ -5,7 +5,7 @@ import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { moveArmy } from '../../systems/armyActions';
 
 import { mergeArmiesAtPositions } from './mergeArmiesAtPositions';
-import { updateArmyInGameState } from '../utils/armyUtils';
+import { updateArmyInGameState } from '../../systems/armyActions';
 
 export const performMovements = (gameState: GameState): void => {
   const turnOwner = gameState.turnOwner;

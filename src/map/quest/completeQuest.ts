@@ -5,7 +5,7 @@ import { armyFactory } from '../../factories/armyFactory';
 import { getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
-import { addArmyToGameState, updateArmyInGameState } from '../utils/armyUtils';
+import { addArmyToGameState, updateArmyInGameState } from '../../systems/armyActions';
 import { addHero } from '../../systems/armyActions';
 import { levelUpHero } from '../../systems/unitsActions';
 
