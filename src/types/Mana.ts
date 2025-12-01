@@ -1,4 +1,4 @@
-import { HeroUnitType } from './Army';
+import { HeroUnitType } from './UnitType';
 import { LandType } from './Land';
 
 export const MAX_MANA = 200;
@@ -17,87 +17,4 @@ export interface ManaSource {
   landTypes: LandType[];
 }
 
-const MANA_SOURCES: ManaSource[] = [
-  {
-    type: ManaType.BLACK,
-    heroTypes: [HeroUnitType.NECROMANCER],
-    landTypes: [LandType.SHADOW_MIRE, LandType.BLIGHTED_FEN],
-  },
-  {
-    type: ManaType.RED,
-    heroTypes: [HeroUnitType.PYROMANCER],
-    landTypes: [LandType.VOLCANO, LandType.LAVA],
-  },
-  {
-    type: ManaType.BLUE,
-    heroTypes: [HeroUnitType.ENCHANTER],
-    landTypes: [LandType.CRISTAL_BASIN, LandType.MISTY_GLADES],
-  },
-  {
-    type: ManaType.GREEN,
-    heroTypes: [HeroUnitType.DRUID],
-    landTypes: [LandType.HEARTWOOD_COVE, LandType.VERDANT_GLADE],
-  },
-  {
-    type: ManaType.WHITE,
-    heroTypes: [HeroUnitType.CLERIC],
-    landTypes: [LandType.SUN_SPIRE_PEAKS, LandType.GOLDEN_PLAINS],
-  },
-];
-
-export const getManaSource = ({
-  heroType,
-  landType,
-}: {
-  heroType?: HeroUnitType;
-  landType?: LandType;
-}): ManaSource | undefined => {
-  return MANA_SOURCES.find(
-    (source) =>
-      (heroType != null && source.heroTypes.includes(heroType)) ||
-      (landType != null && source.landTypes.includes(landType))
-  );
-};
-
 export type Mana = Record<ManaType, number>;
-
-export const getManaColor = (mana: ManaType): string =>
-  ({ white: '#f5f1e8', black: '#3a2f41', green: '#30c46d', blue: '#2daefc', red: '#e64426' })[mana];
-
-/**
- * Converts hex color to RGB values
- */
-const hexToRgb = (hex: string): { r: number; g: number; b: number } | null => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : null;
-};
-
-/**
- * Darkens a hex color by a given factor
- */
-const darkenColor = (hex: string, factor: number): string => {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return hex;
-
-  const r = Math.max(0, Math.floor(rgb.r * factor));
-  const g = Math.max(0, Math.floor(rgb.g * factor));
-  const b = Math.max(0, Math.floor(rgb.b * factor));
-
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-};
-
-/**
- * Returns gradient colors for mana type
- * Returns [baseColor, darkerColor] for linear gradient
- */
-export const getManaGradient = (mana: ManaType): [string, string] => {
-  const baseColor = getManaColor(mana);
-  const darkerColor = darkenColor(baseColor, 0.25);
-  return [baseColor, darkerColor];
-};

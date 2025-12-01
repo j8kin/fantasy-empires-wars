@@ -1,13 +1,15 @@
 import React from 'react';
 import styles from './css/Avatar.module.css';
 
-import { NO_PLAYER, PlayerInfo } from '../../types/GamePlayer';
 import { getAvatarImg } from '../../assets/getAvatarImg';
+
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
 
 type AvatarShape = 'circle' | 'rectangle';
 
 interface AvatarProps {
-  player: PlayerInfo;
+  player: PlayerProfile;
   size?: number;
   shape?: AvatarShape;
   borderColor?: string;
@@ -33,7 +35,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const containerClassName = `${styles.container} ${styles[`container--${shape}`]} ${className || ''}`;
 
   // Check if this is an empty player
-  if (player.id === NO_PLAYER.id) {
+  if (player == null || player.id === NO_PLAYER.id) {
     return (
       <div style={dynamicStyles} className={containerClassName}>
         <div className={styles['empty-placeholder']}>EMPTY</div>

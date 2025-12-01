@@ -4,15 +4,23 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
-import { createGameStateStub } from '../../utils/createGameStateStub';
-import { GameState, TurnPhase } from '../../../types/GameState';
+import { GameState } from '../../../state/GameState';
+import { LandPosition } from '../../../state/map/land/LandPosition';
+
+import { addLand } from '../../../systems/playerActions';
+import { getLand } from '../../../selectors/landSelectors';
+import { getTurnOwner } from '../../../selectors/playerSelectors';
+
+import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
+
 import { BuildingType } from '../../../types/Building';
+import { HeroUnitType, RegularUnitType, UnitType } from '../../../types/UnitType';
+
 import { construct } from '../../../map/building/construct';
-import { UnitType, RegularUnitType, HeroUnitType } from '../../../types/Army';
-import { LandPosition, getLand } from '../../../map/utils/getLands';
 
 // Import the mocked function (will be mocked by jest.mock above)
 import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';
+import { createGameStateStub } from '../../utils/createGameStateStub';
 
 // Mock modules
 jest.mock('../../../map/recruiting/startRecruiting', () => ({
@@ -92,7 +100,6 @@ const mockApplicationContext = {
 const mockGameContext = {
   gameState: null as GameState | null,
   updateGameState: jest.fn(),
-  getPlayerById: jest.fn(),
   recalculateActivePlayerIncome: jest.fn(),
 };
 
@@ -172,11 +179,11 @@ jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', ()
 });
 
 describe('RecruitArmyDialog', () => {
-  let mockGameState: GameState;
+  let gameStateStub: GameState;
 
   const renderWithProviders = (
     ui: React.ReactElement,
-    { gameState = mockGameState, showRecruitArmyDialog = true } = {}
+    { gameState = gameStateStub, showRecruitArmyDialog = true } = {}
   ) => {
     // Update the mock values for this test
     mockApplicationContext.showRecruitArmyDialog = showRecruitArmyDialog;
@@ -190,18 +197,16 @@ describe('RecruitArmyDialog', () => {
     jest.clearAllMocks();
 
     // Create a game state with a barracks that has available slots
-    mockGameState = createGameStateStub({
+    gameStateStub = createGameStateStub({
       nPlayers: 2,
-      turnOwner: 0,
-      turnPhase: TurnPhase.MAIN,
     });
 
     // Add a barracks with available slots to the first player's land
     const landPos: LandPosition = { row: 3, col: 3 };
-    construct(mockGameState, BuildingType.BARRACKS, landPos);
+    construct(gameStateStub, BuildingType.BARRACKS, landPos);
 
     // Ensure the barracks has available slots (2 total, 0 used)
-    const land = getLand(mockGameState, landPos);
+    const land = getLand(gameStateStub, landPos);
     const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
     if (barracks) {
       barracks.numberOfSlots = 2;
@@ -236,7 +241,7 @@ describe('RecruitArmyDialog', () => {
     it('should not render when no barracks with available slots exists', () => {
       // Remove the barracks
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       land.buildings = [];
 
       renderWithProviders(<RecruitArmyDialog />);
@@ -246,7 +251,7 @@ describe('RecruitArmyDialog', () => {
     it('should not render when barracks has no available slots', () => {
       // Fill all barracks slots
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
         barracks.slots = [
@@ -260,7 +265,7 @@ describe('RecruitArmyDialog', () => {
     });
   });
 
-  describe('Unit Display', () => {
+  describe('RegularUnit Display', () => {
     it('should display available non-mage units for recruitment in barracks', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
@@ -322,7 +327,7 @@ describe('RecruitArmyDialog', () => {
     it('should not show mage units in barracks', () => {
       // Add mage units to the land but they should be filtered out for barracks
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       land.land.unitsToRecruit = [
         ...land.land.unitsToRecruit,
         HeroUnitType.CLERIC,
@@ -363,7 +368,7 @@ describe('RecruitArmyDialog', () => {
       expect(mockStartRecruiting).toHaveBeenCalledWith(
         RegularUnitType.WARRIOR, // First unit in sorted list
         { row: 3, col: 3 },
-        mockGameState
+        gameStateStub
       );
     });
 
@@ -445,7 +450,7 @@ describe('RecruitArmyDialog', () => {
       expect(mockStartRecruiting).toHaveBeenCalledWith(
         RegularUnitType.WARRIOR, // First unit in the list
         { row: 3, col: 3 },
-        mockGameState
+        gameStateStub
       );
       expect(mockApplicationContext.setShowRecruitArmyDialog).toHaveBeenCalledWith(false);
     });
@@ -478,10 +483,16 @@ describe('RecruitArmyDialog', () => {
     it('should show mage units in appropriate mage tower', () => {
       // Replace barracks with white mage tower
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       land.buildings = [];
 
-      construct(mockGameState, BuildingType.WHITE_MAGE_TOWER, landPos);
+      // Make sure the current player owns this land
+      addLand(getTurnOwner(gameStateStub), landPos);
+
+      // Give the player enough money to build the mage tower (costs 15000)
+      getTurnOwner(gameStateStub).vault = 20000;
+
+      construct(gameStateStub, BuildingType.WHITE_MAGE_TOWER, landPos);
       const whiteTower = land.buildings.find((b) => b.id === BuildingType.WHITE_MAGE_TOWER);
       if (whiteTower) {
         whiteTower.numberOfSlots = 1;
@@ -504,10 +515,16 @@ describe('RecruitArmyDialog', () => {
 
     it('should show pyromancer in red mage tower', () => {
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       land.buildings = [];
 
-      construct(mockGameState, BuildingType.RED_MAGE_TOWER, landPos);
+      // Make sure the current player owns this land
+      addLand(getTurnOwner(gameStateStub), landPos);
+
+      // Give the player enough money to build the mage tower (costs 15000)
+      getTurnOwner(gameStateStub).vault = 20000;
+
+      construct(gameStateStub, BuildingType.RED_MAGE_TOWER, landPos);
       const redTower = land.buildings.find((b) => b.id === BuildingType.RED_MAGE_TOWER);
       if (redTower) {
         redTower.numberOfSlots = 1;
@@ -525,10 +542,16 @@ describe('RecruitArmyDialog', () => {
 
     it('should show enchanter in blue mage tower', () => {
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       land.buildings = [];
 
-      construct(mockGameState, BuildingType.BLUE_MAGE_TOWER, landPos);
+      // Make sure the current player owns this land
+      addLand(getTurnOwner(gameStateStub), landPos);
+
+      // Give the player enough money to build the mage tower (costs 15000)
+      getTurnOwner(gameStateStub).vault = 20000;
+
+      construct(gameStateStub, BuildingType.BLUE_MAGE_TOWER, landPos);
       const blueTower = land.buildings.find((b) => b.id === BuildingType.BLUE_MAGE_TOWER);
       if (blueTower) {
         blueTower.numberOfSlots = 1;
@@ -546,10 +569,16 @@ describe('RecruitArmyDialog', () => {
 
     it('should show druid in green mage tower', () => {
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       land.buildings = [];
 
-      construct(mockGameState, BuildingType.GREEN_MAGE_TOWER, landPos);
+      // Make sure the current player owns this land
+      addLand(getTurnOwner(gameStateStub), landPos);
+
+      // Give the player enough money to build the mage tower (costs 15000)
+      getTurnOwner(gameStateStub).vault = 20000;
+
+      construct(gameStateStub, BuildingType.GREEN_MAGE_TOWER, landPos);
       const greenTower = land.buildings.find((b) => b.id === BuildingType.GREEN_MAGE_TOWER);
       if (greenTower) {
         greenTower.numberOfSlots = 1;
@@ -567,10 +596,16 @@ describe('RecruitArmyDialog', () => {
 
     it('should show necromancer in black mage tower', () => {
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       land.buildings = [];
 
-      construct(mockGameState, BuildingType.BLACK_MAGE_TOWER, landPos);
+      // Make sure the current player owns this land
+      addLand(getTurnOwner(gameStateStub), landPos);
+
+      // Give the player enough money to build the mage tower (costs 15000)
+      getTurnOwner(gameStateStub).vault = 20000;
+
+      construct(gameStateStub, BuildingType.BLACK_MAGE_TOWER, landPos);
       const blackTower = land.buildings.find((b) => b.id === BuildingType.BLACK_MAGE_TOWER);
       if (blackTower) {
         blackTower.numberOfSlots = 1;
@@ -590,10 +625,30 @@ describe('RecruitArmyDialog', () => {
   describe('Player Type Restrictions', () => {
     it('should allow WARSMITH recruitment for WARSMITH players', () => {
       // Set turn owner to WARSMITH player
-      const warsmithPlayer = mockGameState.players.find((p) => p.type === HeroUnitType.WARSMITH);
-      if (warsmithPlayer) {
-        mockGameState.turnOwner = warsmithPlayer.id;
+      gameStateStub = createGameStateStub({
+        gamePlayers: [PREDEFINED_PLAYERS[3], PREDEFINED_PLAYERS[4]],
+      });
+      expect(getTurnOwner(gameStateStub).id).toBe(PREDEFINED_PLAYERS[3].id);
+
+      // Add a barracks with available slots to the first player's land
+      const landPos: LandPosition = { row: 3, col: 3 };
+      construct(gameStateStub, BuildingType.BARRACKS, landPos);
+
+      // Ensure the barracks has available slots (2 total, 0 used)
+      const land = getLand(gameStateStub, landPos);
+      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
+      if (barracks) {
+        barracks.numberOfSlots = 2;
+        barracks.slots = [];
       }
+
+      // Set up some units to recruit including WARSMITH
+      land.land.unitsToRecruit = [
+        RegularUnitType.WARRIOR,
+        RegularUnitType.BALLISTA,
+        HeroUnitType.WARSMITH,
+        HeroUnitType.FIGHTER,
+      ];
 
       renderWithProviders(<RecruitArmyDialog />);
       // Check that the dialog renders (meaning the player can recruit something)
@@ -603,15 +658,25 @@ describe('RecruitArmyDialog', () => {
     });
 
     it('should not allow WARSMITH recruitment for non-WARSMITH players', () => {
-      // Set turn owner to a different type
-      const nonWarsmithPlayer = mockGameState.players.find((p) => p.type !== HeroUnitType.WARSMITH);
-      if (nonWarsmithPlayer) {
-        mockGameState.turnOwner = nonWarsmithPlayer.id;
+      // Set turn owner to a different type (use players 0 and 1 instead of 3 and 4)
+      gameStateStub = createGameStateStub({
+        gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
+      });
+      expect(getTurnOwner(gameStateStub).id).toBe(PREDEFINED_PLAYERS[0].id);
+
+      // Add a barracks with available slots to the first player's land
+      const landPos: LandPosition = { row: 3, col: 3 };
+      construct(gameStateStub, BuildingType.BARRACKS, landPos);
+
+      // Ensure the barracks has available slots (2 total, 0 used)
+      const land = getLand(gameStateStub, landPos);
+      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
+      if (barracks) {
+        barracks.numberOfSlots = 2;
+        barracks.slots = [];
       }
 
-      // Remove WARSMITH from available units to test the filter
-      const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      // Set units for recruitment but Warsmith should be filtered out
       land.land.unitsToRecruit = [RegularUnitType.WARRIOR, RegularUnitType.BALLISTA];
 
       renderWithProviders(<RecruitArmyDialog />);
@@ -625,7 +690,7 @@ describe('RecruitArmyDialog', () => {
   describe('Edge Cases', () => {
     it('should handle empty units to recruit', () => {
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       land.land.unitsToRecruit = [];
 
       renderWithProviders(<RecruitArmyDialog />);
@@ -638,7 +703,7 @@ describe('RecruitArmyDialog', () => {
     it('should handle building with zero slots', () => {
       // Set numberOfSlots to 0
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
         barracks.numberOfSlots = 0;
@@ -650,7 +715,7 @@ describe('RecruitArmyDialog', () => {
 
     it('should not render when no recruiting buildings exist', () => {
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       // Remove all buildings
       land.buildings = [];
 
@@ -674,7 +739,7 @@ describe('RecruitArmyDialog', () => {
     it('should return undefined when initialSlotCount is 0 and call setShowRecruitArmyDialog', () => {
       // Create a game state with no available slots
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
         barracks.numberOfSlots = 0; // No slots
@@ -704,7 +769,7 @@ describe('RecruitArmyDialog', () => {
 
       // Modify the game state after initial render (this should not affect slot count due to memoization)
       const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(mockGameState, landPos);
+      const land = getLand(gameStateStub, landPos);
       const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
         barracks.numberOfSlots = 5; // Increase slots

@@ -1,13 +1,9 @@
 import { render, renderHook, act, screen } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { GameState, TurnPhase } from '../../types/GameState';
-import { GamePlayer } from '../../types/GamePlayer';
-import { Alignment } from '../../types/Alignment';
-import { HeroUnitType } from '../../types/Army';
-import { DiplomacyStatus } from '../../types/Diplomacy';
 import { TurnManager } from '../../turn/TurnManager';
-import { calculateIncome } from '../../map/gold/calculateIncome';
-import { calculateMaintenance } from '../../map/gold/calculateMaintenance';
+import { calculateIncome } from '../../map/vault/calculateIncome';
+import { calculateMaintenance } from '../../map/vault/calculateMaintenance';
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 // Mock the mapGeneration module to return empty tiles initially
 jest.mock('../../map/generation/generateMap', () => ({
@@ -15,8 +11,8 @@ jest.mock('../../map/generation/generateMap', () => ({
 }));
 
 // Mock the income calculation functions
-jest.mock('../../map/gold/calculateIncome');
-jest.mock('../../map/gold/calculateMaintenance');
+jest.mock('../../map/vault/calculateIncome');
+jest.mock('../../map/vault/calculateMaintenance');
 
 // Mock TurnManager
 jest.mock('../../turn/TurnManager');
@@ -35,69 +31,6 @@ const MockedTurnManager = TurnManager as jest.MockedClass<typeof TurnManager>;
 MockedTurnManager.mockImplementation(() => mockTurnManager as any);
 
 describe('GameContext', () => {
-  const createMockGameState = (): GameState => ({
-    battlefield: {
-      dimensions: { rows: 5, cols: 5 },
-      lands: {
-        '0-0': {
-          mapPos: { row: 0, col: 0 },
-          land: { type: 'grassland', name: 'Grassland' } as any,
-          controlledBy: 'player1',
-          goldPerTurn: 10,
-          buildings: [],
-          army: { units: [] } as any,
-        },
-        '0-1': {
-          mapPos: { row: 0, col: 1 },
-          land: { type: 'mountain', name: 'Mountain' } as any,
-          controlledBy: 'player2',
-          goldPerTurn: 15,
-          buildings: [],
-          army: { units: [] } as any,
-        },
-      },
-    },
-    turn: 1,
-    turnOwner: 'player1',
-    turnPhase: TurnPhase.MAIN,
-    players: [
-      {
-        id: 'player1',
-        name: 'Test Player 1',
-        alignment: Alignment.NEUTRAL,
-        race: 'Human',
-        type: HeroUnitType.FIGHTER,
-        level: 1,
-        description: 'Test player 1',
-        color: 'blue',
-        mana: { red: 0, blue: 0, green: 0, black: 0, white: 0 },
-        vault: 100,
-        income: 50,
-        diplomacy: { player2: DiplomacyStatus.NO_TREATY },
-        playerType: 'human',
-        empireTreasures: [],
-        quests: [],
-      } as GamePlayer,
-      {
-        id: 'player2',
-        name: 'Test Player 2',
-        alignment: Alignment.NEUTRAL,
-        race: 'Elf',
-        type: HeroUnitType.RANGER,
-        level: 1,
-        description: 'Test player 2',
-        color: 'red',
-        mana: { red: 0, blue: 0, green: 0, black: 0, white: 0 },
-        vault: 80,
-        income: 30,
-        diplomacy: { player1: DiplomacyStatus.NO_TREATY },
-        playerType: 'computer',
-        empireTreasures: [],
-        quests: [],
-      } as GamePlayer,
-    ],
-  });
-
   beforeEach(() => {
     jest.clearAllMocks();
     mockCalculateIncome.mockReturnValue(100);
@@ -151,13 +84,13 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createDefaultGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
-      expect(result.current.gameState).toEqual(mockGameState);
+      expect(result.current.gameState).toEqual(gameStateStub);
       expect(MockedTurnManager).toHaveBeenCalledWith(
         expect.objectContaining({
           onTurnPhaseChange: expect.any(Function),
@@ -174,17 +107,17 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createDefaultGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       const firstCallCount = (TurnManager as jest.MockedClass<typeof TurnManager>).mock.calls
         .length;
 
       act(() => {
-        result.current.updateGameState({ ...mockGameState, turn: 2 });
+        result.current.updateGameState({ ...gameStateStub, turn: 2 });
       });
 
       expect(MockedTurnManager.mock.calls.length).toBe(firstCallCount);
@@ -197,10 +130,10 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createDefaultGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       act(() => {
@@ -215,10 +148,10 @@ describe('GameContext', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createDefaultGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       act(() => {
@@ -259,9 +192,9 @@ describe('GameContext', () => {
       });
 
       // Callbacks should be stored internally (tested via TurnManager initialization)
-      const mockGameState = createMockGameState();
+      const gameStateStub = createDefaultGameStateStub();
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       expect(TurnManager).toHaveBeenCalled();

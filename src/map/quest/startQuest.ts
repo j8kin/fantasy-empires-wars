@@ -1,37 +1,43 @@
-import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
-import { HeroUnit, isHero } from '../../types/Army';
-import { getQuest, QuestType } from '../../types/Quest';
-import { getLands } from '../utils/getLands';
+import { GameState } from '../../state/GameState';
+import { HeroState } from '../../state/army/HeroState';
 
-export const startQuest = (hero: HeroUnit, questType: QuestType, gameState: GameState) => {
-  if (gameState.turnPhase !== TurnPhase.MAIN) return;
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getArmiesByPlayer } from '../../selectors/armySelectors';
+import { getHero } from '../../systems/armyActions';
+import { getQuest } from '../../domain/quest/questRepository';
 
-  const heroLand = getLands({
-    gameState: gameState,
-    players: [gameState.turnOwner],
-    noArmy: false,
-  }).find((land) =>
-    land.army.find((army) =>
-      army.units.some((unit) => isHero(unit) && (unit as HeroUnit).name === hero.name)
-    )
-  );
+import { QuestType } from '../../types/Quest';
 
-  if (heroLand != null) {
-    // remove hero from the battlefield
-    heroLand.army = [...heroLand.army]
-      .map((army) => ({
-        ...army,
-        units: army.units.filter(
-          (unit) => !(isHero(unit) && (unit as HeroUnit).name === hero.name)
-        ),
-      }))
-      .filter((army) => army.units.length > 0);
+import { updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
+
+export const startQuest = (hero: HeroState, questType: QuestType, gameState: GameState) => {
+  const turnOwner = getTurnOwner(gameState);
+
+  // Find the army containing the hero
+  const armies = getArmiesByPlayer(gameState, turnOwner.id);
+  const armyWithHero = armies.find((army) => army.heroes.some((unit) => unit.name === hero.name));
+
+  if (armyWithHero != null) {
+    // remove hero from the army
+    const heroResult = getHero(armyWithHero, hero.name)!;
+    Object.assign(armyWithHero, heroResult.updatedArmy);
+
+    // Get the army's current position from movement path
+    const questLandPosition =
+      armyWithHero.movement.path.length > 0 ? armyWithHero.movement.path[0] : { row: 0, col: 0 };
+
+    // Remove army if it has no units left, otherwise update it
+    if (armyWithHero.regulars.length === 0 && armyWithHero.heroes.length === 0) {
+      Object.assign(gameState, removeArmyFromGameState(gameState, armyWithHero.id));
+    } else {
+      Object.assign(gameState, updateArmyInGameState(gameState, armyWithHero));
+    }
 
     // send hero to quest
-    getTurnOwner(gameState)?.quests.push({
+    turnOwner.quests.push({
       quest: getQuest(questType),
-      land: heroLand.mapPos, // hero Start Quest land position (it will return at the same position if survive)
-      hero: hero,
+      land: questLandPosition, // hero Start Quest land position (it will return at the same position if survive)
+      hero: heroResult.hero,
       remainTurnsInQuest: getQuest(questType).length,
     });
   }

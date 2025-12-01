@@ -1,8 +1,16 @@
-import { battlefieldLandId, GameState } from '../../types/GameState';
+import { GameState } from '../../state/GameState';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+
+import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
+import { addLand, hasLand, removeLand } from '../../systems/playerActions';
+import { getArmiesAtPosition } from '../../selectors/armySelectors';
+
 import { BuildingType } from '../../types/Building';
-import { getNearestStrongholdLand, getTilesInRadius } from '../utils/mapAlgorithms';
-import { NO_PLAYER } from '../../types/GamePlayer';
-import { LandPosition } from '../utils/getLands';
+
+import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { clearLandBuildings } from '../../systems/gameStateActions';
 
 /**
  * Player could destroy the building as Demolition before construction of a new one
@@ -11,35 +19,51 @@ import { LandPosition } from '../utils/getLands';
  * @param gameState - Game State (income and player lands could be updated)
  */
 export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => {
-  const landId = battlefieldLandId(landPos);
-  const player = gameState.battlefield.lands[landId].controlledBy;
-  const isStronghold = gameState.battlefield.lands[landId].buildings.some(
+  const player = getLandOwner(gameState, landPos);
+  const landId = getLandId(landPos);
+  const isStronghold = gameState.map.lands[landId].buildings.some(
     (b) => b.id === BuildingType.STRONGHOLD
   );
 
-  gameState.battlefield.lands[landId].buildings = []; // delete all buildings since only one could be on the land (todo: think about WALL it could be an additional building for now destroy all)
+  Object.assign(gameState, clearLandBuildings(gameState, landPos)); // delete all buildings since only one could be on the land (todo: think about WALL it could be an additional building for now destroy all)
 
   if (isStronghold) {
-    // if stronghold destroyed then all Lands in radius two should be neutral or could be taken under control by another player
+    // if stronghold destroyed then all Lands in radius one should be neutral or could be taken under control by another player
     // if there is an amy on the land not change the owner
-    getTilesInRadius(
-      gameState.battlefield.dimensions,
-      gameState.battlefield.lands[landId].mapPos,
+    const previousControlledLands = getTilesInRadius(
+      gameState.map.dimensions,
+      gameState.map.lands[landId].mapPos,
       1,
       false
-    )
-      .map(battlefieldLandId)
-      .filter(
-        (l) =>
-          gameState.battlefield.lands[l].controlledBy === player &&
-          gameState.battlefield.lands[l].army.length === 0 &&
-          !gameState.battlefield.lands[l].buildings.some((b) => b.id === BuildingType.STRONGHOLD)
-      )
-      .forEach(
-        (land) =>
-          (gameState.battlefield.lands[land].controlledBy =
-            getNearestStrongholdLand(gameState.battlefield.lands[land].mapPos, gameState)
-              ?.controlledBy ?? NO_PLAYER.id)
-      );
+    );
+
+    previousControlledLands.forEach((l) => {
+      const owner = getTurnOwner(gameState);
+      const armiesAtPosition = getArmiesAtPosition(gameState, l);
+
+      if (armiesAtPosition.length > 0) {
+        // if land has army of non-previous owner then change for a new owner (who owns army on this land)
+        if (!armiesAtPosition.some((a) => a.controlledBy === player)) {
+          removeLand(owner, l);
+          const newLandOwner = getPlayer(gameState, armiesAtPosition[0].controlledBy);
+          addLand(newLandOwner, l);
+        }
+      } else {
+        // no army look for nearest stronghold
+        const nearestStrongholds = getTilesInRadius(gameState.map.dimensions, l, 1).filter((l) =>
+          getLand(gameState, l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
+        );
+        if (nearestStrongholds && nearestStrongholds.length > 0) {
+          if (!nearestStrongholds.some((s) => hasLand(owner, s))) {
+            const newOwner = getPlayer(gameState, getLandOwner(gameState, nearestStrongholds[0]));
+            addLand(newOwner, l);
+
+            removeLand(owner, l);
+          }
+        } else {
+          removeLand(owner, l);
+        }
+      }
+    });
   }
 };

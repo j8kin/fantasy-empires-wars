@@ -1,18 +1,21 @@
-import { getSpellById, SpellName } from '../../types/Spell';
-import { battlefieldLandId, GameState } from '../../types/GameState';
-import { getLands } from '../utils/getLands';
+import { GameState } from '../../state/GameState';
+import { getLandId } from '../../state/map/land/LandId';
+
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getSpellById } from '../../selectors/spellSelectors';
+
+import { SpellName } from '../../types/Spell';
 
 export const getAvailableToCastSpellLands = (gameState: GameState, spellName: SpellName) => {
   const spell = getSpellById(spellName);
   const playerFiltered =
     spell.apply === 'player'
-      ? [gameState.turnOwner]
-      : (spell.apply === 'opponent'
-          ? gameState.players.filter((p) => p.id !== gameState.turnOwner)
-          : gameState.players
-        ).map((p) => p.id);
+      ? [getTurnOwner(gameState)]
+      : spell.apply === 'opponent'
+        ? gameState.players.filter((p) => p.id !== gameState.turnOwner)
+        : gameState.players;
 
-  return getLands({ gameState: gameState, players: playerFiltered }).map((land) =>
-    battlefieldLandId(land.mapPos)
-  );
+  return playerFiltered
+    .flatMap((playerId) => getPlayerLands(gameState, playerId.id))
+    .map((land) => getLandId(land.mapPos));
 };

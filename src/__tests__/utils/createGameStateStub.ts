@@ -1,14 +1,23 @@
-import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
-import { PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { toGamePlayer } from './toGamePlayer';
-import { generateMockMap } from './generateMockMap';
-import { construct } from '../../map/building/construct';
+import { GameState } from '../../state/GameState';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { MapDimensions } from '../../state/map/MapDimensions';
+
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { addPlayer, nextPlayer } from '../../systems/playerActions';
+import { levelUpHero } from '../../systems/unitsActions';
+import { gameStateFactory } from '../../factories/gameStateFactory';
+import { heroFactory } from '../../factories/heroFactory';
+
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+
 import { BuildingType } from '../../types/Building';
-import { LandPosition } from '../../map/utils/getLands';
-import { placeUnitsOnMap } from './placeUnitsOnMap';
-import { getDefaultUnit, HeroUnit } from '../../types/Army';
+
+import { construct } from '../../map/building/construct';
 import { generateMap } from '../../map/generation/generateMap';
-import { levelUpHero } from '../../map/recruiting/levelUpHero';
+
+import { generateMockMap } from './generateMockMap';
+import { placeUnitsOnMap } from './placeUnitsOnMap';
 
 export const defaultBattlefieldSizeStub = { rows: 10, cols: 20 };
 export const createDefaultGameStateStub = (): GameState => createGameStateStub({});
@@ -16,46 +25,35 @@ export const createDefaultGameStateStub = (): GameState => createGameStateStub({
 export const createGameStateStub = ({
   nPlayers = 3,
   gamePlayers,
-  turnOwner = 0,
-  turnPhase = TurnPhase.START,
   battlefieldSize = defaultBattlefieldSizeStub,
   realBattlefield = false,
   addPlayersHomeland = true,
 }: {
   nPlayers?: number;
-  gamePlayers?: PlayerInfo[];
-  turnOwner?: number;
-  turnPhase?: TurnPhase;
-  battlefieldSize?: BattlefieldDimensions;
+  gamePlayers?: PlayerProfile[];
+  battlefieldSize?: MapDimensions;
   realBattlefield?: boolean;
   addPlayersHomeland?: boolean;
 }): GameState => {
-  const players = (gamePlayers == null ? PREDEFINED_PLAYERS.slice(0, nPlayers) : gamePlayers).map(
-    (p, idx) => toGamePlayer(p, idx === 0 ? 'human' : 'computer')
-  );
+  const playersProfile = gamePlayers ?? PREDEFINED_PLAYERS.slice(0, nPlayers);
 
-  const stubGameState: GameState = {
-    battlefield: realBattlefield ? generateMap(battlefieldSize) : generateMockMap(battlefieldSize),
-    players: players,
-    turn: 1,
-    turnOwner: players[turnOwner].id,
-    turnPhase: turnPhase,
-  };
+  const map = realBattlefield ? generateMap(battlefieldSize) : generateMockMap(battlefieldSize);
+  const stubGameState: GameState = gameStateFactory(map);
+  playersProfile.forEach((p, idx) => addPlayer(stubGameState, p, idx === 0 ? 'human' : 'computer'));
 
   if (addPlayersHomeland) {
-    players.forEach((player, idx) => {
-      stubGameState.turnOwner = player.id;
-      const homeland: LandPosition = { row: 3 + (idx % 2), col: 3 + idx * 5 };
+    for (let i = 0; i < playersProfile.length; i++) {
+      const turnOwner = getTurnOwner(stubGameState);
+      const homeland: LandPosition = { row: 3 + (i % 2), col: 3 + i * 5 };
       construct(stubGameState, BuildingType.STRONGHOLD, homeland);
 
-      const hero = getDefaultUnit(player.type) as HeroUnit;
-      hero.name = player.name;
-      hero.level = player.level - 1;
-      levelUpHero(hero, player);
-
+      const playerProfile = turnOwner.playerProfile;
+      const hero = heroFactory(playerProfile.type, playerProfile.name);
+      while (hero.level < playerProfile.level) levelUpHero(hero, playerProfile.alignment);
       placeUnitsOnMap(hero, stubGameState, homeland);
-    });
-    stubGameState.turnOwner = players[0].id;
+
+      nextPlayer(stubGameState);
+    }
   }
   return stubGameState;
 };

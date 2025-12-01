@@ -1,33 +1,22 @@
-import {
-  getDefaultUnit,
-  HeroUnit,
-  HeroUnitType,
-  isHeroType,
-  isRange,
-  isWarMachine,
-  UnitType,
-} from '../../types/Army';
-import { getLand, LandPosition } from '../utils/getLands';
-import { GameState, getTurnOwner, TurnPhase } from '../../types/GameState';
+import { GameState } from '../../state/GameState';
+import { LandPosition } from '../../state/map/land/LandPosition';
+
+import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
+import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
+import { unitsBaseStats } from '../../domain/unit/unitRepository';
+
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
-
-const recruitmentDuration = (unitType: UnitType) => {
-  if (isHeroType(unitType)) return 3;
-  if (isWarMachine(unitType)) return 3;
-  if (isRange(unitType)) return 2;
-  return 1;
-};
+import { HeroUnitType, UnitType } from '../../types/UnitType';
 
 export const startRecruiting = (
   unitType: UnitType,
   landPos: LandPosition,
   gameState: GameState
 ): void => {
-  if (
-    getLand(gameState, landPos).controlledBy !== gameState.turnOwner &&
-    gameState.turnPhase !== TurnPhase.MAIN
-  ) {
+  if (getLandOwner(gameState, landPos) !== gameState.turnOwner) {
     return; // fallback: a wrong Land Owner should never happen on real game
   }
   // recruitment available only in MAIN phase if there is a slot available
@@ -37,7 +26,7 @@ export const startRecruiting = (
   if (building.length === 1) {
     // additionally verify that regular units and non-magic heroes are recruited in BARRACKS and mages are in mage tower
     if (isHeroType(unitType)) {
-      if ((getDefaultUnit(unitType) as HeroUnit).mana == null) {
+      if (!isMageType(unitType)) {
         if (building[0].id !== BuildingType.BARRACKS) {
           return; // fallback: wrong building type for non-magic heroes
         }
@@ -71,17 +60,23 @@ export const startRecruiting = (
       return; // fallback: wrong building type for regular units
     }
 
-    const availableGold = getTurnOwner(gameState)!.vault;
-    if (availableGold != null && availableGold > getDefaultUnit(unitType)!.recruitCost) {
-      const hasCrownOfDominion = getTurnOwner(gameState)!.empireTreasures?.some(
+    const turnOwner = getTurnOwner(gameState);
+    const availableGold = turnOwner.vault;
+    if (availableGold != null && availableGold >= unitsBaseStats(unitType).recruitCost) {
+      const hasCrownOfDominion = turnOwner.empireTreasures?.some(
         (r) => r.id === TreasureItem.CROWN_OF_DOMINION
       );
-      getTurnOwner(gameState)!.vault -= hasCrownOfDominion
-        ? Math.ceil(getDefaultUnit(unitType).recruitCost * 0.85)
-        : getDefaultUnit(unitType).recruitCost;
+      const costReduction = hasCrownOfDominion
+        ? Math.ceil(unitsBaseStats(unitType).recruitCost * 0.85)
+        : unitsBaseStats(unitType).recruitCost;
+
+      // Update vault using direct mutation for now (matching construct.ts pattern)
+      turnOwner.vault -= costReduction;
+
+      // Add recruitment slot using direct mutation
       building[0].slots!.push({
         unit: unitType,
-        turnsRemaining: recruitmentDuration(unitType),
+        turnsRemaining: getRecruitDuration(unitType),
       });
     }
   }

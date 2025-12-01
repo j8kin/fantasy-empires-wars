@@ -1,46 +1,35 @@
-import { battlefieldLandId, GameState } from '../../types/GameState';
+import { GameState } from '../../state/GameState';
+
+import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { addLand, removeLand } from '../../systems/playerActions';
+import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
+import { hasArmiesAtPositionByPlayer } from '../../selectors/armySelectors';
+
+import { BuildingType } from '../../types/Building';
+
 import { getHostileLands } from '../utils/getHostileLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getLand, getLands } from '../utils/getLands';
-import { BuildingType } from '../../types/Building';
-import { NO_PLAYER } from '../../types/GamePlayer';
-import { getRealmLands } from '../utils/getRealmLands';
 
 export const changeOwner = (gameState: GameState): void => {
-  // find all lands where turnOwner army is present and not controlled by the player or Ally
-  getHostileLands(gameState).forEach((land) => (land.controlledBy = gameState.turnOwner));
+  // find all lands where turnOwner army is present and not controlled by the player or Ally and add them to the player's lands'
+  const turnOwner = getTurnOwner(gameState);
+  getHostileLands(gameState).forEach((land) => addLand(turnOwner, land.mapPos));
 
   // find lands controller by player but far from strongholds and no army
-  const realmLands = getRealmLands(gameState).map((l) => battlefieldLandId(l.mapPos));
+  const hostileLands = getHostileLands(gameState).filter(
+    (land) => !hasArmiesAtPositionByPlayer(gameState, land.mapPos)
+  );
 
-  getLands({
-    gameState: gameState,
-    players: [gameState.turnOwner],
-    noArmy: true,
-  })
-    .filter(
-      (l) =>
-        !realmLands.includes(battlefieldLandId(l.mapPos)) &&
-        !l.army.some((a) => a.controlledBy === gameState.turnOwner)
-    )
-    .forEach((hostileLand) => {
-      if (hostileLand.army.length > 0) {
-        hostileLand.controlledBy = hostileLand.army[0].controlledBy;
-      } else {
-        // army destroyed return to previous owner or set to neutral
-        const neighbourLands = getTilesInRadius(
-          gameState.battlefield.dimensions,
-          hostileLand.mapPos,
-          1
-        );
-        const previousOwner = neighbourLands.find((l) =>
-          getLand(gameState, l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
-        );
-        if (previousOwner) {
-          hostileLand.controlledBy = getLand(gameState, previousOwner).controlledBy;
-        } else {
-          hostileLand.controlledBy = NO_PLAYER.id;
-        }
-      }
-    });
+  hostileLands.forEach((land) => {
+    removeLand(turnOwner, land.mapPos);
+    // trying to find any other owners
+    const neighbourLands = getTilesInRadius(gameState.map.dimensions, land.mapPos, 1);
+    const nearestStronghold = neighbourLands.find((l) =>
+      getLand(gameState, l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
+    );
+    if (nearestStronghold) {
+      const newLandOwner = getPlayer(gameState, getLandOwner(gameState, nearestStronghold));
+      addLand(newLandOwner, land.mapPos);
+    }
+  });
 };

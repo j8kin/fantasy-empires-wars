@@ -1,7 +1,11 @@
-import { PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { getDefaultUnit, HeroUnit, HeroUnitType } from '../../types/Army';
-import { levelUpHero } from '../../map/recruiting/levelUpHero';
-import { toGamePlayer } from '../utils/toGamePlayer';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { levelUpHero } from '../../systems/unitsActions';
+import { playerFactory } from '../../factories/playerFactory';
+import { heroFactory } from '../../factories/heroFactory';
+
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+
+import { HeroUnitType } from '../../types/UnitType';
 import { artifacts, TreasureItem } from '../../types/Treasures';
 
 describe('level up hero', () => {
@@ -67,50 +71,53 @@ describe('level up hero', () => {
       { attack: 45, defense: 15, range: 30, rangeDamage: 85, speed: 2, mana: 16 },
     ],
   ])(
-    'should increase characteristics when hero (%s) gain level %s',
-    (playerType: HeroUnitType, initLevel: number, player: PlayerInfo, expected) => {
+    'should increase characteristics when hero (%s) level %s gain new level',
+    (playerType: HeroUnitType, initLevel: number, player: PlayerProfile, expected) => {
       expect(player.type).toBe(playerType);
 
-      const hero = getDefaultUnit(player.type) as HeroUnit;
-      hero.level = initLevel;
+      const hero = heroFactory(player.type, player.name);
 
-      levelUpHero(hero, toGamePlayer(player));
+      while (hero.level < initLevel) levelUpHero(hero, player.alignment); // set initial level
+
+      levelUpHero(hero, player.alignment); // increase level
 
       expect(hero.level).toBe(initLevel + 1);
-      expect(hero.attack).toBe(expected.attack);
-      expect(hero.defense).toBe(expected.defense);
-      expect(hero.range).toBe(expected.range);
-      expect(hero.rangeDamage).toBe(expected.rangeDamage);
-      expect(hero.speed).toBe(expected.speed);
+      expect(hero.baseStats.attack).toBe(expected.attack);
+      expect(hero.baseStats.defense).toBe(expected.defense);
+      expect(hero.baseStats.range).toBe(expected.range);
+      expect(hero.baseStats.rangeDamage).toBe(expected.rangeDamage);
+      expect(hero.baseStats.speed).toBe(expected.speed);
       expect(hero.mana).toBe(expected.mana);
     }
   );
 
   it('Ring of the Ascendant (RING_OF_EXPERIENCE) artifact increment level by 2', () => {
-    const player = toGamePlayer(PREDEFINED_PLAYERS[0]);
-    const hero1 = getDefaultUnit(player.type) as HeroUnit;
-    hero1.level = 1;
-    const hero2 = getDefaultUnit(player.type) as HeroUnit;
-    hero2.level = 1;
+    const player = playerFactory(PREDEFINED_PLAYERS[0], 'human', 200000);
+    const playerProfile = player.playerProfile;
+    const hero1 = heroFactory(playerProfile.type, 'Hero 1');
+    const hero2 = heroFactory(playerProfile.type, 'Hero 2');
     hero2.artifacts.push(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
 
-    levelUpHero(hero1, player);
-    levelUpHero(hero2, player);
+    levelUpHero(hero1, playerProfile.alignment);
+    levelUpHero(hero2, playerProfile.alignment);
 
     expect(hero1.level).toBe(2);
     expect(hero2.level).toBe(3);
   });
 
   it('level up after 32 is not possible', () => {
-    const player = toGamePlayer(PREDEFINED_PLAYERS[0]);
-    const hero1 = getDefaultUnit(player.type) as HeroUnit;
-    hero1.level = 32;
-    const hero2 = getDefaultUnit(player.type) as HeroUnit;
-    hero2.level = 31;
+    const player = playerFactory(PREDEFINED_PLAYERS[0], 'human', 200000);
+    const playerProfile = player.playerProfile;
+    const hero1 = heroFactory(playerProfile.type, 'Hero 1');
+    while (hero1.level < 32) levelUpHero(hero1, playerProfile.alignment); // gain initial level: 32
+    expect(hero1.level).toBe(32);
+    const hero2 = heroFactory(playerProfile.type, 'Hero 2');
+    while (hero2.level < 31) levelUpHero(hero2, playerProfile.alignment); // gain initial level: 31
+    expect(hero2.level).toBe(31);
     hero2.artifacts.push(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
 
-    levelUpHero(hero1, player);
-    levelUpHero(hero2, player);
+    levelUpHero(hero1, playerProfile.alignment);
+    levelUpHero(hero2, playerProfile.alignment);
 
     expect(hero1.level).toBe(32);
     expect(hero2.level).toBe(32);

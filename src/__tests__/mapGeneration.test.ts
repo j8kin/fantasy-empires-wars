@@ -1,7 +1,9 @@
+import { MapDimensions } from '../state/map/MapDimensions';
+import { LandType } from '../types/Land';
+import { getNearSpecialLandTypes } from '../domain/land/landRelationships';
+import { getMainSpecialLandTypes } from '../domain/land/landQueries';
+
 import { generateMap } from '../map/generation/generateMap';
-import { getMainSpecialLandTypes, getNearSpecialLandTypes, LandType } from '../types/Land';
-import { NO_PLAYER } from '../types/GamePlayer';
-import { BattlefieldDimensions } from '../types/GameState';
 import { defaultBattlefieldSizeStub } from './utils/createGameStateStub';
 
 describe('Map Generation', () => {
@@ -11,7 +13,7 @@ describe('Map Generation', () => {
     ['large', { rows: 11, cols: 23 }],
     ['huge', { rows: 15, cols: 31 }],
     ['test default', defaultBattlefieldSizeStub],
-  ])('should generate map for %s size', (size: string, dimensions: BattlefieldDimensions) => {
+  ])('should generate map for %s size', (size: string, dimensions: MapDimensions) => {
     const lands = generateMap(dimensions);
 
     // Should generate tiles
@@ -19,7 +21,6 @@ describe('Map Generation', () => {
 
     // All tiles should be controlled by a neutral player
     Object.values(lands.lands).forEach((land) => {
-      expect(land.controlledBy).toBe(NO_PLAYER.id);
       expect(land.land.id).not.toBe(LandType.NONE);
       expect(land.goldPerTurn).toBeGreaterThan(0);
     });

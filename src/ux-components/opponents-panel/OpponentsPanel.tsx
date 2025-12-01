@@ -6,30 +6,34 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import Avatar from '../avatars/Avatar';
 
-import { GamePlayer } from '../../types/GamePlayer';
-import { battlefieldLandId, getTurnOwner } from '../../types/GameState';
-import { getLands } from '../../map/utils/getLands';
+import { PlayerState } from '../../state/player/PlayerState';
+import { getLandId } from '../../state/map/land/LandId';
+
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+
+import { getPlayerColorValue } from '../../domain/ui/playerColors';
 
 const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameContext();
   const { showOpponentInfo, addGlowingTile } = useApplicationContext();
 
   const handleShowOpponentInfo = useCallback(
-    (opponent: GamePlayer, screenPosition: { x: number; y: number }) => {
+    (opponent: PlayerState, screenPosition: { x: number; y: number }) => {
       showOpponentInfo(opponent, screenPosition);
 
       setTimeout(() => {
-        getLands({ gameState: gameState!, players: [opponent.id] }).forEach((land) => {
-          addGlowingTile(battlefieldLandId(land.mapPos));
-        });
+        getPlayerLands(gameState!, opponent.id).forEach((land) =>
+          addGlowingTile(getLandId(land.mapPos))
+        );
       }, 0);
     },
     [showOpponentInfo, addGlowingTile, gameState]
   );
 
+  if (gameState == null) return null;
   // Get all players except the selected player (opponents)
   const selectedPlayer = getTurnOwner(gameState);
-  const opponents = gameState?.players?.filter((player) => player.id !== selectedPlayer?.id) || [];
+  const opponents = gameState.players?.filter((player) => player.id !== selectedPlayer?.id) || [];
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {
@@ -43,7 +47,7 @@ const OpponentsPanel: React.FC = () => {
 
   const layout = getAvatarLayout(opponents.length);
 
-  const renderAvatarRow = (avatars: GamePlayer[], rowIndex: number) => (
+  const renderAvatarRow = (avatars: PlayerState[], rowIndex: number) => (
     <div key={rowIndex} className={styles.avatarRow}>
       {avatars.map((opponent, opponentIndex) => (
         <div
@@ -56,10 +60,10 @@ const OpponentsPanel: React.FC = () => {
           }}
         >
           <Avatar
-            player={opponent}
+            player={opponent.playerProfile}
             size={opponents.length <= 4 ? 120 : 90}
             shape="circle"
-            borderColor={opponent.color}
+            borderColor={getPlayerColorValue(opponent.color)}
           />
         </div>
       ))}

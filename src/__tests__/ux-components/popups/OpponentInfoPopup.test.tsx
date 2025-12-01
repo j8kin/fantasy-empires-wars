@@ -1,8 +1,12 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+
 import OpponentInfoPopup from '../../../ux-components/popups/OpponentInfoPopup';
-import { DiplomacyStatus } from '../../../types/Diplomacy';
+
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
+import { getPlayerColorValue } from '../../../domain/ui/playerColors';
+
+import { DiplomacyStatus } from '../../../types/Diplomacy';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 
 jest.mock('../../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
@@ -93,7 +97,7 @@ describe('OpponentInfoPopup', () => {
       </ApplicationContextProvider>
     );
 
-    expect(screen.getByText(gameStateStub.players[1].name)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].playerProfile.name)).toBeInTheDocument();
   });
 
   it('renders player avatar with correct properties', () => {
@@ -104,10 +108,13 @@ describe('OpponentInfoPopup', () => {
     );
 
     const avatar = screen.getByTestId('player-avatar');
-    expect(avatar).toHaveAttribute('data-player-name', gameStateStub.players[1].name);
+    expect(avatar).toHaveAttribute('data-player-name', gameStateStub.players[1].playerProfile.name);
     expect(avatar).toHaveAttribute('data-size', '55');
     expect(avatar).toHaveAttribute('data-shape', 'rectangle');
-    expect(avatar).toHaveAttribute('data-border-color', gameStateStub.players[1].color);
+    expect(avatar).toHaveAttribute(
+      'data-border-color',
+      getPlayerColorValue(gameStateStub.players[1].color)
+    );
   });
 
   it('displays race information', () => {
@@ -118,7 +125,7 @@ describe('OpponentInfoPopup', () => {
     );
 
     expect(screen.getByText('Race:')).toBeInTheDocument();
-    expect(screen.getByText(gameStateStub.players[1].race)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].playerProfile.race)).toBeInTheDocument();
   });
 
   it('displays alignment information with correct color', () => {
@@ -129,7 +136,7 @@ describe('OpponentInfoPopup', () => {
     );
 
     expect(screen.getByText('Alignment:')).toBeInTheDocument();
-    expect(screen.getByText(gameStateStub.players[2].alignment)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[2].playerProfile.alignment)).toBeInTheDocument();
   });
 
   it('displays level information', () => {
@@ -140,7 +147,9 @@ describe('OpponentInfoPopup', () => {
     );
 
     expect(screen.getByText('Level:')).toBeInTheDocument();
-    expect(screen.getByText(gameStateStub.players[1].level.toString())).toBeInTheDocument();
+    expect(
+      screen.getByText(gameStateStub.players[1].playerProfile.level.toString())
+    ).toBeInTheDocument();
   });
 
   describe('diplomacy status display', () => {
@@ -195,7 +204,7 @@ describe('OpponentInfoPopup', () => {
 
     // The popup should be offset by -50 in x and +10 in y
     // This would be tested through the PopupWrapper component
-    expect(screen.getByText(gameStateStub.players[1].name)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].playerProfile.name)).toBeInTheDocument();
   });
 
   it('has appropriate dimensions', () => {
@@ -207,7 +216,7 @@ describe('OpponentInfoPopup', () => {
 
     // Component should render with fixed width of 310px
     // Height is calculated dynamically but capped at 400px
-    expect(screen.getByText(gameStateStub.players[1].name)).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].playerProfile.name)).toBeInTheDocument();
   });
 
   it('calls onClose when close action is triggered', () => {

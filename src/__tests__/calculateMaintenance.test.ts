@@ -1,30 +1,32 @@
-import { calculateMaintenance } from '../map/gold/calculateMaintenance';
-import { battlefieldLandId, GameState } from '../types/GameState';
-import { generateMockMap } from './utils/generateMockMap';
-import {
-  getDefaultUnit,
-  HeroUnit,
-  HeroUnitType,
-  RegularUnit,
-  RegularUnitType,
-  UnitRank,
-} from '../types/Army';
+import { GameState } from '../state/GameState';
+import { LandPosition } from '../state/map/land/LandPosition';
+
+import { getTurnOwner } from '../selectors/playerSelectors';
+import { addLand } from '../systems/playerActions';
+import { addRegulars } from '../systems/armyActions';
+import { levelUpHero, levelUpRegulars } from '../systems/unitsActions';
+
+import { armyFactory } from '../factories/armyFactory';
+
 import { BuildingType } from '../types/Building';
+import { UnitRank } from '../state/army/RegularsState';
+import { HeroUnitType, RegularUnitType } from '../types/UnitType';
+import { Alignment } from '../types/Alignment';
+
+import { calculateMaintenance } from '../map/vault/calculateMaintenance';
 import { construct } from '../map/building/construct';
+
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { LandPosition } from '../map/utils/getLands';
-import {
-  createDefaultGameStateStub,
-  defaultBattlefieldSizeStub,
-} from './utils/createGameStateStub';
+import { createGameStateStub } from './utils/createGameStateStub';
+import { heroFactory } from '../factories/heroFactory';
+import { regularsFactory } from '../factories/regularsFactory';
 
 describe('Calculate Maintenance', () => {
-  const gameStateStub: GameState = createDefaultGameStateStub();
-  const player = gameStateStub.players[0];
+  let gameStateStub: GameState;
 
   beforeEach(() => {
     // clear map to remove all armies and buildings
-    gameStateStub.battlefield = generateMockMap(defaultBattlefieldSizeStub);
+    gameStateStub = createGameStateStub({ addPlayersHomeland: false });
   });
 
   describe('Army Maintenance cost', () => {
@@ -41,16 +43,14 @@ describe('Calculate Maintenance', () => {
       [HeroUnitType.ENCHANTER, 1, 100],
       [HeroUnitType.NECROMANCER, 1, 100],
     ])('Hero %s maintenance level %s', (hero, level, expected) => {
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.id;
-      const heroUnit = getDefaultUnit(hero) as HeroUnit;
-      heroUnit.level = level;
+      addLand(getTurnOwner(gameStateStub), { row: 0, col: 0 });
+      const heroUnit = heroFactory(hero, hero);
+      while (heroUnit.level < level) {
+        levelUpHero(heroUnit, Alignment.LAWFUL);
+      }
 
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
-        {
-          units: [heroUnit],
-          controlledBy: player.id,
-        },
+      gameStateStub.armies = [
+        armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, [heroUnit]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -71,48 +71,37 @@ describe('Calculate Maintenance', () => {
       [RegularUnitType.DARK_ELF, UnitRank.REGULAR, 1, 5],
       [RegularUnitType.BALLISTA, UnitRank.REGULAR, 1, 150],
       [RegularUnitType.CATAPULT, UnitRank.REGULAR, 1, 50],
-    ])('Unit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.id;
-      const regularUnit = getDefaultUnit(regular) as RegularUnit;
-      regularUnit.level = level;
+    ])('RegularUnit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
+      addLand(getTurnOwner(gameStateStub), { row: 0, col: 0 });
+      const regularUnit = regularsFactory(regular);
+      while (regularUnit.rank !== level) {
+        levelUpRegulars(regularUnit, Alignment.LAWFUL);
+      }
       regularUnit.count = quantity;
 
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
-        {
-          units: [regularUnit],
-          controlledBy: player.id,
-        },
+      gameStateStub.armies = [
+        armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, undefined, [regularUnit]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
     });
 
     it('Multiple units in one army', () => {
-      const elitDwarf = getDefaultUnit(RegularUnitType.DWARF) as RegularUnit;
-      elitDwarf.level = UnitRank.ELITE;
+      const elitDwarf = regularsFactory(RegularUnitType.DWARF);
+      levelUpRegulars(elitDwarf, Alignment.LAWFUL);
+      levelUpRegulars(elitDwarf, Alignment.LAWFUL);
+      expect(elitDwarf.rank).toBe(UnitRank.ELITE);
       elitDwarf.count = 17;
 
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].controlledBy =
-        player.id;
-      gameStateStub.battlefield.lands[battlefieldLandId({ row: 0, col: 0 })].army = [
-        {
-          units: [getDefaultUnit(HeroUnitType.NECROMANCER)],
-          controlledBy: player.id,
-        },
-        {
-          units: [getDefaultUnit(RegularUnitType.DWARF)],
-          controlledBy: player.id,
-        },
-        {
-          units: [getDefaultUnit(RegularUnitType.BALLISTA)],
-          controlledBy: player.id,
-        },
-        {
-          units: [elitDwarf],
-          controlledBy: player.id,
-        },
-      ];
+      addLand(getTurnOwner(gameStateStub), { row: 0, col: 0 });
+      const army = armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, [
+        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+      ]);
+      Object.assign(army, addRegulars(army, regularsFactory(RegularUnitType.DWARF)));
+      Object.assign(army, addRegulars(army, regularsFactory(RegularUnitType.BALLISTA)));
+      Object.assign(army, addRegulars(army, elitDwarf));
+
+      gameStateStub.armies = [army];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(520);
     });
@@ -132,7 +121,7 @@ describe('Calculate Maintenance', () => {
       [BuildingType.WALL, 100],
     ])('Building %s maintenance cost', (building, expected) => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
-      gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy = player.id;
+      addLand(getTurnOwner(gameStateStub), buildingPos);
       construct(gameStateStub, building, buildingPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
@@ -141,7 +130,7 @@ describe('Calculate Maintenance', () => {
 
     it('Multiple buildings', () => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
-      gameStateStub.battlefield.lands[battlefieldLandId(buildingPos)].controlledBy = player.id;
+      addLand(getTurnOwner(gameStateStub), buildingPos);
       construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
       construct(gameStateStub, BuildingType.WALL, buildingPos);
       construct(gameStateStub, BuildingType.WALL, buildingPos);
@@ -162,8 +151,8 @@ describe('Calculate Maintenance', () => {
 
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 5, col: 5 });
       construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
-      gameStateStub.turn = 2; // only on turn 2 and after units could be recruited in BARRACK and placed on map
-      placeUnitsOnMap(getDefaultUnit(RegularUnitType.DWARF), gameStateStub, barracksPos);
+
+      placeUnitsOnMap(regularsFactory(RegularUnitType.DWARF), gameStateStub, barracksPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(1000 + 20 * 5);

@@ -1,21 +1,30 @@
-import { BuildingType, getBuilding } from '../../types/Building';
-import { getLand, LandPosition } from '../utils/getLands';
-import { battlefieldLandId, GameState, getTurnOwner } from '../../types/GameState';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { NO_PLAYER } from '../../types/GamePlayer';
-import { destroyBuilding } from './destroyBuilding';
+import { GameState } from '../../state/GameState';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { getBuilding } from '../../selectors/buildingSelectors';
+import { addLand } from '../../systems/playerActions';
+
+import { NO_PLAYER } from '../../domain/player/playerRepository';
+
 import { TreasureItem } from '../../types/Treasures';
+import { BuildingType } from '../../types/Building';
+
+import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { destroyBuilding } from './destroyBuilding';
 
 export const construct = (
   gameState: GameState,
   buildingType: BuildingType,
   position: LandPosition
 ) => {
-  const { battlefield } = gameState;
-  const owner = getTurnOwner(gameState)!;
-  const mapPosition = battlefieldLandId(position);
+  const map = gameState.map;
+  const turnOwner = getTurnOwner(gameState);
+  const mapPosition = getLandId(position);
   const building = getBuilding(buildingType);
-  if (owner.vault < building.buildCost) {
+  if (turnOwner.vault < building.buildCost && gameState.turn > 1) {
     return;
   }
   switch (buildingType) {
@@ -24,31 +33,30 @@ export const construct = (
       break;
 
     case BuildingType.STRONGHOLD:
-      battlefield.lands[mapPosition].buildings.push(building);
-      battlefield.lands[mapPosition].controlledBy = owner.id;
-      const newLandsCandidates = getTilesInRadius(battlefield.dimensions, position, 1, true);
+      gameState.map.lands[mapPosition].buildings.push(building);
+      addLand(turnOwner, position);
+      const newLandsCandidates = getTilesInRadius(map.dimensions, position, 1, true);
       newLandsCandidates.forEach((land) => {
         // if the land is not controlled by any player, it becomes controlled by the player
-        if (getLand(gameState, land).controlledBy === NO_PLAYER.id) {
-          battlefield.lands[battlefieldLandId(land)].controlledBy = owner.id;
+        if (getLandOwner(gameState, land) === NO_PLAYER.id) {
+          addLand(turnOwner, land);
         }
       });
       break;
 
     default:
-      battlefield.lands[mapPosition].buildings.push(building);
+      gameState.map.lands[mapPosition].buildings.push(building);
       break;
   }
 
   // if player has Crown of Dominion, reduce cost by 15%
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests
-  const hasCrownOfDominion = owner.empireTreasures?.some(
+  const hasCrownOfDominion = turnOwner.empireTreasures?.some(
     (t) => t.id === TreasureItem.CROWN_OF_DOMINION
   );
 
-  owner.vault -= hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;
   if (gameState.turn > 1) {
-    // on the first turn default buildings are constructed without maintaining them since the real game starts at turn 2
-    owner.income -= building.maintainCost;
+    const cost = hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;
+    turnOwner.vault -= cost;
   }
 };

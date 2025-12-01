@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import SelectOpponentDialog from '../../../ux-components/dialogs/SelectOpponentDialog';
-import { PREDEFINED_PLAYERS, NO_PLAYER } from '../../../types/GamePlayer';
 import type { FantasyBorderFrameProps } from '../../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
+import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 
 const renderWithProvider = (ui: React.ReactElement) =>
   render(ui, { wrapper: ApplicationContextProvider });

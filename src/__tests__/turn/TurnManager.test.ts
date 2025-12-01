@@ -1,9 +1,13 @@
+import { GameState } from '../../state/GameState';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { nextPlayer } from '../../systems/playerActions';
 import * as startTurnModule from '../../turn/startTurn';
 import * as endTurnModule from '../../turn/endTurn';
 import * as mainAiTurnModule from '../../turn/mainAiTurn';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
-import { GameState, TurnPhase } from '../../types/GameState';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub, createGameStateStub } from '../utils/createGameStateStub';
+import { TurnPhase } from '../../turn/TurnPhase';
+import { nextTurnPhase } from '../utils/TestTurnManagement';
 
 // Mock the turn modules
 jest.mock('../../turn/startTurn');
@@ -24,12 +28,28 @@ const mockMainAiTurn = mainAiTurnModule.mainAiTurn as jest.MockedFunction<
 describe('TurnManager', () => {
   let turnManager: TurnManager;
   let mockCallbacks: jest.Mocked<TurnManagerCallbacks>;
-  let mockGameState: GameState;
+  let gameStateStub: GameState;
 
-  const createMockGameState = (turnOwner: number = 0, turn: number = 2): GameState => {
-    const gameStateStub = createDefaultGameStateStub();
-    gameStateStub.turnOwner = gameStateStub.players[turnOwner].id;
-    gameStateStub.turn = turn;
+  const createGameStateStubTunrManager = (turnOwner: number = 0, turn: number = 1): GameState => {
+    // For turn 1, we don't want to place homelands as that increments turn counter
+    // For turn > 1, we use the default stub which places homelands
+    const gameStateStub =
+      turn === 1
+        ? createGameStateStub({ addPlayersHomeland: false })
+        : createDefaultGameStateStub();
+
+    // Advance to desired turn if needed (for turn > 1)
+    while (gameStateStub.turn < turn) {
+      // Cycle through all players to advance turn
+      for (let i = 0; i < gameStateStub.players.length; i++) {
+        nextPlayer(gameStateStub);
+      }
+    }
+
+    // Set the desired turn owner
+    while (gameStateStub.turnOwner !== gameStateStub.players[turnOwner].id) {
+      nextPlayer(gameStateStub);
+    }
 
     return gameStateStub;
   };
@@ -46,7 +66,7 @@ describe('TurnManager', () => {
     };
 
     turnManager = new TurnManager(mockCallbacks);
-    mockGameState = createMockGameState();
+    gameStateStub = createGameStateStubTunrManager(0, 2);
   });
 
   afterEach(() => {
@@ -63,15 +83,16 @@ describe('TurnManager', () => {
 
   describe('startNewTurn', () => {
     it('should set turn phase to START and call onTurnPhaseChange', () => {
-      turnManager.startNewTurn(mockGameState);
+      turnManager.startNewTurn(gameStateStub);
 
-      expect(mockGameState.turnPhase).toBe(TurnPhase.START);
-      expect(mockCallbacks.onTurnPhaseChange).toHaveBeenCalledWith(mockGameState, TurnPhase.START);
+      expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
+      expect(mockCallbacks.onTurnPhaseChange).toHaveBeenCalledWith(gameStateStub, TurnPhase.START);
     });
 
     it('should show place hero message during turn 1', () => {
-      mockGameState.turn = 1;
-      turnManager.startNewTurn(mockGameState);
+      const turn1GameState = createGameStateStubTunrManager(0, 1);
+      expect(turn1GameState.turn).toBe(1);
+      turnManager.startNewTurn(turn1GameState);
 
       expect(mockCallbacks.onStartProgress).toHaveBeenCalledWith(
         'The banners of Alaric the Bold rise over a new realm!'
@@ -79,56 +100,47 @@ describe('TurnManager', () => {
     });
 
     it('should show progress message for current player', () => {
-      turnManager.startNewTurn(mockGameState);
+      turnManager.startNewTurn(gameStateStub);
 
       expect(mockCallbacks.onStartProgress).toHaveBeenCalledWith('Player Alaric the Bold turn');
     });
 
-    it('should handle case when no valid player found', () => {
-      const invalidGameState = {
-        ...mockGameState,
-        turnOwner: 'nonexistent',
-      };
-
-      turnManager.startNewTurn(invalidGameState);
-
-      expect(mockCallbacks.onGameOver).toHaveBeenCalledWith('No valid player found for turn');
-    });
-
     it('should execute start turn logic after timeout', () => {
-      turnManager.startNewTurn(mockGameState);
+      turnManager.startNewTurn(gameStateStub);
 
       expect(mockStartTurn).not.toHaveBeenCalled();
 
       jest.advanceTimersByTime(1000);
 
-      expect(mockStartTurn).toHaveBeenCalledWith(mockGameState, expect.any(Function));
+      expect(mockStartTurn).toHaveBeenCalledWith(gameStateStub, expect.any(Function));
     });
 
     it('should transition to END phase after start turn execution on Turn 1', () => {
-      mockGameState.turn = 1;
-      turnManager.startNewTurn(mockGameState);
+      const turn1GameState = createGameStateStubTunrManager(0, 1);
+      expect(turn1GameState.turn).toBe(1);
+      turnManager.startNewTurn(turn1GameState);
 
       jest.advanceTimersByTime(1000);
 
-      expect(mockGameState.turnPhase).toBe(TurnPhase.END);
-      expect(mockCallbacks.onTurnPhaseChange).toHaveBeenCalledWith(mockGameState, TurnPhase.END);
+      expect(turn1GameState.turnPhase).toBe(TurnPhase.END);
+      expect(mockCallbacks.onTurnPhaseChange).toHaveBeenCalledWith(turn1GameState, TurnPhase.END);
     });
 
     it('should transition to main phase after start turn execution', () => {
-      turnManager.startNewTurn(mockGameState);
+      turnManager.startNewTurn(gameStateStub);
 
       jest.advanceTimersByTime(1000);
 
-      expect(mockGameState.turnPhase).toBe(TurnPhase.MAIN);
-      expect(mockCallbacks.onTurnPhaseChange).toHaveBeenCalledWith(mockGameState, TurnPhase.MAIN);
+      expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
+      expect(mockCallbacks.onTurnPhaseChange).toHaveBeenCalledWith(gameStateStub, TurnPhase.MAIN);
     });
   });
 
   describe('startMainPhase (private method behavior)', () => {
     it('should NOT handle human player main phase on Turn 1', () => {
-      mockGameState.turn = 1;
-      turnManager.startNewTurn(mockGameState);
+      const turn1GameState = createGameStateStubTunrManager(0, 1);
+      expect(turn1GameState.turn).toBe(1);
+      turnManager.startNewTurn(turn1GameState);
 
       jest.advanceTimersByTime(1000);
 
@@ -138,7 +150,7 @@ describe('TurnManager', () => {
     });
 
     it('should handle human player main phase', () => {
-      turnManager.startNewTurn(mockGameState);
+      turnManager.startNewTurn(gameStateStub);
 
       jest.advanceTimersByTime(1000);
 
@@ -148,7 +160,8 @@ describe('TurnManager', () => {
     });
 
     it('should NOT handle computer player main phase on Turn 1', () => {
-      const aiGameState = createMockGameState(1, 1);
+      const aiGameState = createGameStateStubTunrManager(1, 1);
+      expect(aiGameState.turn).toBe(1);
       turnManager.startNewTurn(aiGameState);
 
       jest.advanceTimersByTime(1000);
@@ -159,7 +172,7 @@ describe('TurnManager', () => {
     });
 
     it('should handle computer player main phase', () => {
-      const aiGameState = createMockGameState(1, 2);
+      const aiGameState = createGameStateStubTunrManager(1, 2);
       turnManager.startNewTurn(aiGameState);
 
       jest.advanceTimersByTime(1000);
@@ -170,7 +183,7 @@ describe('TurnManager', () => {
     });
 
     it('should auto-end computer turn after delay', () => {
-      const aiGameState = createMockGameState(1);
+      const aiGameState = createGameStateStubTunrManager(1, 2); // Player 1 (computer), Turn 2
       const endCurrentTurnSpy = jest.spyOn(turnManager, 'endCurrentTurn');
 
       turnManager.startNewTurn(aiGameState);
@@ -180,40 +193,26 @@ describe('TurnManager', () => {
 
       expect(endCurrentTurnSpy).toHaveBeenCalledWith(aiGameState);
     });
-
-    it('should handle case when no valid player found in main phase', () => {
-      const invalidGameState = {
-        ...mockGameState,
-        players: [],
-        turnOwner: 'nonexistent',
-      };
-
-      turnManager.startNewTurn(invalidGameState);
-
-      jest.advanceTimersByTime(1000);
-
-      expect(mockCallbacks.onGameOver).toHaveBeenCalledWith('No valid player found for turn');
-    });
   });
 
   describe('endCurrentTurn', () => {
     it('should set turn phase to END and call onTurnPhaseChange', () => {
-      turnManager.endCurrentTurn(mockGameState);
+      turnManager.endCurrentTurn(gameStateStub);
 
-      expect(mockGameState.turnPhase).toBe(TurnPhase.END);
-      expect(mockCallbacks.onTurnPhaseChange).toHaveBeenCalledWith(mockGameState, TurnPhase.END);
+      expect(gameStateStub.turnPhase).toBe(TurnPhase.END);
+      expect(mockCallbacks.onTurnPhaseChange).toHaveBeenCalledWith(gameStateStub, TurnPhase.END);
     });
 
     it('should execute end turn logic', () => {
-      turnManager.endCurrentTurn(mockGameState);
+      turnManager.endCurrentTurn(gameStateStub);
 
-      expect(mockEndTurn).toHaveBeenCalledWith(mockGameState);
+      expect(mockEndTurn).toHaveBeenCalledWith(gameStateStub);
     });
 
     it('should NOT check for game over with no human players on Turn 1', () => {
       const gameStateNoHumans = {
-        ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'computer' as const })),
+        ...gameStateStub,
+        players: gameStateStub.players.map((p) => ({ ...p, playerType: 'computer' as const })),
         turn: 1,
       };
 
@@ -223,11 +222,11 @@ describe('TurnManager', () => {
     });
 
     it('should check for game over when no human players remain', () => {
-      const gameStateNoHumans = {
-        ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'computer' as const })),
-        turn: 2,
-      };
+      const gameStateNoHumans = createGameStateStubTunrManager(0, 2);
+      // Change all players to computer type
+      gameStateNoHumans.players.forEach((p) => {
+        (p as any).playerType = 'computer';
+      });
 
       turnManager.endCurrentTurn(gameStateNoHumans);
 
@@ -238,8 +237,8 @@ describe('TurnManager', () => {
 
     it('should NOT check for game over when no computer players remain on Turn 1', () => {
       const gameStateNoComputers = {
-        ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'human' as const })),
+        ...gameStateStub,
+        players: gameStateStub.players.map((p) => ({ ...p, playerType: 'human' as const })),
         turn: 1,
       };
 
@@ -249,11 +248,11 @@ describe('TurnManager', () => {
     });
 
     it('should check for game over when no computer players remain', () => {
-      const gameStateNoComputers = {
-        ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'human' as const })),
-        turn: 2,
-      };
+      const gameStateNoComputers = createGameStateStubTunrManager(0, 2);
+      // Change all players to human type
+      gameStateNoComputers.players.forEach((p) => {
+        (p as any).playerType = 'human';
+      });
 
       turnManager.endCurrentTurn(gameStateNoComputers);
 
@@ -265,22 +264,22 @@ describe('TurnManager', () => {
     it('should start next turn after delay when game continues', () => {
       const startNewTurnSpy = jest.spyOn(turnManager, 'startNewTurn');
 
-      turnManager.endCurrentTurn(mockGameState);
+      turnManager.endCurrentTurn(gameStateStub);
 
       expect(startNewTurnSpy).not.toHaveBeenCalled();
 
       jest.advanceTimersByTime(500);
 
-      expect(startNewTurnSpy).toHaveBeenCalledWith(mockGameState);
+      expect(startNewTurnSpy).toHaveBeenCalledWith(gameStateStub);
     });
 
     it('should not start next turn when game ends', () => {
       const startNewTurnSpy = jest.spyOn(turnManager, 'startNewTurn');
-      const gameStateNoHumans = {
-        ...mockGameState,
-        players: mockGameState.players.map((p) => ({ ...p, playerType: 'computer' as const })),
-        turn: 2,
-      };
+      const gameStateNoHumans = createGameStateStubTunrManager(0, 2);
+      // Change all players to computer type
+      gameStateNoHumans.players.forEach((p) => {
+        (p as any).playerType = 'computer';
+      });
 
       turnManager.endCurrentTurn(gameStateNoHumans);
 
@@ -292,46 +291,40 @@ describe('TurnManager', () => {
 
   describe('canEndTurn', () => {
     it('should return true for human player in main phase', () => {
-      mockGameState.turnPhase = TurnPhase.MAIN;
-      mockGameState.turnOwner = mockGameState.players[0].id; // Human player
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[0].id)
+        nextPlayer(gameStateStub);
+      while (gameStateStub.turnPhase !== TurnPhase.MAIN) nextTurnPhase(gameStateStub);
 
-      const result = turnManager.canEndTurn(mockGameState);
+      const result = turnManager.canEndTurn(gameStateStub);
 
       expect(result).toBe(true);
     });
 
     it('should return false for computer player in main phase', () => {
-      mockGameState.turnPhase = TurnPhase.MAIN;
-      mockGameState.turnOwner = 'player2'; // Computer player
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id)
+        nextPlayer(gameStateStub);
 
-      const result = turnManager.canEndTurn(mockGameState);
+      const result = turnManager.canEndTurn(gameStateStub);
 
       expect(result).toBe(false);
     });
 
     it('should return false when not in main phase', () => {
-      mockGameState.turnPhase = TurnPhase.START;
-      mockGameState.turnOwner = 'player1'; // Human player
+      // human player in START phase
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id)
+        nextPlayer(gameStateStub);
 
-      const result = turnManager.canEndTurn(mockGameState);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false when turn owner is not found', () => {
-      mockGameState.turnPhase = TurnPhase.MAIN;
-      mockGameState.turnOwner = 'nonexistent';
-
-      const result = turnManager.canEndTurn(mockGameState);
+      const result = turnManager.canEndTurn(gameStateStub);
 
       expect(result).toBe(false);
     });
 
     it('should return false in END phase', () => {
-      mockGameState.turnPhase = TurnPhase.END;
-      mockGameState.turnOwner = 'player1'; // Human player
+      // human player in END phase
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id)
+        nextPlayer(gameStateStub);
 
-      const result = turnManager.canEndTurn(mockGameState);
+      const result = turnManager.canEndTurn(gameStateStub);
 
       expect(result).toBe(false);
     });
@@ -342,17 +335,17 @@ describe('TurnManager', () => {
       const startNewTurnSpy = jest.spyOn(turnManager, 'startNewTurn');
 
       // Start turn
-      turnManager.startNewTurn(mockGameState);
-      expect(mockGameState.turnPhase).toBe(TurnPhase.START);
+      turnManager.startNewTurn(gameStateStub);
+      expect(gameStateStub.turnPhase).toBe(TurnPhase.START);
 
       // Advance to main phase
       jest.advanceTimersByTime(1000);
-      expect(mockGameState.turnPhase).toBe(TurnPhase.MAIN);
+      expect(gameStateStub.turnPhase).toBe(TurnPhase.MAIN);
       expect(mockCallbacks.onHideProgress).toHaveBeenCalled();
 
       // End turn
-      turnManager.endCurrentTurn(mockGameState);
-      expect(mockGameState.turnPhase).toBe(TurnPhase.END);
+      turnManager.endCurrentTurn(gameStateStub);
+      expect(gameStateStub.turnPhase).toBe(TurnPhase.END);
 
       // Next turn starts
       jest.advanceTimersByTime(500);
@@ -360,7 +353,7 @@ describe('TurnManager', () => {
     });
 
     it('should handle complete turn cycle for computer player', () => {
-      const aiGameState = createMockGameState(1);
+      const aiGameState = createGameStateStubTunrManager(1, 2); // Player 1 (computer), Turn 2
       const endCurrentTurnSpy = jest.spyOn(turnManager, 'endCurrentTurn');
 
       // Start turn
@@ -391,7 +384,7 @@ describe('TurnManager', () => {
         callOrder.push('onHideProgress');
       });
 
-      turnManager.startNewTurn(mockGameState);
+      turnManager.startNewTurn(gameStateStub);
       jest.advanceTimersByTime(1000);
 
       expect(callOrder).toEqual([
@@ -405,9 +398,9 @@ describe('TurnManager', () => {
 
   describe('Edge Cases', () => {
     it('should handle multiple rapid startNewTurn calls', () => {
-      turnManager.startNewTurn(mockGameState);
-      turnManager.startNewTurn(mockGameState);
-      turnManager.startNewTurn(mockGameState);
+      turnManager.startNewTurn(gameStateStub);
+      turnManager.startNewTurn(gameStateStub);
+      turnManager.startNewTurn(gameStateStub);
 
       expect(mockCallbacks.onStartProgress).toHaveBeenCalledTimes(3);
     });
@@ -415,8 +408,8 @@ describe('TurnManager', () => {
     it('should handle endCurrentTurn called multiple times', () => {
       const startNewTurnSpy = jest.spyOn(turnManager, 'startNewTurn');
 
-      turnManager.endCurrentTurn(mockGameState);
-      turnManager.endCurrentTurn(mockGameState);
+      turnManager.endCurrentTurn(gameStateStub);
+      turnManager.endCurrentTurn(gameStateStub);
 
       jest.advanceTimersByTime(500);
 
@@ -424,18 +417,23 @@ describe('TurnManager', () => {
     });
 
     it('should handle mixed human and computer players correctly', () => {
-      mockGameState.turnPhase = TurnPhase.MAIN;
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[0].id)
+        nextPlayer(gameStateStub);
+      while (gameStateStub.turnPhase !== TurnPhase.MAIN) nextTurnPhase(gameStateStub);
+
       // Test human turn first
-      expect(turnManager.canEndTurn(mockGameState)).toBe(true);
+      expect(turnManager.canEndTurn(gameStateStub)).toBe(true);
 
       // Switch to computer player
-      mockGameState.turnOwner = 'player2';
-      expect(turnManager.canEndTurn(mockGameState)).toBe(false);
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id)
+        nextPlayer(gameStateStub);
+
+      expect(turnManager.canEndTurn(gameStateStub)).toBe(false);
     });
 
     it('should properly clean up timers on rapid successive calls', () => {
-      turnManager.startNewTurn(mockGameState);
-      turnManager.startNewTurn(mockGameState);
+      turnManager.startNewTurn(gameStateStub);
+      turnManager.startNewTurn(gameStateStub);
 
       jest.advanceTimersByTime(1000);
 

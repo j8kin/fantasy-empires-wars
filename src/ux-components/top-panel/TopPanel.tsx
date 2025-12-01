@@ -2,17 +2,18 @@ import React from 'react';
 import styles from './css/TopPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
-import { TurnPhase } from '../../types/GameState';
+import { FrameSize } from '../../contexts/ApplicationContext';
 
 import GameControl from '../game-controls/GameControl';
 import MapActionsControl from '../game-controls/MapActionsControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import GameButton from '../buttons/GameButton';
-import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
-import Player from '../player/Player';
-import { ButtonName } from '../../types/ButtonName';
+import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
+import PlayerSummary from '../player/PlayerSummary';
 import UnitActionControl from '../game-controls/UnitActionControl';
+
+import { ButtonName } from '../../types/ButtonName';
 
 export interface TopPanelProps {
   height: number;
@@ -20,17 +21,11 @@ export interface TopPanelProps {
 }
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
-  const { endCurrentTurn, gameState } = useGameContext();
+  const { endCurrentTurn } = useGameContext();
 
   const avatarSize = height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10;
 
-  const handleEndTurn = () => {
-    if (gameState?.turnPhase === TurnPhase.MAIN) {
-      endCurrentTurn();
-    }
-  };
-
-  const endTurnButton = <GameButton buttonName={ButtonName.TURN} onClick={handleEndTurn} />;
+  const endTurnButton = <GameButton buttonName={ButtonName.TURN} onClick={endCurrentTurn} />;
 
   return (
     <FantasyBorderFrame
@@ -52,7 +47,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
           <UnitActionControl />
 
           {/* Display Player Info only if Game Started */}
-          <Player avatarSize={avatarSize} />
+          <PlayerSummary avatarSize={avatarSize} />
 
           {/* Center - Mana Vials only if Game Started */}
           <VialPanel />

@@ -1,25 +1,11 @@
 import React from 'react';
+import './css/FantasyBorderFrame.css';
 
 import CornerBorder from './CornerBorder';
 import HorizontalBorder from './HorizontalBorder';
 import VerticalBorder from './VerticalBorder';
-import './FantasyBorderFrame.css';
 
-/**
- * Top Left position of the window/dialog/popup
- */
-export interface ScreenPosition {
-  x: number;
-  y: number;
-}
-
-/**
- * Width and height of the window/dialog/popup
- */
-export interface FrameSize {
-  width: number;
-  height: number;
-}
+import { FrameSize, ScreenPosition } from '../../contexts/ApplicationContext';
 
 export interface FantasyBorderFrameProps {
   screenPosition: ScreenPosition;

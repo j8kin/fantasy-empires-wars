@@ -1,31 +1,32 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import UnitActionControl from '../../../ux-components/game-controls/UnitActionControl';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
+
+import { GameState } from '../../../state/GameState';
+import { LandPosition } from '../../../state/map/land/LandPosition';
+
+import { getTurnOwner } from '../../../selectors/playerSelectors';
+import { getArmiesAtPosition } from '../../../selectors/armySelectors';
+import { startMoving } from '../../../systems/armyActions';
+import { heroFactory } from '../../../factories/heroFactory';
+import { regularsFactory } from '../../../factories/regularsFactory';
+
 import { ButtonName } from '../../../types/ButtonName';
-import { createGameStateStub } from '../../utils/createGameStateStub';
 import { BuildingType } from '../../../types/Building';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
-import { getDefaultUnit, HeroUnit } from '../../../types/Army';
-import { LandPosition } from '../../../map/utils/getLands';
+import { RegularUnitType } from '../../../types/UnitType';
+
 import { construct } from '../../../map/building/construct';
-import { GameState } from '../../../types/GameState';
+
+import { createGameStateStub } from '../../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 
 // Mock GameButton component
 jest.mock('../../../ux-components/buttons/GameButton', () => {
   return ({ buttonName, onClick }: any) => (
     <img data-testid={`game-button-${buttonName}`} alt={buttonName} onClick={onClick} />
   );
-});
-
-// Mock getLands utility
-jest.mock('../../../map/utils/getLands', () => {
-  const actual = jest.requireActual('../../../map/utils/getLands');
-  return {
-    ...actual,
-    getLands: jest.fn(actual.getLands),
-  };
 });
 
 const renderWithProviders = (
@@ -89,7 +90,6 @@ describe('UnitActionControl', () => {
       const barracksPosition: LandPosition = { row: 3, col: 3 };
 
       // Add barracks to a land owned by the turn owner
-      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BARRACKS, barracksPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -106,7 +106,6 @@ describe('UnitActionControl', () => {
       const towerPosition: LandPosition = { row: 3, col: 3 };
 
       // Add white mage tower to a land owned by the turn owner
-      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.WHITE_MAGE_TOWER, towerPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -123,17 +122,16 @@ describe('UnitActionControl', () => {
       const barracksPosition: LandPosition = { row: 3, col: 3 };
 
       // Add barracks with full slots
-      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BARRACKS, barracksPosition);
 
       // Fill all slots in the barracks
-      const land = gameState.battlefield.lands[`${barracksPosition.row}-${barracksPosition.col}`];
+      const land = gameState.map.lands[`${barracksPosition.row}-${barracksPosition.col}`];
       const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks && barracks.slots) {
         // Fill all slots to max capacity
         while (barracks.slots.length < barracks.numberOfSlots) {
           barracks.slots.push({
-            unit: gameState.players[0].type,
+            unit: getTurnOwner(gameState).playerProfile.type,
             turnsRemaining: 1,
           });
         }
@@ -185,9 +183,7 @@ describe('UnitActionControl', () => {
       const heroPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a hero to a land owned by the turn owner
-      gameState.turnOwner = gameState.players[0].id;
-      const hero = getDefaultUnit(gameState.players[0].type) as HeroUnit;
-      hero.name = 'Test Hero';
+      const hero = heroFactory(getTurnOwner(gameState).playerProfile.type, 'Test Hero');
       placeUnitsOnMap(hero, gameState, heroPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -204,21 +200,14 @@ describe('UnitActionControl', () => {
       const heroPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a hero with movements
-      gameState.turnOwner = gameState.players[0].id;
-      const hero = getDefaultUnit(gameState.players[0].type) as HeroUnit;
-      hero.name = 'Test Hero';
+      const hero = heroFactory(getTurnOwner(gameState).playerProfile.type, 'Test Hero');
       placeUnitsOnMap(hero, gameState, heroPosition);
 
       // Assign movements to the hero
-      const land = gameState.battlefield.lands[`${heroPosition.row}-${heroPosition.col}`];
-      if (land.army[0]) {
-        land.army[0].movements = {
-          mp: 0,
-          from: heroPosition,
-          to: { row: 4, col: 4 },
-          path: [heroPosition, { row: 4, col: 4 }],
-        };
-      }
+      const armies = getArmiesAtPosition(gameState, heroPosition);
+      expect(armies).toHaveLength(1);
+
+      startMoving(armies[0], { row: 4, col: 4 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -234,11 +223,7 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a non-hero unit
-      gameState.turnOwner = gameState.players[0].id;
-      const nonHeroUnit = getDefaultUnit(gameState.players[0].type);
-      // Ensure it's not a hero by removing hero-specific properties
-      delete (nonHeroUnit as any).experience;
-      delete (nonHeroUnit as any).level;
+      const nonHeroUnit = regularsFactory(RegularUnitType.WARRIOR);
       placeUnitsOnMap(nonHeroUnit, gameState, armyPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -297,20 +282,13 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add army with movements
-      gameState.turnOwner = gameState.players[0].id;
-      const unit = getDefaultUnit(gameState.players[0].type);
+      const unit = regularsFactory(RegularUnitType.WARRIOR);
       placeUnitsOnMap(unit, gameState, armyPosition);
 
+      const armies = getArmiesAtPosition(gameState, armyPosition);
+      expect(armies).toHaveLength(1);
       // Assign movements
-      const land = gameState.battlefield.lands[`${armyPosition.row}-${armyPosition.col}`];
-      if (land.army[0]) {
-        land.army[0].movements = {
-          mp: 0,
-          from: armyPosition,
-          to: { row: 4, col: 4 },
-          path: [armyPosition, { row: 4, col: 4 }],
-        };
-      }
+      startMoving(armies[0], { row: 4, col: 4 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -391,7 +369,6 @@ describe('UnitActionControl', () => {
       const position: LandPosition = { row: 3, col: 3 };
 
       // Add multiple recruitment buildings
-      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BARRACKS, position);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -404,9 +381,6 @@ describe('UnitActionControl', () => {
 
     it('handles lands owned by other players', () => {
       const gameState = createGameStateStub({ nPlayers: 3, addPlayersHomeland: true });
-
-      // Set turn owner to first player
-      gameState.turnOwner = gameState.players[0].id;
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -451,7 +425,6 @@ describe('UnitActionControl', () => {
   describe('All Mage Tower Types', () => {
     it('highlights lands with white mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.WHITE_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -462,7 +435,6 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with black mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BLACK_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -473,7 +445,6 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with blue mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.BLUE_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -484,7 +455,6 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with green mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.GREEN_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -495,7 +465,6 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with red mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      gameState.turnOwner = gameState.players[0].id;
       construct(gameState, BuildingType.RED_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);

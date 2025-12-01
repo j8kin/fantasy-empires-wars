@@ -1,4 +1,5 @@
-import { GameState } from '../types/GameState';
+import { GameState } from '../state/GameState';
+import { nextPlayer } from '../systems/playerActions';
 import { performMovements } from '../map/move-army/performMovements';
 import { changeOwner } from '../map/move-army/changeOwner';
 
@@ -13,12 +14,5 @@ export const endTurn = (gameState: GameState) => {
   changeOwner(gameState);
 
   // change active player
-  const playerIdx =
-    (gameState.players.findIndex((p) => p.id === gameState.turnOwner) + 1) %
-    gameState.players.length;
-  gameState.turnOwner = gameState.players[playerIdx].id;
-
-  if (playerIdx === 0) {
-    gameState.turn++;
-  }
+  nextPlayer(gameState);
 };

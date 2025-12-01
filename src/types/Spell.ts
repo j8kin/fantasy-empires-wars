@@ -95,7 +95,7 @@ const BlueMagicSpells: Spell[] = [
 const GreenMagicSpells: Spell[] = [
   {
     id: SpellName.FERTILE_LAND,
-    description: 'Increase gold production on lands in radius 1 by +50% for 3 turns',
+    description: 'Increase gold production on lands in radius 1 by +50% for 2 turns',
     manaCost: 40,
     apply: 'player',
     manaType: ManaType.GREEN,
@@ -151,7 +151,7 @@ const RedMagicSpells: Spell[] = [
     id: SpellName.METEOR_SHOWER,
     description:
       'Kills 35–45% of all troops, 50% chance to destroy a building (heroes may be killed based on level)',
-    manaCost: 120,
+    manaCost: 200,
     apply: 'opponent',
     manaType: ManaType.RED,
   },
@@ -196,20 +196,3 @@ export const AllSpells: Spell[] = [
   ...RedMagicSpells,
   ...BlackMagicSpells,
 ];
-
-export const getSpellById = (id: SpellName): Spell => AllSpells.find((spell) => spell.id === id)!;
-
-export const getMinManaCost = (mana: ManaType): number => {
-  switch (mana) {
-    case ManaType.WHITE:
-      return Math.max(5, Math.min(...WhiteMagicSpells.map((spell) => spell.manaCost)));
-    case ManaType.BLUE:
-      return Math.max(5, Math.min(...BlueMagicSpells.map((spell) => spell.manaCost)));
-    case ManaType.GREEN:
-      return Math.max(5, Math.min(...GreenMagicSpells.map((spell) => spell.manaCost)));
-    case ManaType.RED:
-      return Math.max(5, Math.min(...RedMagicSpells.map((spell) => spell.manaCost)));
-    case ManaType.BLACK:
-      return Math.max(5, Math.min(...BlackMagicSpells.map((spell) => spell.manaCost)));
-  }
-};

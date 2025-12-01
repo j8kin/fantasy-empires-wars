@@ -2,15 +2,16 @@ import React, { useCallback, useEffect } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getAllBuildings } from '../../selectors/buildingSelectors';
+
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { BuildingType, getAllBuildings } from '../../types/Building';
-import { getTurnOwner } from '../../types/GameState';
+import { BuildingType } from '../../types/Building';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
-import { getLands } from '../../map/utils/getLands';
 
 const ConstructBuildingDialog: React.FC = () => {
   const {
@@ -43,7 +44,7 @@ const ConstructBuildingDialog: React.FC = () => {
   );
 
   useEffect(() => {
-    if (selectedLandAction && showConstructBuildingDialog) {
+    if (selectedLandAction && showConstructBuildingDialog && gameState != null) {
       const selectedPlayer = getTurnOwner(gameState);
       if (selectedPlayer) {
         const building = getAllBuildings(selectedPlayer).find((s) => s.id === selectedLandAction);
@@ -61,11 +62,8 @@ const ConstructBuildingDialog: React.FC = () => {
 
   if (!gameState || !showConstructBuildingDialog) return null;
 
-  const landsWithoutBuildings = getLands({
-    gameState: gameState,
-    players: [gameState.turnOwner],
-    buildings: [],
-  });
+  const landsWithoutBuildings = getPlayerLands(gameState).filter((l) => l.buildings.length === 0);
+
   if (landsWithoutBuildings.length === 0) {
     // trying to allocate lands where only WALLS are constructed (if barracks allowed then other buildings are allowed)
     if (getAvailableToConstructLands(gameState!, BuildingType.BARRACKS).length === 0) {
@@ -78,7 +76,7 @@ const ConstructBuildingDialog: React.FC = () => {
   const isStrongholdAllowed =
     getAvailableToConstructLands(gameState!, BuildingType.STRONGHOLD).length > 0;
 
-  const selectedPlayer = getTurnOwner(gameState)!;
+  const selectedPlayer = getTurnOwner(gameState);
   const availableBuildings = selectedPlayer
     ? getAllBuildings(selectedPlayer).filter(
         (building) =>

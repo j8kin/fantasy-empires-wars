@@ -24,9 +24,10 @@ jest.mock('../../../ux-components/main-view/css/Background.module.css', () => ({
 // Mock child components
 jest.mock('../../ux-components/top-panel/TopPanel', () => {
   return () => {
-    const { PREDEFINED_PLAYERS } = jest.requireActual('../../types/GamePlayer');
+    const { playerFactory } = jest.requireActual('../../factories/playerFactory');
     const { useApplicationContext } = jest.requireActual('../../contexts/ApplicationContext');
-    const mockPlayer = PREDEFINED_PLAYERS[0];
+    const { PREDEFINED_PLAYERS } = jest.requireActual('../../domain/player/playerRepository');
+    const mockPlayer = playerFactory(PREDEFINED_PLAYERS[0], 'computer');
     const { setShowStartWindow, setShowSaveDialog, showOpponentInfo } = useApplicationContext();
     return (
       <div data-testid="TopPanel">
@@ -81,7 +82,7 @@ jest.mock('../../ux-components/popups/OpponentInfoPopup', () => {
 
     return props.opponent ? (
       <div data-testid="OpponentInfoPopup">
-        <span>{props.opponent.name}</span>
+        <span>{props.opponent.playerProfile.name}</span>
         <button onClick={handleClose}>Close</button>
       </div>
     ) : null;

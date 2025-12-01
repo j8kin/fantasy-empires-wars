@@ -3,15 +3,19 @@ import commonStyles from './css/Popup.module.css';
 import styles from './css/LandCharacteristicsPopup.module.css';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { battlefieldLandId, getPlayerById } from '../../types/GameState';
+import { useGameContext } from '../../contexts/GameContext';
 
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
-import { getAlignmentColor } from '../../types/Alignment';
-import { NO_PLAYER } from '../../types/GamePlayer';
-import { LandPosition } from '../../map/utils/getLands';
-import { useGameContext } from '../../contexts/GameContext';
-import { HeroUnit, isHero, RegularUnit } from '../../types/Army';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getPlayer } from '../../selectors/playerSelectors';
+
+import { getAlignmentColor } from '../../domain/ui/alignmentColors';
+
+import { NO_PLAYER } from '../../domain/player/playerRepository';
 
 interface LandCharacteristicsPopupProps extends PopupProps {
   battlefieldPosition: LandPosition;
@@ -23,10 +27,10 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
 }) => {
   const { hideLandPopup } = useApplicationContext();
   const { gameState } = useGameContext();
-  const land = gameState!.battlefield.lands[battlefieldLandId(battlefieldPosition)];
+  const land = gameState!.map.lands[getLandId(battlefieldPosition)];
 
   // Calculate dynamic size based on content type
-  // MANUAL ADJUSTMENT POINT 1: Base heights and row spacing
+  //  Base heights and row spacing
   const headerHeight = 34; // Header with title (6px padding * 2 + 20px content)
   const standardRowHeight = 21; // Height per standard data row (Alignment, ControlledBy etc) (12px font + 6px margin)
   const buildingRowHeight = 24; // Height for building rows (includes building chip padding + gaps)
@@ -42,12 +46,9 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   }
 
   // Army rows - separate heroes and units
-  const heroes = land.army
-    .filter(({ units }) => units.some((unit) => isHero(unit)))
-    .flatMap((a) => a.units.filter((unit) => isHero(unit)).map((u) => u as HeroUnit));
-  const units = land.army
-    .filter(({ units }) => units.some((unit) => !isHero(unit)))
-    .flatMap((a) => a.units.filter((unit) => !isHero(unit)).map((u) => u as RegularUnit));
+  const armiesAtPosition = getArmiesAtPosition(gameState!, battlefieldPosition);
+  const heroes = armiesAtPosition.flatMap((a) => a.heroes);
+  const units = armiesAtPosition.flatMap((a) => a.regulars);
 
   if (heroes.length > 0) {
     calculatedHeight += heroes.length * armyRowHeight;
@@ -57,8 +58,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
     calculatedHeight += units.length * armyRowHeight;
   }
 
-  // MANUAL ADJUSTMENT POINT 2: Final height calculation
-  const dynamicHeight = Math.min(calculatedHeight, 270); // MANUAL ADJUSTMENT POINT 3: Max height limit
+  //  Final height calculation
+  const dynamicHeight = Math.min(calculatedHeight, 270); // Max height limit
   const dynamicWidth = 320;
 
   // Calculate adjusted screen position to keep popup within window bounds
@@ -130,8 +131,9 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
                 <span className={commonStyles.value}>
                   {(() => {
-                    const player = getPlayerById(gameState, land.controlledBy);
-                    return player ? player.name : NO_PLAYER.name;
+                    if (!gameState) return NO_PLAYER.name;
+                    return getPlayer(gameState, getLandOwner(gameState, land.mapPos)).playerProfile
+                      .name;
                   })()}
                 </span>
               </div>
@@ -166,8 +168,8 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                       <span className={`${commonStyles.label} ${styles.label}`}>Units:</span>
                       <div className={styles.buildingsList}>
                         {units.map((unit) => (
-                          <span key={unit.id} className={commonStyles.value}>
-                            {unit.id} ({unit.count})
+                          <span key={unit.type} className={commonStyles.value}>
+                            {unit.type} ({unit.count})
                           </span>
                         ))}
                       </div>

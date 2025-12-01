@@ -9,19 +9,24 @@ import Avatar from '../avatars/Avatar';
 import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 
-import { generateMap } from '../../map/generation/generateMap';
+import { GameState } from '../../state/GameState';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { MapDimensions } from '../../state/map/MapDimensions';
+
+import { addPlayer } from '../../systems/playerActions';
+import { gameStateFactory } from '../../factories/gameStateFactory';
+import { getPlayerColorValue } from '../../domain/ui/playerColors';
+import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+
 import { ButtonName } from '../../types/ButtonName';
-import { GamePlayer, NO_PLAYER, PlayerInfo, PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { DiplomacyStatus } from '../../types/Diplomacy';
-import { getPlayerColorValue, PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
-import { BattlefieldDimensions, GameState, TurnPhase } from '../../types/GameState';
-import { Mana, ManaType } from '../../types/Mana';
-import { toGamePlayer } from '../../__tests__/utils/toGamePlayer';
+import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
+
+import { generateMap } from '../../map/generation/generateMap';
 
 // Local map size type for this dialog only
 type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';
 
-const getBattlefieldDimensions = (selectedMapSize: DialogMapSize): BattlefieldDimensions => {
+const getBattlefieldDimensions = (selectedMapSize: DialogMapSize): MapDimensions => {
   switch (selectedMapSize) {
     case 'small':
       return { rows: 6, cols: 13 };
@@ -64,9 +69,9 @@ const NewGameDialog: React.FC = () => {
 
   // Local state for dialog-specific values
   const [mapSize, setMapSize] = useState<DialogMapSize>('medium');
-  const [selectedPlayer, setSelectedPlayer] = useState<PlayerInfo>(PREDEFINED_PLAYERS[0]);
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerProfile>(PREDEFINED_PLAYERS[0]);
   const [opponentSelectionMode, setOpponentSelectionMode] = useState<'random' | 'manual'>('manual');
-  const [selectedOpponents, setSelectedOpponents] = useState<(PlayerInfo | null)[]>([]);
+  const [selectedOpponents, setSelectedOpponents] = useState<(PlayerProfile | null)[]>([]);
 
   const maxOpponents = getMaxOpponents(mapSize);
 
@@ -80,7 +85,7 @@ const NewGameDialog: React.FC = () => {
       );
       const uniqueColors = availableColors.slice(0, maxOpponents);
 
-      const opponents: (PlayerInfo | null)[] = new Array(maxOpponents).fill(null);
+      const opponents: (PlayerProfile | null)[] = new Array(maxOpponents).fill(null);
       const shuffledPlayers = [...availablePlayers].sort(() => 0.5 - Math.random());
 
       // Add 2 unique random opponents
@@ -123,7 +128,7 @@ const NewGameDialog: React.FC = () => {
       if (opponentSelectionMode === 'random') {
         // Generate unique random opponents for max number
         const shuffledPlayers = [...availablePlayers].sort(() => 0.5 - Math.random());
-        const randomOpponents: PlayerInfo[] = [];
+        const randomOpponents: PlayerProfile[] = [];
 
         for (let i = 0; i < newMaxOpponents && i < shuffledPlayers.length; i++) {
           randomOpponents.push({
@@ -146,7 +151,7 @@ const NewGameDialog: React.FC = () => {
         setSelectedOpponents(randomOpponents);
       } else {
         // Manual mode: start with 2 unique random opponents, rest empty
-        const opponents: (PlayerInfo | null)[] = new Array(newMaxOpponents).fill(null);
+        const opponents: (PlayerProfile | null)[] = new Array(newMaxOpponents).fill(null);
         const shuffledPlayers = [...availablePlayers].sort(() => 0.5 - Math.random());
 
         // Add 2 unique random opponents
@@ -191,7 +196,7 @@ const NewGameDialog: React.FC = () => {
   }, [initializeOpponents, opponentSelectionMode]);
 
   const handlePlayerChange = useCallback(
-    (player: PlayerInfo) => {
+    (player: PlayerProfile) => {
       setSelectedPlayer(player);
     },
     [setSelectedPlayer]
@@ -213,7 +218,7 @@ const NewGameDialog: React.FC = () => {
 
       showSelectOpponentDialogWithConfig(
         excludedPlayerIds,
-        (opponent: PlayerInfo) => {
+        (opponent: PlayerProfile) => {
           const newOpponents = [...selectedOpponents];
           const uniqueColors = getUniqueOpponentColors();
           newOpponents[index] = {
@@ -237,65 +242,18 @@ const NewGameDialog: React.FC = () => {
   const handleStartGame = useCallback(() => {
     const opponents =
       opponentSelectionMode === 'random'
-        ? selectedOpponents.filter((o) => o != null).map((o) => toGamePlayer(o, 'computer'))
-        : selectedOpponents
-            .filter((o) => o != null)
-            .filter((o) => o.id !== NO_PLAYER.id)
-            .map((opponent) => toGamePlayer(opponent, 'computer'));
-
-    const initialMana = (): Mana => ({
-      [ManaType.GREEN]: 0,
-      [ManaType.BLUE]: 0,
-      [ManaType.RED]: 0,
-      [ManaType.WHITE]: 0,
-      [ManaType.BLACK]: 0,
-    });
-
-    const initialMoney = 15000;
-
-    const createdOpponents: GamePlayer[] = opponents.map((opponent) => {
-      return {
-        ...opponent,
-        diplomacy: {
-          ...Object.fromEntries(
-            opponents
-              .filter((o) => o.id !== opponent.id)
-              .map((op) => [op.id, DiplomacyStatus.NO_TREATY])
-          ),
-          [selectedPlayer.id]: DiplomacyStatus.NO_TREATY,
-        },
-        mana: initialMana(),
-        vault: initialMoney,
-        income: 0, // will calculate on game start on the first turn
-        playerType: 'computer', // all opponents for now are computer players
-        quests: [], // no heroes are send to quests at game start
-        empireTreasures: [], // no treasures at game start
-      } as GamePlayer;
-    });
-
-    const createdPlayer: GamePlayer = {
-      ...selectedPlayer,
-      diplomacy: Object.fromEntries(opponents.map((op) => [op.id, DiplomacyStatus.NO_TREATY])),
-      mana: initialMana(),
-      vault: initialMoney,
-      income: 0, // will calculate on game start on first turn
-      playerType: 'human',
-      quests: [], // no heroes are send to quests at game start
-      empireTreasures: [], // no treasures at game start
-    };
+        ? selectedOpponents.filter((o) => o != null)
+        : selectedOpponents.filter((o) => o != null).filter((o) => o.id !== NO_PLAYER.id);
 
     setShowStartWindow(false);
     setProgressMessage('Creating new game...');
     setShowProgressPopup(true);
 
     setTimeout(() => {
-      const gameState: GameState = {
-        battlefield: generateMap(getBattlefieldDimensions(mapSize)),
-        turn: 1,
-        turnOwner: createdPlayer.id,
-        turnPhase: TurnPhase.START,
-        players: [createdPlayer, ...createdOpponents],
-      };
+      const map = generateMap(getBattlefieldDimensions(mapSize));
+      const gameState: GameState = gameStateFactory(map);
+      addPlayer(gameState, selectedPlayer, 'human');
+      opponents.forEach((o) => addPlayer(gameState, o, 'computer'));
 
       startNewGame(gameState);
       setGameStarted(true);

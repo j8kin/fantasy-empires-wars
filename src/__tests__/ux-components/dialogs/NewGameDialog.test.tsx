@@ -2,9 +2,9 @@ import React, { ReactNode, useEffect } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import NewGameDialog from '../../../ux-components/dialogs/NewGameDialog';
-import { PREDEFINED_PLAYERS } from '../../../types/GamePlayer';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
+import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 
 const GameStateInitializer: React.FC<{ children: ReactNode }> = ({ children }) => {

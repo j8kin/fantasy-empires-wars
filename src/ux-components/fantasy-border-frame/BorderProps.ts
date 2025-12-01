@@ -1,4 +1,4 @@
-import { FrameSize } from './FantasyBorderFrame';
+import { FrameSize } from '../../contexts/ApplicationContext';
 
 export interface BorderProps {
   side: 'left' | 'right' | 'top' | 'bottom';

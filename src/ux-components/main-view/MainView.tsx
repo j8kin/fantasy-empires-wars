@@ -88,8 +88,8 @@ const MainViewContent: React.FC = () => {
   // Start the first turn when game begins (only once per game)
   useEffect(() => {
     if (gameStarted && gameState && gameState.turn === 1) {
-      // Create a unique identifier for this game state to detect new games
-      const currentGameId = `${gameState.players.length}-${gameState.battlefield.dimensions.rows}-${gameState.battlefield.dimensions.cols}-${gameState.players[0]?.id}`;
+      // Create a unique identifier for this game state to detect new games todo use UUID instead of string concatenation
+      const currentGameId = `${gameState.players.length}-${gameState.map.dimensions.rows}-${gameState.map.dimensions.cols}-${gameState.players[0]?.id}`;
 
       // Check if this is a different game than the last one
       if (lastGameStateRef.current !== currentGameId) {

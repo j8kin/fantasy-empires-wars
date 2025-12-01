@@ -1,14 +1,9 @@
-import { getLand, getLands, LandPosition } from './getLands';
-import {
-  BattlefieldDimensions,
-  battlefieldLandId,
-  GameState,
-  LandState,
-} from '../../types/GameState';
-import { BuildingType } from '../../types/Building';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+import { MapDimensions } from '../../state/map/MapDimensions';
 
 export const calculateHexDistance = (
-  dimensions: BattlefieldDimensions,
+  dimensions: MapDimensions,
   startPoint: LandPosition,
   endPoint: LandPosition
 ): number => {
@@ -38,7 +33,7 @@ export const calculateHexDistance = (
 };
 
 export const findShortestPath = (
-  dimensions: BattlefieldDimensions,
+  dimensions: MapDimensions,
   startPosition: LandPosition,
   endPosition: LandPosition
 ): LandPosition[] => {
@@ -54,7 +49,7 @@ export const findShortestPath = (
   const visited = new Set<string>();
   const queue: { pos: LandPosition; path: LandPosition[] }[] = [];
 
-  visited.add(battlefieldLandId(startPosition));
+  visited.add(getLandId(startPosition));
   queue.push({ pos: startPosition, path: [startPosition] });
 
   while (queue.length > 0) {
@@ -68,7 +63,7 @@ export const findShortestPath = (
     const neighbors = getValidNeighbors(dimensions, current.pos);
 
     for (const neighbor of neighbors) {
-      const neighborKey = battlefieldLandId(neighbor);
+      const neighborKey = getLandId(neighbor);
 
       if (!visited.has(neighborKey)) {
         //const weight = 1; // Can be modified later for different terrain costs
@@ -88,7 +83,7 @@ const excludePosition = (arr: LandPosition[], exclude: LandPosition): LandPositi
 };
 
 export const getTilesInRadius = (
-  dimensions: BattlefieldDimensions,
+  dimensions: MapDimensions,
   center: LandPosition,
   radius: number,
   excludeCenter: boolean = false
@@ -125,50 +120,14 @@ export const getTilesInRadius = (
   }
   return excludeCenter ? excludePosition(tilesInRadius, center) : tilesInRadius;
 };
-
-export const getNearestStrongholdLand = (
-  landPos: LandPosition,
-  gameState: GameState,
-  radius: number = 1
-): LandState | undefined => {
-  const allStrongholdsInRadius2 = getLands({
-    gameState: gameState,
-    buildings: [BuildingType.STRONGHOLD],
-  })
-    .filter(
-      (stronghold) => stronghold.mapPos.row !== landPos.row || stronghold.mapPos.col !== landPos.col
-    )
-    .filter(
-      (stronghold) =>
-        calculateHexDistance(gameState.battlefield.dimensions, landPos, stronghold.mapPos) <= radius
-    );
-
-  // no stronghold in radius 2
-  if (allStrongholdsInRadius2.length === 0) return undefined;
-
-  // if there is a stronghold in radius 2 with the same owner as the land, return it
-  const sameOwnerStronghold = allStrongholdsInRadius2.find(
-    (s) => s.controlledBy === getLand(gameState, landPos).controlledBy
-  );
-  if (sameOwnerStronghold) {
-    return sameOwnerStronghold;
-  }
-
-  // return the closest stronghold in radius 2
-  return allStrongholdsInRadius2[0];
-};
-
-const isValidPosition = (dimensions: BattlefieldDimensions, pos: LandPosition): boolean => {
+const isValidPosition = (dimensions: MapDimensions, pos: LandPosition): boolean => {
   const { rows, cols } = dimensions;
   if (pos.row < 0 || pos.row >= rows) return false;
   const colsInRow = pos.row % 2 === 0 ? cols : cols - 1;
   return pos.col >= 0 && pos.col < colsInRow;
 };
 
-const getValidNeighbors = (
-  dimensions: BattlefieldDimensions,
-  pos: LandPosition
-): LandPosition[] => {
+const getValidNeighbors = (dimensions: MapDimensions, pos: LandPosition): LandPosition[] => {
   return getHexNeighbors(pos).filter((pos) => isValidPosition(dimensions, pos));
 };
 

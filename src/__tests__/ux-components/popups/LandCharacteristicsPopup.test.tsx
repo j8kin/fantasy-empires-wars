@@ -2,18 +2,22 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
-import { battlefieldLandId, GameState, LandState } from '../../../types/GameState';
-import {
-  Armies,
-  getDefaultUnit,
-  HeroUnit,
-  HeroUnitType,
-  RegularUnit,
-  RegularUnitType,
-} from '../../../types/Army';
-import { createGameStateStub } from '../../utils/createGameStateStub';
-import { getLands } from '../../../map/utils/getLands';
+
+import { GameState } from '../../../state/GameState';
+import { LandState } from '../../../state/map/land/LandState';
+import { Armies } from '../../../state/army/ArmyState';
+
+import { getLandOwner } from '../../../selectors/landSelectors';
+import { getPlayerLands } from '../../../selectors/playerSelectors';
+import { startMoving } from '../../../systems/armyActions';
+import { armyFactory } from '../../../factories/armyFactory';
+import { heroFactory } from '../../../factories/heroFactory';
+import { regularsFactory } from '../../../factories/regularsFactory';
+
+import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
 import { BuildingType } from '../../../types/Building';
+
+import { createGameStateStub } from '../../utils/createGameStateStub';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
@@ -58,16 +62,13 @@ describe('LandCharacteristicsPopup', () => {
   beforeEach(() => {
     // Create fresh game state with real battlefield for each test
     gameStateStub = createGameStateStub({
-      turnOwner: 1,
       realBattlefield: true,
     });
 
     // Find a tile that's controlled by player 1 (Morgana Shadowweaver) AND has buildings
-    mockTileState = getLands({
-      gameState: gameStateStub,
-      players: [gameStateStub.players[1].id],
-      buildings: [BuildingType.STRONGHOLD],
-    })[0];
+    mockTileState = getPlayerLands(gameStateStub, gameStateStub.players[1].id).find((l) =>
+      l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+    )!;
 
     jest.clearAllMocks();
   });
@@ -97,7 +98,7 @@ describe('LandCharacteristicsPopup', () => {
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(mockTileState.controlledBy).toBe(gameStateStub.players[1].id);
+    expect(getLandOwner(gameStateStub, mockTileState.mapPos)).toBe(gameStateStub.players[1].id);
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
   });
 
@@ -151,26 +152,18 @@ describe('LandCharacteristicsPopup', () => {
 
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
-      const mockArmy: Armies = [
-        { units: [getDefaultUnit(HeroUnitType.FIGHTER)], controlledBy: gameStateStub.turnOwner },
-        { units: [getDefaultUnit(HeroUnitType.PYROMANCER)], controlledBy: gameStateStub.turnOwner },
-      ];
+      const army1 = armyFactory(gameStateStub.turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
+      ]);
+      const army2 = armyFactory(gameStateStub.turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.PYROMANCER, HeroUnitType.PYROMANCER),
+      ]);
+      const mockArmy: Armies = [army1, army2];
 
-      const tileWithHeroes = {
-        ...mockTileState,
-        army: mockArmy,
-      };
-
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      // Add armies to centralized system instead of land.army
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
-          lands: {
-            ...gameStateStub.battlefield.lands,
-            [tileId]: tileWithHeroes,
-          },
-        },
+        armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
@@ -187,36 +180,25 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays multiple heroes of same type with different names', () => {
-      const fighter1 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
-      fighter1.name = 'Cedric Brightshield';
+      const turnOwner = gameStateStub.turnOwner;
+      const fighter1 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, 'Cedric Brightshield'),
+      ]);
 
-      const fighter2 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
-      fighter2.name = 'Rowan Ashborne';
+      const fighter2 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, 'Rowan Ashborne'),
+      ]);
 
-      const fighter3 = getDefaultUnit(HeroUnitType.FIGHTER) as HeroUnit;
-      fighter3.name = 'Gareth Dawnhart';
+      const fighter3 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, 'Gareth Dawnhart'),
+      ]);
 
-      const mockArmy: Armies = [
-        { units: [fighter1], controlledBy: gameStateStub.turnOwner },
-        { units: [fighter2], controlledBy: gameStateStub.turnOwner },
-        { units: [fighter3], controlledBy: gameStateStub.turnOwner },
-      ];
+      const mockArmy: Armies = [fighter1, fighter2, fighter3];
 
-      const tileWithHeroes = {
-        ...mockTileState,
-        army: mockArmy,
-      };
-
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      // Add armies to centralized system instead of land.army
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
-          lands: {
-            ...gameStateStub.battlefield.lands,
-            [tileId]: tileWithHeroes,
-          },
-        },
+        armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
@@ -234,26 +216,20 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays units when tile has non-hero units', () => {
-      const mockArmy: Armies = [
-        { units: [getDefaultUnit(RegularUnitType.WARRIOR)], controlledBy: gameStateStub.turnOwner },
-        { units: [getDefaultUnit(RegularUnitType.DWARF)], controlledBy: gameStateStub.turnOwner },
-      ];
+      const turnOwner = gameStateStub.turnOwner;
+      const army1 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.WARRIOR),
+      ]);
+      const army2 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.DWARF),
+      ]);
 
-      const tileWithUnits = {
-        ...mockTileState,
-        army: mockArmy,
-      };
+      const mockArmy: Armies = [army1, army2];
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      // Add armies to centralized system instead of land.army
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
-          lands: {
-            ...gameStateStub.battlefield.lands,
-            [tileId]: tileWithUnits,
-          },
-        },
+        armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
@@ -270,41 +246,31 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays both heroes and units when tile has mixed army', () => {
-      const regularWarriors = getDefaultUnit(RegularUnitType.WARRIOR) as RegularUnit;
+      const regularWarriors = regularsFactory(RegularUnitType.WARRIOR);
       regularWarriors.count = 5;
 
-      const mockArmy: Armies = [
-        { units: [getDefaultUnit(HeroUnitType.FIGHTER)], controlledBy: gameStateStub.turnOwner },
-        { units: [regularWarriors], controlledBy: gameStateStub.turnOwner },
-        {
-          units: [getDefaultUnit(RegularUnitType.DWARF)],
-          movements: {
-            from: { row: 0, col: 0 },
-            to: { row: 1, col: 1 },
-            mp: 0,
-            path: [],
-          },
-          controlledBy: gameStateStub.turnOwner,
-        }, // moving army should also be displayed
-        { units: [getDefaultUnit(HeroUnitType.CLERIC)], controlledBy: gameStateStub.turnOwner },
-        { units: [getDefaultUnit(RegularUnitType.ELF)], controlledBy: gameStateStub.turnOwner },
-      ];
+      const turnOwner = gameStateStub.turnOwner;
+      const army1 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
+      ]);
+      const army2 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [regularWarriors]);
+      const army3 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.DWARF),
+      ]);
+      startMoving(army3, { row: 1, col: 1 });
+      const army4 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+      ]);
+      const army5 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.ELF),
+      ]);
 
-      const tileWithMixedArmy = {
-        ...mockTileState,
-        army: mockArmy,
-      };
+      const mockArmy: Armies = [army1, army2, army3, army4, army5];
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      // Add armies to centralized system instead of land.army
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
-          lands: {
-            ...gameStateStub.battlefield.lands,
-            [tileId]: tileWithMixedArmy,
-          },
-        },
+        armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
@@ -328,21 +294,16 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('does not display army sections when tile has no army', () => {
-      const tileWithoutArmy = {
-        ...mockTileState,
-        army: [],
-      };
-
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      // Filter out any armies that might be at this position
       const gameStateWithoutArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
-          lands: {
-            ...gameStateStub.battlefield.lands,
-            [tileId]: tileWithoutArmy,
-          },
-        },
+        armies: gameStateStub.armies.filter((army) => {
+          const armyPosition = army.movement.path[0];
+          return !(
+            armyPosition.row === mockTileState.mapPos.row &&
+            armyPosition.col === mockTileState.mapPos.col
+          );
+        }),
       };
 
       renderWithProviders(
@@ -358,29 +319,20 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays only heroes section when tile has only heroes', () => {
-      const mockArmy: Armies = [
-        { units: [getDefaultUnit(HeroUnitType.RANGER)], controlledBy: gameStateStub.turnOwner },
-        {
-          units: [getDefaultUnit(HeroUnitType.NECROMANCER)],
-          controlledBy: gameStateStub.turnOwner,
-        },
-      ];
+      const turnOwner = gameStateStub.turnOwner;
+      const army1 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.RANGER, HeroUnitType.RANGER),
+      ]);
+      const army2 = armyFactory(turnOwner, mockTileState.mapPos, [
+        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+      ]);
 
-      const tileWithHeroesOnly = {
-        ...mockTileState,
-        army: mockArmy,
-      };
+      const mockArmy: Armies = [army1, army2];
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      // Add armies to centralized system instead of land.army
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
-          lands: {
-            ...gameStateStub.battlefield.lands,
-            [tileId]: tileWithHeroesOnly,
-          },
-        },
+        armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
@@ -398,29 +350,29 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays only units section when tile has only non-hero units', () => {
-      const mockArmy: Armies = [
-        { units: [getDefaultUnit(RegularUnitType.ORC)], controlledBy: gameStateStub.turnOwner },
-        {
-          units: [getDefaultUnit(RegularUnitType.BALLISTA)],
-          controlledBy: gameStateStub.turnOwner,
-        },
-      ];
+      const turnOwner = gameStateStub.turnOwner;
+      const army1 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.ORC),
+      ]);
+      const army2 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+        regularsFactory(RegularUnitType.BALLISTA),
+      ]);
 
-      const tileWithUnitsOnly = {
-        ...mockTileState,
-        army: mockArmy,
-      };
+      const mockArmy: Armies = [army1, army2];
 
-      const tileId = battlefieldLandId(mockTileState.mapPos);
+      // Filter out any existing armies at this position and add only our test armies
       const gameStateWithArmy = {
         ...gameStateStub,
-        battlefield: {
-          ...gameStateStub.battlefield,
-          lands: {
-            ...gameStateStub.battlefield.lands,
-            [tileId]: tileWithUnitsOnly,
-          },
-        },
+        armies: [
+          ...gameStateStub.armies.filter((army) => {
+            const armyPosition = army.movement.path[0];
+            return !(
+              armyPosition.row === mockTileState.mapPos.row &&
+              armyPosition.col === mockTileState.mapPos.col
+            );
+          }),
+          ...mockArmy,
+        ],
       };
 
       renderWithProviders(

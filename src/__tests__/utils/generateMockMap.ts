@@ -1,7 +1,11 @@
-import { BattlefieldMap, battlefieldLandId, BattlefieldDimensions } from '../../types/GameState';
-import { LandPosition } from '../../map/utils/getLands';
-import { getLandById, Land, LandType } from '../../types/Land';
-import { NO_PLAYER } from '../../types/GamePlayer';
+import { MapState } from '../../state/map/MapState';
+import { MapDimensions } from '../../state/map/MapDimensions';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+
+import { getLandById } from '../../domain/land/landRepository';
+
+import { Land, LandType } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 
 const genLand = (alignment: Alignment | undefined): Land => {
@@ -17,11 +21,11 @@ const genLand = (alignment: Alignment | undefined): Land => {
   }
 };
 export const generateMockMap = (
-  dimensions: BattlefieldDimensions,
+  dimensions: MapDimensions,
   alignment: Alignment | undefined = undefined,
   income: number | undefined = undefined
-): BattlefieldMap => {
-  const result: BattlefieldMap = {
+): MapState => {
+  const result: MapState = {
     dimensions: dimensions,
     lands: {},
   };
@@ -30,14 +34,12 @@ export const generateMockMap = (
     const colsInRow = row % 2 === 0 ? dimensions.cols : dimensions.cols - 1;
     for (let col = 0; col < colsInRow; col++) {
       const position: LandPosition = { row: row, col: col };
-      const key = battlefieldLandId(position);
+      const key = getLandId(position);
       result.lands[key] = {
         mapPos: position,
         land: genLand(alignment),
-        controlledBy: NO_PLAYER.id,
         buildings: [],
         goldPerTurn: income != null ? income : landNumber,
-        army: [],
       };
       landNumber++;
     }

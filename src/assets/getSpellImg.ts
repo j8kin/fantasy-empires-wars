@@ -8,7 +8,17 @@ import illusionImg from './spells/blue/illusion.png';
 import teleportImg from './spells/blue/teleport.png';
 import tornadoImg from './spells/blue/tornado.png';
 import fertileLandsImg from './spells/green/fertile-lands.png';
-import rootsImg from './spells/green/roots.png';
+import entangledRootsImg from './spells/green/entangled-roots.png';
+import beastAttachImg from './spells/green/beast-attack.png';
+import earthquakeImg from './spells/green/earthquake.png';
+import emberRaidImg from './spells/red/ember-raid.png';
+import forgeOfWarImg from './spells/red/forge-of-war.png';
+import fireStormImg from './spells/red/firestorm.png';
+import meteorShowerImg from './spells/red/meteor-shower.png';
+import summonUndeadImg from './spells/black/summon-undead.png';
+import raiseDeadHeroImg from './spells/black/raise-dead-hero.png';
+import plagueImg from './spells/black/plague.png';
+import corruptionImg from './spells/black/corruption.png';
 
 export const getSpellImg = (spell: Spell) => {
   switch (spell.id) {
@@ -32,7 +42,29 @@ export const getSpellImg = (spell: Spell) => {
     case SpellName.FERTILE_LAND:
       return fertileLandsImg;
     case SpellName.ENTANGLING_ROOTS:
-      return rootsImg;
+      return entangledRootsImg;
+    case SpellName.BEAST_ATTACK:
+      return beastAttachImg;
+    case SpellName.EARTHQUAKE:
+      return earthquakeImg;
+    // red spells
+    case SpellName.EMBER_RAID:
+      return emberRaidImg;
+    case SpellName.FORGE_OF_WAR:
+      return forgeOfWarImg;
+    case SpellName.FIRESTORM:
+      return fireStormImg;
+    case SpellName.METEOR_SHOWER:
+      return meteorShowerImg;
+    // black spells
+    case SpellName.SUMMON_UNDEAD:
+      return summonUndeadImg;
+    case SpellName.RAISE_DEAD_HERO:
+      return raiseDeadHeroImg;
+    case SpellName.PLAGUE:
+      return plagueImg;
+    case SpellName.CORRUPTION:
+      return corruptionImg;
     default:
       return undefined;
   }

@@ -1,16 +1,21 @@
-import { GameState } from '../../types/GameState';
+import { GameState } from '../../state/GameState';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { startTurn } from '../../turn/startTurn';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { BuildingType } from '../../types/Building';
+import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
+import { construct } from '../../map/building/construct';
+import { createGameStateStub } from '../utils/createGameStateStub';
+import { nextPlayer } from '../../systems/playerActions';
 
 describe('Start Turn phase', () => {
   let gameStateStub: GameState;
 
   beforeEach(() => {
-    gameStateStub = createDefaultGameStateStub();
+    gameStateStub = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
     gameStateStub.players.forEach((player) => {
       player.vault = 0;
-      player.income = 0;
     });
+    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
   });
 
   /** Test income and money calculation
@@ -20,19 +25,21 @@ describe('Start Turn phase', () => {
    **/
   it.each([
     [1, 0, 0],
-    [2, 0, 141],
-    [3, 141, 141],
+    [2, 0, 441],
+    [3, 441, 441],
   ])(
     'Income and Money calculation based on current turn %s',
-    (turn: number, money: number, income: number) => {
+    (turn: number, expectedVault: number, expectedCalculatedIncome: number) => {
       expect(gameStateStub.players[0].vault).toBe(0);
-      expect(gameStateStub.players[0].income).toBe(0);
+      expect(getTurnOwner(gameStateStub).landsOwned.size).toBe(7);
 
-      gameStateStub.turn = turn;
+      while (gameStateStub.turn < turn) nextPlayer(gameStateStub);
+
+      expect(gameStateStub.turn).toBe(turn);
       startTurn(gameStateStub);
 
-      expect(gameStateStub.players[0].vault).toBe(money);
-      expect(gameStateStub.players[0].income).toBe(income);
+      expect(gameStateStub.players[0].vault).toBe(expectedVault);
+      expect(calculatePlayerIncome(gameStateStub)).toBe(expectedCalculatedIncome);
     }
   );
 });

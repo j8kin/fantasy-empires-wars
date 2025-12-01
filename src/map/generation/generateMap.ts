@@ -1,45 +1,37 @@
-import {
-  BattlefieldDimensions,
-  battlefieldLandId,
-  BattlefieldLands,
-  BattlefieldMap,
-  LandState,
-} from '../../types/GameState';
-import {
-  getLandById,
-  getMainSpecialLandTypes,
-  getNearSpecialLandTypes,
-  getRegularLandTypes,
-  getSurroundingLands,
-  Land,
-  LandType,
-} from '../../types/Land';
-import { NO_PLAYER } from '../../types/GamePlayer';
-import { LandPosition } from '../utils/getLands';
+import { MapState } from '../../state/map/MapState';
+import { MapLands } from '../../state/map/MapState';
+import { LandState } from '../../state/map/land/LandState';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+import { MapDimensions } from '../../state/map/MapDimensions';
+
+import { getLandById } from '../../domain/land/landRepository';
+import { getMainSpecialLandTypes, getRegularLandTypes } from '../../domain/land/landQueries';
+import { getSurroundingLands, getNearSpecialLandTypes } from '../../domain/land/landRelationships';
+import { getRandomElement } from '../../domain/utils/random';
+
+import { Land, LandType } from '../../types/Land';
+
 import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getRandomElement } from '../../types/getRandomElement';
 
 const calculateBaseLandGold = (land: Land): number => {
   const { min, max } = land?.goldPerTurn;
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const getRandomEmptyLand = (tiles: BattlefieldLands): LandState | undefined => {
+const getRandomEmptyLand = (tiles: MapLands): LandState | undefined => {
   const emptyLands = Object.values(tiles).filter((tile) => tile.land.id === LandType.NONE);
   if (emptyLands.length === 0) return undefined;
   return getRandomElement(emptyLands);
 };
 
-const getEmptyNeighbors = (battlefield: BattlefieldMap, position: LandPosition): LandState[] => {
+const getEmptyNeighbors = (battlefield: MapState, position: LandPosition): LandState[] => {
   return getTilesInRadius(battlefield.dimensions, position, 1)
-    .map((pos) => battlefield.lands[battlefieldLandId(pos)])
+    .map((pos) => battlefield.lands[getLandId(pos)])
     .filter((tile) => tile.land.id === LandType.NONE);
 };
 
-const getRandomNoneNeighbor = (
-  battlefield: BattlefieldMap,
-  pos: LandPosition
-): LandState | undefined => {
+const getRandomNoneNeighbor = (battlefield: MapState, pos: LandPosition): LandState | undefined => {
   const noneNeighbors = getEmptyNeighbors(battlefield, pos);
 
   if (noneNeighbors.length === 0) return undefined;
@@ -47,28 +39,26 @@ const getRandomNoneNeighbor = (
   return getRandomElement(noneNeighbors);
 };
 
-const createEmptyBattlefield = (dimensions: BattlefieldDimensions): BattlefieldLands => {
-  const battlefield: BattlefieldLands = {};
+const createEmptyBattlefield = (dimensions: MapDimensions): MapLands => {
+  const battlefield: MapLands = {};
   for (let row = 0; row < dimensions.rows; row++) {
     const colsInRow = row % 2 === 0 ? dimensions.cols : dimensions.cols - 1;
 
     for (let col = 0; col < colsInRow; col++) {
       const mapPos: LandPosition = { row: row, col: col };
 
-      battlefield[battlefieldLandId(mapPos)] = {
+      battlefield[getLandId(mapPos)] = {
         mapPos: mapPos,
         land: getLandById(LandType.NONE), // Temporary, will be overwritten
-        controlledBy: NO_PLAYER.id,
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
-        army: [],
       };
     }
   }
   return battlefield;
 };
 
-const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
+const placeSpecialLand = (battlefield: MapState, landType: LandType) => {
   const placedSpecialLands = Object.values(battlefield.lands).filter((land) =>
     getMainSpecialLandTypes().includes(land.land.id)
   );
@@ -78,7 +68,7 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
       // exclude border lands
       !placedSpecialLands
         .flatMap((h) => getTilesInRadius(battlefield.dimensions, h.mapPos, 4, false))
-        .map((tola) => battlefieldLandId(tola))
+        .map((tola) => getLandId(tola))
         .includes(landId)
   );
 
@@ -86,7 +76,7 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
     // fallback to any land free land
     freeToPlaceLands = Object.values(battlefield.lands)
       .filter((land) => land.land.id === LandType.NONE)
-      .map((l) => battlefieldLandId(l.mapPos));
+      .map((l) => getLandId(l.mapPos));
   }
 
   const newLandPos = getRandomElement(freeToPlaceLands);
@@ -99,7 +89,7 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
   );
 
   for (let i = 0; i < nSupplementedLands && i < shuffledCandidates.length; i++) {
-    battlefield.lands[battlefieldLandId(shuffledCandidates[i])].land = getLandById(
+    battlefield.lands[getLandId(shuffledCandidates[i])].land = getLandById(
       getNearSpecialLandTypes(landType)
     );
   }
@@ -116,8 +106,8 @@ const placeSpecialLand = (battlefield: BattlefieldMap, landType: LandType) => {
   });
 };
 
-export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap => {
-  const battlefield: BattlefieldMap = {
+export const generateMap = (dimensions: MapDimensions): MapState => {
+  const battlefield: MapState = {
     dimensions: dimensions,
     lands: createEmptyBattlefield(dimensions),
   };
@@ -140,7 +130,7 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap =
     ) {
       let startLand = getRandomEmptyLand(battlefield.lands);
       if (startLand == null) break;
-      battlefield.lands[battlefieldLandId(startLand.mapPos)].land = getLandById(landType);
+      battlefield.lands[getLandId(startLand.mapPos)].land = getLandById(landType);
 
       // place 6 land of the same time nearby
       for (
@@ -153,7 +143,7 @@ export const generateMap = (dimensions: BattlefieldDimensions): BattlefieldMap =
         const emptyNeighbor = getRandomNoneNeighbor(battlefield, startLand.mapPos);
         if (emptyNeighbor == null) break;
 
-        const neighborTileId = battlefieldLandId(emptyNeighbor.mapPos);
+        const neighborTileId = getLandId(emptyNeighbor.mapPos);
         battlefield.lands[neighborTileId].land = getLandById(landType);
         startLand = battlefield.lands[neighborTileId];
       }

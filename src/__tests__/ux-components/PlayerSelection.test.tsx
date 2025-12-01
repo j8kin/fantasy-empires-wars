@@ -3,9 +3,10 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import PlayerSelection from '../../ux-components/player-selection/PlayerSelection';
-import { PREDEFINED_PLAYERS } from '../../types/GamePlayer';
-import { Alignment } from '../../types/Alignment';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+
+import { Alignment } from '../../types/Alignment';
 
 const renderWithProvider = (ui: React.ReactElement) =>
   render(ui, { wrapper: ApplicationContextProvider });

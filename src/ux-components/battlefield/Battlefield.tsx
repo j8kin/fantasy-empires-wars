@@ -3,10 +3,13 @@ import styles from './css/Battlefield.module.css';
 import hexStyles from './css/Hexagonal.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
+import { FrameSize } from '../../contexts/ApplicationContext';
 
 import LandTile from './LandTile';
-import FantasyBorderFrame, { FrameSize } from '../fantasy-border-frame/FantasyBorderFrame';
-import { BattlefieldDimensions, battlefieldLandId, getTurnOwner } from '../../types/GameState';
+import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
+
+import { getLandId } from '../../state/map/land/LandId';
+import { MapDimensions } from '../../state/map/MapDimensions';
 
 export interface BattlefieldProps {
   topPanelHeight: number;
@@ -14,7 +17,7 @@ export interface BattlefieldProps {
 }
 
 const getHexTileSize = (
-  battlefieldDimensions: BattlefieldDimensions,
+  battlefieldDimensions: MapDimensions,
   availableArea: FrameSize
 ): FrameSize => {
   const defaultWidth = 100;
@@ -42,7 +45,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
   const { gameState } = useGameContext();
 
   // Battlefield generated at application startup, but gameState is not initialized yet - use dummy map size
-  const { rows, cols } = gameState?.battlefield.dimensions || { rows: 1, cols: 1 };
+  const { rows, cols } = gameState?.map.dimensions || { rows: 1, cols: 1 };
   const availableArea = {
     width: window.innerWidth,
     height: window.innerHeight - topPanelHeight,
@@ -59,7 +62,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
 
     for (let col = 0; col < colsInThisRow; col++) {
       const mapPosition = { row: row, col: col };
-      const tileId = battlefieldLandId(mapPosition);
+      const tileId = getLandId(mapPosition);
 
       hexRow.push(<LandTile key={tileId} battlefieldPosition={mapPosition} />);
     }
@@ -94,7 +97,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
         }
       >
         {/* Draw map if game started */}
-        {getTurnOwner(gameState) && <div className={styles.battlefieldContent}>{hexGrid}</div>}
+        {gameState?.turnOwner && <div className={styles.battlefieldContent}>{hexGrid}</div>}
       </div>
     </FantasyBorderFrame>
   );

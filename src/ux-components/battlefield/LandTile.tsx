@@ -5,22 +5,25 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
 
-import { battlefieldLandId, getPlayerById, getTurnOwner } from '../../types/GameState';
-import { getLand, LandPosition } from '../../map/utils/getLands';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { getPlayer, getRealmLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getSpellById } from '../../selectors/spellSelectors';
+import { getBuilding } from '../../selectors/buildingSelectors';
 
-import { BuildingType, getBuilding } from '../../types/Building';
+import { SpellName } from '../../types/Spell';
+import { BuildingType } from '../../types/Building';
+import { getPlayerColorValue } from '../../domain/ui/playerColors';
+
 import { construct } from '../../map/building/construct';
-
-import { getSpellById, SpellName } from '../../types/Spell';
 import { castSpell } from '../../map/magic/castSpell';
+import { calcMaxMove, MAX_MOVE } from '../../map/move-army/calcMaxMove';
+import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
+import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
 
 import { getLandImg } from '../../assets/getLandImg';
-import { getPlayerColorValue } from '../../types/PlayerColors';
-import { getRealmLands } from '../../map/utils/getRealmLands';
-import { calcMaxMove, MAX_MOVE } from '../../map/move-army/calcMaxMove';
-import { isHero, RegularUnit } from '../../types/Army';
-import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
-import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
 
 interface HexTileProps {
   battlefieldPosition: LandPosition;
@@ -48,7 +51,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     landPopupPosition?.row === battlefieldPosition.row &&
     landPopupPosition?.col === battlefieldPosition.col;
 
-  const battlefieldTile = gameState!.battlefield.lands[battlefieldLandId(battlefieldPosition)];
+  const battlefieldTile = gameState!.map.lands[getLandId(battlefieldPosition)];
 
   if (!battlefieldTile) {
     return <div className={styles.hexTile} title="Empty Tile" />;
@@ -59,7 +62,8 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
   // Get the controlling player's color or default to white if not controlled
   const getBackgroundColor = (): string => {
-    const controllingPlayer = getPlayerById(gameState, battlefieldTile.controlledBy);
+    if (gameState == null) return 'white';
+    const controllingPlayer = getPlayer(gameState, getLandOwner(gameState, battlefieldTile.mapPos));
     return getPlayerColorValue(controllingPlayer?.color ?? 'white');
   };
 
@@ -68,17 +72,17 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     showLandPopup(battlefieldPosition, { x: event.clientX, y: event.clientY });
   };
 
-  const tileId = battlefieldLandId(battlefieldPosition);
+  const tileId = getLandId(battlefieldPosition);
   const isGlowing = glowingTiles.has(tileId) || battlefieldTile.glow;
 
   const handleClick = (event: React.MouseEvent) => {
-    if (isGlowing) {
+    if (gameState && isGlowing) {
       event.preventDefault();
       event.stopPropagation(); // Prevent the battlefield click handler from firing
 
       if (selectedLandAction?.startsWith('Spell: ')) {
         const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
-        const selectedPlayer = getTurnOwner(gameState);
+        const selectedPlayer = gameState?.turnOwner;
         if (selectedPlayer) {
           // todo add animation for casting spell
           castSpell(spellToCast, battlefieldPosition, gameState!);
@@ -108,17 +112,11 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         setSelectedLandAction('MoveArmyTo');
 
         const realmLands = getRealmLands(gameState!).map((l) => l.mapPos);
-        const maxMovements = calcMaxMove(
-          getLand(gameState!, battlefieldPosition).army.flatMap(
-            (a) => a.units.filter((u) => !isHero(u)) as RegularUnit[]
-          )
-        );
-        const nHeroes = getLand(gameState!, battlefieldPosition).army.reduce(
-          (acc, army) => acc + army.units.filter(isHero).length,
-          0
-        );
+        const armiesAtPosition = getArmiesAtPosition(gameState!, battlefieldPosition);
+        const maxMovements = calcMaxMove(armiesAtPosition.flatMap((a) => a.regulars));
+        const nHeroes = armiesAtPosition.reduce((acc, army) => acc + army.heroes.length, 0);
         const landsInRadius = getTilesInRadius(
-          gameState!.battlefield.dimensions,
+          gameState!.map.dimensions,
           battlefieldPosition,
           nHeroes >= MIN_HERO_PACKS ? MAX_MOVE : maxMovements
         );
@@ -132,7 +130,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
           ).values()
         );
 
-        moveToLands.forEach((land) => addGlowingTile(battlefieldLandId(land)));
+        moveToLands.forEach((land) => addGlowingTile(getLandId(land)));
 
         return;
       } else if (selectedLandAction === 'MoveArmyTo') {

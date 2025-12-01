@@ -1,10 +1,12 @@
 import { act, renderHook } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { GameState, TurnPhase } from '../../types/GameState';
+import { GameState } from '../../state/GameState';
 import { TurnManager } from '../../turn/TurnManager';
-import { calculateIncome } from '../../map/gold/calculateIncome';
-import { calculateMaintenance } from '../../map/gold/calculateMaintenance';
+import { calculateIncome } from '../../map/vault/calculateIncome';
+import { calculateMaintenance } from '../../map/vault/calculateMaintenance';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { nextPlayer } from '../../systems/playerActions';
+import { TurnPhase } from '../../turn/TurnPhase';
 
 // Mock TurnManager
 jest.mock('../../turn/TurnManager');
@@ -15,8 +17,8 @@ jest.mock('../../turn/endTurn');
 jest.mock('../../turn/mainAiTurn');
 
 // Mock the income calculation functions
-jest.mock('../../map/gold/calculateIncome');
-jest.mock('../../map/gold/calculateMaintenance');
+jest.mock('../../map/vault/calculateIncome');
+jest.mock('../../map/vault/calculateMaintenance');
 
 const mockCalculateIncome = calculateIncome as jest.MockedFunction<typeof calculateIncome>;
 const mockCalculateMaintenance = calculateMaintenance as jest.MockedFunction<
@@ -35,13 +37,10 @@ MockedTurnManager.mockImplementation(() => mockTurnManager as any);
 jest.useFakeTimers();
 
 describe('GameContext-TurnManager Integration', () => {
-  const createMockGameState = (
-    turnOwner: number = 0,
-    turnPhase: TurnPhase = TurnPhase.MAIN
-  ): GameState => {
+  const createGameStateStub = (turnOwner: number = 0): GameState => {
     const gameStateStub = createDefaultGameStateStub();
-    gameStateStub.turnOwner = gameStateStub.players[turnOwner].id;
-    gameStateStub.turnPhase = turnPhase;
+    while (gameStateStub.turnOwner !== gameStateStub.players[turnOwner].id)
+      nextPlayer(gameStateStub);
 
     return gameStateStub;
   };
@@ -72,13 +71,13 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
-      expect(result.current.gameState).toEqual(mockGameState);
+      expect(result.current.gameState).toEqual(gameStateStub);
       expect(result.current.startNewTurn).toBeDefined();
       expect(result.current.endCurrentTurn).toBeDefined();
     });
@@ -88,10 +87,10 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       // Test startNewTurn delegation
@@ -110,10 +109,10 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createGameStateStub();
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       // Verify TurnManager was called with callbacks
@@ -136,7 +135,7 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createGameStateStub();
       const customCallbacks = {
         onGameOver: jest.fn(),
         onStartProgress: jest.fn(),
@@ -146,7 +145,7 @@ describe('GameContext-TurnManager Integration', () => {
 
       act(() => {
         result.current.setTurnManagerCallbacks(customCallbacks);
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       // Verify that callbacks were set (this would be tested through TurnManager behavior)
@@ -160,10 +159,10 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState(0, TurnPhase.MAIN);
+      const gameStateStub = createGameStateStub(0);
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       // Start a new turn
@@ -185,10 +184,10 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState(1, TurnPhase.MAIN); // Computer player
+      const gameStateStub = createGameStateStub(1); // Computer player
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
     });
   });
@@ -199,7 +198,7 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createGameStateStub();
 
       const customCallbacks = {
         onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
@@ -210,7 +209,7 @@ describe('GameContext-TurnManager Integration', () => {
 
       act(() => {
         result.current.setTurnManagerCallbacks(customCallbacks);
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       // The default callback should still work
@@ -222,7 +221,7 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createGameStateStub();
 
       const firstCallbacks = {
         onGameOver: jest.fn(),
@@ -237,7 +236,7 @@ describe('GameContext-TurnManager Integration', () => {
       act(() => {
         result.current.setTurnManagerCallbacks(firstCallbacks);
         result.current.setTurnManagerCallbacks(secondCallbacks);
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       // Both sets of callbacks should be merged
@@ -271,7 +270,7 @@ describe('GameContext-TurnManager Integration', () => {
       });
 
       const invalidGameState = {
-        ...createMockGameState(),
+        ...createGameStateStub(),
         players: [], // No players
       };
 
@@ -289,12 +288,12 @@ describe('GameContext-TurnManager Integration', () => {
         wrapper: ({ children }) => <GameProvider>{children}</GameProvider>,
       });
 
-      const mockGameState = createMockGameState();
+      const gameStateStub = createGameStateStub();
 
       const constructorSpy = jest.spyOn(TurnManager.prototype, 'constructor' as any);
 
       act(() => {
-        result.current.updateGameState(mockGameState);
+        result.current.updateGameState(gameStateStub);
       });
 
       const initialCallCount = constructorSpy.mock.calls.length;
@@ -302,7 +301,7 @@ describe('GameContext-TurnManager Integration', () => {
       // Update game state again
       act(() => {
         result.current.updateGameState({
-          ...mockGameState,
+          ...gameStateStub,
           turn: 2,
         });
       });
