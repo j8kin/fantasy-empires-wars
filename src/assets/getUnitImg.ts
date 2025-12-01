@@ -38,9 +38,9 @@ export const getUnitImg = (unit: UnitType) => {
     case RegularUnitType.DARK_ELF:
       return darkElfImg;
     case RegularUnitType.UNDEAD:
-      return orcImg;
-    case RegularUnitType.ORC:
       return undeadImg;
+    case RegularUnitType.ORC:
+      return orcImg;
     case RegularUnitType.BALLISTA:
       return ballistaImg;
     case RegularUnitType.CATAPULT:
