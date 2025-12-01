@@ -1,9 +1,11 @@
 import { GameState } from '../state/GameState';
 
 import { getTurnOwner } from '../selectors/playerSelectors';
+import { updatePlayerVault, updatePlayerMana } from '../systems/gameStateActions';
 
 import { HeroOutcome } from '../types/HeroOutcome';
 import { TreasureItem } from '../types/Treasures';
+import { ManaType } from '../types/Mana';
 
 import { calculatePlayerIncome } from '../map/vault/calculatePlayerIncome';
 import { placeHomeland } from '../map/generation/placeHomeland';
@@ -57,12 +59,15 @@ export const startTurn = (
   // OBSIDIAN_CHALICE effect: convert 10% of income to 0.02% of black mana
   if (hasObsidianChalice) {
     // 10% reduction is already applied in `calculatePlayerIncome`
-    player.mana.black = player.mana.black + currentIncome * 0.02;
+    Object.assign(
+      gameState,
+      updatePlayerMana(gameState, player.id, ManaType.BLACK, currentIncome * 0.02)
+    );
   }
 
   // Update vault and mana after turn 2
   if (gameState.turn > 2) {
-    player.vault += currentIncome;
+    Object.assign(gameState, updatePlayerVault(gameState, player.id, currentIncome));
     // calculate Mana
     calculateMana(gameState);
   }

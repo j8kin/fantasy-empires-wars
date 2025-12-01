@@ -10,6 +10,7 @@ import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { BuildingType } from '../../types/Building';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { clearLandBuildings } from '../../systems/gameStateActions';
 
 /**
  * Player could destroy the building as Demolition before construction of a new one
@@ -24,7 +25,7 @@ export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => 
     (b) => b.id === BuildingType.STRONGHOLD
   );
 
-  gameState.map.lands[landId].buildings = []; // delete all buildings since only one could be on the land (todo: think about WALL it could be an additional building for now destroy all)
+  Object.assign(gameState, clearLandBuildings(gameState, landPos)); // delete all buildings since only one could be on the land (todo: think about WALL it could be an additional building for now destroy all)
 
   if (isStronghold) {
     // if stronghold destroyed then all Lands in radius one should be neutral or could be taken under control by another player

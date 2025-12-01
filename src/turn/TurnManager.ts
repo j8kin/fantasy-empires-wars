@@ -6,6 +6,7 @@ import { TurnPhase } from './TurnPhase';
 import { startTurn } from './startTurn';
 import { endTurn } from './endTurn';
 import { mainAiTurn } from './mainAiTurn';
+import { setTurnPhase } from '../systems/gameStateActions';
 
 export interface TurnManagerCallbacks {
   onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => void;
@@ -46,7 +47,7 @@ export class TurnManager {
    * @param phase The phase to transition to
    */
   private transitionToPhase(gameState: GameState, phase: TurnPhase): void {
-    gameState.turnPhase = phase;
+    Object.assign(gameState, setTurnPhase(gameState, phase));
     this.callbacks.onTurnPhaseChange(gameState, phase);
   }
 

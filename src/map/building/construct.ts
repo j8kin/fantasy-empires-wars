@@ -33,7 +33,7 @@ export const construct = (
       break;
 
     case BuildingType.STRONGHOLD:
-      map.lands[mapPosition].buildings.push(building);
+      gameState.map.lands[mapPosition].buildings.push(building);
       addLand(turnOwner, position);
       const newLandsCandidates = getTilesInRadius(map.dimensions, position, 1, true);
       newLandsCandidates.forEach((land) => {
@@ -45,7 +45,7 @@ export const construct = (
       break;
 
     default:
-      map.lands[mapPosition].buildings.push(building);
+      gameState.map.lands[mapPosition].buildings.push(building);
       break;
   }
 
@@ -56,8 +56,7 @@ export const construct = (
   );
 
   if (gameState.turn > 1) {
-    turnOwner.vault -= hasCrownOfDominion
-      ? Math.ceil(building.buildCost * 0.85)
-      : building.buildCost;
+    const cost = hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;
+    turnOwner.vault -= cost;
   }
 };

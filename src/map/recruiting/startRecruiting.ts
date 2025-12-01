@@ -66,9 +66,14 @@ export const startRecruiting = (
       const hasCrownOfDominion = turnOwner.empireTreasures?.some(
         (r) => r.id === TreasureItem.CROWN_OF_DOMINION
       );
-      turnOwner.vault -= hasCrownOfDominion
+      const costReduction = hasCrownOfDominion
         ? Math.ceil(unitsBaseStats(unitType).recruitCost * 0.85)
         : unitsBaseStats(unitType).recruitCost;
+
+      // Update vault using direct mutation for now (matching construct.ts pattern)
+      turnOwner.vault -= costReduction;
+
+      // Add recruitment slot using direct mutation
       building[0].slots!.push({
         unit: unitType,
         turnsRemaining: getRecruitDuration(unitType),

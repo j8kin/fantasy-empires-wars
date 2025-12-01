@@ -6,6 +6,7 @@ import { TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
+import { updatePlayerMana } from '../../systems/gameStateActions';
 
 export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: GameState) => {
   const turnOwner = getTurnOwner(gameState);
@@ -14,9 +15,15 @@ export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: G
   const hasVerdantIdol = turnOwner.empireTreasures?.some((t) => t.id === TreasureItem.VERDANT_IDOL);
 
   if (spell.manaType === ManaType.GREEN && hasVerdantIdol) {
-    turnOwner.mana[spell.manaType] -= spell.manaCost * 0.85;
+    Object.assign(
+      gameState,
+      updatePlayerMana(gameState, turnOwner.id, spell.manaType, -spell.manaCost * 0.85)
+    );
   } else {
-    turnOwner.mana[spell.manaType] -= spell.manaCost;
+    Object.assign(
+      gameState,
+      updatePlayerMana(gameState, turnOwner.id, spell.manaType, -spell.manaCost)
+    );
   }
   const landId = getLandId(affectedLand);
   console.log(`Casting ${spell} on ${landId}`);
