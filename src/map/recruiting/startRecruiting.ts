@@ -1,14 +1,15 @@
 import { GameState } from '../../state/GameState';
+import { LandPosition } from '../../state/map/land/LandPosition';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
+import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
+import { unitsBaseStats } from '../../domain/unit/unitRepository';
 
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
-import { isHeroType, HeroUnitType, UnitType, isMageType } from '../../types/UnitType';
-import { getRecruitDuration } from '../../types/BaseUnit';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { unitsBaseStats } from '../../data/units/unitsBaseStats';
+import { HeroUnitType, UnitType } from '../../types/UnitType';
 
 export const startRecruiting = (
   unitType: UnitType,

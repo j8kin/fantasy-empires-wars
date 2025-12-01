@@ -5,9 +5,9 @@ import { useGameContext } from '../../contexts/GameContext';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { getAllQuests, getQuestType } from '../../types/Quest';
 import { HeroState } from '../../state/army/HeroState';
 import { findHeroAndLand, getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getAllQuests, getQuestType } from '../../domain/quest/questRepository';
 
 import { startQuest } from '../../map/quest/startQuest';
 

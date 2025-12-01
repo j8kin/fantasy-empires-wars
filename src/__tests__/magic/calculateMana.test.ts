@@ -1,23 +1,27 @@
 import { GameState } from '../../state/GameState';
 import { PlayerState } from '../../state/player/PlayerState';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { LandState } from '../../state/map/land/LandState';
 
 import { getLand } from '../../selectors/landSelectors';
 import { getPlayerLands } from '../../selectors/playerSelectors';
+import { getArmiesByPlayer } from '../../selectors/armySelectors';
+import { nextPlayer } from '../../systems/playerActions';
 
 import { relicts, TreasureItem } from '../../types/Treasures';
-import { getManaSource, ManaType } from '../../types/Mana';
+import { ManaType } from '../../types/Mana';
 import { HeroUnitType } from '../../types/UnitType';
-import { getLandById, getSpecialLandTypes, LandType } from '../../types/Land';
+import { LandType } from '../../types/Land';
 
 import { BuildingType } from '../../types/Building';
 
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { getManaSource } from '../../domain/mana/manaSource';
+import { getSpecialLandTypes } from '../../domain/land/landQueries';
+import { getLandById } from '../../domain/land/landRepository';
+
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { nextPlayer } from '../../systems/playerActions';
-import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
-import { PlayerProfile } from '../../state/player/PlayerProfile';
-import { LandState } from '../../state/map/land/LandState';
-import { getArmiesByPlayer } from '../../selectors/armySelectors';
 
 describe('Calculate Mana', () => {
   let testTurnManagement: TestTurnManagement;

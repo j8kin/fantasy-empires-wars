@@ -1,28 +1,25 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
+import { LandPosition } from '../../state/map/land/LandPosition';
+
 import { getLand } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 
-import {
-  isWarMachine,
-  isMageType,
-  HeroUnitType,
-  RegularUnitType,
-  UnitType,
-  isHeroType,
-} from '../../types/UnitType';
+import { isWarMachine, isMageType, isHeroType } from '../../domain/unit/unitTypeChecks';
+import { unitsBaseStats } from '../../domain/unit/unitRepository';
+
+import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
 import { BuildingType } from '../../types/Building';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 
 import { getUnitImg } from '../../assets/getUnitImg';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { unitsBaseStats } from '../../data/units/unitsBaseStats';
 
 interface RecruitUnitProps {
   id: UnitType;

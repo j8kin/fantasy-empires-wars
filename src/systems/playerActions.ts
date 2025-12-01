@@ -1,10 +1,12 @@
 import { GameState } from '../state/GameState';
 import { PlayerState } from '../state/player/PlayerState';
-import { playerFactory } from '../factories/playerFactory';
-import { NO_PLAYER } from '../data/players/predefinedPlayers';
 import { PlayerProfile } from '../state/player/PlayerProfile';
 import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
+
+import { playerFactory } from '../factories/playerFactory';
+
+import { NO_PLAYER } from '../domain/player/playerRepository';
 
 const INITIAL_VAULT = 15000;
 

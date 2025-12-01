@@ -1,17 +1,21 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+
 import TopPanel from '../../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
+
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
-import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { ManaType } from '../../types/Mana';
-import { generateMockMap } from '../utils/generateMockMap';
 import { addPlayer } from '../../systems/playerActions';
+import { GameProvider, useGameContext } from '../../contexts/GameContext';
 
 import { getPlayer } from '../../selectors/playerSelectors';
-import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
 import { gameStateFactory } from '../../factories/gameStateFactory';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+
+import { generateMockMap } from '../utils/generateMockMap';
+
+import { ManaType } from '../../types/Mana';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {

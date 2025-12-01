@@ -1,16 +1,18 @@
 import { GameState } from '../state/GameState';
-import { createGameStateStub } from './utils/createGameStateStub';
 import { LandPosition } from '../state/map/land/LandPosition';
-import { getPlayerLands } from '../selectors/playerSelectors';
-import { BuildingType } from '../types/Building';
-import { getHostileLands } from '../map/utils/getHostileLands';
-import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { heroFactory } from '../factories/heroFactory';
-import { HeroUnitType } from '../types/UnitType';
-import { getLandOwner } from '../selectors/landSelectors';
-import { NO_PLAYER } from '../data/players/predefinedPlayers';
-import { DiplomacyStatus } from '../types/Diplomacy';
 import { getLandId } from '../state/map/land/LandId';
+
+import { getPlayerLands } from '../selectors/playerSelectors';
+import { getLandOwner } from '../selectors/landSelectors';
+import { heroFactory } from '../factories/heroFactory';
+import { NO_PLAYER } from '../domain/player/playerRepository';
+import { BuildingType } from '../types/Building';
+import { HeroUnitType } from '../types/UnitType';
+import { DiplomacyStatus } from '../types/Diplomacy';
+import { getHostileLands } from '../map/utils/getHostileLands';
+
+import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
+import { createGameStateStub } from './utils/createGameStateStub';
 
 describe('getHostileLands', () => {
   let gameStateStub: GameState;

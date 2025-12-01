@@ -3,10 +3,11 @@ import styles from './css/PlayerSelection.module.css';
 
 import Avatar from '../avatars/Avatar';
 
-import { getAlignmentColor } from '../../types/Alignment';
-import { getPlayerColorValue } from '../../types/PlayerColors';
-import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
 import { PlayerProfile } from '../../state/player/PlayerProfile';
+
+import { getAlignmentColor } from '../../domain/ui/alignmentColors';
+import { getPlayerColorValue } from '../../domain/player/colors';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
 interface PlayerSelectionProps {
   label?: string;

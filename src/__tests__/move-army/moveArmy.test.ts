@@ -10,6 +10,8 @@ import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 import { addLand } from '../../systems/playerActions';
 
+import { NO_PLAYER } from '../../domain/player/playerRepository';
+
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { BuildingType } from '../../types/Building';
 
@@ -19,7 +21,6 @@ import { startMovement } from '../../map/move-army/startMovement';
 
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { NO_PLAYER } from '../../data/players/predefinedPlayers';
 
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;

@@ -8,11 +8,12 @@ import { useGameContext } from '../../contexts/GameContext';
 import Avatar from '../avatars/Avatar';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
-import { getAlignmentColor } from '../../types/Alignment';
 import { PlayerState } from '../../state/player/PlayerState';
-import { DiplomacyStatus } from '../../types/Diplomacy';
-import { getPlayerColorValue } from '../../types/PlayerColors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getAlignmentColor } from '../../domain/ui/alignmentColors';
+import { getPlayerColorValue } from '../../domain/player/colors';
+
+import { DiplomacyStatus } from '../../types/Diplomacy';
 
 export interface OpponentInfoProps extends PopupProps {
   opponent?: PlayerState;

@@ -1,9 +1,9 @@
 import { HeroState } from '../state/army/HeroState';
+import { RegularsState, UnitRank } from '../state/army/RegularsState';
+import { unitsBaseStats } from '../domain/unit/unitRepository';
 import { Alignment } from '../types/Alignment';
 import { TreasureItem } from '../types/Treasures';
 import { HeroUnitType, RegularUnitType } from '../types/UnitType';
-import { RegularsState, UnitRank } from '../state/army/RegularsState';
-import { unitsBaseStats } from '../data/units/unitsBaseStats';
 
 export const levelUpHero = (hero: HeroState, playerAlignment: Alignment): void => {
   if (hero.level === 32) return; // hero reached max level

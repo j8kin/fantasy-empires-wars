@@ -6,7 +6,7 @@ import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 
-import { isHeroType } from '../../types/UnitType';
+import { isHeroType } from '../../domain/unit/unitTypeChecks';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 
 import { generateHeroName } from './heroNameGeneration';

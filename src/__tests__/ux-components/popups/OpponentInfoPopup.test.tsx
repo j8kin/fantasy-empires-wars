@@ -1,10 +1,13 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+
 import OpponentInfoPopup from '../../../ux-components/popups/OpponentInfoPopup';
-import { DiplomacyStatus } from '../../../types/Diplomacy';
+
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
+import { getPlayerColorValue } from '../../../domain/player/colors';
+
+import { DiplomacyStatus } from '../../../types/Diplomacy';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
-import { getPlayerColorValue } from '../../../types/PlayerColors';
 
 jest.mock('../../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
   popupContent: 'mocked-popup-content',

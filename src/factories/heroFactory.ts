@@ -1,7 +1,8 @@
 import { v4 as uuid } from 'uuid';
-import { HeroUnitType, isMageType } from '../types/UnitType';
+import { HeroUnitType } from '../types/UnitType';
+import { isMageType } from '../domain/unit/unitTypeChecks';
 import { HeroState } from '../state/army/HeroState';
-import { unitsBaseStats } from '../data/units/unitsBaseStats';
+import { unitsBaseStats } from '../domain/unit/unitRepository';
 
 export const heroFactory = (heroType: HeroUnitType, name: string): HeroState => {
   return {

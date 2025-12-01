@@ -12,7 +12,7 @@
 
 import { GameState } from '../../state/GameState';
 import { createGameStateStub } from '../utils/createGameStateStub';
-import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
 describe('MainView Game Initialization Logic', () => {
   // Test the game identification logic that's used in MainView

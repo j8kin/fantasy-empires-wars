@@ -9,8 +9,9 @@ import { addArmyToGameState, updateArmyInGameState } from '../utils/armyUtils';
 import { addHero } from '../../systems/armyActions';
 import { levelUpHero } from '../../systems/unitsActions';
 
-import { getQuest, HeroQuest, QuestType } from '../../types/Quest';
-import { getRandomElement } from '../../types/getRandomElement';
+import { HeroQuest, QuestType } from '../../types/Quest';
+import { getQuest } from '../../domain/quest/questRepository';
+import { getRandomElement } from '../../domain/utils/random';
 import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
 import { HeroState } from '../../state/army/HeroState';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';

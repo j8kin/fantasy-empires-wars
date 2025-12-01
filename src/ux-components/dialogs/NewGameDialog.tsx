@@ -4,21 +4,24 @@ import styles from './css/NewGameDialog.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { addPlayer } from '../../systems/playerActions';
-
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import Avatar from '../avatars/Avatar';
 import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 
-import { generateMap } from '../../map/generation/generateMap';
-import { ButtonName } from '../../types/ButtonName';
-import { getPlayerColorValue, PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
 import { GameState } from '../../state/GameState';
-import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
 import { PlayerProfile } from '../../state/player/PlayerProfile';
 import { MapDimensions } from '../../state/map/MapDimensions';
+
+import { addPlayer } from '../../systems/playerActions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
+import { getPlayerColorValue } from '../../domain/player/colors';
+import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+
+import { ButtonName } from '../../types/ButtonName';
+import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
+
+import { generateMap } from '../../map/generation/generateMap';
 
 // Local map size type for this dialog only
 type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';

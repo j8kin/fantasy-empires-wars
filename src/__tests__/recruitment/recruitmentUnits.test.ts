@@ -8,6 +8,8 @@ import { getLand } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 
+import { unitsBaseStats } from '../../domain/unit/unitRepository';
+
 import { BuildingType } from '../../types/Building';
 import { relicts, TreasureItem } from '../../types/Treasures';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
@@ -15,7 +17,6 @@ import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 
-import { unitsBaseStats } from '../../data/units/unitsBaseStats';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('Recruitment', () => {

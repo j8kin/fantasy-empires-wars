@@ -1,5 +1,5 @@
 import { HeroUnitType } from '../../types/UnitType';
-import { getRandomElement } from '../../types/getRandomElement';
+import { getRandomElement } from '../../domain/utils/random';
 
 const humanMaleNames: string[] = [
   'Cedric',

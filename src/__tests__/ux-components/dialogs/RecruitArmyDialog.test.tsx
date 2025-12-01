@@ -5,23 +5,22 @@ import '@testing-library/jest-dom';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
 import { GameState } from '../../../state/GameState';
+import { LandPosition } from '../../../state/map/land/LandPosition';
 
 import { addLand } from '../../../systems/playerActions';
 import { getLand } from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
+
+import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 
 import { BuildingType } from '../../../types/Building';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../../types/UnitType';
 
 import { construct } from '../../../map/building/construct';
 
-import { createGameStateStub } from '../../utils/createGameStateStub';
-
 // Import the mocked function (will be mocked by jest.mock above)
 import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';
-
-import { PREDEFINED_PLAYERS } from '../../../data/players/predefinedPlayers';
-import { LandPosition } from '../../../state/map/land/LandPosition';
+import { createGameStateStub } from '../../utils/createGameStateStub';
 
 // Mock modules
 jest.mock('../../../map/recruiting/startRecruiting', () => ({

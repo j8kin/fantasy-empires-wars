@@ -4,7 +4,7 @@ import { HeroState } from '../state/army/HeroState';
 import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
 import { getTurnOwner } from './playerSelectors';
-import { isMageType } from '../types/UnitType';
+import { isMageType } from '../domain/unit/unitTypeChecks';
 
 // Army state selectors (operating on individual army objects)
 export const briefInfo = (state: ArmyState): ArmyBriefInfo => {
