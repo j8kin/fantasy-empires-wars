@@ -629,7 +629,10 @@ describe('SendHeroInQuestDialog', () => {
       expect(lands.length).toBeGreaterThan(0);
       const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
       expect(armies[0].heroes.length).toBeGreaterThan(0);
-      addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, ''));
+      Object.assign(
+        armies[0],
+        addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, ''))
+      );
       expect(armies[0].heroes.length).toBeGreaterThan(1);
 
       renderWithProviders(<SendHeroInQuestDialog />);
@@ -645,7 +648,10 @@ describe('SendHeroInQuestDialog', () => {
       expect(lands.length).toBeGreaterThan(0);
       const longName = 'VeryLongHeroNameThatExceedsNormalLimits AndHasMultipleWords';
       const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
-      addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, longName));
+      Object.assign(
+        armies[0],
+        addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, longName))
+      );
       const heroArmy = armies.find((army) => army.heroes.some((unit) => unit.name === longName));
       renderWithProviders(<SendHeroInQuestDialog />);
 
@@ -666,7 +672,13 @@ describe('SendHeroInQuestDialog', () => {
 
       expect(lands.length).toBeGreaterThan(0);
       const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
-      addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, 'SingleName'));
+      Object.assign(
+        armies[0],
+        addHero(
+          armies[0],
+          heroFactory(getTurnOwner(gameStateStub).playerProfile.type, 'SingleName')
+        )
+      );
       const heroArmy = armies.find((army) =>
         army.heroes.some((unit) => unit.name === 'SingleName')
       );

@@ -8,26 +8,45 @@ import { startMovement } from './moveActions';
 import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
 
-export const addHero = (state: ArmyState, hero: HeroState): void => {
-  state.heroes.push(hero);
+export const addHero = (state: ArmyState, hero: HeroState): ArmyState => {
+  return {
+    ...state,
+    heroes: [...state.heroes, hero],
+  };
 };
 
-export const getHero = (state: ArmyState, name: string): HeroState | undefined => {
+export const getHero = (
+  state: ArmyState,
+  name: string
+): { updatedArmy: ArmyState; hero: HeroState } | undefined => {
   const heroIdx = state.heroes.findIndex((h) => h.name === name);
   if (heroIdx === -1) return undefined;
   const hero = state.heroes[heroIdx];
-  state.heroes.splice(heroIdx, 1);
-  return hero;
+  const updatedArmy = {
+    ...state,
+    heroes: state.heroes.filter((h) => h.name !== name),
+  };
+  return { updatedArmy, hero };
 };
 
-export const addRegulars = (state: ArmyState, regulars: RegularsState): void => {
+export const addRegulars = (state: ArmyState, regulars: RegularsState): ArmyState => {
   const unitIdx = state.regulars.findIndex(
     (u) => u.type === regulars.type && u.rank === regulars.rank
   );
   if (unitIdx !== -1) {
-    state.regulars[unitIdx].count += regulars.count;
+    // Update existing unit count
+    return {
+      ...state,
+      regulars: state.regulars.map((unit, idx) =>
+        idx === unitIdx ? { ...unit, count: unit.count + regulars.count } : unit
+      ),
+    };
   } else {
-    state.regulars.push(regulars);
+    // Add new unit
+    return {
+      ...state,
+      regulars: [...state.regulars, regulars],
+    };
   }
 };
 
@@ -36,33 +55,60 @@ export const getRegulars = (
   unitType: RegularUnitType,
   rank: UnitRank,
   count: number
-): RegularsState | undefined => {
+): { updatedArmy: ArmyState; regulars: RegularsState } | undefined => {
   const unitIdx = state.regulars.findIndex(
     (u) => u.type === unitType && u.rank === rank && u.count >= count
   );
   if (unitIdx === -1) return undefined;
   const unit = state.regulars[unitIdx];
+
   if (unit.count === count) {
-    state.regulars.splice(unitIdx, 1);
-    return unit;
+    // Remove the entire unit
+    const updatedArmy = {
+      ...state,
+      regulars: state.regulars.filter((_, idx) => idx !== unitIdx),
+    };
+    return { updatedArmy, regulars: unit };
+  } else {
+    // Reduce the unit count
+    const updatedArmy = {
+      ...state,
+      regulars: state.regulars.map((u, idx) =>
+        idx === unitIdx ? { ...u, count: u.count - count } : u
+      ),
+    };
+    const regularsToReturn = { ...regularsFactory(unit.type, count), rank: unit.rank };
+    return { updatedArmy, regulars: regularsToReturn };
   }
-  state.regulars[unitIdx].count -= count;
-  return regularsFactory(state.regulars[unitIdx].type, count);
 };
 
-export const mergeArmies = (target: ArmyState, source: ArmyState): void => {
-  // heroes
-  source.heroes.forEach((h) => target.heroes.push(h));
+export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => {
+  // Merge heroes
+  const mergedHeroes = [...target.heroes, ...source.heroes];
 
-  // regulars
-  source.regulars.forEach((unit) => {
-    const existing = target.regulars.find((u) => u.type === unit.type && u.rank === unit.rank);
-    if (existing) {
-      existing.count += unit.count;
+  // Merge regulars
+  const mergedRegulars = [...target.regulars];
+  source.regulars.forEach((sourceUnit) => {
+    const existingIdx = mergedRegulars.findIndex(
+      (u) => u.type === sourceUnit.type && u.rank === sourceUnit.rank
+    );
+    if (existingIdx !== -1) {
+      // Update existing unit count
+      mergedRegulars[existingIdx] = {
+        ...mergedRegulars[existingIdx],
+        count: mergedRegulars[existingIdx].count + sourceUnit.count,
+      };
     } else {
-      target.regulars.push(unit);
+      // Add new unit
+      mergedRegulars.push(sourceUnit);
     }
   });
+
+  return {
+    ...target,
+    heroes: mergedHeroes,
+    regulars: mergedRegulars,
+  };
 
   // source army should be removed from storage separately by removeArmy
 };

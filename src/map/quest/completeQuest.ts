@@ -131,7 +131,8 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
     );
     if (stationedArmy) {
       // add into the existing stationed Army
-      addHero(stationedArmy, hero);
+      const updatedArmy = addHero(stationedArmy, hero);
+      Object.assign(stationedArmy, updatedArmy);
       Object.assign(gameState, updateArmyInGameState(gameState, stationedArmy));
     } else {
       // no valid army found, create new one

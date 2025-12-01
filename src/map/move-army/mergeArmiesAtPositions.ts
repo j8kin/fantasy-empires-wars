@@ -20,9 +20,9 @@ export const mergeArmiesAtPositions = (gameState: GameState): void => {
       (a) => !isMoving(a) && a.controlledBy === turnOwner
     );
     if (armiesAtLand.length < 2) return;
-    const mainArmy = armiesAtLand.pop()!;
+    let mainArmy = armiesAtLand.pop()!;
     armiesAtLand.forEach((armyToMerge) => {
-      mergeArmies(mainArmy, armyToMerge);
+      mainArmy = mergeArmies(mainArmy, armyToMerge);
       // Remove the merged army from GameState
       Object.assign(gameState, removeArmyFromGameState(gameState, armyToMerge.id));
     });

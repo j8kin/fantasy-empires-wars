@@ -43,7 +43,7 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
 
     allArmies.forEach((army) => {
       const normNumUnits = normalizeArmyUnits(army.regulars);
-      attritionPenalty(army, {
+      const updatedArmy = attritionPenalty(army, {
         [UnitRank.REGULAR]:
           loss.regular.total !== 0
             ? Math.ceil((normNumUnits.regular * loss.regular.loss) / loss.regular.total)
@@ -58,6 +58,9 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
             : 0,
       });
 
+      // Update army reference for the conditional check below
+      Object.assign(army, updatedArmy);
+
       // Remove armies with no units or update them in GameState
       if (army.regulars.length === 0 && army.heroes.length === 0) {
         Object.assign(gameState, removeArmyFromGameState(gameState, army.id));
@@ -68,10 +71,13 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
   });
 };
 
-const attritionPenalty = (army: ArmyState, unitsToLoss: Record<UnitRank, number>): void => {
+const attritionPenalty = (army: ArmyState, unitsToLoss: Record<UnitRank, number>): ArmyState => {
+  let updatedArmy = army;
   Object.values(UnitRank).forEach((rank) => {
-    const regUnitsWithRank = army.regulars.filter((u) => u.rank === rank && !isWarMachine(u.type));
-    const warMachUnitsWithRank = army.regulars.filter(
+    const regUnitsWithRank = updatedArmy.regulars.filter(
+      (u) => u.rank === rank && !isWarMachine(u.type)
+    );
+    const warMachUnitsWithRank = updatedArmy.regulars.filter(
       (u) => u.rank === rank && isWarMachine(u.type)
     );
     const toKill = unitsToLoss[rank];
@@ -87,7 +93,15 @@ const attritionPenalty = (army: ArmyState, unitsToLoss: Record<UnitRank, number>
       for (let i = 0; i < warMachUnitsWithRank.length && rest > 0; i++) {
         if (rest > 0) {
           const toDelete = Math.min(warMachUnitsWithRank[i].count, rest);
-          getRegulars(army, warMachUnitsWithRank[i].type, warMachUnitsWithRank[i].rank, toDelete);
+          const result = getRegulars(
+            updatedArmy,
+            warMachUnitsWithRank[i].type,
+            warMachUnitsWithRank[i].rank,
+            toDelete
+          );
+          if (result) {
+            updatedArmy = result.updatedArmy;
+          }
           rest -= toDelete;
         }
       }
@@ -97,12 +111,21 @@ const attritionPenalty = (army: ArmyState, unitsToLoss: Record<UnitRank, number>
       for (let i = 0; i < regUnitsWithRank.length && rest > 0; i++) {
         if (rest > 0) {
           const toDelete = Math.min(regUnitsWithRank[i].count, rest);
-          getRegulars(army, regUnitsWithRank[i].type, regUnitsWithRank[i].rank, toDelete);
+          const result = getRegulars(
+            updatedArmy,
+            regUnitsWithRank[i].type,
+            regUnitsWithRank[i].rank,
+            toDelete
+          );
+          if (result) {
+            updatedArmy = result.updatedArmy;
+          }
           rest -= toDelete;
         }
       }
     }
   });
+  return updatedArmy;
 };
 
 const normalizeArmyUnits = (units: RegularsState[]): Record<UnitRank, number> => {

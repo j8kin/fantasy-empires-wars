@@ -19,7 +19,8 @@ export const startQuest = (hero: HeroState, questType: QuestType, gameState: Gam
 
   if (armyWithHero != null) {
     // remove hero from the army
-    const heroToQuest = getHero(armyWithHero, hero.name)!;
+    const heroResult = getHero(armyWithHero, hero.name)!;
+    Object.assign(armyWithHero, heroResult.updatedArmy);
 
     // Get the army's current position from movement path
     const questLandPosition =
@@ -36,7 +37,7 @@ export const startQuest = (hero: HeroState, questType: QuestType, gameState: Gam
     turnOwner.quests.push({
       quest: getQuest(questType),
       land: questLandPosition, // hero Start Quest land position (it will return at the same position if survive)
-      hero: heroToQuest,
+      hero: heroResult.hero,
       remainTurnsInQuest: getQuest(questType).length,
     });
   }

@@ -97,9 +97,9 @@ describe('Calculate Maintenance', () => {
       const army = armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, [
         heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
       ]);
-      addRegulars(army, regularsFactory(RegularUnitType.DWARF));
-      addRegulars(army, regularsFactory(RegularUnitType.BALLISTA));
-      addRegulars(army, elitDwarf);
+      Object.assign(army, addRegulars(army, regularsFactory(RegularUnitType.DWARF)));
+      Object.assign(army, addRegulars(army, regularsFactory(RegularUnitType.BALLISTA)));
+      Object.assign(army, addRegulars(army, elitDwarf));
 
       gameStateStub.armies = [army];
       const maintenance = calculateMaintenance(gameStateStub);

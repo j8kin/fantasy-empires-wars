@@ -59,11 +59,21 @@ export const startMovement = (
   }
 
   // update stationed army: remove moved heroes and decrement regular units
-  const movingArmy = armyFactory(gameState.turnOwner, from);
-  units.heroes.forEach((hero) => addHero(movingArmy, getHero(stationedArmy, hero.name)!));
-  units.regulars.forEach((regular) =>
-    addRegulars(movingArmy, getRegulars(stationedArmy, regular.id, regular.rank, regular.count)!)
-  );
+  let movingArmy = armyFactory(gameState.turnOwner, from);
+
+  // Add heroes to moving army and update stationed army
+  units.heroes.forEach((hero) => {
+    const heroResult = getHero(stationedArmy, hero.name)!;
+    Object.assign(stationedArmy, heroResult.updatedArmy);
+    movingArmy = addHero(movingArmy, heroResult.hero);
+  });
+
+  // Add regulars to moving army and update stationed army
+  units.regulars.forEach((regular) => {
+    const regularsResult = getRegulars(stationedArmy, regular.id, regular.rank, regular.count)!;
+    Object.assign(stationedArmy, regularsResult.updatedArmy);
+    movingArmy = addRegulars(movingArmy, regularsResult.regulars);
+  });
 
   startMoving(movingArmy, to);
 

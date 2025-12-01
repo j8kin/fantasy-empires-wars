@@ -43,7 +43,8 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
                   message: heroRecruitingMessage(newHero),
                 });
                 if (stationedArmy) {
-                  addHero(stationedArmy, newHero);
+                  const updatedArmy = addHero(stationedArmy, newHero);
+                  Object.assign(stationedArmy, updatedArmy);
                   Object.assign(gameState, updateArmyInGameState(gameState, stationedArmy));
                 } else {
                   const newArmy = armyFactory(turnOwner, l.mapPos, [newHero]);
@@ -52,7 +53,8 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
               } else {
                 const newRegulars = regularsFactory(s.unit);
                 if (stationedArmy) {
-                  addRegulars(stationedArmy, newRegulars);
+                  const updatedArmy = addRegulars(stationedArmy, newRegulars);
+                  Object.assign(stationedArmy, updatedArmy);
                   Object.assign(gameState, updateArmyInGameState(gameState, stationedArmy));
                 } else {
                   const newArmy = armyFactory(turnOwner, l.mapPos, undefined, [newRegulars]);
