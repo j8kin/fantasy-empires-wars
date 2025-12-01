@@ -42,9 +42,14 @@ export const levelUpHero = (hero: HeroState, playerAlignment: Alignment): void =
     hero.mana != null
       ? Math.floor(1 + baseLevelUpParams.mana * alignmentModifier.mana * (hero.level - 1))
       : undefined;
+
+  hero.baseStats.maintainCost = baseHeroClass.maintainCost * (Math.floor(hero.level / 4) + 1);
 };
 
 export const levelUpRegulars = (regular: RegularsState, playerAlignment: Alignment): void => {
+  // Undead units can't be leveled up'
+  if (regular.type === RegularUnitType.UNDEAD) return;
+
   if (regular.rank === UnitRank.REGULAR) {
     regular.rank = UnitRank.VETERAN;
   } else {
@@ -73,6 +78,16 @@ export const levelUpRegulars = (regular: RegularsState, playerAlignment: Alignme
   regular.baseStats.health = Math.floor(
     baseRegularStats.health + baseLevelUpParams.health * alignmentModifier.health * levelModifier
   );
+
+  if (regular.rank === UnitRank.ELITE && regular.type !== RegularUnitType.WARD_HANDS) {
+    regular.baseStats.speed *= 1.5;
+  }
+
+  if (regular.rank === UnitRank.VETERAN) {
+    regular.baseStats.maintainCost = baseRegularStats.maintainCost * 1.5;
+  } else {
+    regular.baseStats.maintainCost = baseRegularStats.maintainCost * 2;
+  }
 };
 
 const baseStatsLevelUpParameters = (unitType: HeroUnitType | RegularUnitType) => {
@@ -104,7 +119,7 @@ const baseStatsLevelUpParameters = (unitType: HeroUnitType | RegularUnitType) =>
     case RegularUnitType.WARD_HANDS:
       return { attack: 0.5, defense: 0.4, health: 0.8, rangeDamage: 0, mana: 0 };
     case RegularUnitType.UNDEAD:
-      return { attack: 0, defense: 0, health: 0, rangeDamage: 0, mana: 0 }; // not increased
+      return { attack: 0, defense: 0, health: 0, rangeDamage: 0, mana: 0 }; // fallback for undead units, they can't be leveled up'
   }
 };
 
