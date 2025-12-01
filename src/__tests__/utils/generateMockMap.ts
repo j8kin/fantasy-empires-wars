@@ -1,10 +1,12 @@
 import { MapState } from '../../state/map/MapState';
-
-import { getLandById, Land, LandType } from '../../types/Land';
-import { Alignment } from '../../types/Alignment';
+import { MapDimensions } from '../../state/map/MapDimensions';
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
-import { MapDimensions } from '../../state/map/MapDimensions';
+
+import { getLandById } from '../../domain/land/landRepository';
+
+import { Land, LandType } from '../../types/Land';
+import { Alignment } from '../../types/Alignment';
 
 const genLand = (alignment: Alignment | undefined): Land => {
   switch (alignment) {

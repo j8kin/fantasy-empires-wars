@@ -1,7 +1,8 @@
 import React from 'react';
 import styles from './css/ManaVial.module.css';
 
-import { getManaColor, getManaGradient, ManaType, MAX_MANA } from '../../types/Mana';
+import { getManaColor, getManaGradient } from '../../domain/ui/manaColors';
+import { ManaType, MAX_MANA } from '../../types/Mana';
 
 import { getManaVialImg } from '../../assets/getManaVialImg';
 

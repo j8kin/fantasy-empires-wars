@@ -1,6 +1,15 @@
 import { GameState } from '../../state/GameState';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { MapDimensions } from '../../state/map/MapDimensions';
 
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { addPlayer, nextPlayer } from '../../systems/playerActions';
+import { levelUpHero } from '../../systems/unitsActions';
+import { gameStateFactory } from '../../factories/gameStateFactory';
+import { heroFactory } from '../../factories/heroFactory';
+
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
 import { BuildingType } from '../../types/Building';
 
@@ -9,14 +18,6 @@ import { generateMap } from '../../map/generation/generateMap';
 
 import { generateMockMap } from './generateMockMap';
 import { placeUnitsOnMap } from './placeUnitsOnMap';
-import { getTurnOwner } from '../../selectors/playerSelectors';
-import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
-import { PlayerProfile } from '../../state/player/PlayerProfile';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { MapDimensions } from '../../state/map/MapDimensions';
-import { gameStateFactory } from '../../factories/gameStateFactory';
-import { levelUpHero } from '../../systems/unitsActions';
-import { heroFactory } from '../../factories/heroFactory';
 
 export const defaultBattlefieldSizeStub = { rows: 10, cols: 20 };
 export const createDefaultGameStateStub = (): GameState => createGameStateStub({});

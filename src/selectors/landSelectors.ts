@@ -1,8 +1,8 @@
 import { GameState } from '../state/GameState';
-
-import { NO_PLAYER } from '../data/players/predefinedPlayers';
 import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
+
+import { NO_PLAYER } from '../domain/player/playerRepository';
 
 export const getLand = (state: GameState, landPos: LandPosition) =>
   state.map.lands[getLandId(landPos)];

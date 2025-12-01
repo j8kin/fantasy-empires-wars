@@ -7,11 +7,11 @@ import { useGameContext } from '../../contexts/GameContext';
 import Avatar from '../avatars/Avatar';
 
 import { PlayerState } from '../../state/player/PlayerState';
-
-import { getPlayerColorValue } from '../../types/PlayerColors';
+import { getLandId } from '../../state/map/land/LandId';
 
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { getLandId } from '../../state/map/land/LandId';
+
+import { getPlayerColorValue } from '../../domain/ui/playerColors';
 
 const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameContext();

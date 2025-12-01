@@ -1,22 +1,25 @@
 import { calculateIncome } from '../../map/vault/calculateIncome';
 import { GameState } from '../../state/GameState';
+import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { getLandId } from '../../state/map/land/LandId';
 
 import { addLand, addPlayer } from '../../systems/playerActions';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getBuilding } from '../../selectors/buildingSelectors';
 
+import { gameStateFactory } from '../../factories/gameStateFactory';
+
 import { BuildingType } from '../../types/Building';
-import { getLandById, LandType } from '../../types/Land';
+import { LandType } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 
 import { construct } from '../../map/building/construct';
 
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { getLandById } from '../../domain/land/landRepository';
+
 import { createGameStateStub, defaultBattlefieldSizeStub } from '../utils/createGameStateStub';
 import { generateMockMap } from '../utils/generateMockMap';
-import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
-import { PlayerProfile } from '../../state/player/PlayerProfile';
-import { getLandId } from '../../state/map/land/LandId';
-import { gameStateFactory } from '../../factories/gameStateFactory';
 
 describe('Calculate Income', () => {
   let gameStateStub: GameState;

@@ -26,7 +26,7 @@ jest.mock('../../ux-components/top-panel/TopPanel', () => {
   return () => {
     const { playerFactory } = jest.requireActual('../../factories/playerFactory');
     const { useApplicationContext } = jest.requireActual('../../contexts/ApplicationContext');
-    const { PREDEFINED_PLAYERS } = jest.requireActual('../../data/players/predefinedPlayers');
+    const { PREDEFINED_PLAYERS } = jest.requireActual('../../domain/player/playerRepository');
     const mockPlayer = playerFactory(PREDEFINED_PLAYERS[0], 'computer');
     const { setShowStartWindow, setShowSaveDialog, showOpponentInfo } = useApplicationContext();
     return (

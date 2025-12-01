@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import NewGameDialog from '../../../ux-components/dialogs/NewGameDialog';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { GameProvider } from '../../../contexts/GameContext';
-import { PREDEFINED_PLAYERS } from '../../../data/players/predefinedPlayers';
+import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 
 const renderNewGameDialog = () => {
   render(

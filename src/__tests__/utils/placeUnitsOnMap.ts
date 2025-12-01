@@ -1,12 +1,14 @@
 import { GameState } from '../../state/GameState';
-import { addArmyToGameState } from '../../map/utils/armyUtils';
-
-import { Unit } from '../../types/BaseUnit';
-import { isHeroType } from '../../types/UnitType';
 import { HeroState } from '../../state/army/HeroState';
 import { RegularsState } from '../../state/army/RegularsState';
 import { LandPosition } from '../../state/map/land/LandPosition';
+
 import { armyFactory } from '../../factories/armyFactory';
+
+import { isHeroType } from '../../domain/unit/unitTypeChecks';
+import { Unit } from '../../types/BaseUnit';
+
+import { addArmyToGameState } from '../../map/utils/armyUtils';
 
 /**
  * test function. Should not be used in integration tests related on TurnManagement

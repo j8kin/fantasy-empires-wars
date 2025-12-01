@@ -1,5 +1,5 @@
 import { RegularsState, UnitRank } from '../../state/army/RegularsState';
-import { isWarMachine } from '../../types/UnitType';
+import { isWarMachine } from '../../domain/unit/unitTypeChecks';
 
 export const MAX_MOVE = 4;
 

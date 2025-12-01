@@ -1,6 +1,6 @@
 import { MapState } from '../state/map/MapState';
-import { NO_PLAYER } from '../data/players/predefinedPlayers';
 import { GameState } from '../state/GameState';
+import { NO_PLAYER } from '../domain/player/playerRepository';
 import { TurnPhase } from '../turn/TurnPhase';
 
 export const gameStateFactory = (map: MapState): GameState => {

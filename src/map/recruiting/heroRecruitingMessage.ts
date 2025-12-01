@@ -1,5 +1,5 @@
 import { HeroState } from '../../state/army/HeroState';
-import { getRandomElement } from '../../types/getRandomElement';
+import { getRandomElement } from '../../domain/utils/random';
 
 export const heroRecruitingMessage = (heroUnit: HeroState): string => {
   const recruitingMessages = [

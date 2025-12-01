@@ -2,6 +2,7 @@ import { GameState } from '../state/GameState';
 import { PlayerState } from '../state/player/PlayerState';
 import { LandState } from '../state/map/land/LandState';
 import { BuildingType } from '../types/Building';
+import { DiplomacyStatus } from '../types/Diplomacy';
 import { getTilesInRadius } from '../map/utils/mapAlgorithms';
 import { getLand } from './landSelectors';
 
@@ -31,4 +32,20 @@ export const getRealmLands = (state: GameState): LandState[] => {
     )
   );
   return realm.values().toArray();
+};
+
+/**
+ * Filters players by diplomacy status relative to turn owner
+ * @param gameState - The current game state
+ * @param statuses - Array of diplomacy statuses to filter by
+ * @returns Array of players matching the diplomacy criteria
+ */
+export const getPlayersByDiplomacy = (
+  gameState: GameState,
+  statuses: DiplomacyStatus[]
+): PlayerState[] => {
+  const { turnOwner } = gameState;
+  return gameState.players.filter(
+    (p) => p.id !== turnOwner && statuses.includes(p.diplomacy[turnOwner])
+  );
 };

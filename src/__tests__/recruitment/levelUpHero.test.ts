@@ -1,11 +1,12 @@
 import { PlayerProfile } from '../../state/player/PlayerProfile';
-import { playerFactory } from '../../factories/playerFactory';
 import { levelUpHero } from '../../systems/unitsActions';
+import { playerFactory } from '../../factories/playerFactory';
+import { heroFactory } from '../../factories/heroFactory';
+
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
 import { HeroUnitType } from '../../types/UnitType';
 import { artifacts, TreasureItem } from '../../types/Treasures';
-import { PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
-import { heroFactory } from '../../factories/heroFactory';
 
 describe('level up hero', () => {
   it.each([

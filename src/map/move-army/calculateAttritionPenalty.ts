@@ -6,7 +6,7 @@ import { updateArmyInGameState, removeArmyFromGameState } from '../utils/armyUti
 
 import { RegularsState, UnitRank } from '../../state/army/RegularsState';
 import { ArmyState } from '../../state/army/ArmyState';
-import { isWarMachine } from '../../types/UnitType';
+import { isWarMachine } from '../../domain/unit/unitTypeChecks';
 
 import { getHostileLands } from '../utils/getHostileLands';
 

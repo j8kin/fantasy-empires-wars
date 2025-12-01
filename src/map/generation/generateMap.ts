@@ -1,22 +1,18 @@
 import { MapState } from '../../state/map/MapState';
 import { MapLands } from '../../state/map/MapState';
 import { LandState } from '../../state/map/land/LandState';
-
-import {
-  getLandById,
-  getMainSpecialLandTypes,
-  getNearSpecialLandTypes,
-  getRegularLandTypes,
-  getSurroundingLands,
-  Land,
-  LandType,
-} from '../../types/Land';
-import { getRandomElement } from '../../types/getRandomElement';
-
-import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
 import { MapDimensions } from '../../state/map/MapDimensions';
+
+import { getLandById } from '../../domain/land/landRepository';
+import { getMainSpecialLandTypes, getRegularLandTypes } from '../../domain/land/landQueries';
+import { getSurroundingLands, getNearSpecialLandTypes } from '../../domain/land/landRelationships';
+import { getRandomElement } from '../../domain/utils/random';
+
+import { Land, LandType } from '../../types/Land';
+
+import { getTilesInRadius } from '../utils/mapAlgorithms';
 
 const calculateBaseLandGold = (land: Land): number => {
   const { min, max } = land?.goldPerTurn;

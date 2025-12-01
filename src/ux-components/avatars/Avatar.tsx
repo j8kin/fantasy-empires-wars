@@ -2,8 +2,9 @@ import React from 'react';
 import styles from './css/Avatar.module.css';
 
 import { getAvatarImg } from '../../assets/getAvatarImg';
-import { NO_PLAYER } from '../../data/players/predefinedPlayers';
+
 import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
 
 type AvatarShape = 'circle' | 'rectangle';
 

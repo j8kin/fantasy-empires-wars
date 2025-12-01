@@ -11,9 +11,10 @@ import { addArmyToGameState } from '../utils/armyUtils';
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
 
+import { getRandomElement } from '../../domain/utils/random';
+
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
-import { getRandomElement } from '../../types/getRandomElement';
 
 import { construct } from '../building/construct';
 import { getTilesInRadius } from '../utils/mapAlgorithms';

@@ -4,8 +4,8 @@ import '@testing-library/jest-dom';
 import NewGameDialog from '../../../ux-components/dialogs/NewGameDialog';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
+import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
-import { PREDEFINED_PLAYERS } from '../../../data/players/predefinedPlayers';
 
 const GameStateInitializer: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { updateGameState } = useGameContext();

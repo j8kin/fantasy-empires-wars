@@ -1,14 +1,17 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
-import OpponentsPanel from '../../ux-components/opponents-panel/OpponentsPanel';
+
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
-import { addPlayer } from '../../systems/playerActions';
-import { generateMockMap } from '../utils/generateMockMap';
-import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../data/players/predefinedPlayers';
+
+import OpponentsPanel from '../../ux-components/opponents-panel/OpponentsPanel';
+
 import { PlayerProfile } from '../../state/player/PlayerProfile';
+import { addPlayer } from '../../systems/playerActions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
+import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { generateMockMap } from '../utils/generateMockMap';
 
 // Test wrapper that provides GameContext and ApplicationContext and allows updating game state
 const TestWrapper: React.FC<{

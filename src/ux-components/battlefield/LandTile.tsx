@@ -15,7 +15,7 @@ import { getBuilding } from '../../selectors/buildingSelectors';
 
 import { SpellName } from '../../types/Spell';
 import { BuildingType } from '../../types/Building';
-import { getPlayerColorValue } from '../../types/PlayerColors';
+import { getPlayerColorValue } from '../../domain/ui/playerColors';
 
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';

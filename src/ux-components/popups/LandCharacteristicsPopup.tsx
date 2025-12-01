@@ -13,9 +13,9 @@ import { getLandOwner } from '../../selectors/landSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getPlayer } from '../../selectors/playerSelectors';
 
-import { getAlignmentColor } from '../../types/Alignment';
+import { getAlignmentColor } from '../../domain/ui/alignmentColors';
 
-import { NO_PLAYER } from '../../data/players/predefinedPlayers';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
 
 interface LandCharacteristicsPopupProps extends PopupProps {
   battlefieldPosition: LandPosition;
