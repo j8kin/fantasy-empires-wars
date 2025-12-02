@@ -1,0 +1,13 @@
+import { SpellName } from './Spell';
+
+export enum EffectType {
+  POSITIVE = 'positive',
+  NEGATIVE = 'negative',
+}
+
+export type Effect = {
+  id: string;
+  type: EffectType; // when army merged positive effect disappears negative effect remains
+  spell: SpellName;
+  duration: number;
+};

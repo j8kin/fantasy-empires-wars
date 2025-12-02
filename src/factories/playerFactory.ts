@@ -22,6 +22,7 @@ export const playerFactory = (
       [ManaType.BLUE]: 0,
       [ManaType.RED]: 0,
     },
+    effects: [],
     quests: [],
     vault: vault,
     color: profile.color,

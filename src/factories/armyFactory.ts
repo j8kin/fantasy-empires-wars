@@ -17,5 +17,6 @@ export const armyFactory = (
     heroes: [...initHeroes],
     regulars: [...initRegulars],
     movement: movementFactory(position),
+    effects: [],
   };
 };
