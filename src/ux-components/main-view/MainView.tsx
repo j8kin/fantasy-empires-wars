@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import React, { useEffect, useRef } from 'react';
 import styles from './css/Background.module.css';
 
@@ -88,8 +89,7 @@ const MainViewContent: React.FC = () => {
   // Start the first turn when game begins (only once per game)
   useEffect(() => {
     if (gameStarted && gameState && gameState.turn === 1) {
-      // Create a unique identifier for this game state to detect new games todo use UUID instead of string concatenation
-      const currentGameId = `${gameState.players.length}-${gameState.map.dimensions.rows}-${gameState.map.dimensions.cols}-${gameState.players[0]?.id}`;
+      const currentGameId = uuid();
 
       // Check if this is a different game than the last one
       if (lastGameStateRef.current !== currentGameId) {
