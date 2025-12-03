@@ -8,7 +8,7 @@ export const effectFactory = (spellName: SpellName): Effect => {
   return {
     id: Object.freeze(uuid()),
     spell: spellName,
-    type: spell.effectType!,
-    duration: spell.duration!,
+    type: spell.effect!.type,
+    duration: spell.effect!.duration,
   };
 };

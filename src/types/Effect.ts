@@ -1,5 +1,10 @@
 import { SpellName } from './Spell';
 
+export enum EffectTarget {
+  PLAYER = 'player',
+  ARMY = 'army',
+  LAND = 'land',
+}
 export enum EffectType {
   POSITIVE = 'positive',
   NEGATIVE = 'negative',
