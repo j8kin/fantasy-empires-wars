@@ -2,6 +2,7 @@ import { GameState } from '../state/GameState';
 
 import { getTurnOwner } from '../selectors/playerSelectors';
 import { updatePlayerVault, updatePlayerMana } from '../systems/gameStateActions';
+import { decrementEffectDurations } from '../systems/effectActions';
 
 import { HeroOutcome } from '../types/HeroOutcome';
 import { TreasureItem } from '../types/Treasures';
@@ -72,5 +73,6 @@ export const startTurn = (
     calculateMana(gameState);
   }
 
-  //  gameState.nextPhase();
+  // Decrement effect durations at the end of the turn (after all effects are taken into account)
+  decrementEffectDurations(gameState);
 };
