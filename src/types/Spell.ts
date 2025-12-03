@@ -1,4 +1,5 @@
 import { ManaType } from './Mana';
+import { EffectType } from './Effect';
 
 // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
 
@@ -35,6 +36,8 @@ export interface Spell {
   manaCost: number;
   manaType: ManaType;
   apply: 'player' | 'opponent' | 'both';
+  effectType?: EffectType;
+  duration?: number;
 }
 
 const WhiteMagicSpells: Spell[] = [
@@ -51,6 +54,8 @@ const WhiteMagicSpells: Spell[] = [
     manaCost: 25,
     apply: 'opponent',
     manaType: ManaType.WHITE,
+    effectType: EffectType.POSITIVE,
+    duration: 1,
   },
   {
     id: SpellName.BLESSING,
@@ -58,6 +63,8 @@ const WhiteMagicSpells: Spell[] = [
     manaCost: 40,
     apply: 'player', // todo: probably both to be able cast on ally
     manaType: ManaType.WHITE,
+    effectType: EffectType.POSITIVE,
+    duration: 3,
   },
   {
     id: SpellName.HEAL,
@@ -75,6 +82,8 @@ const BlueMagicSpells: Spell[] = [
     manaCost: 25,
     apply: 'player',
     manaType: ManaType.BLUE,
+    effectType: EffectType.POSITIVE,
+    duration: 1,
   },
   {
     id: SpellName.TELEPORT,
@@ -99,6 +108,8 @@ const GreenMagicSpells: Spell[] = [
     manaCost: 40,
     apply: 'player',
     manaType: ManaType.GREEN,
+    effectType: EffectType.POSITIVE,
+    duration: 2,
   },
   {
     id: SpellName.ENTANGLING_ROOTS,
@@ -106,6 +117,8 @@ const GreenMagicSpells: Spell[] = [
     manaCost: 100,
     apply: 'opponent',
     manaType: ManaType.GREEN,
+    effectType: EffectType.NEGATIVE,
+    duration: 1,
   },
   {
     id: SpellName.BEAST_ATTACK,
@@ -132,6 +145,8 @@ const RedMagicSpells: Spell[] = [
     manaCost: 30,
     apply: 'opponent',
     manaType: ManaType.RED,
+    effectType: EffectType.NEGATIVE,
+    duration: 3,
   },
   {
     id: SpellName.FORGE_OF_WAR,

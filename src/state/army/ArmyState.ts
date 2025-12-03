@@ -1,6 +1,7 @@
+import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import { Effect } from '../../types/Effect';
 import { RegularsState, UnitRank } from './RegularsState';
 import { HeroState } from './HeroState';
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { MovementState } from './MovementState';
 
 export interface ArmyBriefInfo {
@@ -14,6 +15,7 @@ export interface ArmyState {
   heroes: HeroState[];
   regulars: RegularsState[];
   movement: MovementState;
+  effects: Effect[];
 }
 
 export type Armies = ArmyState[];

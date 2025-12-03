@@ -75,6 +75,12 @@ export const startMovement = (
     movingArmy = addRegulars(movingArmy, regularsResult.regulars);
   });
 
+  // Copy all effects from the stationed army to the moving army
+  movingArmy = {
+    ...movingArmy,
+    effects: [...stationedArmy.effects],
+  };
+
   startMoving(movingArmy, to);
 
   // remove stationed army from GameState if it is empty, otherwise update it

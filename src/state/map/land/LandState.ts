@@ -1,5 +1,6 @@
 import { Land } from '../../../types/Land';
 import { Building } from '../../../types/Building';
+import { Effect } from '../../../types/Effect';
 import { LandPosition } from './LandPosition';
 
 export interface LandState {
@@ -7,5 +8,6 @@ export interface LandState {
   land: Land;
   goldPerTurn: number;
   buildings: Building[];
+  effects: Effect[];
   glow?: boolean;
 }
