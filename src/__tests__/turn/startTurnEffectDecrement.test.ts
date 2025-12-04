@@ -43,24 +43,13 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       ];
 
       const army = armyFactory(turnOwnerId, { row: 1, col: 1 }, [
-        heroFactory(HeroUnitType.WARRIOR, 'Test Hero'),
+        heroFactory(HeroUnitType.FIGHTER, 'Test Hero'),
       ]);
       army.effects = [createEffect('army1', EffectType.POSITIVE, SpellName.HEAL, 2)];
       gameState.armies = [army];
 
       const landId = '1-1';
       turnOwner.landsOwned.add(landId);
-
-      // Ensure the land exists
-      if (!gameState.map.lands[landId]) {
-        gameState.map.lands[landId] = {
-          mapPos: { row: 1, col: 1 },
-          land: { name: 'Test Land', type: 'plains', resources: [], goldPerTurn: 0 },
-          goldPerTurn: 0,
-          buildings: [],
-          effects: [],
-        };
-      }
 
       gameState.map.lands[landId].effects = [
         createEffect('land1', EffectType.POSITIVE, SpellName.FERTILE_LAND, 4),
@@ -139,12 +128,12 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
 
       // Set up armies for both players
       const turnOwnerArmy = armyFactory(turnOwner.id, { row: 1, col: 1 }, [
-        heroFactory(HeroUnitType.WARRIOR, 'Hero1'),
+        heroFactory(HeroUnitType.FIGHTER, 'Hero1'),
       ]);
       turnOwnerArmy.effects = [createEffect('toa1', EffectType.NEGATIVE, SpellName.TORNADO, 2)];
 
       const otherPlayerArmy = armyFactory(otherPlayer.id, { row: 2, col: 2 }, [
-        heroFactory(HeroUnitType.WARRIOR, 'Hero2'),
+        heroFactory(HeroUnitType.FIGHTER, 'Hero2'),
       ]);
       otherPlayerArmy.effects = [
         createEffect('opa1', EffectType.NEGATIVE, SpellName.ENTANGLING_ROOTS, 2),
