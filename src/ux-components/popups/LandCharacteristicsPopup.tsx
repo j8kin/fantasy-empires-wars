@@ -132,8 +132,10 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
                 <span className={commonStyles.value}>
                   {(() => {
                     if (!gameState) return NO_PLAYER.name;
-                    return getPlayer(gameState, getLandOwner(gameState, land.mapPos)).playerProfile
-                      .name;
+                    return (
+                      getPlayer(gameState, getLandOwner(gameState, land.mapPos))?.playerProfile
+                        ?.name ?? NO_PLAYER.name
+                    );
                   })()}
                 </span>
               </div>
