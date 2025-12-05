@@ -38,7 +38,7 @@ describe('castWhiteManaSpell', () => {
 
   describe('Cast TURN_TO_MANA spell', () => {
     it('Number of UNDEAD units decremented', () => {
-      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 20), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
 
       randomSpy.mockReturnValue(0.99); // maximize damage from spell
 
@@ -50,7 +50,7 @@ describe('castWhiteManaSpell', () => {
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars.length).toBe(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
-      expect(undeadArmy?.regulars[0].count).toBe(18); // ceil(60 * 1 / 32) = 2 - spell killed only 2 undead units
+      expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
     });
 
     it('Army destroyed if all units killed', () => {
@@ -72,7 +72,7 @@ describe('castWhiteManaSpell', () => {
     });
 
     it('TURN UNDEAD should be casted only once per turn', () => {
-      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 20), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
 
       randomSpy.mockReturnValue(0.99); // maximize damage from spell
 
@@ -84,7 +84,7 @@ describe('castWhiteManaSpell', () => {
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars.length).toBe(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
-      expect(undeadArmy?.regulars[0].count).toBe(18); // ceil(60 * 1 / 32) = 2 - spell killed only 2 undead units
+      expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
 
       castSpell(getSpellById(SpellName.TURN_UNDEAD), opponentLand, gameStateStub);
 
@@ -96,7 +96,7 @@ describe('castWhiteManaSpell', () => {
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars.length).toBe(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
-      expect(undeadArmy?.regulars[0].count).toBe(18); // the same as in the first cast
+      expect(undeadArmy?.regulars[0].count).toBe(58); // the same as in the first cast
     });
   });
 });
