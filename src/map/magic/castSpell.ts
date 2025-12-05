@@ -77,8 +77,8 @@ const castWhiteManaSpell = (gameState: GameState, landPos: LandPosition, spell: 
           regular: {
             minPct: 0,
             maxPct: 0,
-            minAbs: (40 * maxClericLevel) / MAX_HERO_LEVEL,
-            maxAbs: (60 * maxClericLevel) / MAX_HERO_LEVEL,
+            minAbs: 40 * (1 + maxClericLevel / MAX_HERO_LEVEL),
+            maxAbs: 60 * (1 + maxClericLevel / MAX_HERO_LEVEL),
           },
           // there are no veteran and elite UNDEAD units in the game, so penalty config is empty
           veteran: { minPct: 0, maxPct: 0, maxAbs: 0, minAbs: 0 },
