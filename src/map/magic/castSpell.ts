@@ -6,7 +6,7 @@ import { TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
-import { updatePlayerMana } from '../../systems/gameStateActions';
+import { updatePlayerEffect, updatePlayerMana } from '../../systems/gameStateActions';
 import {
   getArmiesAtPosition,
   getMaxHeroLevelByType,
@@ -47,7 +47,7 @@ export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: G
     );
   }
   const landId = getLandId(affectedLand);
-  console.log(`Casting ${spell} on ${landId}`);
+  console.log(`Casting ${spell.id} on ${landId}`);
 
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
@@ -62,7 +62,16 @@ const castWhiteManaSpell = (gameState: GameState, landPos: LandPosition, spell: 
       const player = getPlayer(gameState, getLandOwner(gameState, landPos));
       // TURN_UNDEAD effect is active only once per player per turn
       if (!hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) {
-        player.effects.push(effectFactory(spell));
+        updatePlayerEffect(gameState, player.id, effectFactory(spell));
+
+        Object.assign(
+          gameState,
+          updatePlayerMana(gameState, gameState.turnOwner, ManaType.WHITE, -spell.manaCost)
+        );
+
+        console.log(
+          `Turning UNDEAD on ${landPos}, player ${player.id} has ${player.effects.flatMap((e) => e.id)} active effects`
+        );
 
         const undeadPenaltyConfig: PenaltyConfig = {
           regular: {

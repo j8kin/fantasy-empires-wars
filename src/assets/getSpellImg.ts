@@ -25,6 +25,7 @@ import whiteEndAnimationImg from './spells/_animation/white-end.png';
 import blackEndAnimationImg from './spells/_animation/black-end.png';
 import greenEndAnimationImg from './spells/_animation/green-end.png';
 import redEndAnimationImg from './spells/_animation/red-end.png';
+import blueEndAnimationImg from './spells/_animation/blue-end.png';
 
 export const getSpellImg = (spell: Spell) => {
   switch (spell.id) {
@@ -71,8 +72,6 @@ export const getSpellImg = (spell: Spell) => {
       return plagueImg;
     case SpellName.CORRUPTION:
       return corruptionImg;
-    default:
-      return undefined;
   }
 };
 
@@ -86,7 +85,7 @@ export const getSpellEndAnimationImg = (manaType: ManaType) => {
       return greenEndAnimationImg;
     case ManaType.RED:
       return redEndAnimationImg;
-    default:
-      return undefined;
+    case ManaType.BLUE:
+      return blueEndAnimationImg;
   }
 };
