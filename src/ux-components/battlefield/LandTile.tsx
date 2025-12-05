@@ -97,9 +97,9 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
           updateGameState(gameState!);
 
           // Show success message after a short delay to let animation start
-          setTimeout(() => {
-            alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
-          }, 100);
+          // setTimeout(() => {
+          //   alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
+          // }, 100);
         }
       } else if (selectedLandAction?.startsWith('Building: ')) {
         const buildingToConstruct = selectedLandAction?.substring(10) as BuildingType;

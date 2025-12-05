@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import styles from './SpellCastAnimation.module.css';
+import styles from './css/SpellCastAnimation.module.css';
 import { ManaType } from '../../types/Mana';
 import { getSpellEndAnimationImg } from '../../assets/getSpellImg';
 
 // Animation size constant - easy to adjust
-export const SPELL_ANIMATION_SIZE = 150;
+export const SPELL_ANIMATION_SIZE = 200;
 
 interface SpellCastAnimationProps {
   manaType: ManaType;
@@ -15,7 +15,7 @@ interface SpellCastAnimationProps {
 const SpellCastAnimation: React.FC<SpellCastAnimationProps> = ({
   manaType,
   onAnimationComplete,
-  duration = 3000, // Default 3 seconds
+  duration = 2000, // 2 seconds
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 

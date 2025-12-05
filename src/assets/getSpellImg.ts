@@ -23,6 +23,8 @@ import corruptionImg from './spells/black/corruption.png';
 
 import whiteEndAnimationImg from './spells/_animation/white-end.png';
 import blackEndAnimationImg from './spells/_animation/black-end.png';
+import greenEndAnimationImg from './spells/_animation/green-end.png';
+import redEndAnimationImg from './spells/_animation/red-end.png';
 
 export const getSpellImg = (spell: Spell) => {
   switch (spell.id) {
@@ -80,6 +82,10 @@ export const getSpellEndAnimationImg = (manaType: ManaType) => {
       return whiteEndAnimationImg;
     case ManaType.BLACK:
       return blackEndAnimationImg;
+    case ManaType.GREEN:
+      return greenEndAnimationImg;
+    case ManaType.RED:
+      return redEndAnimationImg;
     default:
       return undefined;
   }
