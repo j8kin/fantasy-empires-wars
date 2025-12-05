@@ -16,6 +16,7 @@ import { getBuilding } from '../../selectors/buildingSelectors';
 import { SpellName } from '../../types/Spell';
 import { BuildingType } from '../../types/Building';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
+import { calculateTileScreenPosition, getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
@@ -44,6 +45,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     actionLandPosition,
     addGlowingTile,
     setMoveArmyPath,
+    showSpellAnimation,
   } = useApplicationContext();
   const { gameState, updateGameState } = useGameContext();
 
@@ -83,12 +85,21 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
       if (selectedLandAction?.startsWith('Spell: ')) {
         const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
         const selectedPlayer = gameState?.turnOwner;
-        if (selectedPlayer) {
-          // todo add animation for casting spell
-          castSpell(spellToCast, battlefieldPosition, gameState!);
+        if (selectedPlayer && gameState) {
+          // Calculate screen position for animation
+          const mapDimensions = getMapDimensions(gameState);
+          const screenPosition = calculateTileScreenPosition(battlefieldPosition, mapDimensions);
 
+          // Start spell cast animation in MainView
+          showSpellAnimation(spellToCast.manaType, battlefieldPosition, screenPosition);
+
+          castSpell(spellToCast, battlefieldPosition, gameState!);
           updateGameState(gameState!);
-          alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
+
+          // Show success message after a short delay to let animation start
+          setTimeout(() => {
+            alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
+          }, 100);
         }
       } else if (selectedLandAction?.startsWith('Building: ')) {
         const buildingToConstruct = selectedLandAction?.substring(10) as BuildingType;
@@ -144,6 +155,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
       setSelectedLandAction(null); // Clear selected item after action is performed
     }
   };
+
 
   const tileClassName = `${styles.hexTile} ${
     isGlowing ? styles['hexTile--glowing'] : styles['hexTile--normal']

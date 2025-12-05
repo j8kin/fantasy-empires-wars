@@ -3,6 +3,7 @@ import { PlayerState } from '../state/player/PlayerState';
 import { HeroOutcome } from '../types/HeroOutcome';
 import { PlayerProfile } from '../state/player/PlayerProfile';
 import { LandPosition } from '../state/map/land/LandPosition';
+import { ManaType } from '../types/Mana';
 
 /**
  * Top Left position of the window/dialog/popup
@@ -22,6 +23,12 @@ export interface FrameSize {
 interface MoveArmyPath {
   from: LandPosition;
   to: LandPosition;
+}
+
+interface SpellAnimationState {
+  manaType: ManaType;
+  battlefieldPosition: LandPosition;
+  screenPosition: ScreenPosition;
 }
 
 interface ApplicationContextType {
@@ -74,6 +81,12 @@ interface ApplicationContextType {
   // Game states
   gameStarted: boolean;
   glowingTiles: Set<string>;
+
+  // Spell animation state
+  spellAnimation: SpellAnimationState | null;
+  setSpellAnimation: (animation: SpellAnimationState | null) => void;
+  showSpellAnimation: (manaType: ManaType, battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => void;
+  hideSpellAnimation: () => void;
 
   // Dialog actions
   setShowStartWindow: (show: boolean) => void;
@@ -180,6 +193,9 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [glowingTiles, setGlowingTiles] = useState<Set<string>>(new Set());
 
+  // Spell animation state
+  const [spellAnimation, setSpellAnimation] = useState<SpellAnimationState | null>(null);
+
   // HexTile popup actions
   const showLandPopup = useCallback(
     (battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => {
@@ -258,6 +274,22 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     setHeroOutcome([]);
   }, []);
 
+  // Spell animation actions
+  const showSpellAnimation = useCallback(
+    (manaType: ManaType, battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => {
+      setSpellAnimation({
+        manaType,
+        battlefieldPosition,
+        screenPosition,
+      });
+    },
+    []
+  );
+
+  const hideSpellAnimation = useCallback(() => {
+    setSpellAnimation(null);
+  }, []);
+
   return (
     <ApplicationContext.Provider
       value={{
@@ -311,6 +343,12 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         // Game states
         gameStarted,
         glowingTiles,
+
+        // Spell animation state
+        spellAnimation,
+        setSpellAnimation,
+        showSpellAnimation,
+        hideSpellAnimation,
 
         // Dialog actions
         setShowStartWindow,
