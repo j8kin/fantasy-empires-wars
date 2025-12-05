@@ -85,7 +85,11 @@ interface ApplicationContextType {
   // Spell animation state
   spellAnimation: SpellAnimationState | null;
   setSpellAnimation: (animation: SpellAnimationState | null) => void;
-  showSpellAnimation: (manaType: ManaType, battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => void;
+  showSpellAnimation: (
+    manaType: ManaType,
+    battlefieldPosition: LandPosition,
+    screenPosition: ScreenPosition
+  ) => void;
   hideSpellAnimation: () => void;
 
   // Dialog actions

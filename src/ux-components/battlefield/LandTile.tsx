@@ -156,7 +156,6 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
     }
   };
 
-
   const tileClassName = `${styles.hexTile} ${
     isGlowing ? styles['hexTile--glowing'] : styles['hexTile--normal']
   }`;

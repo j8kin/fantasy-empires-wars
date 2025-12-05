@@ -14,7 +14,7 @@ interface SpellCastAnimationProps {
 const SpellCastAnimation: React.FC<SpellCastAnimationProps> = ({
   manaType,
   onAnimationComplete,
-  duration = 3000 // Default 3 seconds
+  duration = 3000, // Default 3 seconds
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -65,7 +65,7 @@ const SpellCastAnimation: React.FC<SpellCastAnimationProps> = ({
         className={styles.animationImage}
         style={{
           width: SPELL_ANIMATION_SIZE,
-          height: SPELL_ANIMATION_SIZE
+          height: SPELL_ANIMATION_SIZE,
         }}
       />
     </div>

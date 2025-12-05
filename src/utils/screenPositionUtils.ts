@@ -17,7 +17,7 @@ export const calculateTileScreenPosition = (
   mapDimensions: { rows: number; cols: number },
   windowDimensions: { width: number; height: number } = {
     width: typeof window !== 'undefined' ? window.innerWidth : 1920,
-    height: typeof window !== 'undefined' ? window.innerHeight : 1080
+    height: typeof window !== 'undefined' ? window.innerHeight : 1080,
   }
 ): ScreenPosition => {
   const availableArea = {
@@ -33,7 +33,11 @@ export const calculateTileScreenPosition = (
   const availableHeightPerRow = (availableArea.height - 100) / effectiveRows;
   const calculatedWidthFromHeight = availableHeightPerRow / HEX_RATIO;
 
-  const tileWidth = Math.max(DEFAULT_TILE_WIDTH, calculatedWidthFromArea, calculatedWidthFromHeight);
+  const tileWidth = Math.max(
+    DEFAULT_TILE_WIDTH,
+    calculatedWidthFromArea,
+    calculatedWidthFromHeight
+  );
   const tileHeight = tileWidth * HEX_RATIO;
 
   // Calculate position in the hex grid
