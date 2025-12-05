@@ -29,3 +29,5 @@ export enum HeroUnitType {
 }
 
 export type UnitType = RegularUnitType | HeroUnitType;
+
+export const MAX_HERO_LEVEL = 32;

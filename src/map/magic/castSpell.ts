@@ -1,12 +1,33 @@
 import { GameState } from '../../state/GameState';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayer, getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 
-import { Spell } from '../../types/Spell';
+import { Spell, SpellName } from '../../types/Spell';
 import { TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
 import { updatePlayerMana } from '../../systems/gameStateActions';
+import {
+  getArmiesAtPosition,
+  getMaxHeroLevelByType,
+  isMoving,
+} from '../../selectors/armySelectors';
+import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
+import { effectFactory } from '../../factories/effectFactory';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { getRandomInt } from '../../domain/utils/random';
+import {
+  addArmyToGameState,
+  addRegulars,
+  cleanupArmies,
+  updateArmyInGameState,
+} from '../../systems/armyActions';
+import { regularsFactory } from '../../factories/regularsFactory';
+import { armyFactory } from '../../factories/armyFactory';
+import {
+  calculateAndApplyArmyPenalties,
+  PenaltyConfig,
+} from '../../domain/army/armyPenaltyCalculator';
 
 export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: GameState) => {
   const turnOwner = getTurnOwner(gameState);
@@ -30,4 +51,83 @@ export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: G
 
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
+  castWhiteManaSpell(gameState, affectedLand, spell);
+  castBlackManaSpell(gameState, affectedLand, spell);
+};
+
+const castWhiteManaSpell = (gameState: GameState, landPos: LandPosition, spell: Spell) => {
+  switch (spell.id) {
+    case SpellName.TURN_UNDEAD:
+      const maxClericLevel = getMaxHeroLevelByType(gameState, HeroUnitType.CLERIC);
+      const player = getPlayer(gameState, getLandOwner(gameState, landPos));
+      // TURN_UNDEAD effect is active only once per player per turn
+      if (!hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) {
+        player.effects.push(effectFactory(spell));
+
+        const undeadPenaltyConfig: PenaltyConfig = {
+          regular: {
+            minPct: 0,
+            maxPct: 0,
+            minAbs: (40 * maxClericLevel) / MAX_HERO_LEVEL,
+            maxAbs: (60 * maxClericLevel) / MAX_HERO_LEVEL,
+          },
+          // there are no veteran and elite UNDEAD units in the game, so penalty config is empty
+          veteran: { minPct: 0, maxPct: 0, maxAbs: 0, minAbs: 0 },
+          elite: { minPct: 0, maxPct: 0, maxAbs: 0, minAbs: 0 },
+        };
+
+        gameState.players.forEach((p) => {
+          const playerArmiesAtPosition = getArmiesAtPosition(gameState, landPos).filter(
+            (a) => a.controlledBy === p.id
+          );
+
+          const updatedArmies = calculateAndApplyArmyPenalties(
+            playerArmiesAtPosition,
+            undeadPenaltyConfig,
+            [RegularUnitType.UNDEAD]
+          );
+
+          updatedArmies.forEach((army) => {
+            Object.assign(gameState, updateArmyInGameState(gameState, army));
+          });
+        });
+
+        // cleanup Armies
+        cleanupArmies(gameState);
+      }
+      break;
+    default:
+      return;
+  }
+};
+
+const castBlackManaSpell = (gameState: GameState, landPos: LandPosition, spell: Spell) => {
+  switch (spell.id) {
+    case SpellName.SUMMON_UNDEAD:
+      const maxNecromancerLevel = getMaxHeroLevelByType(gameState, HeroUnitType.NECROMANCER);
+      const undeadSummoned = regularsFactory(
+        RegularUnitType.UNDEAD,
+        Math.ceil(getRandomInt(40, 60) * (1 + (maxNecromancerLevel - 1) / MAX_HERO_LEVEL))
+      );
+      const stationaryArmy = getArmiesAtPosition(gameState, landPos).find(
+        (a) => !isMoving(a) && a.controlledBy === gameState.turnOwner
+      );
+      if (stationaryArmy != null) {
+        Object.assign(
+          gameState,
+          updateArmyInGameState(gameState, addRegulars(stationaryArmy, undeadSummoned))
+        );
+      } else {
+        Object.assign(
+          gameState,
+          addArmyToGameState(
+            gameState,
+            armyFactory(gameState.turnOwner, landPos, undefined, [undeadSummoned])
+          )
+        );
+      }
+      break;
+    default:
+      return;
+  }
 };
