@@ -1,4 +1,5 @@
 import { Spell, SpellName } from '../types/Spell';
+import { ManaType } from '../types/Mana';
 
 import blessingImg from './spells/white/blessing.png';
 import healImg from './spells/white/heal.png';
@@ -19,6 +20,9 @@ import summonUndeadImg from './spells/black/summon-undead.png';
 import raiseDeadHeroImg from './spells/black/raise-dead-hero.png';
 import plagueImg from './spells/black/plague.png';
 import corruptionImg from './spells/black/corruption.png';
+
+import whiteEndAnimationImg from './spells/_animation/white-end.png';
+import blackEndAnimationImg from './spells/_animation/black-end.png';
 
 export const getSpellImg = (spell: Spell) => {
   switch (spell.id) {
@@ -65,6 +69,17 @@ export const getSpellImg = (spell: Spell) => {
       return plagueImg;
     case SpellName.CORRUPTION:
       return corruptionImg;
+    default:
+      return undefined;
+  }
+};
+
+export const getSpellEndAnimationImg = (manaType: ManaType) => {
+  switch (manaType) {
+    case ManaType.WHITE:
+      return whiteEndAnimationImg;
+    case ManaType.BLACK:
+      return blackEndAnimationImg;
     default:
       return undefined;
   }
