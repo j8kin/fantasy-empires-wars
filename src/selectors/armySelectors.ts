@@ -5,6 +5,7 @@ import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
 import { getTurnOwner } from './playerSelectors';
 import { isMageType } from '../domain/unit/unitTypeChecks';
+import { HeroUnitType } from '../types/UnitType';
 
 // Army state selectors (operating on individual army objects)
 export const briefInfo = (state: ArmyState): ArmyBriefInfo => {
@@ -98,6 +99,13 @@ export const getStationaryArmies = (gameState: GameState, playerId?: string): Ar
   );
 };
 
+export const getMaxHeroLevelByType = (gameState: GameState, heroType: HeroUnitType): number => {
+  return Math.max(
+    ...gameState.armies
+      .filter((a) => a.controlledBy === gameState.turnOwner)
+      .flatMap((army) => army.heroes.filter((h) => h.type === heroType).map((hero) => hero.level))
+  );
+};
 /**
  * Find the land position where a hero with the given name is located
  */

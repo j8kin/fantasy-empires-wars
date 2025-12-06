@@ -6,6 +6,8 @@ import { Building } from '../types/Building';
 import { HeroQuest } from '../types/Quest';
 import { Mana } from '../types/Mana';
 import { getLandId } from '../state/map/land/LandId';
+import { Effect } from '../types/Effect';
+import { getPlayer } from '../selectors/playerSelectors';
 
 interface BuildingSlot {
   unit: any; // UnitType
@@ -108,12 +110,22 @@ export const updatePlayerMana = (
   manaType: keyof Mana,
   deltaMana: number
 ): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const updatedMana = {
     ...player.mana,
     [manaType]: player.mana[manaType] + deltaMana,
   };
   return updatePlayer(gameState, playerId, { mana: updatedMana });
+};
+
+export const updatePlayerEffect = (
+  gameState: GameState,
+  playerId: string,
+  effect: Effect
+): void => {
+  const player = getPlayer(gameState, playerId);
+  const updatedEffects = [...player.effects, effect];
+  Object.assign(gameState, updatePlayer(gameState, playerId, { effects: updatedEffects }));
 };
 
 /**

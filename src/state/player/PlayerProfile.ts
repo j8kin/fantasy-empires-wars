@@ -10,7 +10,7 @@ export interface PlayerProfile {
   alignment: Alignment;
   race: PlayerRace;
   type: HeroUnitType;
-  level: number; // 1-32
+  level: number; // up to MAX_HERO_LEVEL
   description: string;
   color: PlayerColorName; // base player color when game starts continues current color
 }

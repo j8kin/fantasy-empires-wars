@@ -21,6 +21,7 @@ import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
 import ErrorMessagePopup from '../popups/ErrorMessagePopup';
 import HeroOutcomePopup from '../popups/HeroOutcomePopup';
+import SpellCastAnimation from '../animations/SpellCastAnimation';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import SendHeroInQuestDialog from '../dialogs/SendHeroInQuestDialog';
@@ -46,6 +47,8 @@ const MainViewContent: React.FC = () => {
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
     showHeroOutcome,
+    spellAnimation,
+    hideSpellAnimation,
   } = useApplicationContext();
 
   const { gameState, startNewTurn, setTurnManagerCallbacks } = useGameContext();
@@ -188,6 +191,25 @@ const MainViewContent: React.FC = () => {
             y: typeof window !== 'undefined' ? (window.innerHeight - 400) / 2 : 0,
           }}
         />
+      )}
+
+      {/* Spell Cast Animation - positioned absolutely over the battlefield */}
+      {spellAnimation && (
+        <div
+          style={{
+            position: 'fixed',
+            left: spellAnimation.screenPosition.x,
+            top: spellAnimation.screenPosition.y,
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            zIndex: 1000,
+          }}
+        >
+          <SpellCastAnimation
+            manaType={spellAnimation.manaType}
+            onAnimationComplete={hideSpellAnimation}
+          />
+        </div>
       )}
     </main>
   );

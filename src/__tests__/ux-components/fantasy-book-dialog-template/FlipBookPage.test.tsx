@@ -31,7 +31,7 @@ jest.mock(
 );
 
 // Mock romanNumerals utility
-jest.mock('../../../map/utils/romanNumerals', () => ({
+jest.mock('../../../utils/romanNumerals', () => ({
   toRoman: (num: number) => {
     const lookup: { [key: number]: string } = {
       1: 'I',

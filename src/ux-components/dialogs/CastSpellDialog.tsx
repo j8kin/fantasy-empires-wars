@@ -59,19 +59,25 @@ const CastSpellDialog: React.FC = () => {
 
   if (!showCastSpellDialog || gameState == null) return null;
 
-  const selectedPlayer = getTurnOwner(gameState);
-  const playerMana = selectedPlayer.mana;
+  const turnOwner = getTurnOwner(gameState);
+  const playerMana = turnOwner.mana;
 
-  // todo it should be possible to cast turn undead only once per turn
+  const turnUndeadSpellCastAvailable =
+    turnOwner.mana.white > 0 &&
+    gameState.players.some(
+      (p) =>
+        p.id !== gameState.turnOwner && !p.effects.some((e) => e.spell === SpellName.TURN_UNDEAD)
+    );
+
   const availableSpells = playerMana
     ? AllSpells.filter(
         (spell) =>
           spell.manaCost <= playerMana[spell.manaType] &&
-          (spell.id !== SpellName.TURN_UNDEAD || selectedPlayer.mana.white > 0)
+          (spell.id !== SpellName.TURN_UNDEAD || turnUndeadSpellCastAvailable)
       )
     : [];
 
-  return (
+  return availableSpells.length > 0 ? (
     <FlipBook onClickOutside={handleClose}>
       {availableSpells.map((spell, index) => (
         <FlipBookPage
@@ -88,7 +94,7 @@ const CastSpellDialog: React.FC = () => {
         />
       ))}
     </FlipBook>
-  );
+  ) : null;
 };
 
 export default CastSpellDialog;
