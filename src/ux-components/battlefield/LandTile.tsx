@@ -85,7 +85,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
       if (selectedLandAction?.startsWith('Spell: ')) {
         const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
         const selectedPlayer = gameState?.turnOwner;
-        if (selectedPlayer && gameState) {
+        if (selectedPlayer) {
           // Calculate screen position for animation
           const mapDimensions = getMapDimensions(gameState);
           const screenPosition = calculateTileScreenPosition(battlefieldPosition, mapDimensions);
@@ -93,8 +93,8 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
           // Start spell cast animation in MainView
           showSpellAnimation(spellToCast.manaType, battlefieldPosition, screenPosition);
 
-          castSpell(spellToCast, battlefieldPosition, gameState!);
-          updateGameState(gameState!);
+          castSpell(gameState, spellToCast, battlefieldPosition);
+          updateGameState(gameState);
 
           // Show success message after a short delay to let animation start
           // setTimeout(() => {
@@ -106,8 +106,8 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         const selectedPlayer = getTurnOwner(gameState);
         if (selectedPlayer && selectedPlayer.vault! >= getBuilding(buildingToConstruct).buildCost) {
           // todo add animation for building
-          construct(gameState!, buildingToConstruct, battlefieldPosition);
-          updateGameState(gameState!);
+          construct(gameState, buildingToConstruct, battlefieldPosition);
+          updateGameState(gameState);
         }
       } else if (selectedLandAction === 'Recruit') {
         // Handle recruit action - store the selected land position and show dialog
@@ -122,7 +122,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         setActionLandPosition(battlefieldPosition); // store Move Army From position
         setSelectedLandAction('MoveArmyTo');
 
-        const realmLands = getRealmLands(gameState!).map((l) => l.mapPos);
+        const realmLands = getRealmLands(gameState).map((l) => l.mapPos);
         const armiesAtPosition = getArmiesAtPosition(gameState!, battlefieldPosition);
         const maxMovements = calcMaxMove(armiesAtPosition.flatMap((a) => a.regulars));
         const nHeroes = armiesAtPosition.reduce((acc, army) => acc + army.heroes.length, 0);

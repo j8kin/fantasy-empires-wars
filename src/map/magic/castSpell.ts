@@ -19,7 +19,7 @@ import { effectFactory } from '../../factories/effectFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { armyFactory } from '../../factories/armyFactory';
 
-import { getRandomInt } from '../../domain/utils/random';
+import { getMultipleRandomElements, getRandomInt } from '../../domain/utils/random';
 import {
   calculateAndApplyArmyPenalties,
   PenaltyConfig,
@@ -31,7 +31,12 @@ import { ManaType } from '../../types/Mana';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 
-export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: GameState) => {
+export const castSpell = (
+  gameState: GameState,
+  spell: Spell,
+  mainAffectedLand: LandPosition,
+  secondaryAffectedLand?: LandPosition
+) => {
   const turnOwner = getTurnOwner(gameState);
   // first get treasures that have affect on spell casting
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests
@@ -48,16 +53,17 @@ export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: G
       updatePlayerMana(gameState, turnOwner.id, spell.manaType, -spell.manaCost)
     );
   }
-  const landId = getLandId(affectedLand);
+  const landId = getLandId(mainAffectedLand);
   console.log(`Casting ${spell.id} on ${landId}`); // todo remove debug log
 
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
-  castWhiteManaSpell(gameState, affectedLand, spell);
-  castBlackManaSpell(gameState, affectedLand, spell);
+  castWhiteManaSpell(gameState, spell, mainAffectedLand);
+  castBlueManaSpell(gameState, spell, mainAffectedLand);
+  castBlackManaSpell(gameState, spell, mainAffectedLand);
 };
 
-const castWhiteManaSpell = (gameState: GameState, landPos: LandPosition, spell: Spell) => {
+const castWhiteManaSpell = (gameState: GameState, spell: Spell, landPos: LandPosition) => {
   switch (spell.id) {
     case SpellName.TURN_UNDEAD:
       const maxClericLevel = getMaxHeroLevelByType(gameState, HeroUnitType.CLERIC);
@@ -122,7 +128,27 @@ const castWhiteManaSpell = (gameState: GameState, landPos: LandPosition, spell: 
   }
 };
 
-const castBlackManaSpell = (gameState: GameState, landPos: LandPosition, spell: Spell) => {
+const castBlueManaSpell = (gameState: GameState, spell: Spell, landPos: LandPosition) => {
+  switch (spell.id) {
+    case SpellName.ILLUSION:
+      const maxEnchanterLevel = getMaxHeroLevelByType(gameState, HeroUnitType.ENCHANTER);
+      const landsToHide = getTilesInRadius(gameState.map.dimensions, landPos, 1, true)
+        .filter((l) => getLandOwner(gameState, l) === gameState.turnOwner)
+        .flatMap((l) => getLand(gameState, l));
+      const nLandToHide = Math.ceil(landsToHide.length * (maxEnchanterLevel / MAX_HERO_LEVEL));
+
+      // add ILLUSION effect to lands
+      const selectedLands = getMultipleRandomElements(landsToHide, nLandToHide);
+      [getLand(gameState, landPos), ...selectedLands].forEach((l) =>
+        l.effects.push(effectFactory(spell, gameState.turnOwner))
+      );
+      break;
+    default:
+      return;
+  }
+};
+
+const castBlackManaSpell = (gameState: GameState, spell: Spell, landPos: LandPosition) => {
   switch (spell.id) {
     case SpellName.SUMMON_UNDEAD:
       const maxNecromancerLevel = getMaxHeroLevelByType(gameState, HeroUnitType.NECROMANCER);

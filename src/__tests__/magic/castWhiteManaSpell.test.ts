@@ -46,7 +46,7 @@ describe('castWhiteManaSpell', () => {
 
       randomSpy.mockReturnValue(0.99); // maximize damage from spell
 
-      castSpell(getSpellById(SpellName.TURN_UNDEAD), opponentLand, gameStateStub);
+      castSpell(gameStateStub, getSpellById(SpellName.TURN_UNDEAD), opponentLand);
 
       const undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
         a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
@@ -65,7 +65,7 @@ describe('castWhiteManaSpell', () => {
         a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
       )!;
 
-      castSpell(getSpellById(SpellName.TURN_UNDEAD), opponentLand, gameStateStub);
+      castSpell(gameStateStub, getSpellById(SpellName.TURN_UNDEAD), opponentLand);
 
       expect(findArmyById(gameStateStub, undeadArmy.id)).toBeUndefined(); // army destroyed
       expect(
@@ -80,7 +80,7 @@ describe('castWhiteManaSpell', () => {
 
       randomSpy.mockReturnValue(0.99); // maximize damage from spell
 
-      castSpell(getSpellById(SpellName.TURN_UNDEAD), opponentLand, gameStateStub);
+      castSpell(gameStateStub, getSpellById(SpellName.TURN_UNDEAD), opponentLand);
 
       let undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
         a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
@@ -90,7 +90,7 @@ describe('castWhiteManaSpell', () => {
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
 
-      castSpell(getSpellById(SpellName.TURN_UNDEAD), opponentLand, gameStateStub);
+      castSpell(gameStateStub, getSpellById(SpellName.TURN_UNDEAD), opponentLand);
 
       // check that spell is not affected by the second cast
       undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
@@ -138,7 +138,7 @@ describe('castWhiteManaSpell', () => {
       expect(landInfo.regulars).toHaveLength(0);
       expect(landInfo.buildings).toHaveLength(0);
 
-      castSpell(getSpellById(SpellName.VIEW_TERRITORY), opponentLand, gameStateStub);
+      castSpell(gameStateStub, getSpellById(SpellName.VIEW_TERRITORY), opponentLand);
 
       // verify that effect added to the land
       const land = getLand(gameStateStub, opponentLand);

@@ -45,7 +45,7 @@ describe('castBlackManaSpell', () => {
         getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [gameStateStub.turnOwner])
       ).toHaveLength(0);
 
-      castSpell(getSpellById(SpellName.SUMMON_UNDEAD), playerLandPos, gameStateStub);
+      castSpell(gameStateStub, getSpellById(SpellName.SUMMON_UNDEAD), playerLandPos);
 
       const undeadArmy = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
         gameStateStub.turnOwner,
@@ -61,7 +61,7 @@ describe('castBlackManaSpell', () => {
       const playerLandPos = getPlayerLands(gameStateStub)[1].mapPos; // land[0] is Homeland and has default hero that is why use [1]
       placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 1), gameStateStub, playerLandPos);
 
-      castSpell(getSpellById(SpellName.SUMMON_UNDEAD), playerLandPos, gameStateStub);
+      castSpell(gameStateStub, getSpellById(SpellName.SUMMON_UNDEAD), playerLandPos);
 
       const undeadArmies = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
         gameStateStub.turnOwner,
@@ -91,7 +91,7 @@ describe('castBlackManaSpell', () => {
         expect(necromancer.level).toBe(maxLevel);
         placeUnitsOnMap(necromancer, gameStateStub, playerLandPos);
 
-        castSpell(getSpellById(SpellName.SUMMON_UNDEAD), playerLandPos, gameStateStub);
+        castSpell(gameStateStub, getSpellById(SpellName.SUMMON_UNDEAD), playerLandPos);
 
         const summonedUndead = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
           gameStateStub.turnOwner,

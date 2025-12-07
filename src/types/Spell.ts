@@ -10,7 +10,7 @@ export enum SpellName {
   BLESSING = 'Blessing Of Protection',
   HEAL = 'Heal Wounded',
   // blue
-  ILLUSION = 'Illusion Army',
+  ILLUSION = 'Veil of Misdirection',
   TELEPORT = 'Teleport',
   TORNADO = 'Tornado',
   // green
@@ -94,14 +94,14 @@ const WhiteMagicSpells: Spell[] = [
 const BlueMagicSpells: Spell[] = [
   {
     id: SpellName.ILLUSION,
-    description: 'Creates fake army markers on the map for 3 turns (disappear if attacked)',
+    description: 'Temporarily conceals territory information in and around the targeted land.',
     manaCost: 25,
     apply: 'player',
     manaType: ManaType.BLUE,
     effect: {
       type: EffectType.POSITIVE,
       target: EffectTarget.LAND,
-      duration: 1,
+      duration: 3,
     },
   },
   {
