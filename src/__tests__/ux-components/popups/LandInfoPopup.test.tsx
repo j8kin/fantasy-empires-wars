@@ -6,18 +6,24 @@ import LandInfoPopup from '../../../ux-components/popups/LandInfoPopup';
 import { GameState } from '../../../state/GameState';
 import { LandState } from '../../../state/map/land/LandState';
 import { Armies } from '../../../state/army/ArmyState';
+import { getLandId } from '../../../state/map/land/LandId';
 
 import { getLandOwner } from '../../../selectors/landSelectors';
-import { getPlayerLands } from '../../../selectors/playerSelectors';
+import { getPlayerLands, getTurnOwner } from '../../../selectors/playerSelectors';
+import { getSpellById } from '../../../selectors/spellSelectors';
 import { startMoving } from '../../../systems/armyActions';
 import { armyFactory } from '../../../factories/armyFactory';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
+import { effectFactory } from '../../../factories/effectFactory';
 
 import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
 import { BuildingType } from '../../../types/Building';
+import { SpellName } from '../../../types/Spell';
+import { relicts, TreasureItem } from '../../../types/Treasures';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
@@ -42,6 +48,7 @@ jest.mock('../../../ux-components/popups/css/LandCharacteristicsPopup.module.css
   label: 'mocked-label',
   buildingsList: 'mocked-buildings-list',
   building: 'mocked-building',
+  hero: 'mocked-hero',
 }));
 
 jest.mock('../../../ux-components/popups/css/Popup.module.css', () => ({
@@ -54,18 +61,16 @@ jest.mock('../../../ux-components/popups/css/Popup.module.css', () => ({
   value: 'mocked-value',
 }));
 
-describe('LandCharacteristicsPopup', () => {
+describe('LandInfoPopup', () => {
   let gameStateStub: GameState;
   let mockTileState: LandState;
   const mockPosition = { x: 100, y: 100 };
 
   beforeEach(() => {
     // Create fresh game state with real battlefield for each test
-    gameStateStub = createGameStateStub({
-      realBattlefield: true,
-    });
+    gameStateStub = createGameStateStub({ realBattlefield: true });
 
-    // Find a tile that's controlled by player 1 (Morgana Shadowweaver) AND has buildings
+    // Find a tile controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getPlayerLands(gameStateStub, gameStateStub.players[1].id).find((l) =>
       l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
     )!;
@@ -370,6 +375,260 @@ describe('LandCharacteristicsPopup', () => {
       expect(screen.getByText('Orc (20)')).toBeInTheDocument();
       expect(screen.getByText('Ballista (1)')).toBeInTheDocument();
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Effects display functionality', () => {
+    it('displays positive effects with green color when tile has positive effects', () => {
+      // Create a positive effect (Blessing)
+      // Add effect to the land and set the turnOwner to the land owner so effects are visible
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.BLESSING), gameStateStub.turnOwner)
+      );
+      getTurnOwner(gameStateStub).landsOwned.add(getLandId(mockTileState.mapPos));
+
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      // Check if effects section is displayed
+      expect(screen.getByText('Effects:')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          `${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).effect!.duration})`
+        )
+      ).toBeInTheDocument();
+
+      // Check if the effect has green color for positive effect
+      const effectElement = screen.getByText(
+        `${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).effect!.duration})`
+      );
+      expect(effectElement).toHaveStyle({ color: '#4CAF50' });
+    });
+
+    it('displays negative effects with red color when tile has negative effects', () => {
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.BLESSING), gameStateStub.turnOwner)
+      );
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.EMBER_RAID), gameStateStub.players[1].id)
+      );
+      getTurnOwner(gameStateStub).landsOwned.add(getLandId(mockTileState.mapPos));
+
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      // Check if effects section is displayed
+      expect(screen.getByText('Effects:')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          `${SpellName.EMBER_RAID} (${getSpellById(SpellName.EMBER_RAID).effect!.duration})`
+        )
+      ).toBeInTheDocument();
+
+      // Check if the effect has red color for negative effect
+      const effectElement = screen.getByText(
+        `${SpellName.EMBER_RAID} (${getSpellById(SpellName.EMBER_RAID).effect!.duration})`
+      );
+      expect(effectElement).toHaveStyle({ color: '#F44336' });
+    });
+
+    it('displays multiple effects with correct colors when tile has multiple effects', () => {
+      // Create multiple effects with different types
+      // Add effects to the land and set the turnOwner to the land owner so effects are visible
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.BLESSING), gameStateStub.turnOwner)
+      );
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.EMBER_RAID), gameStateStub.players[1].id)
+      );
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.FERTILE_LAND), gameStateStub.turnOwner)
+      );
+      getTurnOwner(gameStateStub).landsOwned.add(getLandId(mockTileState.mapPos));
+
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      // Check if effects section is displayed
+      expect(screen.getByText('Effects:')).toBeInTheDocument();
+
+      // Check all effects are displayed with correct durations
+      expect(
+        screen.getByText(
+          `${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).effect!.duration})`
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          `${SpellName.EMBER_RAID} (${getSpellById(SpellName.EMBER_RAID).effect!.duration})`
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          `${SpellName.FERTILE_LAND} (${getSpellById(SpellName.FERTILE_LAND).effect!.duration})`
+        )
+      ).toBeInTheDocument();
+
+      // Check colors
+      const blessingElement = screen.getByText(
+        `${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).effect!.duration})`
+      );
+      const emberRaidElement = screen.getByText(
+        `${SpellName.EMBER_RAID} (${getSpellById(SpellName.EMBER_RAID).effect!.duration})`
+      );
+      const fertileLandElement = screen.getByText(
+        `${SpellName.FERTILE_LAND} (${getSpellById(SpellName.FERTILE_LAND).effect!.duration})`
+      );
+
+      expect(blessingElement).toHaveStyle({ color: '#4CAF50' }); // Green for positive
+      expect(emberRaidElement).toHaveStyle({ color: '#F44336' }); // Red for negative
+      expect(fertileLandElement).toHaveStyle({ color: '#4CAF50' }); // Green for positive
+    });
+
+    it('does not display effects section when tile has no effects', () => {
+      // Ensure no effects on the land but still set turnOwner to landOwner
+      getTurnOwner(gameStateStub).landsOwned.add(getLandId(mockTileState.mapPos));
+
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      expect(screen.queryByText('Effects:')).not.toBeInTheDocument();
+    });
+
+    it('displays effects with buildings and armies simultaneously', () => {
+      // Create an effect, add armies and building
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.BLESSING), gameStateStub.turnOwner)
+      );
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.VIEW_TERRITORY), gameStateStub.turnOwner)
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
+        gameStateStub,
+        mockTileState.mapPos
+      );
+      placeUnitsOnMap(
+        regularsFactory(RegularUnitType.WARRIOR),
+        gameStateStub,
+        mockTileState.mapPos
+      );
+
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      // Verify all sections are present
+      expect(screen.getByText('Buildings:')).toBeInTheDocument();
+      expect(screen.getByText('Stronghold')).toBeInTheDocument();
+      expect(screen.getByText('Effects:')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          `${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).effect!.duration})`
+        )
+      ).toBeInTheDocument();
+      expect(screen.getByText('Heroes:')).toBeInTheDocument();
+      expect(screen.getByText('Fighter lvl: 1')).toBeInTheDocument();
+      expect(screen.getByText('Units:')).toBeInTheDocument();
+      expect(screen.getByText('Warrior (20)')).toBeInTheDocument();
+    });
+
+    it('displays effects with different durations correctly', () => {
+      // Create effects with custom durations by modifying them after creation
+      const turnUndeadSpell = getSpellById(SpellName.TURN_UNDEAD);
+      const viewTerritorySpell = getSpellById(SpellName.VIEW_TERRITORY);
+
+      const effect1 = effectFactory(turnUndeadSpell, gameStateStub.players[0].id);
+      const effect2 = effectFactory(viewTerritorySpell, gameStateStub.players[0].id);
+
+      // Modify durations for testing
+      effect1.duration = 1;
+      effect2.duration = 5;
+
+      // Add effects to the land and set the turnOwner to the land owner so effects are visible
+      const landId = getLandId(mockTileState.mapPos);
+      const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
+      const gameStateWithEffects = {
+        ...gameStateStub,
+        turnOwner: landOwner, // Set turnOwner to landOwner to make effects visible
+        map: {
+          ...gameStateStub.map,
+          lands: {
+            ...gameStateStub.map.lands,
+            [landId]: {
+              ...gameStateStub.map.lands[landId],
+              effects: [effect1, effect2],
+            },
+          },
+        },
+      };
+
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateWithEffects
+      );
+
+      // Check if effects are displayed with correct durations
+      expect(screen.getByText('Effects:')).toBeInTheDocument();
+      expect(screen.getByText(`${SpellName.TURN_UNDEAD} (1)`)).toBeInTheDocument();
+      expect(screen.getByText(`${SpellName.VIEW_TERRITORY} (5)`)).toBeInTheDocument();
+    });
+  });
+  describe('Illusion display functionality', () => {
+    it('displays illusion message when land owner has Mirror of Illusion treasure', () => {
+      const randomSpy = jest.spyOn(Math, 'random');
+      randomSpy.mockReturnValue(0);
+
+      gameStateStub.players[1].empireTreasures.push(
+        relicts.find((treasure) => treasure.id === TreasureItem.MIRROR_OF_ILLUSION)!
+      );
+
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.VIEW_TERRITORY), gameStateStub.turnOwner)
+      );
+
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      expect(screen.getByText('Gaze too long, and the mirror gazes back')).toBeInTheDocument();
+      expect(screen.queryByText('Buildings:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Effects:')).not.toBeInTheDocument();
+
+      randomSpy.mockRestore();
+    });
+
+    it('displays illusion message when land has ILLUSION spell effect', () => {
+      const randomSpy = jest.spyOn(Math, 'random');
+      randomSpy.mockReturnValue(0.1);
+
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.ILLUSION), gameStateStub.players[1].id)
+      );
+
+      mockTileState.effects.push(
+        effectFactory(getSpellById(SpellName.VIEW_TERRITORY), gameStateStub.turnOwner)
+      );
+
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      expect(screen.getByText('Look deeper, and the land begins reflects')).toBeInTheDocument();
+      expect(screen.queryByText('Buildings:')).not.toBeInTheDocument();
+
+      randomSpy.mockRestore();
     });
   });
 });
