@@ -26,7 +26,7 @@ const getEventBorderColor = (status: HeroOutcomeType): string => {
   return '#ffd700';
 };
 
-const HeroOutcomePopup: React.FC<PopupProps> = ({ screenPosition }) => {
+const RealmEventsPopup: React.FC<PopupProps> = ({ screenPosition }) => {
   const { heroOutcome, hideHeroOutcome } = useApplicationContext();
 
   if (!heroOutcome || heroOutcome.length === 0) {
@@ -49,7 +49,7 @@ const HeroOutcomePopup: React.FC<PopupProps> = ({ screenPosition }) => {
     >
       <div className={styles.popupContent}>
         <div className={styles.header}>
-          <h3 className={styles.title}>Quest Results</h3>
+          <h3 className={styles.title}>Echoes of the Realm</h3>
         </div>
         <div className={styles.results}>
           {heroOutcome.map((result, index) => (
@@ -67,4 +67,4 @@ const HeroOutcomePopup: React.FC<PopupProps> = ({ screenPosition }) => {
   );
 };
 
-export default HeroOutcomePopup;
+export default RealmEventsPopup;

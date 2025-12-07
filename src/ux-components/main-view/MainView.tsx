@@ -20,7 +20,7 @@ import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
 import ErrorMessagePopup from '../popups/ErrorMessagePopup';
-import HeroOutcomePopup from '../popups/HeroOutcomePopup';
+import RealmEventsPopup from '../popups/RealmEventsPopup';
 import SpellCastAnimation from '../animations/SpellCastAnimation';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
@@ -185,7 +185,7 @@ const MainViewContent: React.FC = () => {
 
       {/* Quest Results Popup */}
       {showHeroOutcomePopup && (
-        <HeroOutcomePopup
+        <RealmEventsPopup
           screenPosition={{
             x: typeof window !== 'undefined' ? (window.innerWidth - 500) / 2 : 0,
             y: typeof window !== 'undefined' ? (window.innerHeight - 400) / 2 : 0,
