@@ -1,33 +1,35 @@
 import { GameState } from '../../state/GameState';
-import { getPlayer, getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
-
-import { Spell, SpellName } from '../../types/Spell';
-import { TreasureItem } from '../../types/Treasures';
-import { ManaType } from '../../types/Mana';
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
-import { updatePlayerEffect, updatePlayerMana } from '../../systems/gameStateActions';
+import { getPlayer, getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import {
   getArmiesAtPosition,
   getMaxHeroLevelByType,
   isMoving,
 } from '../../selectors/armySelectors';
-import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
-import { effectFactory } from '../../factories/effectFactory';
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
-import { getRandomInt } from '../../domain/utils/random';
+import { updatePlayerEffect, updatePlayerMana } from '../../systems/gameStateActions';
 import {
   addArmyToGameState,
   addRegulars,
   cleanupArmies,
   updateArmyInGameState,
 } from '../../systems/armyActions';
+import { effectFactory } from '../../factories/effectFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { armyFactory } from '../../factories/armyFactory';
+
+import { getRandomInt } from '../../domain/utils/random';
 import {
   calculateAndApplyArmyPenalties,
   PenaltyConfig,
 } from '../../domain/army/armyPenaltyCalculator';
+
+import { Spell, SpellName } from '../../types/Spell';
+import { TreasureItem } from '../../types/Treasures';
+import { ManaType } from '../../types/Mana';
+import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
+import { getTilesInRadius } from '../utils/mapAlgorithms';
 
 export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: GameState) => {
   const turnOwner = getTurnOwner(gameState);
@@ -101,9 +103,19 @@ const castWhiteManaSpell = (gameState: GameState, landPos: LandPosition, spell: 
         cleanupArmies(gameState);
       }
       break;
+
     case SpellName.VIEW_TERRITORY:
       const land = getLand(gameState, landPos);
       land.effects.push(effectFactory(spell, gameState.turnOwner));
+      break;
+
+    case SpellName.BLESSING:
+      getTilesInRadius(gameState.map.dimensions, landPos, 1, false)
+        .filter((l) => getLandOwner(gameState, l) === gameState.turnOwner)
+        .map((p) => getLand(gameState, p))
+        .forEach((l) => {
+          l.effects.push(effectFactory(spell, gameState.turnOwner));
+        });
       break;
     default:
       return;

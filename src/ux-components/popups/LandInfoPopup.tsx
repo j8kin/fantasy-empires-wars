@@ -11,10 +11,15 @@ import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandInfo } from '../../selectors/landSelectors';
 
 import { getAlignmentColor } from '../../domain/ui/alignmentColors';
+import { EffectType } from '../../types/Effect';
 
 interface LandCharacteristicsPopupProps extends PopupProps {
   landPos: LandPosition;
 }
+
+const getEffectColor = (effectType: EffectType): string => {
+  return effectType === EffectType.POSITIVE ? '#4CAF50' : '#F44336'; // Green for positive, Red for negative
+};
 
 const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, screenPosition }) => {
   const { hideLandPopup } = useApplicationContext();
@@ -29,6 +34,7 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
   const standardRowHeight = 21; // Height per standard data row (Alignment, ControlledBy etc) (12px font + 6px margin)
   const buildingRowHeight = 24; // Height for building rows (includes building chip padding + gaps)
   const armyRowHeight = 21; // Height for army row (standard)
+  const effectRowHeight = 21; // Height for effect row (standard)
 
   // Calculate height for each content type separately
   // Standard rows: Alignment, Position, Gold per Turn, Controlled By
@@ -41,6 +47,11 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
     // Buildings row - accounts for building chips and their styling
     if (landInfo.buildings.length > 0) {
       calculatedHeight += landInfo.buildings.length * buildingRowHeight;
+    }
+
+    // Effects rows - use landInfo data
+    if (landInfo.effects.length > 0) {
+      calculatedHeight += landInfo.effects.length * effectRowHeight;
     }
 
     // Army rows - use landInfo data
@@ -141,6 +152,22 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
                     {landInfo.buildings.map((building, index) => (
                       <span key={index} className={styles.building}>
                         {building}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {landInfo.effects.length > 0 && (
+                <div className={`${commonStyles.row} ${styles.row}`}>
+                  <span className={`${commonStyles.label} ${styles.label}`}>Effects:</span>
+                  <div className={styles.buildingsList}>
+                    {landInfo.effects.map((effect, index) => (
+                      <span
+                        key={index}
+                        className={styles.hero}
+                        style={{ color: getEffectColor(effect.type) }}
+                      >
+                        {effect.spell} ({effect.duration})
                       </span>
                     ))}
                   </div>

@@ -2,16 +2,18 @@ import { GameState } from '../state/GameState';
 import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
 
-import { NO_PLAYER } from '../domain/player/playerRepository';
 import { getPlayer } from './playerSelectors';
+import { getArmiesAtPosition } from './armySelectors';
+import { NO_PLAYER } from '../domain/player/playerRepository';
+import { getPlayerColorValue } from '../domain/ui/playerColors';
+import { getRandomElement } from '../domain/utils/random';
+
 import { TreasureItem } from '../types/Treasures';
 import { SpellName } from '../types/Spell';
-import { getArmiesAtPosition } from './armySelectors';
-import { getRandomElement } from '../domain/utils/random';
 import { LandType } from '../types/Land';
 import { BuildingType } from '../types/Building';
 import { Alignment } from '../types/Alignment';
-import { getPlayerColorValue } from '../domain/ui/playerColors';
+import { Effect } from '../types/Effect';
 
 export const getLand = (state: GameState, landPos: LandPosition) =>
   state.map.lands[getLandId(landPos)];
@@ -28,6 +30,7 @@ interface LandInfo {
   heroes: string[];
   regulars: string[];
   buildings: BuildingType[];
+  effects: Effect[];
   illusionMsg?: string;
 }
 export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo => {
@@ -52,6 +55,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
         type: land.land.id,
         alignment: land.land.alignment,
         goldPerTurn: land.goldPerTurn,
+        effects: [],
         heroes: [],
         regulars: [],
         buildings: [],
@@ -67,6 +71,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       type: land.land.id,
       alignment: land.land.alignment,
       goldPerTurn: land.goldPerTurn,
+      effects: [...land.effects],
       heroes: armies.flatMap((a) => a.heroes).map((h) => `${h.name} lvl: ${h.level}`),
       regulars: armies.flatMap((a) => a.regulars).map((r) => `${r.type} (${r.count})`),
       buildings: land.buildings.map((b) => b.id),
@@ -78,6 +83,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       type: land.land.id,
       alignment: land.land.alignment,
       goldPerTurn: land.goldPerTurn,
+      effects: [],
       heroes: [],
       regulars: [],
       // return buildings only for neutral lands if VIEW_TERRITORY spell is not affected on opponent

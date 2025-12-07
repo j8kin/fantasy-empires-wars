@@ -72,13 +72,13 @@ const WhiteMagicSpells: Spell[] = [
   },
   {
     id: SpellName.BLESSING,
-    description: 'Increases defense of all units on a territory for 2 turns (+20%)',
+    description: 'Increases defense of all units on a territory for 3 turns (+20%)',
     manaCost: 40,
     apply: 'player', // todo: probably both to be able cast on ally
     manaType: ManaType.WHITE,
     effect: {
       type: EffectType.POSITIVE,
-      target: EffectTarget.ARMY,
+      target: EffectTarget.LAND,
       duration: 3,
     },
   },
