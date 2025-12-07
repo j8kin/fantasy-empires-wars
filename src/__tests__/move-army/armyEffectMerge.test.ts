@@ -16,6 +16,7 @@ describe('Army Effect Merge Logic', () => {
     type,
     spell,
     duration,
+    castBy: 'player1',
   });
 
   // Helper function to create a simple test army
@@ -43,7 +44,7 @@ describe('Army Effect Merge Logic', () => {
       expect(mergedArmy.effects).toHaveLength(3);
       expect(mergedArmy.effects.every((effect) => effect.type === EffectType.NEGATIVE)).toBe(true);
 
-      // Check specific effects are preserved
+      // Check-specific effects are preserved
       const effectIds = mergedArmy.effects.map((e) => e.id);
       expect(effectIds).toContain('effect2'); // negative from target
       expect(effectIds).toContain('effect4'); // negative from source

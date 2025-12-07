@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
-import LandCharacteristicsPopup from '../../../ux-components/popups/LandCharacteristicsPopup';
+import LandInfoPopup from '../../../ux-components/popups/LandInfoPopup';
 
 import { GameState } from '../../../state/GameState';
 import { LandState } from '../../../state/map/land/LandState';
@@ -74,12 +74,15 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays building information when tile has buildings', () => {
+    const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
+    const gameStateWithOwnerAsTurnOwner = {
+      ...gameStateStub,
+      turnOwner: landOwner,
+    };
+
     renderWithProviders(
-      <LandCharacteristicsPopup
-        battlefieldPosition={mockTileState.mapPos}
-        screenPosition={mockPosition}
-      />,
-      gameStateStub
+      <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+      gameStateWithOwnerAsTurnOwner
     );
 
     // Check if building information is displayed
@@ -89,10 +92,7 @@ describe('LandCharacteristicsPopup', () => {
 
   it('displays controlled by information with player name', () => {
     renderWithProviders(
-      <LandCharacteristicsPopup
-        battlefieldPosition={mockTileState.mapPos}
-        screenPosition={mockPosition}
-      />,
+      <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
       gameStateStub
     );
 
@@ -103,12 +103,15 @@ describe('LandCharacteristicsPopup', () => {
   });
 
   it('displays both building and control information simultaneously', () => {
+    const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
+    const gameStateWithOwnerAsTurnOwner = {
+      ...gameStateStub,
+      turnOwner: landOwner,
+    };
+
     renderWithProviders(
-      <LandCharacteristicsPopup
-        battlefieldPosition={mockTileState.mapPos}
-        screenPosition={mockPosition}
-      />,
-      gameStateStub
+      <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+      gameStateWithOwnerAsTurnOwner
     );
 
     // Verify both sections are present at the same time
@@ -120,10 +123,7 @@ describe('LandCharacteristicsPopup', () => {
 
   it('displays land type information', () => {
     renderWithProviders(
-      <LandCharacteristicsPopup
-        battlefieldPosition={mockTileState.mapPos}
-        screenPosition={mockPosition}
-      />,
+      <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
       gameStateStub
     );
 
@@ -134,10 +134,7 @@ describe('LandCharacteristicsPopup', () => {
 
   it('displays position and gold information', () => {
     renderWithProviders(
-      <LandCharacteristicsPopup
-        battlefieldPosition={mockTileState.mapPos}
-        screenPosition={mockPosition}
-      />,
+      <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
       gameStateStub
     );
 
@@ -152,25 +149,24 @@ describe('LandCharacteristicsPopup', () => {
 
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
-      const army1 = armyFactory(gameStateStub.turnOwner, mockTileState.mapPos, [
+      const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
       ]);
-      const army2 = armyFactory(gameStateStub.turnOwner, mockTileState.mapPos, [
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitType.PYROMANCER, HeroUnitType.PYROMANCER),
       ]);
       const mockArmy: Armies = [army1, army2];
 
-      // Add armies to centralized system instead of land.army
+      // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
         ...gameStateStub,
+        turnOwner: landOwner,
         armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
-        <LandCharacteristicsPopup
-          battlefieldPosition={mockTileState.mapPos}
-          screenPosition={mockPosition}
-        />,
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
         gameStateWithArmy
       );
 
@@ -180,32 +176,30 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays multiple heroes of same type with different names', () => {
-      const turnOwner = gameStateStub.turnOwner;
-      const fighter1 = armyFactory(turnOwner, mockTileState.mapPos, [
+      const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
+      const fighter1 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitType.FIGHTER, 'Cedric Brightshield'),
       ]);
 
-      const fighter2 = armyFactory(turnOwner, mockTileState.mapPos, [
+      const fighter2 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitType.FIGHTER, 'Rowan Ashborne'),
       ]);
 
-      const fighter3 = armyFactory(turnOwner, mockTileState.mapPos, [
+      const fighter3 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitType.FIGHTER, 'Gareth Dawnhart'),
       ]);
 
       const mockArmy: Armies = [fighter1, fighter2, fighter3];
 
-      // Add armies to centralized system instead of land.army
+      // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
         ...gameStateStub,
+        turnOwner: landOwner,
         armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
-        <LandCharacteristicsPopup
-          battlefieldPosition={mockTileState.mapPos}
-          screenPosition={mockPosition}
-        />,
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
         gameStateWithArmy
       );
 
@@ -216,27 +210,25 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays units when tile has non-hero units', () => {
-      const turnOwner = gameStateStub.turnOwner;
-      const army1 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+      const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
         regularsFactory(RegularUnitType.WARRIOR),
       ]);
-      const army2 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
         regularsFactory(RegularUnitType.DWARF),
       ]);
 
       const mockArmy: Armies = [army1, army2];
 
-      // Add armies to centralized system instead of land.army
+      // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
         ...gameStateStub,
+        turnOwner: landOwner,
         armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
-        <LandCharacteristicsPopup
-          battlefieldPosition={mockTileState.mapPos}
-          screenPosition={mockPosition}
-        />,
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
         gameStateWithArmy
       );
 
@@ -249,35 +241,33 @@ describe('LandCharacteristicsPopup', () => {
       const regularWarriors = regularsFactory(RegularUnitType.WARRIOR);
       regularWarriors.count = 5;
 
-      const turnOwner = gameStateStub.turnOwner;
-      const army1 = armyFactory(turnOwner, mockTileState.mapPos, [
+      const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
       ]);
-      const army2 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [regularWarriors]);
-      const army3 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [regularWarriors]);
+      const army3 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
         regularsFactory(RegularUnitType.DWARF),
       ]);
       startMoving(army3, { row: 1, col: 1 });
-      const army4 = armyFactory(turnOwner, mockTileState.mapPos, [
+      const army4 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
       ]);
-      const army5 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+      const army5 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
         regularsFactory(RegularUnitType.ELF),
       ]);
 
       const mockArmy: Armies = [army1, army2, army3, army4, army5];
 
-      // Add armies to centralized system instead of land.army
+      // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
         ...gameStateStub,
+        turnOwner: landOwner,
         armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
-        <LandCharacteristicsPopup
-          battlefieldPosition={mockTileState.mapPos}
-          screenPosition={mockPosition}
-        />,
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
         gameStateWithArmy
       );
 
@@ -307,10 +297,7 @@ describe('LandCharacteristicsPopup', () => {
       };
 
       renderWithProviders(
-        <LandCharacteristicsPopup
-          battlefieldPosition={mockTileState.mapPos}
-          screenPosition={mockPosition}
-        />,
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
         gameStateWithoutArmy
       );
 
@@ -319,27 +306,25 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays only heroes section when tile has only heroes', () => {
-      const turnOwner = gameStateStub.turnOwner;
-      const army1 = armyFactory(turnOwner, mockTileState.mapPos, [
+      const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitType.RANGER, HeroUnitType.RANGER),
       ]);
-      const army2 = armyFactory(turnOwner, mockTileState.mapPos, [
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
       ]);
 
       const mockArmy: Armies = [army1, army2];
 
-      // Add armies to centralized system instead of land.army
+      // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
         ...gameStateStub,
+        turnOwner: landOwner,
         armies: [...gameStateStub.armies, ...mockArmy],
       };
 
       renderWithProviders(
-        <LandCharacteristicsPopup
-          battlefieldPosition={mockTileState.mapPos}
-          screenPosition={mockPosition}
-        />,
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
         gameStateWithArmy
       );
 
@@ -350,19 +335,20 @@ describe('LandCharacteristicsPopup', () => {
     });
 
     it('displays only units section when tile has only non-hero units', () => {
-      const turnOwner = gameStateStub.turnOwner;
-      const army1 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+      const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
         regularsFactory(RegularUnitType.ORC),
       ]);
-      const army2 = armyFactory(turnOwner, mockTileState.mapPos, undefined, [
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
         regularsFactory(RegularUnitType.BALLISTA),
       ]);
 
       const mockArmy: Armies = [army1, army2];
 
-      // Filter out any existing armies at this position and add only our test armies
+      // Filter out any existing armies at this position and add only our test armies, set turnOwner
       const gameStateWithArmy = {
         ...gameStateStub,
+        turnOwner: landOwner,
         armies: [
           ...gameStateStub.armies.filter((army) => {
             const armyPosition = army.movement.path[0];
@@ -376,10 +362,7 @@ describe('LandCharacteristicsPopup', () => {
       };
 
       renderWithProviders(
-        <LandCharacteristicsPopup
-          battlefieldPosition={mockTileState.mapPos}
-          screenPosition={mockPosition}
-        />,
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
         gameStateWithArmy
       );
 

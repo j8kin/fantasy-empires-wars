@@ -103,7 +103,8 @@ export const getMaxHeroLevelByType = (gameState: GameState, heroType: HeroUnitTy
   return Math.max(
     ...gameState.armies
       .filter((a) => a.controlledBy === gameState.turnOwner)
-      .flatMap((army) => army.heroes.filter((h) => h.type === heroType).map((hero) => hero.level))
+      .flatMap((army) => army.heroes.filter((h) => h.type === heroType).map((hero) => hero.level)),
+    0 // if no related Mages return 0 to allow casting spells even if no heroes (all just die but mana exists)
   );
 };
 /**

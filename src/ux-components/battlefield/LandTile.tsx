@@ -3,7 +3,7 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import LandCharacteristicsPopup from '../popups/LandCharacteristicsPopup';
+import LandInfoPopup from '../popups/LandInfoPopup';
 
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
@@ -176,10 +176,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         )}
       </div>
       {showPopup && (
-        <LandCharacteristicsPopup
-          battlefieldPosition={battlefieldPosition}
-          screenPosition={landPopupScreenPosition}
-        />
+        <LandInfoPopup landPos={battlefieldPosition} screenPosition={landPopupScreenPosition} />
       )}
     </>
   );

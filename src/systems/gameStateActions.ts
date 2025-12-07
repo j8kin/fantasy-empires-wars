@@ -1,13 +1,14 @@
 import { GameState } from '../state/GameState';
 import { PlayerState } from '../state/player/PlayerState';
-import { TurnPhase } from '../turn/TurnPhase';
 import { LandPosition } from '../state/map/land/LandPosition';
+import { getLandId } from '../state/map/land/LandId';
+import { getPlayer } from '../selectors/playerSelectors';
 import { Building } from '../types/Building';
 import { HeroQuest } from '../types/Quest';
 import { Mana } from '../types/Mana';
-import { getLandId } from '../state/map/land/LandId';
 import { Effect } from '../types/Effect';
-import { getPlayer } from '../selectors/playerSelectors';
+import { Item } from '../types/Treasures';
+import { TurnPhase } from '../turn/TurnPhase';
 
 interface BuildingSlot {
   unit: any; // UnitType
@@ -226,7 +227,7 @@ export const removeCompletedQuests = (gameState: GameState, playerId: string): G
 export const addPlayerEmpireTreasure = (
   gameState: GameState,
   playerId: string,
-  treasure: any
+  treasure: Item
 ): GameState => {
   const player = gameState.players.find((p) => p.id === playerId)!;
   return updatePlayer(gameState, playerId, {

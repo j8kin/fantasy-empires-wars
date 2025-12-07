@@ -14,7 +14,7 @@ import {
 } from '../../selectors/armySelectors';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 import { effectFactory } from '../../factories/effectFactory';
-import { getLandOwner } from '../../selectors/landSelectors';
+import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getRandomInt } from '../../domain/utils/random';
 import {
   addArmyToGameState,
@@ -47,7 +47,7 @@ export const castSpell = (spell: Spell, affectedLand: LandPosition, gameState: G
     );
   }
   const landId = getLandId(affectedLand);
-  console.log(`Casting ${spell.id} on ${landId}`);
+  console.log(`Casting ${spell.id} on ${landId}`); // todo remove debug log
 
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
@@ -62,15 +62,11 @@ const castWhiteManaSpell = (gameState: GameState, landPos: LandPosition, spell: 
       const player = getPlayer(gameState, getLandOwner(gameState, landPos));
       // TURN_UNDEAD effect is active only once per player per turn
       if (!hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) {
-        updatePlayerEffect(gameState, player.id, effectFactory(spell));
+        updatePlayerEffect(gameState, player.id, effectFactory(spell, gameState.turnOwner));
 
         Object.assign(
           gameState,
           updatePlayerMana(gameState, gameState.turnOwner, ManaType.WHITE, -spell.manaCost)
-        );
-
-        console.log(
-          `Turning UNDEAD on ${landPos}, player ${player.id} has ${player.effects.flatMap((e) => e.id)} active effects`
         );
 
         const undeadPenaltyConfig: PenaltyConfig = {
@@ -105,6 +101,10 @@ const castWhiteManaSpell = (gameState: GameState, landPos: LandPosition, spell: 
         cleanupArmies(gameState);
       }
       break;
+    case SpellName.VIEW_TERRITORY:
+      const land = getLand(gameState, landPos);
+      land.effects.push(effectFactory(spell, gameState.turnOwner));
+      break;
     default:
       return;
   }
@@ -116,7 +116,7 @@ const castBlackManaSpell = (gameState: GameState, landPos: LandPosition, spell: 
       const maxNecromancerLevel = getMaxHeroLevelByType(gameState, HeroUnitType.NECROMANCER);
       const undeadSummoned = regularsFactory(
         RegularUnitType.UNDEAD,
-        Math.ceil(getRandomInt(40, 60) * (1 + (maxNecromancerLevel - 1) / MAX_HERO_LEVEL))
+        Math.ceil(getRandomInt(40, 60) * (1 + maxNecromancerLevel / MAX_HERO_LEVEL))
       );
       const stationaryArmy = getArmiesAtPosition(gameState, landPos).find(
         (a) => !isMoving(a) && a.controlledBy === gameState.turnOwner

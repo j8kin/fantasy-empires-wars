@@ -1,25 +1,29 @@
 import { GameState } from '../../state/GameState';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { armyFactory } from '../../factories/armyFactory';
+import { heroFactory } from '../../factories/heroFactory';
 import { Effect, EffectType } from '../../types/Effect';
 import { SpellName } from '../../types/Spell';
 import { startTurn } from '../../turn/startTurn';
-import { createGameStateStub } from '../utils/createGameStateStub';
-import { armyFactory } from '../../factories/armyFactory';
-import { heroFactory } from '../../factories/heroFactory';
-import { getTurnOwner } from '../../selectors/playerSelectors';
 import { HeroUnitType } from '../../types/UnitType';
 
+import { createGameStateStub } from '../utils/createGameStateStub';
+
+// todo remove when all spells implemented and tested
 describe('StartTurn Effect Duration Decrement Integration', () => {
   // Helper function to create an effect
   const createEffect = (
     id: string,
     type: EffectType,
     spell: SpellName,
-    duration: number
+    duration: number,
+    castBy: string = 'player1'
   ): Effect => ({
     id,
     type,
     spell,
     duration,
+    castBy,
   });
 
   // Helper function to create a test game state with turn > 1
@@ -38,21 +42,21 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
 
       // Set up effects on player, army, and land
       turnOwner.effects = [
-        createEffect('player1', EffectType.POSITIVE, SpellName.BLESSING, 3),
-        createEffect('player2', EffectType.NEGATIVE, SpellName.TORNADO, 1),
+        createEffect('player1', EffectType.POSITIVE, SpellName.BLESSING, 3, turnOwnerId),
+        createEffect('player2', EffectType.NEGATIVE, SpellName.TORNADO, 1, turnOwnerId),
       ];
 
       const army = armyFactory(turnOwnerId, { row: 1, col: 1 }, [
         heroFactory(HeroUnitType.FIGHTER, 'Test Hero'),
       ]);
-      army.effects = [createEffect('army1', EffectType.POSITIVE, SpellName.HEAL, 2)];
+      army.effects = [createEffect('army1', EffectType.POSITIVE, SpellName.HEAL, 2, turnOwnerId)];
       gameState.armies = [army];
 
       const landId = '1-1';
       turnOwner.landsOwned.add(landId);
 
       gameState.map.lands[landId].effects = [
-        createEffect('land1', EffectType.POSITIVE, SpellName.FERTILE_LAND, 4),
+        createEffect('land1', EffectType.POSITIVE, SpellName.FERTILE_LAND, 4, turnOwnerId),
       ];
 
       // Execute startTurn
@@ -98,8 +102,8 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
 
       // Set up effects that will be tested for decrementation
       turnOwner.effects = [
-        createEffect('player1', EffectType.POSITIVE, SpellName.BLESSING, 1), // will be removed
-        createEffect('player2', EffectType.NEGATIVE, SpellName.TORNADO, 5), // will become 4
+        createEffect('player1', EffectType.POSITIVE, SpellName.BLESSING, 1, turnOwner.id), // will be removed
+        createEffect('player2', EffectType.NEGATIVE, SpellName.TORNADO, 5, turnOwner.id), // will become 4
       ];
 
       // Execute startTurn
@@ -123,20 +127,26 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       const otherPlayer = gameState.players[1];
 
       // Set up effects for both players
-      turnOwner.effects = [createEffect('to1', EffectType.POSITIVE, SpellName.BLESSING, 3)];
-      otherPlayer.effects = [createEffect('op1', EffectType.POSITIVE, SpellName.HEAL, 3)];
+      turnOwner.effects = [
+        createEffect('to1', EffectType.POSITIVE, SpellName.BLESSING, 3, turnOwner.id),
+      ];
+      otherPlayer.effects = [
+        createEffect('op1', EffectType.POSITIVE, SpellName.HEAL, 3, otherPlayer.id),
+      ];
 
       // Set up armies for both players
       const turnOwnerArmy = armyFactory(turnOwner.id, { row: 1, col: 1 }, [
         heroFactory(HeroUnitType.FIGHTER, 'Hero1'),
       ]);
-      turnOwnerArmy.effects = [createEffect('toa1', EffectType.NEGATIVE, SpellName.TORNADO, 2)];
+      turnOwnerArmy.effects = [
+        createEffect('toa1', EffectType.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id),
+      ];
 
       const otherPlayerArmy = armyFactory(otherPlayer.id, { row: 2, col: 2 }, [
         heroFactory(HeroUnitType.FIGHTER, 'Hero2'),
       ]);
       otherPlayerArmy.effects = [
-        createEffect('opa1', EffectType.NEGATIVE, SpellName.ENTANGLING_ROOTS, 2),
+        createEffect('opa1', EffectType.NEGATIVE, SpellName.ENTANGLING_ROOTS, 2, otherPlayer.id),
       ];
 
       gameState.armies = [turnOwnerArmy, otherPlayerArmy];
@@ -161,10 +171,10 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       const turnOwner = getTurnOwner(gameState);
 
       turnOwner.effects = [
-        createEffect('effect0', EffectType.POSITIVE, SpellName.VIEW_TERRITORY, 0), // should be removed
-        createEffect('effect1', EffectType.POSITIVE, SpellName.BLESSING, 1), // should be removed
-        createEffect('effect2', EffectType.NEGATIVE, SpellName.TORNADO, 2), // becomes 1
-        createEffect('effect5', EffectType.POSITIVE, SpellName.HEAL, 5), // becomes 4
+        createEffect('effect0', EffectType.POSITIVE, SpellName.VIEW_TERRITORY, 0, turnOwner.id), // should be removed
+        createEffect('effect1', EffectType.POSITIVE, SpellName.BLESSING, 1, turnOwner.id), // should be removed
+        createEffect('effect2', EffectType.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id), // becomes 1
+        createEffect('effect5', EffectType.POSITIVE, SpellName.HEAL, 5, turnOwner.id), // becomes 4
       ];
 
       startTurn(gameState);

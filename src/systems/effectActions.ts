@@ -5,23 +5,39 @@ import { getArmiesByPlayer } from '../selectors/armySelectors';
 
 /**
  * Decrements effect durations and filters out expired effects
+ * Only processes effects that were cast by the specified player
  * @param effects - Array of effects to process
+ * @param castById - ID of the player whose cast effects should be decremented
  * @returns Array of effects with durations decremented and expired effects removed
  */
-const decrementAndFilterEffects = (effects: Effect[]): Effect[] => {
+const decrementAndFilterEffects = (effects: Effect[], castById: string): Effect[] => {
   return effects
-    .map((effect) => ({
-      ...effect,
-      duration: effect.duration - 1,
-    }))
-    .filter((effect) => effect.duration > 0);
+    .map((effect) => {
+      // Only decrement effects cast by the specified player
+      if (effect.castBy === castById) {
+        return {
+          ...effect,
+          duration: effect.duration - 1,
+        };
+      }
+      // Return effect unchanged if not cast by the specified player
+      return effect;
+    })
+    .filter((effect) => {
+      // Remove effects that were cast by the specified player and have expired
+      if (effect.castBy === castById) {
+        return effect.duration > 0;
+      }
+      // Keep effects that were not cast by the specified player regardless of duration
+      return true;
+    });
 };
 
 /**
- * Decrements effect durations for the current turn owner across all their entities:
- * - Player effects
- * - Land effects (on lands owned by the player)
- * - Army effects (on armies controlled by the player)
+ * Decrements effect durations for effects cast by the current turn owner across all entities:
+ * - Player effects (only those cast by the turn owner)
+ * - Land effects (only those cast by the turn owner, on all lands)
+ * - Army effects (only those cast by the turn owner, on all armies)
  *
  * Effects with duration <= 0 after decrementing are removed.
  *
@@ -29,19 +45,22 @@ const decrementAndFilterEffects = (effects: Effect[]): Effect[] => {
  */
 export const decrementEffectDurations = (gameState: GameState): void => {
   const turnOwner = getTurnOwner(gameState);
+  const turnOwnerId = turnOwner.id;
 
-  // 1. Decrement player effects
-  turnOwner.effects = decrementAndFilterEffects(turnOwner.effects);
+  // 1. Decrement player effects cast by the turn owner
+  turnOwner.effects = decrementAndFilterEffects(turnOwner.effects, turnOwnerId);
 
-  // 2. Decrement effects on lands owned by the turn owner
-  const playerLands = getPlayerLands(gameState);
-  playerLands.forEach((land) => {
-    land.effects = decrementAndFilterEffects(land.effects);
+  // 2. Decrement effects cast by the turn owner on all lands
+  gameState.players.forEach((player) => {
+    const playerLands = getPlayerLands(gameState, player.id);
+    playerLands.forEach((land) => {
+      land.effects = decrementAndFilterEffects(land.effects, turnOwnerId);
+    });
   });
 
-  // 3. Decrement effects on armies controlled by the turn owner
+  // 3. Decrement effects cast by the turn owner on armies controlled by the turn owner
   const playerArmies = getArmiesByPlayer(gameState);
   playerArmies.forEach((army) => {
-    army.effects = decrementAndFilterEffects(army.effects);
+    army.effects = decrementAndFilterEffects(army.effects, turnOwnerId);
   });
 };
