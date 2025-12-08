@@ -16,6 +16,7 @@ import { castSpell } from '../../map/magic/castSpell';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { EffectType } from '../../types/Effect';
 
 describe('castWhiteManaSpell', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -162,6 +163,28 @@ describe('castWhiteManaSpell', () => {
       // effect disappear since duration 1 turn
       expect(gameStateStub.turn).toBe(3);
       expect(getLand(gameStateStub, opponentLand).effects).toHaveLength(0);
+    });
+  });
+
+  describe('Cast BLESSING OF PROTECTION spell', () => {
+    it('affect all lands in radius 1', () => {
+      const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
+
+      castSpell(gameStateStub, getSpellById(SpellName.BLESSING), homelandPos);
+
+      // central land is affected
+      const homeland = getLand(gameStateStub, homelandPos);
+      expect(homeland.effects).toHaveLength(1);
+      expect(homeland.effects[0].spell).toBe(SpellName.BLESSING);
+      expect(homeland.effects[0].type).toBe(EffectType.POSITIVE);
+      expect(homeland.effects[0].castBy).toBe(gameStateStub.turnOwner);
+      expect(homeland.effects[0].duration).toBe(3);
+
+      expect(
+        getPlayerLands(gameStateStub).filter(
+          (l) => l.effects.length > 0 && l.effects.some((e) => e.spell === SpellName.BLESSING)
+        )
+      ).toHaveLength(7);
     });
   });
 });

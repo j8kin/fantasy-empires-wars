@@ -8,6 +8,7 @@ import viewImg from './spells/white/view.png';
 import illusionImg from './spells/blue/illusion.png';
 import teleportImg from './spells/blue/teleport.png';
 import tornadoImg from './spells/blue/tornado.png';
+import arcaneExchangeImg from './spells/blue/arcane-exchange.png';
 import fertileLandsImg from './spells/green/fertile-lands.png';
 import entangledRootsImg from './spells/green/entangled-roots.png';
 import beastAttachImg from './spells/green/beast-attack.png';
@@ -45,6 +46,8 @@ export const getSpellImg = (spell: Spell) => {
       return teleportImg;
     case SpellName.TORNADO:
       return tornadoImg;
+    case SpellName.EXCHANGE:
+      return arcaneExchangeImg;
     // green spells
     case SpellName.FERTILE_LAND:
       return fertileLandsImg;

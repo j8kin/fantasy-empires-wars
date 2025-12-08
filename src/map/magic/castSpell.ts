@@ -33,12 +33,14 @@ import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitT
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { movementFactory } from '../../factories/movementFactory';
+import { Alignment } from '../../types/Alignment';
 
 export const castSpell = (
   gameState: GameState,
   spell: Spell,
   mainAffectedLand: LandPosition,
-  secondaryAffectedLand?: LandPosition
+  secondaryAffectedLand?: LandPosition,
+  exchangeMana?: ManaType
 ) => {
   const turnOwner = getTurnOwner(gameState);
   // first get treasures that have affect on spell casting
@@ -62,7 +64,7 @@ export const castSpell = (
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
   castWhiteManaSpell(gameState, spell, mainAffectedLand);
-  castBlueManaSpell(gameState, spell, mainAffectedLand, secondaryAffectedLand);
+  castBlueManaSpell(gameState, spell, mainAffectedLand, secondaryAffectedLand, exchangeMana);
   castBlackManaSpell(gameState, spell, mainAffectedLand);
 };
 
@@ -121,7 +123,8 @@ const castBlueManaSpell = (
   gameState: GameState,
   spell: Spell,
   landPos: LandPosition,
-  secondLand?: LandPosition
+  secondLand?: LandPosition,
+  exchangeMana?: ManaType
 ) => {
   switch (spell.id) {
     case SpellName.ILLUSION:
@@ -164,6 +167,51 @@ const castBlueManaSpell = (
       // cleanup Armies
       cleanupArmies(gameState);
       break;
+
+    case SpellName.EXCHANGE:
+      const turnOwner = getTurnOwner(gameState);
+      let addMana = 0;
+
+      switch (turnOwner.playerProfile.alignment) {
+        case Alignment.CHAOTIC:
+          switch (exchangeMana!) {
+            case ManaType.BLACK:
+            case ManaType.RED:
+              addMana = 90;
+              break;
+            case ManaType.GREEN:
+              addMana = 75;
+              break;
+            case ManaType.WHITE:
+              addMana = 50;
+              break;
+          }
+          break;
+        case Alignment.LAWFUL:
+          switch (exchangeMana!) {
+            case ManaType.WHITE:
+            case ManaType.GREEN:
+              addMana = 90;
+              break;
+            case ManaType.RED:
+              addMana = 75;
+              break;
+            case ManaType.BLACK:
+              addMana = 50;
+              break;
+          }
+          break;
+        case Alignment.NEUTRAL:
+          addMana = 95;
+          break;
+      }
+
+      Object.assign(
+        gameState,
+        updatePlayerMana(gameState, gameState.turnOwner, exchangeMana!, addMana)
+      );
+      break;
+
     default:
       return;
   }

@@ -14,6 +14,7 @@ export enum SpellName {
   ILLUSION = 'Veil of Misdirection',
   TELEPORT = 'Teleport',
   TORNADO = 'Tornado',
+  EXCHANGE = 'Arcane Exchange',
   // green
   FERTILE_LAND = 'Fertile Lands',
   ENTANGLING_ROOTS = 'Entangling Roots',
@@ -143,6 +144,13 @@ const BlueMagicSpells: Spell[] = [
     manaType: ManaType.BLUE,
     penalty: generatePenaltyConfig(20, 35, 5, 5),
   },
+  {
+    id: SpellName.EXCHANGE,
+    description: 'Exchange 100 Blue mana into another mana source with penalty',
+    manaCost: 100,
+    apply: SpellTarget.PLAYER,
+    manaType: ManaType.BLUE,
+  }
 ];
 
 const GreenMagicSpells: Spell[] = [
