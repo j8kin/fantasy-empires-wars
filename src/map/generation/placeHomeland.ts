@@ -18,6 +18,7 @@ import { Alignment } from '../../types/Alignment';
 
 import { construct } from '../building/construct';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   const player = getTurnOwner(gameState);
@@ -56,9 +57,9 @@ export const placeHomeland = (gameState: GameState) => {
   let freeToBuildLands = Object.keys(gameState.map.lands).filter(
     (landId) =>
       // exclude border lands
-      isNotBorderLand(landId, gameState.map.dimensions) &&
+      isNotBorderLand(landId, getMapDimensions(gameState)) &&
       !existingPlayersHomelands
-        .flatMap((h) => getTilesInRadius(gameState.map.dimensions, h.mapPos, 4, false))
+        .flatMap((h) => getTilesInRadius(getMapDimensions(gameState), h.mapPos, 4, false))
         .map((tola) => getLandId(tola))
         .includes(landId)
   );
@@ -67,9 +68,9 @@ export const placeHomeland = (gameState: GameState) => {
     freeToBuildLands = Object.keys(gameState.map.lands).filter(
       (landId) =>
         // exclude border lands
-        isNotBorderLand(landId, gameState.map.dimensions) &&
+        isNotBorderLand(landId, getMapDimensions(gameState)) &&
         !existingPlayersHomelands
-          .flatMap((h) => getTilesInRadius(gameState.map.dimensions, h.mapPos, 3, false))
+          .flatMap((h) => getTilesInRadius(getMapDimensions(gameState), h.mapPos, 3, false))
           .map((tola) => getLandId(tola))
           .includes(landId)
     );

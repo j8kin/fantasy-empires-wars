@@ -1,7 +1,9 @@
 import { GameState } from '../../state/GameState';
 import { TurnManager } from '../../turn/TurnManager';
-import { createGameStateStub } from '../utils/createGameStateStub';
 import { TurnPhase } from '../../turn/TurnPhase';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
+
+import { createGameStateStub } from '../utils/createGameStateStub';
 
 describe('Turn Mechanics with Different Map Sizes', () => {
   const createGameState = (mapSize: 'small' | 'medium' | 'large' | 'huge'): GameState => {
@@ -51,7 +53,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       expect(gameOverCalled).toBe(false);
 
       // Game state should have the correct dimensions
-      expect(gameState.map.dimensions).toBeDefined();
+      expect(getMapDimensions(gameState)).toBeDefined();
       expect(gameState.map.lands).toBeDefined();
       expect(Object.keys(gameState.map.lands).length).toBeGreaterThan(0);
 
@@ -102,7 +104,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
 
       // Check battlefield is properly initialized
       expect(gameState.map).toBeDefined();
-      expect(gameState.map.dimensions).toBeDefined();
+      expect(getMapDimensions(gameState)).toBeDefined();
       expect(gameState.map.lands).toBeDefined();
 
       // Check dimensions are correct
@@ -113,7 +115,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
         huge: { rows: 15, cols: 31 },
       };
 
-      expect(gameState.map.dimensions).toEqual(expectedDimensions[mapSize]);
+      expect(getMapDimensions(gameState)).toEqual(expectedDimensions[mapSize]);
 
       // Check that lands were generated
       const actualLandCount = Object.keys(gameState.map.lands).length;

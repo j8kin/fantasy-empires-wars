@@ -8,7 +8,12 @@ import LandInfoPopup from '../popups/LandInfoPopup';
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
 import { getLandOwner } from '../../selectors/landSelectors';
-import { getPlayer, getRealmLands, getTurnOwner } from '../../selectors/playerSelectors';
+import {
+  getPlayer,
+  getPlayerLands,
+  getRealmLands,
+  getTurnOwner,
+} from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getBuilding } from '../../selectors/buildingSelectors';
@@ -83,6 +88,34 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
       event.stopPropagation(); // Prevent the battlefield click handler from firing
 
       if (selectedLandAction?.startsWith('Spell: ')) {
+        if (selectedLandAction?.includes(SpellName.TELEPORT)) {
+          // Teleport spell require 2 stages of Land selection - first select the source Land, then the destination Land
+          if (selectedLandAction?.includes('TeleportTo')) {
+            const spellToCast = getSpellById(SpellName.TELEPORT);
+            const screenPosition = calculateTileScreenPosition(
+              battlefieldPosition,
+              getMapDimensions(gameState)
+            );
+            showSpellAnimation(spellToCast.manaType, battlefieldPosition, screenPosition);
+
+            castSpell(gameState, spellToCast, actionLandPosition!, battlefieldPosition);
+            clearAllGlow();
+            setSelectedLandAction(null); // Clear selected item after action is performed
+            return;
+          }
+
+          clearAllGlow();
+          setActionLandPosition(battlefieldPosition); // store Teleport Army From position
+          setSelectedLandAction(`${selectedLandAction}To`);
+
+          // glow all player lands
+          getPlayerLands(gameState)
+            .flatMap((l) => getLandId(l.mapPos))
+            .filter((l) => l !== tileId)
+            .forEach((l) => addGlowingTile(l));
+
+          return;
+        }
         const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
         const selectedPlayer = gameState?.turnOwner;
         if (selectedPlayer) {

@@ -4,6 +4,7 @@ import { getLandId } from '../../state/map/land/LandId';
 import { getPlayer, getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import {
   getArmiesAtPosition,
+  getArmiesAtPositionByPlayers,
   getMaxHeroLevelByType,
   isMoving,
 } from '../../selectors/armySelectors';
@@ -30,6 +31,8 @@ import { TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { movementFactory } from '../../factories/movementFactory';
 
 export const castSpell = (
   gameState: GameState,
@@ -59,7 +62,7 @@ export const castSpell = (
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
   castWhiteManaSpell(gameState, spell, mainAffectedLand);
-  castBlueManaSpell(gameState, spell, mainAffectedLand);
+  castBlueManaSpell(gameState, spell, mainAffectedLand, secondaryAffectedLand);
   castBlackManaSpell(gameState, spell, mainAffectedLand);
 };
 
@@ -72,27 +75,13 @@ const castWhiteManaSpell = (gameState: GameState, spell: Spell, landPos: LandPos
       if (!hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) {
         updatePlayerEffect(gameState, player.id, effectFactory(spell, gameState.turnOwner));
 
-        Object.assign(
-          gameState,
-          updatePlayerMana(gameState, gameState.turnOwner, ManaType.WHITE, -spell.manaCost)
-        );
+        // Note: mana for the spell is already deducted in castSpell() above.
 
-        const undeadPenaltyConfig: PenaltyConfig = {
-          regular: {
-            minPct: 0,
-            maxPct: 0,
-            minAbs: 40 * (1 + maxClericLevel / MAX_HERO_LEVEL),
-            maxAbs: 60 * (1 + maxClericLevel / MAX_HERO_LEVEL),
-          },
-          // there are no veteran and elite UNDEAD units in the game, so penalty config is empty
-          veteran: { minPct: 0, maxPct: 0, maxAbs: 0, minAbs: 0 },
-          elite: { minPct: 0, maxPct: 0, maxAbs: 0, minAbs: 0 },
-        };
+        // Clone penalty config to avoid mutating the global Spell definition across tests/casts
+        const undeadPenaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
 
         gameState.players.forEach((p) => {
-          const playerArmiesAtPosition = getArmiesAtPosition(gameState, landPos).filter(
-            (a) => a.controlledBy === p.id
-          );
+          const playerArmiesAtPosition = getArmiesAtPositionByPlayers(gameState, landPos, [p.id]);
 
           const updatedArmies = calculateAndApplyArmyPenalties(
             playerArmiesAtPosition,
@@ -116,7 +105,7 @@ const castWhiteManaSpell = (gameState: GameState, spell: Spell, landPos: LandPos
       break;
 
     case SpellName.BLESSING:
-      getTilesInRadius(gameState.map.dimensions, landPos, 1, false)
+      getTilesInRadius(getMapDimensions(gameState), landPos, 1, false)
         .filter((l) => getLandOwner(gameState, l) === gameState.turnOwner)
         .map((p) => getLand(gameState, p))
         .forEach((l) => {
@@ -128,11 +117,16 @@ const castWhiteManaSpell = (gameState: GameState, spell: Spell, landPos: LandPos
   }
 };
 
-const castBlueManaSpell = (gameState: GameState, spell: Spell, landPos: LandPosition) => {
+const castBlueManaSpell = (
+  gameState: GameState,
+  spell: Spell,
+  landPos: LandPosition,
+  secondLand?: LandPosition
+) => {
   switch (spell.id) {
     case SpellName.ILLUSION:
       const maxEnchanterLevel = getMaxHeroLevelByType(gameState, HeroUnitType.ENCHANTER);
-      const landsToHide = getTilesInRadius(gameState.map.dimensions, landPos, 1, true)
+      const landsToHide = getTilesInRadius(getMapDimensions(gameState), landPos, 1, true)
         .filter((l) => getLandOwner(gameState, l) === gameState.turnOwner)
         .flatMap((l) => getLand(gameState, l));
       const nLandToHide = Math.ceil(landsToHide.length * (maxEnchanterLevel / MAX_HERO_LEVEL));
@@ -142,6 +136,33 @@ const castBlueManaSpell = (gameState: GameState, spell: Spell, landPos: LandPosi
       [getLand(gameState, landPos), ...selectedLands].forEach((l) =>
         l.effects.push(effectFactory(spell, gameState.turnOwner))
       );
+      break;
+    case SpellName.TELEPORT:
+      if (secondLand != null) {
+        const armiesToTeleport = getArmiesAtPositionByPlayers(gameState, landPos, [
+          gameState.turnOwner,
+        ]);
+        armiesToTeleport.forEach((army) => {
+          army.movement = movementFactory(secondLand);
+        });
+      }
+      break;
+
+    case SpellName.TORNADO:
+      const penalty = spell.penalty!;
+
+      gameState.players.forEach((p) => {
+        const playerArmiesAtPosition = getArmiesAtPositionByPlayers(gameState, landPos, [p.id]);
+
+        const updatedArmies = calculateAndApplyArmyPenalties(playerArmiesAtPosition, penalty);
+
+        updatedArmies.forEach((army) => {
+          Object.assign(gameState, updateArmyInGameState(gameState, army));
+        });
+      });
+
+      // cleanup Armies
+      cleanupArmies(gameState);
       break;
     default:
       return;
@@ -177,4 +198,29 @@ const castBlackManaSpell = (gameState: GameState, spell: Spell, landPos: LandPos
     default:
       return;
   }
+};
+
+const calculatePenaltyConfig = (basePenalty: PenaltyConfig, maxLevel: number) => {
+  const penaltyConfig: PenaltyConfig = {
+    regular: { ...basePenalty.regular },
+    veteran: { ...basePenalty.veteran },
+    elite: { ...basePenalty.elite },
+  };
+
+  penaltyConfig.regular.maxPct += 10 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.regular.minPct += 10 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.regular.minAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
+  penaltyConfig.regular.maxAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
+
+  penaltyConfig.veteran.maxPct += 10 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.veteran.minPct += 10 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.veteran.minAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
+  penaltyConfig.veteran.maxAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
+
+  penaltyConfig.elite.maxPct += 10 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.elite.minPct += 10 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.elite.minAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
+  penaltyConfig.elite.maxAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
+
+  return penaltyConfig;
 };

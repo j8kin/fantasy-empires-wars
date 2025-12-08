@@ -78,7 +78,7 @@ describe('castWhiteManaSpell', () => {
     it('TURN UNDEAD should be casted only once per turn', () => {
       placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
 
-      randomSpy.mockReturnValue(0.99); // maximize damage from spell
+      randomSpy.mockReturnValue(1); // maximize damage from spell
 
       castSpell(gameStateStub, getSpellById(SpellName.TURN_UNDEAD), opponentLand);
 
