@@ -142,7 +142,7 @@ const BlueMagicSpells: Spell[] = [
     manaCost: 50,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.BLUE,
-    penalty: generatePenaltyConfig(20, 35, 5, 5),
+    penalty: generatePenaltyConfig(0.2, 0.35, 5, 5),
   },
   {
     id: SpellName.EXCHANGE,
@@ -184,7 +184,7 @@ const GreenMagicSpells: Spell[] = [
     manaCost: 70,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.GREEN,
-    penalty: generatePenaltyConfig(15, 25, 5, 5),
+    penalty: generatePenaltyConfig(0.15, 0.25, 5, 5),
   },
   {
     id: SpellName.EARTHQUAKE,
@@ -193,7 +193,7 @@ const GreenMagicSpells: Spell[] = [
     manaCost: 100,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.GREEN,
-    penalty: generatePenaltyConfig(10, 20, 5, 5),
+    penalty: generatePenaltyConfig(0.1, 0.2, 5, 5),
   },
 ];
 
@@ -224,7 +224,7 @@ const RedMagicSpells: Spell[] = [
     manaCost: 100,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.RED,
-    penalty: generatePenaltyConfig(15, 20, 5, 5),
+    penalty: generatePenaltyConfig(0.15, 0.2, 5, 5),
   },
   {
     id: SpellName.METEOR_SHOWER,
@@ -233,7 +233,7 @@ const RedMagicSpells: Spell[] = [
     manaCost: 200,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.RED,
-    penalty: generatePenaltyConfig(35, 45, 5, 5),
+    penalty: generatePenaltyConfig(0.35, 0.45, 5, 5),
   },
 ];
 
@@ -266,7 +266,7 @@ const BlackMagicSpells: Spell[] = [
     manaCost: 75,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.BLACK,
-    penalty: generatePenaltyConfig(25, 40, 5, 5),
+    penalty: generatePenaltyConfig(0.25, 0.4, 5, 5),
   },
 ];
 

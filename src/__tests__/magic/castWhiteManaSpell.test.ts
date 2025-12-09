@@ -41,7 +41,7 @@ describe('castWhiteManaSpell', () => {
     randomSpy.mockRestore();
   });
 
-  describe('Cast TURN_TO_MANA spell', () => {
+  describe('Cast TURN_UNDEAD spell', () => {
     it('Number of UNDEAD units decremented', () => {
       placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
 

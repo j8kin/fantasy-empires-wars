@@ -146,7 +146,8 @@ const castBlueManaSpell = (
       );
       break;
     case SpellName.TELEPORT:
-      if (secondLand != null) {
+      // fallback should never happen
+      if (secondLand != null && getLandOwner(gameState, secondLand) === gameState.turnOwner) {
         const armiesToTeleport = getArmiesAtPositionByPlayers(gameState, landPos!, [
           gameState.turnOwner,
         ]);
@@ -229,18 +230,18 @@ const calculatePenaltyConfig = (basePenalty: PenaltyConfig, maxLevel: number) =>
     elite: { ...basePenalty.elite },
   };
 
-  penaltyConfig.regular.maxPct += 10 * (maxLevel / MAX_HERO_LEVEL);
-  penaltyConfig.regular.minPct += 10 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.regular.maxPct += 0.1 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.regular.minPct += 0.1 * (maxLevel / MAX_HERO_LEVEL);
   penaltyConfig.regular.minAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
   penaltyConfig.regular.maxAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
 
-  penaltyConfig.veteran.maxPct += 10 * (maxLevel / MAX_HERO_LEVEL);
-  penaltyConfig.veteran.minPct += 10 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.veteran.maxPct += 0.1 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.veteran.minPct += 0.1 * (maxLevel / MAX_HERO_LEVEL);
   penaltyConfig.veteran.minAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
   penaltyConfig.veteran.maxAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
 
-  penaltyConfig.elite.maxPct += 10 * (maxLevel / MAX_HERO_LEVEL);
-  penaltyConfig.elite.minPct += 10 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.elite.maxPct += 0.1 * (maxLevel / MAX_HERO_LEVEL);
+  penaltyConfig.elite.minPct += 0.1 * (maxLevel / MAX_HERO_LEVEL);
   penaltyConfig.elite.minAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
   penaltyConfig.elite.maxAbs *= 1 + maxLevel / MAX_HERO_LEVEL;
 
