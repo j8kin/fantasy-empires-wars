@@ -9,7 +9,6 @@ import ExchangeManaVialPanel from './ExchangeManaVialPanel';
 
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getMinManaCost } from '../../selectors/spellSelectors';
-import { getSpellById } from '../../selectors/spellSelectors';
 
 import { ManaType } from '../../types/Mana';
 import { SpellName } from '../../types/Spell';
@@ -25,9 +24,8 @@ const VialPanel: React.FC = () => {
   const handleExchange = useCallback(
     (targetManaType: ManaType) => {
       if (gameState) {
-        const arcaneExchangeSpell = getSpellById(SpellName.EXCHANGE);
         // Cast the spell with the selected mana type
-        castSpell(gameState, arcaneExchangeSpell, undefined, undefined, targetManaType);
+        castSpell(gameState, SpellName.EXCHANGE, undefined, undefined, targetManaType);
         updateGameState(gameState);
 
         // Exit exchange mode

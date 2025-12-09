@@ -64,7 +64,7 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
       const mapPosition = { row: row, col: col };
       const tileId = getLandId(mapPosition);
 
-      hexRow.push(<LandTile key={tileId} battlefieldPosition={mapPosition} />);
+      hexRow.push(<LandTile key={tileId} mapPosition={mapPosition} />);
     }
 
     hexGrid.push(

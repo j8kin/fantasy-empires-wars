@@ -31,11 +31,11 @@ import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
 
 import { getLandImg } from '../../assets/getLandImg';
 
-interface HexTileProps {
-  battlefieldPosition: LandPosition;
+export interface HexTileProps {
+  mapPosition: LandPosition;
 }
 
-const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
+const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
   const {
     landPopupPosition,
     landPopupScreenPosition,
@@ -55,10 +55,9 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
   const { gameState, updateGameState } = useGameContext();
 
   const showPopup =
-    landPopupPosition?.row === battlefieldPosition.row &&
-    landPopupPosition?.col === battlefieldPosition.col;
+    landPopupPosition?.row === mapPosition.row && landPopupPosition?.col === mapPosition.col;
 
-  const battlefieldTile = gameState!.map.lands[getLandId(battlefieldPosition)];
+  const battlefieldTile = gameState!.map.lands[getLandId(mapPosition)];
 
   if (!battlefieldTile) {
     return <div className={styles.hexTile} title="Empty Tile" />;
@@ -76,10 +75,10 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
   const handleRightClick = (event: React.MouseEvent) => {
     event.preventDefault();
-    showLandPopup(battlefieldPosition, { x: event.clientX, y: event.clientY });
+    showLandPopup(mapPosition, { x: event.clientX, y: event.clientY });
   };
 
-  const tileId = getLandId(battlefieldPosition);
+  const tileId = getLandId(mapPosition);
   const isGlowing = glowingTiles.has(tileId) || battlefieldTile.glow;
 
   const handleClick = (event: React.MouseEvent) => {
@@ -93,19 +92,19 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
           if (selectedLandAction?.includes('TeleportTo')) {
             const spellToCast = getSpellById(SpellName.TELEPORT);
             const screenPosition = calculateTileScreenPosition(
-              battlefieldPosition,
+              mapPosition,
               getMapDimensions(gameState)
             );
-            showSpellAnimation(spellToCast.manaType, battlefieldPosition, screenPosition);
+            showSpellAnimation(spellToCast.manaType, mapPosition, screenPosition);
 
-            castSpell(gameState, spellToCast, actionLandPosition!, battlefieldPosition);
+            castSpell(gameState, SpellName.TELEPORT, actionLandPosition!, mapPosition);
             clearAllGlow();
             setSelectedLandAction(null); // Clear selected item after action is performed
             return;
           }
 
           clearAllGlow();
-          setActionLandPosition(battlefieldPosition); // store Teleport Army From position
+          setActionLandPosition(mapPosition); // store Teleport Army From position
           setSelectedLandAction(`${selectedLandAction}To`);
 
           // glow all player lands
@@ -121,12 +120,12 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         if (selectedPlayer) {
           // Calculate screen position for animation
           const mapDimensions = getMapDimensions(gameState);
-          const screenPosition = calculateTileScreenPosition(battlefieldPosition, mapDimensions);
+          const screenPosition = calculateTileScreenPosition(mapPosition, mapDimensions);
 
           // Start spell cast animation in MainView
-          showSpellAnimation(spellToCast.manaType, battlefieldPosition, screenPosition);
+          showSpellAnimation(spellToCast.manaType, mapPosition, screenPosition);
 
-          castSpell(gameState, spellToCast, battlefieldPosition);
+          castSpell(gameState, spellToCast.id, mapPosition);
           updateGameState(gameState);
 
           // Show success message after a short delay to let animation start
@@ -139,29 +138,29 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         const selectedPlayer = getTurnOwner(gameState);
         if (selectedPlayer && selectedPlayer.vault! >= getBuilding(buildingToConstruct).buildCost) {
           // todo add animation for building
-          construct(gameState, buildingToConstruct, battlefieldPosition);
+          construct(gameState, buildingToConstruct, mapPosition);
           updateGameState(gameState);
         }
       } else if (selectedLandAction === 'Recruit') {
         // Handle recruit action - store the selected land position and show dialog
-        setActionLandPosition(battlefieldPosition);
+        setActionLandPosition(mapPosition);
         setShowRecruitArmyDialog(true);
       } else if (selectedLandAction === 'Quest') {
         // Handle quest action - store the selected land position and show dialog
-        setActionLandPosition(battlefieldPosition);
+        setActionLandPosition(mapPosition);
         setShowSendHeroInQuestDialog(true);
       } else if (selectedLandAction === 'MoveArmyFrom') {
         clearAllGlow();
-        setActionLandPosition(battlefieldPosition); // store Move Army From position
+        setActionLandPosition(mapPosition); // store Move Army From position
         setSelectedLandAction('MoveArmyTo');
 
         const realmLands = getRealmLands(gameState).map((l) => l.mapPos);
-        const armiesAtPosition = getArmiesAtPosition(gameState!, battlefieldPosition);
+        const armiesAtPosition = getArmiesAtPosition(gameState!, mapPosition);
         const maxMovements = calcMaxMove(armiesAtPosition.flatMap((a) => a.regulars));
         const nHeroes = armiesAtPosition.reduce((acc, army) => acc + army.heroes.length, 0);
         const landsInRadius = getTilesInRadius(
           gameState!.map.dimensions,
-          battlefieldPosition,
+          mapPosition,
           nHeroes >= MIN_HERO_PACKS ? MAX_MOVE : maxMovements
         );
 
@@ -178,7 +177,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
 
         return;
       } else if (selectedLandAction === 'MoveArmyTo') {
-        setMoveArmyPath({ from: actionLandPosition!, to: battlefieldPosition });
+        setMoveArmyPath({ from: actionLandPosition!, to: mapPosition });
       } else {
         alert(
           `Unknown action for Land ${tileId}. Action item: ${JSON.stringify(selectedLandAction)}`
@@ -209,7 +208,7 @@ const LandTile: React.FC<HexTileProps> = ({ battlefieldPosition }) => {
         )}
       </div>
       {showPopup && (
-        <LandInfoPopup landPos={battlefieldPosition} screenPosition={landPopupScreenPosition} />
+        <LandInfoPopup landPos={mapPosition} screenPosition={landPopupScreenPosition} />
       )}
     </>
   );

@@ -1,7 +1,6 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { getSpellById } from '../../selectors/spellSelectors';
 import { findArmyById, getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getLand, getLandInfo } from '../../selectors/landSelectors';
 import { regularsFactory } from '../../factories/regularsFactory';
@@ -47,7 +46,7 @@ describe('castWhiteManaSpell', () => {
 
       randomSpy.mockReturnValue(0.99); // maximize damage from spell
 
-      castSpell(gameStateStub, getSpellById(SpellName.TURN_UNDEAD), opponentLand);
+      castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
 
       const undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
         a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
@@ -66,7 +65,7 @@ describe('castWhiteManaSpell', () => {
         a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
       )!;
 
-      castSpell(gameStateStub, getSpellById(SpellName.TURN_UNDEAD), opponentLand);
+      castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
 
       expect(findArmyById(gameStateStub, undeadArmy.id)).toBeUndefined(); // army destroyed
       expect(
@@ -81,7 +80,7 @@ describe('castWhiteManaSpell', () => {
 
       randomSpy.mockReturnValue(1); // maximize damage from spell
 
-      castSpell(gameStateStub, getSpellById(SpellName.TURN_UNDEAD), opponentLand);
+      castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
 
       let undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
         a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
@@ -91,7 +90,7 @@ describe('castWhiteManaSpell', () => {
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
 
-      castSpell(gameStateStub, getSpellById(SpellName.TURN_UNDEAD), opponentLand);
+      castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
 
       // check that spell is not affected by the second cast
       undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
@@ -139,7 +138,7 @@ describe('castWhiteManaSpell', () => {
       expect(landInfo.regulars).toHaveLength(0);
       expect(landInfo.buildings).toHaveLength(0);
 
-      castSpell(gameStateStub, getSpellById(SpellName.VIEW_TERRITORY), opponentLand);
+      castSpell(gameStateStub, SpellName.VIEW_TERRITORY, opponentLand);
 
       // verify that effect added to the land
       const land = getLand(gameStateStub, opponentLand);
@@ -170,7 +169,7 @@ describe('castWhiteManaSpell', () => {
     it('affect all lands in radius 1', () => {
       const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
 
-      castSpell(gameStateStub, getSpellById(SpellName.BLESSING), homelandPos);
+      castSpell(gameStateStub, SpellName.BLESSING, homelandPos);
 
       // central land is affected
       const homeland = getLand(gameStateStub, homelandPos);

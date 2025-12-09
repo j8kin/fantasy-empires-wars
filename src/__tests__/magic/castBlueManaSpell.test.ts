@@ -1,22 +1,21 @@
 import { GameState } from '../../state/GameState';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { heroFactory } from '../../factories/heroFactory';
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
-import { levelUpHero } from '../../systems/unitsActions';
-import { Alignment } from '../../types/Alignment';
-import { castSpell } from '../../map/magic/castSpell';
-import { SpellName } from '../../types/Spell';
-import { getSpellById } from '../../selectors/spellSelectors';
-import { EffectType } from '../../types/Effect';
-import { regularsFactory } from '../../factories/regularsFactory';
-import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
-import { startMoving } from '../../systems/armyActions';
-import { getLandOwner } from '../../selectors/landSelectors';
 import { UnitRank } from '../../state/army/RegularsState';
-import { ManaType } from '../../types/Mana';
 import { PlayerState } from '../../state/player/PlayerState';
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { levelUpHero } from '../../systems/unitsActions';
+import { startMoving } from '../../systems/armyActions';
+import { heroFactory } from '../../factories/heroFactory';
+import { regularsFactory } from '../../factories/regularsFactory';
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { castSpell } from '../../map/magic/castSpell';
+import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import { Alignment } from '../../types/Alignment';
+import { SpellName } from '../../types/Spell';
+import { EffectType } from '../../types/Effect';
+import { ManaType } from '../../types/Mana';
 
 describe('castBlueManaSpell', () => {
   let gameStateStub: GameState;
@@ -52,7 +51,7 @@ describe('castBlueManaSpell', () => {
           placeUnitsOnMap(hero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
         }
 
-        castSpell(gameStateStub, getSpellById(SpellName.ILLUSION), homeLandPos);
+        castSpell(gameStateStub, SpellName.ILLUSION, homeLandPos);
 
         const affectedLands = getPlayerLands(gameStateStub).filter((l) => l.effects.length > 0);
         expect(affectedLands).toHaveLength(nLands);
@@ -75,7 +74,7 @@ describe('castBlueManaSpell', () => {
       placeUnitsOnMap(regularsFactory(RegularUnitType.HALFLING, 120), gameStateStub, fromPos);
       expect(isMoving(getArmiesAtPosition(gameStateStub, fromPos)[0])).toBeFalsy();
 
-      castSpell(gameStateStub, getSpellById(SpellName.TELEPORT), fromPos, toPos);
+      castSpell(gameStateStub, SpellName.TELEPORT, fromPos, toPos);
       expect(getArmiesAtPosition(gameStateStub, fromPos)).toHaveLength(0);
       const teleportedArmy = getArmiesAtPosition(gameStateStub, toPos);
       expect(teleportedArmy).toHaveLength(1);
@@ -94,7 +93,7 @@ describe('castBlueManaSpell', () => {
       startMoving(movingArmy, lands[3].mapPos); // start moving to another land
       expect(isMoving(getArmiesAtPosition(gameStateStub, fromPos)[0])).toBeTruthy();
 
-      castSpell(gameStateStub, getSpellById(SpellName.TELEPORT), fromPos, toPos);
+      castSpell(gameStateStub, SpellName.TELEPORT, fromPos, toPos);
 
       expect(getArmiesAtPosition(gameStateStub, fromPos)).toHaveLength(0);
       expect(getArmiesAtPosition(gameStateStub, lands[3].mapPos)).toHaveLength(0);
@@ -118,7 +117,7 @@ describe('castBlueManaSpell', () => {
 
       gameStateStub.turnOwner = gameStateStub.players[0].id; // change back turn owner to player 0
 
-      castSpell(gameStateStub, getSpellById(SpellName.TELEPORT), fromPos, toPos);
+      castSpell(gameStateStub, SpellName.TELEPORT, fromPos, toPos);
 
       const player2Army = getArmiesAtPosition(gameStateStub, fromPos);
       expect(player2Army).toHaveLength(1);
@@ -139,7 +138,7 @@ describe('castBlueManaSpell', () => {
       const outerLandPos = { row: homeLandPos.row + 2, col: homeLandPos.col + 2 };
       expect(getLandOwner(gameStateStub, outerLandPos)).not.toBe(gameStateStub.turnOwner);
 
-      castSpell(gameStateStub, getSpellById(SpellName.TELEPORT), homeLandPos, outerLandPos);
+      castSpell(gameStateStub, SpellName.TELEPORT, homeLandPos, outerLandPos);
 
       expect(getArmiesAtPosition(gameStateStub, homeLandPos)).toHaveLength(1);
       expect(getArmiesAtPosition(gameStateStub, outerLandPos)).toHaveLength(0);
@@ -167,7 +166,7 @@ describe('castBlueManaSpell', () => {
         const randomSpy: jest.SpyInstance<number, []> = jest.spyOn(Math, 'random');
         randomSpy.mockReturnValue(0.99); // maximize damage from spell
 
-        castSpell(gameStateStub, getSpellById(SpellName.TORNADO), opponentLandPos);
+        castSpell(gameStateStub, SpellName.TORNADO, opponentLandPos);
 
         const opponentArmy = getArmiesAtPosition(gameStateStub, opponentLandPos);
         expect(opponentArmy).toHaveLength(1);
@@ -187,7 +186,7 @@ describe('castBlueManaSpell', () => {
 
       gameStateStub.turnOwner = gameStateStub.players[1].id; // cast Tornado from player 1 on Player 0's land'
 
-      castSpell(gameStateStub, getSpellById(SpellName.TORNADO), opponentLandPos);
+      castSpell(gameStateStub, SpellName.TORNADO, opponentLandPos);
 
       expect(getArmiesAtPosition(gameStateStub, opponentLandPos)).toHaveLength(0);
     });
@@ -231,13 +230,7 @@ describe('castBlueManaSpell', () => {
         turnOwnerMana[ManaType.RED] = 0;
         turnOwnerMana[ManaType.BLACK] = 0;
 
-        castSpell(
-          gameStateStub,
-          getSpellById(SpellName.EXCHANGE),
-          undefined,
-          undefined,
-          newManaType
-        );
+        castSpell(gameStateStub, SpellName.EXCHANGE, undefined, undefined, newManaType);
 
         expect(getTurnOwner(gameStateStub).mana[ManaType.BLUE]).toBe(100);
         expect(getTurnOwner(gameStateStub).mana[newManaType]).toBe(mana);

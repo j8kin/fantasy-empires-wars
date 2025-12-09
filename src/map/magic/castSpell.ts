@@ -8,6 +8,7 @@ import {
   isMoving,
 } from '../../selectors/armySelectors';
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getSpellById } from '../../selectors/spellSelectors';
 import { updatePlayerEffect, updatePlayerMana } from '../../systems/gameStateActions';
 import {
   addArmyToGameState,
@@ -37,20 +38,21 @@ import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 /**
  * Implement cast spell logic for each spell type.
  * @param gameState
- * @param spell spell to cast
+ * @param spellName
  * @param mainAffectedLand affected land, could be null if spell doesn't affect land (Arcane Exchange, for example)
  * @param secondaryAffectedLand secondary affected land used by Teleport
  * @param exchangeMana - used by Arcane Exchange
  */
 export const castSpell = (
   gameState: GameState,
-  spell: Spell,
+  spellName: SpellName,
   mainAffectedLand?: LandPosition,
   secondaryAffectedLand?: LandPosition,
   exchangeMana?: ManaType
 ) => {
   const turnOwner = getTurnOwner(gameState);
-  // first get treasures that have affect on spell casting
+  const spell = getSpellById(spellName);
+  // first get treasures that have effect on spell casting
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests
   const hasVerdantIdol = turnOwner.empireTreasures?.some((t) => t.id === TreasureItem.VERDANT_IDOL);
 
@@ -69,6 +71,7 @@ export const castSpell = (
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
   castWhiteManaSpell(gameState, spell, mainAffectedLand!);
+  castGreenManaSpell(gameState, spell, mainAffectedLand!);
   castBlueManaSpell(gameState, spell, mainAffectedLand, secondaryAffectedLand, exchangeMana);
   castBlackManaSpell(gameState, spell, mainAffectedLand!);
 };
@@ -123,6 +126,8 @@ const castWhiteManaSpell = (gameState: GameState, spell: Spell, landPos: LandPos
       return;
   }
 };
+
+const castGreenManaSpell = (gameState: GameState, spell: Spell, landPos: LandPosition): void => {};
 
 const castBlueManaSpell = (
   gameState: GameState,

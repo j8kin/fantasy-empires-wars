@@ -1,17 +1,17 @@
 import { GameState } from '../../state/GameState';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
-import { getArmiesAtPositionByPlayers, getArmiesByPlayer } from '../../selectors/armySelectors';
-import { castSpell } from '../../map/magic/castSpell';
-import { getSpellById } from '../../selectors/spellSelectors';
-import { SpellName } from '../../types/Spell';
 import { UnitRank } from '../../state/army/RegularsState';
-import { heroFactory } from '../../factories/heroFactory';
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getArmiesAtPositionByPlayers, getArmiesByPlayer } from '../../selectors/armySelectors';
 import { levelUpHero } from '../../systems/unitsActions';
-import { Alignment } from '../../types/Alignment';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { regularsFactory } from '../../factories/regularsFactory';
+import { heroFactory } from '../../factories/heroFactory';
+import { castSpell } from '../../map/magic/castSpell';
+import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import { SpellName } from '../../types/Spell';
+import { Alignment } from '../../types/Alignment';
+
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 
 describe('castBlackManaSpell', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -45,7 +45,7 @@ describe('castBlackManaSpell', () => {
         getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [gameStateStub.turnOwner])
       ).toHaveLength(0);
 
-      castSpell(gameStateStub, getSpellById(SpellName.SUMMON_UNDEAD), playerLandPos);
+      castSpell(gameStateStub, SpellName.SUMMON_UNDEAD, playerLandPos);
 
       const undeadArmy = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
         gameStateStub.turnOwner,
@@ -61,7 +61,7 @@ describe('castBlackManaSpell', () => {
       const playerLandPos = getPlayerLands(gameStateStub)[1].mapPos; // land[0] is Homeland and has default hero that is why use [1]
       placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 1), gameStateStub, playerLandPos);
 
-      castSpell(gameStateStub, getSpellById(SpellName.SUMMON_UNDEAD), playerLandPos);
+      castSpell(gameStateStub, SpellName.SUMMON_UNDEAD, playerLandPos);
 
       const undeadArmies = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
         gameStateStub.turnOwner,
@@ -91,7 +91,7 @@ describe('castBlackManaSpell', () => {
         expect(necromancer.level).toBe(maxLevel);
         placeUnitsOnMap(necromancer, gameStateStub, playerLandPos);
 
-        castSpell(gameStateStub, getSpellById(SpellName.SUMMON_UNDEAD), playerLandPos);
+        castSpell(gameStateStub, SpellName.SUMMON_UNDEAD, playerLandPos);
 
         const summonedUndead = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
           gameStateStub.turnOwner,
