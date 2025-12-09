@@ -42,6 +42,7 @@ const MainViewContent: React.FC = () => {
     gameStarted,
     clearAllGlow,
     setSelectedLandAction,
+    setIsArcaneExchangeMode,
     setProgressMessage,
     setShowProgressPopup,
     setErrorMessagePopupMessage,
@@ -116,6 +117,7 @@ const MainViewContent: React.FC = () => {
     // Clear glow and selected item when clicking on the main background
     clearAllGlow();
     setSelectedLandAction(null);
+    setIsArcaneExchangeMode(false);
   };
 
   return (

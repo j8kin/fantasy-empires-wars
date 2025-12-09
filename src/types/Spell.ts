@@ -150,7 +150,7 @@ const BlueMagicSpells: Spell[] = [
     manaCost: 100,
     apply: SpellTarget.PLAYER,
     manaType: ManaType.BLUE,
-  }
+  },
 ];
 
 const GreenMagicSpells: Spell[] = [

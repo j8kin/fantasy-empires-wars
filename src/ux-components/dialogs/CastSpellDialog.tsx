@@ -19,6 +19,7 @@ const CastSpellDialog: React.FC = () => {
     selectedLandAction,
     setSelectedLandAction,
     addGlowingTile,
+    setIsArcaneExchangeMode,
   } = useApplicationContext();
   const { gameState } = useGameContext();
 
@@ -26,21 +27,32 @@ const CastSpellDialog: React.FC = () => {
     setShowCastSpellDialog(false);
   }, [setShowCastSpellDialog]);
 
+  const handleDialogClose = useCallback(() => {
+    setShowCastSpellDialog(false);
+    // Reset exchange mode when dialog is explicitly closed
+    setIsArcaneExchangeMode(false);
+  }, [setShowCastSpellDialog, setIsArcaneExchangeMode]);
+
   const createSpellClickHandler = useCallback(
     (spellId: SpellName) => {
       return () => {
         setSelectedLandAction(`${FlipBookPageType.SPELL}: ${spellId}`);
         const spell = getSpellById(spellId);
 
-        // Add tiles to the glowing tiles set for visual highlighting
-        getAvailableToCastSpellLands(gameState!, spell.id).forEach((tileId) => {
-          addGlowingTile(tileId);
-        });
+        // Handle Arcane Exchange spell differently - don't glow any lands, just enter exchange mode
+        if (spellId === SpellName.EXCHANGE) {
+          setIsArcaneExchangeMode(true);
+        } else {
+          // Add tiles to the glowing tiles set for visual highlighting for other spells
+          getAvailableToCastSpellLands(gameState!, spell.id).forEach((tileId) => {
+            addGlowingTile(tileId);
+          });
+        }
 
         handleClose();
       };
     },
-    [gameState, setSelectedLandAction, addGlowingTile, handleClose]
+    [gameState, setSelectedLandAction, addGlowingTile, handleClose, setIsArcaneExchangeMode]
   );
 
   useEffect(() => {
@@ -51,11 +63,11 @@ const CastSpellDialog: React.FC = () => {
           alert(
             `Casting ${spell.id}!\n\nMana Cost: ${spell.manaCost}\n\nEffect: ${spell.description}`
           );
-          handleClose();
+          handleDialogClose();
         }, 100);
       }
     }
-  }, [selectedLandAction, showCastSpellDialog, handleClose]);
+  }, [selectedLandAction, showCastSpellDialog, handleDialogClose]);
 
   if (!showCastSpellDialog || gameState == null) return null;
 
@@ -78,7 +90,7 @@ const CastSpellDialog: React.FC = () => {
     : [];
 
   return availableSpells.length > 0 ? (
-    <FlipBook onClickOutside={handleClose}>
+    <FlipBook onClickOutside={handleDialogClose}>
       {availableSpells.map((spell, index) => (
         <FlipBookPage
           key={spell.id}
@@ -89,7 +101,7 @@ const CastSpellDialog: React.FC = () => {
           description={spell.description}
           cost={spell.manaCost}
           costLabel="Mana Cost"
-          onClose={handleClose}
+          onClose={handleDialogClose}
           onIconClick={createSpellClickHandler(spell.id as SpellName)}
         />
       ))}

@@ -1,6 +1,5 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/map/land/LandPosition';
-import { getLandId } from '../../state/map/land/LandId';
 import { getPlayer, getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import {
   getArmiesAtPosition,
@@ -19,6 +18,7 @@ import {
 import { effectFactory } from '../../factories/effectFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { armyFactory } from '../../factories/armyFactory';
+import { movementFactory } from '../../factories/movementFactory';
 
 import { getMultipleRandomElements, getRandomInt } from '../../domain/utils/random';
 import {
@@ -32,13 +32,20 @@ import { ManaType } from '../../types/Mana';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
-import { movementFactory } from '../../factories/movementFactory';
-import { Alignment } from '../../types/Alignment';
+import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 
+/**
+ * Implement cast spell logic for each spell type.
+ * @param gameState
+ * @param spell spell to cast
+ * @param mainAffectedLand affected land, could be null if spell doesn't affect land (Arcane Exchange, for example)
+ * @param secondaryAffectedLand secondary affected land used by Teleport
+ * @param exchangeMana - used by Arcane Exchange
+ */
 export const castSpell = (
   gameState: GameState,
   spell: Spell,
-  mainAffectedLand: LandPosition,
+  mainAffectedLand?: LandPosition,
   secondaryAffectedLand?: LandPosition,
   exchangeMana?: ManaType
 ) => {
@@ -58,14 +65,12 @@ export const castSpell = (
       updatePlayerMana(gameState, turnOwner.id, spell.manaType, -spell.manaCost)
     );
   }
-  const landId = getLandId(mainAffectedLand);
-  console.log(`Casting ${spell.id} on ${landId}`); // todo remove debug log
 
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
-  castWhiteManaSpell(gameState, spell, mainAffectedLand);
+  castWhiteManaSpell(gameState, spell, mainAffectedLand!);
   castBlueManaSpell(gameState, spell, mainAffectedLand, secondaryAffectedLand, exchangeMana);
-  castBlackManaSpell(gameState, spell, mainAffectedLand);
+  castBlackManaSpell(gameState, spell, mainAffectedLand!);
 };
 
 const castWhiteManaSpell = (gameState: GameState, spell: Spell, landPos: LandPosition) => {
@@ -122,27 +127,27 @@ const castWhiteManaSpell = (gameState: GameState, spell: Spell, landPos: LandPos
 const castBlueManaSpell = (
   gameState: GameState,
   spell: Spell,
-  landPos: LandPosition,
+  landPos?: LandPosition,
   secondLand?: LandPosition,
   exchangeMana?: ManaType
 ) => {
   switch (spell.id) {
     case SpellName.ILLUSION:
       const maxEnchanterLevel = getMaxHeroLevelByType(gameState, HeroUnitType.ENCHANTER);
-      const landsToHide = getTilesInRadius(getMapDimensions(gameState), landPos, 1, true)
+      const landsToHide = getTilesInRadius(getMapDimensions(gameState), landPos!, 1, true)
         .filter((l) => getLandOwner(gameState, l) === gameState.turnOwner)
         .flatMap((l) => getLand(gameState, l));
       const nLandToHide = Math.ceil(landsToHide.length * (maxEnchanterLevel / MAX_HERO_LEVEL));
 
       // add ILLUSION effect to lands
       const selectedLands = getMultipleRandomElements(landsToHide, nLandToHide);
-      [getLand(gameState, landPos), ...selectedLands].forEach((l) =>
+      [getLand(gameState, landPos!), ...selectedLands].forEach((l) =>
         l.effects.push(effectFactory(spell, gameState.turnOwner))
       );
       break;
     case SpellName.TELEPORT:
       if (secondLand != null) {
-        const armiesToTeleport = getArmiesAtPositionByPlayers(gameState, landPos, [
+        const armiesToTeleport = getArmiesAtPositionByPlayers(gameState, landPos!, [
           gameState.turnOwner,
         ]);
         armiesToTeleport.forEach((army) => {
@@ -155,7 +160,7 @@ const castBlueManaSpell = (
       const penalty = spell.penalty!;
 
       gameState.players.forEach((p) => {
-        const playerArmiesAtPosition = getArmiesAtPositionByPlayers(gameState, landPos, [p.id]);
+        const playerArmiesAtPosition = getArmiesAtPositionByPlayers(gameState, landPos!, [p.id]);
 
         const updatedArmies = calculateAndApplyArmyPenalties(playerArmiesAtPosition, penalty);
 
@@ -170,41 +175,10 @@ const castBlueManaSpell = (
 
     case SpellName.EXCHANGE:
       const turnOwner = getTurnOwner(gameState);
-      let addMana = 0;
-
-      switch (turnOwner.playerProfile.alignment) {
-        case Alignment.CHAOTIC:
-          switch (exchangeMana!) {
-            case ManaType.BLACK:
-            case ManaType.RED:
-              addMana = 90;
-              break;
-            case ManaType.GREEN:
-              addMana = 75;
-              break;
-            case ManaType.WHITE:
-              addMana = 50;
-              break;
-          }
-          break;
-        case Alignment.LAWFUL:
-          switch (exchangeMana!) {
-            case ManaType.WHITE:
-            case ManaType.GREEN:
-              addMana = 90;
-              break;
-            case ManaType.RED:
-              addMana = 75;
-              break;
-            case ManaType.BLACK:
-              addMana = 50;
-              break;
-          }
-          break;
-        case Alignment.NEUTRAL:
-          addMana = 95;
-          break;
-      }
+      const addMana = calculateManaConversionAmount(
+        turnOwner.playerProfile.alignment,
+        exchangeMana!
+      );
 
       Object.assign(
         gameState,

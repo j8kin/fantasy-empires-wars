@@ -40,6 +40,10 @@ interface ApplicationContextType {
   moveArmyPath: MoveArmyPath | undefined;
   setMoveArmyPath: (position: MoveArmyPath | undefined) => void;
 
+  // Arcane Exchange mode
+  isArcaneExchangeMode: boolean;
+  setIsArcaneExchangeMode: (mode: boolean) => void;
+
   // Dialog states
   showStartWindow: boolean;
   showSaveDialog: boolean;
@@ -149,6 +153,9 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [selectedLandAction, setSelectedLandAction] = useState<string | null>(null);
   const [actionLandPosition, setActionLandPosition] = useState<LandPosition | undefined>(undefined);
   const [moveArmyPath, setMoveArmyPath] = useState<MoveArmyPath | undefined>(undefined);
+
+  // Arcane Exchange mode
+  const [isArcaneExchangeMode, setIsArcaneExchangeMode] = useState<boolean>(false);
 
   // Dialog states
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
@@ -304,6 +311,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setActionLandPosition,
         moveArmyPath,
         setMoveArmyPath,
+
+        // Arcane Exchange mode
+        isArcaneExchangeMode,
+        setIsArcaneExchangeMode,
 
         // Dialog states
         showStartWindow,
