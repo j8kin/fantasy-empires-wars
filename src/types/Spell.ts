@@ -213,8 +213,8 @@ const RedMagicSpells: Spell[] = [
   },
   {
     id: SpellName.FORGE_OF_WAR,
-    description: 'Instantly recruits +33% of one unit type available in a territory with Barracks',
-    manaCost: 80,
+    description: 'Instantly recruits pack of uniq unit type available in a territory',
+    manaCost: 50,
     apply: SpellTarget.PLAYER,
     manaType: ManaType.RED,
   },
@@ -230,10 +230,10 @@ const RedMagicSpells: Spell[] = [
     id: SpellName.METEOR_SHOWER,
     description:
       'Kills 35–45% of all troops, 50% chance to destroy a building (heroes may be killed based on level)',
-    manaCost: 200,
+    manaCost: 150,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.RED,
-    penalty: generatePenaltyConfig(0.35, 0.45, 5, 5),
+    penalty: generatePenaltyConfig(0.35, 0.45, 20, 20),
   },
 ];
 
