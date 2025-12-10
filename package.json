@@ -7,6 +7,8 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "baseline-browser-mapping": "^2.9.6",
+    "browserslist": "^4.28.1",
     "react": "^19.2.0",
     "react-bootstrap": "^2.7.2",
     "react-dom": "^19.2.0",
@@ -40,8 +42,8 @@
     "husky": "^9.1.7",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.2.0",
-    "ts-jest": "^29.4.5",
-    "prettier": "^3.7.3"
+    "prettier": "^3.7.3",
+    "ts-jest": "^29.4.5"
   },
   "eslintConfig": {
     "extends": [
@@ -71,6 +73,7 @@
     ]
   },
   "resolutions": {
-    "fork-ts-checker-webpack-plugin": "^6.5.3"
+    "fork-ts-checker-webpack-plugin": "^6.5.3",
+    "baseline-browser-mapping": "^2.9.6"
   }
 }
