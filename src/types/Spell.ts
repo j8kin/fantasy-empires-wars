@@ -169,7 +169,7 @@ const GreenMagicSpells: Spell[] = [
   {
     id: SpellName.ENTANGLING_ROOTS,
     description: 'Enemy army on a territory cannot move for 1 turn',
-    manaCost: 100,
+    manaCost: 60,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.GREEN,
     effect: {

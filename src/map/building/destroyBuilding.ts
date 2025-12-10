@@ -16,10 +16,10 @@ import { getMapDimensions } from '../../utils/screenPositionUtils';
 /**
  * Player could destroy the building as Demolition before construction of a new one
  * it could be destroyed in the battle or by spell from the player opponent
- * @param landPos - identify the land where building should be destroyed
  * @param gameState - Game State (income and player lands could be updated)
+ * @param landPos - identify the land where building should be destroyed
  */
-export const destroyBuilding = (landPos: LandPosition, gameState: GameState) => {
+export const destroyBuilding = (gameState: GameState, landPos: LandPosition) => {
   const player = getLandOwner(gameState, landPos);
   const landId = getLandId(landPos);
   const isStronghold = gameState.map.lands[landId].buildings.some(

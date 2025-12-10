@@ -31,6 +31,7 @@ import { Spell, SpellName } from '../../types/Spell';
 import { TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
+import { destroyBuilding } from '../building/destroyBuilding';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
@@ -56,17 +57,15 @@ export const castSpell = (
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests
   const hasVerdantIdol = turnOwner.empireTreasures?.some((t) => t.id === TreasureItem.VERDANT_IDOL);
 
-  if (spell.manaType === ManaType.GREEN && hasVerdantIdol) {
-    Object.assign(
+  Object.assign(
+    gameState,
+    updatePlayerMana(
       gameState,
-      updatePlayerMana(gameState, turnOwner.id, spell.manaType, -spell.manaCost * 0.85)
-    );
-  } else {
-    Object.assign(
-      gameState,
-      updatePlayerMana(gameState, turnOwner.id, spell.manaType, -spell.manaCost)
-    );
-  }
+      turnOwner.id,
+      spell.manaType,
+      -Math.floor(spell.manaCost * (spell.manaType === ManaType.GREEN && hasVerdantIdol ? 0.85 : 1))
+    )
+  );
 
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
@@ -85,27 +84,9 @@ const castWhiteManaSpell = (gameState: GameState, spell: Spell, landPos: LandPos
       if (!hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) {
         updatePlayerEffect(gameState, player.id, effectFactory(spell, gameState.turnOwner));
 
-        // Note: mana for the spell is already deducted in castSpell() above.
+        const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
 
-        // Clone penalty config to avoid mutating the global Spell definition across tests/casts
-        const undeadPenaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
-
-        gameState.players.forEach((p) => {
-          const playerArmiesAtPosition = getArmiesAtPositionByPlayers(gameState, landPos, [p.id]);
-
-          const updatedArmies = calculateAndApplyArmyPenalties(
-            playerArmiesAtPosition,
-            undeadPenaltyConfig,
-            [RegularUnitType.UNDEAD]
-          );
-
-          updatedArmies.forEach((army) => {
-            Object.assign(gameState, updateArmyInGameState(gameState, army));
-          });
-        });
-
-        // cleanup Armies
-        cleanupArmies(gameState);
+        killUnits(gameState, penaltyConfig, landPos!, [RegularUnitType.UNDEAD]);
       }
       break;
 
@@ -127,7 +108,46 @@ const castWhiteManaSpell = (gameState: GameState, spell: Spell, landPos: LandPos
   }
 };
 
-const castGreenManaSpell = (gameState: GameState, spell: Spell, landPos: LandPosition): void => {};
+const castGreenManaSpell = (gameState: GameState, spell: Spell, landPos: LandPosition): void => {
+  let maxDruidLevel: number = 0;
+  switch (spell.id) {
+    case SpellName.FERTILE_LAND:
+      maxDruidLevel = getMaxHeroLevelByType(gameState, HeroUnitType.DRUID);
+      const affectedLands = getTilesInRadius(getMapDimensions(gameState), landPos, 1, true)
+        .filter((l) => getLandOwner(gameState, l) === gameState.turnOwner)
+        .flatMap((l) => getLand(gameState, l));
+      const nLandsToGrow = Math.ceil(affectedLands.length * (maxDruidLevel / MAX_HERO_LEVEL));
+
+      // Add Fertile Land effect to lands
+      const selectedLands = getMultipleRandomElements(affectedLands, nLandsToGrow);
+
+      [getLand(gameState, landPos!), ...selectedLands].forEach((l) =>
+        l.effects.push(effectFactory(spell, gameState.turnOwner))
+      );
+      break;
+
+    case SpellName.ENTANGLING_ROOTS:
+      getLand(gameState, landPos).effects.push(effectFactory(spell, gameState.turnOwner));
+      break;
+
+    case SpellName.BEAST_ATTACK:
+      maxDruidLevel = getMaxHeroLevelByType(gameState, HeroUnitType.DRUID);
+      // penalty increased based on max hero level
+      const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxDruidLevel);
+
+      killUnits(gameState, penaltyConfig, landPos!);
+      break;
+
+    case SpellName.EARTHQUAKE:
+      // kill units
+      killUnits(gameState, spell.penalty!, landPos!);
+      // try to destroy building if exists (40% probability)
+      if (Math.random() < 0.4) {
+        destroyBuilding(gameState, landPos!);
+      }
+      break;
+  }
+};
 
 const castBlueManaSpell = (
   gameState: GameState,
@@ -150,6 +170,7 @@ const castBlueManaSpell = (
         l.effects.push(effectFactory(spell, gameState.turnOwner))
       );
       break;
+
     case SpellName.TELEPORT:
       // fallback should never happen
       if (secondLand != null && getLandOwner(gameState, secondLand) === gameState.turnOwner) {
@@ -163,20 +184,7 @@ const castBlueManaSpell = (
       break;
 
     case SpellName.TORNADO:
-      const penalty = spell.penalty!;
-
-      gameState.players.forEach((p) => {
-        const playerArmiesAtPosition = getArmiesAtPositionByPlayers(gameState, landPos!, [p.id]);
-
-        const updatedArmies = calculateAndApplyArmyPenalties(playerArmiesAtPosition, penalty);
-
-        updatedArmies.forEach((army) => {
-          Object.assign(gameState, updateArmyInGameState(gameState, army));
-        });
-      });
-
-      // cleanup Armies
-      cleanupArmies(gameState);
+      killUnits(gameState, spell.penalty!, landPos!);
       break;
 
     case SpellName.EXCHANGE:
@@ -226,6 +234,31 @@ const castBlackManaSpell = (gameState: GameState, spell: Spell, landPos: LandPos
     default:
       return;
   }
+};
+
+const killUnits = (
+  state: GameState,
+  penaltyConfig: PenaltyConfig,
+  landPos: LandPosition,
+  units?: RegularUnitType[]
+) => {
+  // right now spell affects all players, even turnOwner in rare cases it could cause a friendly-fire
+  state.players.forEach((p) => {
+    const playerArmiesAtPosition = getArmiesAtPositionByPlayers(state, landPos, [p.id]);
+
+    const updatedArmies = calculateAndApplyArmyPenalties(
+      playerArmiesAtPosition,
+      penaltyConfig,
+      units
+    );
+
+    updatedArmies.forEach((army) => {
+      Object.assign(state, updateArmyInGameState(state, army));
+    });
+  });
+
+  // cleanup Armies
+  cleanupArmies(state);
 };
 
 const calculatePenaltyConfig = (basePenalty: PenaltyConfig, maxLevel: number) => {

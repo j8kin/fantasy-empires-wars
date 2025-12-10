@@ -7,17 +7,19 @@ import { getLandId } from '../../state/map/land/LandId';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { briefInfo, isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
+import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addLand } from '../../systems/playerActions';
 
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { BuildingType } from '../../types/Building';
+import { SpellName } from '../../types/Spell';
 
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
+import { castSpell } from '../../map/magic/castSpell';
 
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
@@ -462,6 +464,46 @@ describe('Move Army', () => {
       expect(getLandOwner(gameStateStub, to)).toBe(getTurnOwner(gameStateStub).id); // new territory owner is not changed
 
       randomSpy.mockRestore();
+    });
+
+    it('ENTANGLING ROOTS should prevent armies from moving', () => {
+      // set player 1 to turnOwner to emulate castSpell ENTANGLING ROOTS on player 0 territory on previous turn
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      gameStateStub.players[1].mana.green = 200;
+      castSpell(gameStateStub, SpellName.ENTANGLING_ROOTS, homeLand.mapPos);
+      // roll-back turnOwner
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      expect(getLand(gameStateStub, homeLand.mapPos).effects).toHaveLength(1);
+      expect(getLand(gameStateStub, homeLand.mapPos).effects[0].spell).toBe(
+        SpellName.ENTANGLING_ROOTS
+      );
+
+      const to = { row: homeLand.mapPos.row + 1, col: homeLand.mapPos.col };
+      let armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
+      const armyBriefInfo: ArmyBriefInfo = {
+        heroes: [briefInfo(armies[0]).heroes[0]], // initial hero in homeland
+        regulars: [],
+      };
+
+      startMovement(homeLand.mapPos, to, armyBriefInfo, gameStateStub);
+      expect(isMoving(getArmiesAtPosition(gameStateStub, homeLand.mapPos)[0])).toBeTruthy();
+      testTurnManagement.makeNTurns(1);
+
+      const heroArmy = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
+      expect(heroArmy).toHaveLength(1); // armies should not move
+      expect(isMoving(heroArmy[0])).toBeTruthy();
+      expect(getLand(gameStateStub, homeLand.mapPos).effects).toHaveLength(0); // effect disappear
+
+      // double-check that
+      testTurnManagement.makeNTurns(1);
+      expect(getArmiesAtPosition(gameStateStub, homeLand.mapPos)).toHaveLength(0);
+
+      armies = getArmiesAtPosition(gameStateStub, to);
+      expect(armies.length).toBe(1);
+      expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(armies[0])).toBeFalsy();
+      expect(armies[0].heroes.length).toBe(1);
+      expect(armies[0].heroes[0].name).toBe(armyBriefInfo.heroes[0].name);
     });
   });
 });

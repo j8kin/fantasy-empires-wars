@@ -29,7 +29,7 @@ export const construct = (
   }
   switch (buildingType) {
     case BuildingType.DEMOLITION:
-      destroyBuilding(position, gameState);
+      destroyBuilding(gameState, position);
       break;
 
     case BuildingType.STRONGHOLD:

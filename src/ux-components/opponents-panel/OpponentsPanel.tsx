@@ -33,7 +33,7 @@ const OpponentsPanel: React.FC = () => {
   if (gameState == null) return null;
   // Get all players except the selected player (opponents)
   const selectedPlayer = getTurnOwner(gameState);
-  const opponents = gameState.players?.filter((player) => player.id !== selectedPlayer?.id) || [];
+  const opponents = gameState.players.filter((player) => player.id !== selectedPlayer.id);
 
   const getAvatarLayout = (count: number) => {
     if (count <= 4) {

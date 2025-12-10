@@ -102,6 +102,33 @@ describe('castWhiteManaSpell', () => {
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // the same as in the first cast
     });
+
+    it('Only UNDEAD units can be affected by TURN UNDEAD spell', () => {
+      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitType.WARRIOR, 120), gameStateStub, opponentLand);
+
+      randomSpy.mockReturnValue(0.99); // maximize damage from spell
+
+      castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
+      const armies = getArmiesAtPosition(gameStateStub, opponentLand);
+      expect(armies).toHaveLength(3); // initial hero, undead army and warrior army
+
+      const undeadArmy = armies.find((a) =>
+        a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
+      );
+      expect(undeadArmy).toBeDefined();
+      expect(undeadArmy?.regulars.length).toBe(1);
+      expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
+      expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
+
+      const warriorArmy = armies.find((a) =>
+        a.regulars.some((u) => u.type === RegularUnitType.WARRIOR)
+      );
+      expect(warriorArmy).toBeDefined();
+      expect(warriorArmy?.regulars.length).toBe(1);
+      expect(warriorArmy?.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(warriorArmy?.regulars[0].count).toBe(120); // warrior army not affected by spell
+    });
   });
 
   describe('Cast VIEW TERRITORY spell', () => {
