@@ -2,6 +2,7 @@ import { GameState } from '../../state/GameState';
 import { UnitRank } from '../../state/army/RegularsState';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPositionByPlayers, getArmiesByPlayer } from '../../selectors/armySelectors';
+import { getSpellById } from '../../selectors/spellSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';
@@ -45,7 +46,11 @@ describe('castBlackManaSpell', () => {
         getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [gameStateStub.turnOwner])
       ).toHaveLength(0);
 
+      const blackMana = getTurnOwner(gameStateStub).mana.black;
       castSpell(gameStateStub, SpellName.SUMMON_UNDEAD, playerLandPos);
+      expect(getTurnOwner(gameStateStub).mana.black).toBe(
+        blackMana - getSpellById(SpellName.SUMMON_UNDEAD).manaCost
+      );
 
       const undeadArmy = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
         gameStateStub.turnOwner,

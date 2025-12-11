@@ -366,7 +366,7 @@ describe('Move Army', () => {
       expect(armies.length).toBe(2);
 
       randomSpy = jest.spyOn(Math, 'random');
-      randomSpy.mockReturnValue(0.01); // to return the same value on any random function call to clculate the same a
+      randomSpy.mockReturnValue(0.01); // to return the same value on any random function call to calculate the same penalty
 
       testTurnManagement.makeNTurns(1);
 

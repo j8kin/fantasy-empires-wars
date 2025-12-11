@@ -9,13 +9,14 @@ import { heroFactory } from '../../factories/heroFactory';
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
 import { BuildingType } from '../../types/Building';
+import { EffectType } from '../../types/Effect';
 
 import { castSpell } from '../../map/magic/castSpell';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { EffectType } from '../../types/Effect';
+import { getSpellById } from '../../selectors/spellSelectors';
 
 describe('castWhiteManaSpell', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -90,7 +91,9 @@ describe('castWhiteManaSpell', () => {
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
 
+      const whiteMana = getTurnOwner(gameStateStub).mana.white;
       castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
+      expect(getTurnOwner(gameStateStub).mana.white).toBe(whiteMana); // mana not changed
 
       // check that spell is not affected by the second cast
       undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
@@ -165,7 +168,11 @@ describe('castWhiteManaSpell', () => {
       expect(landInfo.regulars).toHaveLength(0);
       expect(landInfo.buildings).toHaveLength(0);
 
+      const whiteMana = getTurnOwner(gameStateStub).mana.white;
       castSpell(gameStateStub, SpellName.VIEW_TERRITORY, opponentLand);
+      expect(getTurnOwner(gameStateStub).mana.white).toBe(
+        whiteMana - getSpellById(SpellName.VIEW_TERRITORY).manaCost
+      );
 
       // verify that effect added to the land
       const land = getLand(gameStateStub, opponentLand);
@@ -196,7 +203,11 @@ describe('castWhiteManaSpell', () => {
     it('affect all lands in radius 1', () => {
       const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
 
+      const whiteMana = getTurnOwner(gameStateStub).mana.white;
       castSpell(gameStateStub, SpellName.BLESSING, homelandPos);
+      expect(getTurnOwner(gameStateStub).mana.white).toBe(
+        whiteMana - getSpellById(SpellName.BLESSING).manaCost
+      );
 
       // central land is affected
       const homeland = getLand(gameStateStub, homelandPos);

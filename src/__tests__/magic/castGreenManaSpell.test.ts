@@ -54,7 +54,11 @@ describe('castGreenManaSpell', () => {
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
 
+        const greenMana = getTurnOwner(gameStateStub).mana.green;
         castSpell(gameStateStub, SpellName.FERTILE_LAND, homeLandPos);
+        expect(getTurnOwner(gameStateStub).mana.green).toBe(
+          greenMana - getSpellById(SpellName.FERTILE_LAND).manaCost
+        );
 
         const affectedLands = getPlayerLands(gameStateStub).filter((l) => l.effects.length > 0);
         expect(affectedLands).toHaveLength(nLands);
@@ -108,7 +112,11 @@ describe('castGreenManaSpell', () => {
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
 
+        const greenMana = getTurnOwner(gameStateStub).mana.green;
         castSpell(gameStateStub, SpellName.ENTANGLING_ROOTS, opponentHomeLandPos);
+        expect(getTurnOwner(gameStateStub).mana.green).toBe(
+          greenMana - getSpellById(SpellName.ENTANGLING_ROOTS).manaCost
+        );
 
         // spell should affect only one land
         expect(
@@ -172,7 +180,11 @@ describe('castGreenManaSpell', () => {
 
         randomSpy.mockReturnValue(0.99); // maximize damage from spell to make test stable
         // Cast BEAST ATTACK
+        const greenMana = getTurnOwner(gameStateStub).mana.green;
         castSpell(gameStateStub, SpellName.BEAST_ATTACK, opponentLand);
+        expect(getTurnOwner(gameStateStub).mana.green).toBe(
+          greenMana - getSpellById(SpellName.BEAST_ATTACK).manaCost
+        );
 
         const woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
         expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army
@@ -266,7 +278,11 @@ describe('castGreenManaSpell', () => {
         }
 
         randomSpy.mockReturnValue(0.99); // maximize damage from spell to make test stable
+        const greenMana = getTurnOwner(gameStateStub).mana.green;
         castSpell(gameStateStub, SpellName.EARTHQUAKE, opponentLand);
+        expect(getTurnOwner(gameStateStub).mana.green).toBe(
+          greenMana - getSpellById(SpellName.EARTHQUAKE).manaCost
+        );
 
         const woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
         expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army

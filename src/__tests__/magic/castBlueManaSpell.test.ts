@@ -4,18 +4,20 @@ import { PlayerState } from '../../state/player/PlayerState';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { getLandOwner } from '../../selectors/landSelectors';
+import { getSpellById } from '../../selectors/spellSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { startMoving } from '../../systems/armyActions';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { castSpell } from '../../map/magic/castSpell';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
 import { EffectType } from '../../types/Effect';
 import { ManaType } from '../../types/Mana';
+
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 
 describe('castBlueManaSpell', () => {
   let gameStateStub: GameState;
@@ -51,7 +53,11 @@ describe('castBlueManaSpell', () => {
           placeUnitsOnMap(hero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
         }
 
+        const blueMana = getTurnOwner(gameStateStub).mana.blue;
         castSpell(gameStateStub, SpellName.ILLUSION, homeLandPos);
+        expect(getTurnOwner(gameStateStub).mana.blue).toBe(
+          blueMana - getSpellById(SpellName.ILLUSION).manaCost
+        );
 
         const affectedLands = getPlayerLands(gameStateStub).filter((l) => l.effects.length > 0);
         expect(affectedLands).toHaveLength(nLands);
@@ -74,7 +80,12 @@ describe('castBlueManaSpell', () => {
       placeUnitsOnMap(regularsFactory(RegularUnitType.HALFLING, 120), gameStateStub, fromPos);
       expect(isMoving(getArmiesAtPosition(gameStateStub, fromPos)[0])).toBeFalsy();
 
+      const blueMana = getTurnOwner(gameStateStub).mana.blue;
       castSpell(gameStateStub, SpellName.TELEPORT, fromPos, toPos);
+      expect(getTurnOwner(gameStateStub).mana.blue).toBe(
+        blueMana - getSpellById(SpellName.TELEPORT).manaCost
+      );
+
       expect(getArmiesAtPosition(gameStateStub, fromPos)).toHaveLength(0);
       const teleportedArmy = getArmiesAtPosition(gameStateStub, toPos);
       expect(teleportedArmy).toHaveLength(1);
@@ -145,7 +156,7 @@ describe('castBlueManaSpell', () => {
     });
   });
 
-  describe('Cast Tornado spell', () => {
+  describe('Cast TORNADO spell', () => {
     it.each([0, 1, 32])(
       'number of killed is not related on max Enchanter level: %s',
       (maxEnchanterLevel: number) => {
@@ -166,7 +177,11 @@ describe('castBlueManaSpell', () => {
         const randomSpy: jest.SpyInstance<number, []> = jest.spyOn(Math, 'random');
         randomSpy.mockReturnValue(0.99); // maximize damage from spell
 
+        const blueMana = getTurnOwner(gameStateStub).mana.blue;
         castSpell(gameStateStub, SpellName.TORNADO, opponentLandPos);
+        expect(getTurnOwner(gameStateStub).mana.blue).toBe(
+          blueMana - getSpellById(SpellName.TORNADO).manaCost
+        );
 
         const opponentArmy = getArmiesAtPosition(gameStateStub, opponentLandPos);
         expect(opponentArmy).toHaveLength(1);

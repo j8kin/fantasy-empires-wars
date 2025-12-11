@@ -22,6 +22,7 @@ import { armyFactory } from '../../factories/armyFactory';
 import { movementFactory } from '../../factories/movementFactory';
 
 import { getMultipleRandomElements, getRandomInt } from '../../domain/utils/random';
+import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import {
   calculateAndApplyArmyPenalties,
   PenaltyConfig,
@@ -35,7 +36,6 @@ import { destroyBuilding } from '../building/destroyBuilding';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
-import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 
 /**
  * Implement cast spell logic for each spell type.
@@ -52,22 +52,7 @@ export const castSpell = (
   secondaryAffectedLand?: LandPosition,
   exchangeMana?: ManaType
 ) => {
-  const turnOwner = getTurnOwner(state);
   const spell = getSpellById(spellName);
-  // first get treasures that have effect on spell casting
-  // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests
-  const hasVerdantIdol = turnOwner.empireTreasures?.some((t) => t.id === TreasureItem.VERDANT_IDOL);
-
-  Object.assign(
-    state,
-    updatePlayerMana(
-      state,
-      turnOwner.id,
-      spell.manaType,
-      -Math.floor(spell.manaCost * (spell.manaType === ManaType.GREEN && hasVerdantIdol ? 0.85 : 1))
-    )
-  );
-
   // todo implement spell casting logic
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
   castWhiteManaSpell(state, spell, mainAffectedLand!);
@@ -80,16 +65,16 @@ export const castSpell = (
 const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
   switch (spell.id) {
     case SpellName.TURN_UNDEAD:
-      const maxClericLevel = getMaxHeroLevelByType(state, HeroUnitType.CLERIC);
       const player = getPlayer(state, getLandOwner(state, landPos));
       // TURN_UNDEAD effect is active only once per player per turn
-      if (!hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) {
-        updatePlayerEffect(state, player.id, effectFactory(spell, state.turnOwner));
+      if (hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) return;
 
-        const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
+      const maxClericLevel = getMaxHeroLevelByType(state, HeroUnitType.CLERIC);
+      updatePlayerEffect(state, player.id, effectFactory(spell, state.turnOwner));
 
-        killUnits(state, penaltyConfig, landPos!, [RegularUnitType.UNDEAD]);
-      }
+      const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
+
+      killUnits(state, penaltyConfig, landPos!, [RegularUnitType.UNDEAD]);
       break;
 
     case SpellName.VIEW_TERRITORY:
@@ -105,9 +90,12 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
           l.effects.push(effectFactory(spell, state.turnOwner));
         });
       break;
+
     default:
-      return;
+      return; // skip other school spells
   }
+
+  Object.assign(state, updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost));
 };
 
 const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPosition): void => {
@@ -138,7 +126,23 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
         destroyBuilding(state, landPos!);
       }
       break;
+
+    default:
+      return; // skip other school spells
   }
+
+  const turnOwner = getTurnOwner(state);
+  const hasVerdantIdol = turnOwner.empireTreasures?.some((t) => t.id === TreasureItem.VERDANT_IDOL);
+
+  Object.assign(
+    state,
+    updatePlayerMana(
+      state,
+      state.turnOwner,
+      spell.manaType,
+      -Math.floor(spell.manaCost * (spell.manaType === ManaType.GREEN && hasVerdantIdol ? 0.85 : 1))
+    )
+  );
 };
 
 const castBlueManaSpell = (
@@ -179,19 +183,20 @@ const castBlueManaSpell = (
       break;
 
     default:
-      return;
+      return; // skip other school spells
   }
+
+  Object.assign(state, updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost));
 };
 
 const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
   switch (spell.id) {
     case SpellName.EMBER_RAID:
       const land = getLand(state, landPos);
-      if (land.effects.every((e) => e.spell !== SpellName.EMBER_RAID)) {
-        land.effects.push(effectFactory(spell, state.turnOwner));
-        // increase recruit timer
-        land.buildings.forEach((b) => b.slots?.forEach((s) => (s.turnsRemaining += 1)));
-      }
+      if (land.effects.some((e) => e.spell === SpellName.EMBER_RAID)) return;
+
+      land.effects.push(effectFactory(spell, state.turnOwner));
+      land.buildings.forEach((b) => b.slots?.forEach((s) => (s.turnsRemaining += 1)));
       break;
 
     case SpellName.FORGE_OF_WAR:
@@ -220,19 +225,21 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       break;
 
     case SpellName.METEOR_SHOWER:
-      killUnits(state, spell.penalty!, landPos!);
-      // try to destroy building if exists (50+% probability)
-      if (
-        Math.random() <
-        0.5 + (0.1 * getMaxHeroLevelByType(state, HeroUnitType.PYROMANCER)) / MAX_HERO_LEVEL
-      ) {
+      const maxMageLvl = getMaxHeroLevelByType(state, HeroUnitType.PYROMANCER);
+      const showerPenaltyCfg = calculatePenaltyConfig(spell.penalty!, maxMageLvl);
+
+      killUnits(state, showerPenaltyCfg, landPos!);
+      // try to destroy building if exists (50-60% probability)
+      if (Math.random() < 0.5 + (0.1 * maxMageLvl) / MAX_HERO_LEVEL) {
         destroyBuilding(state, landPos!);
       }
       break;
 
     default:
-      return;
+      return; // skip other school spells
   }
+
+  Object.assign(state, updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost));
 };
 
 const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
@@ -261,9 +268,12 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
         );
       }
       break;
+
     default:
-      return;
+      return; // skip other school spells
   }
+
+  Object.assign(state, updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost));
 };
 
 const applyEffectOnRandomLands = (
