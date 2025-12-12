@@ -13,9 +13,9 @@ import { HeroUnitType, UnitType } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
 
 export const startRecruiting = (
-  unitType: UnitType,
+  state: GameState,
   landPos: LandPosition,
-  state: GameState
+  unitType: UnitType
 ): void => {
   if (getLandOwner(state, landPos) !== state.turnOwner) {
     return; // fallback: a wrong Land Owner should never happen on real game

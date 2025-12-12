@@ -479,13 +479,13 @@ describe('MoveArmyDialog', () => {
       await user.click(screen.getByTestId('game-button-Move army'));
 
       expect(mockStartMovement).toHaveBeenCalledWith(
+        gameStateStub,
         fromPosition,
         toPosition,
         expect.objectContaining({
           heroes: expect.any(Array),
           regulars: expect.any(Array),
-        }),
-        gameStateStub
+        })
       );
       expect(mockApplicationContext.setMoveArmyPath).toHaveBeenCalledWith(undefined);
     });
@@ -531,7 +531,7 @@ describe('MoveArmyDialog', () => {
       await user.click(screen.getByTestId('game-button-Move army'));
 
       const moveCall = (mockStartMovement as jest.Mock).mock.calls[0];
-      const [, , selectedUnits] = moveCall;
+      const [, , , selectedUnits] = moveCall;
 
       // Should have moved some units (either heroes or regulars)
       expect(selectedUnits).toEqual(
@@ -569,7 +569,7 @@ describe('MoveArmyDialog', () => {
       await user.click(screen.getByTestId('game-button-Move army'));
 
       const moveCall = (mockStartMovement as jest.Mock).mock.calls[0];
-      const [, , selectedUnits] = moveCall;
+      const [, , , selectedUnits] = moveCall;
 
       // Heroes are passed within the heroes array as brief info objects
       const heroInSelected = selectedUnits.heroes.find((h: any) => h.name === 'TestHero');

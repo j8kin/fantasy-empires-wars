@@ -125,7 +125,7 @@ const MoveArmyDialog: React.FC = () => {
   const handleMove = () => {
     if (!moveArmyPath || !toUnits) return;
 
-    startMovement(moveArmyPath.from, moveArmyPath.to, toUnits, gameState);
+    startMovement(gameState, moveArmyPath.from, moveArmyPath.to, toUnits);
     setMoveArmyPath(undefined);
   };
 

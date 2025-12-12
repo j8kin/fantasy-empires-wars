@@ -16,10 +16,10 @@ import { armyFactory } from '../../factories/armyFactory';
 export const MIN_HERO_PACKS = 10;
 
 export const startMovement = (
+  gameState: GameState,
   from: LandPosition,
   to: LandPosition,
-  units: ArmyBriefInfo,
-  gameState: GameState
+  units: ArmyBriefInfo
 ) => {
   // Hero units could move on hostile territories only with Regular units or if there are move then 10 heroes are moved
   if (

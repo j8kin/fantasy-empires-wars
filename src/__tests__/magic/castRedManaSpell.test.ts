@@ -53,7 +53,7 @@ describe('castRedManaSpell', () => {
           };
           construct(gameStateStub, building, landToRecruit);
 
-          startRecruiting(unit, landToRecruit, gameStateStub);
+          startRecruiting(gameStateStub, landToRecruit, unit);
 
           // change turnOwner and cast EMBER RAID spell
           gameStateStub.turnOwner = gameStateStub.players[1].id;
@@ -95,7 +95,7 @@ describe('castRedManaSpell', () => {
 
           // return turn to player 0 and start recruiting
           gameStateStub.turnOwner = gameStateStub.players[0].id;
-          startRecruiting(unit, landToRecruit, gameStateStub);
+          startRecruiting(gameStateStub, landToRecruit, unit);
 
           // verify that recruiting in building was affected and became newNTurn
           const reqLand = getLand(gameStateStub, landToRecruit);
@@ -158,7 +158,7 @@ describe('castRedManaSpell', () => {
       // change turnOwner construct building and start recruiting
       gameStateStub.turnOwner = gameStateStub.players[1].id;
       construct(gameStateStub, BuildingType.BARRACKS, opponentLandPos);
-      startRecruiting(RegularUnitType.WARRIOR, opponentLandPos, gameStateStub);
+      startRecruiting(gameStateStub, opponentLandPos, RegularUnitType.WARRIOR);
 
       const opponentLand = getLand(gameStateStub, opponentLandPos);
       expect(opponentLand.effects).toHaveLength(1); // effect not disappear due to construction
