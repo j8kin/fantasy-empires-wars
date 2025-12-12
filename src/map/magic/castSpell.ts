@@ -55,14 +55,15 @@ export const castSpell = (
   secondaryAffectedLand?: LandPosition,
   exchangeMana?: ManaType
 ) => {
+  // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
+
   // double-check that land is correctly selected to reuse this method in AI turn
   if (
     spellName === SpellName.EXCHANGE ||
     getAvailableToCastSpellLands(state, spellName).includes(getLandId(mainAffectedLand!))
   ) {
     const spell = getSpellById(spellName);
-    // todo implement spell casting logic
-    // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
+
     castWhiteManaSpell(state, spell, mainAffectedLand!);
     castGreenManaSpell(state, spell, mainAffectedLand!);
     castBlueManaSpell(state, spell, mainAffectedLand, secondaryAffectedLand, exchangeMana);
@@ -100,6 +101,9 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
         });
       break;
 
+    case SpellName.HEAL:
+      // todo implement after Battle Resolve mechanics would be implemented [Issue #61]
+      break;
     default:
       return; // skip other school spells
   }
@@ -308,6 +312,9 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       }
       break;
 
+    case SpellName.RAISE_DEAD_HERO:
+      // todo implement after Battle Resolve mechanics would be implemented [Issue #61]
+      break;
     default:
       return; // skip other school spells
   }
