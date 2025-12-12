@@ -31,6 +31,7 @@ interface LandInfo {
   regulars: string[];
   buildings: BuildingType[];
   effects: Effect[];
+  isCorrupted: boolean;
   illusionMsg?: string;
 }
 export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo => {
@@ -53,12 +54,13 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
         owner: landOwnerId,
         color: landOwnerColor,
         type: land.land.id,
-        alignment: land.land.alignment,
+        alignment: land.corrupted ? Alignment.CHAOTIC : land.land.alignment,
         goldPerTurn: land.goldPerTurn,
         effects: [],
         heroes: [],
         regulars: [],
         buildings: [],
+        isCorrupted: land.corrupted,
         illusionMsg: getRandomElement(ILLUSION_MESSAGES),
       };
     }
@@ -69,7 +71,8 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       owner: landOwnerId,
       color: landOwnerColor,
       type: land.land.id,
-      alignment: land.land.alignment,
+      alignment: land.corrupted ? Alignment.CHAOTIC : land.land.alignment,
+      isCorrupted: land.corrupted,
       goldPerTurn: land.goldPerTurn,
       effects: [...land.effects],
       heroes: armies.flatMap((a) => a.heroes).map((h) => `${h.name} lvl: ${h.level}`),
@@ -81,7 +84,8 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       owner: landOwnerId,
       color: landOwnerColor,
       type: land.land.id,
-      alignment: land.land.alignment,
+      alignment: land.corrupted ? Alignment.CHAOTIC : land.land.alignment,
+      isCorrupted: land.corrupted,
       goldPerTurn: land.goldPerTurn,
       effects: [],
       heroes: [],

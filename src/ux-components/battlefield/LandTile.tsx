@@ -63,7 +63,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
     return <div className={styles.hexTile} title="Empty Tile" />;
   }
 
-  const imageSrc = getLandImg(battlefieldTile.land.id);
+  const imageSrc = getLandImg(battlefieldTile);
   const altText = battlefieldTile.land.id;
 
   // Get the controlling player's color or default to white if not controlled
@@ -196,7 +196,6 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
     <>
       <div
         className={tileClassName}
-        title={`${battlefieldTile.land.id} (${battlefieldTile.land.alignment})`}
         onContextMenu={handleRightClick}
         onClick={handleClick}
         style={{ backgroundColor: getBackgroundColor() }}

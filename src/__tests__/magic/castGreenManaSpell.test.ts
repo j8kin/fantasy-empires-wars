@@ -309,7 +309,11 @@ describe('castGreenManaSpell', () => {
     SpellName.ENTANGLING_ROOTS,
     SpellName.EARTHQUAKE,
   ])('If VERDANT IDOL is in treasury GREEN spells (%s) cost 15% less', (spellName: SpellName) => {
-    const dummyLand: LandPosition = { row: 1, col: 1 };
+    let dummyLand: LandPosition =
+      spellName === SpellName.FERTILE_LAND
+        ? getPlayerLands(gameStateStub)[0].mapPos
+        : getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
+
     castSpell(gameStateStub, spellName, dummyLand);
 
     expect(getTurnOwner(gameStateStub).mana.green).toBe(200 - getSpellById(spellName).manaCost);
@@ -317,6 +321,12 @@ describe('castGreenManaSpell', () => {
     getTurnOwner(gameStateStub).empireTreasures.push(
       relicts.find((r) => r.id === TreasureItem.VERDANT_IDOL)!
     );
+
+    // select another land to cast spell to avoid situation that it is not possible to cast spell on the same land
+    dummyLand =
+      spellName === SpellName.FERTILE_LAND
+        ? getPlayerLands(gameStateStub)[1].mapPos
+        : getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1].mapPos;
 
     getTurnOwner(gameStateStub).mana.green = 200;
 

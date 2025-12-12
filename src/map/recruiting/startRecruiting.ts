@@ -82,7 +82,10 @@ export const startRecruiting = (
       // Add a recruitment slot using direct mutation
       building[0].slots!.push({
         unit: unitType,
-        turnsRemaining: getRecruitDuration(unitType) + (hasEmberRaidEffect ? 1 : 0),
+        turnsRemaining:
+          getRecruitDuration(unitType) +
+          (hasEmberRaidEffect ? 1 : 0) +
+          (getLand(state, landPos).corrupted ? 1 : 0), // corrupted lands add one additional turn to recruitment
       });
     }
   }

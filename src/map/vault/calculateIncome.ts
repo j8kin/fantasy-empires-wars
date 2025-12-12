@@ -44,18 +44,18 @@ export const calculateIncome = (gameState: GameState): number => {
 
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
     if (playerProfile.alignment === Alignment.LAWFUL) {
-      if (land.land.alignment === Alignment.LAWFUL) {
+      if (land.land.alignment === Alignment.LAWFUL && !land.corrupted) {
         landIncome = landIncome * 1.3;
       }
-      if (land.land.alignment === Alignment.CHAOTIC) {
+      if (land.land.alignment === Alignment.CHAOTIC || land.corrupted) {
         landIncome = landIncome * 0.8;
       }
     }
     if (playerProfile.alignment === Alignment.CHAOTIC) {
-      if (land.land.alignment === Alignment.CHAOTIC) {
+      if (land.land.alignment === Alignment.CHAOTIC || land.corrupted) {
         landIncome = landIncome * 2;
       }
-      if (land.land.alignment === Alignment.LAWFUL) {
+      if (land.land.alignment === Alignment.LAWFUL && !land.corrupted) {
         landIncome = landIncome * 0.5;
       }
     }

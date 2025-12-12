@@ -174,7 +174,7 @@ const GreenMagicSpells: Spell[] = [
     manaType: ManaType.GREEN,
     effect: {
       type: EffectType.NEGATIVE,
-      target: EffectTarget.ARMY,
+      target: EffectTarget.LAND,
       duration: 1,
     },
   },
@@ -239,21 +239,6 @@ const RedMagicSpells: Spell[] = [
 
 const BlackMagicSpells: Spell[] = [
   {
-    id: SpellName.CORRUPTION,
-    description:
-      'Converts neutral land into chaotic land (if no stronghold present, only 6 lands per game)',
-    manaCost: 200,
-    apply: SpellTarget.ALL,
-    manaType: ManaType.BLACK,
-  },
-  {
-    id: SpellName.RAISE_DEAD_HERO,
-    description: 'Revives one fallen Hero as an Undead Hero (loses original alignment)',
-    manaCost: 150,
-    apply: SpellTarget.PLAYER,
-    manaType: ManaType.BLACK,
-  },
-  {
     id: SpellName.SUMMON_UNDEAD,
     description: 'Summons 30–60 undead troops depending on maximum Necromancer level',
     manaCost: 25,
@@ -267,6 +252,22 @@ const BlackMagicSpells: Spell[] = [
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.BLACK,
     penalty: generatePenaltyConfig(0.25, 0.4, 5, 5),
+  },
+  {
+    id: SpellName.RAISE_DEAD_HERO,
+    description:
+      'Revives fallen in battle or by magic Heroes as an Undead Hero (loses original alignment)',
+    manaCost: 100,
+    apply: SpellTarget.PLAYER,
+    manaType: ManaType.BLACK,
+  },
+  {
+    id: SpellName.CORRUPTION,
+    description:
+      'Converts neutral land into chaotic land (if no stronghold present, only 6 lands per game)',
+    manaCost: 150,
+    apply: SpellTarget.ALL,
+    manaType: ManaType.BLACK,
   },
 ];
 

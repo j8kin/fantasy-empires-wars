@@ -36,6 +36,9 @@ import { destroyBuilding } from '../building/destroyBuilding';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
+import { getAvailableToCastSpellLands } from './getAvailableToCastSpellLands';
+import { getLandId } from '../../state/map/land/LandId';
+import { LandType } from '../../types/Land';
 
 /**
  * Implement cast spell logic for each spell type.
@@ -52,14 +55,20 @@ export const castSpell = (
   secondaryAffectedLand?: LandPosition,
   exchangeMana?: ManaType
 ) => {
-  const spell = getSpellById(spellName);
-  // todo implement spell casting logic
-  // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
-  castWhiteManaSpell(state, spell, mainAffectedLand!);
-  castGreenManaSpell(state, spell, mainAffectedLand!);
-  castBlueManaSpell(state, spell, mainAffectedLand, secondaryAffectedLand, exchangeMana);
-  castRedManaSpell(state, spell, mainAffectedLand!);
-  castBlackManaSpell(state, spell, mainAffectedLand!);
+  // double-check that land is correctly selected to reuse this method in AI turn
+  if (
+    spellName === SpellName.EXCHANGE ||
+    getAvailableToCastSpellLands(state, spellName).includes(getLandId(mainAffectedLand!))
+  ) {
+    const spell = getSpellById(spellName);
+    // todo implement spell casting logic
+    // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
+    castWhiteManaSpell(state, spell, mainAffectedLand!);
+    castGreenManaSpell(state, spell, mainAffectedLand!);
+    castBlueManaSpell(state, spell, mainAffectedLand, secondaryAffectedLand, exchangeMana);
+    castRedManaSpell(state, spell, mainAffectedLand!);
+    castBlackManaSpell(state, spell, mainAffectedLand!);
+  }
 };
 
 const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
@@ -193,7 +202,6 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
   switch (spell.id) {
     case SpellName.EMBER_RAID:
       const land = getLand(state, landPos);
-      if (land.effects.some((e) => e.spell === SpellName.EMBER_RAID)) return;
 
       land.effects.push(effectFactory(spell, state.turnOwner));
       land.buildings.forEach((b) => b.slots?.forEach((s) => (s.turnsRemaining += 1)));
@@ -266,6 +274,37 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
             armyFactory(state.turnOwner, landPos, undefined, [undeadSummoned])
           )
         );
+      }
+      break;
+
+    case SpellName.PLAGUE:
+      killUnits(state, spell.penalty!, landPos!);
+      break;
+
+    case SpellName.CORRUPTION:
+      const land = getLand(state, landPos);
+      land.corrupted = true;
+      if (getLandOwner(state, landPos) === state.turnOwner) {
+        land.goldPerTurn = land.land.goldPerTurn.max;
+      } else {
+        land.goldPerTurn = land.land.goldPerTurn.min;
+      }
+      // change units to recruit
+      if (land.land.id === LandType.GREEN_FOREST) {
+        land.land.unitsToRecruit = [
+          RegularUnitType.ORC,
+          RegularUnitType.DARK_ELF,
+          RegularUnitType.BALLISTA,
+          RegularUnitType.CATAPULT,
+          HeroUnitType.SHADOW_BLADE,
+        ];
+      } else {
+        land.land.unitsToRecruit = [
+          RegularUnitType.ORC,
+          RegularUnitType.BALLISTA,
+          RegularUnitType.CATAPULT,
+          HeroUnitType.OGR,
+        ];
       }
       break;
 

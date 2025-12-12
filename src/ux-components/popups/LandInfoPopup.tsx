@@ -107,7 +107,9 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
     >
       <div className={commonStyles.popupContent}>
         <div className={`${commonStyles.header} ${styles.header}`}>
-          <h3 className={`${commonStyles.title} ${styles.title}`}>{landInfo.type}</h3>
+          <h3 className={`${commonStyles.title} ${styles.title}`}>
+            {(landInfo.isCorrupted ? 'Corrupted ' : '') + landInfo.type}
+          </h3>
         </div>
 
         <div className={commonStyles.characteristics}>
