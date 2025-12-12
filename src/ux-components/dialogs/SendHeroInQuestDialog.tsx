@@ -56,7 +56,7 @@ const SendHeroInQuestDialog: React.FC = () => {
         // slot.id contain uniq Hero name, and slot name contains what is displayed in the dialog, e.g. "Alaric Lvl: 1"
         const hero = findHeroAndLand(gameState!, slot.id, gameState?.turnOwner)?.hero;
         if (hero) {
-          startQuest(hero, getQuestType(questLvl + 1), gameState!);
+          startQuest(gameState!, hero, getQuestType(questLvl + 1));
           // Mark the slot as used across all pages
           setUsedSlots((prev) => new Set(prev).add(slot.id));
         }
@@ -68,7 +68,7 @@ const SendHeroInQuestDialog: React.FC = () => {
   const createQuestClickHandler = useCallback(
     (questLvl: number, units: HeroState[]) => {
       return () => {
-        units.forEach((hero) => startQuest(hero, getQuestType(questLvl + 1), gameState!));
+        units.forEach((hero) => startQuest(gameState!, hero, getQuestType(questLvl + 1)));
         handleClose();
       };
     },

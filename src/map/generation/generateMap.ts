@@ -53,6 +53,7 @@ const createEmptyBattlefield = (dimensions: MapDimensions): MapLands => {
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
         effects: [],
+        corrupted: false,
       };
     }
   }

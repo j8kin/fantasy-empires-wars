@@ -3,6 +3,7 @@ import { PlayerState } from '../state/player/PlayerState';
 import { HeroOutcome } from '../types/HeroOutcome';
 import { PlayerProfile } from '../state/player/PlayerProfile';
 import { LandPosition } from '../state/map/land/LandPosition';
+import { ManaType } from '../types/Mana';
 
 /**
  * Top Left position of the window/dialog/popup
@@ -24,6 +25,12 @@ interface MoveArmyPath {
   to: LandPosition;
 }
 
+interface SpellAnimationState {
+  manaType: ManaType;
+  battlefieldPosition: LandPosition;
+  screenPosition: ScreenPosition;
+}
+
 interface ApplicationContextType {
   // Selected land position and action
   selectedLandAction: string | null;
@@ -32,6 +39,10 @@ interface ApplicationContextType {
   setActionLandPosition: (position: LandPosition | undefined) => void;
   moveArmyPath: MoveArmyPath | undefined;
   setMoveArmyPath: (position: MoveArmyPath | undefined) => void;
+
+  // Arcane Exchange mode
+  isArcaneExchangeMode: boolean;
+  setIsArcaneExchangeMode: (mode: boolean) => void;
 
   // Dialog states
   showStartWindow: boolean;
@@ -74,6 +85,16 @@ interface ApplicationContextType {
   // Game states
   gameStarted: boolean;
   glowingTiles: Set<string>;
+
+  // Spell animation state
+  spellAnimation: SpellAnimationState | null;
+  setSpellAnimation: (animation: SpellAnimationState | null) => void;
+  showSpellAnimation: (
+    manaType: ManaType,
+    battlefieldPosition: LandPosition,
+    screenPosition: ScreenPosition
+  ) => void;
+  hideSpellAnimation: () => void;
 
   // Dialog actions
   setShowStartWindow: (show: boolean) => void;
@@ -133,6 +154,9 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [actionLandPosition, setActionLandPosition] = useState<LandPosition | undefined>(undefined);
   const [moveArmyPath, setMoveArmyPath] = useState<MoveArmyPath | undefined>(undefined);
 
+  // Arcane Exchange mode
+  const [isArcaneExchangeMode, setIsArcaneExchangeMode] = useState<boolean>(false);
+
   // Dialog states
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
@@ -179,6 +203,9 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   // Game states
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [glowingTiles, setGlowingTiles] = useState<Set<string>>(new Set());
+
+  // Spell animation state
+  const [spellAnimation, setSpellAnimation] = useState<SpellAnimationState | null>(null);
 
   // HexTile popup actions
   const showLandPopup = useCallback(
@@ -258,6 +285,22 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     setHeroOutcome([]);
   }, []);
 
+  // Spell animation actions
+  const showSpellAnimation = useCallback(
+    (manaType: ManaType, battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => {
+      setSpellAnimation({
+        manaType,
+        battlefieldPosition,
+        screenPosition,
+      });
+    },
+    []
+  );
+
+  const hideSpellAnimation = useCallback(() => {
+    setSpellAnimation(null);
+  }, []);
+
   return (
     <ApplicationContext.Provider
       value={{
@@ -268,6 +311,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setActionLandPosition,
         moveArmyPath,
         setMoveArmyPath,
+
+        // Arcane Exchange mode
+        isArcaneExchangeMode,
+        setIsArcaneExchangeMode,
 
         // Dialog states
         showStartWindow,
@@ -311,6 +358,12 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         // Game states
         gameStarted,
         glowingTiles,
+
+        // Spell animation state
+        spellAnimation,
+        setSpellAnimation,
+        showSpellAnimation,
+        hideSpellAnimation,
 
         // Dialog actions
         setShowStartWindow,

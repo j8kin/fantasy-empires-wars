@@ -80,7 +80,7 @@ const RecruitArmyDialog: React.FC = () => {
   const createSlotClickHandler = useCallback(
     (unitType: UnitType, landPos: LandPosition) => {
       return (slot: Slot) => {
-        startRecruiting(unitType, landPos, gameState!);
+        startRecruiting(gameState!, landPos, unitType);
         // Mark the slot as used across all pages
         setUsedSlots((prev) => new Set(prev).add(slot.id));
       };
@@ -95,7 +95,7 @@ const RecruitArmyDialog: React.FC = () => {
         const availableSlots = building.numberOfSlots - (building.slots?.length ?? 0);
         // recruit the same unit for all available slots
         for (let i = 0; i < availableSlots; i++) {
-          startRecruiting(unitType, landPos, gameState!);
+          startRecruiting(gameState!, landPos, unitType);
         }
         handleClose();
       };

@@ -10,7 +10,7 @@ import { QuestType } from '../../types/Quest';
 
 import { updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
 
-export const startQuest = (hero: HeroState, questType: QuestType, gameState: GameState) => {
+export const startQuest = (gameState: GameState, hero: HeroState, questType: QuestType) => {
   const turnOwner = getTurnOwner(gameState);
 
   // Find the army containing the hero

@@ -302,11 +302,12 @@ describe('RecruitArmyDialog', () => {
       const fighterIndex = pageHeaders.findIndex((header) => header === 'Fighter');
       const warsmithIndex = pageHeaders.findIndex((header) => header === 'Warsmith');
 
-      // Based on the test output, Warsmith is not appearing in the result
       // So we expect regular units (Warrior, Ballista) to come before heroes (Fighter)
       expect(warriorIndex).toBeGreaterThanOrEqual(0);
       expect(ballistaIndex).toBeGreaterThanOrEqual(0);
       expect(fighterIndex).toBeGreaterThanOrEqual(0);
+      // Based on the test output, Warsmith is not appearing in the result
+      expect(warsmithIndex).toBe(-1);
 
       // Warrior and Ballista should come before Fighter (hero)
       expect(warriorIndex).toBeLessThan(fighterIndex);
@@ -366,9 +367,9 @@ describe('RecruitArmyDialog', () => {
       await user.click(slot1Button);
 
       expect(mockStartRecruiting).toHaveBeenCalledWith(
-        RegularUnitType.WARRIOR, // First unit in sorted list
+        gameStateStub,
         { row: 3, col: 3 },
-        gameStateStub
+        RegularUnitType.WARRIOR // First unit in sorted list
       );
     });
 
@@ -448,9 +449,9 @@ describe('RecruitArmyDialog', () => {
       await user.click(iconButton);
 
       expect(mockStartRecruiting).toHaveBeenCalledWith(
-        RegularUnitType.WARRIOR, // First unit in the list
+        gameStateStub,
         { row: 3, col: 3 },
-        gameStateStub
+        RegularUnitType.WARRIOR // First unit in the list
       );
       expect(mockApplicationContext.setShowRecruitArmyDialog).toHaveBeenCalledWith(false);
     });
@@ -509,7 +510,7 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // The dialog should render showing the cleric which can be recruited in white mage tower
-      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
       expect(screen.getByTestId('flip-book-page-Cleric')).toBeInTheDocument();
     });
 
@@ -536,7 +537,7 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // The dialog should render showing the pyromancer which can be recruited in red mage tower
-      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
       expect(screen.getByTestId('flip-book-page-Pyromancer')).toBeInTheDocument();
     });
 
@@ -563,7 +564,7 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // The dialog should render showing the enchanter which can be recruited in blue mage tower
-      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
       expect(screen.getByTestId('flip-book-page-Enchanter')).toBeInTheDocument();
     });
 
@@ -590,7 +591,7 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // The dialog should render showing the druid which can be recruited in green mage tower
-      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
       expect(screen.getByTestId('flip-book-page-Druid')).toBeInTheDocument();
     });
 
@@ -617,7 +618,7 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // The dialog should render showing the necromancer which can be recruited in black mage tower
-      expect(screen.queryByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
       expect(screen.getByTestId('flip-book-page-Necromancer')).toBeInTheDocument();
     });
   });

@@ -51,7 +51,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
                     className={styles.playerClass}
                     style={{ color: getAlignmentColor(player.alignment) }}
                   >
-                    {player.alignment.toUpperCase()}
+                    {player.race.toUpperCase()}
                   </span>
                   <span className={styles.playerLevel}>Level {player.level}</span>
                 </div>
@@ -69,7 +69,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
                 className={styles.selectedPlayerClass}
                 style={{ color: getAlignmentColor(displayPlayer.alignment) }}
               >
-                {displayPlayer.alignment.toUpperCase()} - {displayPlayer.race} - Level{' '}
+                {displayPlayer.alignment.toUpperCase()} - {displayPlayer.type} - Level{' '}
                 {displayPlayer.level}
               </div>
             </div>

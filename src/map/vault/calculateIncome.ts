@@ -4,6 +4,7 @@ import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
+import { SpellName } from '../../types/Spell';
 
 import { calculateHexDistance } from '../utils/mapAlgorithms';
 
@@ -43,20 +44,25 @@ export const calculateIncome = (gameState: GameState): number => {
 
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
     if (playerProfile.alignment === Alignment.LAWFUL) {
-      if (land.land.alignment === Alignment.LAWFUL) {
+      if (land.land.alignment === Alignment.LAWFUL && !land.corrupted) {
         landIncome = landIncome * 1.3;
       }
-      if (land.land.alignment === Alignment.CHAOTIC) {
+      if (land.land.alignment === Alignment.CHAOTIC || land.corrupted) {
         landIncome = landIncome * 0.8;
       }
     }
     if (playerProfile.alignment === Alignment.CHAOTIC) {
-      if (land.land.alignment === Alignment.CHAOTIC) {
+      if (land.land.alignment === Alignment.CHAOTIC || land.corrupted) {
         landIncome = landIncome * 2;
       }
-      if (land.land.alignment === Alignment.LAWFUL) {
+      if (land.land.alignment === Alignment.LAWFUL && !land.corrupted) {
         landIncome = landIncome * 0.5;
       }
+    }
+
+    // add FERTILE LAND Bonus
+    if (land.effects.some((e) => e.spell === SpellName.FERTILE_LAND && e.castBy === turnOwner.id)) {
+      landIncome = landIncome * 1.5;
     }
 
     return Math.ceil(acc + landIncome);

@@ -1,3 +1,4 @@
+import { LandState } from '../state/map/land/LandState';
 import { LandType } from '../types/Land';
 
 import darkForestImg from './lands/darkforest.png';
@@ -18,20 +19,26 @@ import blightedFenImg from './lands/blighted-fen.png';
 import heartwoodGroveImg from './lands/heartwood-grove.png';
 import verdantGladeImg from './lands/verdant-glade.png';
 
-export const getLandImg = (landType: LandType): string | undefined => {
-  switch (landType) {
+// corrupted lands
+import hillsCorruptedImg from './lands/hills-corrupted.png';
+import mountainsCorruptedImg from './lands/mountains-corrupted.png';
+import plainsCorruptedImg from './lands/plains-corrupted.png';
+import greenForestCorruptedImg from './lands/green-forest-corrupted.png';
+
+export const getLandImg = (land: LandState): string | undefined => {
+  switch (land.land.id) {
     case LandType.PLAINS:
-      return plainsImg;
+      return land.corrupted ? plainsCorruptedImg : plainsImg;
     case LandType.HILLS:
-      return hillsImg;
+      return land.corrupted ? hillsCorruptedImg : hillsImg;
     case LandType.MOUNTAINS:
-      return mountainsImg;
-    case LandType.SWAMP:
-      return swampImg;
+      return land.corrupted ? mountainsCorruptedImg : mountainsImg;
+    case LandType.GREEN_FOREST:
+      return land.corrupted ? greenForestCorruptedImg : greenForestImg;
     case LandType.DESERT:
       return desertImg;
-    case LandType.GREEN_FOREST:
-      return greenForestImg;
+    case LandType.SWAMP:
+      return swampImg;
     case LandType.DARK_FOREST:
       return darkForestImg;
     // special lands

@@ -6,6 +6,7 @@ import { getLandOwner } from '../../selectors/landSelectors';
 import { getPlayerLands } from '../../selectors/playerSelectors';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 export const getAvailableToConstructLands = (
   gameState: GameState,
@@ -22,7 +23,7 @@ export const getAvailableToConstructLands = (
           (land) =>
             (land.buildings.length === 0 ||
               !land.buildings?.some((b) => b.id === BuildingType.WALL)) &&
-            getTilesInRadius(gameState.map.dimensions, land.mapPos, 1, true).some(
+            getTilesInRadius(getMapDimensions(gameState), land.mapPos, 1, true).some(
               (tile) => getLandOwner(gameState, tile) !== turnOwner
             )
         )
@@ -35,7 +36,7 @@ export const getAvailableToConstructLands = (
         )
       );
       const strongholdsExcludedArea = allStrongholds.flatMap((stronghold) =>
-        getTilesInRadius(gameState.map.dimensions, stronghold.mapPos, 1, false).map((tile) =>
+        getTilesInRadius(getMapDimensions(gameState), stronghold.mapPos, 1, false).map((tile) =>
           getLandId(tile)
         )
       );

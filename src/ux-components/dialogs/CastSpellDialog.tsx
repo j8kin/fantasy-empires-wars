@@ -19,6 +19,7 @@ const CastSpellDialog: React.FC = () => {
     selectedLandAction,
     setSelectedLandAction,
     addGlowingTile,
+    setIsArcaneExchangeMode,
   } = useApplicationContext();
   const { gameState } = useGameContext();
 
@@ -26,21 +27,32 @@ const CastSpellDialog: React.FC = () => {
     setShowCastSpellDialog(false);
   }, [setShowCastSpellDialog]);
 
+  const handleDialogClose = useCallback(() => {
+    setShowCastSpellDialog(false);
+    // Reset exchange mode when dialog is explicitly closed
+    setIsArcaneExchangeMode(false);
+  }, [setShowCastSpellDialog, setIsArcaneExchangeMode]);
+
   const createSpellClickHandler = useCallback(
     (spellId: SpellName) => {
       return () => {
         setSelectedLandAction(`${FlipBookPageType.SPELL}: ${spellId}`);
         const spell = getSpellById(spellId);
 
-        // Add tiles to the glowing tiles set for visual highlighting
-        getAvailableToCastSpellLands(gameState!, spell.id).forEach((tileId) => {
-          addGlowingTile(tileId);
-        });
+        // Handle Arcane Exchange spell differently - don't glow any lands, just enter exchange mode
+        if (spellId === SpellName.EXCHANGE) {
+          setIsArcaneExchangeMode(true);
+        } else {
+          // Add tiles to the glowing tiles set for visual highlighting for other spells
+          getAvailableToCastSpellLands(gameState!, spell.id).forEach((tileId) => {
+            addGlowingTile(tileId);
+          });
+        }
 
         handleClose();
       };
     },
-    [gameState, setSelectedLandAction, addGlowingTile, handleClose]
+    [gameState, setSelectedLandAction, addGlowingTile, handleClose, setIsArcaneExchangeMode]
   );
 
   useEffect(() => {
@@ -51,28 +63,34 @@ const CastSpellDialog: React.FC = () => {
           alert(
             `Casting ${spell.id}!\n\nMana Cost: ${spell.manaCost}\n\nEffect: ${spell.description}`
           );
-          handleClose();
+          handleDialogClose();
         }, 100);
       }
     }
-  }, [selectedLandAction, showCastSpellDialog, handleClose]);
+  }, [selectedLandAction, showCastSpellDialog, handleDialogClose]);
 
   if (!showCastSpellDialog || gameState == null) return null;
 
-  const selectedPlayer = getTurnOwner(gameState);
-  const playerMana = selectedPlayer.mana;
+  const turnOwner = getTurnOwner(gameState);
+  const playerMana = turnOwner.mana;
 
-  // todo it should be possible to cast turn undead only once per turn
+  const turnUndeadSpellCastAvailable =
+    turnOwner.mana.white > 0 &&
+    gameState.players.some(
+      (p) =>
+        p.id !== gameState.turnOwner && !p.effects.some((e) => e.spell === SpellName.TURN_UNDEAD)
+    );
+
   const availableSpells = playerMana
     ? AllSpells.filter(
         (spell) =>
           spell.manaCost <= playerMana[spell.manaType] &&
-          (spell.id !== SpellName.TURN_UNDEAD || selectedPlayer.mana.white > 0)
+          (spell.id !== SpellName.TURN_UNDEAD || turnUndeadSpellCastAvailable)
       )
     : [];
 
-  return (
-    <FlipBook onClickOutside={handleClose}>
+  return availableSpells.length > 0 ? (
+    <FlipBook onClickOutside={handleDialogClose}>
       {availableSpells.map((spell, index) => (
         <FlipBookPage
           key={spell.id}
@@ -83,12 +101,12 @@ const CastSpellDialog: React.FC = () => {
           description={spell.description}
           cost={spell.manaCost}
           costLabel="Mana Cost"
-          onClose={handleClose}
+          onClose={handleDialogClose}
           onIconClick={createSpellClickHandler(spell.id as SpellName)}
         />
       ))}
     </FlipBook>
-  );
+  ) : null;
 };
 
 export default CastSpellDialog;

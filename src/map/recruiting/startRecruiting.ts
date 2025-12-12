@@ -10,17 +10,18 @@ import { unitsBaseStats } from '../../domain/unit/unitRepository';
 import { BuildingType } from '../../types/Building';
 import { TreasureItem } from '../../types/Treasures';
 import { HeroUnitType, UnitType } from '../../types/UnitType';
+import { SpellName } from '../../types/Spell';
 
 export const startRecruiting = (
-  unitType: UnitType,
+  state: GameState,
   landPos: LandPosition,
-  gameState: GameState
+  unitType: UnitType
 ): void => {
-  if (getLandOwner(gameState, landPos) !== gameState.turnOwner) {
+  if (getLandOwner(state, landPos) !== state.turnOwner) {
     return; // fallback: a wrong Land Owner should never happen on real game
   }
   // recruitment available only in MAIN phase if there is a slot available
-  const building = getLand(gameState, landPos).buildings.filter(
+  const building = getLand(state, landPos).buildings.filter(
     (b) => b.slots != null && b.slots.length < b.numberOfSlots
   );
   if (building.length === 1) {
@@ -60,7 +61,7 @@ export const startRecruiting = (
       return; // fallback: wrong building type for regular units
     }
 
-    const turnOwner = getTurnOwner(gameState);
+    const turnOwner = getTurnOwner(state);
     const availableGold = turnOwner.vault;
     if (availableGold != null && availableGold >= unitsBaseStats(unitType).recruitCost) {
       const hasCrownOfDominion = turnOwner.empireTreasures?.some(
@@ -70,13 +71,21 @@ export const startRecruiting = (
         ? Math.ceil(unitsBaseStats(unitType).recruitCost * 0.85)
         : unitsBaseStats(unitType).recruitCost;
 
+      // Ember raid increases recruitment duration by 1 turn
+      const hasEmberRaidEffect = getLand(state, landPos).effects?.some(
+        (e) => e.spell === SpellName.EMBER_RAID
+      );
+
       // Update vault using direct mutation for now (matching construct.ts pattern)
       turnOwner.vault -= costReduction;
 
-      // Add recruitment slot using direct mutation
+      // Add a recruitment slot using direct mutation
       building[0].slots!.push({
         unit: unitType,
-        turnsRemaining: getRecruitDuration(unitType),
+        turnsRemaining:
+          getRecruitDuration(unitType) +
+          (hasEmberRaidEffect ? 1 : 0) +
+          (getLand(state, landPos).corrupted ? 1 : 0), // corrupted lands add one additional turn to recruitment
       });
     }
   }

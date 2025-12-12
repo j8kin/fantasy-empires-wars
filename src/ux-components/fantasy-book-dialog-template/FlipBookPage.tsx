@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import styles from './css/FlipBookPage.module.css';
 
-import { toRoman } from '../../map/utils/romanNumerals';
+import { toRoman } from '../../utils/romanNumerals';
 
 export interface Slot {
   id: string;

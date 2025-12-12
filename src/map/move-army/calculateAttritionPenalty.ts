@@ -1,24 +1,26 @@
 import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { getRegulars } from '../../systems/armyActions';
 import { getArmiesAtPositionByPlayers } from '../../selectors/armySelectors';
 import { updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
 
-import { RegularsState, UnitRank } from '../../state/army/RegularsState';
-import { ArmyState } from '../../state/army/ArmyState';
-import { isWarMachine } from '../../domain/unit/unitTypeChecks';
-
 import { getHostileLands } from '../utils/getHostileLands';
+import {
+  calculateAndApplyArmyPenalties,
+  PenaltyConfig,
+} from '../../domain/army/armyPenaltyCalculator';
 
-// The equivalent number of units per war machine to calculate the attrition penalty.
-const WARMACHINE_TO_UNIT = 20;
+const ATTRITION_PENALTY_CONFIG: PenaltyConfig = {
+  regular: { minPct: 0.08, maxPct: 0.1, minAbs: 40, maxAbs: 60 },
+  veteran: { minPct: 0.05, maxPct: 0.07, minAbs: 20, maxAbs: 40 },
+  elite: { minPct: 0.03, maxPct: 0.05, minAbs: 10, maxAbs: 20 },
+};
 
 /**
  * find armies controlled by the turn owner and apply attrition penalty
  *   out of radius 1 from any owner stronghold or not in ally's land
  *
  * Attrition penalty:
- * | RegularUnit Type        | Attrition Penalty                           |
+ * | RegularUnit Type | Attrition Penalty                           |
  * |------------------|---------------------------------------------|
  * | Regular          | 8-10%, not less than 40-60 units            |
  * | Veteran          | 5-7%, not less than 20-40 units             |
@@ -38,143 +40,25 @@ export const calculateAttritionPenalty = (gameState: GameState): void => {
 
   getHostileLands(gameState).forEach((land) => {
     const allArmies = getArmiesAtPositionByPlayers(gameState, land.mapPos, [turnOwnerId]);
-    const unitsPerArmyNormalized = allArmies.map((a) => normalizeArmyUnits(a.regulars));
-    const loss = rollAttritionLoss(unitsPerArmyNormalized);
 
-    allArmies.forEach((army) => {
-      const normNumUnits = normalizeArmyUnits(army.regulars);
-      const updatedArmy = attritionPenalty(army, {
-        [UnitRank.REGULAR]:
-          loss.regular.total !== 0
-            ? Math.ceil((normNumUnits.regular * loss.regular.loss) / loss.regular.total)
-            : 0,
-        [UnitRank.VETERAN]:
-          loss.veteran.total !== 0
-            ? Math.ceil((normNumUnits.veteran * loss.veteran.loss) / loss.veteran.total)
-            : 0,
-        [UnitRank.ELITE]:
-          loss.elite.total !== 0
-            ? Math.ceil((normNumUnits.elite * loss.elite.loss) / loss.elite.total)
-            : 0,
-      });
+    if (allArmies.length === 0) return;
+
+    // Apply penalties to all armies at this position
+    const updatedArmies = calculateAndApplyArmyPenalties(allArmies, ATTRITION_PENALTY_CONFIG);
+
+    // Update or remove armies based on remaining units
+    updatedArmies.forEach((updatedArmy, index) => {
+      const originalArmy = allArmies[index];
 
       // Update army reference for the conditional check below
-      Object.assign(army, updatedArmy);
+      Object.assign(originalArmy, updatedArmy);
 
       // Remove armies with no units or update them in GameState
-      if (army.regulars.length === 0 && army.heroes.length === 0) {
-        Object.assign(gameState, removeArmyFromGameState(gameState, army.id));
+      if (originalArmy.regulars.length === 0 && originalArmy.heroes.length === 0) {
+        Object.assign(gameState, removeArmyFromGameState(gameState, originalArmy.id));
       } else {
-        Object.assign(gameState, updateArmyInGameState(gameState, army));
+        Object.assign(gameState, updateArmyInGameState(gameState, originalArmy));
       }
     });
   });
-};
-
-const attritionPenalty = (army: ArmyState, unitsToLoss: Record<UnitRank, number>): ArmyState => {
-  let updatedArmy = army;
-  Object.values(UnitRank).forEach((rank) => {
-    const regUnitsWithRank = updatedArmy.regulars.filter(
-      (u) => u.rank === rank && !isWarMachine(u.type)
-    );
-    const warMachUnitsWithRank = updatedArmy.regulars.filter(
-      (u) => u.rank === rank && isWarMachine(u.type)
-    );
-    const toKill = unitsToLoss[rank];
-    const maxWarmachinesToKill = Math.min(
-      warMachUnitsWithRank.reduce((acc, m) => acc + m.count, 0),
-      Math.floor(toKill / WARMACHINE_TO_UNIT)
-    );
-
-    const regularsToKill = unitsToLoss[rank] - maxWarmachinesToKill * WARMACHINE_TO_UNIT;
-
-    let rest = maxWarmachinesToKill;
-    while (rest > 0) {
-      for (let i = 0; i < warMachUnitsWithRank.length && rest > 0; i++) {
-        if (rest > 0) {
-          const toDelete = Math.min(warMachUnitsWithRank[i].count, rest);
-          const result = getRegulars(
-            updatedArmy,
-            warMachUnitsWithRank[i].type,
-            warMachUnitsWithRank[i].rank,
-            toDelete
-          );
-          if (result) {
-            updatedArmy = result.updatedArmy;
-          }
-          rest -= toDelete;
-        }
-      }
-    }
-    rest = regularsToKill;
-    while (rest > 0) {
-      for (let i = 0; i < regUnitsWithRank.length && rest > 0; i++) {
-        if (rest > 0) {
-          const toDelete = Math.min(regUnitsWithRank[i].count, rest);
-          const result = getRegulars(
-            updatedArmy,
-            regUnitsWithRank[i].type,
-            regUnitsWithRank[i].rank,
-            toDelete
-          );
-          if (result) {
-            updatedArmy = result.updatedArmy;
-          }
-          rest -= toDelete;
-        }
-      }
-    }
-  });
-  return updatedArmy;
-};
-
-const normalizeArmyUnits = (units: RegularsState[]): Record<UnitRank, number> => {
-  const packs: Record<UnitRank, number> = {
-    [UnitRank.REGULAR]: 0,
-    [UnitRank.VETERAN]: 0,
-    [UnitRank.ELITE]: 0,
-  };
-
-  Object.values(UnitRank).forEach((rank) => {
-    const rankUnits = units.filter((u) => u.rank === rank);
-    const warMachines = rankUnits
-      .filter((u) => isWarMachine(u.type))
-      .reduce((acc, unit) => acc + unit.count, 0);
-    const regularUnits = rankUnits
-      .filter((u) => !isWarMachine(u.type))
-      .reduce((acc, unit) => acc + unit.count, 0);
-    packs[rank] = warMachines * WARMACHINE_TO_UNIT + regularUnits;
-  });
-  return packs;
-};
-
-const rollAttritionLoss = (
-  normalizedUnits: Record<UnitRank, number>[]
-): Record<UnitRank, { total: number; loss: number }> => {
-  // calculate the number of units based on unit type (regular, veteran, elite)
-  const regularUnits = normalizedUnits.reduce((acc, u) => acc + u.regular, 0);
-  const veteranUnits = normalizedUnits.reduce((acc, u) => acc + u.veteran, 0);
-  const eliteUnits = normalizedUnits.reduce((acc, u) => acc + u.elite, 0);
-
-  const roll = (
-    minPct: number,
-    maxPct: number,
-    minAbs: number,
-    maxAbs: number,
-    count: number
-  ): number =>
-    Math.max(
-      Math.ceil(count * (Math.random() * (maxPct - minPct) + minPct)),
-      Math.ceil(Math.random() * (maxAbs - minAbs) + minAbs)
-    );
-
-  const regularLoss = roll(0.08, 0.1, 40, 60, regularUnits);
-  const veteranLoss = roll(0.05, 0.07, 20, 40, veteranUnits);
-  const eliteLoss = roll(0.03, 0.05, 10, 20, eliteUnits);
-
-  return {
-    [UnitRank.REGULAR]: { total: regularUnits, loss: regularLoss },
-    [UnitRank.VETERAN]: { total: veteranUnits, loss: veteranLoss },
-    [UnitRank.ELITE]: { total: eliteUnits, loss: eliteLoss },
-  };
 };

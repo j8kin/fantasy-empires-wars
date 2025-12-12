@@ -1,14 +1,13 @@
 import { v4 as uuid } from 'uuid';
 import { Effect } from '../types/Effect';
-import { SpellName } from '../types/Spell';
-import { getSpellById } from '../selectors/spellSelectors';
+import { Spell } from '../types/Spell';
 
-export const effectFactory = (spellName: SpellName): Effect => {
-  const spell = getSpellById(spellName);
+export const effectFactory = (spell: Spell, castBy: string): Effect => {
   return {
     id: Object.freeze(uuid()),
-    spell: spellName,
-    type: spell.effect!.type,
+    spell: Object.freeze(spell.id),
+    type: Object.freeze(spell.effect!.type),
+    castBy: Object.freeze(castBy),
     duration: spell.effect!.duration,
   };
 };

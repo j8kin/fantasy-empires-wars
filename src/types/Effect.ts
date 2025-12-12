@@ -15,4 +15,5 @@ export type Effect = {
   type: EffectType; // when army merged positive effect disappears negative effect remains
   spell: SpellName;
   duration: number;
+  castBy: string;
 };

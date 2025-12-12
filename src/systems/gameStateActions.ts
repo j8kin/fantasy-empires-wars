@@ -1,11 +1,14 @@
 import { GameState } from '../state/GameState';
 import { PlayerState } from '../state/player/PlayerState';
-import { TurnPhase } from '../turn/TurnPhase';
 import { LandPosition } from '../state/map/land/LandPosition';
+import { getLandId } from '../state/map/land/LandId';
+import { getPlayer } from '../selectors/playerSelectors';
 import { Building } from '../types/Building';
 import { HeroQuest } from '../types/Quest';
 import { Mana } from '../types/Mana';
-import { getLandId } from '../state/map/land/LandId';
+import { Effect } from '../types/Effect';
+import { Item } from '../types/Treasures';
+import { TurnPhase } from '../turn/TurnPhase';
 
 interface BuildingSlot {
   unit: any; // UnitType
@@ -108,12 +111,22 @@ export const updatePlayerMana = (
   manaType: keyof Mana,
   deltaMana: number
 ): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const updatedMana = {
     ...player.mana,
     [manaType]: player.mana[manaType] + deltaMana,
   };
   return updatePlayer(gameState, playerId, { mana: updatedMana });
+};
+
+export const updatePlayerEffect = (
+  gameState: GameState,
+  playerId: string,
+  effect: Effect
+): void => {
+  const player = getPlayer(gameState, playerId);
+  const updatedEffects = [...player.effects, effect];
+  Object.assign(gameState, updatePlayer(gameState, playerId, { effects: updatedEffects }));
 };
 
 /**
@@ -214,7 +227,7 @@ export const removeCompletedQuests = (gameState: GameState, playerId: string): G
 export const addPlayerEmpireTreasure = (
   gameState: GameState,
   playerId: string,
-  treasure: any
+  treasure: Item
 ): GameState => {
   const player = gameState.players.find((p) => p.id === playerId)!;
   return updatePlayer(gameState, playerId, {

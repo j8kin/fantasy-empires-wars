@@ -100,7 +100,9 @@ describe('PlayerSelection', () => {
 
     // The selectedPlayerClass div should contain the lawful alignment text with color styling
     const selectedPlayerClass = screen.getByText(
-      (content) => content.includes('LAWFUL') && content.includes('Human')
+      (content) =>
+        content.includes(lawfulPlayer.alignment.toUpperCase()) &&
+        content.includes(lawfulPlayer.type)
     );
     expect(selectedPlayerClass).toHaveStyle('color: rgb(74, 144, 226)');
 
@@ -110,7 +112,9 @@ describe('PlayerSelection', () => {
     );
 
     const neutralPlayerClass = screen.getByText(
-      (content) => content.includes('NEUTRAL') && content.includes(neutralPlayer.race)
+      (content) =>
+        content.includes(neutralPlayer.alignment.toUpperCase()) &&
+        content.includes(neutralPlayer.type)
     );
     expect(neutralPlayerClass).toHaveStyle('color: rgb(149, 165, 166)');
 
@@ -120,7 +124,9 @@ describe('PlayerSelection', () => {
     );
 
     const chaoticPlayerClass = screen.getByText(
-      (content) => content.includes('CHAOTIC') && content.includes(chaoticPlayer.race)
+      (content) =>
+        content.includes(chaoticPlayer.alignment.toUpperCase()) &&
+        content.includes(chaoticPlayer.type)
     );
     expect(chaoticPlayerClass).toHaveStyle('color: rgb(231, 76, 60)');
   });
@@ -148,7 +154,7 @@ describe('PlayerSelection', () => {
     // Check alignment, race, and level in details
     expect(
       screen.getByText(
-        `${mockSelectedPlayer.alignment.toUpperCase()} - ${mockSelectedPlayer.race} - Level ${mockSelectedPlayer.level}`
+        `${mockSelectedPlayer.alignment.toUpperCase()} - ${mockSelectedPlayer.type} - Level ${mockSelectedPlayer.level}`
       )
     ).toBeInTheDocument();
 

@@ -1,21 +1,83 @@
 import { GameState } from '../../state/GameState';
+import { LandState } from '../../state/map/land/LandState';
 import { getLandId } from '../../state/map/land/LandId';
 
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayerLands } from '../../selectors/playerSelectors';
+import { getArmiesByPlayer, getPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
+import { getLand } from '../../selectors/landSelectors';
+import { getRegularLandTypes } from '../../domain/land/landQueries';
 
-import { SpellName } from '../../types/Spell';
+import { SpellName, SpellTarget } from '../../types/Spell';
+import { EffectTarget } from '../../types/Effect';
+import { BuildingType } from '../../types/Building';
+import { LandType } from '../../types/Land';
+import { Alignment } from '../../types/Alignment';
+import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
 
-export const getAvailableToCastSpellLands = (gameState: GameState, spellName: SpellName) => {
+export const getAvailableToCastSpellLands = (
+  gameState: GameState,
+  spellName: SpellName
+): string[] => {
   const spell = getSpellById(spellName);
+
+  if (spell.id === SpellName.CORRUPTION) {
+    const affectedLands = new Set<string>();
+
+    getPlayerLands(gameState)
+      .filter((l) =>
+        l.buildings.some(
+          (b) =>
+            b.id === BuildingType.BLACK_MAGE_TOWER ||
+            b.id === BuildingType.OUTPOST ||
+            b.id === BuildingType.STRONGHOLD
+        )
+      )
+      .forEach((land) => {
+        const isStronghold = land.buildings.some((b) => b.id === BuildingType.STRONGHOLD);
+        getTilesInRadius(
+          getMapDimensions(gameState),
+          land.mapPos,
+          isStronghold ? 2 : 3,
+          false
+        ).forEach((l) => {
+          if (canBeCorrupted(getLand(gameState, l))) {
+            affectedLands.add(getLandId(l));
+          }
+        });
+      });
+
+    return Array.from(affectedLands);
+  }
+
+  if (spell.apply === SpellTarget.PLAYER) {
+    if (spell.effect?.target === EffectTarget.ARMY) {
+      return getArmiesByPlayer(gameState)
+        .filter((army) => !army.effects.some((e) => e.spell === spellName))
+        .flatMap((a) => getLandId(getPosition(a)));
+    }
+    return getPlayerLands(gameState)
+      .filter((l) => !l.effects.some((e) => e.spell === spellName))
+      .flatMap((l) => getLandId(l.mapPos));
+  }
+
   const playerFiltered =
-    spell.apply === 'player'
-      ? [getTurnOwner(gameState)]
-      : spell.apply === 'opponent'
-        ? gameState.players.filter((p) => p.id !== gameState.turnOwner)
-        : gameState.players;
+    spell.apply === SpellTarget.OPPONENT
+      ? gameState.players.filter((p) => p.id !== gameState.turnOwner)
+      : gameState.players;
 
   return playerFiltered
-    .flatMap((playerId) => getPlayerLands(gameState, playerId.id))
-    .map((land) => getLandId(land.mapPos));
+    .flatMap((p) => getPlayerLands(gameState, p.id))
+    .filter((l) => !l.effects.some((e) => e.spell === spellName))
+    .flatMap((l) => getLandId(l.mapPos));
+};
+
+const canBeCorrupted = (land: LandState): boolean => {
+  return (
+    land.land.alignment !== Alignment.CHAOTIC &&
+    land.land.id !== LandType.DESERT &&
+    !land.corrupted &&
+    getRegularLandTypes().includes(land.land.id)
+  );
 };

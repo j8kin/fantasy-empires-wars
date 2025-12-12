@@ -142,4 +142,32 @@ describe('Calculate Income', () => {
       expect(income).toBe(expected);
     }
   );
+
+  it.each([
+    [Alignment.LAWFUL, 100, 80], // CORRUPTED has negative effect
+    [Alignment.NEUTRAL, 100, 100], // CORRUPTED has NO effect
+    [Alignment.CHAOTIC, 100, 200], // CORRUPTED has positive effect
+  ])(
+    'CORRUPTED Land treated as CHAOTIC Land type and has affect for %s player',
+    (pAlignment: Alignment, incomeBefore: number, incomeAfter: number) => {
+      const player = getPlayer(pAlignment);
+      addPlayer(gameStateStub, player, 'human');
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(LandType.PLAINS);
+      addLand(getTurnOwner(gameStateStub), { row: 4, col: 4 });
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
+
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
+        getBuilding(BuildingType.STRONGHOLD),
+      ];
+
+      let income = calculateIncome(gameStateStub);
+      expect(income).toBe(incomeBefore);
+
+      // set land to CORRUPTED
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].corrupted = true;
+
+      income = calculateIncome(gameStateStub);
+      expect(income).toBe(incomeAfter); // treated as CHAOTIC Land type
+    }
+  );
 });

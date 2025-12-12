@@ -20,7 +20,8 @@ import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
 import ErrorMessagePopup from '../popups/ErrorMessagePopup';
-import HeroOutcomePopup from '../popups/HeroOutcomePopup';
+import RealmEventsPopup from '../popups/RealmEventsPopup';
+import SpellCastAnimation from '../animations/SpellCastAnimation';
 
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import SendHeroInQuestDialog from '../dialogs/SendHeroInQuestDialog';
@@ -41,11 +42,14 @@ const MainViewContent: React.FC = () => {
     gameStarted,
     clearAllGlow,
     setSelectedLandAction,
+    setIsArcaneExchangeMode,
     setProgressMessage,
     setShowProgressPopup,
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
     showHeroOutcome,
+    spellAnimation,
+    hideSpellAnimation,
   } = useApplicationContext();
 
   const { gameState, startNewTurn, setTurnManagerCallbacks } = useGameContext();
@@ -113,6 +117,7 @@ const MainViewContent: React.FC = () => {
     // Clear glow and selected item when clicking on the main background
     clearAllGlow();
     setSelectedLandAction(null);
+    setIsArcaneExchangeMode(false);
   };
 
   return (
@@ -182,12 +187,31 @@ const MainViewContent: React.FC = () => {
 
       {/* Quest Results Popup */}
       {showHeroOutcomePopup && (
-        <HeroOutcomePopup
+        <RealmEventsPopup
           screenPosition={{
             x: typeof window !== 'undefined' ? (window.innerWidth - 500) / 2 : 0,
             y: typeof window !== 'undefined' ? (window.innerHeight - 400) / 2 : 0,
           }}
         />
+      )}
+
+      {/* Spell Cast Animation - positioned absolutely over the battlefield */}
+      {spellAnimation && (
+        <div
+          style={{
+            position: 'fixed',
+            left: spellAnimation.screenPosition.x,
+            top: spellAnimation.screenPosition.y,
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            zIndex: 1000,
+          }}
+        >
+          <SpellCastAnimation
+            manaType={spellAnimation.manaType}
+            onAnimationComplete={hideSpellAnimation}
+          />
+        </div>
       )}
     </main>
   );

@@ -4,8 +4,8 @@ import Battlefield from '../../ux-components/battlefield/Battlefield';
 import { GameState } from '../../state/GameState';
 
 import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
+import { HexTileProps } from '../../ux-components/battlefield/LandTile';
 import { createGameStateStub } from '../utils/createGameStateStub';
-import { LandPosition } from '../../state/map/land/LandPosition';
 import { MapDimensions } from '../../state/map/MapDimensions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 
@@ -24,19 +24,19 @@ jest.mock('../../ux-components/battlefield/LandTile', () => {
   const { useGameContext } = require('../../contexts/GameContext');
   const { getLandOwner } = require('../../selectors/landSelectors');
 
-  return (props: { battlefieldPosition: LandPosition }) => {
-    const { battlefieldPosition } = props;
-    const tileId: string = getLandId(battlefieldPosition);
+  return (props: HexTileProps) => {
+    const { mapPosition } = props;
+    const tileId: string = getLandId(mapPosition);
     const { gameState } = useGameContext();
     const tile = gameState.map.lands[tileId];
-    const controlledBy = tile ? getLandOwner(gameState, battlefieldPosition) : undefined;
+    const controlledBy = tile ? getLandOwner(gameState, mapPosition) : undefined;
 
     return (
       <div
         data-testid="hex-tile"
         data-tile-id={tileId}
-        data-row={battlefieldPosition.row}
-        data-col={battlefieldPosition.col}
+        data-row={mapPosition.row}
+        data-col={mapPosition.col}
         data-controlled-by={controlledBy}
         data-land-type={tile?.land?.id}
       />

@@ -41,6 +41,7 @@ export const generateMockMap = (
         buildings: [],
         effects: [],
         goldPerTurn: income != null ? income : landNumber,
+        corrupted: false,
       };
       landNumber++;
     }

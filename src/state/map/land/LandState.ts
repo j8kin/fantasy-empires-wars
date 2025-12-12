@@ -10,4 +10,5 @@ export interface LandState {
   buildings: Building[];
   effects: Effect[];
   glow?: boolean;
+  corrupted: boolean;
 }

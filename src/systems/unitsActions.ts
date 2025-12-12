@@ -3,16 +3,16 @@ import { RegularsState, UnitRank } from '../state/army/RegularsState';
 import { unitsBaseStats } from '../domain/unit/unitRepository';
 import { Alignment } from '../types/Alignment';
 import { TreasureItem } from '../types/Treasures';
-import { HeroUnitType, RegularUnitType } from '../types/UnitType';
+import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../types/UnitType';
 
 export const levelUpHero = (hero: HeroState, playerAlignment: Alignment): void => {
-  if (hero.level === 32) return; // hero reached max level
+  if (hero.level === MAX_HERO_LEVEL) return; // hero reached max level
 
   if (
     hero.artifacts.length > 0 &&
     hero.artifacts.some((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)
   ) {
-    hero.level = hero.level === 31 ? 32 : hero.level + 2;
+    hero.level = hero.level === MAX_HERO_LEVEL - 1 ? MAX_HERO_LEVEL : hero.level + 2;
   } else {
     hero.level++;
   }

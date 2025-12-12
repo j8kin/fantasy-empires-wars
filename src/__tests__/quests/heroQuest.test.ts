@@ -82,7 +82,7 @@ describe('Hero Quest', () => {
     // all action could be done only on main phase on other phases all actions are performed automatically
     testTurnManagement.waitStartPhaseComplete();
 
-    startQuest(hero, easyQuest, gameStateStub);
+    startQuest(gameStateStub, hero, easyQuest);
 
     checkQuest(easyQuest, hero, heroLandPos, 4);
 
@@ -93,7 +93,7 @@ describe('Hero Quest', () => {
     expect(gameStateStub.turn).toBe(2);
     testTurnManagement.waitStartPhaseComplete();
 
-    startQuest(hero, easyQuest, gameStateStub);
+    startQuest(gameStateStub, hero, easyQuest);
     checkQuest(easyQuest, hero, heroLandPos, 4);
 
     testTurnManagement.makeNTurns(1);
@@ -108,7 +108,7 @@ describe('Hero Quest', () => {
     expect(gameStateStub.turn).toBe(2);
     testTurnManagement.waitStartPhaseComplete();
 
-    startQuest(hero, easyQuest, gameStateStub);
+    startQuest(gameStateStub, hero, easyQuest);
     checkQuest(easyQuest, hero, heroLandPos, 4);
 
     testTurnManagement.makeNTurns(4);
@@ -132,7 +132,7 @@ describe('Hero Quest', () => {
     expect(gameStateStub.turn).toBe(2);
     testTurnManagement.waitStartPhaseComplete();
 
-    startQuest(hero, mediumQuest, gameStateStub);
+    startQuest(gameStateStub, hero, mediumQuest);
     checkQuest(mediumQuest, hero, heroLandPos, 5);
 
     testTurnManagement.makeNTurns(5);
@@ -150,7 +150,7 @@ describe('Hero Quest', () => {
     expect(gameStateStub.turn).toBe(2);
     testTurnManagement.waitStartPhaseComplete();
 
-    startQuest(hero, mediumQuest, gameStateStub);
+    startQuest(gameStateStub, hero, mediumQuest);
     checkQuest(mediumQuest, hero, heroLandPos, 5);
 
     testTurnManagement.makeNTurns(5);
@@ -207,9 +207,9 @@ describe('Hero Quest', () => {
     expect(armies.length).toBe(0);
 
     // Recruiting 3 heroes of the same type in barracks
-    startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
-    startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
-    startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
+    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
+    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
+    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
     expect(barracksLand.buildings[0].slots![0].unit).toBe(HeroUnitType.FIGHTER);
     expect(barracksLand.buildings[0].slots![1].unit).toBe(HeroUnitType.FIGHTER);
     expect(barracksLand.buildings[0].slots![2].unit).toBe(HeroUnitType.FIGHTER);
@@ -226,7 +226,7 @@ describe('Hero Quest', () => {
     /* ********************** SEND TO QUEST ******************* */
     randomSpy.mockReturnValue(0); // always survive (to successfully return all 3 heroes to the same land)
     const heroes = [...armiesRecruited[0].heroes];
-    heroes.forEach((hero) => startQuest(hero, easyQuest, gameStateStub));
+    heroes.forEach((hero) => startQuest(gameStateStub, hero, easyQuest));
     expect(heroes.length).toBe(3);
 
     expect(getTurnOwner(gameStateStub).quests.length).toBe(3);
@@ -271,8 +271,8 @@ describe('Hero Quest', () => {
     expect(armies.length).toBe(0);
 
     // Recruit one regular and one hero unit
-    startRecruiting(HeroUnitType.FIGHTER, barracksLand.mapPos, gameStateStub);
-    startRecruiting(RegularUnitType.WARRIOR, barracksLand.mapPos, gameStateStub);
+    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
+    startRecruiting(gameStateStub, barracksLand.mapPos, RegularUnitType.WARRIOR);
 
     testTurnManagement.makeNTurns(3);
 
@@ -287,7 +287,7 @@ describe('Hero Quest', () => {
     /* ********************** SEND TO QUEST ******************* */
     randomSpy.mockReturnValue(0.01); // always survive (to successfully return all 3 heroes to the same land)
     const hero = armiesRecruited[0].heroes[0];
-    startQuest(hero, easyQuest, gameStateStub);
+    startQuest(gameStateStub, hero, easyQuest);
     const armiesQuestSend = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
     expect(armiesQuestSend.length).toBe(1);
     expect(armiesQuestSend[0].heroes.length).toBe(0);

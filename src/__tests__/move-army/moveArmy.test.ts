@@ -7,17 +7,19 @@ import { getLandId } from '../../state/map/land/LandId';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { briefInfo, isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
+import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addLand } from '../../systems/playerActions';
 
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { BuildingType } from '../../types/Building';
+import { SpellName } from '../../types/Spell';
 
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
+import { castSpell } from '../../map/magic/castSpell';
 
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
@@ -53,25 +55,25 @@ describe('Move Army', () => {
     construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
     barracksLand = getLand(gameStateStub, barracksPos);
 
-    startRecruiting(RegularUnitType.WARRIOR, barracksPos, gameStateStub);
-    startRecruiting(RegularUnitType.WARRIOR, barracksPos, gameStateStub);
-    startRecruiting(HeroUnitType.FIGHTER, barracksPos, gameStateStub);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, HeroUnitType.FIGHTER);
 
     testTurnManagement.makeNTurns(1);
     let armies = getArmiesAtPosition(gameStateStub, barracksPos);
     expect(armies.length).toBe(1);
     expect(armies[0].regulars[0].count).toBe(40);
 
-    startRecruiting(RegularUnitType.WARRIOR, barracksPos, gameStateStub);
-    startRecruiting(RegularUnitType.WARRIOR, barracksPos, gameStateStub);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
 
     testTurnManagement.makeNTurns(1);
     armies = getArmiesAtPosition(gameStateStub, barracksPos);
     expect(armies.length).toBe(1);
     expect(armies[0].regulars[0].count).toBe(80);
 
-    startRecruiting(RegularUnitType.WARRIOR, barracksPos, gameStateStub);
-    startRecruiting(RegularUnitType.WARRIOR, barracksPos, gameStateStub);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
 
     testTurnManagement.makeNTurns(1);
 
@@ -110,7 +112,7 @@ describe('Move Army', () => {
           regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
         };
 
-        startMovement(from, to, armyBriefInfo, gameStateStub);
+        startMovement(gameStateStub, from, to, armyBriefInfo);
 
         const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
         expect(armies.length).toBe(2);
@@ -139,7 +141,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
       };
 
-      startMovement(from, to, armyBriefInfo, gameStateStub);
+      startMovement(gameStateStub, from, to, armyBriefInfo);
 
       // only hero remains in the army
       const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -162,7 +164,7 @@ describe('Move Army', () => {
         regulars: [],
       };
 
-      startMovement(from, to, armyBriefInfo, gameStateStub);
+      startMovement(gameStateStub, from, to, armyBriefInfo);
 
       // All army stays the same
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -179,7 +181,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
       };
 
-      startMovement(from, to, armyBriefInfo, gameStateStub);
+      startMovement(gameStateStub, from, to, armyBriefInfo);
 
       // only regular remains in the army
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -207,7 +209,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
       };
 
-      startMovement(from, to, armyBriefInfo, gameStateStub);
+      startMovement(gameStateStub, from, to, armyBriefInfo);
 
       // only new army remains
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -231,7 +233,7 @@ describe('Move Army', () => {
 
         expect(armies.length).toBe(0);
 
-        startMovement(emptyLand.mapPos, barracksLand.mapPos, armyBriefInfo, gameStateStub);
+        startMovement(gameStateStub, emptyLand.mapPos, barracksLand.mapPos, armyBriefInfo);
 
         armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
         expect(armies.length).toBe(1);
@@ -252,7 +254,7 @@ describe('Move Army', () => {
           regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 1000 }],
         };
 
-        startMovement(from, to, armyBriefInfo, gameStateStub);
+        startMovement(gameStateStub, from, to, armyBriefInfo);
         armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
 
         expect(armies.length).toBe(1);
@@ -273,7 +275,7 @@ describe('Move Army', () => {
           regulars: [],
         };
 
-        startMovement(from, to, armyBriefInfo, gameStateStub);
+        startMovement(gameStateStub, from, to, armyBriefInfo);
 
         const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
         expect(armies.length).toBe(1);
@@ -297,7 +299,7 @@ describe('Move Army', () => {
         regulars: [],
       };
 
-      startMovement(homeLand.mapPos, to, armyBriefInfo, gameStateStub);
+      startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo);
       testTurnManagement.makeNTurns(1);
 
       armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
@@ -323,7 +325,7 @@ describe('Move Army', () => {
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies.length).toBe(1);
 
-      startMovement(homeLand.mapPos, barracksLand.mapPos, armyBriefInfo, gameStateStub);
+      startMovement(gameStateStub, homeLand.mapPos, barracksLand.mapPos, armyBriefInfo);
 
       testTurnManagement.makeNTurns(1);
       armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
@@ -359,12 +361,12 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
       };
 
-      startMovement(from, to, armyBriefInfo, gameStateStub);
+      startMovement(gameStateStub, from, to, armyBriefInfo);
       armies = getArmiesAtPosition(gameStateStub, from);
       expect(armies.length).toBe(2);
 
       randomSpy = jest.spyOn(Math, 'random');
-      randomSpy.mockReturnValue(0.01); // to return the same value on any random function call to clculate the same a
+      randomSpy.mockReturnValue(0.01); // to return the same value on any random function call to calculate the same penalty
 
       testTurnManagement.makeNTurns(1);
 
@@ -399,7 +401,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
       };
 
-      startMovement(from, to, armyBriefInfo, gameStateStub);
+      startMovement(gameStateStub, from, to, armyBriefInfo);
       armies = getArmiesAtPosition(gameStateStub, from);
       expect(armies.length).toBe(2);
 
@@ -431,7 +433,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
       };
 
-      startMovement(from, to, ArmyBriefInfo1, gameStateStub);
+      startMovement(gameStateStub, from, to, ArmyBriefInfo1);
       armies = getArmiesAtPosition(gameStateStub, from);
       expect(armies.length).toBe(2);
 
@@ -441,7 +443,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 35 }], // 35 regular units is not enough to conquer the new territory
       };
 
-      startMovement(from, to, ArmyBriefInfo2, gameStateStub);
+      startMovement(gameStateStub, from, to, ArmyBriefInfo2);
       armies = getArmiesAtPosition(gameStateStub, from);
       expect(armies.length).toBe(3);
 
@@ -462,6 +464,46 @@ describe('Move Army', () => {
       expect(getLandOwner(gameStateStub, to)).toBe(getTurnOwner(gameStateStub).id); // new territory owner is not changed
 
       randomSpy.mockRestore();
+    });
+
+    it('ENTANGLING ROOTS should prevent armies from moving', () => {
+      // set player 1 to turnOwner to emulate castSpell ENTANGLING ROOTS on player 0 territory on previous turn
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      gameStateStub.players[1].mana.green = 200;
+      castSpell(gameStateStub, SpellName.ENTANGLING_ROOTS, homeLand.mapPos);
+      // roll-back turnOwner
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      expect(getLand(gameStateStub, homeLand.mapPos).effects).toHaveLength(1);
+      expect(getLand(gameStateStub, homeLand.mapPos).effects[0].spell).toBe(
+        SpellName.ENTANGLING_ROOTS
+      );
+
+      const to = { row: homeLand.mapPos.row + 1, col: homeLand.mapPos.col };
+      let armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
+      const armyBriefInfo: ArmyBriefInfo = {
+        heroes: [briefInfo(armies[0]).heroes[0]], // initial hero in homeland
+        regulars: [],
+      };
+
+      startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo);
+      expect(isMoving(getArmiesAtPosition(gameStateStub, homeLand.mapPos)[0])).toBeTruthy();
+      testTurnManagement.makeNTurns(1);
+
+      const heroArmy = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
+      expect(heroArmy).toHaveLength(1); // armies should not move
+      expect(isMoving(heroArmy[0])).toBeTruthy();
+      expect(getLand(gameStateStub, homeLand.mapPos).effects).toHaveLength(0); // effect disappear
+
+      // double-check that
+      testTurnManagement.makeNTurns(1);
+      expect(getArmiesAtPosition(gameStateStub, homeLand.mapPos)).toHaveLength(0);
+
+      armies = getArmiesAtPosition(gameStateStub, to);
+      expect(armies.length).toBe(1);
+      expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(armies[0])).toBeFalsy();
+      expect(armies[0].heroes.length).toBe(1);
+      expect(armies[0].heroes[0].name).toBe(armyBriefInfo.heroes[0].name);
     });
   });
 });

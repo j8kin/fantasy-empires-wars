@@ -8,26 +8,25 @@ import { useGameContext } from '../../contexts/GameContext';
 import PopupWrapper, { PopupProps } from './PopupWrapper';
 
 import { LandPosition } from '../../state/map/land/LandPosition';
-import { getLandId } from '../../state/map/land/LandId';
-import { getLandOwner } from '../../selectors/landSelectors';
-import { getArmiesAtPosition } from '../../selectors/armySelectors';
-import { getPlayer } from '../../selectors/playerSelectors';
+import { getLandInfo } from '../../selectors/landSelectors';
 
 import { getAlignmentColor } from '../../domain/ui/alignmentColors';
-
-import { NO_PLAYER } from '../../domain/player/playerRepository';
+import { EffectType } from '../../types/Effect';
 
 interface LandCharacteristicsPopupProps extends PopupProps {
-  battlefieldPosition: LandPosition;
+  landPos: LandPosition;
 }
 
-const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
-  battlefieldPosition,
-  screenPosition,
-}) => {
+const getEffectColor = (effectType: EffectType): string => {
+  return effectType === EffectType.POSITIVE ? '#4CAF50' : '#F44336'; // Green for positive, Red for negative
+};
+
+const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, screenPosition }) => {
   const { hideLandPopup } = useApplicationContext();
   const { gameState } = useGameContext();
-  const land = gameState!.map.lands[getLandId(battlefieldPosition)];
+  if (gameState == null) return null;
+
+  const landInfo = getLandInfo(gameState, landPos);
 
   // Calculate dynamic size based on content type
   //  Base heights and row spacing
@@ -35,27 +34,34 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   const standardRowHeight = 21; // Height per standard data row (Alignment, ControlledBy etc) (12px font + 6px margin)
   const buildingRowHeight = 24; // Height for building rows (includes building chip padding + gaps)
   const armyRowHeight = 21; // Height for army row (standard)
+  const effectRowHeight = 21; // Height for effect row (standard)
 
   // Calculate height for each content type separately
   // Standard rows: Alignment, Position, Gold per Turn, Controlled By
   let calculatedHeight = headerHeight + 4 * standardRowHeight + 15;
 
-  // Buildings row - accounts for building chips and their styling
-  if (land.buildings && land.buildings.length > 0) {
-    calculatedHeight += land.buildings.length * buildingRowHeight;
-  }
+  // Handle illusion case - only show illusion message
+  if (landInfo.illusionMsg) {
+    calculatedHeight += armyRowHeight; // Height for illusion message
+  } else {
+    // Buildings row - accounts for building chips and their styling
+    if (landInfo.buildings.length > 0) {
+      calculatedHeight += landInfo.buildings.length * buildingRowHeight;
+    }
 
-  // Army rows - separate heroes and units
-  const armiesAtPosition = getArmiesAtPosition(gameState!, battlefieldPosition);
-  const heroes = armiesAtPosition.flatMap((a) => a.heroes);
-  const units = armiesAtPosition.flatMap((a) => a.regulars);
+    // Effects rows - use landInfo data
+    if (landInfo.effects.length > 0) {
+      calculatedHeight += landInfo.effects.length * effectRowHeight;
+    }
 
-  if (heroes.length > 0) {
-    calculatedHeight += heroes.length * armyRowHeight;
-  }
+    // Army rows - use landInfo data
+    if (landInfo.heroes.length > 0) {
+      calculatedHeight += landInfo.heroes.length * armyRowHeight;
+    }
 
-  if (units.length > 0) {
-    calculatedHeight += units.length * armyRowHeight;
+    if (landInfo.regulars.length > 0) {
+      calculatedHeight += landInfo.regulars.length * armyRowHeight;
+    }
   }
 
   //  Final height calculation
@@ -101,7 +107,9 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
     >
       <div className={commonStyles.popupContent}>
         <div className={`${commonStyles.header} ${styles.header}`}>
-          <h3 className={`${commonStyles.title} ${styles.title}`}>{land.land.id}</h3>
+          <h3 className={`${commonStyles.title} ${styles.title}`}>
+            {(landInfo.isCorrupted ? 'Corrupted ' : '') + landInfo.type}
+          </h3>
         </div>
 
         <div className={commonStyles.characteristics}>
@@ -109,69 +117,85 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
             <span className={`${commonStyles.label} ${styles.label}`}>Alignment:</span>
             <span
               className={commonStyles.value}
-              style={{ color: getAlignmentColor(land.land.alignment) }}
+              style={{ color: getAlignmentColor(landInfo.alignment) }}
             >
-              {land.land.alignment}
+              {landInfo.alignment}
             </span>
           </div>
 
-          {land && (
+          <div className={`${commonStyles.row} ${styles.row}`}>
+            <span className={`${commonStyles.label} ${styles.label}`}>Position:</span>
+            <span className={commonStyles.value}>
+              {landPos.row}, {landPos.col}
+            </span>
+          </div>
+          <div className={`${commonStyles.row} ${styles.row}`}>
+            <span className={`${commonStyles.label} ${styles.label}`}>Gold per Turn:</span>
+            <span className={commonStyles.value}>{landInfo.goldPerTurn}</span>
+          </div>
+          <div className={`${commonStyles.row} ${styles.row}`}>
+            <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
+            <span className={commonStyles.value} style={{ color: landInfo.color }}>
+              {landInfo.owner}
+            </span>
+          </div>
+          {landInfo.illusionMsg ? (
+            <div className={`${commonStyles.row} ${styles.row}`}>
+              <span className={commonStyles.label} style={{ fontStyle: 'italic', color: '#888' }}>
+                {landInfo.illusionMsg}
+              </span>
+            </div>
+          ) : (
             <>
-              <div className={`${commonStyles.row} ${styles.row}`}>
-                <span className={`${commonStyles.label} ${styles.label}`}>Position:</span>
-                <span className={commonStyles.value}>
-                  {battlefieldPosition.row}, {battlefieldPosition.col}
-                </span>
-              </div>
-              <div className={`${commonStyles.row} ${styles.row}`}>
-                <span className={`${commonStyles.label} ${styles.label}`}>Gold per Turn:</span>
-                <span className={commonStyles.value}>{land.goldPerTurn}</span>
-              </div>
-              <div className={`${commonStyles.row} ${styles.row}`}>
-                <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
-                <span className={commonStyles.value}>
-                  {(() => {
-                    if (!gameState) return NO_PLAYER.name;
-                    return (
-                      getPlayer(gameState, getLandOwner(gameState, land.mapPos))?.playerProfile
-                        ?.name ?? NO_PLAYER.name
-                    );
-                  })()}
-                </span>
-              </div>
-              {land.buildings && land.buildings.length > 0 && (
+              {landInfo.buildings && landInfo.buildings.length > 0 && (
                 <div className={`${commonStyles.row} ${styles.row}`}>
                   <span className={`${commonStyles.label} ${styles.label}`}>Buildings:</span>
                   <div className={styles.buildingsList}>
-                    {land.buildings.map((building, index) => (
+                    {landInfo.buildings.map((building, index) => (
                       <span key={index} className={styles.building}>
-                        {building.id}
+                        {building}
                       </span>
                     ))}
                   </div>
                 </div>
               )}
-              {(heroes.length > 0 || units.length > 0) && (
+              {landInfo.effects.length > 0 && (
+                <div className={`${commonStyles.row} ${styles.row}`}>
+                  <span className={`${commonStyles.label} ${styles.label}`}>Effects:</span>
+                  <div className={styles.buildingsList}>
+                    {landInfo.effects.map((effect, index) => (
+                      <span
+                        key={index}
+                        className={styles.hero}
+                        style={{ color: getEffectColor(effect.type) }}
+                      >
+                        {effect.spell} ({effect.duration})
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {(landInfo.heroes.length > 0 || landInfo.regulars.length > 0) && (
                 <>
-                  {heroes.length > 0 && (
+                  {landInfo.heroes.length > 0 && (
                     <div className={`${commonStyles.row} ${styles.row}`}>
                       <span className={`${commonStyles.label} ${styles.label}`}>Heroes:</span>
                       <div className={styles.buildingsList}>
-                        {heroes.map((hero) => (
-                          <span key={hero.name} className={styles.hero}>
-                            {hero.name} lvl: {hero.level}
+                        {landInfo.heroes.map((hero, index) => (
+                          <span key={index} className={styles.hero}>
+                            {hero}
                           </span>
                         ))}
                       </div>
                     </div>
                   )}
-                  {units.length > 0 && (
+                  {landInfo.regulars.length > 0 && (
                     <div className={`${commonStyles.row} ${styles.row}`}>
                       <span className={`${commonStyles.label} ${styles.label}`}>Units:</span>
                       <div className={styles.buildingsList}>
-                        {units.map((unit) => (
-                          <span key={unit.type} className={commonStyles.value}>
-                            {unit.type} ({unit.count})
+                        {landInfo.regulars.map((unit, index) => (
+                          <span key={index} className={commonStyles.value}>
+                            {unit}
                           </span>
                         ))}
                       </div>
@@ -187,4 +211,4 @@ const LandCharacteristicsPopup: React.FC<LandCharacteristicsPopupProps> = ({
   );
 };
 
-export default LandCharacteristicsPopup;
+export default LandInfoPopup;

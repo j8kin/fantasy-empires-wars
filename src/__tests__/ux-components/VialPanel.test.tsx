@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
+import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 
 import VialPanel from '../../ux-components/vial-panel/VialPanel';
 
@@ -32,6 +33,11 @@ jest.mock('../../ux-components/vial-panel/css/ManaVial.module.css', () => ({
   vialImage: 'vialImage',
 }));
 
+jest.mock('../../ux-components/vial-panel/css/ExchangeManaVialPanel.module.css', () => ({
+  exchangeVialContainer: 'exchangeVialContainer',
+  exchangeTooltip: 'exchangeTooltip',
+}));
+
 // Test wrapper component that provides game state to context
 const TestVialPanelWrapper: React.FC<{ gameState: GameState }> = ({ gameState }) => {
   const { updateGameState } = useGameContext();
@@ -45,9 +51,11 @@ const TestVialPanelWrapper: React.FC<{ gameState: GameState }> = ({ gameState })
 
 const renderVialPanelWithGameState = (gameState: GameState) => {
   return render(
-    <GameProvider>
-      <TestVialPanelWrapper gameState={gameState} />
-    </GameProvider>
+    <ApplicationContextProvider>
+      <GameProvider>
+        <TestVialPanelWrapper gameState={gameState} />
+      </GameProvider>
+    </ApplicationContextProvider>
   );
 };
 
@@ -230,9 +238,11 @@ describe('VialPanel Integration Test', () => {
       };
 
       rerender(
-        <GameProvider>
-          <TestVialPanelWrapper gameState={gameState} />
-        </GameProvider>
+        <ApplicationContextProvider>
+          <GameProvider>
+            <TestVialPanelWrapper gameState={gameState} />
+          </GameProvider>
+        </ApplicationContextProvider>
       );
 
       // Only white and red vials should render
