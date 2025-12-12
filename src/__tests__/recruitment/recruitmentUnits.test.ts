@@ -6,7 +6,7 @@ import { UnitRank } from '../../state/army/RegularsState';
 
 import { getLand } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
 
@@ -18,6 +18,8 @@ import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { castSpell } from '../../map/magic/castSpell';
+import { SpellName } from '../../types/Spell';
 
 describe('Recruitment', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -88,6 +90,25 @@ describe('Recruitment', () => {
     expect(player.vault).toBe(
       vault - Math.ceil(unitsBaseStats(HeroUnitType.FIGHTER).recruitCost * 0.85)
     );
+  });
+
+  it('If land is CORRUPTED then it takes additional turn to recruit units', () => {
+    const player = getTurnOwner(gameStateStub);
+    player.mana.black = 200;
+    player.vault = 100000;
+
+    const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+    construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
+    castSpell(gameStateStub, SpellName.CORRUPTION, barracksPos);
+
+    startRecruiting(gameStateStub, barracksPos, RegularUnitType.ORC);
+    const barracks = getLand(gameStateStub, barracksPos).buildings[0];
+    expect(barracks.slots![0].unit).toBe(RegularUnitType.ORC);
+    expect(barracks.slots![0].turnsRemaining).toBe(2);
+
+    startRecruiting(gameStateStub, barracksPos, HeroUnitType.OGR);
+    expect(barracks.slots![1].unit).toBe(HeroUnitType.OGR);
+    expect(barracks.slots![1].turnsRemaining).toBe(4);
   });
 
   describe('Recruit regular units', () => {
