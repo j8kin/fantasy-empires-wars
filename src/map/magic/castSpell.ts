@@ -80,7 +80,10 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       if (hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) return;
 
       const maxClericLevel = getMaxHeroLevelByType(state, HeroUnitType.CLERIC);
-      updatePlayerEffect(state, player.id, effectFactory(spell, state.turnOwner));
+      Object.assign(
+        state,
+        updatePlayerEffect(state, player.id, effectFactory(spell, state.turnOwner))
+      );
 
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
 
@@ -363,7 +366,7 @@ const killUnits = (
   });
 
   // cleanup Armies
-  cleanupArmies(state);
+  Object.assign(state, cleanupArmies(state));
 };
 
 const calculatePenaltyConfig = (basePenalty: PenaltyConfig, maxLevel: number) => {

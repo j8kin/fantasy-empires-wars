@@ -5,7 +5,7 @@ import { changeOwner } from '../map/move-army/changeOwner';
 
 export const endTurn = (gameState: GameState) => {
   // complete movements
-  performMovements(gameState);
+  Object.assign(gameState, performMovements(gameState));
 
   // Battle todo [Issue #61]
   // https://github.com/j8kin/fantasy-empires-wars/issues/61

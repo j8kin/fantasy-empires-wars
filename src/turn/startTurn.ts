@@ -70,7 +70,7 @@ export const startTurn = (
   if (gameState.turn > 2) {
     Object.assign(gameState, updatePlayerVault(gameState, player.id, currentIncome));
     // calculate Mana
-    calculateMana(gameState);
+    Object.assign(gameState, calculateMana(gameState));
   }
 
   // Decrement effect durations at the end of the turn (after all effects are taken into account)

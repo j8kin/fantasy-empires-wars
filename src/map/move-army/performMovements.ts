@@ -7,7 +7,7 @@ import { moveArmy, updateArmyInGameState } from '../../systems/armyActions';
 import { SpellName } from '../../types/Spell';
 import { mergeArmiesAtPositions } from './mergeArmiesAtPositions';
 
-export const performMovements = (gameState: GameState): void => {
+export const performMovements = (gameState: GameState): GameState => {
   const turnOwner = gameState.turnOwner;
 
   // Get all moving armies for the turn owner
@@ -19,13 +19,17 @@ export const performMovements = (gameState: GameState): void => {
       )
     );
 
+  let updatedState = gameState;
+
   // Move each army one step forward in their path
   movingArmies.forEach((army) => {
     moveArmy(army);
     // Update the army in the GameState
-    Object.assign(gameState, updateArmyInGameState(gameState, army));
+    updatedState = updateArmyInGameState(updatedState, army);
   });
 
   // merge armies after all movements are performed
-  mergeArmiesAtPositions(gameState);
+  mergeArmiesAtPositions(updatedState);
+
+  return updatedState;
 };

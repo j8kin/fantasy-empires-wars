@@ -152,11 +152,11 @@ export const removeArmyFromGameState = (gameState: GameState, armyId: string): G
 /**
  * Remove all armies from GameState that don't have any regulars or heroes
  */
-export const cleanupArmies = (gameState: GameState): void => {
+export const cleanupArmies = (gameState: GameState): GameState => {
   const validArmies = gameState.armies.filter(
     (army) => army.regulars.length > 0 || army.heroes.length > 0
   );
-  Object.assign(gameState, { ...gameState, armies: validArmies });
+  return { ...gameState, armies: validArmies };
 };
 
 /**

@@ -124,10 +124,10 @@ export const updatePlayerEffect = (
   gameState: GameState,
   playerId: string,
   effect: Effect
-): void => {
+): GameState => {
   const player = getPlayer(gameState, playerId);
   const updatedEffects = [...player.effects, effect];
-  Object.assign(gameState, updatePlayer(gameState, playerId, { effects: updatedEffects }));
+  return updatePlayer(gameState, playerId, { effects: updatedEffects });
 };
 
 /**
