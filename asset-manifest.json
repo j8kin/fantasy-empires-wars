@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.881e72d0.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.65ede0a7.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.48d8e1cb.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/Recruit.png": "/fantasy-empires-wars/static/media/Recruit.51e8324605cf8aaf32f9.png",
     "static/media/Cast.png": "/fantasy-empires-wars/static/media/Cast.8974cde4b8517ffd8d7b.png",
@@ -62,7 +62,6 @@
     "static/media/fighter.png": "/fantasy-empires-wars/static/media/fighter.5f745e0e16fe06b67c67.png",
     "static/media/firestorm.png": "/fantasy-empires-wars/static/media/firestorm.4e5fe5c4d4dae980aa21.png",
     "static/media/demolish.png": "/fantasy-empires-wars/static/media/demolish.67037f98c240acd6e800.png",
-    "static/media/green-forest-corrupted.png": "/fantasy-empires-wars/static/media/green-forest-corrupted.51967c514a66808305a6.png",
     "static/media/ranger.png": "/fantasy-empires-wars/static/media/ranger.de2064e008d5f616bd08.png",
     "static/media/fertile-lands.png": "/fantasy-empires-wars/static/media/fertile-lands.6f44c207024df0e10489.png",
     "static/media/enchanter.png": "/fantasy-empires-wars/static/media/enchanter.371e47bd348b9fd0b04f.png",
@@ -109,6 +108,7 @@
     "static/media/blue-end.png": "/fantasy-empires-wars/static/media/blue-end.4aeb75ab6889a7c1cc91.png",
     "static/media/darkforest.png": "/fantasy-empires-wars/static/media/darkforest.c7b5f337796d4a1b92a4.png",
     "static/media/greenforest.png": "/fantasy-empires-wars/static/media/greenforest.00baf50e8af9fa011256.png",
+    "static/media/green-forest-corrupted.png": "/fantasy-empires-wars/static/media/green-forest-corrupted.e2899427898f4562ed7e.png",
     "static/media/swamp.png": "/fantasy-empires-wars/static/media/swamp.388bc16e3d05124be12d.png",
     "static/media/volcano.png": "/fantasy-empires-wars/static/media/volcano.2414ea3c3519cefd6bb4.png",
     "static/media/lava.png": "/fantasy-empires-wars/static/media/lava.c01031c21cb85214e71a.png",
@@ -122,11 +122,11 @@
     "static/media/mana-vial.png": "/fantasy-empires-wars/static/media/mana-vial.acdc30884558a3ecf7c0.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.881e72d0.css.map": "/fantasy-empires-wars/static/css/main.881e72d0.css.map",
-    "main.65ede0a7.js.map": "/fantasy-empires-wars/static/js/main.65ede0a7.js.map",
+    "main.48d8e1cb.js.map": "/fantasy-empires-wars/static/js/main.48d8e1cb.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.881e72d0.css",
-    "static/js/main.65ede0a7.js"
+    "static/js/main.48d8e1cb.js"
   ]
 }
