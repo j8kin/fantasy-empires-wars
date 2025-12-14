@@ -8,12 +8,15 @@ import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import VialPanel from '../../ux-components/vial-panel/VialPanel';
 
 import { GameState } from '../../state/GameState';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getMinManaCost } from '../../selectors/spellSelectors';
 import { nextPlayer } from '../../systems/playerActions';
+import { heroFactory } from '../../factories/heroFactory';
 
 import { ManaType } from '../../types/Mana';
+import { HeroUnitType } from '../../types/UnitType';
 import { createGameStateStub } from '../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 
 // Mock the image import
 jest.mock('../../assets/getManaVialImg', () => ({
@@ -67,13 +70,38 @@ describe('VialPanel Integration Test', () => {
 
   describe('Human player scenarios', () => {
     it('should render mana vials for human player with sufficient mana', () => {
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.ENCHANTER, HeroUnitType.ENCHANTER),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.DRUID, HeroUnitType.DRUID),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.PYROMANCER, HeroUnitType.PYROMANCER),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
       // Set mana values above minimum thresholds
       getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
-        [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) + 15,
-        [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) + 20,
-        [ManaType.RED]: getMinManaCost(ManaType.RED) + 25,
-        [ManaType.BLACK]: getMinManaCost(ManaType.BLACK) + 30,
+        [ManaType.WHITE]: 1,
+        [ManaType.BLUE]: 1,
+        [ManaType.GREEN]: 1,
+        [ManaType.RED]: 1,
+        [ManaType.BLACK]: 1,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -94,13 +122,29 @@ describe('VialPanel Integration Test', () => {
     });
 
     it('should only render vials for mana types with sufficient mana', () => {
-      // Set only some mana types above minimum thresholds
+      // Display only mana when related mage is available if mana level below minimum threshold
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.DRUID, HeroUnitType.DRUID),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+
       getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10, // Above threshold
-        [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) - 5, // Below threshold
-        [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) + 20, // Above threshold
-        [ManaType.RED]: getMinManaCost(ManaType.RED) - 10, // Below threshold
-        [ManaType.BLACK]: getMinManaCost(ManaType.BLACK) + 30, // Above threshold
+        [ManaType.WHITE]: 1,
+        [ManaType.BLUE]: 1,
+        [ManaType.GREEN]: 1,
+        [ManaType.RED]: 1,
+        [ManaType.BLACK]: 1,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -191,28 +235,34 @@ describe('VialPanel Integration Test', () => {
       expect(screen.getByAltText('black mana vial')).toBeInTheDocument();
     });
 
-    it('should handle edge case when mana is exactly at minimum threshold', () => {
-      // Set mana exactly at minimum thresholds
-      getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: getMinManaCost(ManaType.WHITE), // Exactly at threshold (won't render)
-        [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) + 1, // Just above threshold (will render)
-        [ManaType.GREEN]: getMinManaCost(ManaType.GREEN),
-        [ManaType.RED]: getMinManaCost(ManaType.RED),
-        [ManaType.BLACK]: getMinManaCost(ManaType.BLACK),
-      };
-
-      renderVialPanelWithGameState(gameState);
-
-      // Only blue mana vial should render as it's the only one above threshold
-      expect(screen.queryByTestId('white-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.getByTestId('blue-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.queryByTestId('green-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('red-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('black-filled-mana-vial')).not.toBeInTheDocument();
-    });
-
     it('should handle null/undefined mana values gracefully', () => {
-      // Set mana to undefined/null to test ManaVial null handling
+      // place all mages to verify that null/zero mana handled properly
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.ENCHANTER, HeroUnitType.ENCHANTER),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.DRUID, HeroUnitType.DRUID),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.PYROMANCER, HeroUnitType.PYROMANCER),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+
       const humanPlayer = getTurnOwner(gameState);
       humanPlayer.mana = {
         [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
@@ -234,7 +284,7 @@ describe('VialPanel Integration Test', () => {
         [ManaType.BLUE]: undefined as any,
         [ManaType.GREEN]: null as any,
         [ManaType.RED]: getMinManaCost(ManaType.RED) + 25,
-        [ManaType.BLACK]: 0, // This will be below threshold
+        [ManaType.BLACK]: 0, // Since hero exist vial should be rendered
       };
 
       rerender(
@@ -250,18 +300,34 @@ describe('VialPanel Integration Test', () => {
       expect(screen.queryByTestId('blue-filled-mana-vial')).not.toBeInTheDocument();
       expect(screen.queryByTestId('green-filled-mana-vial')).not.toBeInTheDocument();
       expect(screen.getByTestId('red-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.queryByTestId('black-filled-mana-vial')).not.toBeInTheDocument();
+      expect(screen.getByTestId('black-filled-mana-vial')).toBeInTheDocument();
     });
   });
 
   describe('Component structure and styling', () => {
     it('should render with correct CSS classes and structure', () => {
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.DRUID, HeroUnitType.DRUID),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+      placeUnitsOnMap(
+        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+        gameState,
+        getPlayerLands(gameState)[0].mapPos
+      );
+
       getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
-        [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) - 1, // Won't render
-        [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) + 20,
-        [ManaType.RED]: getMinManaCost(ManaType.RED) - 1, // Won't render
-        [ManaType.BLACK]: getMinManaCost(ManaType.BLACK) + 30,
+        [ManaType.WHITE]: 1,
+        [ManaType.BLUE]: 1, // Won't render
+        [ManaType.GREEN]: 1,
+        [ManaType.RED]: 1, // Won't render
+        [ManaType.BLACK]: 1,
       };
 
       renderVialPanelWithGameState(gameState);

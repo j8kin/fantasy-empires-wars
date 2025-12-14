@@ -36,14 +36,17 @@ const MANA_SOURCES: ManaSource[] = [
  * @returns The matching mana source, or undefined if not found
  */
 export const getManaSource = ({
+  manaType,
   heroType,
   landType,
 }: {
+  manaType?: ManaType;
   heroType?: HeroUnitType;
   landType?: LandType;
 }): ManaSource | undefined => {
   return MANA_SOURCES.find(
     (source) =>
+      (manaType != null && source.type === manaType) ||
       (heroType != null && source.heroTypes.includes(heroType)) ||
       (landType != null && source.landTypes.includes(landType))
   );

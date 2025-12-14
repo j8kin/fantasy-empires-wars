@@ -57,12 +57,12 @@ export const startTurn = (
   );
 
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes'-Quests#-empire-artifacts-permanent
-  // OBSIDIAN_CHALICE effect: convert 10% of income to 0.02% of black mana
+  // OBSIDIAN_CHALICE effect: convert 10% of income to 0.1% of black mana
   if (hasObsidianChalice) {
     // 10% reduction is already applied in `calculatePlayerIncome`
     Object.assign(
       gameState,
-      updatePlayerMana(gameState, player.id, ManaType.BLACK, currentIncome * 0.02)
+      updatePlayerMana(gameState, player.id, ManaType.BLACK, currentIncome * 0.001)
     );
   }
 

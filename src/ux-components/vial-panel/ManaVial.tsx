@@ -2,36 +2,81 @@ import React from 'react';
 import styles from './css/ManaVial.module.css';
 
 import { getManaColor, getManaGradient } from '../../domain/ui/manaColors';
-import { ManaType, MAX_MANA } from '../../types/Mana';
+import { ManaType } from '../../types/Mana';
 
 import { getManaVialImg } from '../../assets/getManaVialImg';
+import { getMaxHeroLevelByType } from '../../selectors/armySelectors';
+import { AllSpells } from '../../types/Spell';
+import { useGameContext } from '../../contexts/GameContext';
+import { GameState } from '../../state/GameState';
+import { getManaSource } from '../../domain/mana/manaSource';
 
 interface FilledManaVialProps {
   color: ManaType;
   mana?: number;
 }
 
-const ManaVial: React.FC<FilledManaVialProps> = ({ color, mana }) => {
-  if (mana == null) return null;
+/**
+ * Calculate discrete fill level based on spell availability
+ * Returns:
+ * - 10% when mana > 0 and related mage is under control but no spells available
+ * - 27% when first spell is available
+ * - 45% when second spell is available
+ * - 62% when third spell is available
+ * - 80% when fourth spell is available
+ * - 100% when mana >= 200 (full mana pool or exchange mode)
+ */
+const calculateFillLevel = (gameState: GameState, manaType: ManaType, cMana: number): number => {
+  if (cMana >= 200) return 100;
 
-  const percentage = mana >= MAX_MANA ? 100 : (mana * 100) / MAX_MANA;
-  // Use element opacity on inner content so color fades with mana, while border (outer) remains solid
-  const opacity = Math.max(0, Math.min(1, percentage / 70));
+  const maxHeroLevel = getMaxHeroLevelByType(gameState, getManaSource({ manaType })!.heroTypes[0]);
+
+  const availableSpells = AllSpells.reduce(
+    (acc, s) => acc + (s.manaType === manaType && s.manaCost <= cMana ? 1 : 0),
+    0
+  );
+
+  switch (availableSpells) {
+    case 0:
+      // if not enough mana and no mage under control, return 0 fill level
+      return maxHeroLevel > 0 ? 10 : 0;
+    case 1:
+      // TURN_UNDEAD available to cast only if CLERIC hero is under control
+      if (manaType === ManaType.WHITE && maxHeroLevel === 0) return 0;
+      return 27;
+    case 2:
+      return 45;
+    case 3:
+      return 62;
+    default:
+      return 80; // all spells available but mana pull is not fully filled
+  }
+};
+
+const ManaVial: React.FC<FilledManaVialProps> = ({ color, mana }) => {
+  const { gameState } = useGameContext();
+
+  if (gameState == null || mana == null) return null;
+
+  const fillLevel = calculateFillLevel(gameState, color, mana);
+
+  if (fillLevel === 0) return null;
 
   const [baseColor, darkerColor] = getManaGradient(color);
   const fillStyle: React.CSSProperties = {
-    // Inner content carries the fading color while outer keeps the solid border
+    // Fill from bottom based on spell availability
     background: `linear-gradient(${baseColor}, ${darkerColor})`,
     boxShadow: `0 0 8px ${getManaColor(color)}80`,
-    opacity,
+    height: `${fillLevel}%`,
+    bottom: 0,
+    top: 'auto',
   };
 
   return (
     <div className={styles.vialContainer} data-testid={color + '-filled-mana-vial'}>
       <div className={styles.fillContainer}>
-        <div className={styles.fill}>
-          <div className={styles.fillContent} style={fillStyle}></div>
-        </div>
+        <div className={styles.fillContent} style={fillStyle}></div>
+        <div className={styles.fillBorder}></div>
       </div>
       <img src={getManaVialImg()} className={styles.vialImage} alt={`${color} mana vial`} />
     </div>

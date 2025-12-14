@@ -8,7 +8,6 @@ import ManaVial from './ManaVial';
 import ExchangeManaVialPanel from './ExchangeManaVialPanel';
 
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { getMinManaCost } from '../../selectors/spellSelectors';
 
 import { ManaType } from '../../types/Mana';
 import { SpellName } from '../../types/Spell';
@@ -63,15 +62,12 @@ const VialPanel: React.FC = () => {
     );
   }
 
-  // Normal mode - do not show mana vials if not enough mana to cast related school spells
-  const availableMana = Object.values(ManaType).filter(
-    (manaType) => turnOwner.mana?.[manaType]! > getMinManaCost(manaType)
-  );
-
+  // Normal mode
   return (
     <div className={styles.vialPanel}>
-      {availableMana &&
-        availableMana.map((m) => <ManaVial key={m} color={m} mana={turnOwner?.mana?.[m]} />)}
+      {Object.values(ManaType).map((m) => (
+        <ManaVial key={m} color={m} mana={turnOwner?.mana?.[m]} />
+      ))}
     </div>
   );
 };

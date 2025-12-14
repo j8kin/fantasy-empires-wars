@@ -112,9 +112,10 @@ export const updatePlayerMana = (
   deltaMana: number
 ): GameState => {
   const player = getPlayer(gameState, playerId);
+  const newMana = player.mana[manaType] + deltaMana;
   const updatedMana = {
     ...player.mana,
-    [manaType]: player.mana[manaType] + deltaMana,
+    [manaType]: newMana >= 200 ? 200 : newMana, // do not allow mana above 200
   };
   return updatePlayer(gameState, playerId, { mana: updatedMana });
 };

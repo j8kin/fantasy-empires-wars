@@ -127,7 +127,7 @@ const BlueMagicSpells: Spell[] = [
   {
     id: SpellName.TELEPORT,
     description: 'Instantly move one army to a friendly stronghold',
-    manaCost: 50,
+    manaCost: 45,
     apply: SpellTarget.PLAYER,
     manaType: ManaType.BLUE,
     effect: {

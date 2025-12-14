@@ -12,7 +12,7 @@ export const calculateMana = (gameState: GameState): void => {
   const allHeroes = getAllHeroes(gameState, true);
 
   // HEARTSTONE_OF_ORRIVANE
-  const hasHeartstone = turnOwner.empireTreasures.some(
+  const hasHeartStone = turnOwner.empireTreasures.some(
     (t) => t.id === TreasureItem.HEARTSTONE_OF_ORRIVANE
   );
 
@@ -31,7 +31,7 @@ export const calculateMana = (gameState: GameState): void => {
       if (allHeroes.some((h) => manaSource.heroTypes.includes(h.type))) {
         Object.assign(gameState, updatePlayerMana(gameState, turnOwner.id, manaSource.type, 1)); // each special land gives 1 mana of a related type
       }
-      if (hasHeartstone) {
+      if (hasHeartStone) {
         Object.assign(gameState, updatePlayerMana(gameState, turnOwner.id, manaSource.type, 1)); // add mana even if there are no heroes of a related type
       }
     });

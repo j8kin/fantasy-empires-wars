@@ -160,7 +160,7 @@ export const relicts: Relic[] = [
   {
     id: TreasureItem.OBSIDIAN_CHALICE,
     description: 'Said to be carved from a meteor; it thirsts for both power and blood.',
-    effect: 'Converts 10% of income into 0.2% of black mana',
+    effect: 'Converts 10% of income into 0.1% of black mana',
     alignment: Alignment.CHAOTIC,
   },
   {
