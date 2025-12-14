@@ -1,7 +1,8 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
-import { getButtonImg } from '../../assets/getButtonImg';
 import { ButtonName } from '../../types/ButtonName';
+
+import buttonImg from '../../assets/buttons/Button.png';
 
 export interface GameButtonProps {
   buttonName: ButtonName;
@@ -21,13 +22,17 @@ const GameButton: React.FC<GameButtonProps> = ({ buttonName, onClick }) => {
     }
   };
 
+  const buttonTxt = Object.entries(ButtonName).filter((n) => n[1] === buttonName)[0][0];
+  const isLongText = buttonTxt.length > 5;
+  const textClassName = isLongText
+    ? `${styles.buttonText} ${styles.buttonTextSmall}`
+    : styles.buttonText;
+
   return (
-    <img
-      src={getButtonImg(buttonName)}
-      alt={buttonName}
-      className={styles.buttonImage}
-      onClick={handleButton}
-    />
+    <div className={styles.buttonContainer} onClick={handleButton}>
+      <img src={buttonImg} alt={buttonName} className={styles.buttonImage} />
+      <span className={textClassName}>{buttonTxt}</span>
+    </div>
   );
 };
 

@@ -1,13 +1,60 @@
-.buttonImage {
+.buttonContainer {
+  position: relative;
   width: 110px;
   height: 55px;
   cursor: pointer;
   transition: all 0.3s ease;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
-  display: block;
+  display: inline-block;
 }
 
-.buttonImage:hover {
+.buttonContainer:hover {
   transform: translateY(-2px);
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.7));
+}
+
+.buttonImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.buttonText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  font-size: 16px;
+  font-family: serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+
+  /* Bronze gradient with color variation within letters */
+  background: linear-gradient(
+    180deg,
+    #d4b883 0%,
+    #b8945f 15%,
+    #7a6040 30%,
+    #c9a870 45%,
+    #a88350 60%,
+    #8b6f47 75%,
+    #6b5435 90%,
+    #5a462a 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  /* Fallback for browsers that don't support background-clip */
+  color: #79774d;
+}
+
+.buttonTextSmall {
+  font-size: 13px;
+  letter-spacing: 0.5px;
 }
