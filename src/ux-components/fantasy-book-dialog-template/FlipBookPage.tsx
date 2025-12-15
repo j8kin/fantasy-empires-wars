@@ -104,15 +104,23 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 alt={header}
                 className={`${styles.icon} clickable-icon`}
                 onClick={handleIconClick}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.filter =
-                    'brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.filter = 'brightness(1)';
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
+                onMouseEnter={
+                  onIconClick
+                    ? (e) => {
+                        e.currentTarget.style.filter =
+                          'brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                      }
+                    : undefined
+                }
+                onMouseLeave={
+                  onIconClick
+                    ? (e) => {
+                        e.currentTarget.style.filter = 'brightness(1)';
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }
+                    : undefined
+                }
                 onError={(e) => {
                   // Fallback to a placeholder or hide an image on error
                   e.currentTarget.style.display = 'none';

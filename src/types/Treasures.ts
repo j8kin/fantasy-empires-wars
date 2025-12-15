@@ -1,7 +1,5 @@
 import { Alignment } from './Alignment';
 
-export type EmpireTreasure = Item | Relic;
-
 interface TreasureType {
   id: TreasureItem;
   description: string;
@@ -22,6 +20,12 @@ export interface Item extends TreasureType {
 export interface Relic extends TreasureType {
   alignment?: Alignment; // undefined means that artifact allowed for all players
 }
+
+export type EmpireTreasure = Item | Relic;
+
+export const isRelic = (treasure: EmpireTreasure): boolean => {
+  return relicts.some((relic) => relic.id === treasure.id);
+};
 
 export enum TreasureItem {
   // Artifacts (Heroes personal items)
