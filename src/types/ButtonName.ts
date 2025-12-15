@@ -11,5 +11,5 @@ export enum ButtonName {
   QUEST = 'Hero quest',
   RECRUIT = 'Recruit amy',
   TURN = 'End of turn',
-  USE = 'Use Item',
+  ITEMS = 'Use Item',
 }

@@ -73,7 +73,7 @@ const MapActionsControl: React.FC = () => {
     <div className={styles.gameControlContainer}>
       <GameButton buttonName={ButtonName.BUILD} onClick={handleShowConstructBuildingDialog} />
       <GameButton buttonName={ButtonName.CAST} onClick={handleShowCastSpellDialog} />
-      <GameButton buttonName={ButtonName.USE} />
+      <GameButton buttonName={ButtonName.ITEMS} />
     </div>
   );
 };
