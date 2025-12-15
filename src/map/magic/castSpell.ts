@@ -1,6 +1,11 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/map/land/LandPosition';
-import { getPlayer, getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
+import {
+  getPlayer,
+  getTurnOwner,
+  hasActiveEffectByPlayer,
+  hasTreasureByPlayer,
+} from '../../selectors/playerSelectors';
 import {
   getArmiesAtPosition,
   getArmiesAtPositionByPlayers,
@@ -148,7 +153,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
   }
 
   const turnOwner = getTurnOwner(state);
-  const hasVerdantIdol = turnOwner.empireTreasures?.some((t) => t.id === TreasureItem.VERDANT_IDOL);
+  const hasVerdantIdol = hasTreasureByPlayer(turnOwner, TreasureItem.VERDANT_IDOL);
 
   Object.assign(
     state,

@@ -11,6 +11,7 @@ export enum EffectType {
 }
 
 export type Effect = {
+  /** UUID **/
   id: string;
   type: EffectType; // when army merged positive effect disappears negative effect remains
   spell: SpellName;

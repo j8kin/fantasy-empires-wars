@@ -2,10 +2,10 @@ import { GameState } from '../../state/GameState';
 import { LandState } from '../../state/map/land/LandState';
 import { getLandId } from '../../state/map/land/LandId';
 
-import { getPlayerLands } from '../../selectors/playerSelectors';
+import { getPlayerLands, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer, getPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { getLand } from '../../selectors/landSelectors';
+import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
 import { getRegularLandTypes } from '../../domain/land/landQueries';
 
 import { SpellName, SpellTarget } from '../../types/Spell';
@@ -58,7 +58,7 @@ export const getAvailableToCastSpellLands = (
         .flatMap((a) => getLandId(getPosition(a)));
     }
     return getPlayerLands(gameState)
-      .filter((l) => !l.effects.some((e) => e.spell === spellName))
+      .filter((l) => !hasActiveEffect(l, spellName))
       .flatMap((l) => getLandId(l.mapPos));
   }
 
@@ -68,8 +68,9 @@ export const getAvailableToCastSpellLands = (
       : gameState.players;
 
   return playerFiltered
+    .filter((p) => !hasActiveEffectByPlayer(p, spellName))
     .flatMap((p) => getPlayerLands(gameState, p.id))
-    .filter((l) => !l.effects.some((e) => e.spell === spellName))
+    .filter((l) => !hasActiveEffect(l, spellName))
     .flatMap((l) => getLandId(l.mapPos));
 };
 

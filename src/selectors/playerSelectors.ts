@@ -1,11 +1,12 @@
 import { GameState } from '../state/GameState';
 import { PlayerState } from '../state/player/PlayerState';
 import { LandState } from '../state/map/land/LandState';
+import { getLand } from './landSelectors';
 import { BuildingType } from '../types/Building';
 import { DiplomacyStatus } from '../types/Diplomacy';
-import { getTilesInRadius } from '../map/utils/mapAlgorithms';
-import { getLand } from './landSelectors';
 import { SpellName } from '../types/Spell';
+import { TreasureItem } from '../types/Treasures';
+import { getTilesInRadius } from '../map/utils/mapAlgorithms';
 
 export const getPlayer = (state: GameState, id: string): PlayerState =>
   state.players.find((p) => p.id === id)!;
@@ -53,4 +54,8 @@ export const getPlayersByDiplomacy = (
 
 export const hasActiveEffectByPlayer = (state: PlayerState, spellId: SpellName): boolean => {
   return state.effects.some((e) => e.spell === spellId && e.duration > 0);
+};
+
+export const hasTreasureByPlayer = (player: PlayerState, treasure: TreasureItem): boolean => {
+  return player.empireTreasures?.some((t) => t.id === treasure);
 };

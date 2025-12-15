@@ -4,7 +4,7 @@ import { LandPosition } from '../../state/map/land/LandPosition';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, getMaxHeroLevelByType } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { getLand } from '../../selectors/landSelectors';
+import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
@@ -122,7 +122,7 @@ describe('castGreenManaSpell', () => {
         // spell should affect only one land
         expect(
           getPlayerLands(gameStateStub, gameStateStub.players[1].id).filter((l) =>
-            l.effects.some((e) => e.spell === SpellName.ENTANGLING_ROOTS)
+            hasActiveEffect(l, SpellName.ENTANGLING_ROOTS)
           )
         ).toHaveLength(1);
 

@@ -1,8 +1,9 @@
 import { GameState } from '../state/GameState';
 import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
+import { LandState } from '../state/map/land/LandState';
 
-import { getPlayer } from './playerSelectors';
+import { getPlayer, hasTreasureByPlayer } from './playerSelectors';
 import { getArmiesAtPosition } from './armySelectors';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { getPlayerColorValue } from '../domain/ui/playerColors';
@@ -34,6 +35,7 @@ interface LandInfo {
   isCorrupted: boolean;
   illusionMsg?: string;
 }
+
 export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo => {
   const land = getLand(state, landPos);
   const landOwner = getPlayer(state, getLandOwner(state, landPos));
@@ -41,12 +43,10 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
   const landOwnerColor = getPlayerColorValue(landOwner?.color ?? 'white');
 
   const isIllusion =
-    landOwner?.empireTreasures?.some((t) => t.id === TreasureItem.MIRROR_OF_ILLUSION) ||
-    land.effects.some((e) => e.spell === SpellName.ILLUSION);
+    hasTreasureByPlayer(landOwner, TreasureItem.MIRROR_OF_ILLUSION) ||
+    hasActiveEffect(land, SpellName.ILLUSION);
 
-  const affectedByViewLand = land.effects.some(
-    (e) => e.spell === SpellName.VIEW_TERRITORY && e.castBy === state.turnOwner
-  );
+  const affectedByViewLand = hasActiveEffect(land, SpellName.VIEW_TERRITORY, state.turnOwner);
 
   if (landOwnerId !== NO_PLAYER.id && (landOwner.id === state.turnOwner || affectedByViewLand)) {
     if (isIllusion && landOwner.id !== state.turnOwner && affectedByViewLand) {
@@ -108,3 +108,9 @@ const ILLUSION_MESSAGES: string[] = [
   'Focus breaks; the image stares back',
   'Here, sight is a question, not an answer',
 ];
+
+export const hasActiveEffect = (state: LandState, spellId: SpellName, castBy?: string): boolean => {
+  return state.effects.some(
+    (e) => e.spell === spellId && e.duration > 0 && (castBy === undefined || e.castBy === castBy)
+  );
+};

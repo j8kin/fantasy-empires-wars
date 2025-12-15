@@ -1,6 +1,6 @@
 import { GameState } from '../state/GameState';
 
-import { getTurnOwner } from '../selectors/playerSelectors';
+import { getTurnOwner, hasTreasureByPlayer } from '../selectors/playerSelectors';
 import { updatePlayerVault, updatePlayerMana } from '../systems/gameStateActions';
 import { decrementEffectDurations } from '../systems/effectActions';
 import { TreasureItem } from '../types/Treasures';
@@ -52,9 +52,7 @@ export const startTurn = (
   const currentIncome = calculatePlayerIncome(gameState);
 
   // Handle empire treasure effects that have side effects (mana conversion)
-  const hasObsidianChalice = player.empireTreasures?.some(
-    (t) => t.id === TreasureItem.OBSIDIAN_CHALICE
-  );
+  const hasObsidianChalice = hasTreasureByPlayer(player, TreasureItem.OBSIDIAN_CHALICE);
 
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes'-Quests#-empire-artifacts-permanent
   // OBSIDIAN_CHALICE effect: convert 10% of income to 0.1% of black mana
