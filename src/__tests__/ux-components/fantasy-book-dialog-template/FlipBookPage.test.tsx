@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FlipBookPage, {
   Slot,
   FlipBookPageType,
+  FlipBookPageProps,
 } from '../../../ux-components/fantasy-book-dialog-template/FlipBookPage';
 
 // Mock CSS modules
@@ -50,13 +51,14 @@ jest.mock('../../../utils/romanNumerals', () => ({
 }));
 
 describe('FlipBookPage Component', () => {
-  const defaultProps = {
+  const defaultProps: FlipBookPageProps = {
     pageNum: 1,
     lorePage: 0,
     header: 'Test Header',
     iconPath: '/test-icon.png',
     description: 'Test description',
     cost: 100,
+    onIconClick: jest.fn(),
   };
 
   describe('Basic Rendering', () => {

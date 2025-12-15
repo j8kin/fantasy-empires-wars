@@ -15,7 +15,7 @@ export enum FlipBookPageType {
   QUEST = 'Quest',
 }
 
-interface FlipBookPageProps {
+export interface FlipBookPageProps {
   pageNum: number;
   lorePage: number;
   header?: string;
