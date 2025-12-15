@@ -35,7 +35,7 @@ import {
 
 import { Spell, SpellName } from '../../types/Spell';
 import { ManaType } from '../../types/Mana';
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
@@ -153,7 +153,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
   }
 
   const turnOwner = getTurnOwner(state);
-  const hasVerdantIdol = hasTreasureByPlayer(turnOwner, TreasureItem.VERDANT_IDOL);
+  const hasVerdantIdol = hasTreasureByPlayer(turnOwner, TreasureType.VERDANT_IDOL);
 
   Object.assign(
     state,

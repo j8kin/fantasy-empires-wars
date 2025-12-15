@@ -12,7 +12,7 @@ import { unitsBaseStats } from '../../domain/unit/unitRepository';
 import { relicts } from '../../domain/treasure/treasureRepository';
 
 import { BuildingType } from '../../types/Building';
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
@@ -73,7 +73,7 @@ describe('Recruitment', () => {
   it('Recruitment cost less when player has TreasureItem.CROWN_OF_DOMINION', () => {
     const player = getTurnOwner(gameStateStub);
     // add  TreasureItem.CROWN_OF_DOMINION to player treasury
-    player.empireTreasures.push(relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!);
+    player.empireTreasures.push(relicts.find((r) => r.type === TreasureType.CROWN_OF_DOMINION)!);
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     construct(gameStateStub, BuildingType.BARRACKS, barracksPos);

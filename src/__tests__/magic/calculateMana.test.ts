@@ -11,7 +11,7 @@ import { nextPlayer } from '../../systems/playerActions';
 import { ManaType } from '../../types/Mana';
 import { HeroUnitType } from '../../types/UnitType';
 import { LandType } from '../../types/Land';
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
 
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
@@ -278,7 +278,7 @@ describe('Calculate Mana', () => {
     const players = [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]];
     gameStateStub = createGameStateStub({ gamePlayers: players });
     gameStateStub.players[0].empireTreasures.push(
-      relicts.find((r) => r.id === TreasureItem.HEARTSTONE_OF_ORRIVANE)!
+      relicts.find((r) => r.type === TreasureType.HEARTSTONE_OF_ORRIVANE)!
     );
 
     const homeLand = getPlayerLands(gameStateStub).find((l) =>

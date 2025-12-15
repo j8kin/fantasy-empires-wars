@@ -21,7 +21,7 @@ import { relicts } from '../../../domain/treasure/treasureRepository';
 import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
 import { BuildingType } from '../../../types/Building';
 import { SpellName } from '../../../types/Spell';
-import { TreasureItem } from '../../../types/Treasures';
+import { TreasureType } from '../../../types/Treasures';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
@@ -590,7 +590,7 @@ describe('LandInfoPopup', () => {
       randomSpy.mockReturnValue(0);
 
       gameStateStub.players[1].empireTreasures.push(
-        relicts.find((treasure) => treasure.id === TreasureItem.MIRROR_OF_ILLUSION)!
+        relicts.find((treasure) => treasure.type === TreasureType.MIRROR_OF_ILLUSION)!
       );
 
       mockTileState.effects.push(

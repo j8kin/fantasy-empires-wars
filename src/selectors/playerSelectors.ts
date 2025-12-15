@@ -5,7 +5,7 @@ import { getLand } from './landSelectors';
 import { BuildingType } from '../types/Building';
 import { DiplomacyStatus } from '../types/Diplomacy';
 import { SpellName } from '../types/Spell';
-import { TreasureItem } from '../types/Treasures';
+import { TreasureType } from '../types/Treasures';
 import { getTilesInRadius } from '../map/utils/mapAlgorithms';
 
 export const getPlayer = (state: GameState, id: string): PlayerState =>
@@ -56,6 +56,6 @@ export const hasActiveEffectByPlayer = (state: PlayerState, spellId: SpellName):
   return state.effects.some((e) => e.spell === spellId && e.duration > 0);
 };
 
-export const hasTreasureByPlayer = (player: PlayerState, treasure: TreasureItem): boolean => {
-  return player.empireTreasures?.some((t) => t.id === treasure);
+export const hasTreasureByPlayer = (player: PlayerState, treasure: TreasureType): boolean => {
+  return player.empireTreasures?.some((t) => t.type === treasure);
 };

@@ -9,7 +9,7 @@ import { NO_PLAYER } from '../domain/player/playerRepository';
 import { getPlayerColorValue } from '../domain/ui/playerColors';
 import { getRandomElement } from '../domain/utils/random';
 
-import { TreasureItem } from '../types/Treasures';
+import { TreasureType } from '../types/Treasures';
 import { SpellName } from '../types/Spell';
 import { LandType } from '../types/Land';
 import { BuildingType } from '../types/Building';
@@ -43,7 +43,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
   const landOwnerColor = getPlayerColorValue(landOwner?.color ?? 'white');
 
   const isIllusion =
-    hasTreasureByPlayer(landOwner, TreasureItem.MIRROR_OF_ILLUSION) ||
+    hasTreasureByPlayer(landOwner, TreasureType.MIRROR_OF_ILLUSION) ||
     hasActiveEffect(land, SpellName.ILLUSION);
 
   const affectedByViewLand = hasActiveEffect(land, SpellName.VIEW_TERRITORY, state.turnOwner);

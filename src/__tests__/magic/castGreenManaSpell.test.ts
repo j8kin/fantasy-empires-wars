@@ -14,7 +14,7 @@ import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
 import { EffectType } from '../../types/Effect';
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { castSpell } from '../../map/magic/castSpell';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 
@@ -320,7 +320,7 @@ describe('castGreenManaSpell', () => {
     expect(getTurnOwner(gameStateStub).mana.green).toBe(200 - getSpellById(spellName).manaCost);
 
     getTurnOwner(gameStateStub).empireTreasures.push(
-      relicts.find((r) => r.id === TreasureItem.VERDANT_IDOL)!
+      relicts.find((r) => r.type === TreasureType.VERDANT_IDOL)!
     );
 
     // select another land to cast spell to avoid situation that it is not possible to cast spell on the same land

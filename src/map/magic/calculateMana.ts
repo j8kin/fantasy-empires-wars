@@ -4,7 +4,7 @@ import { getAllHeroes } from '../../selectors/armySelectors';
 import { updatePlayerMana } from '../../systems/gameStateActions';
 import { getManaSource } from '../../domain/mana/manaSource';
 import { getSpecialLandTypes } from '../../domain/land/landQueries';
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 
 export const calculateMana = (gameState: GameState): GameState => {
   const turnOwner = getTurnOwner(gameState);
@@ -13,7 +13,7 @@ export const calculateMana = (gameState: GameState): GameState => {
 
   // HEARTSTONE_OF_ORRIVANE
   const hasHeartStone = turnOwner.empireTreasures.some(
-    (t) => t.id === TreasureItem.HEARTSTONE_OF_ORRIVANE
+    (t) => t.type === TreasureType.HEARTSTONE_OF_ORRIVANE
   );
 
   let updatedState = gameState;

@@ -9,7 +9,7 @@ import { addLand } from '../../systems/playerActions';
 
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
@@ -51,7 +51,7 @@ export const construct = (
 
   // if player has Crown of Dominion, reduce cost by 15%
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests
-  const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureItem.CROWN_OF_DOMINION);
+  const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureType.CROWN_OF_DOMINION);
 
   if (gameState.turn > 1) {
     const cost = hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;

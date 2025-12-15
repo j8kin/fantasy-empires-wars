@@ -121,7 +121,7 @@ const gainRelic = (gameState: GameState, hero: HeroState): HeroOutcome => {
   const turnOwner = getTurnOwner(gameState);
   const availableRelics = relicts
     .filter((a) => a.alignment == null || a.alignment === turnOwner.playerProfile.alignment)
-    .filter((a) => !relicInPlay.some((r) => r.id === a.id));
+    .filter((a) => !relicInPlay.some((r) => r.type === a.type));
 
   if (availableRelics.length > 0) {
     const relic = getRandomElement(availableRelics);

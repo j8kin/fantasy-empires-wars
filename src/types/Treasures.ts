@@ -1,6 +1,6 @@
 import { Alignment } from './Alignment';
 
-export enum TreasureItem {
+export enum TreasureType {
   // Artifacts (Heroes personal items)
   BOOTS_OF_SPEED = 'Boots of the Windstrider',
   GAUNTLETS_OF_POWER = 'Gauntlets of the Ironheart',
@@ -33,24 +33,24 @@ export enum TreasureItem {
   STARWELL_PRISM = 'Starwell Prism',
 }
 
-interface TreasureType {
-  id: TreasureItem;
+interface Treasure {
+  type: TreasureType;
   description: string;
   effect: string;
 }
 
 // Hero items
-export interface Artifact extends TreasureType {
+export interface Artifact extends Treasure {
   level?: number; // will be set to +1 - +5 when players gets the item todo ???
 }
 
 // Usable on Map Items the main idea is to allow non-magic players to use magic and use another magic school spells
-export interface Item extends TreasureType {
+export interface Item extends Treasure {
   charge?: number; // will be set to 8-12 when players gets the item todo ???
 }
 
 // Items that have a permanent effect on the Game State
-export interface Relic extends TreasureType {
+export interface Relic extends Treasure {
   alignment?: Alignment; // undefined means that artifact allowed for all players
 }
 

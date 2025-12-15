@@ -1,4 +1,4 @@
-import { TreasureItem } from '../types/Treasures';
+import { TreasureType } from '../types/Treasures';
 import { EmpireTreasure } from '../types/Treasures';
 
 import mirrorOfIllusionImg from './treasures/mirror-of-illusion.png';
@@ -7,14 +7,14 @@ import wandOfTurnUndeadImg from './treasures/turn-undead.png';
 import phoenixFeatherImg from './treasures/phoenix-feather.png';
 
 export const getTreasureImg = (treasure: EmpireTreasure) => {
-  switch (treasure.id) {
-    case TreasureItem.WAND_TURN_UNDEAD:
+  switch (treasure.type) {
+    case TreasureType.WAND_TURN_UNDEAD:
       return wandOfTurnUndeadImg;
-    case TreasureItem.ORB_OF_STORM:
+    case TreasureType.ORB_OF_STORM:
       return orbOfStormImg;
-    case TreasureItem.RESURRECTION:
+    case TreasureType.RESURRECTION:
       return phoenixFeatherImg;
-    case TreasureItem.MIRROR_OF_ILLUSION:
+    case TreasureType.MIRROR_OF_ILLUSION:
       return mirrorOfIllusionImg;
   }
   return undefined;

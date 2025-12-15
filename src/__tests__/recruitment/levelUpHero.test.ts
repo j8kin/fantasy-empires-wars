@@ -5,7 +5,7 @@ import { heroFactory } from '../../factories/heroFactory';
 
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { artifacts } from '../../domain/treasure/treasureRepository';
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 
 import { HeroUnitType } from '../../types/UnitType';
 
@@ -97,7 +97,7 @@ describe('level up hero', () => {
     const playerProfile = player.playerProfile;
     const hero1 = heroFactory(playerProfile.type, 'Hero 1');
     const hero2 = heroFactory(playerProfile.type, 'Hero 2');
-    hero2.artifacts.push(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
+    hero2.artifacts.push(artifacts.filter((a) => a.type === TreasureType.RING_OF_EXPERIENCE)[0]);
 
     levelUpHero(hero1, playerProfile.alignment);
     levelUpHero(hero2, playerProfile.alignment);
@@ -115,7 +115,7 @@ describe('level up hero', () => {
     const hero2 = heroFactory(playerProfile.type, 'Hero 2');
     while (hero2.level < 31) levelUpHero(hero2, playerProfile.alignment); // gain initial level: 31
     expect(hero2.level).toBe(31);
-    hero2.artifacts.push(artifacts.filter((a) => a.id === TreasureItem.RING_OF_EXPERIENCE)[0]);
+    hero2.artifacts.push(artifacts.filter((a) => a.type === TreasureType.RING_OF_EXPERIENCE)[0]);
 
     levelUpHero(hero1, playerProfile.alignment);
     levelUpHero(hero2, playerProfile.alignment);

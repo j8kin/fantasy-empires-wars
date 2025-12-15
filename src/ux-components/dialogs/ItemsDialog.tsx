@@ -38,10 +38,10 @@ const ItemsDialog: React.FC = () => {
     <FlipBook onClickOutside={handleDialogClose}>
       {availableItems.map((treasure, index) => (
         <FlipBookPage
-          key={treasure.id}
+          key={treasure.type}
           pageNum={index}
           lorePage={913}
-          header={treasure.id}
+          header={treasure.type}
           iconPath={getTreasureImg(treasure)}
           description={treasure.description}
           onClose={handleDialogClose}

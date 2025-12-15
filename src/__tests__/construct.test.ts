@@ -13,7 +13,7 @@ import { relicts } from '../domain/treasure/treasureRepository';
 
 import { BuildingType } from '../types/Building';
 import { RegularUnitType } from '../types/UnitType';
-import { TreasureItem } from '../types/Treasures';
+import { TreasureType } from '../types/Treasures';
 
 import { construct } from '../map/building/construct';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
@@ -85,7 +85,7 @@ describe('Construct Buildings', () => {
       while (getTurnOwner(gameStateStub).id !== player1.id) nextPlayer(gameStateStub);
 
       getTurnOwner(gameStateStub).empireTreasures.push(
-        relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!
+        relicts.find((r) => r.type === TreasureType.CROWN_OF_DOMINION)!
       );
       expect(getTurnOwner(gameStateStub).vault).toBe(200000);
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);
