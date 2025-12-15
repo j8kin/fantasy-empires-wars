@@ -40,9 +40,13 @@ export enum TreasureItem {
   WAND_TURN_UNDEAD = 'Wand of Turning',
   ORB_OF_STORM = 'Orb of Storms',
   RESTORE_BUILDING = 'Seed of Renewal',
-  CRYSTAL_OF_PROTECTION = 'Crystal of Reflection',
+  AEGIS_SHARD = 'Aegis Shard',
   RESURRECTION = 'Phoenix Feather',
-  INCREASE_SPELL_POWER = 'Runestone of Insight',
+  STONE_OF_RENEWAL = 'Stone of Renewal',
+  COMPASS_OF_DOMINION = 'Compass of Dominion',
+  DEED_OF_RECLAMATION = 'Deed of Reclamation',
+  ORRIVANES_MERCY = 'Orrivane Mercy',
+  HOURGLASS_OF_DELAY = 'Hourglass of Delay',
 
   // Relic items. Has permanent effect on the game state
   MIRROR_OF_ILLUSION = 'Mirror of Illusion',
@@ -109,10 +113,10 @@ export const items: Item[] = [
     charge: 1,
   },
   {
-    id: TreasureItem.CRYSTAL_OF_PROTECTION,
-    description: 'Each use fractures it, until finally it shatters—taking the curse with it.',
-    effect:
-      'Reflects the next hostile spell on land as surrounds with 50% chance to fail on surrounding land',
+    id: TreasureItem.AEGIS_SHARD,
+    description: 'A dormant ward that shatters the moment true harm is attempted.',
+    effect: 'Negates the next hostile spell on one land',
+    charge: 1,
   },
   {
     id: TreasureItem.RESURRECTION,
@@ -121,9 +125,33 @@ export const items: Item[] = [
     charge: 1,
   },
   {
-    id: TreasureItem.INCREASE_SPELL_POWER,
-    description: 'Holds a word of creation itself, briefly lending divine strength to the caster.',
-    effect: '+50% spell damage for next cast',
+    id: TreasureItem.STONE_OF_RENEWAL,
+    description: 'Ancient and patient, it remembers how the land once was.',
+    effect: 'Removes one negative effect from a land',
+    charge: 3,
+  },
+  {
+    id: TreasureItem.COMPASS_OF_DOMINION,
+    description: 'Its needle bends toward power, not north.',
+    effect: 'Reveals all lands owned by one player for 2 turns',
+    charge: 2,
+  },
+  {
+    id: TreasureItem.DEED_OF_RECLAMATION,
+    description: 'An ancient charter granting fleeting dominion by forgotten law.',
+    effect: 'Claim a neutral land for income and mana only',
+    charge: 2,
+  },
+  {
+    id: TreasureItem.ORRIVANES_MERCY,
+    description: 'When fate turns cruel, Orrivane opens a hidden path home.',
+    effect: 'First hero lost on a quest instead escapes to a stronghold',
+  },
+  {
+    id: TreasureItem.HOURGLASS_OF_DELAY,
+    description: 'A timeless tool of the ancient gods; it delays the time of the world.',
+    effect: 'All armies on land could not move for one turn',
+    charge: 2,
   },
 ];
 
