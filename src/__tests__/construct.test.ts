@@ -9,10 +9,11 @@ import { getBuilding } from '../selectors/buildingSelectors';
 import { getArmiesAtPosition } from '../selectors/armySelectors';
 import { hasLand, nextPlayer } from '../systems/playerActions';
 import { regularsFactory } from '../factories/regularsFactory';
+import { relicts } from '../domain/treasure/treasureRepository';
 
 import { BuildingType } from '../types/Building';
 import { RegularUnitType } from '../types/UnitType';
-import { relicts, TreasureItem } from '../types/Treasures';
+import { TreasureItem } from '../types/Treasures';
 
 import { construct } from '../map/building/construct';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';

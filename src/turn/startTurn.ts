@@ -3,9 +3,9 @@ import { GameState } from '../state/GameState';
 import { getTurnOwner } from '../selectors/playerSelectors';
 import { updatePlayerVault, updatePlayerMana } from '../systems/gameStateActions';
 import { decrementEffectDurations } from '../systems/effectActions';
+import { TreasureItem } from '../types/Treasures';
 
 import { HeroOutcome } from '../types/HeroOutcome';
-import { TreasureItem } from '../types/Treasures';
 import { ManaType } from '../types/Mana';
 
 import { calculatePlayerIncome } from '../map/vault/calculatePlayerIncome';

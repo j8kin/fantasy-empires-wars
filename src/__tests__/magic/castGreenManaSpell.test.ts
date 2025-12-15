@@ -8,12 +8,13 @@ import { getLand } from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
+import { relicts } from '../../domain/treasure/treasureRepository';
 
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
 import { EffectType } from '../../types/Effect';
-import { relicts, TreasureItem } from '../../types/Treasures';
+import { TreasureItem } from '../../types/Treasures';
 import { castSpell } from '../../map/magic/castSpell';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 

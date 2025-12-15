@@ -4,9 +4,10 @@ import { playerFactory } from '../../factories/playerFactory';
 import { heroFactory } from '../../factories/heroFactory';
 
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { artifacts } from '../../domain/treasure/treasureRepository';
+import { TreasureItem } from '../../types/Treasures';
 
 import { HeroUnitType } from '../../types/UnitType';
-import { artifacts, TreasureItem } from '../../types/Treasures';
 
 describe('level up hero', () => {
   it.each([

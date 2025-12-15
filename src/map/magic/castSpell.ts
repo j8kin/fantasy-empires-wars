@@ -29,8 +29,8 @@ import {
 } from '../../domain/army/armyPenaltyCalculator';
 
 import { Spell, SpellName } from '../../types/Spell';
-import { TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
+import { TreasureItem } from '../../types/Treasures';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getTilesInRadius } from '../utils/mapAlgorithms';

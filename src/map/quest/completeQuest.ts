@@ -16,9 +16,10 @@ import {
 import { HeroQuest, QuestType } from '../../types/Quest';
 import { getQuest } from '../../domain/quest/questRepository';
 import { getRandomElement } from '../../domain/utils/random';
-import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
+import { artifacts, items, relicts } from '../../domain/treasure/treasureRepository';
 import { HeroState } from '../../state/army/HeroState';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
+import { Artifact } from '../../types/Treasures';
 import {
   emptyHanded,
   heroDieMessage,

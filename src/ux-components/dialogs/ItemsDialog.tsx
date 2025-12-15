@@ -6,7 +6,8 @@ import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { isRelic, Item } from '../../types/Treasures';
+import { isRelic } from '../../domain/treasure/treasureRepository';
+import { Item } from '../../types/Treasures';
 
 import { getTreasureImg } from '../../assets/getTreasureImg';
 

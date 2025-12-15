@@ -9,9 +9,10 @@ import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
+import { relicts } from '../../domain/treasure/treasureRepository';
 
 import { BuildingType } from '../../types/Building';
-import { relicts, TreasureItem } from '../../types/Treasures';
+import { TreasureItem } from '../../types/Treasures';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';

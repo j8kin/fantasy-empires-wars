@@ -8,17 +8,17 @@ import { getPlayerLands } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { nextPlayer } from '../../systems/playerActions';
 
-import { relicts, TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
 import { HeroUnitType } from '../../types/UnitType';
 import { LandType } from '../../types/Land';
-
+import { TreasureItem } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
 
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { getManaSource } from '../../domain/mana/manaSource';
 import { getSpecialLandTypes } from '../../domain/land/landQueries';
 import { getLandById } from '../../domain/land/landRepository';
+import { relicts } from '../../domain/treasure/treasureRepository';
 
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { TestTurnManagement } from '../utils/TestTurnManagement';

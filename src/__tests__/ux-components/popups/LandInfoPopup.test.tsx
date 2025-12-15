@@ -16,11 +16,12 @@ import { armyFactory } from '../../../factories/armyFactory';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
 import { effectFactory } from '../../../factories/effectFactory';
+import { relicts } from '../../../domain/treasure/treasureRepository';
 
 import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
 import { BuildingType } from '../../../types/Building';
 import { SpellName } from '../../../types/Spell';
-import { relicts, TreasureItem } from '../../../types/Treasures';
+import { TreasureItem } from '../../../types/Treasures';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
