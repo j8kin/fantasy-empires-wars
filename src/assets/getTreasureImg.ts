@@ -7,7 +7,7 @@ import phoenixFeatherImg from './treasures/phoenix-feather.png';
 import mirrorOfIllusionImg from './treasures/mirror-of-illusion.png';
 import bannerOfUnityImg from './treasures/banner-of-unity.png';
 import crownOfDominionImg from './treasures/crown-of-dominion.png';
-import shardOfTheSilentAnvil from './treasures/shard-of-silent-avil.png'
+import shardOfTheSilentAnvil from './treasures/shard-of-silent-avil.png';
 
 export const getTreasureImg = (treasure: EmpireTreasure) => {
   switch (treasure.treasure.type) {
