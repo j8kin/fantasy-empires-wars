@@ -362,6 +362,7 @@ const killUnits = (
     const updatedArmies = calculateAndApplyArmyPenalties(
       playerArmiesAtPosition,
       penaltyConfig,
+      hasTreasureByPlayer(p, TreasureType.SHARD_OF_THE_SILENT_ANVIL),
       units
     );
 

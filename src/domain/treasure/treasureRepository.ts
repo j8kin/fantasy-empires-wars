@@ -77,7 +77,7 @@ export const items: Treasure[] = [
     effect: 'Claim a neutral land for income and mana only',
   },
   {
-    type: TreasureType.ORRIVANES_MERCY,
+    type: TreasureType.MERCY_OF_ORRIVANE,
     description: 'When fate turns cruel, Orrivane opens a hidden path home.',
     effect: 'First hero lost on a quest instead escapes to a stronghold',
   },

@@ -18,7 +18,7 @@ export enum TreasureType {
   STONE_OF_RENEWAL = 'Stone of Renewal',
   COMPASS_OF_DOMINION = 'Compass of Dominion',
   DEED_OF_RECLAMATION = 'Deed of Reclamation',
-  ORRIVANES_MERCY = 'Orrivane Mercy',
+  MERCY_OF_ORRIVANE = 'Mercy of Orrivane',
   HOURGLASS_OF_DELAY = 'Hourglass of Delay',
 
   // Relic items. Has a permanent effect on the game state

@@ -3,6 +3,7 @@ import { PlayerState } from '../state/player/PlayerState';
 import { PlayerProfile } from '../state/player/PlayerProfile';
 import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
+import { EmpireTreasure, Item } from '../types/Treasures';
 
 import { playerFactory } from '../factories/playerFactory';
 import {
@@ -79,4 +80,19 @@ export const removeLandFromPlayer = (
 
 export const hasLand = (state: PlayerState, landPos: LandPosition): boolean => {
   return state.landsOwned.has(getLandId(landPos));
+};
+
+// Empire treasure management functions
+export const addEmpireTreasure = (state: PlayerState, treasure: EmpireTreasure): PlayerState => {
+  return {
+    ...state,
+    empireTreasures: [...state.empireTreasures, treasure],
+  };
+};
+
+export const removeEmpireTreasureItems = (state: PlayerState, treasure: Item): PlayerState => {
+  return {
+    ...state,
+    empireTreasures: state.empireTreasures.filter((t) => t !== treasure),
+  };
 };

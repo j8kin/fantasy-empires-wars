@@ -47,7 +47,7 @@ const getCharge = (itemType: TreasureType): number => {
     case TreasureType.RESTORE_BUILDING:
     case TreasureType.AEGIS_SHARD:
     case TreasureType.RESURRECTION:
-    case TreasureType.ORRIVANES_MERCY:
+    case TreasureType.MERCY_OF_ORRIVANE:
       return 1;
     case TreasureType.COMPASS_OF_DOMINION:
     case TreasureType.DEED_OF_RECLAMATION:

@@ -19,7 +19,7 @@ export const getHostileLands = (gameState: GameState): LandState[] => {
 
   // get lands controlled by players but far from strongholds
   getPlayerLands(gameState)
-    .filter((land) => !realmLands.includes(getLandId(land.mapPos)))
+    .filter((land) => !realmLands.includes(getLandId(land.mapPos))) // todo add effect from DEED_OF_RECLAMATION
     .forEach((land) => hostileLands.add(land));
 
   // add lands far from strongholds but with an army but not controlled by player
