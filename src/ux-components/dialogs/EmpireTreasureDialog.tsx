@@ -11,7 +11,7 @@ import { Item } from '../../types/Treasures';
 
 import { getTreasureImg } from '../../assets/getTreasureImg';
 
-const ItemsDialog: React.FC = () => {
+const EmpireTreasureDialog: React.FC = () => {
   const { setShowItemsDialog } = useApplicationContext();
 
   const handleDialogClose = useCallback(() => {
@@ -38,12 +38,12 @@ const ItemsDialog: React.FC = () => {
     <FlipBook onClickOutside={handleDialogClose}>
       {availableItems.map((treasure, index) => (
         <FlipBookPage
-          key={treasure.type}
+          key={treasure.treasure.type}
           pageNum={index}
           lorePage={913}
-          header={treasure.type}
+          header={treasure.treasure.type}
           iconPath={getTreasureImg(treasure)}
-          description={treasure.description}
+          description={treasure.treasure.description}
           onClose={handleDialogClose}
           // Relic items are permanent, and they are not "usable" that is why disable click on them
           onIconClick={isRelic(treasure) ? undefined : createItemClickHandler(treasure)}
@@ -52,4 +52,4 @@ const ItemsDialog: React.FC = () => {
     </FlipBook>
   ) : null;
 };
-export default ItemsDialog;
+export default EmpireTreasureDialog;

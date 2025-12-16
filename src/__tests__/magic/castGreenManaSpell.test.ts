@@ -8,7 +8,6 @@ import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
-import { relicts } from '../../domain/treasure/treasureRepository';
 
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
@@ -20,6 +19,7 @@ import { calculateIncome } from '../../map/vault/calculateIncome';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { relictFactory } from '../../factories/treasureFactory';
 
 describe('castGreenManaSpell', () => {
   let gameStateStub: GameState;
@@ -319,9 +319,7 @@ describe('castGreenManaSpell', () => {
 
     expect(getTurnOwner(gameStateStub).mana.green).toBe(200 - getSpellById(spellName).manaCost);
 
-    getTurnOwner(gameStateStub).empireTreasures.push(
-      relicts.find((r) => r.type === TreasureType.VERDANT_IDOL)!
-    );
+    getTurnOwner(gameStateStub).empireTreasures.push(relictFactory(TreasureType.VERDANT_IDOL));
 
     // select another land to cast spell to avoid situation that it is not possible to cast spell on the same land
     dummyLand =

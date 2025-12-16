@@ -57,5 +57,5 @@ export const hasActiveEffectByPlayer = (state: PlayerState, spellId: SpellName):
 };
 
 export const hasTreasureByPlayer = (player: PlayerState, treasure: TreasureType): boolean => {
-  return player.empireTreasures?.some((t) => t.type === treasure);
+  return player.empireTreasures?.some((t) => t.treasure.type === treasure);
 };

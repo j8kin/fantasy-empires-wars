@@ -235,6 +235,8 @@ describe('castBlueManaSpell', () => {
           case Alignment.CHAOTIC:
             player = gameStateStub.players[1];
             break;
+          default:
+            throw new Error('Invalid player alignment');
         }
 
         gameStateStub.turnOwner = player.id;

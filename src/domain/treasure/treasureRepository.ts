@@ -1,7 +1,6 @@
-import { Alignment } from '../../types/Alignment';
-import { Artifact, Item, Relic, TreasureType, EmpireTreasure } from '../../types/Treasures';
+import { Treasure, TreasureType, EmpireTreasure, Relic } from '../../types/Treasures';
 
-export const artifacts: Artifact[] = [
+export const artifacts: Treasure[] = [
   {
     type: TreasureType.BOOTS_OF_SPEED,
     description: 'Woven from feathers of sky-born eagles, they hum with the breath of dawn itself.',
@@ -35,7 +34,8 @@ export const artifacts: Artifact[] = [
     effect: '+20% chance to evade damage',
   },
 ];
-export const items: Item[] = [
+
+export const items: Treasure[] = [
   {
     type: TreasureType.WAND_TURN_UNDEAD,
     description: 'Glows faintly when darkness rises, whispering the forgotten prayers of light.',
@@ -50,37 +50,31 @@ export const items: Item[] = [
     type: TreasureType.RESTORE_BUILDING,
     description: 'This seed sprouts overnight into a structure born of the world’s memory.',
     effect: 'Restores one destroyed building. Even Stronghold on neutral land is restored',
-    charge: 1,
   },
   {
     type: TreasureType.AEGIS_SHARD,
     description: 'A dormant ward that shatters the moment true harm is attempted.',
     effect: 'Negates the next hostile spell on one land',
-    charge: 1,
   },
   {
     type: TreasureType.RESURRECTION,
     description: 'Burns with immortal fire; rebirth always comes with the scent of ash.',
     effect: 'Revives a fallen hero once',
-    charge: 1,
   },
   {
     type: TreasureType.STONE_OF_RENEWAL,
     description: 'Ancient and patient, it remembers how the land once was.',
     effect: 'Removes one negative effect from a land',
-    charge: 3,
   },
   {
     type: TreasureType.COMPASS_OF_DOMINION,
     description: 'Its needle bends toward power, not north.',
     effect: 'Reveals all lands owned by one player for 2 turns',
-    charge: 2,
   },
   {
     type: TreasureType.DEED_OF_RECLAMATION,
     description: 'An ancient charter granting fleeting dominion by forgotten law.',
     effect: 'Claim a neutral land for income and mana only',
-    charge: 2,
   },
   {
     type: TreasureType.ORRIVANES_MERCY,
@@ -91,10 +85,10 @@ export const items: Item[] = [
     type: TreasureType.HOURGLASS_OF_DELAY,
     description: 'A timeless tool of the ancient gods; it delays the time of the world.',
     effect: 'All armies on land could not move for one turn',
-    charge: 2,
   },
 ];
-export const relicts: Relic[] = [
+
+export const relicts: Treasure[] = [
   {
     type: TreasureType.MIRROR_OF_ILLUSION,
     description: 'Once owned by Selene Duskwhisper; it reflects not truth but intention.',
@@ -132,13 +126,13 @@ export const relicts: Relic[] = [
     type: TreasureType.OBSIDIAN_CHALICE,
     description: 'Said to be carved from a meteor; it thirsts for both power and blood.',
     effect: 'Converts 10% of income into 0.1% of black mana',
-    alignment: Alignment.CHAOTIC,
+    //alignment: Alignment.CHAOTIC,
   },
   {
     type: TreasureType.VERDANT_IDOL,
     description: 'Covered in moss that never dies; druids whisper that it breathes.',
     effect: 'All Green Mana spells cost 15% less',
-    alignment: Alignment.LAWFUL,
+    //alignment: Alignment.LAWFUL,
   },
   {
     type: TreasureType.STARWELL_PRISM,
@@ -146,7 +140,7 @@ export const relicts: Relic[] = [
       'Said to resonate with the afterglow of the first dawn, it repeats what has once been cast.',
     effect:
       'Each offensive spell has a 15% chance to automatically repeat once its effect on a nearby enemy land.',
-    alignment: Alignment.NEUTRAL,
+    //alignment: Alignment.NEUTRAL,
   },
 ];
 
@@ -155,6 +149,6 @@ export const relicts: Relic[] = [
  * @param treasure - The treasure to check
  * @returns True if the treasure is a relic
  */
-export const isRelic = (treasure: EmpireTreasure): boolean => {
-  return relicts.some((relic) => relic.type === treasure.type);
+export const isRelic = (treasure: EmpireTreasure): treasure is Relic => {
+  return relicts.some((relic) => relic.type === treasure.treasure.type);
 };

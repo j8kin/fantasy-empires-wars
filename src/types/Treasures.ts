@@ -21,7 +21,7 @@ export enum TreasureType {
   ORRIVANES_MERCY = 'Orrivane Mercy',
   HOURGLASS_OF_DELAY = 'Hourglass of Delay',
 
-  // Relic items. Has permanent effect on the game state
+  // Relic items. Has a permanent effect on the game state
   MIRROR_OF_ILLUSION = 'Mirror of Illusion',
   BANNER_OF_UNITY = 'Banner of Unity',
   HEARTSTONE_OF_ORRIVANE = 'Heartstone of Orrivane',
@@ -33,25 +33,34 @@ export enum TreasureType {
   STARWELL_PRISM = 'Starwell Prism',
 }
 
-interface Treasure {
+export interface Treasure {
   type: TreasureType;
   description: string;
   effect: string;
 }
 
 // Hero items
-export interface Artifact extends Treasure {
-  level?: number; // will be set to +1 - +5 when players gets the item todo ???
+export interface Artifact {
+  /** UUID */
+  id: string;
+  level: number;
+  treasure: Treasure;
 }
 
-// Usable on Map Items the main idea is to allow non-magic players to use magic and use another magic school spells
-export interface Item extends Treasure {
-  charge?: number; // will be set to 8-12 when players gets the item todo ???
+// Usable on Map Items
+export interface Item {
+  /** UUID */
+  id: string;
+  charge: number;
+  treasure: Treasure;
 }
 
 // Items that have a permanent effect on the Game State
-export interface Relic extends Treasure {
-  alignment?: Alignment; // undefined means that artifact allowed for all players
+export interface Relic {
+  /** UUID */
+  id: string;
+  alignment: Alignment;
+  treasure: Treasure;
 }
 
 export type EmpireTreasure = Item | Relic;

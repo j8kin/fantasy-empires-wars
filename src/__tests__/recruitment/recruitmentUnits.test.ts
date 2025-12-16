@@ -7,20 +7,20 @@ import { UnitRank } from '../../state/army/RegularsState';
 import { getLand } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
+import { relictFactory } from '../../factories/treasureFactory';
 
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
-import { relicts } from '../../domain/treasure/treasureRepository';
 
 import { BuildingType } from '../../types/Building';
 import { TreasureType } from '../../types/Treasures';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
+import { SpellName } from '../../types/Spell';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
+import { castSpell } from '../../map/magic/castSpell';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { castSpell } from '../../map/magic/castSpell';
-import { SpellName } from '../../types/Spell';
 
 describe('Recruitment', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -73,7 +73,7 @@ describe('Recruitment', () => {
   it('Recruitment cost less when player has TreasureItem.CROWN_OF_DOMINION', () => {
     const player = getTurnOwner(gameStateStub);
     // add  TreasureItem.CROWN_OF_DOMINION to player treasury
-    player.empireTreasures.push(relicts.find((r) => r.type === TreasureType.CROWN_OF_DOMINION)!);
+    player.empireTreasures.push(relictFactory(TreasureType.CROWN_OF_DOMINION));
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     construct(gameStateStub, BuildingType.BARRACKS, barracksPos);

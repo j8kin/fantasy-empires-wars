@@ -1,23 +1,29 @@
 import { GameState } from '../../state/GameState';
+import { HeroState } from '../../state/army/HeroState';
 
 import { armyFactory } from '../../factories/armyFactory';
 import { getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
-import { addArmyToGameState, updateArmyInGameState } from '../../systems/armyActions';
-import { addHero } from '../../systems/armyActions';
+import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
+import { addArmyToGameState, addHero, updateArmyInGameState } from '../../systems/armyActions';
 import { levelUpHero } from '../../systems/unitsActions';
 import {
   addPlayerEmpireTreasure,
   decrementQuestTurns,
   removeCompletedQuests,
 } from '../../systems/gameStateActions';
+import {
+  artifactFactory,
+  getRelicAlignment,
+  itemFactory,
+  relictFactory,
+} from '../../factories/treasureFactory';
 
-import { HeroQuest, QuestType } from '../../types/Quest';
+import { artifacts, items, relicts } from '../../domain/treasure/treasureRepository';
 import { getQuest } from '../../domain/quest/questRepository';
 import { getRandomElement } from '../../domain/utils/random';
-import { artifacts, items, relicts } from '../../domain/treasure/treasureRepository';
-import { HeroState } from '../../state/army/HeroState';
+
+import { HeroQuest, QuestType } from '../../types/Quest';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
 import { Artifact } from '../../types/Treasures';
 import {
@@ -27,6 +33,7 @@ import {
   heroGainItem,
   heroGainRelic,
 } from './questCompleteMessages';
+import { Alignment } from '../../types/Alignment';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
@@ -81,10 +88,10 @@ const gainArtifact = (
   questType: QuestType
 ): { outcome: HeroOutcome; updatedHero: HeroState } => {
   const baseArtifactLevel = getQuest(questType).level;
-  const heroArtifact: Artifact = {
-    ...getRandomElement(artifacts),
-    level: getRandomElement([baseArtifactLevel, baseArtifactLevel + 1, baseArtifactLevel + 2]),
-  };
+  const heroArtifact: Artifact = artifactFactory(
+    getRandomElement(artifacts).type,
+    getRandomElement([baseArtifactLevel, baseArtifactLevel + 1, baseArtifactLevel + 2])
+  );
   // todo if hero already has artifact, then allow user to choose between two artifacts
 
   const updatedHero = {
@@ -103,16 +110,13 @@ const gainArtifact = (
 
 const gainItem = (gameState: GameState, hero: HeroState): HeroOutcome => {
   const turnOwner = getTurnOwner(gameState);
-  const item = { ...getRandomElement(items) }; // Create copy to avoid mutating original
-  if (item.charge == null) {
-    item.charge = getRandomElement([7, 10, 15]);
-  }
+  const itemType = getRandomElement(items).type;
 
-  Object.assign(gameState, addPlayerEmpireTreasure(gameState, turnOwner.id, item));
+  Object.assign(gameState, addPlayerEmpireTreasure(gameState, turnOwner.id, itemFactory(itemType)));
 
   return {
     status: HeroOutcomeType.Positive,
-    message: heroGainItem(hero.name, item),
+    message: heroGainItem(hero.name, itemType),
   };
 };
 
@@ -120,16 +124,23 @@ const gainRelic = (gameState: GameState, hero: HeroState): HeroOutcome => {
   const relicInPlay = gameState.players.flatMap((p) => p.empireTreasures);
   const turnOwner = getTurnOwner(gameState);
   const availableRelics = relicts
-    .filter((a) => a.alignment == null || a.alignment === turnOwner.playerProfile.alignment)
-    .filter((a) => !relicInPlay.some((r) => r.type === a.type));
+    .filter(
+      (a) =>
+        getRelicAlignment(a.type) === Alignment.NONE ||
+        getRelicAlignment(a.type) === turnOwner.playerProfile.alignment
+    )
+    .filter((a) => !relicInPlay.some((r) => r.treasure.type === a.type));
 
   if (availableRelics.length > 0) {
-    const relic = getRandomElement(availableRelics);
-    Object.assign(gameState, addPlayerEmpireTreasure(gameState, turnOwner.id, relic));
+    const relicType = getRandomElement(availableRelics).type;
+    Object.assign(
+      gameState,
+      addPlayerEmpireTreasure(gameState, turnOwner.id, relictFactory(relicType))
+    );
 
     return {
       status: HeroOutcomeType.Legendary,
-      message: heroGainRelic(hero.name, relic),
+      message: heroGainRelic(hero.name, relicType),
     };
   } else {
     return gainItem(gameState, hero);

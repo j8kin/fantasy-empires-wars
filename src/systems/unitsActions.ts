@@ -1,5 +1,6 @@
 import { HeroState } from '../state/army/HeroState';
 import { RegularsState, UnitRank } from '../state/army/RegularsState';
+import { hasArtifact } from '../selectors/armySelectors';
 import { unitsBaseStats } from '../domain/unit/unitRepository';
 import { Alignment } from '../types/Alignment';
 import { TreasureType } from '../types/Treasures';
@@ -8,10 +9,7 @@ import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../types/UnitType
 export const levelUpHero = (hero: HeroState, playerAlignment: Alignment): void => {
   if (hero.level === MAX_HERO_LEVEL) return; // hero reached max level
 
-  if (
-    hero.artifacts.length > 0 &&
-    hero.artifacts.some((a) => a.type === TreasureType.RING_OF_EXPERIENCE)
-  ) {
+  if (hasArtifact(hero, TreasureType.RING_OF_EXPERIENCE)) {
     hero.level = hero.level === MAX_HERO_LEVEL - 1 ? MAX_HERO_LEVEL : hero.level + 2;
   } else {
     hero.level++;
@@ -131,5 +129,7 @@ const alignmentModifiers = (alignment: Alignment) => {
       return { attack: 1.1, defense: 0.9, health: 0.9, mana: 1.1 };
     case Alignment.NEUTRAL:
       return { attack: 1.0, defense: 1.0, health: 1.0, mana: 1.0 };
+    default:
+      throw new Error('AlignmentModifiers: Invalid player alignment'); // should never happen
   }
 };

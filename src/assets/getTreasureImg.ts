@@ -7,7 +7,7 @@ import wandOfTurnUndeadImg from './treasures/turn-undead.png';
 import phoenixFeatherImg from './treasures/phoenix-feather.png';
 
 export const getTreasureImg = (treasure: EmpireTreasure) => {
-  switch (treasure.type) {
+  switch (treasure.treasure.type) {
     case TreasureType.WAND_TURN_UNDEAD:
       return wandOfTurnUndeadImg;
     case TreasureType.ORB_OF_STORM:

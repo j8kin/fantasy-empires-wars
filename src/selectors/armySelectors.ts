@@ -6,6 +6,7 @@ import { getLandId } from '../state/map/land/LandId';
 import { getTurnOwner } from './playerSelectors';
 import { isMageType } from '../domain/unit/unitTypeChecks';
 import { HeroUnitType } from '../types/UnitType';
+import { TreasureType } from '../types/Treasures';
 
 // Army state selectors (operating on individual army objects)
 export const briefInfo = (state: ArmyState): ArmyBriefInfo => {
@@ -97,6 +98,10 @@ export const getStationaryArmies = (gameState: GameState, playerId?: string): Ar
   return gameState.armies.filter(
     (army) => !isMoving(army) && (!playerId || army.controlledBy === playerId)
   );
+};
+
+export const hasArtifact = (hero: HeroState, artifact: TreasureType): boolean => {
+  return hero.artifacts.some((a) => a.treasure.type === artifact);
 };
 
 export const getMaxHeroLevelByType = (gameState: GameState, heroType: HeroUnitType): number => {
