@@ -48,7 +48,7 @@ interface ApplicationContextType {
   showStartWindow: boolean;
   showSaveDialog: boolean;
   showCastSpellDialog: boolean;
-  showItemsDialog: boolean;
+  showEmpireTreasureDialog: boolean;
   showConstructBuildingDialog: boolean;
   showRecruitArmyDialog: boolean;
   showSendHeroInQuestDialog: boolean;
@@ -101,7 +101,7 @@ interface ApplicationContextType {
   setShowStartWindow: (show: boolean) => void;
   setShowSaveDialog: (show: boolean) => void;
   setShowCastSpellDialog: (show: boolean) => void;
-  setShowItemsDialog: (show: boolean) => void;
+  setShowEmpireTreasureDialog: (show: boolean) => void;
   setShowConstructBuildingDialog: (show: boolean) => void;
   setShowRecruitArmyDialog: (show: boolean) => void;
   setShowSendHeroInQuestDialog: (show: boolean) => void;
@@ -163,7 +163,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [showStartWindow, setShowStartWindow] = useState<boolean>(true);
   const [showSaveDialog, setShowSaveDialog] = useState<boolean>(false);
   const [showCastSpellDialog, setShowCastSpellDialog] = useState<boolean>(false);
-  const [showItemsDialog, setShowItemsDialog] = useState<boolean>(false);
+  const [showEmpireTreasureDialog, setShowEmpireTreasureDialog] = useState<boolean>(false);
   const [showConstructBuildingDialog, setShowConstructBuildingDialog] = useState<boolean>(false);
   const [showRecruitArmyDialog, setShowRecruitArmyDialog] = useState<boolean>(false);
   const [showSendHeroInQuestDialog, setShowSendHeroInQuestDialog] = useState<boolean>(false);
@@ -323,7 +323,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         showStartWindow,
         showSaveDialog,
         showCastSpellDialog,
-        showItemsDialog,
+        showEmpireTreasureDialog,
         showConstructBuildingDialog,
         showRecruitArmyDialog,
         showSendHeroInQuestDialog,
@@ -373,7 +373,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setShowStartWindow,
         setShowSaveDialog,
         setShowCastSpellDialog,
-        setShowItemsDialog,
+        setShowEmpireTreasureDialog,
         setShowConstructBuildingDialog,
         setShowRecruitArmyDialog,
         setShowSendHeroInQuestDialog,

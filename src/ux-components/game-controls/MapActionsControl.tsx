@@ -16,6 +16,7 @@ const MapActionsControl: React.FC = () => {
   const {
     setShowCastSpellDialog,
     setShowConstructBuildingDialog,
+    setShowEmpireTreasureDialog,
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
   } = useApplicationContext();
@@ -67,13 +68,32 @@ const MapActionsControl: React.FC = () => {
     setShowErrorMessagePopup,
   ]);
 
+  const handleShowEmpireTreasureDialog = useCallback(() => {
+    if (gameState == null) return;
+    const selectedPlayer = getTurnOwner(gameState);
+    if (!selectedPlayer) return;
+    if (selectedPlayer.empireTreasures.length > 0) {
+      setShowEmpireTreasureDialog(true);
+    } else {
+      if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+        setErrorMessagePopupMessage('No treasures in your empire!');
+        setShowErrorMessagePopup(true);
+      }
+    }
+  }, [
+    gameState,
+    setErrorMessagePopupMessage,
+    setShowEmpireTreasureDialog,
+    setShowErrorMessagePopup,
+  ]);
+
   if (gameState == null || getTurnOwner(gameState).playerType !== 'human') return null;
 
   return (
     <div className={styles.gameControlContainer}>
       <GameButton buttonName={ButtonName.BUILD} onClick={handleShowConstructBuildingDialog} />
       <GameButton buttonName={ButtonName.CAST} onClick={handleShowCastSpellDialog} />
-      <GameButton buttonName={ButtonName.ITEMS} />
+      <GameButton buttonName={ButtonName.ITEMS} onClick={handleShowEmpireTreasureDialog} />
     </div>
   );
 };

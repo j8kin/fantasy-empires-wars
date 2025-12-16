@@ -12,11 +12,11 @@ import { Item } from '../../types/Treasures';
 import { getTreasureImg } from '../../assets/getTreasureImg';
 
 const EmpireTreasureDialog: React.FC = () => {
-  const { setShowItemsDialog } = useApplicationContext();
+  const { showEmpireTreasureDialog, setShowEmpireTreasureDialog } = useApplicationContext();
 
   const handleDialogClose = useCallback(() => {
-    setShowItemsDialog(false);
-  }, [setShowItemsDialog]);
+    setShowEmpireTreasureDialog(false);
+  }, [setShowEmpireTreasureDialog]);
 
   const createItemClickHandler = useCallback(
     (item: Item) => {
@@ -28,13 +28,15 @@ const EmpireTreasureDialog: React.FC = () => {
   );
 
   const { gameState } = useGameContext();
-  if (!gameState) return null;
+  if (!gameState || !showEmpireTreasureDialog) return null;
 
   const availableItems = getTurnOwner(gameState).empireTreasures.sort(
     (a, b) => Number(isRelic(a)) - Number(isRelic(b))
   );
 
-  return availableItems.length > 0 ? (
+  if (availableItems.length === 0) return null;
+
+  return (
     <FlipBook onClickOutside={handleDialogClose}>
       {availableItems.map((treasure, index) => (
         <FlipBookPage
@@ -50,6 +52,6 @@ const EmpireTreasureDialog: React.FC = () => {
         />
       ))}
     </FlipBook>
-  ) : null;
+  );
 };
 export default EmpireTreasureDialog;
