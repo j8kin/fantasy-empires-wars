@@ -52,9 +52,9 @@ export const getAvailableToCastSpellLands = (
   }
 
   if (spell.apply === SpellTarget.PLAYER) {
-    if (spell.effect?.target === EffectTarget.ARMY) {
+    if (spell.rules?.target === EffectTarget.ARMY) {
       return getArmiesByPlayer(gameState)
-        .filter((army) => !army.effects.some((e) => e.spell === spellName))
+        .filter((army) => !army.effects.some((e) => e.sourceId === spellName))
         .flatMap((a) => getLandId(getPosition(a)));
     }
     return getPlayerLands(gameState)

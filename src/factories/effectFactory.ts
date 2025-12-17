@@ -1,13 +1,24 @@
 import { v4 as uuid } from 'uuid';
-import { Effect } from '../types/Effect';
-import { Spell } from '../types/Spell';
+import { getSpellById } from '../selectors/spellSelectors';
+import { getItem } from '../domain/treasure/treasureRepository';
 
-export const effectFactory = (spell: Spell, castBy: string): Effect => {
+import { Effect, EffectSourceId } from '../types/Effect';
+import { SpellName } from '../types/Spell';
+
+const isSpellEffect = (effect: EffectSourceId): effect is SpellName => {
+  return Object.values(SpellName).includes(effect as SpellName);
+};
+
+export const effectFactory = (sourceId: EffectSourceId, appliedBy: string): Effect => {
+  const source = isSpellEffect(sourceId) ? getSpellById(sourceId) : getItem(sourceId);
   return {
     id: Object.freeze(uuid()),
-    spell: Object.freeze(spell.id),
-    type: Object.freeze(spell.effect!.type),
-    castBy: Object.freeze(castBy),
-    duration: spell.effect!.duration,
+    sourceId: Object.freeze(sourceId),
+    appliedBy: Object.freeze(appliedBy),
+    rules: {
+      type: source.rules!.type,
+      target: source.rules!.target,
+      duration: source.rules!.duration,
+    },
   };
 };

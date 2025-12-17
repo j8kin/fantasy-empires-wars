@@ -62,10 +62,10 @@ describe('castRedManaSpell', () => {
           // verify that recruiting in building was affected and became newNTurn
           const reqLand = getLand(gameStateStub, landToRecruit);
           expect(reqLand.effects).toHaveLength(1);
-          expect(reqLand.effects[0].spell).toBe(SpellName.EMBER_RAID);
-          expect(reqLand.effects[0].castBy).toBe(gameStateStub.players[1].id);
-          expect(reqLand.effects[0].type).toBe(EffectType.NEGATIVE);
-          expect(reqLand.effects[0].duration).toBe(3);
+          expect(reqLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
+          expect(reqLand.effects[0].appliedBy).toBe(gameStateStub.players[1].id);
+          expect(reqLand.effects[0].rules.type).toBe(EffectType.NEGATIVE);
+          expect(reqLand.effects[0].rules.duration).toBe(3);
 
           expect(reqLand.buildings).toHaveLength(1);
           expect(reqLand.buildings[0].slots![0].unit).toBe(unit);
@@ -100,10 +100,10 @@ describe('castRedManaSpell', () => {
           // verify that recruiting in building was affected and became newNTurn
           const reqLand = getLand(gameStateStub, landToRecruit);
           expect(reqLand.effects).toHaveLength(1);
-          expect(reqLand.effects[0].spell).toBe(SpellName.EMBER_RAID);
-          expect(reqLand.effects[0].castBy).toBe(gameStateStub.players[1].id);
-          expect(reqLand.effects[0].type).toBe(EffectType.NEGATIVE);
-          expect(reqLand.effects[0].duration).toBe(3);
+          expect(reqLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
+          expect(reqLand.effects[0].appliedBy).toBe(gameStateStub.players[1].id);
+          expect(reqLand.effects[0].rules.type).toBe(EffectType.NEGATIVE);
+          expect(reqLand.effects[0].rules.duration).toBe(3);
 
           expect(reqLand.buildings).toHaveLength(1);
           expect(reqLand.buildings[0].slots![0].unit).toBe(unit);
@@ -135,16 +135,20 @@ describe('castRedManaSpell', () => {
 
         testTurnManagement.makeNTurns(1);
         expect(getLand(gameStateStub, opponentLandPos).effects).toHaveLength(1);
-        expect(getLand(gameStateStub, opponentLandPos).effects[0].spell).toBe(SpellName.EMBER_RAID);
-        expect(getLand(gameStateStub, opponentLandPos).effects[0].duration).toBe(2);
+        expect(getLand(gameStateStub, opponentLandPos).effects[0].sourceId).toBe(
+          SpellName.EMBER_RAID
+        );
+        expect(getLand(gameStateStub, opponentLandPos).effects[0].rules.duration).toBe(2);
 
         const opponentMana = getTurnOwner(gameStateStub).mana.red;
         castSpell(gameStateStub, SpellName.EMBER_RAID, opponentLandPos);
         expect(getTurnOwner(gameStateStub).mana.red).toBe(opponentMana); // mana not used
 
         expect(getLand(gameStateStub, opponentLandPos).effects).toHaveLength(1);
-        expect(getLand(gameStateStub, opponentLandPos).effects[0].spell).toBe(SpellName.EMBER_RAID);
-        expect(getLand(gameStateStub, opponentLandPos).effects[0].duration).toBe(2); // not changed
+        expect(getLand(gameStateStub, opponentLandPos).effects[0].sourceId).toBe(
+          SpellName.EMBER_RAID
+        );
+        expect(getLand(gameStateStub, opponentLandPos).effects[0].rules.duration).toBe(2); // not changed
       });
     });
 
@@ -162,10 +166,10 @@ describe('castRedManaSpell', () => {
 
       const opponentLand = getLand(gameStateStub, opponentLandPos);
       expect(opponentLand.effects).toHaveLength(1); // effect not disappear due to construction
-      expect(opponentLand.effects[0].spell).toBe(SpellName.EMBER_RAID);
-      expect(opponentLand.effects[0].castBy).toBe(gameStateStub.players[0].id);
-      expect(opponentLand.effects[0].type).toBe(EffectType.NEGATIVE);
-      expect(opponentLand.effects[0].duration).toBe(3);
+      expect(opponentLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
+      expect(opponentLand.effects[0].appliedBy).toBe(gameStateStub.players[0].id);
+      expect(opponentLand.effects[0].rules.type).toBe(EffectType.NEGATIVE);
+      expect(opponentLand.effects[0].rules.duration).toBe(3);
 
       expect(opponentLand.buildings).toHaveLength(1);
       expect(opponentLand.buildings[0].slots![0].unit).toBe(RegularUnitType.WARRIOR);

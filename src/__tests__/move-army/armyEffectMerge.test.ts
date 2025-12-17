@@ -1,8 +1,8 @@
 import { ArmyState } from '../../state/army/ArmyState';
-import { Effect, EffectType } from '../../types/Effect';
-import { SpellName } from '../../types/Spell';
 import { mergeArmies } from '../../systems/armyActions';
 import { armyFactory } from '../../factories/armyFactory';
+import { Effect, EffectTarget, EffectType } from '../../types/Effect';
+import { SpellName } from '../../types/Spell';
 
 describe('Army Effect Merge Logic', () => {
   // Helper function to create an effect
@@ -13,10 +13,13 @@ describe('Army Effect Merge Logic', () => {
     duration: number
   ): Effect => ({
     id,
-    type,
-    spell,
-    duration,
-    castBy: 'player1',
+    sourceId: spell,
+    appliedBy: 'player1',
+    rules: {
+      type: type,
+      duration: duration,
+      target: EffectTarget.LAND,
+    },
   });
 
   // Helper function to create a simple test army
@@ -42,7 +45,9 @@ describe('Army Effect Merge Logic', () => {
 
       // Should only have negative effects
       expect(mergedArmy.effects).toHaveLength(3);
-      expect(mergedArmy.effects.every((effect) => effect.type === EffectType.NEGATIVE)).toBe(true);
+      expect(mergedArmy.effects.every((effect) => effect.rules.type === EffectType.NEGATIVE)).toBe(
+        true
+      );
 
       // Check-specific effects are preserved
       const effectIds = mergedArmy.effects.map((e) => e.id);
@@ -64,7 +69,7 @@ describe('Army Effect Merge Logic', () => {
 
       expect(mergedArmy.effects).toHaveLength(1);
       expect(mergedArmy.effects[0].id).toBe('effect1');
-      expect(mergedArmy.effects[0].type).toBe(EffectType.NEGATIVE);
+      expect(mergedArmy.effects[0].rules.type).toBe(EffectType.NEGATIVE);
     });
 
     it('should handle merging when both armies have no effects', () => {
@@ -104,16 +109,16 @@ describe('Army Effect Merge Logic', () => {
 
       expect(mergedArmy.effects).toHaveLength(2);
 
-      const tornado = mergedArmy.effects.find((e) => e.spell === SpellName.TORNADO);
-      const earthquake = mergedArmy.effects.find((e) => e.spell === SpellName.EARTHQUAKE);
+      const tornado = mergedArmy.effects.find((e) => e.sourceId === SpellName.TORNADO);
+      const earthquake = mergedArmy.effects.find((e) => e.sourceId === SpellName.EARTHQUAKE);
 
       expect(tornado).toBeDefined();
-      expect(tornado!.duration).toBe(10);
-      expect(tornado!.type).toBe(EffectType.NEGATIVE);
+      expect(tornado!.rules.duration).toBe(10);
+      expect(tornado!.rules.type).toBe(EffectType.NEGATIVE);
 
       expect(earthquake).toBeDefined();
-      expect(earthquake!.duration).toBe(5);
-      expect(earthquake!.type).toBe(EffectType.NEGATIVE);
+      expect(earthquake!.rules.duration).toBe(5);
+      expect(earthquake!.rules.type).toBe(EffectType.NEGATIVE);
     });
 
     it('should not modify original army effect arrays', () => {
