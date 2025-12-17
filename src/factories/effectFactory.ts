@@ -5,9 +5,9 @@ import { Spell } from '../types/Spell';
 export const effectFactory = (spell: Spell, castBy: string): Effect => {
   return {
     id: Object.freeze(uuid()),
-    spell: Object.freeze(spell.id),
+    sourceId: Object.freeze(spell.id),
     type: Object.freeze(spell.effect!.type),
-    castBy: Object.freeze(castBy),
+    appliedBy: Object.freeze(castBy),
     duration: spell.effect!.duration,
   };
 };

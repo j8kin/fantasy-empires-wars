@@ -23,9 +23,9 @@ describe('Effect Duration Manager', () => {
     ): Effect => ({
       id,
       type,
-      spell,
+      sourceId: spell,
       duration,
-      castBy,
+      appliedBy: castBy,
     });
 
     describe('Player effect duration decrement', () => {
@@ -40,8 +40,8 @@ describe('Effect Duration Manager', () => {
 
         expect(turnOwner.effects).toHaveLength(2); // effect3 should be removed (duration was 1)
 
-        const blessing = turnOwner.effects.find((e) => e.spell === SpellName.BLESSING);
-        const tornado = turnOwner.effects.find((e) => e.spell === SpellName.TORNADO);
+        const blessing = turnOwner.effects.find((e) => e.sourceId === SpellName.BLESSING);
+        const tornado = turnOwner.effects.find((e) => e.sourceId === SpellName.TORNADO);
 
         expect(blessing?.duration).toBe(2); // 3 - 1
         expect(tornado?.duration).toBe(4); // 5 - 1
@@ -57,7 +57,7 @@ describe('Effect Duration Manager', () => {
         decrementEffectDurations(gameState);
 
         expect(turnOwner.effects).toHaveLength(1); // Only effect3 should remain
-        expect(turnOwner.effects[0].spell).toBe(SpellName.VIEW_TERRITORY);
+        expect(turnOwner.effects[0].sourceId).toBe(SpellName.VIEW_TERRITORY);
         expect(turnOwner.effects[0].duration).toBe(1);
       });
 
@@ -96,12 +96,12 @@ describe('Effect Duration Manager', () => {
 
         // Check army1 effects
         expect(army1.effects).toHaveLength(1); // effect2 should be removed (duration was 1)
-        expect(army1.effects[0].spell).toBe(SpellName.BLESSING);
+        expect(army1.effects[0].sourceId).toBe(SpellName.BLESSING);
         expect(army1.effects[0].duration).toBe(3); // 4 - 1
 
         // Check army2 effects
         expect(army2.effects).toHaveLength(1);
-        expect(army2.effects[0].spell).toBe(SpellName.TORNADO);
+        expect(army2.effects[0].sourceId).toBe(SpellName.TORNADO);
         expect(army2.effects[0].duration).toBe(1); // 2 - 1
 
         // Check other player army is unchanged
@@ -151,12 +151,12 @@ describe('Effect Duration Manager', () => {
 
         // Check land1 effects
         expect(gameState.map.lands[landId1].effects).toHaveLength(1); // effect2 should be removed
-        expect(gameState.map.lands[landId1].effects[0].spell).toBe(SpellName.FERTILE_LAND);
+        expect(gameState.map.lands[landId1].effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
         expect(gameState.map.lands[landId1].effects[0].duration).toBe(2); // 3 - 1
 
         // Check land2 effects
         expect(gameState.map.lands[landId2].effects).toHaveLength(1);
-        expect(gameState.map.lands[landId2].effects[0].spell).toBe(SpellName.BLESSING);
+        expect(gameState.map.lands[landId2].effects[0].sourceId).toBe(SpellName.BLESSING);
         expect(gameState.map.lands[landId2].effects[0].duration).toBe(1); // 2 - 1
 
         // Check land3 effects (owned by different player, should be unchanged)

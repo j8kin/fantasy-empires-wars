@@ -54,7 +54,7 @@ export const getPlayersByDiplomacy = (
 };
 
 export const hasActiveEffectByPlayer = (state: PlayerState, spellId: SpellName): boolean => {
-  return state.effects.some((e) => e.spell === spellId && e.duration > 0);
+  return state.effects.some((e) => e.sourceId === spellId && e.duration > 0);
 };
 
 export const hasTreasureByPlayer = (player: PlayerState, treasure: TreasureType): boolean => {

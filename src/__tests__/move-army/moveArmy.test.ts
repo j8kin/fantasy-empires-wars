@@ -5,7 +5,7 @@ import { ArmyBriefInfo } from '../../state/army/ArmyState';
 import { UnitRank } from '../../state/army/RegularsState';
 import { getLandId } from '../../state/map/land/LandId';
 
-import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addPlayerLand } from '../../systems/gameStateActions';
@@ -476,10 +476,9 @@ describe('Move Army', () => {
       castSpell(gameStateStub, SpellName.ENTANGLING_ROOTS, homeLand.mapPos);
       // roll-back turnOwner
       gameStateStub.turnOwner = gameStateStub.players[0].id;
-      expect(getLand(gameStateStub, homeLand.mapPos).effects).toHaveLength(1);
-      expect(getLand(gameStateStub, homeLand.mapPos).effects[0].spell).toBe(
-        SpellName.ENTANGLING_ROOTS
-      );
+      expect(
+        hasActiveEffect(getLand(gameStateStub, homeLand.mapPos), SpellName.ENTANGLING_ROOTS)
+      ).toBeTruthy();
 
       const to = { row: homeLand.mapPos.row + 1, col: homeLand.mapPos.col };
       let armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);

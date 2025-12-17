@@ -73,7 +73,7 @@ export const startRecruiting = (
 
       // Ember raid increases recruitment duration by 1 turn
       const hasEmberRaidEffect = getLand(state, landPos).effects?.some(
-        (e) => e.spell === SpellName.EMBER_RAID
+        (e) => e.sourceId === SpellName.EMBER_RAID
       );
 
       Object.assign(state, updatePlayerVault(state, turnOwner.id, -costReduction));

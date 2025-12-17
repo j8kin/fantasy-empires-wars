@@ -233,10 +233,10 @@ describe('castWhiteManaSpell', () => {
       // verify that effect added to the land
       const land = getLand(gameStateStub, opponentLand);
       expect(land.effects).toHaveLength(1);
-      expect(land.effects[0].spell).toBe(SpellName.VIEW_TERRITORY);
+      expect(land.effects[0].sourceId).toBe(SpellName.VIEW_TERRITORY);
       expect(land.effects[0].duration).toBe(1);
 
-      expect(land.effects[0].castBy).toBe(gameStateStub.turnOwner);
+      expect(land.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
 
       const landInfoWithEffect = getLandInfo(gameStateStub, opponentLand);
       // verify that effect not added to the land yet
@@ -268,9 +268,9 @@ describe('castWhiteManaSpell', () => {
       // central land is affected
       const homeland = getLand(gameStateStub, homelandPos);
       expect(homeland.effects).toHaveLength(1);
-      expect(homeland.effects[0].spell).toBe(SpellName.BLESSING);
+      expect(homeland.effects[0].sourceId).toBe(SpellName.BLESSING);
       expect(homeland.effects[0].type).toBe(EffectType.POSITIVE);
-      expect(homeland.effects[0].castBy).toBe(gameStateStub.turnOwner);
+      expect(homeland.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
       expect(homeland.effects[0].duration).toBe(3);
 
       expect(

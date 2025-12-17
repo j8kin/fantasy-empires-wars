@@ -14,9 +14,9 @@ describe('Army Effect Merge Logic', () => {
   ): Effect => ({
     id,
     type,
-    spell,
+    sourceId: spell,
     duration,
-    castBy: 'player1',
+    appliedBy: 'player1',
   });
 
   // Helper function to create a simple test army
@@ -104,8 +104,8 @@ describe('Army Effect Merge Logic', () => {
 
       expect(mergedArmy.effects).toHaveLength(2);
 
-      const tornado = mergedArmy.effects.find((e) => e.spell === SpellName.TORNADO);
-      const earthquake = mergedArmy.effects.find((e) => e.spell === SpellName.EARTHQUAKE);
+      const tornado = mergedArmy.effects.find((e) => e.sourceId === SpellName.TORNADO);
+      const earthquake = mergedArmy.effects.find((e) => e.sourceId === SpellName.EARTHQUAKE);
 
       expect(tornado).toBeDefined();
       expect(tornado!.duration).toBe(10);

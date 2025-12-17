@@ -169,7 +169,7 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
                         className={styles.hero}
                         style={{ color: getEffectColor(effect.type) }}
                       >
-                        {effect.spell} ({effect.duration})
+                        {effect.sourceId} ({effect.duration})
                       </span>
                     ))}
                   </div>

@@ -65,10 +65,10 @@ describe('castGreenManaSpell', () => {
         expect(affectedLands).toHaveLength(nLands);
         affectedLands.forEach((l) => {
           expect(l.effects).toHaveLength(1);
-          expect(l.effects[0].spell).toBe(SpellName.FERTILE_LAND);
+          expect(l.effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
           expect(l.effects[0].type).toBe(EffectType.POSITIVE);
           expect(l.effects[0].duration).toBe(2);
-          expect(l.effects[0].castBy).toBe(gameStateStub.turnOwner);
+          expect(l.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
         });
       }
     );
@@ -128,7 +128,7 @@ describe('castGreenManaSpell', () => {
 
         const opponentHomeLand = getLand(gameStateStub, opponentHomeLandPos);
         expect(opponentHomeLand.effects).toHaveLength(1);
-        expect(opponentHomeLand.effects[0].spell).toBe(SpellName.ENTANGLING_ROOTS);
+        expect(opponentHomeLand.effects[0].sourceId).toBe(SpellName.ENTANGLING_ROOTS);
         expect(opponentHomeLand.effects[0].type).toBe(EffectType.NEGATIVE);
         expect(opponentHomeLand.effects[0].duration).toBe(1);
       }

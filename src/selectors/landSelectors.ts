@@ -14,7 +14,7 @@ import { SpellName } from '../types/Spell';
 import { LandType } from '../types/Land';
 import { BuildingType } from '../types/Building';
 import { Alignment } from '../types/Alignment';
-import { Effect } from '../types/Effect';
+import { Effect, EffectSourceId } from '../types/Effect';
 
 export const getLand = (state: GameState, landPos: LandPosition) =>
   state.map.lands[getLandId(landPos)];
@@ -109,8 +109,15 @@ const ILLUSION_MESSAGES: string[] = [
   'Here, sight is a question, not an answer',
 ];
 
-export const hasActiveEffect = (state: LandState, spellId: SpellName, castBy?: string): boolean => {
+export const hasActiveEffect = (
+  state: LandState,
+  effectSourceId: EffectSourceId,
+  appliedBy?: string
+): boolean => {
   return state.effects.some(
-    (e) => e.spell === spellId && e.duration > 0 && (castBy === undefined || e.castBy === castBy)
+    (e) =>
+      e.sourceId === effectSourceId &&
+      e.duration > 0 &&
+      (appliedBy === undefined || e.appliedBy === appliedBy)
   );
 };

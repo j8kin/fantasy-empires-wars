@@ -15,7 +15,7 @@ const decrementAndFilterEffects = (effects: Effect[], castById: string): Effect[
   return effects
     .map((effect) => {
       // Only decrement effects cast by the specified player
-      if (effect.castBy === castById || effect.spell === SpellName.TURN_UNDEAD) {
+      if (effect.appliedBy === castById || effect.sourceId === SpellName.TURN_UNDEAD) {
         return {
           ...effect,
           duration: effect.duration - 1,
@@ -26,7 +26,7 @@ const decrementAndFilterEffects = (effects: Effect[], castById: string): Effect[
     })
     .filter((effect) => {
       // Remove effects that were cast by the specified player and have expired
-      if (effect.castBy === castById || effect.spell === SpellName.TURN_UNDEAD) {
+      if (effect.appliedBy === castById || effect.sourceId === SpellName.TURN_UNDEAD) {
         return effect.duration > 0;
       }
       // Keep effects that were not cast by the specified player regardless of duration
@@ -42,25 +42,25 @@ const decrementAndFilterEffects = (effects: Effect[], castById: string): Effect[
  *
  * Effects with duration <= 0 after decrementing are removed.
  *
- * @param gameState - The current game state
+ * @param state - The current game state
  */
-export const decrementEffectDurations = (gameState: GameState): void => {
-  const turnOwner = getTurnOwner(gameState);
+export const decrementEffectDurations = (state: GameState): void => {
+  const turnOwner = getTurnOwner(state);
   const turnOwnerId = turnOwner.id;
 
   // 1. Decrement player effects cast by the turn owner
   turnOwner.effects = decrementAndFilterEffects(turnOwner.effects, turnOwnerId);
 
   // 2. Decrement effects cast by the turn owner on all lands
-  gameState.players.forEach((player) => {
-    const playerLands = getPlayerLands(gameState, player.id);
+  state.players.forEach((player) => {
+    const playerLands = getPlayerLands(state, player.id);
     playerLands.forEach((land) => {
       land.effects = decrementAndFilterEffects(land.effects, turnOwnerId);
     });
   });
 
   // 3. Decrement effects cast by the turn owner on armies controlled by the turn owner
-  const playerArmies = getArmiesByPlayer(gameState);
+  const playerArmies = getArmiesByPlayer(state);
   playerArmies.forEach((army) => {
     army.effects = decrementAndFilterEffects(army.effects, turnOwnerId);
   });

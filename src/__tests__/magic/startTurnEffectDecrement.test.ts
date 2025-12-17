@@ -21,9 +21,9 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
   ): Effect => ({
     id,
     type,
-    spell,
+    sourceId: spell,
     duration,
-    castBy,
+    appliedBy: castBy,
   });
 
   // Helper function to create a test game state with turn > 1
@@ -68,17 +68,17 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       // Verify effect durations were decremented
       // Player effects: duration 3->2, duration 1->removed
       expect(updatedTurnOwner.effects).toHaveLength(1);
-      expect(updatedTurnOwner.effects[0].spell).toBe(SpellName.BLESSING);
+      expect(updatedTurnOwner.effects[0].sourceId).toBe(SpellName.BLESSING);
       expect(updatedTurnOwner.effects[0].duration).toBe(2);
 
       // Army effects: duration 2->1
       expect(army.effects).toHaveLength(1);
-      expect(army.effects[0].spell).toBe(SpellName.HEAL);
+      expect(army.effects[0].sourceId).toBe(SpellName.HEAL);
       expect(army.effects[0].duration).toBe(1);
 
       // Land effects: duration 4->3
       expect(gameState.map.lands[landId].effects).toHaveLength(1);
-      expect(gameState.map.lands[landId].effects[0].spell).toBe(SpellName.FERTILE_LAND);
+      expect(gameState.map.lands[landId].effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
       expect(gameState.map.lands[landId].effects[0].duration).toBe(3);
     });
 
@@ -114,7 +114,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
 
       // Verify effect durations were decremented (this proves the decrementation occurred)
       expect(updatedTurnOwner.effects).toHaveLength(1);
-      expect(updatedTurnOwner.effects[0].spell).toBe(SpellName.TORNADO);
+      expect(updatedTurnOwner.effects[0].sourceId).toBe(SpellName.TORNADO);
       expect(updatedTurnOwner.effects[0].duration).toBe(4); // 5 - 1
 
       // The fact that this test passes along with the other tests demonstrates
@@ -187,10 +187,10 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
 
       const remainingEffects = updatedTurnOwner.effects.sort((a, b) => a.duration - b.duration);
 
-      expect(remainingEffects[0].spell).toBe(SpellName.TORNADO);
+      expect(remainingEffects[0].sourceId).toBe(SpellName.TORNADO);
       expect(remainingEffects[0].duration).toBe(1); // was 2
 
-      expect(remainingEffects[1].spell).toBe(SpellName.HEAL);
+      expect(remainingEffects[1].sourceId).toBe(SpellName.HEAL);
       expect(remainingEffects[1].duration).toBe(4); // was 5
     });
   });
