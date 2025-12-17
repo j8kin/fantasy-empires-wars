@@ -1,4 +1,5 @@
-import { Alignment } from './Alignment';
+import type { Alignment } from './Alignment';
+import type { EffectRules } from './Effect';
 
 export enum TreasureType {
   // Artifacts (Heroes personal items)
@@ -35,8 +36,9 @@ export enum TreasureType {
 
 export interface Treasure {
   type: TreasureType;
+  lore: string;
   description: string;
-  effect: string;
+  rules?: EffectRules;
 }
 
 // Hero items

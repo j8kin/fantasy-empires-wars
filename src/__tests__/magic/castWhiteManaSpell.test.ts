@@ -234,7 +234,7 @@ describe('castWhiteManaSpell', () => {
       const land = getLand(gameStateStub, opponentLand);
       expect(land.effects).toHaveLength(1);
       expect(land.effects[0].sourceId).toBe(SpellName.VIEW_TERRITORY);
-      expect(land.effects[0].duration).toBe(1);
+      expect(land.effects[0].rules.duration).toBe(1);
 
       expect(land.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
 
@@ -269,9 +269,9 @@ describe('castWhiteManaSpell', () => {
       const homeland = getLand(gameStateStub, homelandPos);
       expect(homeland.effects).toHaveLength(1);
       expect(homeland.effects[0].sourceId).toBe(SpellName.BLESSING);
-      expect(homeland.effects[0].type).toBe(EffectType.POSITIVE);
+      expect(homeland.effects[0].rules.type).toBe(EffectType.POSITIVE);
       expect(homeland.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
-      expect(homeland.effects[0].duration).toBe(3);
+      expect(homeland.effects[0].rules.duration).toBe(3);
 
       expect(
         getPlayerLands(gameStateStub).filter((l) => hasActiveEffect(l, SpellName.BLESSING))

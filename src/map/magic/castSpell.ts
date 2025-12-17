@@ -1,5 +1,6 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
 import {
   getPlayer,
   getTurnOwner,
@@ -33,17 +34,16 @@ import {
   PenaltyConfig,
 } from '../../domain/army/armyPenaltyCalculator';
 
-import { Spell, SpellName } from '../../types/Spell';
-import { ManaType } from '../../types/Mana';
-import { TreasureType } from '../../types/Treasures';
-import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 import { getAvailableToCastSpellLands } from './getAvailableToCastSpellLands';
-import { getLandId } from '../../state/map/land/LandId';
 import { LandType } from '../../types/Land';
+import { Spell, SpellName } from '../../types/Spell';
+import { ManaType } from '../../types/Mana';
+import { TreasureType } from '../../types/Treasures';
+import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 
 /**
  * Implement cast spell logic for each spell type.
@@ -87,7 +87,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       const maxClericLevel = getMaxHeroLevelByType(state, HeroUnitType.CLERIC);
       Object.assign(
         state,
-        updatePlayerEffect(state, player.id, effectFactory(spell, state.turnOwner))
+        updatePlayerEffect(state, player.id, effectFactory(spell.id, state.turnOwner))
       );
 
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
@@ -97,7 +97,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
 
     case SpellName.VIEW_TERRITORY:
       const land = getLand(state, landPos);
-      land.effects.push(effectFactory(spell, state.turnOwner));
+      land.effects.push(effectFactory(spell.id, state.turnOwner));
       break;
 
     case SpellName.BLESSING:
@@ -105,7 +105,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
         .filter((l) => getLandOwner(state, l) === state.turnOwner)
         .map((p) => getLand(state, p))
         .forEach((l) => {
-          l.effects.push(effectFactory(spell, state.turnOwner));
+          l.effects.push(effectFactory(spell.id, state.turnOwner));
         });
       break;
 
@@ -128,7 +128,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       break;
 
     case SpellName.ENTANGLING_ROOTS:
-      getLand(state, landPos).effects.push(effectFactory(spell, state.turnOwner));
+      getLand(state, landPos).effects.push(effectFactory(spell.id, state.turnOwner));
       break;
 
     case SpellName.BEAST_ATTACK:
@@ -215,7 +215,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
     case SpellName.EMBER_RAID:
       const land = getLand(state, landPos);
 
-      land.effects.push(effectFactory(spell, state.turnOwner));
+      land.effects.push(effectFactory(spell.id, state.turnOwner));
       land.buildings.forEach((b) => b.slots?.forEach((s) => (s.turnsRemaining += 1)));
       break;
 
@@ -345,7 +345,7 @@ const applyEffectOnRandomLands = (
   const selectedLands = getMultipleRandomElements(affectedLands, nLandsToGrow);
 
   [getLand(state, landPos!), ...selectedLands].forEach((l) =>
-    l.effects.push(effectFactory(spell, state.turnOwner))
+    l.effects.push(effectFactory(spell.id, state.turnOwner))
   );
 };
 

@@ -18,7 +18,14 @@ interface LandCharacteristicsPopupProps extends PopupProps {
 }
 
 const getEffectColor = (effectType: EffectType): string => {
-  return effectType === EffectType.POSITIVE ? '#4CAF50' : '#F44336'; // Green for positive, Red for negative
+  switch (effectType) {
+    case EffectType.POSITIVE:
+      return '#4CAF50';
+    case EffectType.NEGATIVE:
+      return '#F44336';
+    case EffectType.PERMANENT:
+      return '#344ceb';
+  }
 };
 
 const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, screenPosition }) => {
@@ -167,9 +174,9 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
                       <span
                         key={index}
                         className={styles.hero}
-                        style={{ color: getEffectColor(effect.type) }}
+                        style={{ color: getEffectColor(effect.rules.type) }}
                       >
-                        {effect.sourceId} ({effect.duration})
+                        {effect.sourceId} ({effect.rules.duration})
                       </span>
                     ))}
                   </div>

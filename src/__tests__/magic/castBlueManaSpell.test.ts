@@ -64,8 +64,8 @@ describe('castBlueManaSpell', () => {
         affectedLands.forEach((l) => {
           expect(l.effects).toHaveLength(1);
           expect(l.effects[0].sourceId).toBe(SpellName.ILLUSION);
-          expect(l.effects[0].type).toBe(EffectType.POSITIVE);
-          expect(l.effects[0].duration).toBe(3);
+          expect(l.effects[0].rules.type).toBe(EffectType.POSITIVE);
+          expect(l.effects[0].rules.duration).toBe(3);
           expect(l.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
         });
       }

@@ -1,6 +1,6 @@
 import { ManaType } from './Mana';
-import { EffectTarget, EffectType } from './Effect';
-import { PenaltyConfig } from '../domain/army/armyPenaltyCalculator';
+import { EffectTarget, EffectType, EffectRules } from './Effect';
+import type { PenaltyConfig } from '../domain/army/armyPenaltyCalculator';
 
 // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
 
@@ -32,12 +32,6 @@ export enum SpellName {
   PLAGUE = 'Plague',
 }
 
-export type SpellEffect = {
-  type: EffectType;
-  target: EffectTarget;
-  duration: number;
-};
-
 export enum SpellTarget {
   PLAYER = 'player',
   OPPONENT = 'opponent',
@@ -50,7 +44,7 @@ export interface Spell {
   manaCost: number;
   manaType: ManaType;
   apply: SpellTarget;
-  effect?: SpellEffect;
+  rules?: EffectRules;
   penalty?: PenaltyConfig;
 }
 const generatePenaltyConfig = (
@@ -71,7 +65,7 @@ const WhiteMagicSpells: Spell[] = [
     manaCost: 0,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.WHITE,
-    effect: {
+    rules: {
       type: EffectType.POSITIVE,
       target: EffectTarget.LAND,
       duration: 1, // this spell apply to player and not allow to cast it more then once on the same player on the same turn
@@ -84,7 +78,7 @@ const WhiteMagicSpells: Spell[] = [
     manaCost: 25,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.WHITE,
-    effect: {
+    rules: {
       type: EffectType.POSITIVE,
       target: EffectTarget.LAND,
       duration: 1,
@@ -96,7 +90,7 @@ const WhiteMagicSpells: Spell[] = [
     manaCost: 40,
     apply: SpellTarget.PLAYER, // todo: probably both to be able cast on ally
     manaType: ManaType.WHITE,
-    effect: {
+    rules: {
       type: EffectType.POSITIVE,
       target: EffectTarget.LAND,
       duration: 3,
@@ -118,7 +112,7 @@ const BlueMagicSpells: Spell[] = [
     manaCost: 25,
     apply: SpellTarget.PLAYER,
     manaType: ManaType.BLUE,
-    effect: {
+    rules: {
       type: EffectType.POSITIVE,
       target: EffectTarget.LAND,
       duration: 3,
@@ -130,7 +124,7 @@ const BlueMagicSpells: Spell[] = [
     manaCost: 45,
     apply: SpellTarget.PLAYER,
     manaType: ManaType.BLUE,
-    effect: {
+    rules: {
       type: EffectType.POSITIVE,
       target: EffectTarget.ARMY,
       duration: 0, // this means that effect applies immediately and not stored in the effect stack
@@ -160,7 +154,7 @@ const GreenMagicSpells: Spell[] = [
     manaCost: 40,
     apply: SpellTarget.PLAYER,
     manaType: ManaType.GREEN,
-    effect: {
+    rules: {
       type: EffectType.POSITIVE,
       target: EffectTarget.LAND,
       duration: 2,
@@ -172,7 +166,7 @@ const GreenMagicSpells: Spell[] = [
     manaCost: 60,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.GREEN,
-    effect: {
+    rules: {
       type: EffectType.NEGATIVE,
       target: EffectTarget.LAND,
       duration: 1,
@@ -205,7 +199,7 @@ const RedMagicSpells: Spell[] = [
     manaCost: 30,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.RED,
-    effect: {
+    rules: {
       type: EffectType.NEGATIVE,
       target: EffectTarget.LAND,
       duration: 3,

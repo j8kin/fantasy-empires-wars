@@ -1,10 +1,12 @@
+import { getLandId } from '../../state/map/land/LandId';
+import { getPlayerLands } from '../../selectors/playerSelectors';
 import { decrementEffectDurations } from '../../systems/effectActions';
 import { armyFactory } from '../../factories/armyFactory';
-import { Effect, EffectType } from '../../types/Effect';
+
+import { Effect, EffectTarget, EffectType } from '../../types/Effect';
 import { SpellName } from '../../types/Spell';
+
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { getPlayerLands } from '../../selectors/playerSelectors';
-import { getLandId } from '../../state/map/land/LandId';
 
 // todo remove after all spells implemented and tested
 describe('Effect Duration Manager', () => {
@@ -22,10 +24,13 @@ describe('Effect Duration Manager', () => {
       castBy: string
     ): Effect => ({
       id,
-      type,
       sourceId: spell,
-      duration,
       appliedBy: castBy,
+      rules: {
+        type: type,
+        target: EffectTarget.LAND,
+        duration: duration,
+      },
     });
 
     describe('Player effect duration decrement', () => {
@@ -43,8 +48,8 @@ describe('Effect Duration Manager', () => {
         const blessing = turnOwner.effects.find((e) => e.sourceId === SpellName.BLESSING);
         const tornado = turnOwner.effects.find((e) => e.sourceId === SpellName.TORNADO);
 
-        expect(blessing?.duration).toBe(2); // 3 - 1
-        expect(tornado?.duration).toBe(4); // 5 - 1
+        expect(blessing?.rules.duration).toBe(2); // 3 - 1
+        expect(tornado?.rules.duration).toBe(4); // 5 - 1
       });
 
       it('should remove player effects with duration <= 0', () => {
@@ -58,7 +63,7 @@ describe('Effect Duration Manager', () => {
 
         expect(turnOwner.effects).toHaveLength(1); // Only effect3 should remain
         expect(turnOwner.effects[0].sourceId).toBe(SpellName.VIEW_TERRITORY);
-        expect(turnOwner.effects[0].duration).toBe(1);
+        expect(turnOwner.effects[0].rules.duration).toBe(1);
       });
 
       it('should handle empty player effects array', () => {
@@ -97,16 +102,16 @@ describe('Effect Duration Manager', () => {
         // Check army1 effects
         expect(army1.effects).toHaveLength(1); // effect2 should be removed (duration was 1)
         expect(army1.effects[0].sourceId).toBe(SpellName.BLESSING);
-        expect(army1.effects[0].duration).toBe(3); // 4 - 1
+        expect(army1.effects[0].rules.duration).toBe(3); // 4 - 1
 
         // Check army2 effects
         expect(army2.effects).toHaveLength(1);
         expect(army2.effects[0].sourceId).toBe(SpellName.TORNADO);
-        expect(army2.effects[0].duration).toBe(1); // 2 - 1
+        expect(army2.effects[0].rules.duration).toBe(1); // 2 - 1
 
         // Check other player army is unchanged
         expect(otherPlayerArmy.effects).toHaveLength(1);
-        expect(otherPlayerArmy.effects[0].duration).toBe(5); // unchanged
+        expect(otherPlayerArmy.effects[0].rules.duration).toBe(5); // unchanged
       });
 
       it('should handle armies with no effects', () => {
@@ -152,16 +157,16 @@ describe('Effect Duration Manager', () => {
         // Check land1 effects
         expect(gameState.map.lands[landId1].effects).toHaveLength(1); // effect2 should be removed
         expect(gameState.map.lands[landId1].effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
-        expect(gameState.map.lands[landId1].effects[0].duration).toBe(2); // 3 - 1
+        expect(gameState.map.lands[landId1].effects[0].rules.duration).toBe(2); // 3 - 1
 
         // Check land2 effects
         expect(gameState.map.lands[landId2].effects).toHaveLength(1);
         expect(gameState.map.lands[landId2].effects[0].sourceId).toBe(SpellName.BLESSING);
-        expect(gameState.map.lands[landId2].effects[0].duration).toBe(1); // 2 - 1
+        expect(gameState.map.lands[landId2].effects[0].rules.duration).toBe(1); // 2 - 1
 
         // Check land3 effects (owned by different player, should be unchanged)
         expect(gameState.map.lands[landId3].effects).toHaveLength(1);
-        expect(gameState.map.lands[landId3].effects[0].duration).toBe(4); // unchanged
+        expect(gameState.map.lands[landId3].effects[0].rules.duration).toBe(4); // unchanged
       });
 
       it('should handle lands with no effects', () => {
@@ -204,17 +209,17 @@ describe('Effect Duration Manager', () => {
         // Player: effect with duration 1 should be removed, duration 3 becomes 2
         expect(turnOwner.effects).toHaveLength(1);
         expect(turnOwner.effects[0].id).toBe('player2');
-        expect(turnOwner.effects[0].duration).toBe(2);
+        expect(turnOwner.effects[0].rules.duration).toBe(2);
 
         // Army: effect with duration 0 should be removed, duration 2 becomes 1
         expect(army.effects).toHaveLength(1);
         expect(army.effects[0].id).toBe('army2');
-        expect(army.effects[0].duration).toBe(1);
+        expect(army.effects[0].rules.duration).toBe(1);
 
         // Land: duration 4 becomes 3
         expect(gameState.map.lands[landId].effects).toHaveLength(1);
         expect(gameState.map.lands[landId].effects[0].id).toBe('land1');
-        expect(gameState.map.lands[landId].effects[0].duration).toBe(3);
+        expect(gameState.map.lands[landId].effects[0].rules.duration).toBe(3);
       });
 
       it('should only affect turn owner entities', () => {
@@ -244,12 +249,12 @@ describe('Effect Duration Manager', () => {
         decrementEffectDurations(gameState);
 
         // Turn owner effects should be decremented
-        expect(turnOwner.effects[0].duration).toBe(1);
+        expect(turnOwner.effects[0].rules.duration).toBe(1);
 
         // Other player effects should remain unchanged
-        expect(otherPlayer.effects[0].duration).toBe(2);
-        expect(otherArmy.effects[0].duration).toBe(2);
-        expect(gameState.map.lands[landId].effects[0].duration).toBe(2);
+        expect(otherPlayer.effects[0].rules.duration).toBe(2);
+        expect(otherArmy.effects[0].rules.duration).toBe(2);
+        expect(gameState.map.lands[landId].effects[0].rules.duration).toBe(2);
       });
 
       it('should handle player with no owned lands or armies', () => {
@@ -278,11 +283,11 @@ describe('Effect Duration Manager', () => {
 
         expect(turnOwner.effects).toHaveLength(2);
 
-        const positiveEffect = turnOwner.effects.find((e) => e.type === EffectType.POSITIVE);
-        const negativeEffect = turnOwner.effects.find((e) => e.type === EffectType.NEGATIVE);
+        const positiveEffect = turnOwner.effects.find((e) => e.rules.type === EffectType.POSITIVE);
+        const negativeEffect = turnOwner.effects.find((e) => e.rules.type === EffectType.NEGATIVE);
 
-        expect(positiveEffect?.duration).toBe(2);
-        expect(negativeEffect?.duration).toBe(2);
+        expect(positiveEffect?.rules.duration).toBe(2);
+        expect(negativeEffect?.rules.duration).toBe(2);
       });
     });
   });

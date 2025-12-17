@@ -11,10 +11,12 @@ import { getRandomElement } from '../domain/utils/random';
 
 import { TreasureType } from '../types/Treasures';
 import { SpellName } from '../types/Spell';
-import { LandType } from '../types/Land';
-import { BuildingType } from '../types/Building';
 import { Alignment } from '../types/Alignment';
-import { Effect, EffectSourceId } from '../types/Effect';
+import { EffectType } from '../types/Effect';
+
+import type { LandType } from '../types/Land';
+import type { BuildingType } from '../types/Building';
+import type { Effect, EffectSourceId } from '../types/Effect';
 
 export const getLand = (state: GameState, landPos: LandPosition) =>
   state.map.lands[getLandId(landPos)];
@@ -117,7 +119,7 @@ export const hasActiveEffect = (
   return state.effects.some(
     (e) =>
       e.sourceId === effectSourceId &&
-      e.duration > 0 &&
+      (e.rules.duration > 0 || e.rules.type === EffectType.PERMANENT) &&
       (appliedBy === undefined || e.appliedBy === appliedBy)
   );
 };

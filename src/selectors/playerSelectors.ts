@@ -2,12 +2,16 @@ import { GameState } from '../state/GameState';
 import { PlayerState } from '../state/player/PlayerState';
 import { LandState } from '../state/map/land/LandState';
 import { getLand } from './landSelectors';
-import { BuildingType } from '../types/Building';
-import { DiplomacyStatus } from '../types/Diplomacy';
-import { SpellName } from '../types/Spell';
-import { Item, TreasureType } from '../types/Treasures';
-import { getTilesInRadius } from '../map/utils/mapAlgorithms';
 import { isRelic } from '../domain/treasure/treasureRepository';
+
+import { getTilesInRadius } from '../map/utils/mapAlgorithms';
+
+import { EffectType } from '../types/Effect';
+import { BuildingType } from '../types/Building';
+
+import type { SpellName } from '../types/Spell';
+import type { Item, TreasureType } from '../types/Treasures';
+import type { DiplomacyStatus } from '../types/Diplomacy';
 
 export const getPlayer = (state: GameState, id: string): PlayerState =>
   state.players.find((p) => p.id === id)!;
@@ -54,7 +58,9 @@ export const getPlayersByDiplomacy = (
 };
 
 export const hasActiveEffectByPlayer = (state: PlayerState, spellId: SpellName): boolean => {
-  return state.effects.some((e) => e.sourceId === spellId && e.duration > 0);
+  return state.effects.some(
+    (e) => e.sourceId === spellId && (e.rules.duration > 0 || e.rules.type === EffectType.PERMANENT)
+  );
 };
 
 export const hasTreasureByPlayer = (player: PlayerState, treasure: TreasureType): boolean => {

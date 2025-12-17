@@ -5,9 +5,9 @@ import { RegularsState, UnitRank } from '../state/army/RegularsState';
 import { LandPosition } from '../state/map/land/LandPosition';
 import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
-import { RegularUnitType } from '../types/UnitType';
-import { EffectType } from '../types/Effect';
 import { startMovement } from './moveActions';
+import { EffectType } from '../types/Effect';
+import type { RegularUnitType } from '../types/UnitType';
 
 export const addHero = (state: ArmyState, hero: HeroState): ArmyState => {
   return {
@@ -108,7 +108,7 @@ export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => 
   // Merge effects: combine all negative effects from both armies, positive effects disappear
   // prevent an abusing system when one unit split with good effect and combine with another huge army
   const allEffects = [...target.effects, ...source.effects];
-  const mergedEffects = allEffects.filter((effect) => effect.type === EffectType.NEGATIVE);
+  const mergedEffects = allEffects.filter((effect) => effect.rules.type === EffectType.NEGATIVE);
 
   return {
     ...target,

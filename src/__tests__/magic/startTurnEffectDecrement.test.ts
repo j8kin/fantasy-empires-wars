@@ -2,9 +2,9 @@ import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
-import { Effect, EffectType } from '../../types/Effect';
-import { SpellName } from '../../types/Spell';
 import { startTurn } from '../../turn/startTurn';
+import { Effect, EffectTarget, EffectType } from '../../types/Effect';
+import { SpellName } from '../../types/Spell';
 import { HeroUnitType } from '../../types/UnitType';
 
 import { createGameStateStub } from '../utils/createGameStateStub';
@@ -20,10 +20,13 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
     castBy: string = 'player1'
   ): Effect => ({
     id,
-    type,
     sourceId: spell,
-    duration,
     appliedBy: castBy,
+    rules: {
+      type: type,
+      target: EffectTarget.LAND,
+      duration: duration,
+    },
   });
 
   // Helper function to create a test game state with turn > 1
@@ -69,17 +72,17 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       // Player effects: duration 3->2, duration 1->removed
       expect(updatedTurnOwner.effects).toHaveLength(1);
       expect(updatedTurnOwner.effects[0].sourceId).toBe(SpellName.BLESSING);
-      expect(updatedTurnOwner.effects[0].duration).toBe(2);
+      expect(updatedTurnOwner.effects[0].rules.duration).toBe(2);
 
       // Army effects: duration 2->1
       expect(army.effects).toHaveLength(1);
       expect(army.effects[0].sourceId).toBe(SpellName.HEAL);
-      expect(army.effects[0].duration).toBe(1);
+      expect(army.effects[0].rules.duration).toBe(1);
 
       // Land effects: duration 4->3
       expect(gameState.map.lands[landId].effects).toHaveLength(1);
       expect(gameState.map.lands[landId].effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
-      expect(gameState.map.lands[landId].effects[0].duration).toBe(3);
+      expect(gameState.map.lands[landId].effects[0].rules.duration).toBe(3);
     });
 
     it('should not decrement effects on turn 1 (early return)', () => {
@@ -93,7 +96,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
 
       // Effects should remain unchanged because startTurn returns early on turn 1
       expect(turnOwner.effects).toHaveLength(1);
-      expect(turnOwner.effects[0].duration).toBe(2); // unchanged
+      expect(turnOwner.effects[0].rules.duration).toBe(2); // unchanged
     });
 
     it('should decrement effects after all other startTurn operations are completed', () => {
@@ -115,7 +118,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       // Verify effect durations were decremented (this proves the decrementation occurred)
       expect(updatedTurnOwner.effects).toHaveLength(1);
       expect(updatedTurnOwner.effects[0].sourceId).toBe(SpellName.TORNADO);
-      expect(updatedTurnOwner.effects[0].duration).toBe(4); // 5 - 1
+      expect(updatedTurnOwner.effects[0].rules.duration).toBe(4); // 5 - 1
 
       // The fact that this test passes along with the other tests demonstrates
       // that effect decrementation works properly at the end of startTurn
@@ -158,12 +161,12 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       const updatedTurnOwner = getTurnOwner(gameState);
 
       // Turn owner effects should be decremented
-      expect(updatedTurnOwner.effects[0].duration).toBe(2); // 3 - 1
-      expect(turnOwnerArmy.effects[0].duration).toBe(1); // 2 - 1
+      expect(updatedTurnOwner.effects[0].rules.duration).toBe(2); // 3 - 1
+      expect(turnOwnerArmy.effects[0].rules.duration).toBe(1); // 2 - 1
 
       // Other player effects should remain unchanged
-      expect(otherPlayer.effects[0].duration).toBe(3); // unchanged
-      expect(otherPlayerArmy.effects[0].duration).toBe(2); // unchanged
+      expect(otherPlayer.effects[0].rules.duration).toBe(3); // unchanged
+      expect(otherPlayerArmy.effects[0].rules.duration).toBe(2); // unchanged
     });
 
     it('should handle effects with various durations correctly', () => {
@@ -185,13 +188,15 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       // Only effects with duration > 1 should remain
       expect(updatedTurnOwner.effects).toHaveLength(2);
 
-      const remainingEffects = updatedTurnOwner.effects.sort((a, b) => a.duration - b.duration);
+      const remainingEffects = updatedTurnOwner.effects.sort(
+        (a, b) => a.rules.duration - b.rules.duration
+      );
 
       expect(remainingEffects[0].sourceId).toBe(SpellName.TORNADO);
-      expect(remainingEffects[0].duration).toBe(1); // was 2
+      expect(remainingEffects[0].rules.duration).toBe(1); // was 2
 
       expect(remainingEffects[1].sourceId).toBe(SpellName.HEAL);
-      expect(remainingEffects[1].duration).toBe(4); // was 5
+      expect(remainingEffects[1].rules.duration).toBe(4); // was 5
     });
   });
 });
