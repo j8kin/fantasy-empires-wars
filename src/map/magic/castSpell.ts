@@ -17,7 +17,7 @@ import { updatePlayerEffect, updatePlayerMana } from '../../systems/gameStateAct
 import {
   addArmyToGameState,
   addRegulars,
-  cleanupArmies,
+  killRegularUnits,
   updateArmyInGameState,
 } from '../../systems/armyActions';
 import { effectFactory } from '../../factories/effectFactory';
@@ -26,7 +26,6 @@ import { armyFactory } from '../../factories/armyFactory';
 import { movementFactory } from '../../factories/movementFactory';
 import { getMultipleRandomElements, getRandomInt } from '../../domain/utils/random';
 import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
-import { calculateAndApplyArmyPenalties } from '../../domain/army/armyPenaltyCalculator';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
@@ -90,7 +89,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
 
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
 
-      killUnits(state, penaltyConfig, landPos!, [RegularUnitType.UNDEAD]);
+      killRegularUnits(state, penaltyConfig, landPos!, [RegularUnitType.UNDEAD]);
       break;
 
     case SpellName.VIEW_TERRITORY:
@@ -134,12 +133,12 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       // penalty increased based on max hero level
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxDruidLevel);
 
-      killUnits(state, penaltyConfig, landPos!);
+      killRegularUnits(state, penaltyConfig, landPos!);
       break;
 
     case SpellName.EARTHQUAKE:
       // kill units
-      killUnits(state, spell.penalty!, landPos!);
+      killRegularUnits(state, spell.penalty!, landPos!);
       // try to destroy building if exists (40% probability)
       if (Math.random() < 0.4) {
         destroyBuilding(state, landPos!);
@@ -188,7 +187,7 @@ const castBlueManaSpell = (
       break;
 
     case SpellName.TORNADO:
-      killUnits(state, spell.penalty!, landPos!);
+      killRegularUnits(state, spell.penalty!, landPos!);
       break;
 
     case SpellName.EXCHANGE:
@@ -238,7 +237,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxPyromancerLevel);
 
       getTilesInRadius(getMapDimensions(state), landPos, 1, false).forEach((l) => {
-        killUnits(state, penaltyConfig, l);
+        killRegularUnits(state, penaltyConfig, l);
       });
       break;
 
@@ -246,7 +245,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       const maxMageLvl = getMaxHeroLevelByType(state, HeroUnitType.PYROMANCER);
       const showerPenaltyCfg = calculatePenaltyConfig(spell.penalty!, maxMageLvl);
 
-      killUnits(state, showerPenaltyCfg, landPos!);
+      killRegularUnits(state, showerPenaltyCfg, landPos!);
       // try to destroy building if exists (50-60% probability)
       if (Math.random() < 0.5 + (0.1 * maxMageLvl) / MAX_HERO_LEVEL) {
         destroyBuilding(state, landPos!);
@@ -288,7 +287,7 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       break;
 
     case SpellName.PLAGUE:
-      killUnits(state, spell.penalty!, landPos!);
+      killRegularUnits(state, spell.penalty!, landPos!);
       break;
 
     case SpellName.CORRUPTION:
@@ -345,32 +344,6 @@ const applyEffectOnRandomLands = (
   [getLand(state, landPos!), ...selectedLands].forEach((l) =>
     l.effects.push(effectFactory(spell.id, state.turnOwner))
   );
-};
-
-const killUnits = (
-  state: GameState,
-  penaltyConfig: PenaltyConfig,
-  landPos: LandPosition,
-  units?: RegularUnitType[]
-) => {
-  // right now spell affects all players, even turnOwner in rare cases it could cause a friendly-fire
-  state.players.forEach((p) => {
-    const playerArmiesAtPosition = getArmiesAtPositionByPlayers(state, landPos, [p.id]);
-
-    const updatedArmies = calculateAndApplyArmyPenalties(
-      playerArmiesAtPosition,
-      penaltyConfig,
-      hasTreasureByPlayer(p, TreasureType.SHARD_OF_THE_SILENT_ANVIL),
-      units
-    );
-
-    updatedArmies.forEach((army) => {
-      Object.assign(state, updateArmyInGameState(state, army));
-    });
-  });
-
-  // cleanup Armies
-  Object.assign(state, cleanupArmies(state));
 };
 
 const calculatePenaltyConfig = (basePenalty: PenaltyConfig, maxLevel: number) => {

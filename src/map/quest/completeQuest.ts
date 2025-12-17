@@ -47,9 +47,8 @@ const surviveInQuest = (quest: HeroQuest): boolean => {
 };
 
 const calculateReward = (
-  hero: HeroState,
-  quest: HeroQuest,
-  gameState: GameState
+  state: GameState,
+  quest: HeroQuest
 ): { outcome: HeroOutcome; updatedHero: HeroState } => {
   if (Math.random() > 0.55 - 0.05 * (quest.quest.level - 1)) {
     return {
@@ -57,35 +56,35 @@ const calculateReward = (
         status: HeroOutcomeType.Neutral,
         message: emptyHanded(quest.hero.name),
       },
-      updatedHero: hero, // No changes to hero
+      updatedHero: quest.hero, // No changes to hero
     };
   }
   const treasureType = Math.random();
 
   switch (quest.quest.id) {
     case 'The Echoing Ruins':
-      return gainArtifact(hero, quest.quest.id);
+      return gainArtifact(quest.hero, quest.quest.id);
 
     case 'The Whispering Grove':
       if (treasureType <= 0.3) {
-        return { outcome: gainItem(gameState, hero), updatedHero: hero };
+        return { outcome: gainItem(state, quest.hero), updatedHero: quest.hero };
       } else {
-        return gainArtifact(hero, quest.quest.id);
+        return gainArtifact(quest.hero, quest.quest.id);
       }
 
     case 'The Abyssal Crypt':
       if (treasureType <= 0.2) {
-        return { outcome: gainRelic(gameState, hero), updatedHero: hero };
+        return { outcome: gainRelic(state, quest.hero), updatedHero: quest.hero };
       } else if (treasureType <= 0.55) {
-        return { outcome: gainItem(gameState, hero), updatedHero: hero };
+        return { outcome: gainItem(state, quest.hero), updatedHero: quest.hero };
       } else {
-        return gainArtifact(hero, quest.quest.id);
+        return gainArtifact(quest.hero, quest.quest.id);
       }
     case 'The Shattered Sky':
       if (treasureType <= 0.4) {
-        return { outcome: gainRelic(gameState, hero), updatedHero: hero };
+        return { outcome: gainRelic(state, quest.hero), updatedHero: quest.hero };
       } else {
-        return { outcome: gainItem(gameState, hero), updatedHero: hero };
+        return { outcome: gainItem(state, quest.hero), updatedHero: quest.hero };
       }
   }
 };
@@ -115,11 +114,11 @@ const gainArtifact = (
   };
 };
 
-const gainItem = (gameState: GameState, hero: HeroState): HeroOutcome => {
-  const turnOwner = getTurnOwner(gameState);
+const gainItem = (state: GameState, hero: HeroState): HeroOutcome => {
+  const turnOwner = getTurnOwner(state);
   const itemType = getRandomElement(items).type;
 
-  Object.assign(gameState, addPlayerEmpireTreasure(gameState, turnOwner.id, itemFactory(itemType)));
+  Object.assign(state, addPlayerEmpireTreasure(state, turnOwner.id, itemFactory(itemType)));
 
   return {
     status: HeroOutcomeType.Positive,
@@ -127,9 +126,9 @@ const gainItem = (gameState: GameState, hero: HeroState): HeroOutcome => {
   };
 };
 
-const gainRelic = (gameState: GameState, hero: HeroState): HeroOutcome => {
-  const relicInPlay = gameState.players.flatMap((p) => p.empireTreasures);
-  const turnOwner = getTurnOwner(gameState);
+const gainRelic = (state: GameState, hero: HeroState): HeroOutcome => {
+  const relicInPlay = state.players.flatMap((p) => p.empireTreasures);
+  const turnOwner = getTurnOwner(state);
   const availableRelics = relicts
     .filter(
       (a) =>
@@ -140,41 +139,36 @@ const gainRelic = (gameState: GameState, hero: HeroState): HeroOutcome => {
 
   if (availableRelics.length > 0) {
     const relicType = getRandomElement(availableRelics).type;
-    Object.assign(
-      gameState,
-      addPlayerEmpireTreasure(gameState, turnOwner.id, relictFactory(relicType))
-    );
+    Object.assign(state, addPlayerEmpireTreasure(state, turnOwner.id, relictFactory(relicType)));
 
     return {
       status: HeroOutcomeType.Legendary,
       message: heroGainRelic(hero.name, relicType),
     };
   } else {
-    return gainItem(gameState, hero);
+    return gainItem(state, hero);
   }
 };
 
-const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
+const questResults = (state: GameState, quest: HeroQuest): HeroOutcome => {
   let questOutcome: HeroOutcome;
-  const turnOwner = getTurnOwner(gameState);
+  const turnOwner = getTurnOwner(state);
 
   if (
     // player survived quest
     surviveInQuest(quest) &&
     // and player still controls the land where quest is
-    getLandOwner(gameState, quest.land) === turnOwner.id
+    getLandOwner(state, quest.land) === turnOwner.id
   ) {
-    let hero = quest.hero;
+    const rewardResult = calculateReward(state, quest);
+    questOutcome = rewardResult.outcome;
+    const hero: HeroState = { ...rewardResult.updatedHero }; // Use potentially updated hero with artifacts
 
     if (hero.level < quest.quest.level * 5) {
       levelUpHero(hero, turnOwner.playerProfile.alignment);
     }
 
-    const rewardResult = calculateReward(hero, quest, gameState);
-    questOutcome = rewardResult.outcome;
-    hero = rewardResult.updatedHero; // Use potentially updated hero with artifacts
-
-    returnHeroOnMap(gameState, hero, quest.land);
+    returnHeroOnMap(state, hero, quest.land);
   } else {
     if (hasTreasureByPlayer(turnOwner, TreasureType.MERCY_OF_ORRIVANE)) {
       // No time to die, Orrivane gives a mercy but not a new level
@@ -182,12 +176,12 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
         status: HeroOutcomeType.Success,
         message: `${heroDieMessage(quest.hero.name)} Yet Orrivane remembered them, and the world bent so they might return.`,
       };
-      returnHeroOnMap(gameState, quest.hero, quest.land);
+      returnHeroOnMap(state, quest.hero, quest.land);
 
       Object.assign(
-        gameState,
+        state,
         updatePlayer(
-          gameState,
+          state,
           turnOwner.id,
           removeEmpireTreasureItems(
             turnOwner,
@@ -223,23 +217,23 @@ const returnHeroOnMap = (state: GameState, hero: HeroState, landPosition: LandPo
   }
 };
 
-export const completeQuest = (gameState: GameState): HeroOutcome[] => {
-  const turnOwner = getTurnOwner(gameState);
+export const completeQuest = (state: GameState): HeroOutcome[] => {
+  const turnOwner = getTurnOwner(state);
 
   // First, decrement quest turn counters immutably
-  Object.assign(gameState, decrementQuestTurns(gameState, turnOwner.id));
+  Object.assign(state, decrementQuestTurns(state, turnOwner.id));
 
   // Get quests that are ready to complete (after decrementing)
-  const updatedTurnOwner = getTurnOwner(gameState); // Get fresh reference after state update
+  const updatedTurnOwner = getTurnOwner(state); // Get fresh reference after state update
   const questsToComplete = updatedTurnOwner.quests.filter(
     (quest) => quest.remainTurnsInQuest === 0
   );
 
   // Complete quests and collect outcomes
-  const status = questsToComplete.map((q) => questResults(q, gameState));
+  const status = questsToComplete.map((q) => questResults(state, q));
 
   // Remove completed quests from quests array immutably
-  Object.assign(gameState, removeCompletedQuests(gameState, turnOwner.id));
+  Object.assign(state, removeCompletedQuests(state, turnOwner.id));
 
   return status;
 };

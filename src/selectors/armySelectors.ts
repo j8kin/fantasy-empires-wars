@@ -144,41 +144,9 @@ export const findLandByHeroName = (
   return undefined;
 };
 
-/**
- * Find both the hero and the land position where the hero is located
- */
-export const findHeroAndLand = (
-  gameState: GameState,
-  heroName: string,
-  playerId?: string
-): { hero: HeroState; position: LandPosition } | undefined => {
-  const armies = playerId ? getArmiesByPlayer(gameState, playerId) : gameState.armies;
-
-  for (const army of armies) {
-    const hero = army.heroes.find((h) => h.name === heroName);
-    if (hero) {
-      let position: LandPosition | undefined;
-
-      if (isMoving(army)) {
-        // For moving armies, get current position based on progress
-        position =
-          army.movement.path.length > army.movement.progress
-            ? army.movement.path[army.movement.progress]
-            : army.movement.path[army.movement.path.length - 1];
-      } else {
-        // For stationary armies, get the first position in path
-        position = army.movement.path.length > 0 ? army.movement.path[0] : undefined;
-      }
-
-      if (position) {
-        return { hero, position };
-      }
-    }
-  }
-
-  return undefined;
+export const findArmyByHero = (state: GameState, heroName: string, playerId?: string) => {
+  return getArmiesByPlayer(state, playerId).find((a) => a.heroes.some((h) => h.name === heroName));
 };
-
 /**
  * Retrieves a list of all hero units in the game include heroes in Quest.
  *

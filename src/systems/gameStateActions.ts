@@ -1,5 +1,5 @@
 import { getLandId } from '../state/map/land/LandId';
-import { getPlayer } from '../selectors/playerSelectors';
+import { getPlayer, getTurnOwner } from '../selectors/playerSelectors';
 import { addEmpireTreasure } from './playerActions';
 import { MAX_MANA } from '../types/Mana';
 
@@ -192,13 +192,9 @@ export const removePlayerLand = (
 /**
  * Add a quest to a player's quest list
  */
-export const addPlayerQuest = (
-  gameState: GameState,
-  playerId: string,
-  quest: HeroQuest
-): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
-  return updatePlayer(gameState, playerId, {
+export const addPlayerQuest = (gameState: GameState, quest: HeroQuest): GameState => {
+  const player = getTurnOwner(gameState);
+  return updatePlayer(gameState, player.id, {
     quests: [...player.quests, quest],
   });
 };

@@ -1,42 +1,27 @@
-import { getTurnOwner } from '../../selectors/playerSelectors';
-import { getArmiesByPlayer } from '../../selectors/armySelectors';
-import { getHero } from '../../systems/armyActions';
-import { updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
-import { getQuest } from '../../domain/quest/questRepository';
+import { findArmyByHero, getPosition } from '../../selectors/armySelectors';
+import { cleanupArmies, getHero } from '../../systems/armyActions';
+import { updateArmyInGameState } from '../../systems/armyActions';
+import { addPlayerQuest } from '../../systems/gameStateActions';
+import { heroQuestFactory } from '../../factories/heroQuestFactory';
 
 import type { GameState } from '../../state/GameState';
-import type { HeroState } from '../../state/army/HeroState';
 import type { QuestType } from '../../types/Quest';
 
-export const startQuest = (gameState: GameState, hero: HeroState, questType: QuestType) => {
-  const turnOwner = getTurnOwner(gameState);
-
+export const startQuest = (state: GameState, heroName: string, questType: QuestType) => {
   // Find the army containing the hero
-  const armies = getArmiesByPlayer(gameState, turnOwner.id);
-  const armyWithHero = armies.find((army) => army.heroes.some((unit) => unit.name === hero.name));
+  const heroArmy = findArmyByHero(state, heroName);
+  if (!heroArmy) return;
 
-  if (armyWithHero != null) {
-    // remove hero from the army
-    const heroResult = getHero(armyWithHero, hero.name)!;
-    Object.assign(armyWithHero, heroResult.updatedArmy);
+  // remove hero from the army
+  const heroAndArmy = getHero(heroArmy, heroName)!;
+  Object.assign(state, updateArmyInGameState(state, heroAndArmy.updatedArmy));
 
-    // Get the army's current position from movement path
-    const questLandPosition =
-      armyWithHero.movement.path.length > 0 ? armyWithHero.movement.path[0] : { row: 0, col: 0 };
+  const questLandPosition = getPosition(heroAndArmy.updatedArmy);
 
-    // Remove army if it has no units left, otherwise update it
-    if (armyWithHero.regulars.length === 0 && armyWithHero.heroes.length === 0) {
-      Object.assign(gameState, removeArmyFromGameState(gameState, armyWithHero.id));
-    } else {
-      Object.assign(gameState, updateArmyInGameState(gameState, armyWithHero));
-    }
+  Object.assign(state, cleanupArmies(state));
 
-    // send hero to quest
-    turnOwner.quests.push({
-      quest: getQuest(questType),
-      land: questLandPosition, // hero Start Quest land position (it will return at the same position if survive)
-      hero: heroResult.hero,
-      remainTurnsInQuest: getQuest(questType).length,
-    });
-  }
+  Object.assign(
+    state,
+    addPlayerQuest(state, heroQuestFactory(questType, heroAndArmy.hero, questLandPosition))
+  );
 };

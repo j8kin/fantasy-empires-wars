@@ -396,7 +396,7 @@ describe('SendHeroInQuestDialog', () => {
 
       // Verify startQuest was called with correct parameters
       // First quest type
-      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero, 'The Echoing Ruins');
+      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.name, 'The Echoing Ruins');
     });
 
     it('should track used slots across all pages', async () => {
@@ -446,7 +446,7 @@ describe('SendHeroInQuestDialog', () => {
 
       // Verify each hero was sent to the correct quest
       allHeroes.forEach((hero) => {
-        expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero, 'The Echoing Ruins');
+        expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.name, 'The Echoing Ruins');
       });
 
       // Should close dialog after sending all heroes
@@ -470,17 +470,17 @@ describe('SendHeroInQuestDialog', () => {
       // Click on second quest (The Whispering Grove)
       await user.click(heroSlots[1]);
 
-      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero, 'The Whispering Grove');
+      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.name, 'The Whispering Grove');
 
       // Click on third quest (The Abyssal Crypt)
       await user.click(heroSlots[2]);
 
-      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero, 'The Abyssal Crypt');
+      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.name, 'The Abyssal Crypt');
 
       // Click on fourth quest (The Shattered Sky)
       await user.click(heroSlots[3]);
 
-      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero, 'The Shattered Sky');
+      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.name, 'The Shattered Sky');
 
       expect(mockStartQuest).toHaveBeenCalledTimes(3);
     });

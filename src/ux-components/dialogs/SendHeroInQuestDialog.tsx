@@ -1,16 +1,17 @@
 import React, { useCallback, useState, useEffect } from 'react';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
+import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-import { findHeroAndLand, getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getAllQuests, getQuestType } from '../../domain/quest/questRepository';
 import { startQuest } from '../../map/quest/startQuest';
 
 import { getQuestImg } from '../../assets/getQuestImg';
 
+import type { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 import type { HeroState } from '../../state/army/HeroState';
 
 const SendHeroInQuestDialog: React.FC = () => {
@@ -54,12 +55,9 @@ const SendHeroInQuestDialog: React.FC = () => {
     (questLvl: number) => {
       return (slot: Slot) => {
         // slot.id contain uniq Hero name, and slot name contains what is displayed in the dialog, e.g. "Alaric Lvl: 1"
-        const hero = findHeroAndLand(gameState!, slot.id, gameState?.turnOwner)?.hero;
-        if (hero) {
-          startQuest(gameState!, hero, getQuestType(questLvl + 1));
-          // Mark the slot as used across all pages
-          setUsedSlots((prev) => new Set(prev).add(slot.id));
-        }
+        startQuest(gameState!, slot.id, getQuestType(questLvl + 1));
+        // Mark the slot as used across all pages
+        setUsedSlots((prev) => new Set(prev).add(slot.id));
       };
     },
     [gameState]
@@ -68,7 +66,7 @@ const SendHeroInQuestDialog: React.FC = () => {
   const createQuestClickHandler = useCallback(
     (questLvl: number, units: HeroState[]) => {
       return () => {
-        units.forEach((hero) => startQuest(gameState!, hero, getQuestType(questLvl + 1)));
+        units.forEach((hero) => startQuest(gameState!, hero.name, getQuestType(questLvl + 1)));
         handleClose();
       };
     },
