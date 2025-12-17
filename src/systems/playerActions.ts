@@ -5,14 +5,7 @@ import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
 
 import { playerFactory } from '../factories/playerFactory';
-import {
-  addPlayer as addPlayerToGameState,
-  removePlayer as removePlayerFromGameState,
-  setTurnOwner,
-  incrementTurn,
-  addPlayerLand,
-  removePlayerLand,
-} from './gameStateActions';
+import { addPlayer as addPlayerToGameState, setTurnOwner, incrementTurn } from './gameStateActions';
 
 import { NO_PLAYER } from '../domain/player/playerRepository';
 
@@ -30,13 +23,6 @@ export const addPlayer = (
   }
 };
 
-export const removePlayer = (gameState: GameState, playerId: string) => {
-  if (gameState.turnOwner === playerId) {
-    nextPlayer(gameState);
-  }
-  Object.assign(gameState, removePlayerFromGameState(gameState, playerId));
-};
-
 export const nextPlayer = (gameState: GameState): void => {
   const { players, turnOwner } = gameState;
   if (players.length === 0) return;
@@ -49,32 +35,6 @@ export const nextPlayer = (gameState: GameState): void => {
   if (nextIdx === 0) {
     Object.assign(gameState, incrementTurn(gameState));
   }
-};
-
-// Legacy functions - use addPlayerLand/removePlayerLand from gameStateActions for new code
-export const addLand = (state: PlayerState, landPos: LandPosition): void => {
-  state.landsOwned.add(getLandId(landPos));
-};
-
-export const removeLand = (state: PlayerState, landPos: LandPosition): void => {
-  state.landsOwned.delete(getLandId(landPos));
-};
-
-// GameState-level land ownership functions
-export const addLandToPlayer = (
-  gameState: GameState,
-  playerId: string,
-  landPos: LandPosition
-): void => {
-  Object.assign(gameState, addPlayerLand(gameState, playerId, landPos));
-};
-
-export const removeLandFromPlayer = (
-  gameState: GameState,
-  playerId: string,
-  landPos: LandPosition
-): void => {
-  Object.assign(gameState, removePlayerLand(gameState, playerId, landPos));
 };
 
 export const hasLand = (state: PlayerState, landPos: LandPosition): boolean => {

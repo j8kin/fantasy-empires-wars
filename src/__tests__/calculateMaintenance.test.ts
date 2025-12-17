@@ -2,7 +2,7 @@ import { GameState } from '../state/GameState';
 import { LandPosition } from '../state/map/land/LandPosition';
 
 import { getTurnOwner } from '../selectors/playerSelectors';
-import { addLand } from '../systems/playerActions';
+import { addPlayerLand } from '../systems/gameStateActions';
 import { addRegulars } from '../systems/armyActions';
 import { levelUpHero, levelUpRegulars } from '../systems/unitsActions';
 
@@ -43,7 +43,10 @@ describe('Calculate Maintenance', () => {
       [HeroUnitType.ENCHANTER, 1, 100],
       [HeroUnitType.NECROMANCER, 1, 100],
     ])('Hero %s maintenance level %s', (hero, level, expected) => {
-      addLand(getTurnOwner(gameStateStub), { row: 0, col: 0 });
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 0, col: 0 })
+      );
       const heroUnit = heroFactory(hero, hero);
       while (heroUnit.level < level) {
         levelUpHero(heroUnit, Alignment.LAWFUL);
@@ -72,7 +75,10 @@ describe('Calculate Maintenance', () => {
       [RegularUnitType.BALLISTA, UnitRank.REGULAR, 1, 150],
       [RegularUnitType.CATAPULT, UnitRank.REGULAR, 1, 50],
     ])('RegularUnit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
-      addLand(getTurnOwner(gameStateStub), { row: 0, col: 0 });
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 0, col: 0 })
+      );
       const regularUnit = regularsFactory(regular);
       while (regularUnit.rank !== level) {
         levelUpRegulars(regularUnit, Alignment.LAWFUL);
@@ -93,7 +99,10 @@ describe('Calculate Maintenance', () => {
       expect(elitDwarf.rank).toBe(UnitRank.ELITE);
       elitDwarf.count = 17;
 
-      addLand(getTurnOwner(gameStateStub), { row: 0, col: 0 });
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 0, col: 0 })
+      );
       const army = armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, [
         heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
       ]);
@@ -121,7 +130,10 @@ describe('Calculate Maintenance', () => {
       [BuildingType.WALL, 100],
     ])('Building %s maintenance cost', (building, expected) => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
-      addLand(getTurnOwner(gameStateStub), buildingPos);
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, buildingPos)
+      );
       construct(gameStateStub, building, buildingPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
@@ -130,7 +142,10 @@ describe('Calculate Maintenance', () => {
 
     it('Multiple buildings', () => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
-      addLand(getTurnOwner(gameStateStub), buildingPos);
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, buildingPos)
+      );
       construct(gameStateStub, BuildingType.BARRACKS, buildingPos);
       construct(gameStateStub, BuildingType.WALL, buildingPos);
       construct(gameStateStub, BuildingType.WALL, buildingPos);

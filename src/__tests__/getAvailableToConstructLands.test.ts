@@ -1,13 +1,15 @@
 import { GameState } from '../state/GameState';
 import { getTurnOwner } from '../selectors/playerSelectors';
+import { nextPlayer } from '../systems/playerActions';
+import { addPlayerLand } from '../systems/gameStateActions';
+import { heroFactory } from '../factories/heroFactory';
 import { BuildingType } from '../types/Building';
 import { HeroUnitType } from '../types/UnitType';
 import { getAvailableToConstructLands } from '../map/building/getAvailableToConstructLands';
 import { construct } from '../map/building/construct';
+
 import { createGameStateStub } from './utils/createGameStateStub';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { addLand, nextPlayer } from '../systems/playerActions';
-import { heroFactory } from '../factories/heroFactory';
 
 describe('getAvailableLands', () => {
   let gameStateStub: GameState;
@@ -53,7 +55,10 @@ describe('getAvailableLands', () => {
       row: 3,
       col: 5,
     });
-    addLand(getTurnOwner(gameStateStub), { row: 3, col: 5 });
+    Object.assign(
+      gameStateStub,
+      addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 3, col: 5 })
+    );
     //gameStateStub.battlefield.lands['3-5'].controlledBy = gameStateStub.turnOwner;
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingType.STRONGHOLD);
