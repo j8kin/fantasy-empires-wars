@@ -1,5 +1,6 @@
 import { getLandId } from '../state/map/land/LandId';
 import { getPlayer } from '../selectors/playerSelectors';
+import { addEmpireTreasure } from './playerActions';
 import { MAX_MANA } from '../types/Mana';
 
 import type { GameState } from '../state/GameState';
@@ -11,9 +12,10 @@ import type { Mana } from '../types/Mana';
 import type { Effect } from '../types/Effect';
 import type { EmpireTreasure } from '../types/Treasures';
 import type { TurnPhase } from '../turn/TurnPhase';
+import type { UnitType } from '../types/UnitType';
 
 interface BuildingSlot {
-  unit: any; // UnitType
+  unit: UnitType;
   turnsRemaining: number;
 }
 
@@ -232,10 +234,11 @@ export const addPlayerEmpireTreasure = (
   playerId: string,
   treasure: EmpireTreasure
 ): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
-  return updatePlayer(gameState, playerId, {
-    empireTreasures: [...player.empireTreasures, treasure],
-  });
+  return updatePlayer(
+    gameState,
+    playerId,
+    addEmpireTreasure(getPlayer(gameState, playerId), treasure)
+  );
 };
 
 // ============================================================================
