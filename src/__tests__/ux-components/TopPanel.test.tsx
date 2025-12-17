@@ -6,7 +6,7 @@ import TopPanel from '../../ux-components/top-panel/TopPanel';
 import { defaultTileDimensions } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
-import { addPlayer } from '../../systems/playerActions';
+import { addPlayerToGameState } from '../../systems/playerActions';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 
 import { getPlayer } from '../../selectors/playerSelectors';
@@ -28,7 +28,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
 
         // Add players to the game
         PREDEFINED_PLAYERS.slice(0, 3).forEach((player, index) => {
-          addPlayer(newGameState, player, index === 0 ? 'human' : 'computer');
+          addPlayerToGameState(newGameState, player, index === 0 ? 'human' : 'computer');
         });
 
         // Set up the first player with test data
@@ -188,7 +188,7 @@ describe('TopPanel Component', () => {
             const newGameState = gameStateFactory(map);
 
             // Add only one player
-            addPlayer(newGameState, PREDEFINED_PLAYERS[0], 'human');
+            addPlayerToGameState(newGameState, PREDEFINED_PLAYERS[0], 'human');
 
             updateGameState(newGameState);
           }

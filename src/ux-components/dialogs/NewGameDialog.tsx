@@ -13,7 +13,7 @@ import { GameState } from '../../state/GameState';
 import { PlayerProfile } from '../../state/player/PlayerProfile';
 import { MapDimensions } from '../../state/map/MapDimensions';
 
-import { addPlayer } from '../../systems/playerActions';
+import { addPlayerToGameState } from '../../systems/playerActions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
@@ -252,8 +252,8 @@ const NewGameDialog: React.FC = () => {
     setTimeout(() => {
       const map = generateMap(getBattlefieldDimensions(mapSize));
       const gameState: GameState = gameStateFactory(map);
-      addPlayer(gameState, selectedPlayer, 'human');
-      opponents.forEach((o) => addPlayer(gameState, o, 'computer'));
+      addPlayerToGameState(gameState, selectedPlayer, 'human');
+      opponents.forEach((o) => addPlayerToGameState(gameState, o, 'computer'));
 
       startNewGame(gameState);
       setGameStarted(true);

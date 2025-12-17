@@ -4,7 +4,7 @@ import { LandPosition } from '../../state/map/land/LandPosition';
 import { MapDimensions } from '../../state/map/MapDimensions';
 
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { addPlayer, nextPlayer } from '../../systems/playerActions';
+import { addPlayerToGameState, nextPlayer } from '../../systems/playerActions';
 import { levelUpHero } from '../../systems/unitsActions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 import { heroFactory } from '../../factories/heroFactory';
@@ -39,7 +39,9 @@ export const createGameStateStub = ({
 
   const map = realBattlefield ? generateMap(battlefieldSize) : generateMockMap(battlefieldSize);
   const stubGameState: GameState = gameStateFactory(map);
-  playersProfile.forEach((p, idx) => addPlayer(stubGameState, p, idx === 0 ? 'human' : 'computer'));
+  playersProfile.forEach((p, idx) =>
+    addPlayerToGameState(stubGameState, p, idx === 0 ? 'human' : 'computer')
+  );
 
   if (addPlayersHomeland) {
     for (let i = 0; i < playersProfile.length; i++) {

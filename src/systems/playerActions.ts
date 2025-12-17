@@ -5,19 +5,19 @@ import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
 
 import { playerFactory } from '../factories/playerFactory';
-import { addPlayer as addPlayerToGameState, setTurnOwner, incrementTurn } from './gameStateActions';
+import { addPlayer, setTurnOwner, incrementTurn } from './gameStateActions';
 
 import { NO_PLAYER } from '../domain/player/playerRepository';
 
 const INITIAL_VAULT = 15000;
 
-export const addPlayer = (
+export const addPlayerToGameState = (
   gameState: GameState,
   profile: PlayerProfile,
   type: 'human' | 'computer'
 ) => {
   const newPlayer = playerFactory(profile, type, INITIAL_VAULT);
-  Object.assign(gameState, addPlayerToGameState(gameState, newPlayer));
+  Object.assign(gameState, addPlayer(gameState, newPlayer));
   if (gameState.turnOwner === NO_PLAYER.id) {
     Object.assign(gameState, setTurnOwner(gameState, newPlayer.id));
   }
