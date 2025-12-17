@@ -13,7 +13,7 @@ import {
 import { nextPlayer } from '../../systems/playerActions';
 
 import { QuestType } from '../../types/Quest';
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 
@@ -163,7 +163,9 @@ describe('Hero Quest', () => {
     expect(armies[0].heroes[0]).toBe(hero);
     expect(armies[0].heroes[0].artifacts.length).toBe(0);
     expect(getTurnOwner(gameStateStub).empireTreasures.length).toBe(1);
-    expect(getTurnOwner(gameStateStub).empireTreasures[0].id).toBe(TreasureItem.WAND_TURN_UNDEAD); // quest reward
+    expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
+      TreasureType.WAND_TURN_UNDEAD
+    ); // quest reward
     expect(hero.level).toBe(heroLevel + 1);
 
     // verify that hero stats are incremented exact new stats calculation verified separately
@@ -252,7 +254,7 @@ describe('Hero Quest', () => {
     armiesReturn[0].heroes.forEach((armyUnit) => {
       expect(armyUnit.level).toBe(2);
       expect(armyUnit.artifacts.length).toBe(1);
-      expect(armyUnit.artifacts[0].id).toBe(TreasureItem.BOOTS_OF_SPEED);
+      expect(armyUnit.artifacts[0].treasure.type).toBe(TreasureType.BOOTS_OF_SPEED);
     });
   });
 
@@ -307,7 +309,9 @@ describe('Hero Quest', () => {
     expect(armiesQuestComplete[0].heroes[0].type).toBe(HeroUnitType.FIGHTER);
     expect(armiesQuestComplete[0].heroes[0].level).toBe(2);
     expect(armiesQuestComplete[0].heroes[0].artifacts.length).toBe(1);
-    expect(armiesQuestComplete[0].heroes[0].artifacts[0].id).toBe(TreasureItem.BOOTS_OF_SPEED);
+    expect(armiesQuestComplete[0].heroes[0].artifacts[0].treasure.type).toBe(
+      TreasureType.BOOTS_OF_SPEED
+    );
   });
 
   //todo add test when hero returns from quest into territory which now controlled by another player and die

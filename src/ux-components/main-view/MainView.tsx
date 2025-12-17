@@ -13,6 +13,7 @@ import Battlefield from '../battlefield/Battlefield';
 import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import CastSpellDialog from '../dialogs/CastSpellDialog';
+import EmpireTreasureDialog from '../dialogs/EmpireTreasureDialog';
 import ConstructBuildingDialog from '../dialogs/ConstructBuildingDialog';
 import RecruitArmyDialog from '../dialogs/RecruitArmyDialog';
 import MoveArmyDialog from '../dialogs/MoveArmyDialog';
@@ -148,6 +149,9 @@ const MainViewContent: React.FC = () => {
 
       {/* Cast Spell Dialog - shown as overlay */}
       <CastSpellDialog />
+
+      {/* Empire Treasure Dialog - shown as overlay */}
+      <EmpireTreasureDialog />
 
       {/* Construct Building Dialog - shown as overlay */}
       <ConstructBuildingDialog />

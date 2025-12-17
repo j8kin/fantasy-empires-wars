@@ -195,16 +195,31 @@ export const applyArmyPenalty = (
   return updatedArmy;
 };
 
+const calcLoss = (
+  normUnits: number,
+  lossAbs: {
+    total: number;
+    loss: number;
+  },
+  hasShardOfTheSilentAnvil: boolean
+) => {
+  return Math.ceil(
+    ((hasShardOfTheSilentAnvil ? 0.65 : 1) * (normUnits * lossAbs.loss)) / lossAbs.total
+  );
+};
+
 /**
  * Calculates and applies penalties to multiple armies based on configuration
  * @param armies Array of armies to apply penalties to
  * @param config Penalty configuration
+ * @param hasShardOfTheSilentAnvil player has Shard Of The Silent Anvil in treasure which reduce spell loss by 35%
  * @param unitTypesInvolved Optional array of specific unit types to target for penalties
  * @returns Array of updated armies with penalties applied
  */
 export const calculateAndApplyArmyPenalties = (
   armies: ArmyState[],
   config: PenaltyConfig,
+  hasShardOfTheSilentAnvil: boolean = false,
   unitTypesInvolved?: RegularUnitType[]
 ): ArmyState[] => {
   const normalizedUnits = armies.map((army) =>
@@ -217,15 +232,15 @@ export const calculateAndApplyArmyPenalties = (
     const unitsToLoss: Record<UnitRank, number> = {
       [UnitRank.REGULAR]:
         loss.regular.total !== 0
-          ? Math.ceil((normUnits.regular * loss.regular.loss) / loss.regular.total)
+          ? calcLoss(normUnits.regular, loss.regular, hasShardOfTheSilentAnvil)
           : 0,
       [UnitRank.VETERAN]:
         loss.veteran.total !== 0
-          ? Math.ceil((normUnits.veteran * loss.veteran.loss) / loss.veteran.total)
+          ? calcLoss(normUnits.veteran, loss.veteran, hasShardOfTheSilentAnvil)
           : 0,
       [UnitRank.ELITE]:
         loss.elite.total !== 0
-          ? Math.ceil((normUnits.elite * loss.elite.loss) / loss.elite.total)
+          ? calcLoss(normUnits.elite, loss.elite, hasShardOfTheSilentAnvil)
           : 0,
     };
 

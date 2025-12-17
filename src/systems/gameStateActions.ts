@@ -7,7 +7,7 @@ import { Building } from '../types/Building';
 import { HeroQuest } from '../types/Quest';
 import { Mana } from '../types/Mana';
 import { Effect } from '../types/Effect';
-import { Item } from '../types/Treasures';
+import { EmpireTreasure } from '../types/Treasures';
 import { TurnPhase } from '../turn/TurnPhase';
 
 interface BuildingSlot {
@@ -223,12 +223,12 @@ export const removeCompletedQuests = (gameState: GameState, playerId: string): G
 };
 
 /**
- * Add an item to a player's empire treasures
+ * Add an quest item or relict to a player's empire treasures
  */
 export const addPlayerEmpireTreasure = (
   gameState: GameState,
   playerId: string,
-  treasure: Item
+  treasure: EmpireTreasure
 ): GameState => {
   const player = gameState.players.find((p) => p.id === playerId)!;
   return updatePlayer(gameState, playerId, {

@@ -1,11 +1,13 @@
 import { GameState } from '../state/GameState';
 import { PlayerState } from '../state/player/PlayerState';
 import { LandState } from '../state/map/land/LandState';
+import { getLand } from './landSelectors';
 import { BuildingType } from '../types/Building';
 import { DiplomacyStatus } from '../types/Diplomacy';
-import { getTilesInRadius } from '../map/utils/mapAlgorithms';
-import { getLand } from './landSelectors';
 import { SpellName } from '../types/Spell';
+import { Item, TreasureType } from '../types/Treasures';
+import { getTilesInRadius } from '../map/utils/mapAlgorithms';
+import { isRelic } from '../domain/treasure/treasureRepository';
 
 export const getPlayer = (state: GameState, id: string): PlayerState =>
   state.players.find((p) => p.id === id)!;
@@ -53,4 +55,14 @@ export const getPlayersByDiplomacy = (
 
 export const hasActiveEffectByPlayer = (state: PlayerState, spellId: SpellName): boolean => {
   return state.effects.some((e) => e.spell === spellId && e.duration > 0);
+};
+
+export const hasTreasureByPlayer = (player: PlayerState, treasure: TreasureType): boolean => {
+  return player.empireTreasures?.some((t) => t.treasure.type === treasure);
+};
+
+export const getTreasureItem = (player: PlayerState, itemType: TreasureType): Item | undefined => {
+  const item = player.empireTreasures?.find((t) => t.treasure.type === itemType);
+  if (!item) return undefined;
+  return !isRelic(item) ? item : undefined;
 };

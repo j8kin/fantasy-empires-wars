@@ -1,24 +1,36 @@
 import { GameState } from '../../state/GameState';
+import { HeroState } from '../../state/army/HeroState';
 
 import { armyFactory } from '../../factories/armyFactory';
 import { getLandOwner } from '../../selectors/landSelectors';
-import { getTurnOwner } from '../../selectors/playerSelectors';
-import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
-import { addArmyToGameState, updateArmyInGameState } from '../../systems/armyActions';
-import { addHero } from '../../systems/armyActions';
+import {
+  getTreasureItem,
+  getTurnOwner,
+  hasTreasureByPlayer,
+} from '../../selectors/playerSelectors';
+import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
+import { addArmyToGameState, addHero, updateArmyInGameState } from '../../systems/armyActions';
 import { levelUpHero } from '../../systems/unitsActions';
 import {
   addPlayerEmpireTreasure,
   decrementQuestTurns,
   removeCompletedQuests,
+  updatePlayer,
 } from '../../systems/gameStateActions';
+import {
+  artifactFactory,
+  getRelicAlignment,
+  itemFactory,
+  relictFactory,
+} from '../../factories/treasureFactory';
 
-import { HeroQuest, QuestType } from '../../types/Quest';
+import { artifacts, items, relicts } from '../../domain/treasure/treasureRepository';
 import { getQuest } from '../../domain/quest/questRepository';
 import { getRandomElement } from '../../domain/utils/random';
-import { Artifact, artifacts, items, relicts } from '../../types/Treasures';
-import { HeroState } from '../../state/army/HeroState';
+
+import { HeroQuest, QuestType } from '../../types/Quest';
 import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
+import { Artifact, TreasureType } from '../../types/Treasures';
 import {
   emptyHanded,
   heroDieMessage,
@@ -26,6 +38,9 @@ import {
   heroGainItem,
   heroGainRelic,
 } from './questCompleteMessages';
+import { Alignment } from '../../types/Alignment';
+import { LandPosition } from '../../state/map/land/LandPosition';
+import { removeEmpireTreasureItems } from '../../systems/playerActions';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
@@ -80,10 +95,10 @@ const gainArtifact = (
   questType: QuestType
 ): { outcome: HeroOutcome; updatedHero: HeroState } => {
   const baseArtifactLevel = getQuest(questType).level;
-  const heroArtifact: Artifact = {
-    ...getRandomElement(artifacts),
-    level: getRandomElement([baseArtifactLevel, baseArtifactLevel + 1, baseArtifactLevel + 2]),
-  };
+  const heroArtifact: Artifact = artifactFactory(
+    getRandomElement(artifacts).type,
+    getRandomElement([baseArtifactLevel, baseArtifactLevel + 1, baseArtifactLevel + 2])
+  );
   // todo if hero already has artifact, then allow user to choose between two artifacts
 
   const updatedHero = {
@@ -102,16 +117,13 @@ const gainArtifact = (
 
 const gainItem = (gameState: GameState, hero: HeroState): HeroOutcome => {
   const turnOwner = getTurnOwner(gameState);
-  const item = { ...getRandomElement(items) }; // Create copy to avoid mutating original
-  if (item.charge == null) {
-    item.charge = getRandomElement([7, 10, 15]);
-  }
+  const itemType = getRandomElement(items).type;
 
-  Object.assign(gameState, addPlayerEmpireTreasure(gameState, turnOwner.id, item));
+  Object.assign(gameState, addPlayerEmpireTreasure(gameState, turnOwner.id, itemFactory(itemType)));
 
   return {
     status: HeroOutcomeType.Positive,
-    message: heroGainItem(hero.name, item),
+    message: heroGainItem(hero.name, itemType),
   };
 };
 
@@ -119,16 +131,23 @@ const gainRelic = (gameState: GameState, hero: HeroState): HeroOutcome => {
   const relicInPlay = gameState.players.flatMap((p) => p.empireTreasures);
   const turnOwner = getTurnOwner(gameState);
   const availableRelics = relicts
-    .filter((a) => a.alignment == null || a.alignment === turnOwner.playerProfile.alignment)
-    .filter((a) => !relicInPlay.some((r) => r.id === a.id));
+    .filter(
+      (a) =>
+        getRelicAlignment(a.type) === Alignment.NONE ||
+        getRelicAlignment(a.type) === turnOwner.playerProfile.alignment
+    )
+    .filter((a) => !relicInPlay.some((r) => r.treasure.type === a.type));
 
   if (availableRelics.length > 0) {
-    const relic = getRandomElement(availableRelics);
-    Object.assign(gameState, addPlayerEmpireTreasure(gameState, turnOwner.id, relic));
+    const relicType = getRandomElement(availableRelics).type;
+    Object.assign(
+      gameState,
+      addPlayerEmpireTreasure(gameState, turnOwner.id, relictFactory(relicType))
+    );
 
     return {
       status: HeroOutcomeType.Legendary,
-      message: heroGainRelic(hero.name, relic),
+      message: heroGainRelic(hero.name, relicType),
     };
   } else {
     return gainItem(gameState, hero);
@@ -149,36 +168,59 @@ const questResults = (quest: HeroQuest, gameState: GameState): HeroOutcome => {
 
     if (hero.level < quest.quest.level * 5) {
       levelUpHero(hero, turnOwner.playerProfile.alignment);
-      //levelUpHero(hero, turnOwner);
     }
 
     const rewardResult = calculateReward(hero, quest, gameState);
     questOutcome = rewardResult.outcome;
     hero = rewardResult.updatedHero; // Use potentially updated hero with artifacts
 
-    // return hero to quest land (with artifact if the hero gain it) that is why it is after calculateReward
-    const armiesAtPosition = getArmiesAtPosition(gameState, quest.land);
-    const stationedArmy = armiesAtPosition.find(
-      (a) => !isMoving(a) && a.controlledBy === turnOwner.id
-    );
-    if (stationedArmy) {
-      // add into the existing stationed Army
-      const updatedArmy = addHero(stationedArmy, hero);
-      Object.assign(stationedArmy, updatedArmy);
-      Object.assign(gameState, updateArmyInGameState(gameState, stationedArmy));
-    } else {
-      // no valid army found, create new one
-      const newArmy = armyFactory(turnOwner.id, quest.land, [hero]);
-      Object.assign(gameState, addArmyToGameState(gameState, newArmy));
-    }
+    returnHeroOnMap(gameState, hero, quest.land);
   } else {
-    questOutcome = {
-      status: HeroOutcomeType.Negative,
-      message: heroDieMessage(quest.hero.name),
-    };
+    if (hasTreasureByPlayer(turnOwner, TreasureType.MERCY_OF_ORRIVANE)) {
+      // No time to die, Orrivane gives a mercy but not a new level
+      questOutcome = {
+        status: HeroOutcomeType.Success,
+        message: `${heroDieMessage(quest.hero.name)} Yet Orrivane remembered them, and the world bent so they might return.`,
+      };
+      returnHeroOnMap(gameState, quest.hero, quest.land);
+
+      Object.assign(
+        gameState,
+        updatePlayer(
+          gameState,
+          turnOwner.id,
+          removeEmpireTreasureItems(
+            turnOwner,
+            getTreasureItem(turnOwner, TreasureType.MERCY_OF_ORRIVANE)!
+          )
+        )
+      );
+    } else {
+      questOutcome = {
+        status: HeroOutcomeType.Negative,
+        message: heroDieMessage(quest.hero.name),
+      };
+    }
   }
 
   return questOutcome;
+};
+
+const returnHeroOnMap = (state: GameState, hero: HeroState, landPosition: LandPosition) => {
+  const armiesAtPosition = getArmiesAtPosition(state, landPosition);
+  const stationedArmy = armiesAtPosition.find(
+    (a) => !isMoving(a) && a.controlledBy === state.turnOwner
+  );
+  if (stationedArmy) {
+    // add into the existing stationed Army
+    const updatedArmy = addHero(stationedArmy, hero);
+    Object.assign(stationedArmy, updatedArmy);
+    Object.assign(state, updateArmyInGameState(state, stationedArmy));
+  } else {
+    // no valid army found, create new one
+    const newArmy = armyFactory(state.turnOwner, landPosition, [hero]);
+    Object.assign(state, addArmyToGameState(state, newArmy));
+  }
 };
 
 export const completeQuest = (gameState: GameState): HeroOutcome[] => {

@@ -8,11 +8,10 @@ import { getPlayerLands } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { nextPlayer } from '../../systems/playerActions';
 
-import { relicts, TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
 import { HeroUnitType } from '../../types/UnitType';
 import { LandType } from '../../types/Land';
-
+import { TreasureType } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
 
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
@@ -22,6 +21,7 @@ import { getLandById } from '../../domain/land/landRepository';
 
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { relictFactory } from '../../factories/treasureFactory';
 
 describe('Calculate Mana', () => {
   let testTurnManagement: TestTurnManagement;
@@ -278,7 +278,7 @@ describe('Calculate Mana', () => {
     const players = [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]];
     gameStateStub = createGameStateStub({ gamePlayers: players });
     gameStateStub.players[0].empireTreasures.push(
-      relicts.find((r) => r.id === TreasureItem.HEARTSTONE_OF_ORRIVANE)!
+      relictFactory(TreasureType.HEARTSTONE_OF_ORRIVANE)
     );
 
     const homeLand = getPlayerLands(gameStateStub).find((l) =>

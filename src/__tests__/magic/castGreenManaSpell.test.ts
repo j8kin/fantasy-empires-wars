@@ -4,7 +4,7 @@ import { LandPosition } from '../../state/map/land/LandPosition';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, getMaxHeroLevelByType } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { getLand } from '../../selectors/landSelectors';
+import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
@@ -13,12 +13,13 @@ import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
 import { EffectType } from '../../types/Effect';
-import { relicts, TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { castSpell } from '../../map/magic/castSpell';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { relictFactory } from '../../factories/treasureFactory';
 
 describe('castGreenManaSpell', () => {
   let gameStateStub: GameState;
@@ -121,7 +122,7 @@ describe('castGreenManaSpell', () => {
         // spell should affect only one land
         expect(
           getPlayerLands(gameStateStub, gameStateStub.players[1].id).filter((l) =>
-            l.effects.some((e) => e.spell === SpellName.ENTANGLING_ROOTS)
+            hasActiveEffect(l, SpellName.ENTANGLING_ROOTS)
           )
         ).toHaveLength(1);
 
@@ -318,9 +319,7 @@ describe('castGreenManaSpell', () => {
 
     expect(getTurnOwner(gameStateStub).mana.green).toBe(200 - getSpellById(spellName).manaCost);
 
-    getTurnOwner(gameStateStub).empireTreasures.push(
-      relicts.find((r) => r.id === TreasureItem.VERDANT_IDOL)!
-    );
+    getTurnOwner(gameStateStub).empireTreasures.push(relictFactory(TreasureType.VERDANT_IDOL));
 
     // select another land to cast spell to avoid situation that it is not possible to cast spell on the same land
     dummyLand =

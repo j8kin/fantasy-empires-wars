@@ -11,10 +11,11 @@ import { getArmiesAtPosition } from '../selectors/armySelectors';
 import { hasLand, nextPlayer } from '../systems/playerActions';
 import { regularsFactory } from '../factories/regularsFactory';
 import { PREDEFINED_PLAYERS } from '../domain/player/playerRepository';
+import { relictFactory } from '../factories/treasureFactory';
 
 import { BuildingType } from '../types/Building';
 import { RegularUnitType } from '../types/UnitType';
-import { relicts, TreasureItem } from '../types/Treasures';
+import { TreasureType } from '../types/Treasures';
 
 import { construct } from '../map/building/construct';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
@@ -88,9 +89,10 @@ describe('Construct Buildings', () => {
         addPlayerEmpireTreasure(
           gameStateStub,
           player1Id,
-          relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!
+          relictFactory(TreasureType.CROWN_OF_DOMINION)
         )
       );
+
       expect(getTurnOwner(gameStateStub).vault).toBe(200000);
 
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);

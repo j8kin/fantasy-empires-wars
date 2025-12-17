@@ -2,14 +2,14 @@ import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
 
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getLandOwner } from '../../selectors/landSelectors';
 import { getBuilding } from '../../selectors/buildingSelectors';
 import { addPlayerLand, updatePlayerVault } from '../../systems/gameStateActions';
 
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
@@ -51,9 +51,7 @@ export const construct = (
 
   // if player has Crown of Dominion, reduce cost by 15%
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests
-  const hasCrownOfDominion = turnOwner.empireTreasures?.some(
-    (t) => t.id === TreasureItem.CROWN_OF_DOMINION
-  );
+  const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureType.CROWN_OF_DOMINION);
 
   if (gameState.turn > 1) {
     const cost = hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;

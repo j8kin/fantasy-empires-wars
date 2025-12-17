@@ -1,6 +1,7 @@
 import { GameState } from '../../state/GameState';
 
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { hasActiveEffect } from '../../selectors/landSelectors';
 
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
@@ -61,7 +62,7 @@ export const calculateIncome = (gameState: GameState): number => {
     }
 
     // add FERTILE LAND Bonus
-    if (land.effects.some((e) => e.spell === SpellName.FERTILE_LAND && e.castBy === turnOwner.id)) {
+    if (hasActiveEffect(land, SpellName.FERTILE_LAND, turnOwner.id)) {
       landIncome = landIncome * 1.5;
     }
 

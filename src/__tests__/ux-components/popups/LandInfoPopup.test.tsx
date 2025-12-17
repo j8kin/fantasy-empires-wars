@@ -20,10 +20,11 @@ import { effectFactory } from '../../../factories/effectFactory';
 import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
 import { BuildingType } from '../../../types/Building';
 import { SpellName } from '../../../types/Spell';
-import { relicts, TreasureItem } from '../../../types/Treasures';
+import { TreasureType } from '../../../types/Treasures';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { relictFactory } from '../../../factories/treasureFactory';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
@@ -588,9 +589,7 @@ describe('LandInfoPopup', () => {
       const randomSpy = jest.spyOn(Math, 'random');
       randomSpy.mockReturnValue(0);
 
-      gameStateStub.players[1].empireTreasures.push(
-        relicts.find((treasure) => treasure.id === TreasureItem.MIRROR_OF_ILLUSION)!
-      );
+      gameStateStub.players[1].empireTreasures.push(relictFactory(TreasureType.MIRROR_OF_ILLUSION));
 
       mockTileState.effects.push(
         effectFactory(getSpellById(SpellName.VIEW_TERRITORY), gameStateStub.turnOwner)

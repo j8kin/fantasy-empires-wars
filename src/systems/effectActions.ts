@@ -1,5 +1,6 @@
 import { GameState } from '../state/GameState';
 import { Effect } from '../types/Effect';
+import { SpellName } from '../types/Spell';
 import { getPlayerLands, getTurnOwner } from '../selectors/playerSelectors';
 import { getArmiesByPlayer } from '../selectors/armySelectors';
 
@@ -14,7 +15,7 @@ const decrementAndFilterEffects = (effects: Effect[], castById: string): Effect[
   return effects
     .map((effect) => {
       // Only decrement effects cast by the specified player
-      if (effect.castBy === castById) {
+      if (effect.castBy === castById || effect.spell === SpellName.TURN_UNDEAD) {
         return {
           ...effect,
           duration: effect.duration - 1,
@@ -25,7 +26,7 @@ const decrementAndFilterEffects = (effects: Effect[], castById: string): Effect[
     })
     .filter((effect) => {
       // Remove effects that were cast by the specified player and have expired
-      if (effect.castBy === castById) {
+      if (effect.castBy === castById || effect.spell === SpellName.TURN_UNDEAD) {
         return effect.duration > 0;
       }
       // Keep effects that were not cast by the specified player regardless of duration

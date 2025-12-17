@@ -33,6 +33,8 @@ describe('Calculate Income', () => {
         return PREDEFINED_PLAYERS[2]; // Morgana - CHAOTIC
       case Alignment.CHAOTIC:
         return PREDEFINED_PLAYERS[1]; // Thorin - NEUTRAL
+      default:
+        throw new Error('Invalid player alignment');
     }
   };
   beforeEach(() => {

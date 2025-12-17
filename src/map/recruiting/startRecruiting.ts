@@ -2,14 +2,14 @@ import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/map/land/LandPosition';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { updatePlayerVault } from '../../systems/gameStateActions';
 import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
 import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
 
 import { BuildingType } from '../../types/Building';
-import { TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { HeroUnitType, UnitType } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
 
@@ -65,9 +65,8 @@ export const startRecruiting = (
     const turnOwner = getTurnOwner(state);
     const availableGold = turnOwner.vault;
     if (availableGold != null && availableGold >= unitsBaseStats(unitType).recruitCost) {
-      const hasCrownOfDominion = turnOwner.empireTreasures?.some(
-        (r) => r.id === TreasureItem.CROWN_OF_DOMINION
-      );
+      const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureType.CROWN_OF_DOMINION);
+
       const costReduction = hasCrownOfDominion
         ? Math.ceil(unitsBaseStats(unitType).recruitCost * 0.85)
         : unitsBaseStats(unitType).recruitCost;

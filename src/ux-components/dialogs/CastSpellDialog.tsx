@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
@@ -77,8 +77,7 @@ const CastSpellDialog: React.FC = () => {
   const turnUndeadSpellCastAvailable =
     turnOwner.mana.white > 0 &&
     gameState.players.some(
-      (p) =>
-        p.id !== gameState.turnOwner && !p.effects.some((e) => e.spell === SpellName.TURN_UNDEAD)
+      (p) => p.id !== gameState.turnOwner && !hasActiveEffectByPlayer(p, SpellName.TURN_UNDEAD)
     );
 
   const availableSpells = playerMana

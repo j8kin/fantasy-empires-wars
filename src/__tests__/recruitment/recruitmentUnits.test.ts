@@ -8,19 +8,20 @@ import { getLand } from '../../selectors/landSelectors';
 import { getPlayer, getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';
+import { relictFactory } from '../../factories/treasureFactory';
 
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
 
 import { BuildingType } from '../../types/Building';
-import { relicts, TreasureItem } from '../../types/Treasures';
+import { TreasureType } from '../../types/Treasures';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
+import { SpellName } from '../../types/Spell';
 
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
+import { castSpell } from '../../map/magic/castSpell';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { castSpell } from '../../map/magic/castSpell';
-import { SpellName } from '../../types/Spell';
 
 describe('Recruitment', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -78,7 +79,7 @@ describe('Recruitment', () => {
       addPlayerEmpireTreasure(
         gameStateStub,
         playerId,
-        relicts.find((r) => r.id === TreasureItem.CROWN_OF_DOMINION)!
+        relictFactory(TreasureType.CROWN_OF_DOMINION)
       )
     );
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };

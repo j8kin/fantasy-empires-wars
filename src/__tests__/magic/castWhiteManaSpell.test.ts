@@ -1,8 +1,10 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/map/land/LandPosition';
+import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { findArmyById, getArmiesAtPosition } from '../../selectors/armySelectors';
-import { getLand, getLandInfo } from '../../selectors/landSelectors';
+import { getLand, getLandInfo, hasActiveEffect } from '../../selectors/landSelectors';
+import { getSpellById } from '../../selectors/spellSelectors';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';
 
@@ -12,11 +14,11 @@ import { BuildingType } from '../../types/Building';
 import { EffectType } from '../../types/Effect';
 
 import { castSpell } from '../../map/magic/castSpell';
+import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCastSpellLands';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { getSpellById } from '../../selectors/spellSelectors';
 
 describe('castWhiteManaSpell', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -132,6 +134,60 @@ describe('castWhiteManaSpell', () => {
       expect(warriorArmy?.regulars[0].type).toBe(RegularUnitType.WARRIOR);
       expect(warriorArmy?.regulars[0].count).toBe(120); // warrior army not affected by spell
     });
+
+    it('TURN_UNDEAD Effect cleared from opponent Lands on Opponents START Phase and it is possible to cast TURN_UNDEAD on that Lands again', () => {
+      /*********** SETUP **************/
+      jest.useFakeTimers();
+      jest.clearAllMocks();
+
+      gameStateStub = createDefaultGameStateStub();
+      getTurnOwner(gameStateStub).mana.white = 200; // to allow casting spells
+      const testTurnManagement = new TestTurnManagement(gameStateStub);
+
+      testTurnManagement.startNewTurn(gameStateStub);
+      testTurnManagement.waitStartPhaseComplete();
+      /********************************/
+
+      const opponetLands = getPlayerLands(gameStateStub, gameStateStub.players[1].id).flatMap((l) =>
+        getLandId(l.mapPos)
+      );
+      const opponentLand = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
+      let availableToCastSpellLands = getAvailableToCastSpellLands(
+        gameStateStub,
+        SpellName.TURN_UNDEAD
+      );
+      expect(
+        opponetLands.every((landId) => availableToCastSpellLands.includes(landId))
+      ).toBeTruthy();
+
+      /*********** CALL SUT **************/
+      castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
+      /***********************************/
+
+      availableToCastSpellLands = getAvailableToCastSpellLands(
+        gameStateStub,
+        SpellName.TURN_UNDEAD
+      );
+      expect(
+        opponetLands.every((landId) => availableToCastSpellLands.includes(landId))
+      ).toBeFalsy();
+
+      /*********** MAKE A TURN **************/
+      testTurnManagement.makeNTurns(1);
+      /**************************************/
+
+      availableToCastSpellLands = getAvailableToCastSpellLands(
+        gameStateStub,
+        SpellName.TURN_UNDEAD
+      );
+      expect(
+        opponetLands.every((landId) => availableToCastSpellLands.includes(landId))
+      ).toBeTruthy();
+
+      /*********** CLEANUP **************/
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    });
   });
 
   describe('Cast VIEW TERRITORY spell', () => {
@@ -218,9 +274,7 @@ describe('castWhiteManaSpell', () => {
       expect(homeland.effects[0].duration).toBe(3);
 
       expect(
-        getPlayerLands(gameStateStub).filter(
-          (l) => l.effects.length > 0 && l.effects.some((e) => e.spell === SpellName.BLESSING)
-        )
+        getPlayerLands(gameStateStub).filter((l) => hasActiveEffect(l, SpellName.BLESSING))
       ).toHaveLength(7);
     });
   });

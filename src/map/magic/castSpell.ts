@@ -1,6 +1,11 @@
 import { GameState } from '../../state/GameState';
 import { LandPosition } from '../../state/map/land/LandPosition';
-import { getPlayer, getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
+import {
+  getPlayer,
+  getTurnOwner,
+  hasActiveEffectByPlayer,
+  hasTreasureByPlayer,
+} from '../../selectors/playerSelectors';
 import {
   getArmiesAtPosition,
   getArmiesAtPositionByPlayers,
@@ -29,8 +34,8 @@ import {
 } from '../../domain/army/armyPenaltyCalculator';
 
 import { Spell, SpellName } from '../../types/Spell';
-import { TreasureItem } from '../../types/Treasures';
 import { ManaType } from '../../types/Mana';
+import { TreasureType } from '../../types/Treasures';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
@@ -148,7 +153,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
   }
 
   const turnOwner = getTurnOwner(state);
-  const hasVerdantIdol = turnOwner.empireTreasures?.some((t) => t.id === TreasureItem.VERDANT_IDOL);
+  const hasVerdantIdol = hasTreasureByPlayer(turnOwner, TreasureType.VERDANT_IDOL);
 
   Object.assign(
     state,
@@ -357,6 +362,7 @@ const killUnits = (
     const updatedArmies = calculateAndApplyArmyPenalties(
       playerArmiesAtPosition,
       penaltyConfig,
+      hasTreasureByPlayer(p, TreasureType.SHARD_OF_THE_SILENT_ANVIL),
       units
     );
 
