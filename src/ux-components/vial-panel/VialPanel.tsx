@@ -1,18 +1,18 @@
 import React, { useCallback, useState } from 'react';
 import styles from './css/VialPanel.module.css';
 
-import { useGameContext } from '../../contexts/GameContext';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-
 import ManaVial from './ManaVial';
 import ExchangeManaVialPanel from './ExchangeManaVialPanel';
 
+import { useGameContext } from '../../contexts/GameContext';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { castSpell } from '../../map/magic/castSpell';
+import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 
 import { ManaType } from '../../types/Mana';
 import { SpellName } from '../../types/Spell';
-import { castSpell } from '../../map/magic/castSpell';
-import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 
 const VialPanel: React.FC = () => {
   const { gameState, updateGameState } = useGameContext();

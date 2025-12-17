@@ -1,6 +1,7 @@
-import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
+import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
-import { BaseUnitStats } from '../../types/BaseUnit';
+import type { BaseUnitStats } from '../../types/BaseUnit';
+import type { UnitType } from '../../types/UnitType';
 
 export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
   switch (unitType) {

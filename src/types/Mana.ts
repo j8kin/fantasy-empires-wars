@@ -1,5 +1,5 @@
-import { HeroUnitType } from './UnitType';
-import { LandType } from './Land';
+import type { HeroUnitType } from './UnitType';
+import type { LandType } from './Land';
 
 export const MAX_MANA = 200;
 

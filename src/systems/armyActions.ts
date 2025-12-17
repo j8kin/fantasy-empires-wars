@@ -1,13 +1,14 @@
-import { GameState } from '../state/GameState';
-import { ArmyState } from '../state/army/ArmyState';
-import { HeroState } from '../state/army/HeroState';
-import { RegularsState, UnitRank } from '../state/army/RegularsState';
-import { LandPosition } from '../state/map/land/LandPosition';
 import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
 import { startMovement } from './moveActions';
+
 import { EffectType } from '../types/Effect';
+import type { GameState } from '../state/GameState';
+import type { ArmyState } from '../state/army/ArmyState';
+import type { HeroState } from '../state/army/HeroState';
+import type { RegularsState, UnitRank } from '../state/army/RegularsState';
 import type { RegularUnitType } from '../types/UnitType';
+import type { LandPosition } from '../state/map/land/LandPosition';
 
 export const addHero = (state: ArmyState, hero: HeroState): ArmyState => {
   return {

@@ -2,8 +2,9 @@ import { v4 as uuid } from 'uuid';
 import { getRandomInt } from '../domain/utils/random';
 import { artifacts, items, relicts } from '../domain/treasure/treasureRepository';
 
-import { Artifact, EmpireTreasure, Relic, TreasureType } from '../types/Treasures';
+import { TreasureType } from '../types/Treasures';
 import { Alignment } from '../types/Alignment';
+import type { Artifact, EmpireTreasure, Relic } from '../types/Treasures';
 
 export const artifactFactory = (treasureType: TreasureType, level: number): Artifact => {
   return {

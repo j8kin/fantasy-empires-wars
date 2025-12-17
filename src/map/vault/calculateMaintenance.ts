@@ -1,7 +1,7 @@
-import { GameState } from '../../state/GameState';
-
 import { getPlayerLands } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer } from '../../selectors/armySelectors';
+
+import type { GameState } from '../../state/GameState';
 
 export const calculateMaintenance = (gameState: GameState): number => {
   const { turnOwner } = gameState;

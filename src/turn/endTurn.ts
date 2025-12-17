@@ -1,7 +1,8 @@
-import { GameState } from '../state/GameState';
 import { nextPlayer } from '../systems/playerActions';
 import { performMovements } from '../map/move-army/performMovements';
 import { changeOwner } from '../map/move-army/changeOwner';
+
+import type { GameState } from '../state/GameState';
 
 export const endTurn = (gameState: GameState) => {
   // complete movements

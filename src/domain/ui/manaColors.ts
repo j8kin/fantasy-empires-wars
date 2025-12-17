@@ -1,4 +1,4 @@
-import { ManaType } from '../../types/Mana';
+import type { ManaType } from '../../types/Mana';
 
 /**
  * Returns the hex color for a mana type

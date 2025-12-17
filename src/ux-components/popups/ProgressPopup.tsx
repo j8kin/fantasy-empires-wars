@@ -1,7 +1,9 @@
 import React from 'react';
 import styles from './css/ProgressPopup.module.css';
 
-import PopupWrapper, { PopupProps } from './PopupWrapper';
+import PopupWrapper from './PopupWrapper';
+
+import type { PopupProps } from './PopupWrapper';
 
 interface ProgressPopupProps extends PopupProps {
   message: string;

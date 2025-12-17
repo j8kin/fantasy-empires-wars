@@ -1,4 +1,5 @@
-import { UnitType, HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import type { UnitType } from '../../types/UnitType';
 
 /**
  * Type guard to check if a unit type is a hero unit

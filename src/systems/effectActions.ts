@@ -1,8 +1,10 @@
-import { GameState } from '../state/GameState';
-import { Effect, EffectType } from '../types/Effect';
-import { SpellName } from '../types/Spell';
 import { getPlayerLands, getTurnOwner } from '../selectors/playerSelectors';
 import { getArmiesByPlayer } from '../selectors/armySelectors';
+
+import { SpellName } from '../types/Spell';
+import { EffectType } from '../types/Effect';
+import type { GameState } from '../state/GameState';
+import type { Effect } from '../types/Effect';
 
 /**
  * Decrements effect durations and filters out expired effects

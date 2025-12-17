@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useRef } from 'react';
-import { GameState } from '../state/GameState';
+import type { GameState } from '../state/GameState';
 import { TurnManager, TurnManagerCallbacks } from '../turn/TurnManager';
-import { HeroOutcome } from '../types/HeroOutcome';
-import { TurnPhase } from '../turn/TurnPhase';
+import type { TurnPhase } from '../turn/TurnPhase';
+import type { HeroOutcome } from '../types/HeroOutcome';
 
 interface GameContextType {
   // Game State

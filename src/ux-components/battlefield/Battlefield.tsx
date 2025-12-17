@@ -2,14 +2,14 @@ import React from 'react';
 import styles from './css/Battlefield.module.css';
 import hexStyles from './css/Hexagonal.module.css';
 
-import { useGameContext } from '../../contexts/GameContext';
-import { FrameSize } from '../../contexts/ApplicationContext';
-
-import LandTile from './LandTile';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
+import LandTile from './LandTile';
 
+import { useGameContext } from '../../contexts/GameContext';
 import { getLandId } from '../../state/map/land/LandId';
-import { MapDimensions } from '../../state/map/MapDimensions';
+
+import type { MapDimensions } from '../../state/map/MapDimensions';
+import type { FrameSize } from '../../contexts/ApplicationContext';
 
 export interface BattlefieldProps {
   topPanelHeight: number;

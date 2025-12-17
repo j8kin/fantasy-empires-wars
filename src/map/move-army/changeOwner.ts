@@ -1,15 +1,13 @@
-import { GameState } from '../../state/GameState';
-
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { addPlayerLand, removePlayerLand } from '../../systems/gameStateActions';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { hasArmiesAtPositionByPlayer } from '../../selectors/armySelectors';
-
-import { BuildingType } from '../../types/Building';
-
 import { getHostileLands } from '../utils/getHostileLands';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
+
+import { BuildingType } from '../../types/Building';
+import type { GameState } from '../../state/GameState';
 
 export const changeOwner = (gameState: GameState): void => {
   // find all lands where turnOwner army is present and not controlled by the player or Ally and add them to the player's lands'

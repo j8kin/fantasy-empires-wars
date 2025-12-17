@@ -1,7 +1,6 @@
 import { Alignment } from '../../types/Alignment';
 import { HeroUnitType } from '../../types/UnitType';
-
-import { PlayerProfile } from '../../state/player/PlayerProfile';
+import type { PlayerProfile } from '../../state/player/PlayerProfile';
 
 export const NO_PLAYER: PlayerProfile = {
   id: 'none',

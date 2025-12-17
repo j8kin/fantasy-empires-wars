@@ -1,8 +1,4 @@
-import { GameState } from '../state/GameState';
-import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
-import { LandState } from '../state/map/land/LandState';
-
 import { getPlayer, hasTreasureByPlayer } from './playerSelectors';
 import { getArmiesAtPosition } from './armySelectors';
 import { NO_PLAYER } from '../domain/player/playerRepository';
@@ -13,7 +9,9 @@ import { TreasureType } from '../types/Treasures';
 import { SpellName } from '../types/Spell';
 import { Alignment } from '../types/Alignment';
 import { EffectType } from '../types/Effect';
-
+import type { GameState } from '../state/GameState';
+import type { LandPosition } from '../state/map/land/LandPosition';
+import type { LandState } from '../state/map/land/LandState';
 import type { LandType } from '../types/Land';
 import type { BuildingType } from '../types/Building';
 import type { Effect, EffectSourceId } from '../types/Effect';

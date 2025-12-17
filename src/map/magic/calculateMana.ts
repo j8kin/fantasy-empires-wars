@@ -1,10 +1,11 @@
-import { GameState } from '../../state/GameState';
 import { getPlayerLands, getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getAllHeroes } from '../../selectors/armySelectors';
 import { updatePlayerMana } from '../../systems/gameStateActions';
 import { getManaSource } from '../../domain/mana/manaSource';
 import { getSpecialLandTypes } from '../../domain/land/landQueries';
+
 import { TreasureType } from '../../types/Treasures';
+import type { GameState } from '../../state/GameState';
 
 export const calculateMana = (gameState: GameState): GameState => {
   const turnOwner = getTurnOwner(gameState);

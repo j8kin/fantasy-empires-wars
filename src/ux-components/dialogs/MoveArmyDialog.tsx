@@ -1,20 +1,19 @@
 import React, { useRef, useState } from 'react';
 import styles from './css/MoveArmyDialog.module.css';
 
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameContext } from '../../contexts/GameContext';
-
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameContext } from '../../contexts/GameContext';
+
 import { briefInfo, isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
+import { startMovement } from '../../map/move-army/startMovement';
 
 import { ButtonName } from '../../types/ButtonName';
 import { UnitRank } from '../../state/army/RegularsState';
-import { ArmyBriefInfo } from '../../state/army/ArmyState';
-import { HeroUnitType } from '../../types/UnitType';
-
-import { startMovement } from '../../map/move-army/startMovement';
+import type { ArmyBriefInfo } from '../../state/army/ArmyState';
+import type { HeroUnitType } from '../../types/UnitType';
 
 // Consolidate units of the same type and rank
 const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {

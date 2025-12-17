@@ -1,17 +1,17 @@
 import React, { useCallback, useEffect } from 'react';
+import FlipBook from '../fantasy-book-dialog-template/FlipBook';
+import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getAllBuildings } from '../../selectors/buildingSelectors';
-
-import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
-
-import { BuildingType } from '../../types/Building';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
+
+import { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
+import { BuildingType } from '../../types/Building';
 
 const ConstructBuildingDialog: React.FC = () => {
   const {

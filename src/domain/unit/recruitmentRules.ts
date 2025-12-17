@@ -1,5 +1,6 @@
-import { UnitType, RegularUnitType } from '../../types/UnitType';
 import { isHeroType } from './unitTypeChecks';
+import { RegularUnitType } from '../../types/UnitType';
+import type { UnitType } from '../../types/UnitType';
 
 /**
  * Returns the number of turns required to recruit a specific unit type

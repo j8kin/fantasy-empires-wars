@@ -1,5 +1,5 @@
-import { RegularUnitType } from '../../types/UnitType';
-import { BaseUnitStats } from '../../types/BaseUnit';
+import type { RegularUnitType } from '../../types/UnitType';
+import type { BaseUnitStats } from '../../types/BaseUnit';
 
 export enum UnitRank {
   REGULAR = 'regular',

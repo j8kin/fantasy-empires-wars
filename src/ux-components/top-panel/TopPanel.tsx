@@ -2,18 +2,18 @@ import React from 'react';
 import styles from './css/TopPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
-import { FrameSize } from '../../contexts/ApplicationContext';
 
+import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameControl from '../game-controls/GameControl';
 import MapActionsControl from '../game-controls/MapActionsControl';
+import UnitActionControl from '../game-controls/UnitActionControl';
 import VialPanel from '../vial-panel/VialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
-import GameButton from '../buttons/GameButton';
-import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import PlayerSummary from '../player/PlayerSummary';
-import UnitActionControl from '../game-controls/UnitActionControl';
+import GameButton from '../buttons/GameButton';
 
 import { ButtonName } from '../../types/ButtonName';
+import type { FrameSize } from '../../contexts/ApplicationContext';
 
 export interface TopPanelProps {
   height: number;

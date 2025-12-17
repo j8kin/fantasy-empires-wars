@@ -1,6 +1,5 @@
 import { TreasureType } from '../../types/Treasures';
 import { EffectTarget, EffectType } from '../../types/Effect';
-
 import type { Treasure, EmpireTreasure, Relic } from '../../types/Treasures';
 
 export const artifacts: Treasure[] = [

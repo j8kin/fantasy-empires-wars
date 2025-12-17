@@ -1,5 +1,3 @@
-import { BuildingType } from '../../types/Building';
-import { GameState } from '../../state/GameState';
 import { getLandId } from '../../state/map/land/LandId';
 
 import { getLandOwner } from '../../selectors/landSelectors';
@@ -7,6 +5,9 @@ import { getPlayerLands } from '../../selectors/playerSelectors';
 
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
+
+import { BuildingType } from '../../types/Building';
+import type { GameState } from '../../state/GameState';
 
 export const getAvailableToConstructLands = (
   gameState: GameState,

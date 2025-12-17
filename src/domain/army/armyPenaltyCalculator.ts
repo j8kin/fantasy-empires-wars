@@ -1,8 +1,10 @@
-import { RegularsState, UnitRank } from '../../state/army/RegularsState';
-import { ArmyState } from '../../state/army/ArmyState';
-import { RegularUnitType } from '../../types/UnitType';
+import { UnitRank } from '../../state/army/RegularsState';
 import { isWarMachine } from '../unit/unitTypeChecks';
 import { getRegulars } from '../../systems/armyActions';
+
+import type { RegularsState } from '../../state/army/RegularsState';
+import type { ArmyState } from '../../state/army/ArmyState';
+import type { RegularUnitType } from '../../types/UnitType';
 
 // The equivalent number of units per war machine to calculate penalties.
 const WARMACHINE_TO_UNIT = 20;

@@ -1,5 +1,5 @@
-import { LandState } from '../state/map/land/LandState';
 import { LandType } from '../types/Land';
+import type { LandState } from '../state/map/land/LandState';
 
 import darkForestImg from './lands/darkforest.png';
 import greenForestImg from './lands/greenforest.png';

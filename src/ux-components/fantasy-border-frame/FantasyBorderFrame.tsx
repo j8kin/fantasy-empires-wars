@@ -5,7 +5,7 @@ import CornerBorder from './CornerBorder';
 import HorizontalBorder from './HorizontalBorder';
 import VerticalBorder from './VerticalBorder';
 
-import { FrameSize, ScreenPosition } from '../../contexts/ApplicationContext';
+import type { FrameSize, ScreenPosition } from '../../contexts/ApplicationContext';
 
 export interface FantasyBorderFrameProps {
   screenPosition: ScreenPosition;

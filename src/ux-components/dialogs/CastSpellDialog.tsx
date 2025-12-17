@@ -1,14 +1,17 @@
 import React, { useCallback, useEffect } from 'react';
+
+import FlipBook from '../fantasy-book-dialog-template/FlipBook';
+import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-
-import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage, { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
-
-import { AllSpells, SpellName } from '../../types/Spell';
 import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCastSpellLands';
+import { AllSpells } from '../../types/Spell';
+
+import { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
+import { SpellName } from '../../types/Spell';
 
 import { getSpellImg } from '../../assets/getSpellImg';
 

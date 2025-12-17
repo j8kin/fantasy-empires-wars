@@ -5,7 +5,6 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import LandInfoPopup from '../popups/LandInfoPopup';
 
-import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
 import { getLandOwner } from '../../selectors/landSelectors';
 import {
@@ -17,19 +16,20 @@ import {
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getBuilding } from '../../selectors/buildingSelectors';
-
-import { SpellName } from '../../types/Spell';
-import { BuildingType } from '../../types/Building';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { calculateTileScreenPosition, getMapDimensions } from '../../utils/screenPositionUtils';
-
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
-import { calcMaxMove, MAX_MOVE } from '../../map/move-army/calcMaxMove';
-import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
+import { calcMaxMove } from '../../map/move-army/calcMaxMove';
 import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
+import { MAX_MOVE } from '../../map/move-army/calcMaxMove';
+import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
 
 import { getLandImg } from '../../assets/getLandImg';
+
+import { SpellName } from '../../types/Spell';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { BuildingType } from '../../types/Building';
 
 export interface HexTileProps {
   mapPosition: LandPosition;

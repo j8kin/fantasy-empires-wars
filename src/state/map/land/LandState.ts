@@ -1,7 +1,7 @@
-import { Land } from '../../../types/Land';
-import { Building } from '../../../types/Building';
-import { Effect } from '../../../types/Effect';
-import { LandPosition } from './LandPosition';
+import type { Land } from '../../../types/Land';
+import type { Building } from '../../../types/Building';
+import type { Effect } from '../../../types/Effect';
+import type { LandPosition } from './LandPosition';
 
 export interface LandState {
   mapPos: LandPosition;

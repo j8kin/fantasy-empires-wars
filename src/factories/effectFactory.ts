@@ -2,8 +2,8 @@ import { v4 as uuid } from 'uuid';
 import { getSpellById } from '../selectors/spellSelectors';
 import { getItem } from '../domain/treasure/treasureRepository';
 
-import { Effect, EffectSourceId } from '../types/Effect';
 import { SpellName } from '../types/Spell';
+import type { Effect, EffectSourceId } from '../types/Effect';
 
 const isSpellEffect = (effect: EffectSourceId): effect is SpellName => {
   return Object.values(SpellName).includes(effect as SpellName);

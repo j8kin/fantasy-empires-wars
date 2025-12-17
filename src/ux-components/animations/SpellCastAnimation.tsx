@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styles from './css/SpellCastAnimation.module.css';
-import { ManaType } from '../../types/Mana';
 import { getSpellEndAnimationImg } from '../../assets/getSpellImg';
 
+import type { ManaType } from '../../types/Mana';
+
 // Animation size constant - easy to adjust
-export const SPELL_ANIMATION_SIZE = 200;
+const SPELL_ANIMATION_SIZE = 200;
 
 interface SpellCastAnimationProps {
   manaType: ManaType;

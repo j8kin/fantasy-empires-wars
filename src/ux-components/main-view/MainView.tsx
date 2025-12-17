@@ -2,12 +2,6 @@ import { v4 as uuid } from 'uuid';
 import React, { useEffect, useRef } from 'react';
 import styles from './css/Background.module.css';
 
-import {
-  ApplicationContextProvider,
-  useApplicationContext,
-} from '../../contexts/ApplicationContext';
-import { GameProvider, useGameContext } from '../../contexts/GameContext';
-
 import TopPanel from '../top-panel/TopPanel';
 import Battlefield from '../battlefield/Battlefield';
 import NewGameDialog from '../dialogs/NewGameDialog';
@@ -18,15 +12,23 @@ import ConstructBuildingDialog from '../dialogs/ConstructBuildingDialog';
 import RecruitArmyDialog from '../dialogs/RecruitArmyDialog';
 import MoveArmyDialog from '../dialogs/MoveArmyDialog';
 import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
+import SendHeroInQuestDialog from '../dialogs/SendHeroInQuestDialog';
+
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
 import ErrorMessagePopup from '../popups/ErrorMessagePopup';
 import RealmEventsPopup from '../popups/RealmEventsPopup';
+
 import SpellCastAnimation from '../animations/SpellCastAnimation';
 
+import {
+  ApplicationContextProvider,
+  useApplicationContext,
+} from '../../contexts/ApplicationContext';
+import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
-import SendHeroInQuestDialog from '../dialogs/SendHeroInQuestDialog';
-import { HeroOutcome } from '../../types/HeroOutcome';
+
+import type { HeroOutcome } from '../../types/HeroOutcome';
 
 const MainViewContent: React.FC = () => {
   const {

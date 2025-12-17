@@ -1,24 +1,20 @@
-import { GameState } from '../../state/GameState';
-import { LandState } from '../../state/map/land/LandState';
-import { MapDimensions } from '../../state/map/MapDimensions';
 import { getLandId } from '../../state/map/land/LandId';
-
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { hasLand } from '../../systems/playerActions';
 import { levelUpHero } from '../../systems/unitsActions';
 import { addArmyToGameState } from '../../systems/armyActions';
-
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
-
 import { getRandomElement } from '../../domain/utils/random';
-
-import { BuildingType } from '../../types/Building';
-import { Alignment } from '../../types/Alignment';
-
 import { construct } from '../building/construct';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
+
+import { BuildingType } from '../../types/Building';
+import { Alignment } from '../../types/Alignment';
+import type { GameState } from '../../state/GameState';
+import type { LandState } from '../../state/map/land/LandState';
+import type { MapDimensions } from '../../state/map/MapDimensions';
 
 const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   const player = getTurnOwner(gameState);

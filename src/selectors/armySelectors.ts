@@ -1,12 +1,12 @@
-import { GameState } from '../state/GameState';
-import { Armies, ArmyState, ArmyBriefInfo } from '../state/army/ArmyState';
-import { HeroState } from '../state/army/HeroState';
-import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
 import { getTurnOwner } from './playerSelectors';
 import { isMageType } from '../domain/unit/unitTypeChecks';
-import { HeroUnitType } from '../types/UnitType';
-import { TreasureType } from '../types/Treasures';
+import type { GameState } from '../state/GameState';
+import type { LandPosition } from '../state/map/land/LandPosition';
+import type { Armies, ArmyState, ArmyBriefInfo } from '../state/army/ArmyState';
+import type { HeroState } from '../state/army/HeroState';
+import type { HeroUnitType } from '../types/UnitType';
+import type { TreasureType } from '../types/Treasures';
 
 // Army state selectors (operating on individual army objects)
 export const briefInfo = (state: ArmyState): ArmyBriefInfo => {

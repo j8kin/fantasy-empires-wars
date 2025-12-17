@@ -1,7 +1,4 @@
-import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
-
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
@@ -11,11 +8,12 @@ import {
   addPlayerLand,
   removePlayerLand,
 } from '../../systems/gameStateActions';
-
-import { BuildingType } from '../../types/Building';
-
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
+
+import { BuildingType } from '../../types/Building';
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
 
 /**
  * Player could destroy the building as Demolition before construction of a new one

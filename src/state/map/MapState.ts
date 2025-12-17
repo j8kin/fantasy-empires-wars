@@ -1,5 +1,5 @@
-import { LandState } from './land/LandState';
-import { MapDimensions } from './MapDimensions';
+import type { LandState } from './land/LandState';
+import type { MapDimensions } from './MapDimensions';
 
 export type MapLands = Record<string, LandState>;
 

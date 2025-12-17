@@ -1,4 +1,5 @@
-import { PlayerColorName, PLAYER_COLORS } from '../../types/PlayerColors';
+import { PLAYER_COLORS } from '../../types/PlayerColors';
+import type { PlayerColorName } from '../../types/PlayerColors';
 
 /**
  * Looks up a color's hex value by name

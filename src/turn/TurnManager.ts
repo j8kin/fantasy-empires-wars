@@ -1,12 +1,13 @@
-import { GameState } from '../state/GameState';
 import { getTurnOwner } from '../selectors/playerSelectors';
 import { nextPlayer } from '../systems/playerActions';
-import { HeroOutcome } from '../types/HeroOutcome';
-import { TurnPhase } from './TurnPhase';
+import { setTurnPhase } from '../systems/gameStateActions';
 import { startTurn } from './startTurn';
 import { endTurn } from './endTurn';
 import { mainAiTurn } from './mainAiTurn';
-import { setTurnPhase } from '../systems/gameStateActions';
+
+import { TurnPhase } from './TurnPhase';
+import type { GameState } from '../state/GameState';
+import type { HeroOutcome } from '../types/HeroOutcome';
 
 export interface TurnManagerCallbacks {
   onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => void;

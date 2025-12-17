@@ -1,6 +1,3 @@
-import { GameState } from '../../state/GameState';
-import { HeroState } from '../../state/army/HeroState';
-
 import { armyFactory } from '../../factories/armyFactory';
 import { getLandOwner } from '../../selectors/landSelectors';
 import {
@@ -11,6 +8,7 @@ import {
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addArmyToGameState, addHero, updateArmyInGameState } from '../../systems/armyActions';
 import { levelUpHero } from '../../systems/unitsActions';
+import { removeEmpireTreasureItems } from '../../systems/playerActions';
 import {
   addPlayerEmpireTreasure,
   decrementQuestTurns,
@@ -23,14 +21,9 @@ import {
   itemFactory,
   relictFactory,
 } from '../../factories/treasureFactory';
-
 import { artifacts, items, relicts } from '../../domain/treasure/treasureRepository';
 import { getQuest } from '../../domain/quest/questRepository';
 import { getRandomElement } from '../../domain/utils/random';
-
-import { HeroQuest, QuestType } from '../../types/Quest';
-import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
-import { Artifact, TreasureType } from '../../types/Treasures';
 import {
   emptyHanded,
   heroDieMessage,
@@ -38,9 +31,16 @@ import {
   heroGainItem,
   heroGainRelic,
 } from './questCompleteMessages';
+
+import { HeroOutcomeType } from '../../types/HeroOutcome';
+import { TreasureType } from '../../types/Treasures';
 import { Alignment } from '../../types/Alignment';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { removeEmpireTreasureItems } from '../../systems/playerActions';
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { HeroQuest, QuestType } from '../../types/Quest';
+import type { HeroState } from '../../state/army/HeroState';
+import type { Artifact } from '../../types/Treasures';
+import type { HeroOutcome } from '../../types/HeroOutcome';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;

@@ -1,6 +1,7 @@
-import { ManaSource, ManaType } from '../../types/Mana';
+import { ManaType } from '../../types/Mana';
 import { HeroUnitType } from '../../types/UnitType';
 import { LandType } from '../../types/Land';
+import type { ManaSource } from '../../types/Mana';
 
 const MANA_SOURCES: ManaSource[] = [
   {

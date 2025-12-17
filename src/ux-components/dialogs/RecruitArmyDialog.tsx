@@ -1,25 +1,23 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import FlipBook from '../fantasy-book-dialog-template/FlipBook';
+import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-
-import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
-
-import { LandPosition } from '../../state/map/land/LandPosition';
-
 import { getLand } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-
 import { isWarMachine, isMageType, isHeroType } from '../../domain/unit/unitTypeChecks';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
-
-import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
-import { BuildingType } from '../../types/Building';
-
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 
 import { getUnitImg } from '../../assets/getUnitImg';
+
+import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import { BuildingType } from '../../types/Building';
+import type { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { UnitType } from '../../types/UnitType';
 
 interface RecruitUnitProps {
   id: UnitType;

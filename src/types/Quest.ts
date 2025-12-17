@@ -1,5 +1,5 @@
-import { HeroState } from '../state/army/HeroState';
-import { LandPosition } from '../state/map/land/LandPosition';
+import type { HeroState } from '../state/army/HeroState';
+import type { LandPosition } from '../state/map/land/LandPosition';
 
 export type QuestType =
   | 'The Echoing Ruins'

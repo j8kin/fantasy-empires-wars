@@ -1,10 +1,13 @@
-import { HeroState } from '../state/army/HeroState';
-import { RegularsState, UnitRank } from '../state/army/RegularsState';
 import { hasArtifact } from '../selectors/armySelectors';
 import { unitsBaseStats } from '../domain/unit/unitRepository';
+import { MAX_HERO_LEVEL } from '../types/UnitType';
+
+import { UnitRank } from '../state/army/RegularsState';
+import { HeroUnitType, RegularUnitType } from '../types/UnitType';
 import { Alignment } from '../types/Alignment';
 import { TreasureType } from '../types/Treasures';
-import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../types/UnitType';
+import type { RegularsState } from '../state/army/RegularsState';
+import type { HeroState } from '../state/army/HeroState';
 
 export const levelUpHero = (hero: HeroState, playerAlignment: Alignment): void => {
   if (hero.level === MAX_HERO_LEVEL) return; // hero reached max level

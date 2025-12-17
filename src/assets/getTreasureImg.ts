@@ -1,4 +1,5 @@
-import { EmpireTreasure, TreasureType } from '../types/Treasures';
+import { TreasureType } from '../types/Treasures';
+import type { EmpireTreasure } from '../types/Treasures';
 
 import orbOfStormImg from './treasures/orb-of-storm.png';
 import wandOfTurnUndeadImg from './treasures/turn-undead.png';

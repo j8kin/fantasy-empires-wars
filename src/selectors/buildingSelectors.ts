@@ -1,7 +1,7 @@
 import { BuildingType, Building } from '../types/Building';
-import { PlayerState } from '../state/player/PlayerState';
 import { Alignment } from '../types/Alignment';
 import { HeroUnitType } from '../types/UnitType';
+import type { PlayerState } from '../state/player/PlayerState';
 
 export const getBuilding = (building: BuildingType): Building => {
   switch (building) {

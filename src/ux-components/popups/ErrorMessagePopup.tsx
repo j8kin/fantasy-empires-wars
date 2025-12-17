@@ -1,7 +1,11 @@
 import React from 'react';
-import PopupWrapper, { PopupProps } from './PopupWrapper';
 import styles from './css/Popup.module.css';
+
+import PopupWrapper from './PopupWrapper';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
+
+import type { PopupProps } from './PopupWrapper';
 
 const ErrorMessagePopup: React.FC<PopupProps> = ({ screenPosition }) => {
   const { errorMessagePopupMessage } = useApplicationContext();

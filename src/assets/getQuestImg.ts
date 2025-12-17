@@ -1,4 +1,4 @@
-import { QuestType } from '../types/Quest';
+import type { QuestType } from '../types/Quest';
 
 import theEchoingRuinsImg from './quest/the-echoing-ruins.png';
 import theWhisperingGroveImg from './quest/the-whispering-grove.png';

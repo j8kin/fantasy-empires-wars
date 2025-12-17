@@ -1,14 +1,13 @@
-import { GameState } from '../state/GameState';
-import { PlayerState } from '../state/player/PlayerState';
-import { PlayerProfile } from '../state/player/PlayerProfile';
-import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
-import { EmpireTreasure, Item } from '../types/Treasures';
-
 import { playerFactory } from '../factories/playerFactory';
 import { addPlayer, setTurnOwner, incrementTurn } from './gameStateActions';
-
 import { NO_PLAYER } from '../domain/player/playerRepository';
+
+import type { GameState } from '../state/GameState';
+import type { PlayerState } from '../state/player/PlayerState';
+import type { PlayerProfile } from '../state/player/PlayerProfile';
+import type { LandPosition } from '../state/map/land/LandPosition';
+import type { EmpireTreasure, Item } from '../types/Treasures';
 
 const INITIAL_VAULT = 15000;
 

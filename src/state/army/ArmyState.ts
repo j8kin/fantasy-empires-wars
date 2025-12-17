@@ -1,8 +1,8 @@
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
-import { Effect } from '../../types/Effect';
-import { RegularsState, UnitRank } from './RegularsState';
-import { HeroState } from './HeroState';
-import { MovementState } from './MovementState';
+import type { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import type { Effect } from '../../types/Effect';
+import type { RegularsState, UnitRank } from './RegularsState';
+import type { HeroState } from './HeroState';
+import type { MovementState } from './MovementState';
 
 export interface ArmyBriefInfo {
   heroes: { name: string; type: HeroUnitType; level: number }[];

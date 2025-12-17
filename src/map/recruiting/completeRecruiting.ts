@@ -1,22 +1,21 @@
-import { GameState } from '../../state/GameState';
-import { addHero, addRegulars } from '../../systems/armyActions';
 import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getPlayerLands } from '../../selectors/playerSelectors';
-import { armyFactory } from '../../factories/armyFactory';
-import { heroFactory } from '../../factories/heroFactory';
-import { regularsFactory } from '../../factories/regularsFactory';
+import { addHero, addRegulars } from '../../systems/armyActions';
 import {
   decrementPlayerRecruitmentSlots,
   removePlayerCompletedRecruitmentSlots,
 } from '../../systems/gameStateActions';
-
+import { addArmyToGameState, updateArmyInGameState } from '../../systems/armyActions';
+import { armyFactory } from '../../factories/armyFactory';
+import { heroFactory } from '../../factories/heroFactory';
+import { regularsFactory } from '../../factories/regularsFactory';
 import { isHeroType } from '../../domain/unit/unitTypeChecks';
-import { HeroOutcome, HeroOutcomeType } from '../../types/HeroOutcome';
-
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 
-import { addArmyToGameState, updateArmyInGameState } from '../../systems/armyActions';
+import { HeroOutcomeType } from '../../types/HeroOutcome';
+import type { HeroOutcome } from '../../types/HeroOutcome';
+import type { GameState } from '../../state/GameState';
 
 export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
   const heroesRecruited: HeroOutcome[] = [];

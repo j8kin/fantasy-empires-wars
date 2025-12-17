@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from './css/SaveGameDialog.module.css';
 
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
+
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+
 import { ButtonName } from '../../types/ButtonName';
 
 const SaveGameDialog: React.FC = () => {

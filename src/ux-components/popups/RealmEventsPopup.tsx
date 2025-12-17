@@ -1,8 +1,12 @@
 import React from 'react';
-import PopupWrapper, { PopupProps } from './PopupWrapper';
 import styles from './css/HeroOutcomePopup.module.css';
+
+import PopupWrapper from './PopupWrapper';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { HeroOutcomeType } from '../../types/HeroOutcome';
+
+import type { PopupProps } from './PopupWrapper';
+import type { HeroOutcomeType } from '../../types/HeroOutcome';
 
 const getMessageHeight = (messages: string) => {
   return (Math.floor(messages.length / 64) + 1) * 17 + 30.5;

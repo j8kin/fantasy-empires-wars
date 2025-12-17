@@ -1,5 +1,6 @@
 import { ManaType } from './Mana';
-import { EffectTarget, EffectType, EffectRules } from './Effect';
+import { EffectTarget, EffectType } from './Effect';
+import type { EffectRules } from './Effect';
 import type { PenaltyConfig } from '../domain/army/armyPenaltyCalculator';
 
 // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic

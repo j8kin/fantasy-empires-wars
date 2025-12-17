@@ -1,7 +1,4 @@
-import { GameState } from '../../state/GameState';
-import { LandState } from '../../state/map/land/LandState';
 import { getLandId } from '../../state/map/land/LandId';
-
 import { getLand } from '../../selectors/landSelectors';
 import { getPosition, getArmiesByPlayer } from '../../selectors/armySelectors';
 import {
@@ -11,6 +8,8 @@ import {
 } from '../../selectors/playerSelectors';
 
 import { DiplomacyStatus } from '../../types/Diplomacy';
+import type { GameState } from '../../state/GameState';
+import type { LandState } from '../../state/map/land/LandState';
 
 export const getHostileLands = (gameState: GameState): LandState[] => {
   const hostileLands = new Set<LandState>();

@@ -1,5 +1,3 @@
-import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
 import {
   getPlayer,
@@ -26,24 +24,24 @@ import { effectFactory } from '../../factories/effectFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { armyFactory } from '../../factories/armyFactory';
 import { movementFactory } from '../../factories/movementFactory';
-
 import { getMultipleRandomElements, getRandomInt } from '../../domain/utils/random';
 import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
-import {
-  calculateAndApplyArmyPenalties,
-  PenaltyConfig,
-} from '../../domain/army/armyPenaltyCalculator';
-
+import { calculateAndApplyArmyPenalties } from '../../domain/army/armyPenaltyCalculator';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 import { getAvailableToCastSpellLands } from './getAvailableToCastSpellLands';
+
 import { LandType } from '../../types/Land';
-import { Spell, SpellName } from '../../types/Spell';
+import { SpellName } from '../../types/Spell';
 import { ManaType } from '../../types/Mana';
 import { TreasureType } from '../../types/Treasures';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
+import type { Spell } from '../../types/Spell';
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { PenaltyConfig } from '../../domain/army/armyPenaltyCalculator';
 
 /**
  * Implement cast spell logic for each spell type.

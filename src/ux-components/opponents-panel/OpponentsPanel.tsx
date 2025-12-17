@@ -1,17 +1,16 @@
 import React, { useCallback } from 'react';
 import styles from './css/OpponentsPanel.module.css';
 
+import Avatar from '../avatars/Avatar';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import Avatar from '../avatars/Avatar';
-
-import { PlayerState } from '../../state/player/PlayerState';
 import { getLandId } from '../../state/map/land/LandId';
-
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
+
+import type { PlayerState } from '../../state/player/PlayerState';
 
 const OpponentsPanel: React.FC = () => {
   const { gameState } = useGameContext();

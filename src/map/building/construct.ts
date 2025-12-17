@@ -1,19 +1,16 @@
-import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
-
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getLandOwner } from '../../selectors/landSelectors';
 import { getBuilding } from '../../selectors/buildingSelectors';
 import { addPlayerLand, updatePlayerVault } from '../../systems/gameStateActions';
-
 import { NO_PLAYER } from '../../domain/player/playerRepository';
+import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { destroyBuilding } from './destroyBuilding';
 
 import { TreasureType } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
-
-import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { destroyBuilding } from './destroyBuilding';
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
 
 export const construct = (
   gameState: GameState,

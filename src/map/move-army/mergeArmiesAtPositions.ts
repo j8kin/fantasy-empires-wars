@@ -1,13 +1,14 @@
-import { GameState } from '../../state/GameState';
-import { mergeArmies } from '../../systems/armyActions';
 import {
   getPosition,
   isMoving,
   getArmiesAtPosition,
   getArmiesByPlayer,
 } from '../../selectors/armySelectors';
+import { mergeArmies } from '../../systems/armyActions';
 import { removeArmyFromGameState, updateArmyInGameState } from '../../systems/armyActions';
-import { LandPosition } from '../../state/map/land/LandPosition';
+
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
 
 export const mergeArmiesAtPositions = (gameState: GameState): void => {
   const turnOwner = gameState.turnOwner;

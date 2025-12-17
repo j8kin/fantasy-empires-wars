@@ -1,6 +1,7 @@
-import { RegularsState, UnitRank } from '../state/army/RegularsState';
 import { unitsBaseStats } from '../domain/unit/unitRepository';
+import { UnitRank } from '../state/army/RegularsState';
 import { RegularUnitType } from '../types/UnitType';
+import type { RegularsState } from '../state/army/RegularsState';
 
 export const regularsFactory = (
   unitType: RegularUnitType,

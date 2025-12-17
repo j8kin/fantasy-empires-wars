@@ -1,20 +1,19 @@
-import { GameState } from '../../state/GameState';
-import { LandState } from '../../state/map/land/LandState';
 import { getLandId } from '../../state/map/land/LandId';
-
 import { getPlayerLands, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer, getPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
 import { getRegularLandTypes } from '../../domain/land/landQueries';
+import { getTilesInRadius } from '../utils/mapAlgorithms';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { SpellName, SpellTarget } from '../../types/Spell';
 import { EffectTarget } from '../../types/Effect';
 import { BuildingType } from '../../types/Building';
 import { LandType } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
-import { getMapDimensions } from '../../utils/screenPositionUtils';
+import type { GameState } from '../../state/GameState';
+import type { LandState } from '../../state/map/land/LandState';
 
 export const getAvailableToCastSpellLands = (
   gameState: GameState,

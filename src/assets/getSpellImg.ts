@@ -1,5 +1,6 @@
-import { Spell, SpellName } from '../types/Spell';
+import { SpellName } from '../types/Spell';
 import { ManaType } from '../types/Mana';
+import type { Spell } from '../types/Spell';
 
 import blessingImg from './spells/white/blessing.png';
 import healImg from './spells/white/heal.png';

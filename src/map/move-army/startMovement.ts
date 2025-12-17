@@ -1,7 +1,3 @@
-import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { ArmyBriefInfo } from '../../state/army/ArmyState';
-
 import { getLandOwner } from '../../selectors/landSelectors';
 import { addHero, addRegulars, getHero, getRegulars, startMoving } from '../../systems/armyActions';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
@@ -10,8 +6,11 @@ import {
   updateArmyInGameState,
   removeArmyFromGameState,
 } from '../../systems/armyActions';
-
 import { armyFactory } from '../../factories/armyFactory';
+
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { ArmyBriefInfo } from '../../state/army/ArmyState';
 
 export const MIN_HERO_PACKS = 10;
 

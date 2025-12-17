@@ -1,14 +1,16 @@
-import { GameState } from '../state/GameState';
-import { PlayerState } from '../state/player/PlayerState';
-import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
 import { getPlayer } from '../selectors/playerSelectors';
-import { Building } from '../types/Building';
-import { HeroQuest } from '../types/Quest';
-import { Mana } from '../types/Mana';
-import { Effect } from '../types/Effect';
-import { EmpireTreasure } from '../types/Treasures';
-import { TurnPhase } from '../turn/TurnPhase';
+import { MAX_MANA } from '../types/Mana';
+
+import type { GameState } from '../state/GameState';
+import type { PlayerState } from '../state/player/PlayerState';
+import type { LandPosition } from '../state/map/land/LandPosition';
+import type { Building } from '../types/Building';
+import type { HeroQuest } from '../types/Quest';
+import type { Mana } from '../types/Mana';
+import type { Effect } from '../types/Effect';
+import type { EmpireTreasure } from '../types/Treasures';
+import type { TurnPhase } from '../turn/TurnPhase';
 
 interface BuildingSlot {
   unit: any; // UnitType
@@ -115,7 +117,7 @@ export const updatePlayerMana = (
   const newMana = player.mana[manaType] + deltaMana;
   const updatedMana = {
     ...player.mana,
-    [manaType]: newMana >= 200 ? 200 : newMana, // do not allow mana above 200
+    [manaType]: newMana >= MAX_MANA ? MAX_MANA : newMana, // do not allow mana above 200
   };
   return updatePlayer(gameState, playerId, { mana: updatedMana });
 };

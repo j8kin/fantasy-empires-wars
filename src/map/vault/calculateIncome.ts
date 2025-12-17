@@ -1,13 +1,11 @@
-import { GameState } from '../../state/GameState';
-
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { hasActiveEffect } from '../../selectors/landSelectors';
+import { calculateHexDistance } from '../utils/mapAlgorithms';
 
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
-
-import { calculateHexDistance } from '../utils/mapAlgorithms';
+import type { GameState } from '../../state/GameState';
 
 export const calculateIncome = (gameState: GameState): number => {
   const map = gameState.map;

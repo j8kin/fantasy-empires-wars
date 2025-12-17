@@ -1,17 +1,16 @@
 import React from 'react';
 import styles from './css/Player.module.css';
 
+import Avatar from '../avatars/Avatar';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
 import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-
-import Avatar from '../avatars/Avatar';
-
 import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
 
-export interface PlayerSummaryProps {
+interface PlayerSummaryProps {
   avatarSize: number;
 }
 

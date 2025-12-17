@@ -1,13 +1,6 @@
-import { GameState } from '../state/GameState';
-
 import { getTurnOwner, hasTreasureByPlayer } from '../selectors/playerSelectors';
 import { updatePlayerVault, updatePlayerMana } from '../systems/gameStateActions';
 import { decrementEffectDurations } from '../systems/effectActions';
-import { TreasureType } from '../types/Treasures';
-
-import { HeroOutcome } from '../types/HeroOutcome';
-import { ManaType } from '../types/Mana';
-
 import { calculatePlayerIncome } from '../map/vault/calculatePlayerIncome';
 import { placeHomeland } from '../map/generation/placeHomeland';
 import { completeQuest } from '../map/quest/completeQuest';
@@ -16,6 +9,11 @@ import { mergeArmiesAtPositions } from '../map/move-army/mergeArmiesAtPositions'
 import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPenalty';
 import { changeOwner } from '../map/move-army/changeOwner';
 import { calculateMana } from '../map/magic/calculateMana';
+
+import { TreasureType } from '../types/Treasures';
+import { ManaType } from '../types/Mana';
+import type { GameState } from '../state/GameState';
+import type { HeroOutcome } from '../types/HeroOutcome';
 
 export const startTurn = (
   gameState: GameState,

@@ -1,11 +1,10 @@
-import { GameState } from '../../state/GameState';
-
 import { getArmiesByPlayer, getPosition, isMoving } from '../../selectors/armySelectors';
 import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
 import { moveArmy, updateArmyInGameState } from '../../systems/armyActions';
+import { mergeArmiesAtPositions } from './mergeArmiesAtPositions';
 
 import { SpellName } from '../../types/Spell';
-import { mergeArmiesAtPositions } from './mergeArmiesAtPositions';
+import type { GameState } from '../../state/GameState';
 
 export const performMovements = (gameState: GameState): GameState => {
   const turnOwner = gameState.turnOwner;

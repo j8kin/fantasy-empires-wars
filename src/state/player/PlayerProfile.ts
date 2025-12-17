@@ -1,6 +1,6 @@
-import { Alignment } from '../../types/Alignment';
-import { HeroUnitType } from '../../types/UnitType';
-import { PlayerColorName } from '../../types/PlayerColors';
+import type { Alignment } from '../../types/Alignment';
+import type { HeroUnitType } from '../../types/UnitType';
+import type { PlayerColorName } from '../../types/PlayerColors';
 
 import { PlayerRace } from './PlayerType';
 

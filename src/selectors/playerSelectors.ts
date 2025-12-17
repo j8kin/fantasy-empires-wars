@@ -1,14 +1,12 @@
-import { GameState } from '../state/GameState';
-import { PlayerState } from '../state/player/PlayerState';
-import { LandState } from '../state/map/land/LandState';
 import { getLand } from './landSelectors';
 import { isRelic } from '../domain/treasure/treasureRepository';
-
 import { getTilesInRadius } from '../map/utils/mapAlgorithms';
 
 import { EffectType } from '../types/Effect';
 import { BuildingType } from '../types/Building';
-
+import type { GameState } from '../state/GameState';
+import type { PlayerState } from '../state/player/PlayerState';
+import type { LandState } from '../state/map/land/LandState';
 import type { SpellName } from '../types/Spell';
 import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatus } from '../types/Diplomacy';

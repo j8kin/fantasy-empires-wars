@@ -1,15 +1,16 @@
 import React, { useCallback } from 'react';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameContext } from '../../contexts/GameContext';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { isRelic } from '../../domain/treasure/treasureRepository';
-import { Item } from '../../types/Treasures';
 
 import { getTreasureImg } from '../../assets/getTreasureImg';
+
+import type { Item } from '../../types/Treasures';
 
 const EmpireTreasureDialog: React.FC = () => {
   const { showEmpireTreasureDialog, setShowEmpireTreasureDialog } = useApplicationContext();

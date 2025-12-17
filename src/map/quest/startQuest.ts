@@ -1,14 +1,12 @@
-import { GameState } from '../../state/GameState';
-import { HeroState } from '../../state/army/HeroState';
-
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { getHero } from '../../systems/armyActions';
+import { updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
 import { getQuest } from '../../domain/quest/questRepository';
 
-import { QuestType } from '../../types/Quest';
-
-import { updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
+import type { GameState } from '../../state/GameState';
+import type { HeroState } from '../../state/army/HeroState';
+import type { QuestType } from '../../types/Quest';
 
 export const startQuest = (gameState: GameState, hero: HeroState, questType: QuestType) => {
   const turnOwner = getTurnOwner(gameState);

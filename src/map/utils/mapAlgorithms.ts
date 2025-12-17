@@ -1,6 +1,7 @@
-import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
-import { MapDimensions } from '../../state/map/MapDimensions';
+
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { MapDimensions } from '../../state/map/MapDimensions';
 
 export const calculateHexDistance = (
   dimensions: MapDimensions,

@@ -1,4 +1,4 @@
-import { MovementState } from '../state/army/MovementState';
+import type { MovementState } from '../state/army/MovementState';
 
 export const move = (state: MovementState): void => {
   if (state.progress < state.path.length - 1) {

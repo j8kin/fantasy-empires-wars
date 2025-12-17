@@ -1,4 +1,4 @@
-import { Artifact, TreasureType } from '../../types/Treasures';
+import type { Artifact, TreasureType } from '../../types/Treasures';
 
 export const heroDieMessage = (name: string): string => {
   const messageId = Math.floor(Math.random() * 8);

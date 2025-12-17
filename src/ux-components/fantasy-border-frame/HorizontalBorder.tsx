@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { BorderProps } from './BorderProps';
+import type { BorderProps } from './BorderProps';
 
 import CelticPatternVertical from '../../assets/border/CelticPatternVertical.png';
 

@@ -1,5 +1,5 @@
-import { LandPosition } from '../state/map/land/LandPosition';
-import { ScreenPosition } from '../contexts/ApplicationContext';
+import type { ScreenPosition } from '../contexts/ApplicationContext';
+import type { LandPosition } from '../state/map/land/LandPosition';
 
 /**
  * Constants for battlefield positioning calculation

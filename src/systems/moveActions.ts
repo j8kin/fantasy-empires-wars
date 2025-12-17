@@ -1,6 +1,7 @@
-import { MovementState } from '../state/army/MovementState';
-import { LandPosition } from '../state/map/land/LandPosition';
 import { findShortestPath } from '../map/utils/mapAlgorithms';
+
+import type { MovementState } from '../state/army/MovementState';
+import type { LandPosition } from '../state/map/land/LandPosition';
 
 export const startMovement = (state: MovementState, to: LandPosition): void => {
   const from = state.path[state.progress];

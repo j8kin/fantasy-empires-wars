@@ -1,7 +1,4 @@
-import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/map/land/LandPosition';
-
-import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { updatePlayerVault } from '../../systems/gameStateActions';
 import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
@@ -10,8 +7,11 @@ import { unitsBaseStats } from '../../domain/unit/unitRepository';
 
 import { BuildingType } from '../../types/Building';
 import { TreasureType } from '../../types/Treasures';
-import { HeroUnitType, UnitType } from '../../types/UnitType';
+import { HeroUnitType } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { UnitType } from '../../types/UnitType';
 
 export const startRecruiting = (
   state: GameState,
@@ -72,9 +72,7 @@ export const startRecruiting = (
         : unitsBaseStats(unitType).recruitCost;
 
       // Ember raid increases recruitment duration by 1 turn
-      const hasEmberRaidEffect = getLand(state, landPos).effects?.some(
-        (e) => e.sourceId === SpellName.EMBER_RAID
-      );
+      const hasEmberRaidEffect = hasActiveEffect(getLand(state, landPos), SpellName.EMBER_RAID);
 
       Object.assign(state, updatePlayerVault(state, turnOwner.id, -costReduction));
 

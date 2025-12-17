@@ -1,6 +1,6 @@
-import { Alignment } from './Alignment';
-import { HeroState } from '../state/army/HeroState';
-import { RegularsState } from '../state/army/RegularsState';
+import type { Alignment } from './Alignment';
+import type { HeroState } from '../state/army/HeroState';
+import type { RegularsState } from '../state/army/RegularsState';
 
 export type Unit = HeroState | RegularsState;
 

@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
 import styles from './css/GameControl.module.css';
 
+import GameButton from '../buttons/GameButton';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 
-import GameButton from '../buttons/GameButton';
 import { ButtonName } from '../../types/ButtonName';
 
 const GameControl: React.FC = () => {

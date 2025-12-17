@@ -1,17 +1,17 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameContext } from '../../contexts/GameContext';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 
-import { HeroState } from '../../state/army/HeroState';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameContext } from '../../contexts/GameContext';
 import { findHeroAndLand, getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getAllQuests, getQuestType } from '../../domain/quest/questRepository';
-
 import { startQuest } from '../../map/quest/startQuest';
 
 import { getQuestImg } from '../../assets/getQuestImg';
+
+import type { HeroState } from '../../state/army/HeroState';
 
 const SendHeroInQuestDialog: React.FC = () => {
   const {

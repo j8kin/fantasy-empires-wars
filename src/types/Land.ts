@@ -1,5 +1,5 @@
-import { Alignment } from './Alignment';
-import { UnitType } from './UnitType';
+import type { Alignment } from './Alignment';
+import type { UnitType } from './UnitType';
 
 // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
 

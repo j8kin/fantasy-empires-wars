@@ -1,27 +1,27 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './css/NewGameDialog.module.css';
 
-import { useApplicationContext } from '../../contexts/ApplicationContext';
-import { useGameContext } from '../../contexts/GameContext';
-
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import Avatar from '../avatars/Avatar';
 import GameButton from '../buttons/GameButton';
 import PlayerSelection from '../player-selection/PlayerSelection';
 
-import { GameState } from '../../state/GameState';
-import { PlayerProfile } from '../../state/player/PlayerProfile';
-import { MapDimensions } from '../../state/map/MapDimensions';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import { addPlayerToGameState } from '../../systems/playerActions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
+import { generateMap } from '../../map/generation/generateMap';
+
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { PLAYER_COLORS } from '../../types/PlayerColors';
 
 import { ButtonName } from '../../types/ButtonName';
-import { PLAYER_COLORS, PlayerColorName } from '../../types/PlayerColors';
-
-import { generateMap } from '../../map/generation/generateMap';
+import type { GameState } from '../../state/GameState';
+import type { PlayerProfile } from '../../state/player/PlayerProfile';
+import type { MapDimensions } from '../../state/map/MapDimensions';
+import type { PlayerColorName } from '../../types/PlayerColors';
 
 // Local map size type for this dialog only
 type DialogMapSize = 'small' | 'medium' | 'large' | 'huge';

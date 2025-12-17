@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import styles from './css/ExchangeManaVialPanel.module.css';
 
 import ManaVial from './ManaVial';
-import { ManaType } from '../../types/Mana';
+import type { ManaType } from '../../types/Mana';
 
 // Component for exchange mode vials that show conversion rates and handle clicking
 interface ExchangeVialProps {

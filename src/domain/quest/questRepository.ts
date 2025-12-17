@@ -1,4 +1,4 @@
-import { QuestType, Quest } from '../../types/Quest';
+import type { QuestType, Quest } from '../../types/Quest';
 
 const ALL_QUESTS: Quest[] = [
   {

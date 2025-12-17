@@ -1,4 +1,4 @@
-import { UnitType } from './UnitType';
+import type { UnitType } from './UnitType';
 
 export enum BuildingType {
   STRONGHOLD = 'Stronghold',

@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import styles from './css/GameControl.module.css';
 
+import GameButton from '../buttons/GameButton';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-
-import GameButton from '../buttons/GameButton';
 
 import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';

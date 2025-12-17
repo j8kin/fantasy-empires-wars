@@ -2,15 +2,16 @@ import React from 'react';
 import commonStyles from './css/Popup.module.css';
 import styles from './css/LandCharacteristicsPopup.module.css';
 
+import PopupWrapper from './PopupWrapper';
+
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import PopupWrapper, { PopupProps } from './PopupWrapper';
-
-import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandInfo } from '../../selectors/landSelectors';
-
 import { getAlignmentColor } from '../../domain/ui/alignmentColors';
+
+import type { PopupProps } from './PopupWrapper';
+import type { LandPosition } from '../../state/map/land/LandPosition';
 import { EffectType } from '../../types/Effect';
 
 interface LandCharacteristicsPopupProps extends PopupProps {

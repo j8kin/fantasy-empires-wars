@@ -1,8 +1,9 @@
-import { GameState } from '../../state/GameState';
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
-import { TreasureType } from '../../types/Treasures';
 import { calculateIncome } from './calculateIncome';
 import { calculateMaintenance } from './calculateMaintenance';
+
+import { TreasureType } from '../../types/Treasures';
+import type { GameState } from '../../state/GameState';
 
 /**
  * Calculates the current net income for the turn owner player.

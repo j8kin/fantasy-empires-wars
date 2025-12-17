@@ -1,15 +1,18 @@
 import React from 'react';
 import styles from './css/ManaVial.module.css';
 
+import { useGameContext } from '../../contexts/GameContext';
+import { getMaxHeroLevelByType } from '../../selectors/armySelectors';
 import { getManaColor, getManaGradient } from '../../domain/ui/manaColors';
-import { ManaType } from '../../types/Mana';
+import { getManaSource } from '../../domain/mana/manaSource';
 
 import { getManaVialImg } from '../../assets/getManaVialImg';
-import { getMaxHeroLevelByType } from '../../selectors/armySelectors';
+
+import { MAX_MANA } from '../../types/Mana';
 import { AllSpells } from '../../types/Spell';
-import { useGameContext } from '../../contexts/GameContext';
-import { GameState } from '../../state/GameState';
-import { getManaSource } from '../../domain/mana/manaSource';
+
+import { ManaType } from '../../types/Mana';
+import type { GameState } from '../../state/GameState';
 
 interface FilledManaVialProps {
   color: ManaType;
@@ -27,7 +30,7 @@ interface FilledManaVialProps {
  * - 100% when mana >= 200 (full mana pool or exchange mode)
  */
 const calculateFillLevel = (gameState: GameState, manaType: ManaType, cMana: number): number => {
-  if (cMana >= 200) return 100;
+  if (cMana >= MAX_MANA) return 100;
 
   const maxHeroLevel = getMaxHeroLevelByType(gameState, getManaSource({ manaType })!.heroTypes[0]);
 

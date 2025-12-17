@@ -1,13 +1,11 @@
-import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPositionByPlayers } from '../../selectors/armySelectors';
 import { updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
-
 import { getHostileLands } from '../utils/getHostileLands';
-import {
-  calculateAndApplyArmyPenalties,
-  PenaltyConfig,
-} from '../../domain/army/armyPenaltyCalculator';
+import { calculateAndApplyArmyPenalties } from '../../domain/army/armyPenaltyCalculator';
+
+import type { PenaltyConfig } from '../../domain/army/armyPenaltyCalculator';
+import type { GameState } from '../../state/GameState';
 
 const ATTRITION_PENALTY_CONFIG: PenaltyConfig = {
   regular: { minPct: 0.08, maxPct: 0.1, minAbs: 40, maxAbs: 60 },

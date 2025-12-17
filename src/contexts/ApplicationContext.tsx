@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { PlayerState } from '../state/player/PlayerState';
-import { HeroOutcome } from '../types/HeroOutcome';
-import { PlayerProfile } from '../state/player/PlayerProfile';
-import { LandPosition } from '../state/map/land/LandPosition';
-import { ManaType } from '../types/Mana';
+import type { PlayerState } from '../state/player/PlayerState';
+import type { HeroOutcome } from '../types/HeroOutcome';
+import type { PlayerProfile } from '../state/player/PlayerProfile';
+import type { LandPosition } from '../state/map/land/LandPosition';
+import type { ManaType } from '../types/Mana';
 
 /**
  * Top Left position of the window/dialog/popup
