@@ -3,10 +3,14 @@ import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
-import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
-import { addLand, hasLand, removeLand } from '../../systems/playerActions';
-import { clearLandBuildings } from '../../systems/gameStateActions';
+import { hasLand } from '../../systems/playerActions';
+import {
+  clearLandBuildings,
+  addPlayerLand,
+  removePlayerLand,
+} from '../../systems/gameStateActions';
 
 import { BuildingType } from '../../types/Building';
 
@@ -45,9 +49,9 @@ export const destroyBuilding = (gameState: GameState, landPos: LandPosition) => 
       if (armiesAtPosition.length > 0) {
         // if land has army of non-previous owner then change for a new owner (who owns army on this land)
         if (!armiesAtPosition.some((a) => a.controlledBy === player)) {
-          removeLand(owner, l);
-          const newLandOwner = getPlayer(gameState, armiesAtPosition[0].controlledBy);
-          addLand(newLandOwner, l);
+          Object.assign(gameState, removePlayerLand(gameState, owner.id, l));
+          const newLandOwnerId = armiesAtPosition[0].controlledBy;
+          Object.assign(gameState, addPlayerLand(gameState, newLandOwnerId, l));
         }
       } else {
         // no army look for nearest stronghold
@@ -56,13 +60,13 @@ export const destroyBuilding = (gameState: GameState, landPos: LandPosition) => 
         );
         if (nearestStrongholds && nearestStrongholds.length > 0) {
           if (!nearestStrongholds.some((s) => hasLand(owner, s))) {
-            const newOwner = getPlayer(gameState, getLandOwner(gameState, nearestStrongholds[0]));
-            addLand(newOwner, l);
+            const newLandOwnerId = getLandOwner(gameState, nearestStrongholds[0]);
+            Object.assign(gameState, addPlayerLand(gameState, newLandOwnerId, l));
 
-            removeLand(owner, l);
+            Object.assign(gameState, removePlayerLand(gameState, owner.id, l));
           }
         } else {
-          removeLand(owner, l);
+          Object.assign(gameState, removePlayerLand(gameState, owner.id, l));
         }
       }
     });

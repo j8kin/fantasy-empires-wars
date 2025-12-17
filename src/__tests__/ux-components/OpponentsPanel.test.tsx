@@ -8,7 +8,7 @@ import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import OpponentsPanel from '../../ux-components/opponents-panel/OpponentsPanel';
 
 import { PlayerProfile } from '../../state/player/PlayerProfile';
-import { addPlayer } from '../../systems/playerActions';
+import { addPlayerToGameState } from '../../systems/playerActions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { generateMockMap } from '../utils/generateMockMap';
@@ -28,11 +28,11 @@ const TestWrapper: React.FC<{
       const newGameState = gameStateFactory(map);
 
       // Add the selected player first
-      addPlayer(newGameState, selectedPlayer, 'human');
+      addPlayerToGameState(newGameState, selectedPlayer, 'human');
 
       // Add all opponents to the game
       opponents.forEach((opponent) => {
-        addPlayer(newGameState, opponent, 'computer');
+        addPlayerToGameState(newGameState, opponent, 'computer');
       });
 
       updateGameState(newGameState);

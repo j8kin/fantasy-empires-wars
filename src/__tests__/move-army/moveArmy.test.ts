@@ -8,7 +8,7 @@ import { getLandId } from '../../state/map/land/LandId';
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
-import { addLand } from '../../systems/playerActions';
+import { addPlayerLand } from '../../systems/gameStateActions';
 
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 
@@ -106,7 +106,10 @@ describe('Move Army', () => {
       'new Army with movement should be created into %s with pathLength: %s',
       (to: LandPosition, pathLength: number, path: string[]) => {
         const from = barracksLand.mapPos;
-        addLand(getTurnOwner(gameStateStub), from);
+        Object.assign(
+          gameStateStub,
+          addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, from)
+        );
         const armyBriefInfo: ArmyBriefInfo = {
           heroes: [],
           regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],

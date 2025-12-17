@@ -7,7 +7,7 @@ import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog'
 import { GameState } from '../../../state/GameState';
 import { LandPosition } from '../../../state/map/land/LandPosition';
 
-import { addLand } from '../../../systems/playerActions';
+import { addPlayerLand } from '../../../systems/gameStateActions';
 import { getLand } from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
 
@@ -488,7 +488,10 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       // Make sure the current player owns this land
-      addLand(getTurnOwner(gameStateStub), landPos);
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, landPos)
+      );
 
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;
@@ -520,7 +523,10 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       // Make sure the current player owns this land
-      addLand(getTurnOwner(gameStateStub), landPos);
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, landPos)
+      );
 
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;
@@ -547,7 +553,10 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       // Make sure the current player owns this land
-      addLand(getTurnOwner(gameStateStub), landPos);
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, landPos)
+      );
 
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;
@@ -574,7 +583,10 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       // Make sure the current player owns this land
-      addLand(getTurnOwner(gameStateStub), landPos);
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, landPos)
+      );
 
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;
@@ -601,7 +613,10 @@ describe('RecruitArmyDialog', () => {
       land.buildings = [];
 
       // Make sure the current player owns this land
-      addLand(getTurnOwner(gameStateStub), landPos);
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, landPos)
+      );
 
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;

@@ -6,36 +6,22 @@ import { getLandId } from '../state/map/land/LandId';
 import { EmpireTreasure, Item } from '../types/Treasures';
 
 import { playerFactory } from '../factories/playerFactory';
-import {
-  addPlayer as addPlayerToGameState,
-  removePlayer as removePlayerFromGameState,
-  setTurnOwner,
-  incrementTurn,
-  addPlayerLand,
-  removePlayerLand,
-} from './gameStateActions';
+import { addPlayer, setTurnOwner, incrementTurn } from './gameStateActions';
 
 import { NO_PLAYER } from '../domain/player/playerRepository';
 
 const INITIAL_VAULT = 15000;
 
-export const addPlayer = (
+export const addPlayerToGameState = (
   gameState: GameState,
   profile: PlayerProfile,
   type: 'human' | 'computer'
 ) => {
   const newPlayer = playerFactory(profile, type, INITIAL_VAULT);
-  Object.assign(gameState, addPlayerToGameState(gameState, newPlayer));
+  Object.assign(gameState, addPlayer(gameState, newPlayer));
   if (gameState.turnOwner === NO_PLAYER.id) {
     Object.assign(gameState, setTurnOwner(gameState, newPlayer.id));
   }
-};
-
-export const removePlayer = (gameState: GameState, playerId: string) => {
-  if (gameState.turnOwner === playerId) {
-    nextPlayer(gameState);
-  }
-  Object.assign(gameState, removePlayerFromGameState(gameState, playerId));
 };
 
 export const nextPlayer = (gameState: GameState): void => {
@@ -50,32 +36,6 @@ export const nextPlayer = (gameState: GameState): void => {
   if (nextIdx === 0) {
     Object.assign(gameState, incrementTurn(gameState));
   }
-};
-
-// Legacy functions - use addPlayerLand/removePlayerLand from gameStateActions for new code
-export const addLand = (state: PlayerState, landPos: LandPosition): void => {
-  state.landsOwned.add(getLandId(landPos));
-};
-
-export const removeLand = (state: PlayerState, landPos: LandPosition): void => {
-  state.landsOwned.delete(getLandId(landPos));
-};
-
-// GameState-level land ownership functions
-export const addLandToPlayer = (
-  gameState: GameState,
-  playerId: string,
-  landPos: LandPosition
-): void => {
-  Object.assign(gameState, addPlayerLand(gameState, playerId, landPos));
-};
-
-export const removeLandFromPlayer = (
-  gameState: GameState,
-  playerId: string,
-  landPos: LandPosition
-): void => {
-  Object.assign(gameState, removePlayerLand(gameState, playerId, landPos));
 };
 
 export const hasLand = (state: PlayerState, landPos: LandPosition): boolean => {

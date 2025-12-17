@@ -5,7 +5,7 @@ import { getLandId } from '../../state/map/land/LandId';
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getLandOwner } from '../../selectors/landSelectors';
 import { getBuilding } from '../../selectors/buildingSelectors';
-import { addLand } from '../../systems/playerActions';
+import { addPlayerLand, updatePlayerVault } from '../../systems/gameStateActions';
 
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 
@@ -34,12 +34,12 @@ export const construct = (
 
     case BuildingType.STRONGHOLD:
       gameState.map.lands[mapPosition].buildings.push(building);
-      addLand(turnOwner, position);
+      Object.assign(gameState, addPlayerLand(gameState, turnOwner.id, position));
       const newLandsCandidates = getTilesInRadius(map.dimensions, position, 1, true);
       newLandsCandidates.forEach((land) => {
         // if the land is not controlled by any player, it becomes controlled by the player
         if (getLandOwner(gameState, land) === NO_PLAYER.id) {
-          addLand(turnOwner, land);
+          Object.assign(gameState, addPlayerLand(gameState, turnOwner.id, land));
         }
       });
       break;
@@ -55,6 +55,6 @@ export const construct = (
 
   if (gameState.turn > 1) {
     const cost = hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;
-    turnOwner.vault -= cost;
+    Object.assign(gameState, updatePlayerVault(gameState, turnOwner.id, -cost));
   }
 };

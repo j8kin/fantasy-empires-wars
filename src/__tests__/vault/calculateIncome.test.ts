@@ -3,7 +3,8 @@ import { GameState } from '../../state/GameState';
 import { PlayerProfile } from '../../state/player/PlayerProfile';
 import { getLandId } from '../../state/map/land/LandId';
 
-import { addLand, addPlayer } from '../../systems/playerActions';
+import { addPlayerToGameState } from '../../systems/playerActions';
+import { addPlayerLand } from '../../systems/gameStateActions';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getBuilding } from '../../selectors/buildingSelectors';
 
@@ -42,14 +43,17 @@ describe('Calculate Income', () => {
   });
 
   it('No land owned', () => {
-    addPlayer(gameStateStub, PREDEFINED_PLAYERS[0], 'human');
+    addPlayerToGameState(gameStateStub, PREDEFINED_PLAYERS[0], 'human');
     const income = calculateIncome(gameStateStub);
     expect(income).toBe(0);
   });
 
   it('Corner case: No owned strongholds', () => {
-    addPlayer(gameStateStub, PREDEFINED_PLAYERS[0], 'human');
-    addLand(getTurnOwner(gameStateStub), { row: 5, col: 5 });
+    addPlayerToGameState(gameStateStub, PREDEFINED_PLAYERS[0], 'human');
+    Object.assign(
+      gameStateStub,
+      addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 5, col: 5 })
+    );
 
     const income = calculateIncome(gameStateStub);
     expect(income).toBe(0);
@@ -73,7 +77,7 @@ describe('Calculate Income', () => {
       gameStateStub = gameStateFactory(
         generateMockMap(defaultBattlefieldSizeStub, allLandsAlignment, 100)
       );
-      addPlayer(gameStateStub, player, 'human');
+      addPlayerToGameState(gameStateStub, player, 'human');
       // add stronghold
       construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
       const income = calculateIncome(gameStateStub);
@@ -96,17 +100,23 @@ describe('Calculate Income', () => {
     (penalty: string, playerAlignment: Alignment, landCol: number, expected: number) => {
       const player = getPlayer(playerAlignment);
 
-      addPlayer(gameStateStub, player, 'human');
+      addPlayerToGameState(gameStateStub, player, 'human');
 
       // stronghold
-      addLand(getTurnOwner(gameStateStub), { row: 5, col: 5 });
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 5, col: 5 })
+      );
       gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
       gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
       ];
 
       // additional land (should be calculated with penalty
-      addLand(getTurnOwner(gameStateStub), { row: 5, col: landCol });
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 5, col: landCol })
+      );
       gameStateStub.map.lands[getLandId({ row: 5, col: landCol })].goldPerTurn = 100;
 
       const income = calculateIncome(gameStateStub);
@@ -130,11 +140,14 @@ describe('Calculate Income', () => {
     (playerAlignment: Alignment, land, expected) => {
       const player = getPlayer(playerAlignment);
 
-      addPlayer(gameStateStub, player, 'human');
+      addPlayerToGameState(gameStateStub, player, 'human');
 
       // add different type land in the stronghold radius to demonstrate different income calculations
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(land);
-      addLand(getTurnOwner(gameStateStub), { row: 4, col: 4 });
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 4, col: 4 })
+      );
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
         getBuilding(BuildingType.STRONGHOLD),
@@ -153,9 +166,12 @@ describe('Calculate Income', () => {
     'CORRUPTED Land treated as CHAOTIC Land type and has affect for %s player',
     (pAlignment: Alignment, incomeBefore: number, incomeAfter: number) => {
       const player = getPlayer(pAlignment);
-      addPlayer(gameStateStub, player, 'human');
+      addPlayerToGameState(gameStateStub, player, 'human');
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(LandType.PLAINS);
-      addLand(getTurnOwner(gameStateStub), { row: 4, col: 4 });
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 4, col: 4 })
+      );
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
 
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [

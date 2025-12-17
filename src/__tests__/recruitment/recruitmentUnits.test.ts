@@ -5,8 +5,9 @@ import { LandPosition } from '../../state/map/land/LandPosition';
 import { UnitRank } from '../../state/army/RegularsState';
 
 import { getLand } from '../../selectors/landSelectors';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayer, getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
+import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';
 import { relictFactory } from '../../factories/treasureFactory';
 
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
@@ -71,24 +72,30 @@ describe('Recruitment', () => {
   };
 
   it('Recruitment cost less when player has TreasureItem.CROWN_OF_DOMINION', () => {
-    const player = getTurnOwner(gameStateStub);
+    const playerId = getTurnOwner(gameStateStub).id;
     // add  TreasureItem.CROWN_OF_DOMINION to player treasury
-    player.empireTreasures.push(relictFactory(TreasureType.CROWN_OF_DOMINION));
-
+    Object.assign(
+      gameStateStub,
+      addPlayerEmpireTreasure(
+        gameStateStub,
+        playerId,
+        relictFactory(TreasureType.CROWN_OF_DOMINION)
+      )
+    );
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
-    let vault = player.vault;
+    let vault = getPlayer(gameStateStub, playerId).vault;
 
     startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
     // artifact has effect on regular units
-    expect(player.vault).toBe(
+    expect(getPlayer(gameStateStub, playerId).vault).toBe(
       vault - Math.ceil(unitsBaseStats(RegularUnitType.WARRIOR).recruitCost * 0.85)
     );
 
     // artifact has effect on hero units
-    vault = player.vault;
+    vault = getPlayer(gameStateStub, playerId).vault;
     startRecruiting(gameStateStub, barracksPos, HeroUnitType.FIGHTER);
-    expect(player.vault).toBe(
+    expect(getPlayer(gameStateStub, playerId).vault).toBe(
       vault - Math.ceil(unitsBaseStats(HeroUnitType.FIGHTER).recruitCost * 0.85)
     );
   });

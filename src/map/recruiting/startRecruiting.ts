@@ -3,6 +3,7 @@ import { LandPosition } from '../../state/map/land/LandPosition';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
+import { updatePlayerVault } from '../../systems/gameStateActions';
 import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
 import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
@@ -75,8 +76,7 @@ export const startRecruiting = (
         (e) => e.spell === SpellName.EMBER_RAID
       );
 
-      // Update vault using direct mutation for now (matching construct.ts pattern)
-      turnOwner.vault -= costReduction;
+      Object.assign(state, updatePlayerVault(state, turnOwner.id, -costReduction));
 
       // Add a recruitment slot using direct mutation
       building[0].slots!.push({
