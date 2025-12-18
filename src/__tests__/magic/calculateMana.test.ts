@@ -1,27 +1,26 @@
-import { GameState } from '../../state/GameState';
-import { PlayerState } from '../../state/player/PlayerState';
-import { PlayerProfile } from '../../state/player/PlayerProfile';
-import { LandState } from '../../state/map/land/LandState';
-
 import { getLand } from '../../selectors/landSelectors';
 import { getPlayerLands } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { nextPlayer } from '../../systems/playerActions';
+import { relictFactory } from '../../factories/treasureFactory';
+import { getManaSource } from '../../domain/mana/manaSource';
+import { getSpecialLandTypes } from '../../domain/land/landQueries';
+import { getLandById } from '../../domain/land/landRepository';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { MAX_MANA } from '../../types/Mana';
 
 import { ManaType } from '../../types/Mana';
 import { HeroUnitType } from '../../types/UnitType';
 import { LandType } from '../../types/Land';
 import { TreasureType } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
-
-import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-import { getManaSource } from '../../domain/mana/manaSource';
-import { getSpecialLandTypes } from '../../domain/land/landQueries';
-import { getLandById } from '../../domain/land/landRepository';
+import type { GameState } from '../../state/GameState';
+import type { PlayerState } from '../../state/player/PlayerState';
+import type { PlayerProfile } from '../../state/player/PlayerProfile';
+import type { LandState } from '../../state/map/land/LandState';
 
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { relictFactory } from '../../factories/treasureFactory';
 
 describe('Calculate Mana', () => {
   let testTurnManagement: TestTurnManagement;
@@ -40,7 +39,7 @@ describe('Calculate Mana', () => {
   });
 
   const expectedMana = (manaType: ManaType, mana: number, playerId: number = 0): void => {
-    expect(gameStateStub.players[playerId].mana[manaType]).toBe(mana);
+    expect(gameStateStub.players[playerId].mana[manaType]).toBe(mana > MAX_MANA ? MAX_MANA : mana); // mana is limited to MAX_MANA
     Object.values(ManaType)
       .filter((m) => m !== manaType)
       .forEach((m) => {
@@ -268,7 +267,7 @@ describe('Calculate Mana', () => {
 
     expectManaOnTurn(gameStateStub.turn, basePlayersMana);
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       testTurnManagement.makeNTurns(1);
       expectManaOnTurn(gameStateStub.turn, basePlayersMana);
     }
