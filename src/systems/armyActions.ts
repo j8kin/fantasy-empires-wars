@@ -3,7 +3,7 @@ import { hasTreasureByPlayer } from '../selectors/playerSelectors';
 import { getArmiesAtPositionByPlayers } from '../selectors/armySelectors';
 import { regularsFactory } from '../factories/regularsFactory';
 import { calculateAndApplyArmyPenalties } from '../domain/army/armyPenaltyCalculator';
-import { startMovement } from './moveActions';
+import { findShortestPath } from '../map/utils/mapAlgorithms';
 
 import { EffectType } from '../types/Effect';
 import { RegularUnitType } from '../types/UnitType';
@@ -127,7 +127,8 @@ export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => 
 };
 
 export const startMoving = (state: ArmyState, to: LandPosition): void => {
-  startMovement(state.movement, to);
+  const from = state.movement.path[state.movement.progress];
+  state.movement.path = findShortestPath({ rows: 100, cols: 100 }, from, to);
 };
 
 export const moveArmy = (state: ArmyState): void => {

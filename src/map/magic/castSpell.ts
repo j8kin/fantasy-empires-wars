@@ -141,7 +141,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       killRegularUnits(state, spell.penalty!, landPos!);
       // try to destroy building if exists (40% probability)
       if (Math.random() < 0.4) {
-        destroyBuilding(state, landPos!);
+        Object.assign(state, destroyBuilding(state, landPos!));
       }
       break;
 
@@ -248,7 +248,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       killRegularUnits(state, showerPenaltyCfg, landPos!);
       // try to destroy building if exists (50-60% probability)
       if (Math.random() < 0.5 + (0.1 * maxMageLvl) / MAX_HERO_LEVEL) {
-        destroyBuilding(state, landPos!);
+        Object.assign(state, destroyBuilding(state, landPos!));
       }
       break;
 

@@ -26,35 +26,42 @@ export const construct = (
   if (turnOwner.vault < building.buildCost && gameState.turn > 1) {
     return;
   }
+
+  // Accumulate all state changes
+  let updatedState = gameState;
+
   switch (buildingType) {
     case BuildingType.DEMOLITION:
-      destroyBuilding(gameState, position);
+      updatedState = destroyBuilding(updatedState, position);
       break;
 
     case BuildingType.STRONGHOLD:
-      Object.assign(gameState, addBuildingToLand(gameState, position, building));
+      updatedState = addBuildingToLand(updatedState, position, building);
+      updatedState = addPlayerLand(updatedState, turnOwner.id, position);
 
-      Object.assign(gameState, addPlayerLand(gameState, turnOwner.id, position));
       const newLandsCandidates = getTilesInRadius(map.dimensions, position, 1, true);
       newLandsCandidates.forEach((land) => {
         // if the land is not controlled by any player, it becomes controlled by the player
-        if (getLandOwner(gameState, land) === NO_PLAYER.id) {
-          Object.assign(gameState, addPlayerLand(gameState, turnOwner.id, land));
+        if (getLandOwner(updatedState, land) === NO_PLAYER.id) {
+          updatedState = addPlayerLand(updatedState, turnOwner.id, land);
         }
       });
       break;
 
     default:
-      Object.assign(gameState, addBuildingToLand(gameState, position, building));
+      updatedState = addBuildingToLand(updatedState, position, building);
       break;
   }
 
   // if player has Crown of Dominion, reduce cost by 15%
-  // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes’-Quests
+  // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes'-Quests
   const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureType.CROWN_OF_DOMINION);
 
   if (gameState.turn > 1) {
     const cost = hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;
-    Object.assign(gameState, updatePlayerVault(gameState, turnOwner.id, -cost));
+    updatedState = updatePlayerVault(updatedState, turnOwner.id, -cost);
   }
+
+  // Apply all accumulated changes in one place
+  Object.assign(gameState, updatedState);
 };
