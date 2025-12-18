@@ -115,7 +115,7 @@ describe('Move Army', () => {
           regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
         };
 
-        startMovement(gameStateStub, from, to, armyBriefInfo);
+        Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
 
         const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
         expect(armies.length).toBe(2);
@@ -144,7 +144,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
       };
 
-      startMovement(gameStateStub, from, to, armyBriefInfo);
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
 
       // only hero remains in the army
       const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -167,7 +167,7 @@ describe('Move Army', () => {
         regulars: [],
       };
 
-      startMovement(gameStateStub, from, to, armyBriefInfo);
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
 
       // All army stays the same
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -184,7 +184,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
       };
 
-      startMovement(gameStateStub, from, to, armyBriefInfo);
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
 
       // only regular remains in the army
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -212,7 +212,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
       };
 
-      startMovement(gameStateStub, from, to, armyBriefInfo);
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
 
       // only new army remains
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -236,7 +236,10 @@ describe('Move Army', () => {
 
         expect(armies.length).toBe(0);
 
-        startMovement(gameStateStub, emptyLand.mapPos, barracksLand.mapPos, armyBriefInfo);
+        Object.assign(
+          gameStateStub,
+          startMovement(gameStateStub, emptyLand.mapPos, barracksLand.mapPos, armyBriefInfo)
+        );
 
         armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
         expect(armies.length).toBe(1);
@@ -257,7 +260,7 @@ describe('Move Army', () => {
           regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 1000 }],
         };
 
-        startMovement(gameStateStub, from, to, armyBriefInfo);
+        Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
         armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
 
         expect(armies.length).toBe(1);
@@ -278,7 +281,7 @@ describe('Move Army', () => {
           regulars: [],
         };
 
-        startMovement(gameStateStub, from, to, armyBriefInfo);
+        Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
 
         const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
         expect(armies.length).toBe(1);
@@ -302,7 +305,10 @@ describe('Move Army', () => {
         regulars: [],
       };
 
-      startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo);
+      Object.assign(
+        gameStateStub,
+        startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo)
+      );
       testTurnManagement.makeNTurns(1);
 
       armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
@@ -328,7 +334,10 @@ describe('Move Army', () => {
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies.length).toBe(1);
 
-      startMovement(gameStateStub, homeLand.mapPos, barracksLand.mapPos, armyBriefInfo);
+      Object.assign(
+        gameStateStub,
+        startMovement(gameStateStub, homeLand.mapPos, barracksLand.mapPos, armyBriefInfo)
+      );
 
       testTurnManagement.makeNTurns(1);
       armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
@@ -364,7 +373,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
       };
 
-      startMovement(gameStateStub, from, to, armyBriefInfo);
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
       armies = getArmiesAtPosition(gameStateStub, from);
       expect(armies.length).toBe(2);
 
@@ -404,7 +413,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
       };
 
-      startMovement(gameStateStub, from, to, armyBriefInfo);
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
       armies = getArmiesAtPosition(gameStateStub, from);
       expect(armies.length).toBe(2);
 
@@ -436,7 +445,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
       };
 
-      startMovement(gameStateStub, from, to, ArmyBriefInfo1);
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, ArmyBriefInfo1));
       armies = getArmiesAtPosition(gameStateStub, from);
       expect(armies.length).toBe(2);
 
@@ -446,7 +455,7 @@ describe('Move Army', () => {
         regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 35 }], // 35 regular units is not enough to conquer the new territory
       };
 
-      startMovement(gameStateStub, from, to, ArmyBriefInfo2);
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, ArmyBriefInfo2));
       armies = getArmiesAtPosition(gameStateStub, from);
       expect(armies.length).toBe(3);
 
@@ -487,7 +496,10 @@ describe('Move Army', () => {
         regulars: [],
       };
 
-      startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo);
+      Object.assign(
+        gameStateStub,
+        startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo)
+      );
       expect(isMoving(getArmiesAtPosition(gameStateStub, homeLand.mapPos)[0])).toBeTruthy();
       testTurnManagement.makeNTurns(1);
 

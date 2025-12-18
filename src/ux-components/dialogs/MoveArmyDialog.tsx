@@ -48,7 +48,7 @@ const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {
 
 const MoveArmyDialog: React.FC = () => {
   const { setMoveArmyPath, moveArmyPath } = useApplicationContext();
-  const { gameState } = useGameContext();
+  const { gameState, updateGameState } = useGameContext();
 
   const fromUnitsRef = useRef<ArmyBriefInfo | undefined>(undefined);
   const toUnitsRef = useRef<ArmyBriefInfo | undefined>(undefined);
@@ -124,7 +124,7 @@ const MoveArmyDialog: React.FC = () => {
   const handleMove = () => {
     if (!moveArmyPath || !toUnits) return;
 
-    startMovement(gameState, moveArmyPath.from, moveArmyPath.to, toUnits);
+    updateGameState(startMovement(gameState, moveArmyPath.from, moveArmyPath.to, toUnits));
     setMoveArmyPath(undefined);
   };
 
