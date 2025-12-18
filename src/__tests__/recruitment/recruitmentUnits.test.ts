@@ -1,27 +1,24 @@
-import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { GameState } from '../../state/GameState';
-import { LandState } from '../../state/map/land/LandState';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { UnitRank } from '../../state/army/RegularsState';
-
 import { getLand } from '../../selectors/landSelectors';
 import { getPlayer, getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';
 import { relictFactory } from '../../factories/treasureFactory';
-
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
+import { startRecruiting } from '../../map/recruiting/startRecruiting';
+import { construct } from '../../map/building/construct';
+import { castSpell } from '../../map/magic/castSpell';
 
 import { BuildingType } from '../../types/Building';
 import { TreasureType } from '../../types/Treasures';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
-
-import { startRecruiting } from '../../map/recruiting/startRecruiting';
-import { construct } from '../../map/building/construct';
-import { castSpell } from '../../map/magic/castSpell';
+import { UnitRank } from '../../state/army/RegularsState';
+import type { GameState } from '../../state/GameState';
+import type { LandState } from '../../state/map/land/LandState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { TestTurnManagement } from '../utils/TestTurnManagement';
 
 describe('Recruitment', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -110,11 +107,13 @@ describe('Recruitment', () => {
     castSpell(gameStateStub, SpellName.CORRUPTION, barracksPos);
 
     startRecruiting(gameStateStub, barracksPos, RegularUnitType.ORC);
-    const barracks = getLand(gameStateStub, barracksPos).buildings[0];
+    let barracks = getLand(gameStateStub, barracksPos).buildings[0];
     expect(barracks.slots![0].unit).toBe(RegularUnitType.ORC);
     expect(barracks.slots![0].turnsRemaining).toBe(2);
 
     startRecruiting(gameStateStub, barracksPos, HeroUnitType.OGR);
+    barracks = getLand(gameStateStub, barracksPos).buildings[0];
+
     expect(barracks.slots![1].unit).toBe(HeroUnitType.OGR);
     expect(barracks.slots![1].turnsRemaining).toBe(4);
   });

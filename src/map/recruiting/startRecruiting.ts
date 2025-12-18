@@ -1,6 +1,6 @@
 import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
-import { updatePlayerVault } from '../../systems/gameStateActions';
+import { addRecruitmentSlot, updatePlayerVault } from '../../systems/gameStateActions';
 import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
 import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
@@ -21,15 +21,15 @@ export const startRecruiting = (
   if (getLandOwner(state, landPos) !== state.turnOwner) {
     return; // fallback: a wrong Land Owner should never happen on real game
   }
-  // recruitment available only in MAIN phase if there is a slot available
-  const building = getLand(state, landPos).buildings.filter(
+  const land = getLand(state, landPos);
+  const buildingIdx = land.buildings.findIndex(
     (b) => b.slots != null && b.slots.length < b.numberOfSlots
   );
-  if (building.length === 1) {
+  if (buildingIdx !== -1) {
     // additionally verify that regular units and non-magic heroes are recruited in BARRACKS and mages are in mage tower
     if (isHeroType(unitType)) {
       if (!isMageType(unitType)) {
-        if (building[0].id !== BuildingType.BARRACKS) {
+        if (land.buildings[buildingIdx].id !== BuildingType.BARRACKS) {
           return; // fallback: wrong building type for non-magic heroes
         }
       } else {
@@ -54,17 +54,18 @@ export const startRecruiting = (
           default:
             break; // fallback should never reach here
         }
-        if (expectedMageTower == null || building[0].id !== expectedMageTower) {
+        if (expectedMageTower == null || land.buildings[buildingIdx].id !== expectedMageTower) {
           return;
         }
       }
-    } else if (building[0].id !== BuildingType.BARRACKS) {
+    } else if (land.buildings[buildingIdx].id !== BuildingType.BARRACKS) {
       return; // fallback: wrong building type for regular units
     }
 
     const turnOwner = getTurnOwner(state);
     const availableGold = turnOwner.vault;
     if (availableGold != null && availableGold >= unitsBaseStats(unitType).recruitCost) {
+      let newState: GameState = state;
       const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureType.CROWN_OF_DOMINION);
 
       const costReduction = hasCrownOfDominion
@@ -72,18 +73,19 @@ export const startRecruiting = (
         : unitsBaseStats(unitType).recruitCost;
 
       // Ember raid increases recruitment duration by 1 turn
-      const hasEmberRaidEffect = hasActiveEffect(getLand(state, landPos), SpellName.EMBER_RAID);
+      const hasEmberRaidEffect = hasActiveEffect(land, SpellName.EMBER_RAID);
 
-      Object.assign(state, updatePlayerVault(state, turnOwner.id, -costReduction));
+      newState = updatePlayerVault(newState, turnOwner.id, -costReduction);
 
       // Add a recruitment slot using direct mutation
-      building[0].slots!.push({
+      newState = addRecruitmentSlot(newState, landPos, buildingIdx, {
         unit: unitType,
         turnsRemaining:
-          getRecruitDuration(unitType) +
-          (hasEmberRaidEffect ? 1 : 0) +
-          (getLand(state, landPos).corrupted ? 1 : 0), // corrupted lands add one additional turn to recruitment
+          getRecruitDuration(unitType) + (hasEmberRaidEffect ? 1 : 0) + (land.corrupted ? 1 : 0), // corrupted lands add one additional turn to recruitment
       });
+
+      // Update state
+      Object.assign(state, newState);
     }
   }
 };

@@ -10,6 +10,7 @@ import { nextPlayer } from '../../systems/playerActions';
 import { startQuest } from '../../map/quest/startQuest';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
 import { TreasureType } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
@@ -19,9 +20,8 @@ import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { HeroState } from '../../state/army/HeroState';
 import type { QuestType } from '../../types/Quest';
 
-import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { TestTurnManagement } from '../utils/TestTurnManagement';
 
 describe('Hero Quest', () => {
   const easyQuest: QuestType = 'The Echoing Ruins';
@@ -209,7 +209,7 @@ describe('Hero Quest', () => {
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     constructBuilding(BuildingType.BARRACKS, barracksPos);
 
-    const barracksLand = getLand(gameStateStub, barracksPos);
+    let barracksLand = getLand(gameStateStub, barracksPos);
     const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
     expect(armies.length).toBe(0);
 
@@ -217,6 +217,7 @@ describe('Hero Quest', () => {
     startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
     startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
     startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
+    barracksLand = getLand(gameStateStub, barracksPos);
     expect(barracksLand.buildings[0].slots![0].unit).toBe(HeroUnitType.FIGHTER);
     expect(barracksLand.buildings[0].slots![1].unit).toBe(HeroUnitType.FIGHTER);
     expect(barracksLand.buildings[0].slots![2].unit).toBe(HeroUnitType.FIGHTER);

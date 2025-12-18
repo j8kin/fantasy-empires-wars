@@ -8,7 +8,7 @@ import type { PlayerState } from '../state/player/PlayerState';
 import type { LandPosition } from '../state/map/land/LandPosition';
 import type { Building } from '../types/Building';
 import type { HeroQuest } from '../types/Quest';
-import type { Mana } from '../types/Mana';
+import type { ManaType } from '../types/Mana';
 import type { Effect } from '../types/Effect';
 import type { EmpireTreasure } from '../types/Treasures';
 import type { TurnPhase } from '../turn/TurnPhase';
@@ -112,7 +112,7 @@ export const updatePlayerVault = (
 export const updatePlayerMana = (
   gameState: GameState,
   playerId: string,
-  manaType: keyof Mana,
+  manaType: ManaType,
   deltaMana: number
 ): GameState => {
   const player = getPlayer(gameState, playerId);
@@ -134,27 +134,9 @@ export const updatePlayerEffect = (
   return updatePlayer(gameState, playerId, { effects: updatedEffects });
 };
 
-/**
- * Set a player's mana for a specific type (absolute value)
- */
-export const setPlayerMana = (
-  gameState: GameState,
-  playerId: string,
-  manaType: keyof Mana,
-  manaValue: number
-): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
-  const updatedMana = {
-    ...player.mana,
-    [manaType]: manaValue,
-  };
-  return updatePlayer(gameState, playerId, { mana: updatedMana });
-};
-
 // ============================================================================
 // PLAYER LAND OWNERSHIP FUNCTIONS
 // ============================================================================
-
 /**
  * Add a land to a player's owned lands
  */

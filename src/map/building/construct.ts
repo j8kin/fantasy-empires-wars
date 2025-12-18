@@ -1,11 +1,14 @@
-import { getLandId } from '../../state/map/land/LandId';
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getLandOwner } from '../../selectors/landSelectors';
 import { getBuilding } from '../../selectors/buildingSelectors';
-import { addPlayerLand, updatePlayerVault } from '../../systems/gameStateActions';
-import { NO_PLAYER } from '../../domain/player/playerRepository';
+import {
+  addBuildingToLand,
+  addPlayerLand,
+  updatePlayerVault,
+} from '../../systems/gameStateActions';
 import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { destroyBuilding } from './destroyBuilding';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
 
 import { TreasureType } from '../../types/Treasures';
 import { BuildingType } from '../../types/Building';
@@ -19,7 +22,6 @@ export const construct = (
 ) => {
   const map = gameState.map;
   const turnOwner = getTurnOwner(gameState);
-  const mapPosition = getLandId(position);
   const building = getBuilding(buildingType);
   if (turnOwner.vault < building.buildCost && gameState.turn > 1) {
     return;
@@ -30,7 +32,8 @@ export const construct = (
       break;
 
     case BuildingType.STRONGHOLD:
-      gameState.map.lands[mapPosition].buildings.push(building);
+      Object.assign(gameState, addBuildingToLand(gameState, position, building));
+
       Object.assign(gameState, addPlayerLand(gameState, turnOwner.id, position));
       const newLandsCandidates = getTilesInRadius(map.dimensions, position, 1, true);
       newLandsCandidates.forEach((land) => {
@@ -42,7 +45,7 @@ export const construct = (
       break;
 
     default:
-      gameState.map.lands[mapPosition].buildings.push(building);
+      Object.assign(gameState, addBuildingToLand(gameState, position, building));
       break;
   }
 
