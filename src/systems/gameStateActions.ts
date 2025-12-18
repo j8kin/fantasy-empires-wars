@@ -220,6 +220,119 @@ export const addPlayerEmpireTreasure = (
 };
 
 // ============================================================================
+// LAND MANAGEMENT FUNCTIONS
+// ============================================================================
+
+/**
+ * Most generic low-level function to update land properties
+ * @param gameState - Current game state
+ * @param landPos - Position of the land
+ * @param landUpdater - Function that takes current land state and returns updated land state
+ */
+const updateLandState = (
+  gameState: GameState,
+  landPos: LandPosition,
+  landUpdater: (land: (typeof gameState.map.lands)[string]) => (typeof gameState.map.lands)[string]
+): GameState => {
+  const landId = getLandId(landPos);
+  const land = gameState.map.lands[landId];
+  const updatedLand = landUpdater(land);
+
+  return {
+    ...gameState,
+    map: {
+      ...gameState.map,
+      lands: {
+        ...gameState.map.lands,
+        [landId]: updatedLand,
+      },
+    },
+  };
+};
+
+/**
+ * Add an effect to a specific land
+ */
+export const updateLandEffect = (
+  gameState: GameState,
+  landPos: LandPosition,
+  effect: Effect
+): GameState => {
+  return updateLandState(gameState, landPos, (land) => ({
+    ...land,
+    effects: [...land.effects, effect],
+  }));
+};
+
+/**
+ * Update a specific land's properties
+ */
+export const updateLand = (
+  gameState: GameState,
+  landPos: LandPosition,
+  updates: {
+    corrupted?: boolean;
+    goldPerTurn?: number;
+    unitsToRecruit?: UnitType[];
+  }
+): GameState => {
+  return updateLandState(gameState, landPos, (land) => ({
+    ...land,
+    ...(updates.corrupted !== undefined && { corrupted: updates.corrupted }),
+    ...(updates.goldPerTurn !== undefined && { goldPerTurn: updates.goldPerTurn }),
+    ...(updates.unitsToRecruit !== undefined && {
+      land: {
+        ...land.land,
+        unitsToRecruit: updates.unitsToRecruit,
+      },
+    }),
+  }));
+};
+
+/**
+ * Low-level function to update buildings at a specific land
+ * @param gameState - Current game state
+ * @param landPos - Position of the land
+ * @param buildingUpdater - Function that takes a building and its index, returns updated building
+ */
+export const updateLandBuildings = (
+  gameState: GameState,
+  landPos: LandPosition,
+  buildingUpdater: (building: Building, index: number) => Building
+): GameState => {
+  return updateLandState(gameState, landPos, (land) => ({
+    ...land,
+    buildings: land.buildings.map(buildingUpdater),
+  }));
+};
+
+/**
+ * Low-level function to update building slots at a specific land
+ * Applies the slot transformer to all buildings at the land
+ * @param gameState - Current game state
+ * @param landPos - Position of the land
+ * @param slotsTransformer - Function that takes slots array and returns updated slots array
+ */
+export const updateLandBuildingSlots = (
+  gameState: GameState,
+  landPos: LandPosition,
+  slotsTransformer: (slots: BuildingSlot[]) => BuildingSlot[]
+): GameState => {
+  return updateLandBuildings(gameState, landPos, (building) => {
+    if (!building.slots || building.slots.length === 0) {
+      return building;
+    }
+
+    const updatedSlots = slotsTransformer(building.slots);
+
+    return {
+      ...building,
+      slots: updatedSlots,
+    };
+  });
+};
+
+// ============================================================================
 // BUILDING MANAGEMENT FUNCTIONS
 // ============================================================================
 
@@ -231,44 +344,24 @@ export const addBuildingToLand = (
   landPos: LandPosition,
   building: Building
 ): GameState => {
-  const landId = getLandId(landPos);
-  return {
-    ...gameState,
-    map: {
-      ...gameState.map,
-      lands: {
-        ...gameState.map.lands,
-        [landId]: {
-          ...gameState.map.lands[landId],
-          buildings: [...gameState.map.lands[landId].buildings, building],
-        },
-      },
-    },
-  };
+  return updateLandState(gameState, landPos, (land) => ({
+    ...land,
+    buildings: [...land.buildings, building],
+  }));
 };
 
 /**
  * Remove all buildings from a specific land
  */
 export const clearLandBuildings = (gameState: GameState, landPos: LandPosition): GameState => {
-  const landId = getLandId(landPos);
-  return {
-    ...gameState,
-    map: {
-      ...gameState.map,
-      lands: {
-        ...gameState.map.lands,
-        [landId]: {
-          ...gameState.map.lands[landId],
-          buildings: [],
-        },
-      },
-    },
-  };
+  return updateLandState(gameState, landPos, (land) => ({
+    ...land,
+    buildings: [],
+  }));
 };
 
 /**
- * Add a recruitment slot to a building
+ * Add a recruitment slot to a specific building
  */
 export const addRecruitmentSlot = (
   gameState: GameState,
@@ -276,206 +369,112 @@ export const addRecruitmentSlot = (
   buildingIndex: number,
   slot: BuildingSlot
 ): GameState => {
-  const landId = getLandId(landPos);
-  const land = gameState.map.lands[landId];
-  const building = land.buildings[buildingIndex];
+  return updateLandBuildings(gameState, landPos, (building, idx) => {
+    if (idx !== buildingIndex) {
+      return building;
+    }
 
-  const updatedBuilding = {
-    ...building,
-    slots: building.slots ? [...building.slots, slot] : [slot],
-  };
-
-  const updatedBuildings = land.buildings.map((b, idx) =>
-    idx === buildingIndex ? updatedBuilding : b
-  );
-
-  return {
-    ...gameState,
-    map: {
-      ...gameState.map,
-      lands: {
-        ...gameState.map.lands,
-        [landId]: {
-          ...land,
-          buildings: updatedBuildings,
-        },
-      },
-    },
-  };
+    return {
+      ...building,
+      slots: building.slots ? [...building.slots, slot] : [slot],
+    };
+  });
 };
 
 /**
- * Update recruitment slot turns remaining
+ * Update recruitment slot turns remaining for a specific building
  */
 export const decrementRecruitmentSlots = (
   gameState: GameState,
   landPos: LandPosition,
   buildingIndex: number
 ): GameState => {
-  const landId = getLandId(landPos);
-  const land = gameState.map.lands[landId];
-  const building = land.buildings[buildingIndex];
+  return updateLandBuildings(gameState, landPos, (building, idx) => {
+    if (idx !== buildingIndex || !building.slots) {
+      return building;
+    }
 
-  if (!building.slots) return gameState;
+    const updatedSlots = building.slots.map((slot) => ({
+      ...slot,
+      turnsRemaining: slot.turnsRemaining - 1,
+    }));
 
-  const updatedSlots = building.slots.map((slot) => ({
-    ...slot,
-    turnsRemaining: slot.turnsRemaining - 1,
-  }));
-
-  const updatedBuilding = {
-    ...building,
-    slots: updatedSlots,
-  };
-
-  const updatedBuildings = land.buildings.map((b, idx) =>
-    idx === buildingIndex ? updatedBuilding : b
-  );
-
-  return {
-    ...gameState,
-    map: {
-      ...gameState.map,
-      lands: {
-        ...gameState.map.lands,
-        [landId]: {
-          ...land,
-          buildings: updatedBuildings,
-        },
-      },
-    },
-  };
+    return {
+      ...building,
+      slots: updatedSlots,
+    };
+  });
 };
 
 /**
- * Remove completed recruitment slots from a building
+ * Remove completed recruitment slots from a specific building
  */
 export const removeCompletedRecruitmentSlots = (
   gameState: GameState,
   landPos: LandPosition,
   buildingIndex: number
 ): GameState => {
-  const landId = getLandId(landPos);
-  const land = gameState.map.lands[landId];
-  const building = land.buildings[buildingIndex];
+  return updateLandBuildings(gameState, landPos, (building, idx) => {
+    if (idx !== buildingIndex || !building.slots) {
+      return building;
+    }
 
-  if (!building.slots) return gameState;
+    const activeSlots = building.slots.filter((slot) => slot.turnsRemaining > 0);
 
-  const activeSlots = building.slots.filter((slot) => slot.turnsRemaining > 0);
-
-  const updatedBuilding = {
-    ...building,
-    slots: activeSlots,
-  };
-
-  const updatedBuildings = land.buildings.map((b, idx) =>
-    idx === buildingIndex ? updatedBuilding : b
-  );
-
-  return {
-    ...gameState,
-    map: {
-      ...gameState.map,
-      lands: {
-        ...gameState.map.lands,
-        [landId]: {
-          ...land,
-          buildings: updatedBuildings,
-        },
-      },
-    },
-  };
+    return {
+      ...building,
+      slots: activeSlots,
+    };
+  });
 };
 
 /**
  * Decrement recruitment slots turns remaining for a specific player's lands
+ * This is a higher-level function that applies the decrement logic to all player lands
  */
 export const decrementPlayerRecruitmentSlots = (
   gameState: GameState,
   playerId: string
 ): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId);
-  if (!player) return gameState;
+  const player = getPlayer(gameState, playerId);
+  let updatedState = gameState;
 
-  const updatedLands = { ...gameState.map.lands };
-
-  // Only iterate through lands owned by the specific player
+  // Apply decrement to all lands owned by the player
   Array.from(player.landsOwned).forEach((landId) => {
-    const land = updatedLands[landId];
-    if (!land) return;
+    const landPos = gameState.map.lands[landId]?.mapPos;
+    if (!landPos) return;
 
-    const updatedBuildings = land.buildings.map((building) => {
-      if (!building.slots || building.slots.length === 0) {
-        return building;
-      }
-
-      const updatedSlots = building.slots.map((slot) => ({
+    updatedState = updateLandBuildingSlots(updatedState, landPos, (slots) =>
+      slots.map((slot) => ({
         ...slot,
         turnsRemaining: slot.turnsRemaining - 1,
-      }));
-
-      return {
-        ...building,
-        slots: updatedSlots,
-      };
-    });
-
-    updatedLands[landId] = {
-      ...land,
-      buildings: updatedBuildings,
-    };
+      }))
+    );
   });
 
-  return {
-    ...gameState,
-    map: {
-      ...gameState.map,
-      lands: updatedLands,
-    },
-  };
+  return updatedState;
 };
 
 /**
  * Remove all completed recruitment slots (turns remaining === 0) from a specific player's buildings
+ * This is a higher-level function that applies the filter logic to all player lands
  */
 export const removePlayerCompletedRecruitmentSlots = (
   gameState: GameState,
   playerId: string
 ): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId);
-  if (!player) return gameState;
+  const player = getPlayer(gameState, playerId);
+  let updatedState = gameState;
 
-  const updatedLands = { ...gameState.map.lands };
-
-  // Only iterate through lands owned by the specific player
+  // Apply filter to all lands owned by the player
   Array.from(player.landsOwned).forEach((landId) => {
-    const land = updatedLands[landId];
-    if (!land) return;
+    const landPos = gameState.map.lands[landId]?.mapPos;
+    if (!landPos) return;
 
-    const updatedBuildings = land.buildings.map((building) => {
-      if (!building.slots || building.slots.length === 0) {
-        return building;
-      }
-
-      const activeSlots = building.slots.filter((slot) => slot.turnsRemaining > 0);
-
-      return {
-        ...building,
-        slots: activeSlots,
-      };
-    });
-
-    updatedLands[landId] = {
-      ...land,
-      buildings: updatedBuildings,
-    };
+    updatedState = updateLandBuildingSlots(updatedState, landPos, (slots) =>
+      slots.filter((slot) => slot.turnsRemaining > 0)
+    );
   });
 
-  return {
-    ...gameState,
-    map: {
-      ...gameState.map,
-      lands: updatedLands,
-    },
-  };
+  return updatedState;
 };

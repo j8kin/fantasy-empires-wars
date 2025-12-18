@@ -1,19 +1,14 @@
 import { move } from '../selectors/movementSelectors';
-import { hasTreasureByPlayer } from '../selectors/playerSelectors';
-import { getArmiesAtPositionByPlayers } from '../selectors/armySelectors';
 import { regularsFactory } from '../factories/regularsFactory';
-import { calculateAndApplyArmyPenalties } from '../domain/army/armyPenaltyCalculator';
 import { findShortestPath } from '../map/utils/mapAlgorithms';
 
 import { EffectType } from '../types/Effect';
 import { RegularUnitType } from '../types/UnitType';
-import { TreasureType } from '../types/Treasures';
 import type { GameState } from '../state/GameState';
 import type { ArmyState } from '../state/army/ArmyState';
 import type { HeroState } from '../state/army/HeroState';
 import type { RegularsState, UnitRank } from '../state/army/RegularsState';
 import type { LandPosition } from '../state/map/land/LandPosition';
-import type { PenaltyConfig } from '../domain/army/armyPenaltyCalculator';
 
 export const addHero = (state: ArmyState, hero: HeroState): ArmyState => {
   return {
@@ -174,30 +169,4 @@ export const updateArmyInGameState = (gameState: GameState, updatedArmy: ArmySta
     ...gameState,
     armies: gameState.armies.map((army) => (army.id === updatedArmy.id ? updatedArmy : army)),
   };
-};
-
-export const killRegularUnits = (
-  state: GameState,
-  penaltyConfig: PenaltyConfig,
-  landPos: LandPosition,
-  units?: RegularUnitType[]
-) => {
-  // right now spell affects all players, even turnOwner in rare cases it could cause a friendly-fire
-  state.players.forEach((p) => {
-    const playerArmiesAtPosition = getArmiesAtPositionByPlayers(state, landPos, [p.id]);
-
-    const updatedArmies = calculateAndApplyArmyPenalties(
-      playerArmiesAtPosition,
-      penaltyConfig,
-      hasTreasureByPlayer(p, TreasureType.SHARD_OF_THE_SILENT_ANVIL),
-      units
-    );
-
-    updatedArmies.forEach((army) => {
-      Object.assign(state, updateArmyInGameState(state, army));
-    });
-  });
-
-  // cleanup Armies
-  Object.assign(state, cleanupArmies(state));
 };

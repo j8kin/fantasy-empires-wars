@@ -13,13 +13,15 @@ import {
 } from '../../selectors/armySelectors';
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { updatePlayerEffect, updatePlayerMana } from '../../systems/gameStateActions';
 import {
-  addArmyToGameState,
-  addRegulars,
-  killRegularUnits,
-  updateArmyInGameState,
-} from '../../systems/armyActions';
+  updatePlayerEffect,
+  updatePlayerMana,
+  updateLandEffect,
+  updateLand,
+  updateLandBuildingSlots,
+} from '../../systems/gameStateActions';
+import { addArmyToGameState, addRegulars, updateArmyInGameState } from '../../systems/armyActions';
+import { applyArmyCasualtiesAtPosition } from './applyArmyCasualties';
 import { effectFactory } from '../../factories/effectFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { armyFactory } from '../../factories/armyFactory';
@@ -75,34 +77,44 @@ export const castSpell = (
 };
 
 const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
+  let updatedState: GameState = state;
   switch (spell.id) {
     case SpellName.TURN_UNDEAD:
-      const player = getPlayer(state, getLandOwner(state, landPos));
+      const player = getPlayer(updatedState, getLandOwner(state, landPos));
       // TURN_UNDEAD effect is active only once per player per turn
       if (hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) return;
 
       const maxClericLevel = getMaxHeroLevelByType(state, HeroUnitType.CLERIC);
-      Object.assign(
-        state,
-        updatePlayerEffect(state, player.id, effectFactory(spell.id, state.turnOwner))
+      updatedState = updatePlayerEffect(
+        updatedState,
+        player.id,
+        effectFactory(spell.id, state.turnOwner)
       );
 
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
 
-      killRegularUnits(state, penaltyConfig, landPos!, [RegularUnitType.UNDEAD]);
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos!, [
+        RegularUnitType.UNDEAD,
+      ]);
       break;
 
     case SpellName.VIEW_TERRITORY:
-      const land = getLand(state, landPos);
-      land.effects.push(effectFactory(spell.id, state.turnOwner));
+      updatedState = updateLandEffect(
+        updatedState,
+        landPos,
+        effectFactory(spell.id, state.turnOwner)
+      );
       break;
 
     case SpellName.BLESSING:
-      getTilesInRadius(getMapDimensions(state), landPos, 1, false)
-        .filter((l) => getLandOwner(state, l) === state.turnOwner)
-        .map((p) => getLand(state, p))
+      getTilesInRadius(getMapDimensions(updatedState), landPos, 1, false)
+        .filter((l) => getLandOwner(updatedState, l) === updatedState.turnOwner)
         .forEach((l) => {
-          l.effects.push(effectFactory(spell.id, state.turnOwner));
+          updatedState = updateLandEffect(
+            updatedState,
+            l,
+            effectFactory(spell.id, updatedState.turnOwner)
+          );
         });
       break;
 
@@ -113,35 +125,43 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       return; // skip other school spells
   }
 
-  Object.assign(state, updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost));
+  Object.assign(
+    state,
+    updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost)
+  );
 };
 
 const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPosition): void => {
+  let updatedState: GameState = state;
   let maxDruidLevel: number = 0;
   switch (spell.id) {
     case SpellName.FERTILE_LAND:
-      maxDruidLevel = getMaxHeroLevelByType(state, HeroUnitType.DRUID);
-      applyEffectOnRandomLands(state, spell, landPos!, maxDruidLevel);
+      maxDruidLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.DRUID);
+      updatedState = applyEffectOnRandomLands(updatedState, spell, landPos!, maxDruidLevel);
       break;
 
     case SpellName.ENTANGLING_ROOTS:
-      getLand(state, landPos).effects.push(effectFactory(spell.id, state.turnOwner));
+      updatedState = updateLandEffect(
+        updatedState,
+        landPos,
+        effectFactory(spell.id, updatedState.turnOwner)
+      );
       break;
 
     case SpellName.BEAST_ATTACK:
-      maxDruidLevel = getMaxHeroLevelByType(state, HeroUnitType.DRUID);
+      maxDruidLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.DRUID);
       // penalty increased based on max hero level
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxDruidLevel);
 
-      killRegularUnits(state, penaltyConfig, landPos!);
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos!);
       break;
 
     case SpellName.EARTHQUAKE:
       // kill units
-      killRegularUnits(state, spell.penalty!, landPos!);
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, spell.penalty!, landPos!);
       // try to destroy building if exists (40% probability)
       if (Math.random() < 0.4) {
-        Object.assign(state, destroyBuilding(state, landPos!));
+        updatedState = destroyBuilding(updatedState, landPos!);
       }
       break;
 
@@ -149,14 +169,13 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       return; // skip other school spells
   }
 
-  const turnOwner = getTurnOwner(state);
-  const hasVerdantIdol = hasTreasureByPlayer(turnOwner, TreasureType.VERDANT_IDOL);
+  const hasVerdantIdol = hasTreasureByPlayer(getTurnOwner(updatedState), TreasureType.VERDANT_IDOL);
 
   Object.assign(
     state,
     updatePlayerMana(
-      state,
-      state.turnOwner,
+      updatedState,
+      updatedState.turnOwner,
       spell.manaType,
       -Math.floor(spell.manaCost * (spell.manaType === ManaType.GREEN && hasVerdantIdol ? 0.85 : 1))
     )
@@ -170,55 +189,73 @@ const castBlueManaSpell = (
   secondLand?: LandPosition,
   exchangeMana?: ManaType
 ) => {
+  let updatedState: GameState = state;
   switch (spell.id) {
     case SpellName.ILLUSION:
-      const maxEnchanterLevel = getMaxHeroLevelByType(state, HeroUnitType.ENCHANTER);
-      applyEffectOnRandomLands(state, spell, landPos!, maxEnchanterLevel);
+      const maxEnchanterLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.ENCHANTER);
+      updatedState = applyEffectOnRandomLands(updatedState, spell, landPos!, maxEnchanterLevel);
       break;
 
     case SpellName.TELEPORT:
       // fallback should never happen
-      if (secondLand != null && getLandOwner(state, secondLand) === state.turnOwner) {
-        const armiesToTeleport = getArmiesAtPositionByPlayers(state, landPos!, [state.turnOwner]);
+      if (secondLand != null && getLandOwner(updatedState, secondLand) === updatedState.turnOwner) {
+        const armiesToTeleport = getArmiesAtPositionByPlayers(updatedState, landPos!, [
+          updatedState.turnOwner,
+        ]);
         armiesToTeleport.forEach((army) => {
-          army.movement = movementFactory(secondLand);
+          updatedState = updateArmyInGameState(updatedState, {
+            ...army,
+            movement: movementFactory(secondLand),
+          });
         });
       }
       break;
 
     case SpellName.TORNADO:
-      killRegularUnits(state, spell.penalty!, landPos!);
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, spell.penalty!, landPos!);
       break;
 
     case SpellName.EXCHANGE:
-      const turnOwner = getTurnOwner(state);
+      const turnOwner = getTurnOwner(updatedState);
       const addMana = calculateManaConversionAmount(
         turnOwner.playerProfile.alignment,
         exchangeMana!
       );
 
-      Object.assign(state, updatePlayerMana(state, state.turnOwner, exchangeMana!, addMana));
+      updatedState = updatePlayerMana(updatedState, updatedState.turnOwner, exchangeMana!, addMana);
       break;
 
     default:
       return; // skip other school spells
   }
 
-  Object.assign(state, updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost));
+  Object.assign(
+    state,
+    updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost)
+  );
 };
 
 const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
+  let updatedState: GameState = state;
   switch (spell.id) {
     case SpellName.EMBER_RAID:
-      const land = getLand(state, landPos);
-
-      land.effects.push(effectFactory(spell.id, state.turnOwner));
-      land.buildings.forEach((b) => b.slots?.forEach((s) => (s.turnsRemaining += 1)));
+      updatedState = updateLandEffect(
+        updatedState,
+        landPos,
+        effectFactory(spell.id, updatedState.turnOwner)
+      );
+      // Delay all recruitment by incrementing turnsRemaining by 1
+      updatedState = updateLandBuildingSlots(updatedState, landPos, (slots) =>
+        slots.map((slot) => ({
+          ...slot,
+          turnsRemaining: slot.turnsRemaining + 1,
+        }))
+      );
       break;
 
     case SpellName.FORGE_OF_WAR:
       const forgedUnitType =
-        getLand(state, landPos).land.unitsToRecruit.find(
+        getLand(updatedState, landPos).land.unitsToRecruit.find(
           (u) =>
             !isHeroType(u) &&
             !isWarMachine(u) &&
@@ -226,29 +263,29 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
             u !== RegularUnitType.WARRIOR // to recruit uniq type then WARRIOR
         ) ?? RegularUnitType.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
 
-      const newArmy = armyFactory(state.turnOwner, landPos, undefined, [
+      const newArmy = armyFactory(updatedState.turnOwner, landPos, undefined, [
         regularsFactory(forgedUnitType as RegularUnitType, 60), // the same as 3 slots in Barracks
       ]);
-      Object.assign(state, addArmyToGameState(state, newArmy));
+      updatedState = addArmyToGameState(updatedState, newArmy);
       break;
 
     case SpellName.FIRESTORM:
-      const maxPyromancerLevel = getMaxHeroLevelByType(state, HeroUnitType.PYROMANCER);
+      const maxPyromancerLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.PYROMANCER);
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxPyromancerLevel);
 
-      getTilesInRadius(getMapDimensions(state), landPos, 1, false).forEach((l) => {
-        killRegularUnits(state, penaltyConfig, l);
+      getTilesInRadius(getMapDimensions(updatedState), landPos, 1, false).forEach((l) => {
+        updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, l);
       });
       break;
 
     case SpellName.METEOR_SHOWER:
-      const maxMageLvl = getMaxHeroLevelByType(state, HeroUnitType.PYROMANCER);
+      const maxMageLvl = getMaxHeroLevelByType(updatedState, HeroUnitType.PYROMANCER);
       const showerPenaltyCfg = calculatePenaltyConfig(spell.penalty!, maxMageLvl);
 
-      killRegularUnits(state, showerPenaltyCfg, landPos!);
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, showerPenaltyCfg, landPos!);
       // try to destroy building if exists (50-60% probability)
       if (Math.random() < 0.5 + (0.1 * maxMageLvl) / MAX_HERO_LEVEL) {
-        Object.assign(state, destroyBuilding(state, landPos!));
+        updatedState = destroyBuilding(updatedState, landPos!);
       }
       break;
 
@@ -256,65 +293,70 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       return; // skip other school spells
   }
 
-  Object.assign(state, updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost));
+  Object.assign(
+    state,
+    updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost)
+  );
 };
 
 const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
+  let updatedState: GameState = state;
   switch (spell.id) {
     case SpellName.SUMMON_UNDEAD:
-      const maxNecromancerLevel = getMaxHeroLevelByType(state, HeroUnitType.NECROMANCER);
+      const maxNecromancerLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.NECROMANCER);
       const undeadSummoned = regularsFactory(
         RegularUnitType.UNDEAD,
         Math.ceil(getRandomInt(40, 60) * (1 + maxNecromancerLevel / MAX_HERO_LEVEL))
       );
-      const stationaryArmy = getArmiesAtPosition(state, landPos).find(
-        (a) => !isMoving(a) && a.controlledBy === state.turnOwner
+      const stationaryArmy = getArmiesAtPosition(updatedState, landPos).find(
+        (a) => !isMoving(a) && a.controlledBy === updatedState.turnOwner
       );
       if (stationaryArmy != null) {
-        Object.assign(
-          state,
-          updateArmyInGameState(state, addRegulars(stationaryArmy, undeadSummoned))
+        updatedState = updateArmyInGameState(
+          updatedState,
+          addRegulars(stationaryArmy, undeadSummoned)
         );
       } else {
-        Object.assign(
-          state,
-          addArmyToGameState(
-            state,
-            armyFactory(state.turnOwner, landPos, undefined, [undeadSummoned])
-          )
+        updatedState = addArmyToGameState(
+          updatedState,
+          armyFactory(updatedState.turnOwner, landPos, undefined, [undeadSummoned])
         );
       }
       break;
 
     case SpellName.PLAGUE:
-      killRegularUnits(state, spell.penalty!, landPos!);
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, spell.penalty!, landPos!);
       break;
 
     case SpellName.CORRUPTION:
-      const land = getLand(state, landPos);
-      land.corrupted = true;
-      if (getLandOwner(state, landPos) === state.turnOwner) {
-        land.goldPerTurn = land.land.goldPerTurn.max;
-      } else {
-        land.goldPerTurn = land.land.goldPerTurn.min;
-      }
-      // change units to recruit
-      if (land.land.id === LandType.GREEN_FOREST) {
-        land.land.unitsToRecruit = [
-          RegularUnitType.ORC,
-          RegularUnitType.DARK_ELF,
-          RegularUnitType.BALLISTA,
-          RegularUnitType.CATAPULT,
-          HeroUnitType.SHADOW_BLADE,
-        ];
-      } else {
-        land.land.unitsToRecruit = [
-          RegularUnitType.ORC,
-          RegularUnitType.BALLISTA,
-          RegularUnitType.CATAPULT,
-          HeroUnitType.OGR,
-        ];
-      }
+      const land = getLand(updatedState, landPos);
+      const isOwnedByTurnOwner = getLandOwner(updatedState, landPos) === updatedState.turnOwner;
+      const goldPerTurn = isOwnedByTurnOwner
+        ? land.land.goldPerTurn.max
+        : land.land.goldPerTurn.min;
+
+      // change units to recruit based on land type
+      const unitsToRecruit =
+        land.land.id === LandType.GREEN_FOREST
+          ? [
+              RegularUnitType.ORC,
+              RegularUnitType.DARK_ELF,
+              RegularUnitType.BALLISTA,
+              RegularUnitType.CATAPULT,
+              HeroUnitType.SHADOW_BLADE,
+            ]
+          : [
+              RegularUnitType.ORC,
+              RegularUnitType.BALLISTA,
+              RegularUnitType.CATAPULT,
+              HeroUnitType.OGR,
+            ];
+
+      updatedState = updateLand(updatedState, landPos, {
+        corrupted: true,
+        goldPerTurn,
+        unitsToRecruit,
+      });
       break;
 
     case SpellName.RAISE_DEAD_HERO:
@@ -324,7 +366,10 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       return; // skip other school spells
   }
 
-  Object.assign(state, updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost));
+  Object.assign(
+    state,
+    updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost)
+  );
 };
 
 const applyEffectOnRandomLands = (
@@ -332,18 +377,21 @@ const applyEffectOnRandomLands = (
   spell: Spell,
   landPos: LandPosition,
   msxMageLvl: number
-) => {
-  const affectedLands = getTilesInRadius(getMapDimensions(state), landPos, 1, true)
-    .filter((l) => getLandOwner(state, l) === state.turnOwner)
-    .flatMap((l) => getLand(state, l));
-
-  const nLandsToGrow = Math.ceil(affectedLands.length * (msxMageLvl / MAX_HERO_LEVEL));
-
-  const selectedLands = getMultipleRandomElements(affectedLands, nLandsToGrow);
-
-  [getLand(state, landPos!), ...selectedLands].forEach((l) =>
-    l.effects.push(effectFactory(spell.id, state.turnOwner))
+): GameState => {
+  const affectedLandPositions = getTilesInRadius(getMapDimensions(state), landPos, 1, true).filter(
+    (l) => getLandOwner(state, l) === state.turnOwner
   );
+
+  const nLandsToGrow = Math.ceil(affectedLandPositions.length * (msxMageLvl / MAX_HERO_LEVEL));
+
+  const selectedLandPositions = getMultipleRandomElements(affectedLandPositions, nLandsToGrow);
+
+  let updatedState = state;
+  [landPos, ...selectedLandPositions].forEach((l) => {
+    updatedState = updateLandEffect(updatedState, l, effectFactory(spell.id, state.turnOwner));
+  });
+
+  return updatedState;
 };
 
 const calculatePenaltyConfig = (basePenalty: PenaltyConfig, maxLevel: number) => {
