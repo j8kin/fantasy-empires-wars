@@ -1,5 +1,6 @@
 import { getPlayerLands } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer } from '../../selectors/armySelectors';
+import { getBuilding } from '../../domain/building/buildingRepository';
 
 import type { GameState } from '../../state/GameState';
 
@@ -10,7 +11,10 @@ export const calculateMaintenance = (gameState: GameState): number => {
   const buildingMaintenance = getPlayerLands(gameState)
     .filter((l) => l.buildings.length > 0)
     .reduce((acc, land) => {
-      return acc + land.buildings.reduce((acc, building) => acc + building.maintainCost, 0);
+      return (
+        acc +
+        land.buildings.reduce((acc, building) => acc + getBuilding(building.id).maintainCost, 0)
+      );
     }, 0);
 
   // army maintenance

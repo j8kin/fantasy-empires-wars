@@ -1,9 +1,23 @@
-import { BuildingType, Building } from '../types/Building';
-import { Alignment } from '../types/Alignment';
-import { HeroUnitType } from '../types/UnitType';
-import type { PlayerState } from '../state/player/PlayerState';
+import { BuildingType } from '../../types/Building';
+import { Alignment } from '../../types/Alignment';
+import { HeroUnitType } from '../../types/UnitType';
+import type { PlayerState } from '../../state/player/PlayerState';
 
-export const getBuilding = (building: BuildingType): Building => {
+/**
+ * BuildingTemplate represents static building characteristics
+ * This is the template/configuration for a building type
+ */
+export interface BuildingTemplate {
+  id: BuildingType;
+  buildCost: number;
+  maintainCost: number;
+  description: string;
+}
+
+/**
+ * Get static building information by type
+ */
+export const getBuilding = (building: BuildingType): BuildingTemplate => {
   switch (building) {
     case BuildingType.STRONGHOLD:
       return {
@@ -11,7 +25,6 @@ export const getBuilding = (building: BuildingType): Building => {
         buildCost: 15000,
         maintainCost: 0,
         description: 'Protect army and produce gold',
-        numberOfSlots: 0,
       };
     case BuildingType.BARRACKS:
       return {
@@ -19,8 +32,6 @@ export const getBuilding = (building: BuildingType): Building => {
         buildCost: 10000,
         maintainCost: 1000,
         description: 'Allows recruitment of military units',
-        numberOfSlots: 3,
-        slots: [],
       };
     case BuildingType.WHITE_MAGE_TOWER:
     case BuildingType.BLACK_MAGE_TOWER:
@@ -32,8 +43,6 @@ export const getBuilding = (building: BuildingType): Building => {
         buildCost: 15000,
         maintainCost: 2000,
         description: 'Allows recruitment of Mage units',
-        numberOfSlots: 1,
-        slots: [],
       };
     case BuildingType.WATCH_TOWER:
       return {
@@ -41,7 +50,6 @@ export const getBuilding = (building: BuildingType): Building => {
         buildCost: 5000,
         maintainCost: 300,
         description: 'Increases vision range and provides early warning',
-        numberOfSlots: 0,
       };
     case BuildingType.OUTPOST:
       return {
@@ -49,7 +57,6 @@ export const getBuilding = (building: BuildingType): Building => {
         buildCost: 10000,
         maintainCost: 1000,
         description: 'The army stationed at the outpost defend all lands within a radius of 4',
-        numberOfSlots: 0,
       };
     case BuildingType.WALL:
       return {
@@ -57,7 +64,6 @@ export const getBuilding = (building: BuildingType): Building => {
         buildCost: 5000,
         maintainCost: 100,
         description: 'Provides strong defensive bonuses',
-        numberOfSlots: 0,
       };
     // this is not an actual building this is only an action to destroy previous building to be able to construct a new one
     case BuildingType.DEMOLITION:
@@ -66,12 +72,11 @@ export const getBuilding = (building: BuildingType): Building => {
         buildCost: 2000,
         maintainCost: -1,
         description: 'Demolish building and prepare territory for a new construction',
-        numberOfSlots: 0,
       };
   }
 };
 
-export const getAllBuildings = (player: PlayerState): Building[] => {
+export const getAllBuildings = (player: PlayerState): BuildingTemplate[] => {
   const playerProfile = player.playerProfile;
   return Object.values(BuildingType)
     .map(getBuilding)

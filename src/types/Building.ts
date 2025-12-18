@@ -14,16 +14,13 @@ export enum BuildingType {
   DEMOLITION = 'Building Demolition',
 }
 
-interface BuildingSlot {
+export interface RecruitmentSlot {
+  isOccupied: boolean;
   unit: UnitType;
   turnsRemaining: number;
 }
 
 export interface Building {
   id: BuildingType;
-  buildCost: number;
-  maintainCost: number;
-  description: string;
-  numberOfSlots: number;
-  slots?: BuildingSlot[];
+  slots: RecruitmentSlot[];
 }

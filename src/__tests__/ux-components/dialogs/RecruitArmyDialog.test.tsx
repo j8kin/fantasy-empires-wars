@@ -207,11 +207,6 @@ describe('RecruitArmyDialog', () => {
 
     // Ensure the barracks has available slots (2 total, 0 used)
     const land = getLand(gameStateStub, landPos);
-    const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
-    if (barracks) {
-      barracks.numberOfSlots = 2;
-      barracks.slots = [];
-    }
 
     // Set up some units to recruit - use units that would be available on Plains land
     land.land.unitsToRecruit = [
@@ -255,8 +250,9 @@ describe('RecruitArmyDialog', () => {
       const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
         barracks.slots = [
-          { unit: RegularUnitType.WARRIOR, turnsRemaining: 1 },
-          { unit: RegularUnitType.BALLISTA, turnsRemaining: 2 },
+          { unit: RegularUnitType.WARRIOR, turnsRemaining: 1, isOccupied: true },
+          { unit: RegularUnitType.BALLISTA, turnsRemaining: 2, isOccupied: true },
+          { unit: RegularUnitType.WARRIOR, turnsRemaining: 1, isOccupied: true },
         ];
       }
 
@@ -347,12 +343,13 @@ describe('RecruitArmyDialog', () => {
     it('should display available slots', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
-      // Should show 2 available slots
+      // Should show 3 available slots for Barracks
       const slot1Buttons = screen.getAllByTestId('slot-buildSlot1');
       const slot2Buttons = screen.getAllByTestId('slot-buildSlot2');
+      const slot3Buttons = screen.getAllByTestId('slot-buildSlot3');
       expect(slot1Buttons.length).toBeGreaterThan(0);
       expect(slot2Buttons.length).toBeGreaterThan(0);
-      expect(screen.queryAllByTestId('slot-buildSlot3')).toHaveLength(0);
+      expect(slot3Buttons.length).toBeGreaterThan(0);
     });
 
     it('should handle slot click and start recruiting', async () => {
@@ -497,11 +494,6 @@ describe('RecruitArmyDialog', () => {
       getTurnOwner(gameStateStub).vault = 20000;
 
       construct(gameStateStub, BuildingType.WHITE_MAGE_TOWER, landPos);
-      const whiteTower = land.buildings.find((b) => b.id === BuildingType.WHITE_MAGE_TOWER);
-      if (whiteTower) {
-        whiteTower.numberOfSlots = 1;
-        whiteTower.slots = [];
-      }
 
       // Add cleric to available units
       land.land.unitsToRecruit = [
@@ -532,11 +524,6 @@ describe('RecruitArmyDialog', () => {
       getTurnOwner(gameStateStub).vault = 20000;
 
       construct(gameStateStub, BuildingType.RED_MAGE_TOWER, landPos);
-      const redTower = land.buildings.find((b) => b.id === BuildingType.RED_MAGE_TOWER);
-      if (redTower) {
-        redTower.numberOfSlots = 1;
-        redTower.slots = [];
-      }
 
       land.land.unitsToRecruit = [HeroUnitType.PYROMANCER, HeroUnitType.CLERIC];
 
@@ -562,11 +549,6 @@ describe('RecruitArmyDialog', () => {
       getTurnOwner(gameStateStub).vault = 20000;
 
       construct(gameStateStub, BuildingType.BLUE_MAGE_TOWER, landPos);
-      const blueTower = land.buildings.find((b) => b.id === BuildingType.BLUE_MAGE_TOWER);
-      if (blueTower) {
-        blueTower.numberOfSlots = 1;
-        blueTower.slots = [];
-      }
 
       land.land.unitsToRecruit = [HeroUnitType.ENCHANTER, HeroUnitType.CLERIC];
 
@@ -592,11 +574,6 @@ describe('RecruitArmyDialog', () => {
       getTurnOwner(gameStateStub).vault = 20000;
 
       construct(gameStateStub, BuildingType.GREEN_MAGE_TOWER, landPos);
-      const greenTower = land.buildings.find((b) => b.id === BuildingType.GREEN_MAGE_TOWER);
-      if (greenTower) {
-        greenTower.numberOfSlots = 1;
-        greenTower.slots = [];
-      }
 
       land.land.unitsToRecruit = [HeroUnitType.DRUID, HeroUnitType.CLERIC];
 
@@ -622,11 +599,6 @@ describe('RecruitArmyDialog', () => {
       getTurnOwner(gameStateStub).vault = 20000;
 
       construct(gameStateStub, BuildingType.BLACK_MAGE_TOWER, landPos);
-      const blackTower = land.buildings.find((b) => b.id === BuildingType.BLACK_MAGE_TOWER);
-      if (blackTower) {
-        blackTower.numberOfSlots = 1;
-        blackTower.slots = [];
-      }
 
       land.land.unitsToRecruit = [HeroUnitType.NECROMANCER, HeroUnitType.CLERIC];
 
@@ -652,11 +624,6 @@ describe('RecruitArmyDialog', () => {
 
       // Ensure the barracks has available slots (2 total, 0 used)
       const land = getLand(gameStateStub, landPos);
-      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
-      if (barracks) {
-        barracks.numberOfSlots = 2;
-        barracks.slots = [];
-      }
 
       // Set up some units to recruit including WARSMITH
       land.land.unitsToRecruit = [
@@ -686,11 +653,6 @@ describe('RecruitArmyDialog', () => {
 
       // Ensure the barracks has available slots (2 total, 0 used)
       const land = getLand(gameStateStub, landPos);
-      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
-      if (barracks) {
-        barracks.numberOfSlots = 2;
-        barracks.slots = [];
-      }
 
       // Set units for recruitment but Warsmith should be filtered out
       land.land.unitsToRecruit = [RegularUnitType.WARRIOR, RegularUnitType.BALLISTA];
@@ -716,19 +678,6 @@ describe('RecruitArmyDialog', () => {
       expect(screen.queryByTestId(/flip-book-page-/)).not.toBeInTheDocument();
     });
 
-    it('should handle building with zero slots', () => {
-      // Set numberOfSlots to 0
-      const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(gameStateStub, landPos);
-      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
-      if (barracks) {
-        barracks.numberOfSlots = 0;
-      }
-
-      renderWithProviders(<RecruitArmyDialog />);
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
-    });
-
     it('should not render when no recruiting buildings exist', () => {
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(gameStateStub, landPos);
@@ -751,55 +700,35 @@ describe('RecruitArmyDialog', () => {
     });
   });
 
-  describe('Early return conditions', () => {
-    it('should return undefined when initialSlotCount is 0 and call setShowRecruitArmyDialog', () => {
-      // Create a game state with no available slots
-      const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(gameStateStub, landPos);
-      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
-      if (barracks) {
-        barracks.numberOfSlots = 0; // No slots
-        barracks.slots = [];
-      }
-
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-
-      renderWithProviders(<RecruitArmyDialog />);
-
-      // Should not render anything
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
-
-      consoleSpy.mockRestore();
-    });
-  });
-
   describe('Memoization and Performance', () => {
     it('should maintain consistent slot count during dialog session', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
-      // Initial render should show 2 slots
+      // Initial render should show 3 slots for Barracks
       const slot1Buttons = screen.getAllByTestId('slot-buildSlot1');
       const slot2Buttons = screen.getAllByTestId('slot-buildSlot2');
+      const slot3Buttons = screen.getAllByTestId('slot-buildSlot3');
       expect(slot1Buttons.length).toBeGreaterThan(0);
       expect(slot2Buttons.length).toBeGreaterThan(0);
+      expect(slot3Buttons.length).toBeGreaterThan(0);
 
-      // Modify the game state after initial render (this should not affect slot count due to memoization)
+      // Modify the game state after initial render by occupying some slots
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(gameStateStub, landPos);
       const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
       if (barracks) {
-        barracks.numberOfSlots = 5; // Increase slots
+        // Occupy first slot
+        barracks.slots[0].isOccupied = true;
       }
 
-      // Re-render - should still show only 2 slots due to memoization
+      // Re-render - should still show 3 slots due to memoization
       renderWithProviders(<RecruitArmyDialog />);
       const newSlot1Buttons = screen.getAllByTestId('slot-buildSlot1');
       const newSlot2Buttons = screen.getAllByTestId('slot-buildSlot2');
+      const newSlot3Buttons = screen.getAllByTestId('slot-buildSlot3');
       expect(newSlot1Buttons.length).toBeGreaterThan(0);
       expect(newSlot2Buttons.length).toBeGreaterThan(0);
-      // In this test, memoization doesn't work as expected in the mock setup
-      // The updated state shows slot3 exists, indicating the state is updated
-      expect(screen.queryAllByTestId('slot-buildSlot3')).toHaveLength(3); // 3 units * 1 slot each
+      expect(newSlot3Buttons.length).toBeGreaterThan(0);
     });
   });
 });

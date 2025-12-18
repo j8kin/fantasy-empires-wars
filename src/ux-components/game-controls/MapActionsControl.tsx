@@ -6,7 +6,7 @@ import GameButton from '../buttons/GameButton';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getAllBuildings } from '../../selectors/buildingSelectors';
+import { getAllBuildings } from '../../domain/building/buildingRepository';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { AllSpells } from '../../types/Spell';
 

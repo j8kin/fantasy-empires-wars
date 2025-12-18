@@ -1,6 +1,7 @@
 import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
-import { addRecruitmentSlot, updatePlayerVault } from '../../systems/gameStateActions';
+import { startRecruitmentInSlot, updatePlayerVault } from '../../systems/gameStateActions';
+import { hasAvailableSlot } from '../../factories/buildingFactory';
 import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
 import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
@@ -22,9 +23,7 @@ export const startRecruiting = (
     return; // fallback: a wrong Land Owner should never happen on real game
   }
   const land = getLand(state, landPos);
-  const buildingIdx = land.buildings.findIndex(
-    (b) => b.slots != null && b.slots.length < b.numberOfSlots
-  );
+  const buildingIdx = land.buildings.findIndex((b) => hasAvailableSlot(b));
   if (buildingIdx !== -1) {
     // additionally verify that regular units and non-magic heroes are recruited in BARRACKS and mages are in mage tower
     if (isHeroType(unitType)) {
@@ -77,12 +76,14 @@ export const startRecruiting = (
 
       newState = updatePlayerVault(newState, turnOwner.id, -costReduction);
 
-      // Add a recruitment slot using direct mutation
-      newState = addRecruitmentSlot(newState, landPos, buildingIdx, {
-        unit: unitType,
-        turnsRemaining:
-          getRecruitDuration(unitType) + (hasEmberRaidEffect ? 1 : 0) + (land.corrupted ? 1 : 0), // corrupted lands add one additional turn to recruitment
-      });
+      // Start recruitment in first available slot
+      newState = startRecruitmentInSlot(
+        newState,
+        landPos,
+        buildingIdx,
+        unitType,
+        getRecruitDuration(unitType) + (hasEmberRaidEffect ? 1 : 0) + (land.corrupted ? 1 : 0) // corrupted lands add one additional turn to recruitment
+      );
 
       // Update state
       Object.assign(state, newState);

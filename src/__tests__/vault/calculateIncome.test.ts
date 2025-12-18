@@ -1,23 +1,19 @@
-import { calculateIncome } from '../../map/vault/calculateIncome';
-import { GameState } from '../../state/GameState';
-import { PlayerProfile } from '../../state/player/PlayerProfile';
 import { getLandId } from '../../state/map/land/LandId';
-
 import { addPlayerToGameState } from '../../systems/playerActions';
 import { addPlayerLand } from '../../systems/gameStateActions';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { getBuilding } from '../../selectors/buildingSelectors';
-
 import { gameStateFactory } from '../../factories/gameStateFactory';
+import { buildingFactory } from '../../factories/buildingFactory';
+import { getLandById } from '../../domain/land/landRepository';
+import { construct } from '../../map/building/construct';
+import { calculateIncome } from '../../map/vault/calculateIncome';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
 import { BuildingType } from '../../types/Building';
 import { LandType } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
-
-import { construct } from '../../map/building/construct';
-
-import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-import { getLandById } from '../../domain/land/landRepository';
+import type { GameState } from '../../state/GameState';
+import type { PlayerProfile } from '../../state/player/PlayerProfile';
 
 import { createGameStateStub, defaultBattlefieldSizeStub } from '../utils/createGameStateStub';
 import { generateMockMap } from '../utils/generateMockMap';
@@ -109,7 +105,7 @@ describe('Calculate Income', () => {
       );
       gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
       gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].buildings = [
-        getBuilding(BuildingType.STRONGHOLD),
+        buildingFactory(BuildingType.STRONGHOLD),
       ];
 
       // additional land (should be calculated with penalty
@@ -150,7 +146,7 @@ describe('Calculate Income', () => {
       );
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
-        getBuilding(BuildingType.STRONGHOLD),
+        buildingFactory(BuildingType.STRONGHOLD),
       ];
 
       const income = calculateIncome(gameStateStub);
@@ -175,7 +171,7 @@ describe('Calculate Income', () => {
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
 
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
-        getBuilding(BuildingType.STRONGHOLD),
+        buildingFactory(BuildingType.STRONGHOLD),
       ];
 
       let income = calculateIncome(gameStateStub);

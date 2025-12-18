@@ -5,7 +5,7 @@ import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { getAllBuildings } from '../../selectors/buildingSelectors';
+import { getAllBuildings } from '../../domain/building/buildingRepository';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 
 import { getBuildingImg } from '../../assets/getBuildingImg';

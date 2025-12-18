@@ -10,6 +10,7 @@ import { getTurnOwner } from '../../selectors/playerSelectors';
 import { isWarMachine, isMageType, isHeroType } from '../../domain/unit/unitTypeChecks';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
+import { getAvailableSlotsCount, hasAvailableSlot } from '../../factories/buildingFactory';
 
 import { getUnitImg } from '../../assets/getUnitImg';
 
@@ -44,11 +45,9 @@ const RecruitArmyDialog: React.FC = () => {
     const land = getLand(gameState, actionLandPosition);
     if (!land) return 0;
 
-    const recruitBuilding = land.buildings.filter(
-      (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots
-    )[0];
+    const recruitBuilding = land.buildings.find((b) => hasAvailableSlot(b));
 
-    return (recruitBuilding?.numberOfSlots ?? 0) - (recruitBuilding?.slots?.length ?? 0);
+    return recruitBuilding ? getAvailableSlotsCount(recruitBuilding) : 0;
   }, [gameState, actionLandPosition]); // Only recalculate when dialog opens or land changes
 
   const handleClose = useCallback(() => {
@@ -66,9 +65,7 @@ const RecruitArmyDialog: React.FC = () => {
     const land = getLand(gameState, actionLandPosition);
     if (!land) return;
 
-    const recruitBuilding = land.buildings.filter(
-      (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots
-    )[0];
+    const recruitBuilding = land.buildings.find((b) => hasAvailableSlot(b));
 
     if (!recruitBuilding && showRecruitArmyDialog) {
       handleClose();
@@ -89,8 +86,8 @@ const RecruitArmyDialog: React.FC = () => {
   const createRecruitClickHandler = useCallback(
     (unitType: UnitType, landPos: LandPosition) => {
       return () => {
-        const building = getLand(gameState!, landPos).buildings.find((b) => b.slots != null)!;
-        const availableSlots = building.numberOfSlots - (building.slots?.length ?? 0);
+        const building = getLand(gameState!, landPos).buildings.find((b) => hasAvailableSlot(b))!;
+        const availableSlots = getAvailableSlotsCount(building);
         // recruit the same unit for all available slots
         for (let i = 0; i < availableSlots; i++) {
           startRecruiting(gameState!, landPos, unitType);
@@ -111,9 +108,7 @@ const RecruitArmyDialog: React.FC = () => {
 
   const land = getLand(gameState, actionLandPosition);
 
-  const recruitBuilding = land.buildings.filter(
-    (b) => b.slots != null && b.numberOfSlots > 0 && b.slots?.length < b.numberOfSlots
-  )[0];
+  const recruitBuilding = land.buildings.find((b) => hasAvailableSlot(b));
 
   // If no recruit building is available (all slots filled), don't render content
   if (!recruitBuilding) {

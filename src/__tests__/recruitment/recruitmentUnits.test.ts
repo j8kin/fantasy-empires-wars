@@ -53,6 +53,11 @@ describe('Recruitment', () => {
     randomSpy.mockRestore();
   });
 
+  const getOccupiedSlotsCount = (landPos: LandPosition): number => {
+    const land = getLand(gameStateStub, landPos);
+    return land.buildings[0].slots.filter((s) => s.isOccupied).length;
+  };
+
   const verifyRecruitSlot = (
     landPos: LandPosition,
     slot: number,
@@ -63,9 +68,10 @@ describe('Recruitment', () => {
     const land = getLand(gameStateStub, landPos);
 
     expect(land).toBeDefined();
-    expect(land!.buildings[0].slots?.length).toBe(usedSlots);
-    expect(land!.buildings[0].slots![slot].unit).toBe(unitType);
-    expect(land!.buildings[0].slots![slot].turnsRemaining).toBe(remainTurns);
+    const occupiedSlots = land!.buildings[0].slots.filter((s) => s.isOccupied);
+    expect(occupiedSlots.length).toBe(usedSlots);
+    expect(land!.buildings[0].slots[slot].unit).toBe(unitType);
+    expect(land!.buildings[0].slots[slot].turnsRemaining).toBe(remainTurns);
   };
 
   it('Recruitment cost less when player has TreasureItem.CROWN_OF_DOMINION', () => {
@@ -130,8 +136,11 @@ describe('Recruitment', () => {
 
       expect(barracksLand).toBeDefined();
       expect(getArmiesAtPosition(gameStateStub, barracksLand.mapPos).length).toBe(0);
-      expect(barracksLand.buildings[0].numberOfSlots).toBe(3);
-      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0);
+      expect(barracksLand.buildings[0].slots.length).toBe(3);
+      expect(
+        getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots.filter((s) => s.isOccupied)
+          .length
+      ).toBe(0);
     });
 
     it.each([
@@ -168,7 +177,7 @@ describe('Recruitment', () => {
 
         testTurnManagement.makeNTurns(nTurns);
 
-        expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // no units in recruitment queue
+        expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(0); // no units in recruitment queue
 
         // check that all units are placed on the map
         const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -191,16 +200,16 @@ describe('Recruitment', () => {
 
       testTurnManagement.makeNTurns(1);
 
-      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(1); // ballista still in recruitment queue
+      expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(1); // ballista still in recruitment queue
       verifyRecruitSlot(barracksLand.mapPos, 0, 1, RegularUnitType.BALLISTA, 2);
 
       startRecruiting(gameStateStub, barracksLand.mapPos, RegularUnitType.WARRIOR); // start recruiting warrior
-      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(2);
+      expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(2);
       verifyRecruitSlot(barracksLand.mapPos, 0, 2, RegularUnitType.BALLISTA, 2);
       verifyRecruitSlot(barracksLand.mapPos, 1, 2, RegularUnitType.WARRIOR, 1);
 
       testTurnManagement.makeNTurns(1);
-      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(1); // ballista still in recruitment queue
+      expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(1); // ballista still in recruitment queue
       verifyRecruitSlot(barracksLand.mapPos, 0, 1, RegularUnitType.BALLISTA, 1);
 
       // check that all units are placed on the map
@@ -215,7 +224,7 @@ describe('Recruitment', () => {
 
       testTurnManagement.makeNTurns(1);
 
-      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // all units are recruited
+      expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(0); // all units are recruited
       // check that all units are placed on the map
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies.length).toBe(1);
@@ -246,7 +255,7 @@ describe('Recruitment', () => {
 
       testTurnManagement.makeNTurns(1);
 
-      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // all units are recruited
+      expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(0); // all units are recruited
       // check that all units are placed on the map
       const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies.length).toBe(1);
@@ -262,7 +271,7 @@ describe('Recruitment', () => {
 
       testTurnManagement.makeNTurns(1);
 
-      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // all units are recruited
+      expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(0); // all units are recruited
       // check that all units are placed on the map
       let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies.length).toBe(1);
@@ -276,7 +285,7 @@ describe('Recruitment', () => {
 
       testTurnManagement.makeNTurns(1);
 
-      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // all units are recruited
+      expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(0); // all units are recruited
       // check that all units are placed on the map
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies.length).toBe(1);
@@ -293,7 +302,7 @@ describe('Recruitment', () => {
 
         startRecruiting(gameStateStub, mageTowerPos, RegularUnitType.WARRIOR);
         expect(barracksLand.buildings[0].slots).toBeDefined(); // regular units not recruited
-        expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // regular units not recruited
+        expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(0); // regular units not recruited
       });
 
       it('regular units could not be recruited in land without buildings', () => {
@@ -315,7 +324,7 @@ describe('Recruitment', () => {
 
         startRecruiting(gameStateStub, barracksLand.mapPos, RegularUnitType.WARRIOR);
         const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
-        expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0);
+        expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(0);
         expect(armies.length).toBe(0);
       });
     });
@@ -330,10 +339,13 @@ describe('Recruitment', () => {
 
       expect(barracksLand).toBeDefined();
       expect(armies.length).toBe(0);
-      expect(barracksLand.buildings[0].numberOfSlots).toBe(
+      expect(barracksLand.buildings[0].slots.length).toBe(
         buildingType === BuildingType.BARRACKS ? 3 : 1
       );
-      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0);
+      expect(
+        getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots.filter((s) => s.isOccupied)
+          .length
+      ).toBe(0);
     };
     describe('Non-Mage heroes', () => {
       it.each([
@@ -357,7 +369,7 @@ describe('Recruitment', () => {
 
           testTurnManagement.makeNTurns(3);
 
-          expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // hero recruited
+          expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(0); // hero recruited
 
           const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
           expect(armies.length).toBe(1);
@@ -395,7 +407,7 @@ describe('Recruitment', () => {
 
           testTurnManagement.makeNTurns(3);
 
-          expect(getLand(gameStateStub, mageTowerLand.mapPos).buildings[0].slots?.length).toBe(0); // hero recruited
+          expect(getOccupiedSlotsCount(mageTowerLand.mapPos)).toBe(0); // hero recruited
 
           const armies = getArmiesAtPosition(gameStateStub, mageTowerLand.mapPos);
           expect(armies.length).toBe(1);
@@ -428,7 +440,7 @@ describe('Recruitment', () => {
 
         testTurnManagement.makeNTurns(3);
 
-        expect(getLand(gameStateStub, barracksPos).buildings[0].slots?.length).toBe(0); // hero recruited
+        expect(getOccupiedSlotsCount(barracksPos)).toBe(0); // hero recruited
 
         armies = getArmiesAtPosition(gameStateStub, barracksPos);
         expect(armies.length).toBe(1);
@@ -445,10 +457,10 @@ describe('Recruitment', () => {
         const barracksLand = getLand(gameStateStub, barracksPos);
 
         startRecruiting(gameStateStub, barracksPos, HeroUnitType.FIGHTER);
-        expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(1); // hero recruited
+        expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(1); // hero recruited
 
         startRecruiting(gameStateStub, barracksPos, HeroUnitType.CLERIC);
-        expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(1); // CLERIC is not allowed in Barracks
+        expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(1); // CLERIC is not allowed in Barracks
       });
 
       it.each([
@@ -463,7 +475,7 @@ describe('Recruitment', () => {
         const barracksLand = getLand(gameStateStub, mageTowerPos);
 
         startRecruiting(gameStateStub, mageTowerPos, HeroUnitType.FIGHTER);
-        expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // hero not recruited
+        expect(getOccupiedSlotsCount(barracksLand.mapPos)).toBe(0); // hero not recruited
       });
 
       it('hero units could not be recruited in land without buildings', () => {
@@ -491,7 +503,7 @@ describe('Recruitment', () => {
 
         const armies = getArmiesAtPosition(gameStateStub, barracksPos);
         expect(armies.length).toBe(0);
-        expect(getLand(gameStateStub, barracksPos).buildings[0].slots?.length).toBe(0); // hero is not recruited
+        expect(getOccupiedSlotsCount(barracksPos)).toBe(0); // hero is not recruited
       });
     });
   });

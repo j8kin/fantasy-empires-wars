@@ -15,7 +15,7 @@ import {
 } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { getBuilding } from '../../selectors/buildingSelectors';
+import { getBuilding } from '../../domain/building/buildingRepository';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { calculateTileScreenPosition, getMapDimensions } from '../../utils/screenPositionUtils';
 import { construct } from '../../map/building/construct';
