@@ -16,7 +16,7 @@ export class TestTurnManagement {
       onStartProgress: jest.fn(),
       onHideProgress: jest.fn(),
       onComputerMainTurn: jest.fn(),
-      onHeroOutcomeResult: jest.fn(),
+      onEmpireEventResult: jest.fn(),
     };
 
     this.turnManager = new TurnManager(this.mockCallbacks);

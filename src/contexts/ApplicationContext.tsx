@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import type { PlayerState } from '../state/player/PlayerState';
-import type { HeroOutcome } from '../types/HeroOutcome';
+import type { EmpireEvent } from '../types/EmpireEvent';
 import type { PlayerProfile } from '../state/player/PlayerProfile';
 import type { LandPosition } from '../state/map/land/LandPosition';
 import type { ManaType } from '../types/Mana';
@@ -58,8 +58,8 @@ interface ApplicationContextType {
   // Quest Results Popup
   showHeroOutcomePopup: boolean;
   setShowHeroOutcomePopup: (show: boolean) => void;
-  heroOutcome: HeroOutcome[];
-  setHeroOutcome: (results: HeroOutcome[]) => void;
+  heroOutcome: EmpireEvent[];
+  setHeroOutcome: (results: EmpireEvent[]) => void;
 
   // Dialog data
   selectedOpponent: PlayerState | undefined;
@@ -144,7 +144,7 @@ interface ApplicationContextType {
   hideSelectOpponentDialog: () => void;
 
   // Hero Outcome actions
-  showHeroOutcome: (results: HeroOutcome[]) => void;
+  showHeroOutcome: (results: EmpireEvent[]) => void;
   hideHeroOutcome: () => void;
 }
 
@@ -172,7 +172,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   // Quest Results Popup states
   const [showHeroOutcomePopup, setShowHeroOutcomePopup] = useState<boolean>(false);
-  const [heroOutcome, setHeroOutcome] = useState<HeroOutcome[]>([]);
+  const [heroOutcome, setHeroOutcome] = useState<EmpireEvent[]>([]);
 
   // Dialog data
   const [selectedOpponent, setSelectedOpponent] = useState<PlayerState | undefined>(undefined);
@@ -278,7 +278,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   }, []);
 
   // Hero Outcome actions
-  const showHeroOutcome = useCallback((results: HeroOutcome[]) => {
+  const showHeroOutcome = useCallback((results: EmpireEvent[]) => {
     setHeroOutcome(results);
     setShowHeroOutcomePopup(true);
   }, []);

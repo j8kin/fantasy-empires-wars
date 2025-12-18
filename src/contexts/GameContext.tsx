@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import type { GameState } from '../state/GameState';
 import { TurnManager, TurnManagerCallbacks } from '../turn/TurnManager';
 import type { TurnPhase } from '../turn/TurnPhase';
-import type { HeroOutcome } from '../types/HeroOutcome';
+import type { EmpireEvent } from '../types/EmpireEvent';
 
 interface GameContextType {
   // Game State
@@ -48,8 +48,8 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       onComputerMainTurn: (gameState: GameState) => {
         turnManagerCallbacksRef.current.onComputerMainTurn?.(gameState);
       },
-      onHeroOutcomeResult: (results: HeroOutcome[]) => {
-        turnManagerCallbacksRef.current.onHeroOutcomeResult?.(results);
+      onEmpireEventResult: (results: EmpireEvent[]) => {
+        turnManagerCallbacksRef.current.onEmpireEventResult?.(results);
       },
     };
   }, []);

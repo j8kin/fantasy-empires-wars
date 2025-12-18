@@ -41,7 +41,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
         },
         onHideProgress: () => {},
         onComputerMainTurn: (_gameState: GameState) => {},
-        onHeroOutcomeResult: (_results) => {},
+        onEmpireEventResult: (_results) => {},
       });
 
       // Start a new turn
@@ -81,7 +81,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
         onStartProgress: (_message: string) => {},
         onHideProgress: () => {},
         onComputerMainTurn: (_gameState: GameState) => {},
-        onHeroOutcomeResult: (_results) => {},
+        onEmpireEventResult: (_results) => {},
       });
 
       // End the current turn

@@ -1,4 +1,4 @@
-export enum HeroOutcomeType {
+export enum EmpireEventType {
   Negative = 'negative',
   Success = 'success',
   Neutral = 'neutral',
@@ -7,7 +7,7 @@ export enum HeroOutcomeType {
   Legendary = 'legendary',
 }
 
-export interface HeroOutcome {
-  status: HeroOutcomeType;
+export interface EmpireEvent {
+  status: EmpireEventType;
   message: string;
 }

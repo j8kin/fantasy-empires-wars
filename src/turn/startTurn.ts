@@ -13,11 +13,11 @@ import { calculateMana } from '../map/magic/calculateMana';
 import { TreasureType } from '../types/Treasures';
 import { ManaType } from '../types/Mana';
 import type { GameState } from '../state/GameState';
-import type { HeroOutcome } from '../types/HeroOutcome';
+import type { EmpireEvent } from '../types/EmpireEvent';
 
 export const startTurn = (
   gameState: GameState,
-  onQuestResults?: (results: HeroOutcome[]) => void
+  onEmpireEventResults?: (results: EmpireEvent[]) => void
 ) => {
   if (gameState.turn === 1) {
     // on first turn place players randomly on a map
@@ -43,7 +43,7 @@ export const startTurn = (
     player.playerType === 'human' &&
     (questStatus.length > 0 || heroRecruitingStatus.length > 0)
   ) {
-    onQuestResults?.([...questStatus, ...heroRecruitingStatus]);
+    onEmpireEventResults?.([...questStatus, ...heroRecruitingStatus]);
   }
 
   // Calculate current player income for vault update and mana conversion

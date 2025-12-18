@@ -6,13 +6,13 @@ import PopupWrapper from './PopupWrapper';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 import type { PopupProps } from './PopupWrapper';
-import type { HeroOutcomeType } from '../../types/HeroOutcome';
+import type { EmpireEventType } from '../../types/EmpireEvent';
 
 const getMessageHeight = (messages: string) => {
   return (Math.floor(messages.length / 64) + 1) * 17 + 30.5;
 };
 
-const getEventBorderColor = (status: HeroOutcomeType): string => {
+const getEventBorderColor = (status: EmpireEventType): string => {
   switch (status) {
     case 'negative':
       return '#ff0000';

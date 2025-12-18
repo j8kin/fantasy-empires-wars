@@ -5,7 +5,6 @@ import {
   decrementPlayerRecruitmentSlots,
   removePlayerCompletedRecruitmentSlots,
 } from '../../systems/gameStateActions';
-import { addArmyToGameState, updateArmyInGameState } from '../../systems/armyActions';
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
@@ -13,24 +12,29 @@ import { isHeroType } from '../../domain/unit/unitTypeChecks';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 
-import { HeroOutcomeType } from '../../types/HeroOutcome';
-import type { HeroOutcome } from '../../types/HeroOutcome';
+import { EmpireEventType } from '../../types/EmpireEvent';
+import type { EmpireEvent } from '../../types/EmpireEvent';
 import type { GameState } from '../../state/GameState';
+import type { ArmyState } from '../../state/army/ArmyState';
 
-export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
-  const heroesRecruited: HeroOutcome[] = [];
+export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
+  const recruitEvents: EmpireEvent[] = [];
   const { turnOwner } = gameState;
 
-  // First, decrement recruitment slot counters immutably for current player's lands only
-  Object.assign(gameState, decrementPlayerRecruitmentSlots(gameState, turnOwner));
+  // Step 1: Decrement recruitment slot counters immutably
+  let updatedState = decrementPlayerRecruitmentSlots(gameState, turnOwner);
 
-  // Find all completed recruitment slots (turns remaining === 0) and process them
-  const playerLands = getPlayerLands(gameState);
+  // Step 2: Find all completed recruitment slots and collect updates
+  const playerLands = getPlayerLands(updatedState);
   const landsWithRecruitment = playerLands.filter(
     (l) =>
       l.buildings.length > 0 &&
       l.buildings.some((b) => b.numberOfSlots > 0 && b.slots && b.slots.length > 0)
   );
+
+  // Track which armies need to be updated or added
+  const armiesToUpdate = new Map<string, ArmyState>();
+  const newArmies: ArmyState[] = [];
 
   landsWithRecruitment.forEach((l) =>
     l.buildings.forEach((b) => {
@@ -39,35 +43,38 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
         const completedSlots = b.slots.filter((s) => s.turnsRemaining === 0);
 
         completedSlots.forEach((s) => {
-          const armiesAtPosition = getArmiesAtPosition(gameState, l.mapPos);
+          const armiesAtPosition = getArmiesAtPosition(updatedState, l.mapPos);
           const stationedArmy = armiesAtPosition.find(
             (a) => !isMoving(a) && a.controlledBy === turnOwner
           );
 
           if (isHeroType(s.unit)) {
             const newHero = heroFactory(s.unit, generateHeroName(s.unit));
-            // create a message for hero recruiting
-            heroesRecruited.push({
-              status: HeroOutcomeType.Success,
+            recruitEvents.push({
+              status: EmpireEventType.Success,
               message: heroRecruitingMessage(newHero),
             });
+
             if (stationedArmy) {
-              const updatedArmy = addHero(stationedArmy, newHero);
-              Object.assign(stationedArmy, updatedArmy);
-              Object.assign(gameState, updateArmyInGameState(gameState, stationedArmy));
+              // Get the latest version of this army (might have been updated already)
+              const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
+              const updatedArmy = addHero(currentArmy, newHero);
+              armiesToUpdate.set(stationedArmy.id, updatedArmy);
             } else {
               const newArmy = armyFactory(turnOwner, l.mapPos, [newHero]);
-              Object.assign(gameState, addArmyToGameState(gameState, newArmy));
+              newArmies.push(newArmy);
             }
           } else {
             const newRegulars = regularsFactory(s.unit);
+
             if (stationedArmy) {
-              const updatedArmy = addRegulars(stationedArmy, newRegulars);
-              Object.assign(stationedArmy, updatedArmy);
-              Object.assign(gameState, updateArmyInGameState(gameState, stationedArmy));
+              // Get the latest version of this army (might have been updated already)
+              const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
+              const updatedArmy = addRegulars(currentArmy, newRegulars);
+              armiesToUpdate.set(stationedArmy.id, updatedArmy);
             } else {
               const newArmy = armyFactory(turnOwner, l.mapPos, undefined, [newRegulars]);
-              Object.assign(gameState, addArmyToGameState(gameState, newArmy));
+              newArmies.push(newArmy);
             }
           }
         });
@@ -75,8 +82,20 @@ export const completeRecruiting = (gameState: GameState): HeroOutcome[] => {
     })
   );
 
-  // Finally, remove all completed recruitment slots immutably for current player only
-  Object.assign(gameState, removePlayerCompletedRecruitmentSlots(gameState, turnOwner));
+  // Step 3: Apply all army updates in a single state transition
+  updatedState = {
+    ...updatedState,
+    armies: [
+      ...updatedState.armies.map((army) => armiesToUpdate.get(army.id) || army),
+      ...newArmies,
+    ],
+  };
 
-  return heroesRecruited;
+  // Step 4: Remove all completed recruitment slots
+  updatedState = removePlayerCompletedRecruitmentSlots(updatedState, turnOwner);
+
+  // Step 5: Apply final state
+  Object.assign(gameState, updatedState);
+
+  return recruitEvents;
 };

@@ -62,7 +62,7 @@ describe('TurnManager', () => {
       onStartProgress: jest.fn(),
       onHideProgress: jest.fn(),
       onComputerMainTurn: jest.fn(),
-      onHeroOutcomeResult: jest.fn(),
+      onEmpireEventResult: jest.fn(),
     };
 
     turnManager = new TurnManager(mockCallbacks);

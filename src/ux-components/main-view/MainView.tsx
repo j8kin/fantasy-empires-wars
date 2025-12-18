@@ -28,7 +28,7 @@ import {
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 
-import type { HeroOutcome } from '../../types/HeroOutcome';
+import type { EmpireEvent } from '../../types/EmpireEvent';
 
 const MainViewContent: React.FC = () => {
   const {
@@ -80,7 +80,7 @@ const MainViewContent: React.FC = () => {
         // Stub for computer AI turn
         console.log('Computer player turn - AI not implemented yet');
       },
-      onHeroOutcomeResult: (results: HeroOutcome[]) => {
+      onEmpireEventResult: (results: EmpireEvent[]) => {
         showHeroOutcome(results);
       },
     });

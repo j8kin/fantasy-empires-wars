@@ -7,7 +7,7 @@ import { mainAiTurn } from './mainAiTurn';
 
 import { TurnPhase } from './TurnPhase';
 import type { GameState } from '../state/GameState';
-import type { HeroOutcome } from '../types/HeroOutcome';
+import type { EmpireEvent } from '../types/EmpireEvent';
 
 export interface TurnManagerCallbacks {
   onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => void;
@@ -15,7 +15,7 @@ export interface TurnManagerCallbacks {
   onStartProgress: (message: string) => void;
   onHideProgress: () => void;
   onComputerMainTurn: (gameState: GameState) => void;
-  onHeroOutcomeResult: (results: HeroOutcome[]) => void;
+  onEmpireEventResult: (results: EmpireEvent[]) => void;
 }
 
 /**
@@ -102,7 +102,7 @@ export class TurnManager {
     // Execute start turn logic
     const timer = setTimeout(() => {
       this.activeTimers.delete(timer);
-      startTurn(gameState, this.callbacks.onHeroOutcomeResult);
+      startTurn(gameState, this.callbacks.onEmpireEventResult);
 
       if (gameState.turn === 1) {
         // On first turn, advance to END phase and end immediately

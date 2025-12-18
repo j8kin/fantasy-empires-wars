@@ -32,7 +32,7 @@ import {
   heroGainRelic,
 } from './questCompleteMessages';
 
-import { HeroOutcomeType } from '../../types/HeroOutcome';
+import { EmpireEventType } from '../../types/EmpireEvent';
 import { TreasureType } from '../../types/Treasures';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
@@ -40,7 +40,7 @@ import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { HeroQuest, QuestType } from '../../types/Quest';
 import type { HeroState } from '../../state/army/HeroState';
 import type { Artifact } from '../../types/Treasures';
-import type { HeroOutcome } from '../../types/HeroOutcome';
+import type { EmpireEvent } from '../../types/EmpireEvent';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
@@ -49,11 +49,11 @@ const surviveInQuest = (quest: HeroQuest): boolean => {
 const calculateReward = (
   state: GameState,
   quest: HeroQuest
-): { outcome: HeroOutcome; updatedHero: HeroState } => {
+): { outcome: EmpireEvent; updatedHero: HeroState } => {
   if (Math.random() > 0.55 - 0.05 * (quest.quest.level - 1)) {
     return {
       outcome: {
-        status: HeroOutcomeType.Neutral,
+        status: EmpireEventType.Neutral,
         message: emptyHanded(quest.hero.name),
       },
       updatedHero: quest.hero, // No changes to hero
@@ -92,7 +92,7 @@ const calculateReward = (
 const gainArtifact = (
   hero: HeroState,
   questType: QuestType
-): { outcome: HeroOutcome; updatedHero: HeroState } => {
+): { outcome: EmpireEvent; updatedHero: HeroState } => {
   const baseArtifactLevel = getQuest(questType).level;
   const heroArtifact: Artifact = artifactFactory(
     getRandomElement(artifacts).type,
@@ -107,26 +107,26 @@ const gainArtifact = (
 
   return {
     outcome: {
-      status: HeroOutcomeType.Minor,
+      status: EmpireEventType.Minor,
       message: heroGainArtifact(hero.name, heroArtifact),
     },
     updatedHero,
   };
 };
 
-const gainItem = (state: GameState, hero: HeroState): HeroOutcome => {
+const gainItem = (state: GameState, hero: HeroState): EmpireEvent => {
   const turnOwner = getTurnOwner(state);
   const itemType = getRandomElement(items).type;
 
   Object.assign(state, addPlayerEmpireTreasure(state, turnOwner.id, itemFactory(itemType)));
 
   return {
-    status: HeroOutcomeType.Positive,
+    status: EmpireEventType.Positive,
     message: heroGainItem(hero.name, itemType),
   };
 };
 
-const gainRelic = (state: GameState, hero: HeroState): HeroOutcome => {
+const gainRelic = (state: GameState, hero: HeroState): EmpireEvent => {
   const relicInPlay = state.players.flatMap((p) => p.empireTreasures);
   const turnOwner = getTurnOwner(state);
   const availableRelics = relicts
@@ -142,7 +142,7 @@ const gainRelic = (state: GameState, hero: HeroState): HeroOutcome => {
     Object.assign(state, addPlayerEmpireTreasure(state, turnOwner.id, relictFactory(relicType)));
 
     return {
-      status: HeroOutcomeType.Legendary,
+      status: EmpireEventType.Legendary,
       message: heroGainRelic(hero.name, relicType),
     };
   } else {
@@ -150,8 +150,8 @@ const gainRelic = (state: GameState, hero: HeroState): HeroOutcome => {
   }
 };
 
-const questResults = (state: GameState, quest: HeroQuest): HeroOutcome => {
-  let questOutcome: HeroOutcome;
+const questResults = (state: GameState, quest: HeroQuest): EmpireEvent => {
+  let questOutcome: EmpireEvent;
   const turnOwner = getTurnOwner(state);
 
   if (
@@ -173,7 +173,7 @@ const questResults = (state: GameState, quest: HeroQuest): HeroOutcome => {
     if (hasTreasureByPlayer(turnOwner, TreasureType.MERCY_OF_ORRIVANE)) {
       // No time to die, Orrivane gives a mercy but not a new level
       questOutcome = {
-        status: HeroOutcomeType.Success,
+        status: EmpireEventType.Success,
         message: `${heroDieMessage(quest.hero.name)} Yet Orrivane remembered them, and the world bent so they might return.`,
       };
       returnHeroOnMap(state, quest.hero, quest.land);
@@ -191,7 +191,7 @@ const questResults = (state: GameState, quest: HeroQuest): HeroOutcome => {
       );
     } else {
       questOutcome = {
-        status: HeroOutcomeType.Negative,
+        status: EmpireEventType.Negative,
         message: heroDieMessage(quest.hero.name),
       };
     }
@@ -217,7 +217,7 @@ const returnHeroOnMap = (state: GameState, hero: HeroState, landPosition: LandPo
   }
 };
 
-export const completeQuest = (state: GameState): HeroOutcome[] => {
+export const completeQuest = (state: GameState): EmpireEvent[] => {
   const turnOwner = getTurnOwner(state);
 
   // First, decrement quest turn counters immutably
