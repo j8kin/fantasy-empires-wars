@@ -1,28 +1,24 @@
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom';
 
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
 
-import { GameState } from '../../../state/GameState';
-import { HeroState } from '../../../state/army/HeroState';
-
 import { getPlayerLands, getTurnOwner } from '../../../selectors/playerSelectors';
+import { findAllHeroesOnMap, getArmiesAtPosition } from '../../../selectors/armySelectors';
 import { addHero } from '../../../systems/armyActions';
 import { levelUpHero } from '../../../systems/unitsActions';
-import { armyFactory } from '../../../factories/armyFactory';
 import { heroFactory } from '../../../factories/heroFactory';
+// Import as a mocked function to be able to spy on it and verify calls
+import { startQuest as mockStartQuest } from '../../../map/quest/startQuest';
 
 import { HeroUnitType } from '../../../types/UnitType';
 import { Alignment } from '../../../types/Alignment';
-import { getArmiesAtPosition } from '../../../selectors/armySelectors';
+import type { GameState } from '../../../state/GameState';
+import type { HeroState } from '../../../state/army/HeroState';
 
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
-
-// Import the mocked function (will be the mocked version due to jest.mock above)
-import { startQuest as mockStartQuest } from '../../../map/quest/startQuest';
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 
 // Mock modules
 jest.mock('../../../map/quest/startQuest', () => ({
@@ -122,65 +118,8 @@ jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBook', () => 
   );
 });
 
-// Mock FlipBookPage component
-jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
-  return {
-    __esModule: true,
-    default: ({
-      header,
-      iconPath,
-      description,
-      slots,
-      onSlotClick,
-      onIconClick,
-      onClose,
-      usedSlots,
-      pageNum,
-      lorePage,
-    }: any) => (
-      <div data-testid={`flip-book-page-${header.replace(/\s+/g, '-')}`}>
-        <h3 data-testid="page-header">{header}</h3>
-        <img src={iconPath} alt={header} data-testid="page-icon" />
-        <p data-testid="page-description">{description}</p>
-        <span data-testid="page-num">{pageNum}</span>
-        <span data-testid="lore-page">{lorePage}</span>
-
-        {/* Icon click button */}
-        <button data-testid="icon-button" onClick={onIconClick}>
-          Send all heroes to {header}
-        </button>
-
-        {/* Slots */}
-        {slots?.map((slot: any) => (
-          <button
-            key={slot.id}
-            data-testid={`slot-${slot.id}`}
-            onClick={() => onSlotClick?.(slot)}
-            disabled={usedSlots?.has(slot.id)}
-            className={usedSlots?.has(slot.id) ? 'used-slot' : 'available-slot'}
-          >
-            {slot.name} {usedSlots?.has(slot.id) ? '(Used)' : ''}
-          </button>
-        ))}
-
-        <button data-testid="close-button" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    ),
-  };
-});
-
 describe('SendHeroInQuestDialog', () => {
   let gameStateStub: GameState;
-
-  // Helper function to get hero lands for current player
-  const getHeroLands = (gameState: GameState) => {
-    return getPlayerLands(gameState).filter((land) => {
-      const armies = getArmiesAtPosition(gameState, land.mapPos);
-      return armies.length > 0 && armies.some((army) => army.heroes.length > 0);
-    });
-  };
 
   const renderWithProviders = (
     ui: React.ReactElement,
@@ -273,16 +212,16 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Should show all 4 quests
-      expect(screen.getByTestId('flip-book-page-The-Echoing-Ruins')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-The-Whispering-Grove')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-The-Abyssal-Crypt')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-The-Shattered-Sky')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-The Echoing Ruins')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-The Whispering Grove')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-The Abyssal Crypt')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-The Shattered Sky')).toBeInTheDocument();
     });
 
     it('should display quest information correctly', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
-      const echoingRuinsPage = screen.getByTestId('flip-book-page-The-Echoing-Ruins');
+      const echoingRuinsPage = screen.getByTestId('flipbook-page-The Echoing Ruins');
       expect(echoingRuinsPage).toBeInTheDocument();
 
       // Check quest title
@@ -292,7 +231,7 @@ describe('SendHeroInQuestDialog', () => {
       expect(screen.getByText(/Whispers of lost ages linger/)).toBeInTheDocument();
 
       // Check lore page number (appears on all 4 pages)
-      expect(screen.getAllByText('1417')).toHaveLength(4);
+      expect(screen.getAllByTestId(/flipbook-page-number-/)).toHaveLength(4);
     });
 
     it('should display quest icons', () => {
@@ -310,18 +249,13 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get the first hero from the game state using helper function
-      const lands = getHeroLands(gameStateStub);
-      expect(lands.length).toBeGreaterThan(0);
-
-      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
-      const heroArmy = armies.find((army) => army.heroes.length > 0);
-      expect(heroArmy).toBeDefined();
-
-      const hero = heroArmy!.heroes[0];
+      const heroesOnMap = findAllHeroesOnMap(gameStateStub);
+      expect(heroesOnMap.length).toBeGreaterThan(0);
+      const hero = heroesOnMap[0].hero;
 
       // Check that hero slot is displayed with correct ID (full name) and display name (first name + level)
       // Hero appears on all 4 quest pages, so get the first occurrence
-      const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
+      const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.name}`);
       expect(heroSlots).toHaveLength(4); // Should appear on all 4 quest pages
       const heroSlot = heroSlots[0];
       expect(heroSlot).toBeInTheDocument();
@@ -334,40 +268,31 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get the first hero from the game state using helper function
-      const lands = getHeroLands(gameStateStub);
-      expect(lands.length).toBeGreaterThan(0);
-
-      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
-      const heroArmy = armies.find((army) => army.heroes.length > 0);
-      const hero = heroArmy!.heroes[0];
+      const heroesOnMap = findAllHeroesOnMap(gameStateStub);
+      expect(heroesOnMap.length).toBeGreaterThan(0);
+      const hero = heroesOnMap[0].hero;
 
       // The slot ID should be the full hero name, which is what findHeroByName expects
       // Hero appears on all 4 quest pages, so get the first occurrence
-      const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
+      const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.name}`);
       expect(heroSlots).toHaveLength(4); // Should appear on all 4 quest pages
       const heroSlot = heroSlots[0];
       expect(heroSlot).toBeInTheDocument();
 
       // Verify the slot ID is the same as the hero name in game state
-      expect(heroSlot.getAttribute('data-testid')).toBe(`slot-${hero.name}`);
+      expect(heroSlot.getAttribute('data-testid')).toBe(`flipbook-slot-${hero.name}`);
     });
 
     it('should display heroes from all available lands', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Count all heroes from all lands owned by current player
-      const heroLands = getHeroLands(gameStateStub);
-
-      let totalHeroes = 0;
-      heroLands.forEach((land) => {
-        const armies = getArmiesAtPosition(gameStateStub, land.mapPos);
-        totalHeroes += armies.reduce((count, army) => count + army.heroes.length, 0);
-      });
+      const heroesOnMap = findAllHeroesOnMap(gameStateStub);
 
       // Should show slot buttons for all heroes across all quest pages
-      const allSlotButtons = screen.getAllByTestId(/slot-/);
+      const allSlotButtons = screen.getAllByTestId(/flipbook-slot-/);
       // Each hero appears on each of the 4 quest pages
-      expect(allSlotButtons.length).toBe(totalHeroes * 4);
+      expect(allSlotButtons.length).toBe(heroesOnMap.length * 4);
     });
   });
 
@@ -377,20 +302,17 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get the first hero from the game state using helper function
-      const lands = getHeroLands(gameStateStub);
-      expect(lands.length).toBeGreaterThan(0);
-
-      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
-      const heroArmy = armies.find((army) => army.heroes.length > 0);
-      const hero = heroArmy!.heroes[0];
+      const heroesOnMap = findAllHeroesOnMap(gameStateStub);
+      expect(heroesOnMap.length).toBeGreaterThan(0);
+      const hero = heroesOnMap[0].hero;
 
       // Click on the hero slot in the first quest (The Echoing Ruins)
       // Hero appears on all 4 quest pages, so get the first occurrence
-      const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
+      const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.name}`);
       expect(heroSlots).toHaveLength(4); // Should appear on all 4 quest pages
       const heroSlot = heroSlots[0]; // First quest page
       expect(heroSlot).not.toBeDisabled();
-      expect(heroSlot).toHaveClass('available-slot');
+      expect(heroSlot).toHaveClass('slot');
 
       await user.click(heroSlot);
 
@@ -404,14 +326,12 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get the first hero
-      const lands = getHeroLands(gameStateStub);
-
-      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
-      const heroArmy = armies.find((army) => army.heroes.length > 0);
-      const hero = heroArmy!.heroes[0];
+      const heroesOnMap = findAllHeroesOnMap(gameStateStub);
+      expect(heroesOnMap.length).toBeGreaterThan(0);
+      const hero = heroesOnMap[0].hero;
 
       // Click on hero slot in first quest
-      const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
+      const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.name}`);
       expect(heroSlots.length).toBe(4); // Should appear on all 4 quest pages
 
       const firstHeroSlot = heroSlots[0];
@@ -426,64 +346,55 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get all heroes from game state
-      const heroLands = getHeroLands(gameStateStub);
-
-      let allHeroes: HeroState[] = [];
-      heroLands.forEach((land) => {
-        const armies = getArmiesAtPosition(gameStateStub, land.mapPos);
-        const landHeroes = armies.flatMap((army) => army.heroes);
-        allHeroes = allHeroes.concat(landHeroes);
-      });
+      const heroesOnMap = findAllHeroesOnMap(gameStateStub);
+      expect(heroesOnMap.length).toBeGreaterThan(0);
 
       // Click icon button for first quest
-      const iconButtons = screen.getAllByTestId('icon-button');
+      const iconButtons = screen.getAllByTestId('flipbook-icon');
       const firstQuestIconButton = iconButtons[0]; // The Echoing Ruins
 
       await user.click(firstQuestIconButton);
 
       // Should call startQuest for each hero
-      expect(mockStartQuest).toHaveBeenCalledTimes(allHeroes.length);
+      expect(mockStartQuest).toHaveBeenCalledTimes(heroesOnMap.length);
 
       // Verify each hero was sent to the correct quest
-      allHeroes.forEach((hero) => {
-        expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.name, 'The Echoing Ruins');
+      heroesOnMap.forEach((heroOnMap) => {
+        expect(mockStartQuest).toHaveBeenCalledWith(
+          gameStateStub,
+          heroOnMap.hero.name,
+          'The Echoing Ruins'
+        );
       });
 
       // Should close dialog after sending all heroes
       expect(mockApplicationContext.setShowSendHeroInQuestDialog).toHaveBeenCalledWith(false);
     });
 
-    it('should handle different quest levels correctly', async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<SendHeroInQuestDialog />);
+    it.each([
+      [0, 'The Echoing Ruins'],
+      [1, 'The Whispering Grove'],
+      [2, 'The Abyssal Crypt'],
+      [3, 'The Shattered Sky'],
+    ])(
+      'should handle different quest level %s correctly',
+      async (questLevel: number, questName: string) => {
+        renderWithProviders(<SendHeroInQuestDialog />);
 
-      // Get the first hero
-      const lands = getHeroLands(gameStateStub);
+        // Get the first hero
+        const hero = findAllHeroesOnMap(gameStateStub)[0];
 
-      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
-      const heroArmy = armies.find((army) => army.heroes.length > 0);
-      const hero = heroArmy!.heroes[0];
+        // Click hero slot on different quest pages
+        const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.hero.name}`);
 
-      // Click hero slot on different quest pages
-      const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
+        // Click on second quest (The Whispering Grove)
+        await userEvent.click(heroSlots[questLevel]);
 
-      // Click on second quest (The Whispering Grove)
-      await user.click(heroSlots[1]);
+        expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.hero.name, questName);
 
-      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.name, 'The Whispering Grove');
-
-      // Click on third quest (The Abyssal Crypt)
-      await user.click(heroSlots[2]);
-
-      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.name, 'The Abyssal Crypt');
-
-      // Click on fourth quest (The Shattered Sky)
-      await user.click(heroSlots[3]);
-
-      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.name, 'The Shattered Sky');
-
-      expect(mockStartQuest).toHaveBeenCalledTimes(3);
-    });
+        expect(mockStartQuest).toHaveBeenCalledTimes(1);
+      }
+    );
   });
 
   describe('Dialog Closing', () => {
@@ -493,17 +404,6 @@ describe('SendHeroInQuestDialog', () => {
 
       const flipBook = screen.getByTestId('flip-book');
       await user.click(flipBook);
-
-      expect(mockApplicationContext.setShowSendHeroInQuestDialog).toHaveBeenCalledWith(false);
-    });
-
-    it('should close dialog when clicking close button', async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<SendHeroInQuestDialog />);
-
-      const closeButtons = screen.getAllByTestId('close-button');
-      const firstCloseButton = closeButtons[0];
-      await user.click(firstCloseButton);
 
       expect(mockApplicationContext.setShowSendHeroInQuestDialog).toHaveBeenCalledWith(false);
     });
@@ -566,17 +466,13 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get heroes from the actual game state
-      const lands = getHeroLands(gameStateStub);
-
-      expect(lands.length).toBeGreaterThan(0);
-
-      const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
-      const heroArmy = armies.find((army) => army.heroes.length > 0);
-      const hero = heroArmy!.heroes[0];
+      const heroesOnMap = findAllHeroesOnMap(gameStateStub);
+      expect(heroesOnMap.length).toBeGreaterThan(0);
+      const hero = heroesOnMap[0].hero;
 
       // The slot should be created with hero.name as the id
       // Hero appears on all 4 quest pages, so get the first occurrence
-      const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
+      const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.name}`);
       expect(heroSlots).toHaveLength(4); // Should appear on all 4 quest pages
       const heroSlot = heroSlots[0];
       expect(heroSlot).toBeInTheDocument();
@@ -595,25 +491,22 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Get all heroes from game state
-      const heroLands = getHeroLands(gameStateStub);
+      const heroesOnMap = findAllHeroesOnMap(gameStateStub);
+      expect(heroesOnMap.length).toBeGreaterThan(0);
 
-      heroLands.forEach((land) => {
-        getArmiesAtPosition(gameStateStub, land.mapPos)
-          .flatMap((army) => army.heroes)
-          .forEach((unit) => {
-            const hero = unit as HeroState;
+      heroesOnMap.forEach((heroOnMap) => {
+        const hero = heroOnMap.hero;
 
-            // Check slot exists with hero name as ID
-            // Hero appears on all 4 quest pages, so get the first occurrence
-            const heroSlots = screen.getAllByTestId(`slot-${hero.name}`);
-            expect(heroSlots).toHaveLength(4); // Should appear on all 4 quest pages
-            const heroSlot = heroSlots[0];
-            expect(heroSlot).toBeInTheDocument();
+        // Check slot exists with hero name as ID
+        // Hero appears on all 4 quest pages, so get the first occurrence
+        const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.name}`);
+        expect(heroSlots).toHaveLength(4); // Should appear on all 4 quest pages
+        const heroSlot = heroSlots[0];
+        expect(heroSlot).toBeInTheDocument();
 
-            // Check display format is "FirstName Lvl: X"
-            const expectedDisplayName = `${hero.name.split(' ')[0]} Lvl: ${hero.level}`;
-            expect(heroSlot).toHaveTextContent(expectedDisplayName);
-          });
+        // Check display format is "FirstName Lvl: X"
+        const expectedDisplayName = `${hero.name.split(' ')[0]} Lvl: ${hero.level}`;
+        expect(heroSlot).toHaveTextContent(expectedDisplayName);
       });
     });
   });
@@ -653,7 +546,7 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Hero appears on all 4 quest pages, so get the first occurrence
-      const heroSlots = screen.getAllByTestId(`slot-${longName}`);
+      const heroSlots = screen.getAllByTestId(`flipbook-slot-${longName}`);
       expect(heroSlots).toHaveLength(4); // Should appear on all 4 quest pages
       const heroSlot = heroSlots[0];
       expect(heroSlot).toBeInTheDocument();
@@ -685,7 +578,7 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />);
 
       // Hero appears on all 4 quest pages, so get the first occurrence
-      const heroSlots = screen.getAllByTestId(`slot-SingleName`);
+      const heroSlots = screen.getAllByTestId(`flipbook-slot-SingleName`);
       expect(heroSlots).toHaveLength(4); // Should appear on all 4 quest pages
       const heroSlot = heroSlots[0];
       expect(heroSlot).toBeInTheDocument();
@@ -700,17 +593,12 @@ describe('SendHeroInQuestDialog', () => {
     beforeEach(() => {
       // Add additional heroes to test multiple hero scenarios
       const currentPlayerLands = getPlayerLands(gameStateStub);
+      expect(currentPlayerLands.length).toBeGreaterThan(1);
 
-      if (currentPlayerLands.length > 1) {
-        // Add a second hero to another land
-        const secondHero: HeroState = heroFactory(HeroUnitType.FIGHTER, 'Additional Hero');
-        levelUpHero(secondHero, Alignment.LAWFUL);
-
-        // Add army to centralized system
-        gameStateStub.armies.push(
-          armyFactory(getTurnOwner(gameStateStub).id, currentPlayerLands[1].mapPos, [secondHero])
-        );
-      }
+      // Add a second hero to another land
+      const secondHero: HeroState = heroFactory(HeroUnitType.FIGHTER, 'Additional Hero');
+      levelUpHero(secondHero, Alignment.LAWFUL);
+      placeUnitsOnMap(secondHero, gameStateStub, currentPlayerLands[1].mapPos);
     });
 
     it('should display multiple heroes from different lands', () => {
@@ -720,7 +608,7 @@ describe('SendHeroInQuestDialog', () => {
       expect(screen.queryAllByTestId(/slot-/).length).toBeGreaterThan(0);
 
       // Get all slot buttons - should be multiple heroes * 4 quests
-      const allSlots = screen.getAllByTestId(/slot-/);
+      const allSlots = screen.getAllByTestId(/flipbook-slot-/);
       expect(allSlots.length).toBeGreaterThanOrEqual(4); // At least one hero across 4 quests
     });
 
@@ -744,8 +632,8 @@ describe('SendHeroInQuestDialog', () => {
       renderWithProviders(<SendHeroInQuestDialog />, { gameState: testGameState });
 
       // Get all hero slot buttons for the first quest
-      const questPage = screen.getByTestId('flip-book-page-The-Echoing-Ruins');
-      const heroSlots = within(questPage).getAllByTestId(/slot-/);
+      const questPage = screen.getByTestId('flipbook-page-The Echoing Ruins');
+      const heroSlots = within(questPage).getAllByTestId(/flipbook-slot-/);
 
       // Should now have 2 heroes * 1 quest = 2 slots
       expect(heroSlots.length).toBe(2);

@@ -1,25 +1,23 @@
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
-import { GameState } from '../../../state/GameState';
-import { LandPosition } from '../../../state/map/land/LandPosition';
 
 import { addPlayerLand } from '../../../systems/gameStateActions';
 import { getLand } from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
+import { construct } from '../../../map/building/construct';
+// Import as a mocked function to be able to spy on it and verify calls
+import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';
 
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 
 import { BuildingType } from '../../../types/Building';
 import { HeroUnitType, RegularUnitType, UnitType } from '../../../types/UnitType';
+import type { GameState } from '../../../state/GameState';
+import type { LandPosition } from '../../../state/map/land/LandPosition';
 
-import { construct } from '../../../map/building/construct';
-
-// Import the mocked function (will be mocked by jest.mock above)
-import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';
 import { createGameStateStub } from '../../utils/createGameStateStub';
 
 // Mock modules
@@ -122,62 +120,6 @@ jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBook', () => 
   );
 });
 
-// Mock FlipBookPage component
-jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', () => {
-  const { FlipBookPageType } = jest.requireActual(
-    '../../../ux-components/fantasy-book-dialog-template/FlipBookPage'
-  );
-
-  return {
-    FlipBookPageType,
-    __esModule: true,
-    default: ({
-      header,
-      iconPath,
-      description,
-      cost,
-      slots,
-      onSlotClick,
-      onIconClick,
-      onClose,
-      usedSlots,
-      dialogType,
-      pageNum,
-    }: any) => (
-      <div data-testid={`flip-book-page-${header}`}>
-        <h3 data-testid="page-header">{header}</h3>
-        <img src={iconPath} alt={header} data-testid="page-icon" />
-        <p data-testid="page-description">{description}</p>
-        <span data-testid="page-cost">Cost: {cost}</span>
-        <span data-testid="page-type">{dialogType}</span>
-        <span data-testid="page-num">{pageNum}</span>
-
-        {/* Icon click button */}
-        <button data-testid="icon-button" onClick={onIconClick}>
-          Recruit {header}
-        </button>
-
-        {/* Slots */}
-        {slots?.map((slot: any) => (
-          <button
-            key={slot.id}
-            data-testid={`slot-${slot.id}`}
-            onClick={() => onSlotClick?.(slot)}
-            disabled={usedSlots?.has(slot.id)}
-            className={usedSlots?.has(slot.id) ? 'used-slot' : 'available-slot'}
-          >
-            {slot.name} {usedSlots?.has(slot.id) ? '(Used)' : ''}
-          </button>
-        ))}
-
-        <button data-testid="close-button" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    ),
-  };
-});
-
 describe('RecruitArmyDialog', () => {
   let gameStateStub: GameState;
 
@@ -266,16 +208,16 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // Should show non-mage units
-      expect(screen.getByTestId('flip-book-page-Warrior')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-Ballista')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-Fighter')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Warrior')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Fighter')).toBeInTheDocument();
       // Note: Warsmith may not appear due to player type restrictions
     });
 
     it('should display unit information correctly', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
-      const warriorPage = screen.getByTestId('flip-book-page-Warrior');
+      const warriorPage = screen.getByTestId('flipbook-page-Warrior');
       expect(warriorPage).toBeInTheDocument();
 
       // Check if the page contains the expected information
@@ -287,16 +229,14 @@ describe('RecruitArmyDialog', () => {
     it('should sort units with heroes at the end', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
-      const pages = screen.getAllByTestId(/flip-book-page-/);
-      const pageHeaders = pages.map(
-        (page) => within(page).getByTestId('page-header').textContent || ''
-      );
+      const pages = screen.getAllByTestId(/flipbook-page-/);
+      const pageHeaders = pages.map((page) => page.getAttribute('data-testid'));
 
       // Regular units should come before heroes
-      const warriorIndex = pageHeaders.findIndex((header) => header === 'Warrior');
-      const ballistaIndex = pageHeaders.findIndex((header) => header === 'Ballista');
-      const fighterIndex = pageHeaders.findIndex((header) => header === 'Fighter');
-      const warsmithIndex = pageHeaders.findIndex((header) => header === 'Warsmith');
+      const warriorIndex = pageHeaders.findIndex((header) => header!.endsWith('Warrior'));
+      const ballistaIndex = pageHeaders.findIndex((header) => header!.endsWith('Ballista'));
+      const fighterIndex = pageHeaders.findIndex((header) => header!.endsWith('Fighter'));
+      const warsmithIndex = pageHeaders.findIndex((header) => header!.endsWith('Warsmith'));
 
       // So we expect regular units (Warrior, Ballista) to come before heroes (Fighter)
       expect(warriorIndex).toBeGreaterThanOrEqual(0);
@@ -334,8 +274,8 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // Should not show mage heroes in barracks
-      expect(screen.queryByTestId('flip-book-page-Cleric')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('flip-book-page-Pyromancer')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-page-Cleric')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-page-Pyromancer')).not.toBeInTheDocument();
     });
   });
 
@@ -344,9 +284,9 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // Should show 3 available slots for Barracks
-      const slot1Buttons = screen.getAllByTestId('slot-buildSlot1');
-      const slot2Buttons = screen.getAllByTestId('slot-buildSlot2');
-      const slot3Buttons = screen.getAllByTestId('slot-buildSlot3');
+      const slot1Buttons = screen.getAllByTestId('flipbook-slot-buildSlot1');
+      const slot2Buttons = screen.getAllByTestId('flipbook-slot-buildSlot2');
+      const slot3Buttons = screen.getAllByTestId('flipbook-slot-buildSlot3');
       expect(slot1Buttons.length).toBeGreaterThan(0);
       expect(slot2Buttons.length).toBeGreaterThan(0);
       expect(slot3Buttons.length).toBeGreaterThan(0);
@@ -356,10 +296,10 @@ describe('RecruitArmyDialog', () => {
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
 
-      const slot1Buttons = screen.getAllByTestId('slot-buildSlot1');
+      const slot1Buttons = screen.getAllByTestId('flipbook-slot-buildSlot1');
       const slot1Button = slot1Buttons[0]; // Get the first one
       expect(slot1Button).not.toBeDisabled();
-      expect(slot1Button).toHaveClass('available-slot');
+      expect(slot1Button).toHaveClass('slot');
 
       await user.click(slot1Button);
 
@@ -375,7 +315,7 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // Click slot on first unit page
-      const slot1Buttons = screen.getAllByTestId('slot-buildSlot1');
+      const slot1Buttons = screen.getAllByTestId('flipbook-slot-buildSlot1');
       const slot1Button = slot1Buttons[0]; // Get the first one
       await user.click(slot1Button);
 
@@ -390,26 +330,24 @@ describe('RecruitArmyDialog', () => {
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
 
-      const slot1Buttons = screen.getAllByTestId('slot-buildSlot1');
+      const slot1Buttons = screen.getAllByTestId('flipbook-slot-buildSlot1');
       const slot1Button = slot1Buttons[0]; // Get the first one
 
       // First click
       await user.click(slot1Button);
       expect(mockStartRecruiting).toHaveBeenCalledTimes(1);
 
-      // Second click - in the mock setup, button behavior isn't disabled
-      // This is due to the mock component not implementing full state tracking
+      // Second click - should not be allowed
       await user.click(slot1Button);
-      // Mock allows multiple clicks since it doesn't track state
-      expect(mockStartRecruiting).toHaveBeenCalledTimes(2);
+      expect(mockStartRecruiting).toHaveBeenCalledTimes(1);
     });
 
     it('should allow using different slots', async () => {
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
 
-      const slot1Buttons = screen.getAllByTestId('slot-buildSlot1');
-      const slot2Buttons = screen.getAllByTestId('slot-buildSlot2');
+      const slot1Buttons = screen.getAllByTestId('flipbook-slot-buildSlot1');
+      const slot2Buttons = screen.getAllByTestId('flipbook-slot-buildSlot2');
       const slot1Button = slot1Buttons[0]; // Get the first one
       const slot2Button = slot2Buttons[0]; // Get the first one
 
@@ -441,7 +379,7 @@ describe('RecruitArmyDialog', () => {
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
 
-      const iconButtons = screen.getAllByTestId('icon-button');
+      const iconButtons = screen.getAllByTestId('flipbook-icon');
       const iconButton = iconButtons[0]; // Get the first one (Warrior)
       await user.click(iconButton);
 
@@ -461,17 +399,6 @@ describe('RecruitArmyDialog', () => {
 
       const flipBook = screen.getByTestId('flip-book');
       await user.click(flipBook);
-
-      expect(mockApplicationContext.setShowRecruitArmyDialog).toHaveBeenCalledWith(false);
-    });
-
-    it('should close dialog when clicking close button', async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<RecruitArmyDialog />);
-
-      const closeButtons = screen.getAllByTestId('close-button');
-      const closeButton = closeButtons[0]; // Get the first one
-      await user.click(closeButton);
 
       expect(mockApplicationContext.setShowRecruitArmyDialog).toHaveBeenCalledWith(false);
     });
@@ -506,7 +433,7 @@ describe('RecruitArmyDialog', () => {
 
       // The dialog should render showing the cleric which can be recruited in white mage tower
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-Cleric')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Cleric')).toBeInTheDocument();
     });
 
     it('should show pyromancer in red mage tower', () => {
@@ -531,7 +458,7 @@ describe('RecruitArmyDialog', () => {
 
       // The dialog should render showing the pyromancer which can be recruited in red mage tower
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-Pyromancer')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Pyromancer')).toBeInTheDocument();
     });
 
     it('should show enchanter in blue mage tower', () => {
@@ -556,7 +483,7 @@ describe('RecruitArmyDialog', () => {
 
       // The dialog should render showing the enchanter which can be recruited in blue mage tower
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-Enchanter')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Enchanter')).toBeInTheDocument();
     });
 
     it('should show druid in green mage tower', () => {
@@ -581,7 +508,7 @@ describe('RecruitArmyDialog', () => {
 
       // The dialog should render showing the druid which can be recruited in green mage tower
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-Druid')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Druid')).toBeInTheDocument();
     });
 
     it('should show necromancer in black mage tower', () => {
@@ -606,7 +533,7 @@ describe('RecruitArmyDialog', () => {
 
       // The dialog should render showing the necromancer which can be recruited in black mage tower
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-Necromancer')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Necromancer')).toBeInTheDocument();
     });
   });
 
@@ -659,9 +586,9 @@ describe('RecruitArmyDialog', () => {
 
       renderWithProviders(<RecruitArmyDialog />);
 
-      expect(screen.getByTestId('flip-book-page-Warrior')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book-page-Ballista')).toBeInTheDocument();
-      expect(screen.queryByTestId('flip-book-page-Warsmith')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Warrior')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-page-Warsmith')).not.toBeInTheDocument();
     });
   });
 
@@ -675,7 +602,7 @@ describe('RecruitArmyDialog', () => {
 
       // Should render flip book but with no pages
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.queryByTestId(/flip-book-page-/)).not.toBeInTheDocument();
+      expect(screen.queryByTestId(/flipbook-page-/)).not.toBeInTheDocument();
     });
 
     it('should not render when no recruiting buildings exist', () => {
@@ -705,9 +632,9 @@ describe('RecruitArmyDialog', () => {
       renderWithProviders(<RecruitArmyDialog />);
 
       // Initial render should show 3 slots for Barracks
-      const slot1Buttons = screen.getAllByTestId('slot-buildSlot1');
-      const slot2Buttons = screen.getAllByTestId('slot-buildSlot2');
-      const slot3Buttons = screen.getAllByTestId('slot-buildSlot3');
+      const slot1Buttons = screen.getAllByTestId('flipbook-slot-buildSlot1');
+      const slot2Buttons = screen.getAllByTestId('flipbook-slot-buildSlot2');
+      const slot3Buttons = screen.getAllByTestId('flipbook-slot-buildSlot3');
       expect(slot1Buttons.length).toBeGreaterThan(0);
       expect(slot2Buttons.length).toBeGreaterThan(0);
       expect(slot3Buttons.length).toBeGreaterThan(0);
@@ -723,9 +650,9 @@ describe('RecruitArmyDialog', () => {
 
       // Re-render - should still show 3 slots due to memoization
       renderWithProviders(<RecruitArmyDialog />);
-      const newSlot1Buttons = screen.getAllByTestId('slot-buildSlot1');
-      const newSlot2Buttons = screen.getAllByTestId('slot-buildSlot2');
-      const newSlot3Buttons = screen.getAllByTestId('slot-buildSlot3');
+      const newSlot1Buttons = screen.getAllByTestId('flipbook-slot-buildSlot1');
+      const newSlot2Buttons = screen.getAllByTestId('flipbook-slot-buildSlot2');
+      const newSlot3Buttons = screen.getAllByTestId('flipbook-slot-buildSlot3');
       expect(newSlot1Buttons.length).toBeGreaterThan(0);
       expect(newSlot2Buttons.length).toBeGreaterThan(0);
       expect(newSlot3Buttons.length).toBeGreaterThan(0);

@@ -93,26 +93,26 @@ describe('FlipBookPage Component', () => {
   describe('Page Styling', () => {
     it('should apply even page class for odd pageNum', () => {
       render(<FlipBookPage {...defaultProps} pageNum={1} />);
-      const page = screen.getByTestId('flipbook-page');
+      const page = screen.getByTestId('flipbook-page-' + defaultProps.header);
       expect(page).toHaveClass('evenPage');
     });
 
     it('should apply odd page class for even pageNum', () => {
       render(<FlipBookPage {...defaultProps} pageNum={2} />);
-      const page = screen.getByTestId('flipbook-page');
+      const page = screen.getByTestId('flipbook-page-' + defaultProps.header);
       expect(page).toHaveClass('oddPage');
     });
 
     it('should apply custom className along with default', () => {
       render(<FlipBookPage {...defaultProps} className="custom-class" pageNum={1} />);
-      const page = screen.getByTestId('flipbook-page');
+      const page = screen.getByTestId('flipbook-page-' + defaultProps.header);
       expect(page).toHaveClass('evenPage');
       expect(page).toHaveClass('custom-class');
     });
 
     it('should apply custom style prop', () => {
       render(<FlipBookPage {...defaultProps} style={{ backgroundColor: 'red' }} />);
-      const page = screen.getByTestId('flipbook-page');
+      const page = screen.getByTestId('flipbook-page-' + defaultProps.header);
       expect(page).toHaveStyle({ backgroundColor: 'red' });
     });
   });

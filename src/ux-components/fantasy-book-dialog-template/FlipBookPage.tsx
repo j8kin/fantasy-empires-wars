@@ -92,7 +92,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
 
     return (
       <div
-        data-testid="flipbook-page"
+        data-testid={'flipbook-page-' + header}
         className={`${styles.pageStyle} ${finalClassName}`}
         ref={ref}
         style={style}
@@ -102,6 +102,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
             <div className={styles.caption}>{header}</div>
             <div className={styles.imageSlotContainer}>
               <img
+                data-testid={'flipbook-icon'}
                 src={iconPath}
                 alt={header}
                 className={`${styles.icon} clickable-icon`}
@@ -135,6 +136,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 >
                   {availableSlots.map((slot) => (
                     <div
+                      data-testid={'flipbook-slot-' + slot.id}
                       key={slot.id}
                       onClick={(e) => handleSlotClick(e, slot)}
                       className={styles.slot}
@@ -171,7 +173,9 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 </div>
               )}
             </div>
-            <h4 className={styles.pageNumber}>- {toRoman(lorePage + pageNum)} -</h4>
+            <h4 className={styles.pageNumber} data-testid={'flipbook-page-number-' + pageNum}>
+              - {toRoman(lorePage + pageNum)} -
+            </h4>
           </>
         )}
       </div>

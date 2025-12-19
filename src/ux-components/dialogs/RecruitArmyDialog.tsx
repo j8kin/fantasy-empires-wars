@@ -42,10 +42,9 @@ const RecruitArmyDialog: React.FC = () => {
   const initialSlotCount = useMemo(() => {
     if (!gameState || !actionLandPosition) return 0;
 
-    const land = getLand(gameState, actionLandPosition);
-    if (!land) return 0;
-
-    const recruitBuilding = land.buildings.find((b) => hasAvailableSlot(b));
+    const recruitBuilding = getLand(gameState, actionLandPosition).buildings.find((b) =>
+      hasAvailableSlot(b)
+    );
 
     return recruitBuilding ? getAvailableSlotsCount(recruitBuilding) : 0;
   }, [gameState, actionLandPosition]); // Only recalculate when dialog opens or land changes
@@ -63,7 +62,6 @@ const RecruitArmyDialog: React.FC = () => {
     if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return;
 
     const land = getLand(gameState, actionLandPosition);
-    if (!land) return;
 
     const recruitBuilding = land.buildings.find((b) => hasAvailableSlot(b));
 
@@ -98,12 +96,12 @@ const RecruitArmyDialog: React.FC = () => {
     [gameState, handleClose]
   );
 
-  if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return undefined;
+  if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return null;
 
   // Use the fixed initial slot count instead of recalculating
   if (initialSlotCount === 0) {
     setShowRecruitArmyDialog(false);
-    return undefined;
+    return null;
   }
 
   const land = getLand(gameState, actionLandPosition);
@@ -111,9 +109,7 @@ const RecruitArmyDialog: React.FC = () => {
   const recruitBuilding = land.buildings.find((b) => hasAvailableSlot(b));
 
   // If no recruit building is available (all slots filled), don't render content
-  if (!recruitBuilding) {
-    return null;
-  }
+  if (!recruitBuilding) return null;
 
   const sortArmyUnits = (unit: RecruitUnitProps): number => {
     if (unit.id === RegularUnitType.WARD_HANDS) return 0;
