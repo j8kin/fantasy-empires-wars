@@ -14,6 +14,7 @@ import {
   findAllHeroesOnMap,
   getArmiesByPlayer,
 } from '../../selectors/armySelectors';
+import { hasAvailableSlot } from '../../selectors/buildingSelectors';
 
 import { ButtonName } from '../../types/ButtonName';
 
@@ -30,9 +31,9 @@ const UnitActionControl: React.FC = () => {
       // Prevent event bubbling to parent elements (MainView)
       event.stopPropagation();
 
-      // Get all lands owned by current player with BARRACKS or Mage Towers
+      // Get all lands owned by current player with BARRACKS or Mage Towers that have available slots
       const recruitmentLands = getPlayerLands(gameState).filter((l) =>
-        l.buildings.some((b) => b.slots && b.numberOfSlots > 0 && b.slots.length < b.numberOfSlots)
+        l.buildings.some((b) => hasAvailableSlot(b))
       );
 
       setSelectedLandAction('Recruit');

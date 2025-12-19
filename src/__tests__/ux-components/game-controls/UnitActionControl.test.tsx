@@ -1,23 +1,22 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import UnitActionControl from '../../../ux-components/game-controls/UnitActionControl';
+
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
-
-import { GameState } from '../../../state/GameState';
-import { LandPosition } from '../../../state/map/land/LandPosition';
-
 import { getTurnOwner } from '../../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../../selectors/armySelectors';
 import { startMoving } from '../../../systems/armyActions';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
+import { startRecruiting } from '../../../map/recruiting/startRecruiting';
+import { construct } from '../../../map/building/construct';
 
 import { ButtonName } from '../../../types/ButtonName';
 import { BuildingType } from '../../../types/Building';
 import { RegularUnitType } from '../../../types/UnitType';
-
-import { construct } from '../../../map/building/construct';
+import type { GameState } from '../../../state/GameState';
+import type { LandPosition } from '../../../state/map/land/LandPosition';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
@@ -125,17 +124,9 @@ describe('UnitActionControl', () => {
       construct(gameState, BuildingType.BARRACKS, barracksPosition);
 
       // Fill all slots in the barracks
-      const land = gameState.map.lands[`${barracksPosition.row}-${barracksPosition.col}`];
-      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
-      if (barracks && barracks.slots) {
-        // Fill all slots to max capacity
-        while (barracks.slots.length < barracks.numberOfSlots) {
-          barracks.slots.push({
-            unit: getTurnOwner(gameState).playerProfile.type,
-            turnsRemaining: 1,
-          });
-        }
-      }
+      startRecruiting(gameState, barracksPosition, RegularUnitType.WARRIOR);
+      startRecruiting(gameState, barracksPosition, RegularUnitType.WARRIOR);
+      startRecruiting(gameState, barracksPosition, RegularUnitType.WARRIOR);
 
       renderWithProviders(<UnitActionControl />, gameState);
 

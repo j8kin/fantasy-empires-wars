@@ -6,6 +6,7 @@ import {
   getArmiesAtPosition,
   findArmyByHero,
 } from '../../selectors/armySelectors';
+import { getAvailableSlotsCount, hasAvailableSlot } from '../../selectors/buildingSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { startQuest } from '../../map/quest/startQuest';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
@@ -193,10 +194,7 @@ describe('Hero Quest', () => {
     expect(barracksLand).toBeDefined();
     const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
     expect(armies.length).toBe(0);
-    expect(barracksLand.buildings[0].numberOfSlots).toBe(
-      buildingType === BuildingType.BARRACKS ? 3 : 1
-    );
-    expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0);
+    expect(hasAvailableSlot(barracksLand.buildings[0])).toBeTruthy();
   };
 
   it('Couple heroes returned from quest at the same time should be placed on the same land', () => {
@@ -224,7 +222,10 @@ describe('Hero Quest', () => {
 
     testTurnManagement.makeNTurns(3);
 
-    expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0); // hero recruited
+    // heroes are recruited and available for quests
+    expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(
+      3
+    );
 
     // heroes recruited and available for quests
     const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -284,7 +285,10 @@ describe('Hero Quest', () => {
 
     testTurnManagement.makeNTurns(3);
 
-    expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots?.length).toBe(0);
+    expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(
+      3
+    );
+
     const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
     expect(armiesRecruited.length).toBe(1);
     expect(armiesRecruited[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);

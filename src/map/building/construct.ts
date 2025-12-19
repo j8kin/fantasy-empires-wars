@@ -1,6 +1,7 @@
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getLandOwner } from '../../selectors/landSelectors';
-import { getBuilding } from '../../selectors/buildingSelectors';
+import { buildingFactory } from '../../factories/buildingFactory';
+import { getBuilding } from '../../domain/building/buildingRepository';
 import {
   addBuildingToLand,
   addPlayerLand,
@@ -36,7 +37,7 @@ export const construct = (
       break;
 
     case BuildingType.STRONGHOLD:
-      updatedState = addBuildingToLand(updatedState, position, building);
+      updatedState = addBuildingToLand(updatedState, position, buildingFactory(buildingType));
       updatedState = addPlayerLand(updatedState, turnOwner.id, position);
 
       const newLandsCandidates = getTilesInRadius(map.dimensions, position, 1, true);
@@ -49,7 +50,7 @@ export const construct = (
       break;
 
     default:
-      updatedState = addBuildingToLand(updatedState, position, building);
+      updatedState = addBuildingToLand(updatedState, position, buildingFactory(buildingType));
       break;
   }
 

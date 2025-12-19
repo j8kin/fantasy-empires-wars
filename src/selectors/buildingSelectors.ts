@@ -1,98 +1,26 @@
-import { BuildingType, Building } from '../types/Building';
-import { Alignment } from '../types/Alignment';
-import { HeroUnitType } from '../types/UnitType';
-import type { PlayerState } from '../state/player/PlayerState';
+import type { Building } from '../types/Building';
 
-export const getBuilding = (building: BuildingType): Building => {
-  switch (building) {
-    case BuildingType.STRONGHOLD:
-      return {
-        id: BuildingType.STRONGHOLD,
-        buildCost: 15000,
-        maintainCost: 0,
-        description: 'Protect army and produce gold',
-        numberOfSlots: 0,
-      };
-    case BuildingType.BARRACKS:
-      return {
-        id: BuildingType.BARRACKS,
-        buildCost: 10000,
-        maintainCost: 1000,
-        description: 'Allows recruitment of military units',
-        numberOfSlots: 3,
-        slots: [],
-      };
-    case BuildingType.WHITE_MAGE_TOWER:
-    case BuildingType.BLACK_MAGE_TOWER:
-    case BuildingType.GREEN_MAGE_TOWER:
-    case BuildingType.BLUE_MAGE_TOWER:
-    case BuildingType.RED_MAGE_TOWER:
-      return {
-        id: building,
-        buildCost: 15000,
-        maintainCost: 2000,
-        description: 'Allows recruitment of Mage units',
-        numberOfSlots: 1,
-        slots: [],
-      };
-    case BuildingType.WATCH_TOWER:
-      return {
-        id: BuildingType.WATCH_TOWER,
-        buildCost: 5000,
-        maintainCost: 300,
-        description: 'Increases vision range and provides early warning',
-        numberOfSlots: 0,
-      };
-    case BuildingType.OUTPOST:
-      return {
-        id: BuildingType.OUTPOST,
-        buildCost: 10000,
-        maintainCost: 1000,
-        description: 'The army stationed at the outpost defend all lands within a radius of 4',
-        numberOfSlots: 0,
-      };
-    case BuildingType.WALL:
-      return {
-        id: BuildingType.WALL,
-        buildCost: 5000,
-        maintainCost: 100,
-        description: 'Provides strong defensive bonuses',
-        numberOfSlots: 0,
-      };
-    // this is not an actual building this is only an action to destroy previous building to be able to construct a new one
-    case BuildingType.DEMOLITION:
-      return {
-        id: BuildingType.DEMOLITION,
-        buildCost: 2000,
-        maintainCost: -1,
-        description: 'Demolish building and prepare territory for a new construction',
-        numberOfSlots: 0,
-      };
-  }
+/**
+ * Check if a building has any available (unoccupied) recruitment slots
+ */
+export const hasAvailableSlot = (building: Building): boolean => {
+  return building.slots.some((slot) => !slot.isOccupied);
 };
-
-export const getAllBuildings = (player: PlayerState): Building[] => {
-  const playerProfile = player.playerProfile;
-  return Object.values(BuildingType)
-    .map(getBuilding)
-    .filter(
-      (building) =>
-        !building.id.toString().includes('Mage Tower') ||
-        building.id === BuildingType.BLUE_MAGE_TOWER ||
-        (building.id === BuildingType.WHITE_MAGE_TOWER &&
-          playerProfile.type === HeroUnitType.CLERIC) ||
-        (building.id === BuildingType.WHITE_MAGE_TOWER &&
-          playerProfile.alignment === Alignment.LAWFUL) ||
-        (building.id === BuildingType.BLACK_MAGE_TOWER &&
-          playerProfile.type === HeroUnitType.NECROMANCER) ||
-        (building.id === BuildingType.BLACK_MAGE_TOWER &&
-          playerProfile.alignment === Alignment.CHAOTIC) ||
-        (building.id === BuildingType.GREEN_MAGE_TOWER &&
-          playerProfile.alignment !== Alignment.CHAOTIC) ||
-        (building.id === BuildingType.RED_MAGE_TOWER &&
-          playerProfile.alignment !== Alignment.LAWFUL)
-    );
+/**
+ * Find the index of the first available slot, or -1 if none available
+ */
+export const findAvailableSlotIndex = (building: Building): number => {
+  return building.slots.findIndex((slot) => !slot.isOccupied);
 };
-
-export const isMageTower = (building: BuildingType): boolean =>
-  building.toString().includes('Mage Tower');
+/**
+ * Get count of available slots
+ */
+export const getAvailableSlotsCount = (building: Building): number => {
+  return building.slots.filter((slot) => !slot.isOccupied).length;
+};
+/**
+ * Get count of occupied slots
+ */
+export const getOccupiedSlotsCount = (building: Building): number => {
+  return building.slots.filter((slot) => slot.isOccupied).length;
+};

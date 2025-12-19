@@ -3,7 +3,7 @@ import { getPlayerLands } from '../../selectors/playerSelectors';
 import { addHero, addRegulars } from '../../systems/armyActions';
 import {
   decrementPlayerRecruitmentSlots,
-  removePlayerCompletedRecruitmentSlots,
+  freePlayerCompletedRecruitmentSlots,
 } from '../../systems/gameStateActions';
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
@@ -27,9 +27,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
   // Step 2: Find all completed recruitment slots and collect updates
   const playerLands = getPlayerLands(updatedState);
   const landsWithRecruitment = playerLands.filter(
-    (l) =>
-      l.buildings.length > 0 &&
-      l.buildings.some((b) => b.numberOfSlots > 0 && b.slots && b.slots.length > 0)
+    (l) => l.buildings.length > 0 && l.buildings.some((b) => b.slots.length > 0)
   );
 
   // Track which armies need to be updated or added
@@ -38,9 +36,9 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
 
   landsWithRecruitment.forEach((l) =>
     l.buildings.forEach((b) => {
-      if (b.slots && b.slots.length > 0) {
-        // Find completed slots (after decrement, so 0 means just completed)
-        const completedSlots = b.slots.filter((s) => s.turnsRemaining === 0);
+      if (b.slots.length > 0) {
+        // Find completed slots (after decrement, so 0 means just completed and isOccupied)
+        const completedSlots = b.slots.filter((s) => s.isOccupied && s.turnsRemaining === 0);
 
         completedSlots.forEach((s) => {
           const armiesAtPosition = getArmiesAtPosition(updatedState, l.mapPos);
@@ -91,8 +89,8 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
     ],
   };
 
-  // Step 4: Remove all completed recruitment slots
-  updatedState = removePlayerCompletedRecruitmentSlots(updatedState, turnOwner);
+  // Step 4: Free all completed recruitment slots
+  updatedState = freePlayerCompletedRecruitmentSlots(updatedState, turnOwner);
 
   // Step 5: Apply final state
   Object.assign(gameState, updatedState);

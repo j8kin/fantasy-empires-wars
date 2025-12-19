@@ -6,18 +6,13 @@ import { MAX_MANA } from '../types/Mana';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
 import type { LandPosition } from '../state/map/land/LandPosition';
-import type { Building } from '../types/Building';
+import type { Building, RecruitmentSlot } from '../types/Building';
 import type { HeroQuest } from '../types/Quest';
 import type { ManaType } from '../types/Mana';
 import type { Effect } from '../types/Effect';
 import type { EmpireTreasure } from '../types/Treasures';
 import type { TurnPhase } from '../turn/TurnPhase';
 import type { UnitType } from '../types/UnitType';
-
-interface BuildingSlot {
-  unit: UnitType;
-  turnsRemaining: number;
-}
 
 // ============================================================================
 // TURN MANAGEMENT FUNCTIONS
@@ -102,7 +97,7 @@ export const updatePlayerVault = (
   deltaVault: number
 ): GameState => {
   return updatePlayer(gameState, playerId, {
-    vault: gameState.players.find((p) => p.id === playerId)!.vault + deltaVault,
+    vault: getPlayer(gameState, playerId).vault + deltaVault,
   });
 };
 
@@ -145,7 +140,7 @@ export const addPlayerLand = (
   playerId: string,
   landPos: LandPosition
 ): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const newLandsOwned = new Set(player.landsOwned);
   newLandsOwned.add(getLandId(landPos));
 
@@ -160,7 +155,7 @@ export const removePlayerLand = (
   playerId: string,
   landPos: LandPosition
 ): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const newLandsOwned = new Set(player.landsOwned);
   newLandsOwned.delete(getLandId(landPos));
 
@@ -185,7 +180,7 @@ export const addPlayerQuest = (gameState: GameState, quest: HeroQuest): GameStat
  * Update quest turns remaining for all player quests
  */
 export const decrementQuestTurns = (gameState: GameState, playerId: string): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const updatedQuests = player.quests.map((quest) => ({
     ...quest,
     remainTurnsInQuest: quest.remainTurnsInQuest - 1,
@@ -198,7 +193,7 @@ export const decrementQuestTurns = (gameState: GameState, playerId: string): Gam
  * Remove completed quests from a player
  */
 export const removeCompletedQuests = (gameState: GameState, playerId: string): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const activeQuests = player.quests.filter((quest) => quest.remainTurnsInQuest > 0);
 
   return updatePlayer(gameState, playerId, { quests: activeQuests });
@@ -316,10 +311,10 @@ export const updateLandBuildings = (
 export const updateLandBuildingSlots = (
   gameState: GameState,
   landPos: LandPosition,
-  slotsTransformer: (slots: BuildingSlot[]) => BuildingSlot[]
+  slotsTransformer: (slots: RecruitmentSlot[]) => RecruitmentSlot[]
 ): GameState => {
   return updateLandBuildings(gameState, landPos, (building) => {
-    if (!building.slots || building.slots.length === 0) {
+    if (building.slots.length === 0) {
       return building;
     }
 
@@ -361,43 +356,36 @@ export const clearLandBuildings = (gameState: GameState, landPos: LandPosition):
 };
 
 /**
- * Add a recruitment slot to a specific building
+ * Start recruitment in a specific building slot
+ * Finds the first available slot and occupies it
  */
-export const addRecruitmentSlot = (
+export const startRecruitmentInSlot = (
   gameState: GameState,
   landPos: LandPosition,
   buildingIndex: number,
-  slot: BuildingSlot
+  unit: UnitType,
+  turnsRemaining: number
 ): GameState => {
   return updateLandBuildings(gameState, landPos, (building, idx) => {
     if (idx !== buildingIndex) {
       return building;
     }
 
-    return {
-      ...building,
-      slots: building.slots ? [...building.slots, slot] : [slot],
-    };
-  });
-};
-
-/**
- * Update recruitment slot turns remaining for a specific building
- */
-export const decrementRecruitmentSlots = (
-  gameState: GameState,
-  landPos: LandPosition,
-  buildingIndex: number
-): GameState => {
-  return updateLandBuildings(gameState, landPos, (building, idx) => {
-    if (idx !== buildingIndex || !building.slots) {
-      return building;
+    // Find first available slot
+    const slotIndex = building.slots.findIndex((s) => !s.isOccupied);
+    if (slotIndex === -1) {
+      return building; // No available slots
     }
 
-    const updatedSlots = building.slots.map((slot) => ({
-      ...slot,
-      turnsRemaining: slot.turnsRemaining - 1,
-    }));
+    const updatedSlots = building.slots.map((slot, i) =>
+      i === slotIndex
+        ? {
+            isOccupied: true,
+            unit,
+            turnsRemaining,
+          }
+        : slot
+    );
 
     return {
       ...building,
@@ -407,30 +395,7 @@ export const decrementRecruitmentSlots = (
 };
 
 /**
- * Remove completed recruitment slots from a specific building
- */
-export const removeCompletedRecruitmentSlots = (
-  gameState: GameState,
-  landPos: LandPosition,
-  buildingIndex: number
-): GameState => {
-  return updateLandBuildings(gameState, landPos, (building, idx) => {
-    if (idx !== buildingIndex || !building.slots) {
-      return building;
-    }
-
-    const activeSlots = building.slots.filter((slot) => slot.turnsRemaining > 0);
-
-    return {
-      ...building,
-      slots: activeSlots,
-    };
-  });
-};
-
-/**
  * Decrement recruitment slots turns remaining for a specific player's lands
- * This is a higher-level function that applies the decrement logic to all player lands
  */
 export const decrementPlayerRecruitmentSlots = (
   gameState: GameState,
@@ -445,10 +410,14 @@ export const decrementPlayerRecruitmentSlots = (
     if (!landPos) return;
 
     updatedState = updateLandBuildingSlots(updatedState, landPos, (slots) =>
-      slots.map((slot) => ({
-        ...slot,
-        turnsRemaining: slot.turnsRemaining - 1,
-      }))
+      slots.map((slot) =>
+        slot.isOccupied
+          ? {
+              ...slot,
+              turnsRemaining: slot.turnsRemaining - 1,
+            }
+          : slot
+      )
     );
   });
 
@@ -456,23 +425,30 @@ export const decrementPlayerRecruitmentSlots = (
 };
 
 /**
- * Remove all completed recruitment slots (turns remaining === 0) from a specific player's buildings
- * This is a higher-level function that applies the filter logic to all player lands
+ * Free all completed recruitment slots (turns remaining === 0) from a specific player's buildings
+ * Sets isOccupied to false for completed slots
  */
-export const removePlayerCompletedRecruitmentSlots = (
+export const freePlayerCompletedRecruitmentSlots = (
   gameState: GameState,
   playerId: string
 ): GameState => {
   const player = getPlayer(gameState, playerId);
   let updatedState = gameState;
 
-  // Apply filter to all lands owned by the player
+  // Apply to all lands owned by the player
   Array.from(player.landsOwned).forEach((landId) => {
     const landPos = gameState.map.lands[landId]?.mapPos;
     if (!landPos) return;
 
     updatedState = updateLandBuildingSlots(updatedState, landPos, (slots) =>
-      slots.filter((slot) => slot.turnsRemaining > 0)
+      slots.map((slot) =>
+        slot.isOccupied && slot.turnsRemaining === 0
+          ? {
+              ...slot,
+              isOccupied: false,
+            }
+          : slot
+      )
     );
   });
 
