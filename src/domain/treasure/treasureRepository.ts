@@ -37,7 +37,7 @@ export const artifacts: Treasure[] = [
 
 export const items: Treasure[] = [
   {
-    type: TreasureType.WAND_TURN_UNDEAD,
+    type: TreasureType.WAND_OF_TURN_UNDEAD,
     lore: 'Glows faintly when darkness rises, whispering the forgotten prayers of light.',
     description: 'Turns undead on the selected land',
   },

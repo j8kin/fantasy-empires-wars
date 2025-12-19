@@ -51,3 +51,9 @@ export const getTreasureItem = (player: PlayerState, itemType: TreasureType): It
   if (!item) return undefined;
   return !isRelic(item) ? item : undefined;
 };
+
+export const getTreasureItemById = (player: PlayerState, itemId: string): Item | undefined => {
+  const item = player.empireTreasures?.find((t) => t.id === itemId);
+  if (!item) return undefined;
+  return !isRelic(item) ? item : undefined;
+};

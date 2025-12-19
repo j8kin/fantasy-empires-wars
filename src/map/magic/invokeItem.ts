@@ -1,7 +1,13 @@
-import { getPlayerLands, getTreasureItem, getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayerLands, getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
-import { addPlayerLand, removeLandEffect, updateLandEffect } from '../../systems/gameStateActions';
+import {
+  addPlayerLand,
+  removeLandEffect,
+  updateLandEffect,
+  updatePlayer,
+} from '../../systems/gameStateActions';
+import { decrementItemCharges, removeEmpireTreasureItem } from '../../systems/playerActions';
 import { effectFactory } from '../../factories/effectFactory';
 import { applyArmyCasualtiesAtPosition } from './applyArmyCasualties';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
@@ -13,15 +19,26 @@ import { EffectType } from '../../types/Effect';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 
-export const useItem = (state: GameState, itemType: TreasureType, landPos: LandPosition) => {
+export const invokeItem = (state: GameState, itemId: string, landPos: LandPosition) => {
   const turnOwner = getTurnOwner(state);
-  const treasureItem = getTreasureItem(turnOwner, itemType);
+  const treasureItem = getTreasureItemById(turnOwner, itemId);
 
-  if (!treasureItem || treasureItem.charge === 0) return;
+  if (!treasureItem) return; // fallback should never happen
+
+  if (treasureItem.charge === 0) {
+    // remove item from player inventory when user trying to use it after all charges are used
+    // it will be a surprise for the user: instead of using item the item scramble it dust and lost forever
+    // cover this message in useItemDialog
+    Object.assign(
+      state,
+      updatePlayer(state, turnOwner.id, removeEmpireTreasureItem(turnOwner, treasureItem))
+    );
+    return;
+  }
 
   let updatedState: GameState = state;
-  switch (itemType) {
-    case TreasureType.WAND_TURN_UNDEAD:
+  switch (treasureItem.treasure.type) {
+    case TreasureType.WAND_OF_TURN_UNDEAD:
       updatedState = applyArmyCasualtiesAtPosition(
         updatedState,
         // penalty should be the same but without CLERIC bonuses
@@ -48,7 +65,7 @@ export const useItem = (state: GameState, itemType: TreasureType, landPos: LandP
       updatedState = updateLandEffect(
         updatedState,
         landPos,
-        effectFactory(itemType, state.turnOwner)
+        effectFactory(treasureItem.treasure.type, state.turnOwner)
       );
       break;
 
@@ -73,7 +90,7 @@ export const useItem = (state: GameState, itemType: TreasureType, landPos: LandP
         updatedState = updateLandEffect(
           updatedState,
           land.mapPos,
-          effectFactory(itemType, state.turnOwner)
+          effectFactory(treasureItem.treasure.type, state.turnOwner)
         );
       });
       break;
@@ -85,7 +102,7 @@ export const useItem = (state: GameState, itemType: TreasureType, landPos: LandP
         updatedState = updateLandEffect(
           updatedState,
           landPos,
-          effectFactory(itemType, updatedState.turnOwner)
+          effectFactory(treasureItem.treasure.type, updatedState.turnOwner)
         );
       }
       break;
@@ -100,5 +117,13 @@ export const useItem = (state: GameState, itemType: TreasureType, landPos: LandP
 
     // MERCY_OF_ORRIVANE has permanent effect, and it is not necessary to activate it
   }
+
+  // decrement charges
+  updatedState = updatePlayer(
+    updatedState,
+    turnOwner.id,
+    decrementItemCharges(getTurnOwner(updatedState), treasureItem)
+  );
+
   Object.assign(state, updatedState);
 };

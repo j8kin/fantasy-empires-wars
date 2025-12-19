@@ -8,7 +8,7 @@ import {
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addArmyToGameState, addHero, updateArmyInGameState } from '../../systems/armyActions';
 import { levelUpHero } from '../../systems/unitsActions';
-import { removeEmpireTreasureItems } from '../../systems/playerActions';
+import { removeEmpireTreasureItem } from '../../systems/playerActions';
 import {
   addPlayerEmpireTreasure,
   decrementQuestTurns,
@@ -183,8 +183,9 @@ const questResults = (state: GameState, quest: HeroQuest): EmpireEvent => {
         updatePlayer(
           state,
           turnOwner.id,
-          removeEmpireTreasureItems(
+          removeEmpireTreasureItem(
             turnOwner,
+            // get first Mercy of Orrivane item and destroy it
             getTreasureItem(turnOwner, TreasureType.MERCY_OF_ORRIVANE)!
           )
         )

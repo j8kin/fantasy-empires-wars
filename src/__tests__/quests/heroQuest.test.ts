@@ -171,7 +171,7 @@ describe('Hero Quest', () => {
     expect(armies[0].heroes[0].artifacts.length).toBe(0);
     expect(getTurnOwner(gameStateStub).empireTreasures.length).toBe(1);
     expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-      TreasureType.WAND_TURN_UNDEAD
+      TreasureType.WAND_OF_TURN_UNDEAD
     ); // quest reward
 
     // verify that hero stats are incremented exact new stats calculation verified separately
