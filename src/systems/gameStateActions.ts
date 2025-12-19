@@ -396,7 +396,6 @@ export const startRecruitmentInSlot = (
 
 /**
  * Decrement recruitment slots turns remaining for a specific player's lands
- * Only decrements occupied slots
  */
 export const decrementPlayerRecruitmentSlots = (
   gameState: GameState,
