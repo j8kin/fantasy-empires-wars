@@ -71,7 +71,8 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
 
     // Slot click handler - slot marking as used is now handled by parent
     const handleSlotClick = useCallback(
-      (slot: Slot) => {
+      (e: React.MouseEvent, slot: Slot) => {
+        e.stopPropagation();
         if (onSlotClick) {
           onSlotClick(slot);
         }
@@ -82,7 +83,8 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     const defaultClassName = isEvenPage ? styles.evenPage : styles.oddPage;
     const finalClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
 
-    const handleIconClick = () => {
+    const handleIconClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
       if (onIconClick) {
         onIconClick();
       }
@@ -134,7 +136,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                   {availableSlots.map((slot) => (
                     <div
                       key={slot.id}
-                      onClick={() => handleSlotClick(slot)}
+                      onClick={(e) => handleSlotClick(e, slot)}
                       className={styles.slot}
                     >
                       <span className={styles.descriptionText}>{slot.name}</span>
