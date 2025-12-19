@@ -1,7 +1,7 @@
 import { getLandId } from '../state/map/land/LandId';
 import { getLand, getTilesInRadius } from '../selectors/landSelectors';
 import { getPlayer, getPlayerLands, getTurnOwner } from '../selectors/playerSelectors';
-import { getBuilding } from '../domain/building/buildingRepository';
+import { getBuildingInfo } from '../domain/building/buildingRepository';
 import { addPlayerEmpireTreasure } from '../systems/gameStateActions';
 import { getArmiesAtPosition } from '../selectors/armySelectors';
 import { hasLand, nextPlayer } from '../systems/playerActions';
@@ -95,7 +95,7 @@ describe('Construct Buildings', () => {
 
       construct(gameStateStub, BuildingType.STRONGHOLD, homeLand1);
       expect(getTurnOwner(gameStateStub).vault).toBe(
-        200000 - Math.ceil(getBuilding(BuildingType.STRONGHOLD).buildCost * 0.85)
+        200000 - Math.ceil(getBuildingInfo(BuildingType.STRONGHOLD).buildCost * 0.85)
       );
     });
   });
