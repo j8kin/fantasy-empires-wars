@@ -97,7 +97,7 @@ export const updatePlayerVault = (
   deltaVault: number
 ): GameState => {
   return updatePlayer(gameState, playerId, {
-    vault: gameState.players.find((p) => p.id === playerId)!.vault + deltaVault,
+    vault: getPlayer(gameState, playerId).vault + deltaVault,
   });
 };
 
@@ -140,7 +140,7 @@ export const addPlayerLand = (
   playerId: string,
   landPos: LandPosition
 ): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const newLandsOwned = new Set(player.landsOwned);
   newLandsOwned.add(getLandId(landPos));
 
@@ -155,7 +155,7 @@ export const removePlayerLand = (
   playerId: string,
   landPos: LandPosition
 ): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const newLandsOwned = new Set(player.landsOwned);
   newLandsOwned.delete(getLandId(landPos));
 
@@ -180,7 +180,7 @@ export const addPlayerQuest = (gameState: GameState, quest: HeroQuest): GameStat
  * Update quest turns remaining for all player quests
  */
 export const decrementQuestTurns = (gameState: GameState, playerId: string): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const updatedQuests = player.quests.map((quest) => ({
     ...quest,
     remainTurnsInQuest: quest.remainTurnsInQuest - 1,
@@ -193,7 +193,7 @@ export const decrementQuestTurns = (gameState: GameState, playerId: string): Gam
  * Remove completed quests from a player
  */
 export const removeCompletedQuests = (gameState: GameState, playerId: string): GameState => {
-  const player = gameState.players.find((p) => p.id === playerId)!;
+  const player = getPlayer(gameState, playerId);
   const activeQuests = player.quests.filter((quest) => quest.remainTurnsInQuest > 0);
 
   return updatePlayer(gameState, playerId, { quests: activeQuests });
