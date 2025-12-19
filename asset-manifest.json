@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.d65e6d44.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.28d92ce4.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.c5200a21.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/CelticPatternVertical.png": "/fantasy-empires-wars/static/media/CelticPatternVertical.8f1fe8a5abcd3ac8d2e6.png",
     "static/media/kael.png": "/fantasy-empires-wars/static/media/kael.020c79f3591fb99ef9d7.png",
@@ -106,7 +106,11 @@
     "static/media/plains-corrupted.png": "/fantasy-empires-wars/static/media/plains-corrupted.90325e50c11d535342da.png",
     "static/media/black-end.png": "/fantasy-empires-wars/static/media/black-end.dbdc5a450f592169fd9d.png",
     "static/media/verdant-idol.png": "/fantasy-empires-wars/static/media/verdant-idol.0b9f5d0c9c6b5b05c358.png",
+    "static/media/compass-of-dominion.png": "/fantasy-empires-wars/static/media/compass-of-dominion.d7d65dae82a0eeefeb06.png",
+    "static/media/seed-of-renewal.png": "/fantasy-empires-wars/static/media/seed-of-renewal.3109d5bba0f7172f3745.png",
     "static/media/white-end.png": "/fantasy-empires-wars/static/media/white-end.32c4ca6494e12e4a1d54.png",
+    "static/media/deed-of-reclamation.png": "/fantasy-empires-wars/static/media/deed-of-reclamation.a4b75372345063df67fc.png",
+    "static/media/aegis-shard.png": "/fantasy-empires-wars/static/media/aegis-shard.c6d1671f62cf441ad1e6.png",
     "static/media/PageOdd.png": "/fantasy-empires-wars/static/media/PageOdd.692b562e83a17ebf3638.png",
     "static/media/heartstone-of-orrivane.png": "/fantasy-empires-wars/static/media/heartstone-of-orrivane.d1926976495e9470c8c4.png",
     "static/media/crown-of-dominion.png": "/fantasy-empires-wars/static/media/crown-of-dominion.4a0d1b1a472d769b5d38.png",
@@ -115,6 +119,7 @@
     "static/media/starwell-prism.png": "/fantasy-empires-wars/static/media/starwell-prism.e3b03b0ed060df8f16bb.png",
     "static/media/obsidian-chalice.png": "/fantasy-empires-wars/static/media/obsidian-chalice.b350056793c386e31b4f.png",
     "static/media/mirror-of-illusion.png": "/fantasy-empires-wars/static/media/mirror-of-illusion.ef5a391442041cf80aeb.png",
+    "static/media/hourglass-of-delay.png": "/fantasy-empires-wars/static/media/hourglass-of-delay.5661a992f4ce7b9eea56.png",
     "static/media/shard-of-silent-avil.png": "/fantasy-empires-wars/static/media/shard-of-silent-avil.bc629cff7c5ea3c0e7f3.png",
     "static/media/orb-of-storm.png": "/fantasy-empires-wars/static/media/orb-of-storm.71d3509be18e4345da97.png",
     "static/media/scepter-of-tempests.png": "/fantasy-empires-wars/static/media/scepter-of-tempests.21655d5fd41dd97d8fb4.png",
@@ -122,11 +127,11 @@
     "static/media/mana-vial.png": "/fantasy-empires-wars/static/media/mana-vial.acdc30884558a3ecf7c0.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.d65e6d44.css.map": "/fantasy-empires-wars/static/css/main.d65e6d44.css.map",
-    "main.28d92ce4.js.map": "/fantasy-empires-wars/static/js/main.28d92ce4.js.map",
+    "main.c5200a21.js.map": "/fantasy-empires-wars/static/js/main.c5200a21.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d65e6d44.css",
-    "static/js/main.28d92ce4.js"
+    "static/js/main.c5200a21.js"
   ]
 }
