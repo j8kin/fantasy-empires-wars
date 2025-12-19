@@ -3,6 +3,11 @@ import { EmpireTreasure, TreasureType } from '../types/Treasures';
 import orbOfStormImg from './treasures/orb-of-storm.png';
 import wandOfTurnUndeadImg from './treasures/turn-undead.png';
 import phoenixFeatherImg from './treasures/phoenix-feather.png';
+import aegisShardImg from './treasures/aegis-shard.png';
+import compassOfDominionImg from './treasures/compass-of-dominion.png';
+import deedOfReclamationImg from './treasures/deed-of-reclamation.png';
+import seedOfRenewalImg from './treasures/seed-of-renewal.png';
+import hourglassOfDelayImg from './treasures/hourglass-of-delay.png';
 
 import mirrorOfIllusionImg from './treasures/mirror-of-illusion.png';
 import bannerOfUnityImg from './treasures/banner-of-unity.png';
@@ -20,6 +25,16 @@ export const getTreasureImg = (treasure: EmpireTreasure) => {
       return wandOfTurnUndeadImg;
     case TreasureType.ORB_OF_STORM:
       return orbOfStormImg;
+    case TreasureType.AEGIS_SHARD:
+      return aegisShardImg;
+    case TreasureType.COMPASS_OF_DOMINION:
+      return compassOfDominionImg;
+    case TreasureType.DEED_OF_RECLAMATION:
+      return deedOfReclamationImg;
+    case TreasureType.HOURGLASS_OF_DELAY:
+      return hourglassOfDelayImg;
+    case TreasureType.STONE_OF_RENEWAL:
+      return seedOfRenewalImg;
     case TreasureType.RESURRECTION:
       return phoenixFeatherImg;
     case TreasureType.MIRROR_OF_ILLUSION:
