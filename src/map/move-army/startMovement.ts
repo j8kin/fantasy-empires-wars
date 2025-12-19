@@ -1,4 +1,4 @@
-import { getLandOwner } from '../../selectors/landSelectors';
+import { findShortestPath, getLandOwner } from '../../selectors/landSelectors';
 import { addHero, addRegulars, getHero, getRegulars } from '../../systems/armyActions';
 import { getArmiesAtPosition, getPosition, isMoving } from '../../selectors/armySelectors';
 import {
@@ -7,7 +7,7 @@ import {
   removeArmyFromGameState,
 } from '../../systems/armyActions';
 import { armyFactory } from '../../factories/armyFactory';
-import { findShortestPath } from '../utils/mapAlgorithms';
+
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import type { GameState } from '../../state/GameState';

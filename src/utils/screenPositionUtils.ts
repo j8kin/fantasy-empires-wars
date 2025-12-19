@@ -1,5 +1,7 @@
+import type { GameState } from '../state/GameState';
 import type { ScreenPosition } from '../contexts/ApplicationContext';
 import type { LandPosition } from '../state/map/land/LandPosition';
+import type { MapDimensions } from '../state/map/MapDimensions';
 
 /**
  * Constants for battlefield positioning calculation
@@ -70,6 +72,6 @@ export const calculateTileScreenPosition = (
  * Get the current map dimensions from game state
  * This is a utility to extract dimensions safely
  */
-export const getMapDimensions = (gameState: any): { rows: number; cols: number } => {
-  return gameState?.map?.dimensions || { rows: 1, cols: 1 };
+export const getMapDimensions = (gameState: GameState): MapDimensions => {
+  return gameState.map.dimensions || { rows: 1, cols: 1 };
 };

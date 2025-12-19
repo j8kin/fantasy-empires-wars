@@ -1,15 +1,14 @@
-import { GameState } from '../state/GameState';
-import { LandPosition } from '../state/map/land/LandPosition';
 import { getLandId } from '../state/map/land/LandId';
-
 import { getPlayerLands } from '../selectors/playerSelectors';
-import { getLandOwner } from '../selectors/landSelectors';
+import { getHostileLands, getLandOwner } from '../selectors/landSelectors';
 import { heroFactory } from '../factories/heroFactory';
 import { NO_PLAYER } from '../domain/player/playerRepository';
+
 import { BuildingType } from '../types/Building';
 import { HeroUnitType } from '../types/UnitType';
 import { DiplomacyStatus } from '../types/Diplomacy';
-import { getHostileLands } from '../map/utils/getHostileLands';
+import type { GameState } from '../state/GameState';
+import type { LandPosition } from '../state/map/land/LandPosition';
 
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { createGameStateStub } from './utils/createGameStateStub';

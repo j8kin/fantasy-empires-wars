@@ -1,9 +1,6 @@
-import { getLand } from './landSelectors';
 import { isRelic } from '../domain/treasure/treasureRepository';
-import { getTilesInRadius } from '../map/utils/mapAlgorithms';
 
 import { EffectType } from '../types/Effect';
-import { BuildingType } from '../types/Building';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
 import type { LandState } from '../state/map/land/LandState';
@@ -21,22 +18,6 @@ export const getPlayerLands = (state: GameState, playerId?: string): LandState[]
     .landsOwned.values()
     .toArray()
     .map((landId) => state.map.lands[landId]);
-};
-
-/** return all lands controlled by all strongholds of the player
- **/
-export const getRealmLands = (state: GameState): LandState[] => {
-  const realm = new Set<LandState>();
-
-  const playerStrongholds = getPlayerLands(state).filter((l) =>
-    l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
-  );
-  playerStrongholds.forEach((s) =>
-    getTilesInRadius(state.map.dimensions, s.mapPos, 1).forEach((pos) =>
-      realm.add(getLand(state, pos))
-    )
-  );
-  return realm.values().toArray();
 };
 
 /**

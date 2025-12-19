@@ -1,5 +1,5 @@
 import { getLandId } from '../../state/map/land/LandId';
-import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getLand, getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { hasLand } from '../../systems/playerActions';
@@ -8,7 +8,6 @@ import {
   addPlayerLand,
   removePlayerLand,
 } from '../../systems/gameStateActions';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { BuildingType } from '../../types/Building';

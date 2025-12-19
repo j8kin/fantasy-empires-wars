@@ -1,6 +1,5 @@
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { hasActiveEffect } from '../../selectors/landSelectors';
-import { calculateHexDistance } from '../utils/mapAlgorithms';
+import { calculateHexDistance, hasActiveEffect } from '../../selectors/landSelectors';
 
 import { BuildingType } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';

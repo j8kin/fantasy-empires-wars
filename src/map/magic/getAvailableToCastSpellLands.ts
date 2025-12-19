@@ -2,9 +2,8 @@ import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer, getPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
+import { getLand, getTilesInRadius, hasActiveEffect } from '../../selectors/landSelectors';
 import { getRegularLandTypes } from '../../domain/land/landQueries';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { SpellName, SpellTarget } from '../../types/Spell';

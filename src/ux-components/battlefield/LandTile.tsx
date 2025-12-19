@@ -6,13 +6,8 @@ import { useGameContext } from '../../contexts/GameContext';
 import LandInfoPopup from '../popups/LandInfoPopup';
 
 import { getLandId } from '../../state/map/land/LandId';
-import { getLandOwner } from '../../selectors/landSelectors';
-import {
-  getPlayer,
-  getPlayerLands,
-  getRealmLands,
-  getTurnOwner,
-} from '../../selectors/playerSelectors';
+import { getLandOwner, getRealmLands, getTilesInRadius } from '../../selectors/landSelectors';
+import { getPlayer, getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getBuilding } from '../../domain/building/buildingRepository';
@@ -21,7 +16,6 @@ import { calculateTileScreenPosition, getMapDimensions } from '../../utils/scree
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
 import { calcMaxMove } from '../../map/move-army/calcMaxMove';
-import { getTilesInRadius } from '../../map/utils/mapAlgorithms';
 import { MAX_MOVE } from '../../map/move-army/calcMaxMove';
 import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
 

@@ -1,9 +1,9 @@
 import { getLandId } from '../../state/map/land/LandId';
+import { getTilesInRadius } from '../../selectors/landSelectors';
 import { getLandById } from '../../domain/land/landRepository';
 import { getMainSpecialLandTypes, getRegularLandTypes } from '../../domain/land/landQueries';
 import { getSurroundingLands, getNearSpecialLandTypes } from '../../domain/land/landRelationships';
 import { getRandomElement } from '../../domain/utils/random';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
 
 import { LandType } from '../../types/Land';
 import type { Land } from '../../types/Land';

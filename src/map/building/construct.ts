@@ -1,5 +1,5 @@
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
-import { getLandOwner } from '../../selectors/landSelectors';
+import { getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
 import { buildingFactory } from '../../factories/buildingFactory';
 import { getBuilding } from '../../domain/building/buildingRepository';
 import {
@@ -7,7 +7,6 @@ import {
   addPlayerLand,
   updatePlayerVault,
 } from '../../systems/gameStateActions';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { destroyBuilding } from './destroyBuilding';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 

@@ -259,6 +259,17 @@ export const updateLandEffect = (
   }));
 };
 
+export const removeLandEffect = (
+  state: GameState,
+  landPos: LandPosition,
+  effectId: string
+): GameState => {
+  return updateLandState(state, landPos, (land) => ({
+    ...land,
+    effects: land.effects.filter((effect) => effect.id !== effectId),
+  }));
+};
+
 /**
  * Update a specific land's properties
  */

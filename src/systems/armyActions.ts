@@ -1,6 +1,6 @@
 import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
-import { findShortestPath } from '../map/utils/mapAlgorithms';
+import { findShortestPath } from '../selectors/landSelectors';
 
 import { EffectType } from '../types/Effect';
 import { RegularUnitType } from '../types/UnitType';
@@ -123,7 +123,8 @@ export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => 
 
 export const startMoving = (state: ArmyState, to: LandPosition): void => {
   const from = state.movement.path[state.movement.progress];
-  state.movement.path = findShortestPath({ rows: 100, cols: 100 }, from, to);
+  state.movement.path = findShortestPath({ rows: 100, cols: 100 }, from, to); // todo refactor to use map
+  state.movement.progress = 0;
 };
 
 export const moveArmy = (state: ArmyState): void => {

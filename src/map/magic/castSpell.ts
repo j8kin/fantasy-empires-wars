@@ -11,7 +11,7 @@ import {
   getMaxHeroLevelByType,
   isMoving,
 } from '../../selectors/armySelectors';
-import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getLand, getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import {
   updatePlayerEffect,
@@ -29,7 +29,6 @@ import { movementFactory } from '../../factories/movementFactory';
 import { getMultipleRandomElements, getRandomInt } from '../../domain/utils/random';
 import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { destroyBuilding } from '../building/destroyBuilding';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 import { getAvailableToCastSpellLands } from './getAvailableToCastSpellLands';

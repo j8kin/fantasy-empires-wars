@@ -1,5 +1,6 @@
 import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTilesInRadius } from '../../selectors/landSelectors';
 import { hasLand } from '../../systems/playerActions';
 import { levelUpHero } from '../../systems/unitsActions';
 import { addArmyToGameState } from '../../systems/armyActions';
@@ -7,7 +8,6 @@ import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { getRandomElement } from '../../domain/utils/random';
 import { construct } from '../building/construct';
-import { getTilesInRadius } from '../utils/mapAlgorithms';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { BuildingType } from '../../types/Building';
