@@ -7,10 +7,10 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getLand } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getAvailableSlotsCount, hasAvailableSlot } from '../../selectors/buildingSelectors';
 import { isWarMachine, isMageType, isHeroType } from '../../domain/unit/unitTypeChecks';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
-import { getAvailableSlotsCount, hasAvailableSlot } from '../../factories/buildingFactory';
 
 import { getUnitImg } from '../../assets/getUnitImg';
 

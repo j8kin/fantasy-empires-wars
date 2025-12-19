@@ -1,7 +1,7 @@
 import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
+import { hasAvailableSlot } from '../../selectors/buildingSelectors';
 import { startRecruitmentInSlot, updatePlayerVault } from '../../systems/gameStateActions';
-import { hasAvailableSlot } from '../../factories/buildingFactory';
 import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
 import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';

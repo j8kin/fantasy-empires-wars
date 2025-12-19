@@ -14,7 +14,7 @@ import {
   findAllHeroesOnMap,
   getArmiesByPlayer,
 } from '../../selectors/armySelectors';
-import { hasAvailableSlot } from '../../factories/buildingFactory';
+import { hasAvailableSlot } from '../../selectors/buildingSelectors';
 
 import { ButtonName } from '../../types/ButtonName';
 

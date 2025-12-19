@@ -395,65 +395,6 @@ export const startRecruitmentInSlot = (
 };
 
 /**
- * Decrement turns remaining for all occupied slots in a specific building
- */
-export const decrementRecruitmentSlots = (
-  gameState: GameState,
-  landPos: LandPosition,
-  buildingIndex: number
-): GameState => {
-  return updateLandBuildings(gameState, landPos, (building, idx) => {
-    if (idx !== buildingIndex) {
-      return building;
-    }
-
-    const updatedSlots = building.slots.map((slot) =>
-      slot.isOccupied
-        ? {
-            ...slot,
-            turnsRemaining: slot.turnsRemaining - 1,
-          }
-        : slot
-    );
-
-    return {
-      ...building,
-      slots: updatedSlots,
-    };
-  });
-};
-
-/**
- * Free completed recruitment slots in a specific building
- * Sets isOccupied to false for slots with turnsRemaining === 0
- */
-export const freeCompletedRecruitmentSlots = (
-  gameState: GameState,
-  landPos: LandPosition,
-  buildingIndex: number
-): GameState => {
-  return updateLandBuildings(gameState, landPos, (building, idx) => {
-    if (idx !== buildingIndex) {
-      return building;
-    }
-
-    const updatedSlots = building.slots.map((slot) =>
-      slot.isOccupied && slot.turnsRemaining === 0
-        ? {
-            ...slot,
-            isOccupied: false,
-          }
-        : slot
-    );
-
-    return {
-      ...building,
-      slots: updatedSlots,
-    };
-  });
-};
-
-/**
  * Decrement recruitment slots turns remaining for a specific player's lands
  * Only decrements occupied slots
  */
@@ -486,7 +427,7 @@ export const decrementPlayerRecruitmentSlots = (
 
 /**
  * Free all completed recruitment slots (turns remaining === 0) from a specific player's buildings
- * Sets isOccupied to false for completed slots instead of removing them
+ * Sets isOccupied to false for completed slots
  */
 export const freePlayerCompletedRecruitmentSlots = (
   gameState: GameState,
