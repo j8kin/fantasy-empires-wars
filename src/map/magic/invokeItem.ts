@@ -1,5 +1,5 @@
-import { getPlayerLands, getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
-import { getLand, getLandOwner } from '../../selectors/landSelectors';
+import { getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
+import { getLand, getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
 import {
   addPlayerLand,
   removeLandEffect,
@@ -8,6 +8,7 @@ import {
 } from '../../systems/gameStateActions';
 import { decrementItemCharges, removeEmpireTreasureItem } from '../../systems/playerActions';
 import { effectFactory } from '../../factories/effectFactory';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { applyArmyCasualtiesAtPosition } from './applyArmyCasualties';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 
@@ -81,12 +82,16 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
       break;
 
     case TreasureType.COMPASS_OF_DOMINION:
-      const allPlayerLands = getPlayerLands(updatedState, getLandOwner(updatedState, landPos));
+      const landOwner = getLandOwner(updatedState, landPos);
+      // todo when fog of war implemented reveal all visible lands of the player
+      const landsToReveal = getTilesInRadius(getMapDimensions(state), landPos, 1, false).filter(
+        (l) => getLandOwner(state, l) === landOwner
+      );
 
-      allPlayerLands.forEach((land) => {
+      landsToReveal.forEach((land) => {
         updatedState = updateLandEffect(
           updatedState,
-          land.mapPos,
+          land,
           effectFactory(treasureItem.treasure.type, state.turnOwner)
         );
       });

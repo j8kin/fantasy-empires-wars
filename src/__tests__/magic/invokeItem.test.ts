@@ -16,11 +16,11 @@ import { castSpell } from '../../map/magic/castSpell';
 import { EffectType } from '../../types/Effect';
 import { SpellName } from '../../types/Spell';
 import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import type { Item } from '../../types/Treasures';
 import { TreasureType } from '../../types/Treasures';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
-import type { Item } from '../../types/Treasures';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
@@ -445,6 +445,111 @@ describe('invokeItems', () => {
       expect(effectedLand.effects[0].rules.duration).toBe(0);
 
       jest.useRealTimers();
+    });
+  });
+
+  describe('Use STONE_OF_RENEWAL', () => {
+    let playerLand: LandPosition;
+
+    beforeEach(() => {
+      treasureItem = addTreasureItemToPlayer(TreasureType.STONE_OF_RENEWAL)!;
+      playerLand = getPlayerLands(gameStateStub)[0].mapPos;
+    });
+
+    it('Should remove one NEGATIVE effect from land', () => {
+      // set player 1 as turn owner and cast 2 negetive effects
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      gameStateStub.players[1].mana.red = 200;
+      gameStateStub.players[1].mana.green = 200;
+      castSpell(gameStateStub, SpellName.EMBER_RAID, playerLand);
+      castSpell(gameStateStub, SpellName.ENTANGLING_ROOTS, playerLand);
+
+      // change owner back
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+
+      expect(getLand(gameStateStub, playerLand).effects).toHaveLength(2);
+
+      /************** USE STONE_OF_RENEWAL *********************/
+      invokeItem(gameStateStub, treasureItem.id, playerLand);
+      /************************************************************/
+      expect(getLand(gameStateStub, playerLand).effects).toHaveLength(1);
+
+      /************** USE STONE_OF_RENEWAL Second time *********************/
+      invokeItem(gameStateStub, treasureItem.id, playerLand);
+      /************************************************************/
+      expect(getLand(gameStateStub, playerLand).effects).toHaveLength(0);
+    });
+
+    it('Should not remove POSITIVE effect from land', () => {
+      // set player 1 as turn owner and cast 2 negetive effects
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      gameStateStub.players[1].mana.red = 200;
+      castSpell(gameStateStub, SpellName.EMBER_RAID, playerLand); // negative effect
+
+      // change owner back
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      gameStateStub.players[0].mana.green = 200;
+      castSpell(gameStateStub, SpellName.FERTILE_LAND, playerLand); // positive effect
+
+      expect(getLand(gameStateStub, playerLand).effects).toHaveLength(2);
+
+      const charges = getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge;
+      /************** USE STONE_OF_RENEWAL *********************/
+      invokeItem(gameStateStub, treasureItem.id, playerLand);
+      /************************************************************/
+      expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge).toBe(
+        charges! - 1
+      );
+      const land = getLand(gameStateStub, playerLand);
+      expect(land.effects).toHaveLength(1);
+      expect(land.effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
+      expect(land.effects[0].rules.type).toBe(EffectType.POSITIVE);
+
+      /************** USE STONE_OF_RENEWAL the second time *********************/
+      invokeItem(gameStateStub, treasureItem.id, playerLand);
+      /************************************************************/
+      expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge).toBe(
+        charges! - 2
+      );
+      expect(getLand(gameStateStub, playerLand).effects).toHaveLength(1);
+    });
+  });
+
+  describe('Use COMPASS_OF_DOMINION', () => {
+    beforeEach(() => {
+      treasureItem = addTreasureItemToPlayer(TreasureType.COMPASS_OF_DOMINION)!;
+    });
+
+    it('Should reveal opponent lands in radius 1 for 2 turns, central land', () => {
+      // homeland all 7 lands should be revealed
+      const opponent = gameStateStub.players[1];
+      const landPos = getPlayerLands(gameStateStub, opponent.id)[0].mapPos;
+
+      /************** USE COMPASS_OF_DOMINION *********************/
+      invokeItem(gameStateStub, treasureItem.id, landPos);
+      /************************************************************/
+      const revealedLands = getPlayerLands(gameStateStub, opponent.id).filter((l) =>
+        hasActiveEffect(l, TreasureType.COMPASS_OF_DOMINION)
+      );
+      expect(revealedLands).toHaveLength(7);
+      expect(revealedLands.every((l) => l.effects.length === 1)).toBe(true);
+      expect(revealedLands.every((l) => l.effects[0].rules.duration === 2)).toBe(true);
+    });
+
+    it('Should reveal opponent lands in radius 1 for 2 turns, border land', () => {
+      // homeland all 7 lands should be revealed
+      const opponent = gameStateStub.players[1];
+      const landPos = getPlayerLands(gameStateStub, opponent.id)[1].mapPos;
+
+      /************** USE COMPASS_OF_DOMINION *********************/
+      invokeItem(gameStateStub, treasureItem.id, landPos);
+      /************************************************************/
+      const revealedLands = getPlayerLands(gameStateStub, opponent.id).filter((l) =>
+        hasActiveEffect(l, TreasureType.COMPASS_OF_DOMINION)
+      );
+      expect(revealedLands).toHaveLength(4);
+      expect(revealedLands.every((l) => l.effects.length === 1)).toBe(true);
+      expect(revealedLands.every((l) => l.effects[0].rules.duration === 2)).toBe(true);
     });
   });
 });
