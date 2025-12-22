@@ -46,8 +46,8 @@ interface LandInfo {
 export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo => {
   const land = getLand(state, landPos);
   const landOwner = getPlayer(state, getLandOwner(state, landPos));
-  const landOwnerId = landOwner?.playerProfile.name ?? NO_PLAYER.id;
-  const landOwnerColor = getPlayerColorValue(landOwner?.color ?? 'white');
+  const landOwnerId = landOwner.playerProfile.name;
+  const landOwnerColor = getPlayerColorValue(landOwner.color);
 
   const isIllusion =
     hasTreasureByPlayer(landOwner, TreasureType.MIRROR_OF_ILLUSION) ||

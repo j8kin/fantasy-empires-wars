@@ -143,7 +143,11 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
           </div>
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
-            <span className={commonStyles.value} style={{ color: landInfo.color }}>
+            <span
+              className={commonStyles.value}
+              style={{ color: landInfo.color }}
+              data-testid="owner"
+            >
               {landInfo.owner}
             </span>
           </div>
