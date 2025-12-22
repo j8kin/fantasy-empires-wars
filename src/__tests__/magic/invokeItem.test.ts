@@ -1,28 +1,45 @@
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { regularsFactory } from '../../factories/regularsFactory';
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import { findArmyById, getArmiesAtPosition } from '../../selectors/armySelectors';
-import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import {
   getPlayerLands,
   getTreasureItem,
   getTreasureItemById,
   getTurnOwner,
 } from '../../selectors/playerSelectors';
+import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
+import { levelUpHero } from '../../systems/unitsActions';
+import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';
+import { regularsFactory } from '../../factories/regularsFactory';
+import { itemFactory } from '../../factories/treasureFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { invokeItem } from '../../map/magic/invokeItem';
-import { Item, TreasureType } from '../../types/Treasures';
-import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';
-import { itemFactory } from '../../factories/treasureFactory';
+import { castSpell } from '../../map/magic/castSpell';
+import { EffectType } from '../../types/Effect';
+import { SpellName } from '../../types/Spell';
+import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import { TreasureType } from '../../types/Treasures';
+import { Alignment } from '../../types/Alignment';
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { Item } from '../../types/Treasures';
 
-describe('useItem', () => {
+import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { TestTurnManagement } from '../utils/TestTurnManagement';
+
+describe('invokeItems', () => {
   let randomSpy: jest.SpyInstance<number, []>;
 
   let gameStateStub: GameState;
   let opponentLand: LandPosition;
   let treasureItem: Item;
+
+  const addTreasureItemToPlayer = (treasureType: TreasureType) => {
+    Object.assign(
+      gameStateStub,
+      addPlayerEmpireTreasure(gameStateStub, gameStateStub.turnOwner, itemFactory(treasureType))
+    );
+    return getTreasureItem(getTurnOwner(gameStateStub), treasureType)!;
+  };
 
   beforeEach(() => {
     randomSpy = jest.spyOn(Math, 'random');
@@ -43,18 +60,7 @@ describe('useItem', () => {
 
   describe('Use WAND_OF_TURN_UNDEAD', () => {
     beforeEach(() => {
-      Object.assign(
-        gameStateStub,
-        addPlayerEmpireTreasure(
-          gameStateStub,
-          gameStateStub.turnOwner,
-          itemFactory(TreasureType.WAND_OF_TURN_UNDEAD)
-        )
-      );
-      treasureItem = getTreasureItem(
-        getTurnOwner(gameStateStub),
-        TreasureType.WAND_OF_TURN_UNDEAD
-      )!;
+      treasureItem = addTreasureItemToPlayer(TreasureType.WAND_OF_TURN_UNDEAD)!;
     });
 
     it('should decrement opponent Undead in army', () => {
@@ -89,7 +95,7 @@ describe('useItem', () => {
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars.length).toBe(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
-      expect(undeadArmy?.regulars[0].count).toBe(80); // min damage from WAND_OF_TURN_UNDEAD = 40
+      expect(undeadArmy?.regulars[0].count).toBe(90); // min damage from WAND_OF_TURN_UNDEAD = 30
 
       /************** USE WAND_OF_TURN_UNDEAD AGAIN ***************/
       invokeItem(gameStateStub, treasureItem.id, opponentLand);
@@ -101,7 +107,7 @@ describe('useItem', () => {
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars.length).toBe(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
-      expect(undeadArmy?.regulars[0].count).toBe(40); // decremented by 40 from previous useItem call
+      expect(undeadArmy?.regulars[0].count).toBe(60); // decremented by 30 from previous invokeItem call
     });
 
     it('Army destroyed if all units killed', () => {
@@ -150,6 +156,295 @@ describe('useItem', () => {
       expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)).toBeUndefined();
       // no effect on an opponent army
       expect(findArmyById(gameStateStub, undeadArmy.id)).toBeDefined();
+    });
+
+    it.each([0, 1, 32])(
+      'Corner Case: Cleric level (%s) is not related to damage from WAND_OF_TURN_UNDEAD',
+      (clericLevel) => {
+        if (clericLevel > 0) {
+          const clericHero = heroFactory(HeroUnitType.CLERIC, `Cleric Level ${clericLevel}`);
+          while (clericHero.level < clericLevel) levelUpHero(clericHero, Alignment.LAWFUL);
+          placeUnitsOnMap(clericHero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
+        }
+        placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
+
+        randomSpy.mockReturnValue(0.5); // some value to make test stable
+
+        /************** USE WAND_OF_TURN_UNDEAD *********************/
+        invokeItem(gameStateStub, treasureItem.id, opponentLand);
+        /************************************************************/
+
+        let undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
+          a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
+        );
+        expect(undeadArmy).toBeDefined();
+        expect(undeadArmy?.regulars.length).toBe(1);
+        expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
+        expect(undeadArmy?.regulars[0].count).toBe(75); // number of casualties are not related on CLERIC level
+      }
+    );
+
+    it('Corner Case: Non-Undead units should not be affected by WAND_OF_TURN_UNDEAD', () => {
+      placeUnitsOnMap(regularsFactory(RegularUnitType.WARRIOR, 2), gameStateStub, opponentLand);
+
+      let warriorsArmyId = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
+        a.regulars.some((u) => u.type === RegularUnitType.WARRIOR)
+      )!.id;
+
+      /************** USE WAND_OF_TURN_UNDEAD *********************/
+      randomSpy.mockReturnValue(0.99); // maximize damage from item
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+      const warriorsArmy = findArmyById(gameStateStub, warriorsArmyId);
+      expect(warriorsArmy).toBeDefined(); // army still exists
+      expect(warriorsArmy?.regulars).toHaveLength(1); // regulars are not affected by WAND_OF_TURN_UNDEAD
+      expect(warriorsArmy?.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(warriorsArmy?.regulars[0].count).toBe(2);
+    });
+  });
+
+  describe('Use ORB_OF_STORM', () => {
+    beforeEach(() => {
+      treasureItem = addTreasureItemToPlayer(TreasureType.ORB_OF_STORM)!;
+    });
+
+    it('should decrement opponent regulars in army', () => {
+      placeUnitsOnMap(regularsFactory(RegularUnitType.WARRIOR, 120), gameStateStub, opponentLand);
+
+      /************** USE ORB_OF_STORM *********************/
+      randomSpy.mockReturnValue(0.99); // maximize damage from item
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+
+      const regularArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
+        a.regulars.some((u) => u.type === RegularUnitType.WARRIOR)
+      );
+      expect(regularArmy).toBeDefined();
+      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(regularArmy?.regulars[0].count).toBe(60); // max damage from ORB_OF_STORM = 60
+    });
+
+    it('could be used more then once per turn', () => {
+      placeUnitsOnMap(regularsFactory(RegularUnitType.WARRIOR, 120), gameStateStub, opponentLand);
+
+      randomSpy.mockReturnValue(0.0); // minimize damage from item
+
+      /************** USE ORB_OF_STORM *********************/
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+
+      const regularArmyId = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
+        a.regulars.some((u) => u.type === RegularUnitType.WARRIOR)
+      )!.id;
+      let regularArmy = findArmyById(gameStateStub, regularArmyId);
+      expect(regularArmy).toBeDefined();
+      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(regularArmy?.regulars[0].count).toBe(90); // min damage from ORB_OF_STORM = 30
+
+      /************** USE ORB_OF_STORM AGAIN ***************/
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+
+      regularArmy = regularArmy = findArmyById(gameStateStub, regularArmyId);
+      expect(regularArmy).toBeDefined();
+      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(regularArmy?.regulars[0].count).toBe(60); // decremented by 30 from previous invokeItem call
+    });
+
+    it('Army destroyed if all units killed', () => {
+      placeUnitsOnMap(regularsFactory(RegularUnitType.WARD_HANDS, 2), gameStateStub, opponentLand);
+
+      const regularArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
+        a.regulars.some((u) => u.type === RegularUnitType.WARD_HANDS)
+      )!;
+
+      /************** USE ORB_OF_STORM *********************/
+      randomSpy.mockReturnValue(0.99); // maximize damage from item
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+
+      expect(findArmyById(gameStateStub, regularArmy.id)).toBeUndefined(); // army destroyed
+      expect(
+        getArmiesAtPosition(gameStateStub, opponentLand).filter((a) =>
+          a.regulars.some((r) => r.type === RegularUnitType.WARD_HANDS)
+        )
+      ).toHaveLength(0); // no armies left
+    });
+
+    it('possible to use Item while item charges are not exceeded', () => {
+      expect(treasureItem).toBeDefined();
+      expect(treasureItem.charge).toBeGreaterThan(5);
+      const nCharges = treasureItem.charge;
+      for (let i = 0; i < nCharges; i++) {
+        invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      }
+      const zeroChargeOrb = getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id);
+      expect(zeroChargeOrb).toBeDefined();
+      expect(zeroChargeOrb?.charge).toBe(0);
+
+      /************** Place minimum number of WARRIORS units on map  to make sure that ORB not cast ****************/
+      placeUnitsOnMap(regularsFactory(RegularUnitType.WARRIOR, 2), gameStateStub, opponentLand);
+      const regularArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
+        a.regulars.some((u) => u.type === RegularUnitType.WARRIOR)
+      )!;
+
+      /************** USE ORB_OF_STORM with 0 charge ****************/
+      randomSpy.mockReturnValue(0.99); // maximize damage from item
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+
+      // wand removed from player treasure
+      expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)).toBeUndefined();
+      // no effect on an opponent army
+      expect(findArmyById(gameStateStub, regularArmy.id)).toBeDefined();
+    });
+
+    it('Undead army also affected by ORB_OF_STORM', () => {
+      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
+
+      randomSpy.mockReturnValue(0.5); // some value to make test stable
+
+      /************** USE ORB_OF_STORM *********************/
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+
+      let regularArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
+        a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
+      );
+      expect(regularArmy).toBeDefined();
+      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
+      expect(regularArmy?.regulars[0].count).toBe(75); // undead army also affected by ORB_OF_STORM
+    });
+
+    it.each([0, 1, 32])(
+      'Corner Case: Enchanter level (%s) is not related to damage from ORB_OF_STORM',
+      (clericLevel) => {
+        if (clericLevel > 0) {
+          const enchanterHero = heroFactory(
+            HeroUnitType.ENCHANTER,
+            `Enchanter Level ${clericLevel}`
+          );
+          while (enchanterHero.level < clericLevel) levelUpHero(enchanterHero, Alignment.LAWFUL);
+          placeUnitsOnMap(enchanterHero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
+        }
+        placeUnitsOnMap(
+          regularsFactory(RegularUnitType.DARK_ELF, 120),
+          gameStateStub,
+          opponentLand
+        );
+
+        randomSpy.mockReturnValue(0.5); // some value to make test stable
+
+        /************** USE ORB_OF_STORM *********************/
+        invokeItem(gameStateStub, treasureItem.id, opponentLand);
+        /************************************************************/
+
+        let regularArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
+          a.regulars.some((u) => u.type === RegularUnitType.DARK_ELF)
+        );
+        expect(regularArmy).toBeDefined();
+        expect(regularArmy?.regulars.length).toBe(1);
+        expect(regularArmy?.regulars[0].type).toBe(RegularUnitType.DARK_ELF);
+        expect(regularArmy?.regulars[0].count).toBe(75); // number of casualties are not related on ENCHANTER level
+      }
+    );
+  });
+
+  describe('Use AEGIS_SHARD', () => {
+    let playerLand: LandPosition;
+
+    beforeEach(() => {
+      treasureItem = addTreasureItemToPlayer(TreasureType.AEGIS_SHARD)!;
+      playerLand = getPlayerLands(gameStateStub)[0].mapPos;
+    });
+
+    it('effect should be added only to one land', () => {
+      expect(
+        hasActiveEffect(getLand(gameStateStub, playerLand), TreasureType.AEGIS_SHARD)
+      ).toBeFalsy();
+      /************** USE AEGIS_SHARD *********************/
+      invokeItem(gameStateStub, treasureItem.id, playerLand);
+      /************************************************************/
+      const effectedLand = getLand(gameStateStub, playerLand);
+      expect(hasActiveEffect(effectedLand, TreasureType.AEGIS_SHARD)).toBeTruthy();
+      expect(effectedLand.effects[0].rules.type).toBe(EffectType.PERMANENT);
+      expect(effectedLand.effects[0].rules.duration).toBe(0);
+      getPlayerLands(gameStateStub)
+        .filter((l) => !(l.mapPos.row === playerLand.row && l.mapPos.col === playerLand.col))
+        .forEach((land) => expect(hasActiveEffect(land, TreasureType.AEGIS_SHARD)).toBeFalsy());
+    });
+
+    it('will cancel next negative spell', () => {
+      placeUnitsOnMap(regularsFactory(RegularUnitType.WARRIOR, 120), gameStateStub, playerLand);
+      const regularArmyId = getArmiesAtPosition(gameStateStub, playerLand).find((a) =>
+        a.regulars.some((u) => u.type === RegularUnitType.WARRIOR)
+      )!.id;
+
+      /************** USE AEGIS_SHARD *********************/
+      invokeItem(gameStateStub, treasureItem.id, playerLand);
+      /************************************************************/
+
+      // change turn owner and cast Turn Undead
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      // add white mana and cleric to be able to cast Turn Undead spell
+      gameStateStub.players[1].mana.blue = 100;
+
+      /************** cast TORNADO Spell *********************/
+      castSpell(gameStateStub, SpellName.TORNADO, playerLand);
+      // chack that mana was spent
+      expect(gameStateStub.players[1].mana.blue).toBe(50);
+      /***********************************************************/
+
+      // verify that spell not affected due to AEGIS_SHARD
+      let regularArmy = findArmyById(gameStateStub, regularArmyId);
+      expect(regularArmy).toBeDefined();
+      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(regularArmy?.regulars[0].count).toBe(120);
+
+      // effect should be removed from land
+      expect(
+        hasActiveEffect(getLand(gameStateStub, playerLand), TreasureType.AEGIS_SHARD)
+      ).toBeFalsy();
+
+      randomSpy.mockReturnValue(0.5); // some value to make test stable
+      /************** cast TORNADO Spell Second time *********************/
+      castSpell(gameStateStub, SpellName.TORNADO, playerLand);
+      // chack that mana was spent
+      expect(gameStateStub.players[1].mana.blue).toBe(0);
+      /***********************************************************/
+
+      regularArmy = findArmyById(gameStateStub, regularArmyId);
+      expect(regularArmy).toBeDefined();
+      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(regularArmy?.regulars[0].count).toBe(87); // now land is not protected and army is affected by spell
+    });
+
+    it('creates permanent effect', () => {
+      jest.useFakeTimers();
+
+      const testTurnManagement = new TestTurnManagement(gameStateStub);
+      testTurnManagement.startNewTurn(gameStateStub);
+      testTurnManagement.waitStartPhaseComplete();
+
+      /************** USE AEGIS_SHARD *********************/
+      invokeItem(gameStateStub, treasureItem.id, playerLand);
+      /************************************************************/
+
+      testTurnManagement.makeNTurns(10);
+
+      // effect still exists
+      const effectedLand = getLand(gameStateStub, playerLand);
+      expect(hasActiveEffect(effectedLand, TreasureType.AEGIS_SHARD)).toBeTruthy();
+      expect(effectedLand.effects[0].rules.type).toBe(EffectType.PERMANENT);
+      expect(effectedLand.effects[0].rules.duration).toBe(0);
+
+      jest.useRealTimers();
     });
   });
 });

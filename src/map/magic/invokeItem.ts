@@ -1,5 +1,4 @@
 import { getPlayerLands, getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
-import { getSpellById } from '../../selectors/spellSelectors';
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import {
   addPlayerLand,
@@ -14,16 +13,23 @@ import { NO_PLAYER } from '../../domain/player/playerRepository';
 
 import { TreasureType } from '../../types/Treasures';
 import { RegularUnitType } from '../../types/UnitType';
-import { SpellName } from '../../types/Spell';
 import { EffectType } from '../../types/Effect';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { PenaltyConfig } from '../../domain/army/armyPenaltyCalculator';
 
 export const invokeItem = (state: GameState, itemId: string, landPos: LandPosition) => {
   const turnOwner = getTurnOwner(state);
   const treasureItem = getTreasureItemById(turnOwner, itemId);
 
   if (!treasureItem) return; // fallback should never happen
+
+  // since it is possible to use multiple time the items should not be killer feature
+  const penaltyConfig: PenaltyConfig = {
+    regular: { minPct: 0, maxPct: 0, minAbs: 30, maxAbs: 60 },
+    veteran: { minPct: 0, maxPct: 0, minAbs: 15, maxAbs: 30 },
+    elite: { minPct: 0, maxPct: 0, minAbs: 5, maxAbs: 15 },
+  };
 
   if (treasureItem.charge === 0) {
     // remove item from player inventory when user trying to use it after all charges are used
@@ -39,22 +45,13 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
   let updatedState: GameState = state;
   switch (treasureItem.treasure.type) {
     case TreasureType.WAND_OF_TURN_UNDEAD:
-      updatedState = applyArmyCasualtiesAtPosition(
-        updatedState,
-        // penalty should be the same but without CLERIC bonuses
-        getSpellById(SpellName.TURN_UNDEAD).penalty!,
-        landPos,
-        [RegularUnitType.UNDEAD]
-      );
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos, [
+        RegularUnitType.UNDEAD,
+      ]);
       break;
 
     case TreasureType.ORB_OF_STORM:
-      updatedState = applyArmyCasualtiesAtPosition(
-        updatedState,
-        // penalty should be the same but without ENCHANTER bonuses
-        getSpellById(SpellName.TORNADO).penalty!,
-        landPos
-      );
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos);
       break;
 
     case TreasureType.RESTORE_BUILDING:
