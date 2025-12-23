@@ -9,7 +9,7 @@ import { getTurnOwner } from '../../selectors/playerSelectors';
 import { hasArmiesAtPositionByPlayer } from '../../selectors/armySelectors';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { TreasureName } from '../../types/Treasures';
 
 import type { GameState } from '../../state/GameState';
@@ -44,7 +44,7 @@ export const changeOwner = (gameState: GameState): void => {
     // trying to find any other owners
     const neighbourLands = getTilesInRadius(getMapDimensions(updatedState), land.mapPos, 1);
     const nearestStronghold = neighbourLands.find((l) =>
-      getLand(updatedState, l).buildings?.some((b) => b.type === BuildingKind.STRONGHOLD)
+      getLand(updatedState, l).buildings?.some((b) => b.type === BuildingName.STRONGHOLD)
     );
     if (nearestStronghold) {
       const newLandOwnerId = getLandOwner(updatedState, nearestStronghold);

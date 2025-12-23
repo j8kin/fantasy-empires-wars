@@ -9,7 +9,7 @@ import { construct } from '../../map/building/construct';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { LandKind } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
@@ -76,7 +76,7 @@ describe('Calculate Income', () => {
       );
       addPlayerToGameState(gameStateStub, player, 'human');
       // add stronghold
-      construct(gameStateStub, BuildingKind.STRONGHOLD, { row: 3, col: 3 });
+      construct(gameStateStub, BuildingName.STRONGHOLD, { row: 3, col: 3 });
       const income = calculateIncome(gameStateStub);
       expect(income).toBe(expectedIncome);
     }
@@ -106,7 +106,7 @@ describe('Calculate Income', () => {
       );
       gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
       gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].buildings = [
-        buildingFactory(BuildingKind.STRONGHOLD),
+        buildingFactory(BuildingName.STRONGHOLD),
       ];
 
       // additional land (should be calculated with penalty
@@ -147,7 +147,7 @@ describe('Calculate Income', () => {
       );
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
-        buildingFactory(BuildingKind.STRONGHOLD),
+        buildingFactory(BuildingName.STRONGHOLD),
       ];
 
       const income = calculateIncome(gameStateStub);
@@ -172,7 +172,7 @@ describe('Calculate Income', () => {
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
 
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
-        buildingFactory(BuildingKind.STRONGHOLD),
+        buildingFactory(BuildingName.STRONGHOLD),
       ];
 
       let income = calculateIncome(gameStateStub);

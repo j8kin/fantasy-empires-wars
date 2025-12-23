@@ -18,7 +18,7 @@ import { castSpell } from '../../map/magic/castSpell';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { SpellName } from '../../types/Spell';
 import { UnitRank } from '../../state/army/RegularsState';
 import type { GameState } from '../../state/GameState';
@@ -54,11 +54,11 @@ describe('Move Army', () => {
 
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
     )!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    construct(gameStateStub, BuildingKind.BARRACKS, barracksPos);
+    construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
     barracksLand = getLand(gameStateStub, barracksPos);
 
     startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);

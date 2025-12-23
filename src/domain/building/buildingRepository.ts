@@ -1,4 +1,4 @@
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { HeroUnitName } from '../../types/UnitType';
 import type { PlayerState } from '../../state/player/PlayerState';
@@ -20,46 +20,46 @@ export interface BuildingInfo {
  */
 export const getBuildingInfo = (buildingType: BuildingType): BuildingInfo => {
   switch (buildingType) {
-    case BuildingKind.STRONGHOLD:
+    case BuildingName.STRONGHOLD:
       return {
         id: buildingType,
         buildCost: 15000,
         maintainCost: 0,
         description: 'Protect army and produce gold',
       };
-    case BuildingKind.BARRACKS:
+    case BuildingName.BARRACKS:
       return {
         id: buildingType,
         buildCost: 10000,
         maintainCost: 1000,
         description: 'Allows recruitment of military units',
       };
-    case BuildingKind.WHITE_MAGE_TOWER:
-    case BuildingKind.BLACK_MAGE_TOWER:
-    case BuildingKind.GREEN_MAGE_TOWER:
-    case BuildingKind.BLUE_MAGE_TOWER:
-    case BuildingKind.RED_MAGE_TOWER:
+    case BuildingName.WHITE_MAGE_TOWER:
+    case BuildingName.BLACK_MAGE_TOWER:
+    case BuildingName.GREEN_MAGE_TOWER:
+    case BuildingName.BLUE_MAGE_TOWER:
+    case BuildingName.RED_MAGE_TOWER:
       return {
         id: buildingType,
         buildCost: 15000,
         maintainCost: 2000,
         description: 'Allows recruitment of Mage units',
       };
-    case BuildingKind.WATCH_TOWER:
+    case BuildingName.WATCH_TOWER:
       return {
         id: buildingType,
         buildCost: 5000,
         maintainCost: 300,
         description: 'Increases vision range and provides early warning',
       };
-    case BuildingKind.OUTPOST:
+    case BuildingName.OUTPOST:
       return {
         id: buildingType,
         buildCost: 10000,
         maintainCost: 1000,
         description: 'The army stationed at the outpost defend all lands within a radius of 4',
       };
-    case BuildingKind.WALL:
+    case BuildingName.WALL:
       return {
         id: buildingType,
         buildCost: 5000,
@@ -67,7 +67,7 @@ export const getBuildingInfo = (buildingType: BuildingType): BuildingInfo => {
         description: 'Provides strong defensive bonuses',
       };
     // this is not an actual building this is only an action to destroy previous building to be able to construct a new one
-    case BuildingKind.DEMOLITION:
+    case BuildingName.DEMOLITION:
       return {
         id: buildingType,
         buildCost: 2000,
@@ -79,23 +79,23 @@ export const getBuildingInfo = (buildingType: BuildingType): BuildingInfo => {
 
 export const getAllBuildings = (player: PlayerState): BuildingInfo[] => {
   const playerProfile = player.playerProfile;
-  return Object.values(BuildingKind)
+  return Object.values(BuildingName)
     .map(getBuildingInfo)
     .filter(
       (building) =>
         !building.id.toString().includes('Mage Tower') ||
-        building.id === BuildingKind.BLUE_MAGE_TOWER ||
-        (building.id === BuildingKind.WHITE_MAGE_TOWER &&
+        building.id === BuildingName.BLUE_MAGE_TOWER ||
+        (building.id === BuildingName.WHITE_MAGE_TOWER &&
           playerProfile.type === HeroUnitName.CLERIC) ||
-        (building.id === BuildingKind.WHITE_MAGE_TOWER &&
+        (building.id === BuildingName.WHITE_MAGE_TOWER &&
           playerProfile.alignment === Alignment.LAWFUL) ||
-        (building.id === BuildingKind.BLACK_MAGE_TOWER &&
+        (building.id === BuildingName.BLACK_MAGE_TOWER &&
           playerProfile.type === HeroUnitName.NECROMANCER) ||
-        (building.id === BuildingKind.BLACK_MAGE_TOWER &&
+        (building.id === BuildingName.BLACK_MAGE_TOWER &&
           playerProfile.alignment === Alignment.CHAOTIC) ||
-        (building.id === BuildingKind.GREEN_MAGE_TOWER &&
+        (building.id === BuildingName.GREEN_MAGE_TOWER &&
           playerProfile.alignment !== Alignment.CHAOTIC) ||
-        (building.id === BuildingKind.RED_MAGE_TOWER &&
+        (building.id === BuildingName.RED_MAGE_TOWER &&
           playerProfile.alignment !== Alignment.LAWFUL)
     );
 };

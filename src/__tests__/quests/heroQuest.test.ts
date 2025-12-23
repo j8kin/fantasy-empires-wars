@@ -13,7 +13,7 @@ import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import type { GameState } from '../../state/GameState';
 import type { HeroState } from '../../state/army/HeroState';
@@ -201,11 +201,11 @@ describe('Hero Quest', () => {
     testTurnManagement.waitStartPhaseComplete();
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
     )!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    constructBuilding(BuildingKind.BARRACKS, barracksPos);
+    constructBuilding(BuildingName.BARRACKS, barracksPos);
 
     let barracksLand = getLand(gameStateStub, barracksPos);
     const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -269,11 +269,11 @@ describe('Hero Quest', () => {
     testTurnManagement.waitStartPhaseComplete();
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
     )!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    constructBuilding(BuildingKind.BARRACKS, barracksPos);
+    constructBuilding(BuildingName.BARRACKS, barracksPos);
 
     const barracksLand = getLand(gameStateStub, barracksPos);
     const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);

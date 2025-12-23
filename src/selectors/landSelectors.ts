@@ -13,7 +13,7 @@ import { TreasureName } from '../types/Treasures';
 import { SpellName } from '../types/Spell';
 import { Alignment } from '../types/Alignment';
 import { EffectKind } from '../types/Effect';
-import { BuildingKind } from '../types/Building';
+import { BuildingName } from '../types/Building';
 import { DiplomacyStatus } from '../types/Diplomacy';
 import type { GameState } from '../state/GameState';
 import type { MapDimensions } from '../state/map/MapDimensions';
@@ -146,7 +146,7 @@ export const getRealmLands = (state: GameState): LandState[] => {
     }
   });
   const playerStrongholds = lands.filter((l) =>
-    l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
+    l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
   );
   playerStrongholds.forEach((s) =>
     getTilesInRadius(state.map.dimensions, s.mapPos, 1).forEach((pos) =>

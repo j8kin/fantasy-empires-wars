@@ -17,7 +17,7 @@ import { updateLandEffect } from '../../../systems/gameStateActions';
 import { construct } from '../../../map/building/construct';
 import { NO_PLAYER } from '../../../domain/player/playerRepository';
 import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
-import { BuildingKind } from '../../../types/Building';
+import { BuildingName } from '../../../types/Building';
 import { SpellName } from '../../../types/Spell';
 import { TreasureName } from '../../../types/Treasures';
 import type { GameState } from '../../../state/GameState';
@@ -74,7 +74,7 @@ describe('LandInfoPopup', () => {
 
     // Find a tile controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getPlayerLands(gameStateStub, gameStateStub.players[1].id).find((l) =>
-      l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
     )!;
 
     jest.clearAllMocks();
@@ -185,7 +185,7 @@ describe('LandInfoPopup', () => {
 
     it('displays buildings on neutral lands', () => {
       const landPos = { row: 0, col: 0 };
-      construct(gameStateStub, BuildingKind.BARRACKS, landPos);
+      construct(gameStateStub, BuildingName.BARRACKS, landPos);
       const land = getLand(gameStateStub, landPos);
       expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
 

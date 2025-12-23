@@ -11,7 +11,7 @@ import { destroyBuilding } from './destroyBuilding';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
 import type { BuildingType } from '../../types/Building';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 
@@ -31,11 +31,11 @@ export const construct = (
   let updatedState = gameState;
 
   switch (buildingType) {
-    case BuildingKind.DEMOLITION:
+    case BuildingName.DEMOLITION:
       updatedState = destroyBuilding(updatedState, position);
       break;
 
-    case BuildingKind.STRONGHOLD:
+    case BuildingName.STRONGHOLD:
       updatedState = addBuildingToLand(updatedState, position, buildingFactory(buildingType));
       updatedState = addPlayerLand(updatedState, turnOwner.id, position);
 

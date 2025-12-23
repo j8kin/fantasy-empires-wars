@@ -3,7 +3,7 @@ import { getPlayerLands } from '../selectors/playerSelectors';
 import { getHostileLands, getLandOwner } from '../selectors/landSelectors';
 import { heroFactory } from '../factories/heroFactory';
 import { NO_PLAYER } from '../domain/player/playerRepository';
-import { BuildingKind } from '../types/Building';
+import { BuildingName } from '../types/Building';
 import { HeroUnitName } from '../types/UnitType';
 import { DiplomacyStatus } from '../types/Diplomacy';
 import type { GameState } from '../state/GameState';
@@ -19,7 +19,7 @@ describe('getHostileLands', () => {
   beforeEach(() => {
     gameStateStub = createGameStateStub({ nPlayers: 2 });
     homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
     )!.mapPos;
   });
   it('return no hostile lans when all armies are near strongholds', () => {

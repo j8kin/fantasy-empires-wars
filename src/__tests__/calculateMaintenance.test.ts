@@ -11,7 +11,7 @@ import { armyFactory } from '../factories/armyFactory';
 import { calculateMaintenance } from '../map/vault/calculateMaintenance';
 import { construct } from '../map/building/construct';
 
-import { BuildingKind } from '../types/Building';
+import { BuildingName } from '../types/Building';
 import { UnitRank } from '../state/army/RegularsState';
 import { HeroUnitName, RegularUnitName } from '../types/UnitType';
 import { Alignment } from '../types/Alignment';
@@ -116,16 +116,16 @@ describe('Calculate Maintenance', () => {
 
   describe('Building Maintenance cost', () => {
     it.each([
-      [BuildingKind.STRONGHOLD, 0],
-      [BuildingKind.BARRACKS, 1000],
-      [BuildingKind.WHITE_MAGE_TOWER, 2000],
-      [BuildingKind.BLACK_MAGE_TOWER, 2000],
-      [BuildingKind.BLUE_MAGE_TOWER, 2000],
-      [BuildingKind.GREEN_MAGE_TOWER, 2000],
-      [BuildingKind.RED_MAGE_TOWER, 2000],
-      [BuildingKind.WATCH_TOWER, 300],
-      [BuildingKind.OUTPOST, 1000],
-      [BuildingKind.WALL, 100],
+      [BuildingName.STRONGHOLD, 0],
+      [BuildingName.BARRACKS, 1000],
+      [BuildingName.WHITE_MAGE_TOWER, 2000],
+      [BuildingName.BLACK_MAGE_TOWER, 2000],
+      [BuildingName.BLUE_MAGE_TOWER, 2000],
+      [BuildingName.GREEN_MAGE_TOWER, 2000],
+      [BuildingName.RED_MAGE_TOWER, 2000],
+      [BuildingName.WATCH_TOWER, 300],
+      [BuildingName.OUTPOST, 1000],
+      [BuildingName.WALL, 100],
     ])('Building %s maintenance cost', (building, expected) => {
       const buildingPos: LandPosition = { row: 5, col: 5 };
       Object.assign(
@@ -144,9 +144,9 @@ describe('Calculate Maintenance', () => {
         gameStateStub,
         addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, buildingPos)
       );
-      construct(gameStateStub, BuildingKind.BARRACKS, buildingPos);
-      construct(gameStateStub, BuildingKind.WALL, buildingPos);
-      construct(gameStateStub, BuildingKind.WALL, buildingPos);
+      construct(gameStateStub, BuildingName.BARRACKS, buildingPos);
+      construct(gameStateStub, BuildingName.WALL, buildingPos);
+      construct(gameStateStub, BuildingName.WALL, buildingPos);
 
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(1200);
@@ -162,8 +162,8 @@ describe('Calculate Maintenance', () => {
     it('Army and Buildings', () => {
       const barracksPos: LandPosition = { row: 5, col: 6 };
 
-      construct(gameStateStub, BuildingKind.STRONGHOLD, { row: 5, col: 5 });
-      construct(gameStateStub, BuildingKind.BARRACKS, barracksPos);
+      construct(gameStateStub, BuildingName.STRONGHOLD, { row: 5, col: 5 });
+      construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
 
       placeUnitsOnMap(regularsFactory(RegularUnitName.DWARF), gameStateStub, barracksPos);
 

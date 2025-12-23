@@ -6,7 +6,7 @@ import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
 import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
 
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { TreasureName } from '../../types/Treasures';
 import { HeroUnitName } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
@@ -29,7 +29,7 @@ export const startRecruiting = (
     // additionally verify that regular units and non-magic heroes are recruited in BARRACKS and mages are in mage tower
     if (isHeroType(unitType)) {
       if (!isMageType(unitType)) {
-        if (land.buildings[buildingIdx].type !== BuildingKind.BARRACKS) {
+        if (land.buildings[buildingIdx].type !== BuildingName.BARRACKS) {
           return; // fallback: wrong building type for non-magic heroes
         }
       } else {
@@ -37,19 +37,19 @@ export const startRecruiting = (
         let expectedMageTower: BuildingType | undefined = undefined;
         switch (unitType) {
           case HeroUnitName.CLERIC:
-            expectedMageTower = BuildingKind.WHITE_MAGE_TOWER;
+            expectedMageTower = BuildingName.WHITE_MAGE_TOWER;
             break;
           case HeroUnitName.DRUID:
-            expectedMageTower = BuildingKind.GREEN_MAGE_TOWER;
+            expectedMageTower = BuildingName.GREEN_MAGE_TOWER;
             break;
           case HeroUnitName.ENCHANTER:
-            expectedMageTower = BuildingKind.BLUE_MAGE_TOWER;
+            expectedMageTower = BuildingName.BLUE_MAGE_TOWER;
             break;
           case HeroUnitName.PYROMANCER:
-            expectedMageTower = BuildingKind.RED_MAGE_TOWER;
+            expectedMageTower = BuildingName.RED_MAGE_TOWER;
             break;
           case HeroUnitName.NECROMANCER:
-            expectedMageTower = BuildingKind.BLACK_MAGE_TOWER;
+            expectedMageTower = BuildingName.BLACK_MAGE_TOWER;
             break;
           default:
             break; // fallback should never reach here
@@ -58,7 +58,7 @@ export const startRecruiting = (
           return;
         }
       }
-    } else if (land.buildings[buildingIdx].type !== BuildingKind.BARRACKS) {
+    } else if (land.buildings[buildingIdx].type !== BuildingName.BARRACKS) {
       return; // fallback: wrong building type for regular units
     }
 

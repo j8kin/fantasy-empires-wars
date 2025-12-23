@@ -15,7 +15,7 @@ import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { getUnitImg } from '../../assets/getUnitImg';
 
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { UnitType } from '../../types/UnitType';
 
@@ -129,17 +129,17 @@ const RecruitArmyDialog: React.FC = () => {
     .filter(
       (u) =>
         // non-mages should be recruited in BARRACKS only
-        (recruitBuilding.type === BuildingKind.BARRACKS &&
+        (recruitBuilding.type === BuildingName.BARRACKS &&
           !isMageType(u) &&
           // The players, who reject magic, should be able to recruit their owned special heroes
           (u !== HeroUnitName.WARSMITH ||
             getTurnOwner(gameState).playerProfile.type === HeroUnitName.WARSMITH)) ||
         // mage Heroes should be recruited in related towers only
-        (u === HeroUnitName.CLERIC && recruitBuilding.type === BuildingKind.WHITE_MAGE_TOWER) ||
-        (u === HeroUnitName.ENCHANTER && recruitBuilding.type === BuildingKind.BLUE_MAGE_TOWER) ||
-        (u === HeroUnitName.DRUID && recruitBuilding.type === BuildingKind.GREEN_MAGE_TOWER) ||
-        (u === HeroUnitName.PYROMANCER && recruitBuilding.type === BuildingKind.RED_MAGE_TOWER) ||
-        (u === HeroUnitName.NECROMANCER && recruitBuilding.type === BuildingKind.BLACK_MAGE_TOWER)
+        (u === HeroUnitName.CLERIC && recruitBuilding.type === BuildingName.WHITE_MAGE_TOWER) ||
+        (u === HeroUnitName.ENCHANTER && recruitBuilding.type === BuildingName.BLUE_MAGE_TOWER) ||
+        (u === HeroUnitName.DRUID && recruitBuilding.type === BuildingName.GREEN_MAGE_TOWER) ||
+        (u === HeroUnitName.PYROMANCER && recruitBuilding.type === BuildingName.RED_MAGE_TOWER) ||
+        (u === HeroUnitName.NECROMANCER && recruitBuilding.type === BuildingName.BLACK_MAGE_TOWER)
     )
     .map((unit) => typeToRecruitProps(unit))
     .sort((a, b) => sortArmyUnits(a) - sortArmyUnits(b));

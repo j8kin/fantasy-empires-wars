@@ -8,7 +8,7 @@ import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { SpellName, SpellTarget } from '../../types/Spell';
 import { EffectTarget } from '../../types/Effect';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { LandKind } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
@@ -28,13 +28,13 @@ export const getAvailableToCastSpellLands = (
       .filter((l) =>
         l.buildings.some(
           (b) =>
-            b.type === BuildingKind.BLACK_MAGE_TOWER ||
-            b.type === BuildingKind.OUTPOST ||
-            b.type === BuildingKind.STRONGHOLD
+            b.type === BuildingName.BLACK_MAGE_TOWER ||
+            b.type === BuildingName.OUTPOST ||
+            b.type === BuildingName.STRONGHOLD
         )
       )
       .forEach((land) => {
-        const isStronghold = land.buildings.some((b) => b.type === BuildingKind.STRONGHOLD);
+        const isStronghold = land.buildings.some((b) => b.type === BuildingName.STRONGHOLD);
         getTilesInRadius(
           getMapDimensions(gameState),
           land.mapPos,

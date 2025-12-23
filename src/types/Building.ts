@@ -1,6 +1,6 @@
 import type { UnitType } from './UnitType';
 
-export const BuildingKind = {
+export const BuildingName = {
   STRONGHOLD: 'Stronghold',
   BARRACKS: 'Barracks',
   WHITE_MAGE_TOWER: 'White Mage Tower',
@@ -14,7 +14,7 @@ export const BuildingKind = {
   DEMOLITION: 'Building Demolition',
 } as const;
 
-export type BuildingType = (typeof BuildingKind)[keyof typeof BuildingKind];
+export type BuildingType = (typeof BuildingName)[keyof typeof BuildingName];
 
 export interface RecruitmentSlot {
   isOccupied: boolean;

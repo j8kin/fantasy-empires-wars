@@ -14,7 +14,7 @@ import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { UnitRank } from '../../state/army/RegularsState';
 import { LandKind } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { EffectKind } from '../../types/Effect';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
@@ -42,10 +42,10 @@ describe('castRedManaSpell', () => {
   describe('Cast EMBER RAID spell', () => {
     describe('EMBER RAID effects current recruiting', () => {
       it.each([
-        [HeroUnitName.NECROMANCER, BuildingKind.BLACK_MAGE_TOWER, 4],
-        [HeroUnitName.FIGHTER, BuildingKind.BARRACKS, 4],
-        [RegularUnitName.WARRIOR, BuildingKind.BARRACKS, 2],
-        [RegularUnitName.CATAPULT, BuildingKind.BARRACKS, 4],
+        [HeroUnitName.NECROMANCER, BuildingName.BLACK_MAGE_TOWER, 4],
+        [HeroUnitName.FIGHTER, BuildingName.BARRACKS, 4],
+        [RegularUnitName.WARRIOR, BuildingName.BARRACKS, 2],
+        [RegularUnitName.CATAPULT, BuildingName.BARRACKS, 4],
       ])(
         'Recruiting %s in %s affected and became %s',
         (unit: UnitType, building: BuildingType, newNTurn: number) => {
@@ -78,10 +78,10 @@ describe('castRedManaSpell', () => {
     });
     describe('EMBER RAID effects new recruiting if effect active', () => {
       it.each([
-        [HeroUnitName.CLERIC, BuildingKind.WHITE_MAGE_TOWER, 4],
-        [HeroUnitName.RANGER, BuildingKind.BARRACKS, 4],
-        [RegularUnitName.ELF, BuildingKind.BARRACKS, 3],
-        [RegularUnitName.BALLISTA, BuildingKind.BARRACKS, 4],
+        [HeroUnitName.CLERIC, BuildingName.WHITE_MAGE_TOWER, 4],
+        [HeroUnitName.RANGER, BuildingName.BARRACKS, 4],
+        [RegularUnitName.ELF, BuildingName.BARRACKS, 3],
+        [RegularUnitName.BALLISTA, BuildingName.BARRACKS, 4],
       ])(
         'Recruiting %s in %s affected and became %s',
         (unit: UnitType, building: BuildingType, newNTurn: number) => {
@@ -164,7 +164,7 @@ describe('castRedManaSpell', () => {
 
       // change turnOwner construct building and start recruiting
       gameStateStub.turnOwner = gameStateStub.players[1].id;
-      construct(gameStateStub, BuildingKind.BARRACKS, opponentLandPos);
+      construct(gameStateStub, BuildingName.BARRACKS, opponentLandPos);
       startRecruiting(gameStateStub, opponentLandPos, RegularUnitName.WARRIOR);
 
       const opponentLand = getLand(gameStateStub, opponentLandPos);

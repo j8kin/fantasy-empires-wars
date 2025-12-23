@@ -1,6 +1,6 @@
 import { isMageTower } from '../domain/building/buildingRepository';
 
-import { BuildingKind } from '../types/Building';
+import { BuildingName } from '../types/Building';
 import { RegularUnitName } from '../types/UnitType';
 import type { BuildingState } from '../state/map/building/BuildingState';
 import type { RecruitmentSlot } from '../types/Building';
@@ -28,7 +28,7 @@ export const buildingFactory = (type: BuildingType): BuildingState => {
     slots: [],
   };
 
-  if (type === BuildingKind.BARRACKS) {
+  if (type === BuildingName.BARRACKS) {
     building.slots = Array(BARRACKS_SLOTS)
       .fill(null)
       .map(() => recruitmentSlotFactory());

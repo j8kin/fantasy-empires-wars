@@ -11,7 +11,7 @@ import { getAvailableToConstructLands } from '../../map/building/getAvailableToC
 import { getBuildingImg } from '../../assets/getBuildingImg';
 
 import type { BuildingType } from '../../types/Building';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 
 const ConstructBuildingDialog: React.FC = () => {
   const {
@@ -66,22 +66,22 @@ const ConstructBuildingDialog: React.FC = () => {
 
   if (landsWithoutBuildings.length === 0) {
     // trying to allocate lands where only WALLS are constructed (if barracks allowed then other buildings are allowed)
-    if (getAvailableToConstructLands(gameState!, BuildingKind.BARRACKS).length === 0) {
+    if (getAvailableToConstructLands(gameState!, BuildingName.BARRACKS).length === 0) {
       // probably only WALLS are allowed to be constructed
-      if (getAvailableToConstructLands(gameState!, BuildingKind.WALL).length === 0) {
+      if (getAvailableToConstructLands(gameState!, BuildingName.WALL).length === 0) {
         return null;
       }
     }
   }
   const isStrongholdAllowed =
-    getAvailableToConstructLands(gameState!, BuildingKind.STRONGHOLD).length > 0;
+    getAvailableToConstructLands(gameState!, BuildingName.STRONGHOLD).length > 0;
 
   const selectedPlayer = getTurnOwner(gameState);
   const availableBuildings = selectedPlayer
     ? getAllBuildings(selectedPlayer).filter(
         (building) =>
           building.buildCost <= selectedPlayer.vault! &&
-          (building.id !== BuildingKind.STRONGHOLD || isStrongholdAllowed)
+          (building.id !== BuildingName.STRONGHOLD || isStrongholdAllowed)
       )
     : [];
 

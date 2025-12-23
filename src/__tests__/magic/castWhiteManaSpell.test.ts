@@ -10,7 +10,7 @@ import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCast
 
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { EffectKind } from '../../types/Effect';
 
 import type { GameState } from '../../state/GameState';
@@ -245,7 +245,7 @@ describe('castWhiteManaSpell', () => {
       expect(landInfoWithEffect.regulars).toHaveLength(1);
       expect(landInfoWithEffect.regulars[0]).toBe(`${RegularUnitName.UNDEAD} (1)`);
       expect(landInfoWithEffect.buildings).toHaveLength(1);
-      expect(landInfoWithEffect.buildings[0]).toBe(BuildingKind.STRONGHOLD);
+      expect(landInfoWithEffect.buildings[0]).toBe(BuildingName.STRONGHOLD);
 
       testTurnManagement.makeNTurns(1);
 

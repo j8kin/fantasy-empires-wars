@@ -1,4 +1,4 @@
-import { BuildingKind } from '../types/Building';
+import { BuildingName } from '../types/Building';
 import type { BuildingType } from '../types/Building';
 
 import strongholdImg from './buildings/stronghold.png';
@@ -15,27 +15,27 @@ import demolishImg from './buildings/demolish.png';
 
 export const getBuildingImg = (building: BuildingType) => {
   switch (building) {
-    case BuildingKind.STRONGHOLD:
+    case BuildingName.STRONGHOLD:
       return strongholdImg;
-    case BuildingKind.BARRACKS:
+    case BuildingName.BARRACKS:
       return barracksImg;
-    case BuildingKind.WHITE_MAGE_TOWER:
+    case BuildingName.WHITE_MAGE_TOWER:
       return mageTowerWhite;
-    case BuildingKind.BLUE_MAGE_TOWER:
+    case BuildingName.BLUE_MAGE_TOWER:
       return mageTowerBlue;
-    case BuildingKind.GREEN_MAGE_TOWER:
+    case BuildingName.GREEN_MAGE_TOWER:
       return mageTowerGreen;
-    case BuildingKind.RED_MAGE_TOWER:
+    case BuildingName.RED_MAGE_TOWER:
       return mageTowerRed;
-    case BuildingKind.BLACK_MAGE_TOWER:
+    case BuildingName.BLACK_MAGE_TOWER:
       return mageTowerBlack;
-    case BuildingKind.OUTPOST:
+    case BuildingName.OUTPOST:
       return outpostImg;
-    case BuildingKind.WATCH_TOWER:
+    case BuildingName.WATCH_TOWER:
       return watchTowerImg;
-    case BuildingKind.WALL:
+    case BuildingName.WALL:
       return wallImg;
-    case BuildingKind.DEMOLITION:
+    case BuildingName.DEMOLITION:
       return demolishImg;
     default:
       return undefined;

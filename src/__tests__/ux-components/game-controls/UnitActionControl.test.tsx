@@ -13,7 +13,7 @@ import { startRecruiting } from '../../../map/recruiting/startRecruiting';
 import { construct } from '../../../map/building/construct';
 
 import { ButtonName } from '../../../types/ButtonName';
-import { BuildingKind } from '../../../types/Building';
+import { BuildingName } from '../../../types/Building';
 import { RegularUnitName } from '../../../types/UnitType';
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
@@ -89,7 +89,7 @@ describe('UnitActionControl', () => {
       const barracksPosition: LandPosition = { row: 3, col: 3 };
 
       // Add barracks to a land owned by the turn owner
-      construct(gameState, BuildingKind.BARRACKS, barracksPosition);
+      construct(gameState, BuildingName.BARRACKS, barracksPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -105,7 +105,7 @@ describe('UnitActionControl', () => {
       const towerPosition: LandPosition = { row: 3, col: 3 };
 
       // Add white mage tower to a land owned by the turn owner
-      construct(gameState, BuildingKind.WHITE_MAGE_TOWER, towerPosition);
+      construct(gameState, BuildingName.WHITE_MAGE_TOWER, towerPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -121,7 +121,7 @@ describe('UnitActionControl', () => {
       const barracksPosition: LandPosition = { row: 3, col: 3 };
 
       // Add barracks with full slots
-      construct(gameState, BuildingKind.BARRACKS, barracksPosition);
+      construct(gameState, BuildingName.BARRACKS, barracksPosition);
 
       // Fill all slots in the barracks
       startRecruiting(gameState, barracksPosition, RegularUnitName.WARRIOR);
@@ -360,7 +360,7 @@ describe('UnitActionControl', () => {
       const position: LandPosition = { row: 3, col: 3 };
 
       // Add multiple recruitment buildings
-      construct(gameState, BuildingKind.BARRACKS, position);
+      construct(gameState, BuildingName.BARRACKS, position);
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -416,7 +416,7 @@ describe('UnitActionControl', () => {
   describe('All Mage Tower Types', () => {
     it('highlights lands with white mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingKind.WHITE_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.WHITE_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -426,7 +426,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with black mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingKind.BLACK_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.BLACK_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -436,7 +436,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with blue mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingKind.BLUE_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.BLUE_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -446,7 +446,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with green mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingKind.GREEN_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.GREEN_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -456,7 +456,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with red mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingKind.RED_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.RED_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 

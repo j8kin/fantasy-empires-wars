@@ -3,7 +3,7 @@ import { getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
 import { getPlayerLands } from '../../selectors/playerSelectors';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import type { BuildingType } from '../../types/Building';
 import type { GameState } from '../../state/GameState';
 
@@ -15,23 +15,23 @@ export const getAvailableToConstructLands = (
   const playerLands = getPlayerLands(gameState, turnOwner);
 
   switch (buildingType) {
-    case BuildingKind.WALL:
+    case BuildingName.WALL:
       // border lands: some land in radius 1 has a non-player owner (neutral or opponent)
       return playerLands
         .filter(
           (land) =>
             (land.buildings.length === 0 ||
-              !land.buildings?.some((b) => b.type === BuildingKind.WALL)) &&
+              !land.buildings?.some((b) => b.type === BuildingName.WALL)) &&
             getTilesInRadius(getMapDimensions(gameState), land.mapPos, 1, true).some(
               (tile) => getLandOwner(gameState, tile) !== turnOwner
             )
         )
         .map((l) => getLandId(l.mapPos));
 
-    case BuildingKind.STRONGHOLD:
+    case BuildingName.STRONGHOLD:
       const allStrongholds = gameState.players.flatMap((p) =>
         getPlayerLands(gameState, p.id).filter((l) =>
-          l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
+          l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
         )
       );
       const strongholdsExcludedArea = allStrongholds.flatMap((stronghold) =>
@@ -44,7 +44,7 @@ export const getAvailableToConstructLands = (
         .filter((land) => !strongholdsExcludedArea.includes(getLandId(land.mapPos)))
         .map((l) => getLandId(l.mapPos));
 
-    case BuildingKind.DEMOLITION:
+    case BuildingName.DEMOLITION:
       return playerLands
         .filter((land) => land.buildings.length > 0)
         .map((l) => getLandId(l.mapPos));
@@ -54,7 +54,7 @@ export const getAvailableToConstructLands = (
         .filter(
           (land) =>
             land.buildings.length === 0 ||
-            (land.buildings.length === 1 && land.buildings[0].type === BuildingKind.WALL)
+            (land.buildings.length === 1 && land.buildings[0].type === BuildingName.WALL)
         )
         .map((l) => getLandId(l.mapPos));
   }

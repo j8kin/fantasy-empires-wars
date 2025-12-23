@@ -8,7 +8,7 @@ import { unitsBaseStats } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { TreasureName } from '../../types/Treasures';
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
@@ -44,7 +44,7 @@ describe('Recruitment', () => {
 
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
     )!;
   });
 
@@ -88,7 +88,7 @@ describe('Recruitment', () => {
       )
     );
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    construct(gameStateStub, BuildingKind.BARRACKS, barracksPos);
+    construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
     let vault = getPlayer(gameStateStub, playerId).vault;
 
     startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
@@ -111,7 +111,7 @@ describe('Recruitment', () => {
     player.vault = 100000;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    construct(gameStateStub, BuildingKind.BARRACKS, barracksPos);
+    construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
     castSpell(gameStateStub, SpellName.CORRUPTION, barracksPos);
 
     startRecruiting(gameStateStub, barracksPos, RegularUnitName.ORC);
@@ -131,7 +131,7 @@ describe('Recruitment', () => {
 
     beforeEach(() => {
       const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-      construct(gameStateStub, BuildingKind.BARRACKS, barracksPos);
+      construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
       barracksLand = getLand(gameStateStub, barracksPos);
 
       expect(gameStateStub.turn).toBe(2);
@@ -296,7 +296,7 @@ describe('Recruitment', () => {
     describe('Corner cases', () => {
       it('regular units could not be recruited in mage towers', () => {
         const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col - 1 };
-        construct(gameStateStub, BuildingKind.WHITE_MAGE_TOWER, mageTowerPos);
+        construct(gameStateStub, BuildingName.WHITE_MAGE_TOWER, mageTowerPos);
 
         startRecruiting(gameStateStub, mageTowerPos, RegularUnitName.WARRIOR);
         expect(barracksLand.buildings[0].slots).toBeDefined(); // regular units not recruited
@@ -338,7 +338,7 @@ describe('Recruitment', () => {
       expect(barracksLand).toBeDefined();
       expect(armies.length).toBe(0);
       expect(barracksLand.buildings[0].slots.length).toBe(
-        buildingType === BuildingKind.BARRACKS ? 3 : 1
+        buildingType === BuildingName.BARRACKS ? 3 : 1
       );
       expect(
         getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots.filter((s) => s.isOccupied)
@@ -357,7 +357,7 @@ describe('Recruitment', () => {
           randomSpy.mockReturnValue(0.99); // to have the same name of the hero unit
 
           const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-          constructBuilding(BuildingKind.BARRACKS, barracksPos);
+          constructBuilding(BuildingName.BARRACKS, barracksPos);
 
           const barracksLand = getLand(gameStateStub, barracksPos);
 
@@ -383,11 +383,11 @@ describe('Recruitment', () => {
       );
 
       it.each([
-        [HeroUnitName.CLERIC, 'Rowena Ironhall', BuildingKind.WHITE_MAGE_TOWER],
-        [HeroUnitName.DRUID, 'Olyssia Riverlight', BuildingKind.GREEN_MAGE_TOWER],
-        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard', BuildingKind.BLUE_MAGE_TOWER],
-        [HeroUnitName.PYROMANCER, 'Branna Ashfang', BuildingKind.RED_MAGE_TOWER],
-        [HeroUnitName.NECROMANCER, 'Eldra Stonebeard', BuildingKind.BLACK_MAGE_TOWER],
+        [HeroUnitName.CLERIC, 'Rowena Ironhall', BuildingName.WHITE_MAGE_TOWER],
+        [HeroUnitName.DRUID, 'Olyssia Riverlight', BuildingName.GREEN_MAGE_TOWER],
+        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard', BuildingName.BLUE_MAGE_TOWER],
+        [HeroUnitName.PYROMANCER, 'Branna Ashfang', BuildingName.RED_MAGE_TOWER],
+        [HeroUnitName.NECROMANCER, 'Eldra Stonebeard', BuildingName.BLACK_MAGE_TOWER],
       ])(
         '"%s named \'%s\' should be start recruited in 3 turn in %s"',
         (unitType: HeroUnitType, name: string, magicTower: BuildingType) => {
@@ -423,7 +423,7 @@ describe('Recruitment', () => {
 
       it('Recruiting heroes 3 heroes in parallel', () => {
         const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-        constructBuilding(BuildingKind.BARRACKS, barracksPos);
+        constructBuilding(BuildingName.BARRACKS, barracksPos);
 
         let armies = getArmiesAtPosition(gameStateStub, barracksPos);
         expect(armies.length).toBe(0);
@@ -451,7 +451,7 @@ describe('Recruitment', () => {
     describe('Corner cases', () => {
       it('mages should not recruit in barracks', () => {
         const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-        constructBuilding(BuildingKind.BARRACKS, barracksPos);
+        constructBuilding(BuildingName.BARRACKS, barracksPos);
         const barracksLand = getLand(gameStateStub, barracksPos);
 
         startRecruiting(gameStateStub, barracksPos, HeroUnitName.FIGHTER);
@@ -462,11 +462,11 @@ describe('Recruitment', () => {
       });
 
       it.each([
-        [BuildingKind.WHITE_MAGE_TOWER],
-        [BuildingKind.GREEN_MAGE_TOWER],
-        [BuildingKind.BLUE_MAGE_TOWER],
-        [BuildingKind.RED_MAGE_TOWER],
-        [BuildingKind.BLACK_MAGE_TOWER],
+        [BuildingName.WHITE_MAGE_TOWER],
+        [BuildingName.GREEN_MAGE_TOWER],
+        [BuildingName.BLUE_MAGE_TOWER],
+        [BuildingName.RED_MAGE_TOWER],
+        [BuildingName.BLACK_MAGE_TOWER],
       ])('non-mage heroes should not recruit in mage towers', (mageTower: BuildingType) => {
         const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
         constructBuilding(mageTower, mageTowerPos);
@@ -493,7 +493,7 @@ describe('Recruitment', () => {
 
       it('regular units could not be recruited when not enough gold in vault', () => {
         const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-        constructBuilding(BuildingKind.BARRACKS, barracksPos);
+        constructBuilding(BuildingName.BARRACKS, barracksPos);
 
         getTurnOwner(gameStateStub).vault = 100;
 

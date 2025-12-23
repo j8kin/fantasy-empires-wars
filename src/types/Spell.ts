@@ -53,6 +53,7 @@ export interface Spell {
   rules?: EffectRules;
   penalty?: PenaltyConfig;
 }
+
 const generatePenaltyConfig = (
   minPct: number,
   maxPct: number,

@@ -15,7 +15,7 @@ import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { UnitRank } from '../../state/army/RegularsState';
 import { SpellName } from '../../types/Spell';
 import { Alignment } from '../../types/Alignment';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { LandKind } from '../../types/Land';
 import type { GameState } from '../../state/GameState';
 import type { LandType } from '../../types/Land';
@@ -170,7 +170,7 @@ describe('castBlackManaSpell', () => {
 
     it('CORRUPTION Could be cast only radius 2 STRONGHOLD', () => {
       const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
-      expect(getLand(gameStateStub, homelandPos).buildings[0].type).toBe(BuildingKind.STRONGHOLD);
+      expect(getLand(gameStateStub, homelandPos).buildings[0].type).toBe(BuildingName.STRONGHOLD);
       let castPosition: LandPosition = { row: homelandPos.row + 1, col: homelandPos.col };
       expect(getLand(gameStateStub, castPosition).corrupted).toBeFalsy();
 

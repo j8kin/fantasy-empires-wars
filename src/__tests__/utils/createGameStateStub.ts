@@ -11,7 +11,7 @@ import { heroFactory } from '../../factories/heroFactory';
 import { construct } from '../../map/building/construct';
 import { generateMap } from '../../map/generation/generateMap';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-import { BuildingKind } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 
 import { generateMockMap } from './generateMockMap';
 import { placeUnitsOnMap } from './placeUnitsOnMap';
@@ -44,7 +44,7 @@ export const createGameStateStub = ({
     for (let i = 0; i < playersProfile.length; i++) {
       const turnOwner = getTurnOwner(stubGameState);
       const homeland: LandPosition = { row: 3 + (i % 2), col: 3 + i * 5 };
-      construct(stubGameState, BuildingKind.STRONGHOLD, homeland);
+      construct(stubGameState, BuildingName.STRONGHOLD, homeland);
 
       const playerProfile = turnOwner.playerProfile;
       const hero = heroFactory(playerProfile.type, playerProfile.name);
