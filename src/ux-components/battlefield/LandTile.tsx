@@ -10,7 +10,7 @@ import { getLandOwner, getRealmLands, getTilesInRadius } from '../../selectors/l
 import { getPlayer, getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { getBuilding } from '../../domain/building/buildingRepository';
+import { getBuildingInfo } from '../../domain/building/buildingRepository';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { calculateTileScreenPosition, getMapDimensions } from '../../utils/screenPositionUtils';
 import { construct } from '../../map/building/construct';
@@ -130,7 +130,10 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
       } else if (selectedLandAction?.startsWith('Building: ')) {
         const buildingToConstruct = selectedLandAction?.substring(10) as BuildingType;
         const selectedPlayer = getTurnOwner(gameState);
-        if (selectedPlayer && selectedPlayer.vault! >= getBuilding(buildingToConstruct).buildCost) {
+        if (
+          selectedPlayer &&
+          selectedPlayer.vault! >= getBuildingInfo(buildingToConstruct).buildCost
+        ) {
           // todo add animation for building
           construct(gameState, buildingToConstruct, mapPosition);
           updateGameState(gameState);

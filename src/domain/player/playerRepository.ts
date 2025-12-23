@@ -4,7 +4,7 @@ import type { PlayerProfile } from '../../state/player/PlayerProfile';
 
 export const NO_PLAYER: PlayerProfile = {
   id: 'none',
-  name: 'None',
+  name: 'none',
   alignment: Alignment.NEUTRAL,
   race: 'Human',
   type: HeroUnitType.FIGHTER,

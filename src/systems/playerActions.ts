@@ -49,9 +49,18 @@ export const addEmpireTreasure = (state: PlayerState, treasure: EmpireTreasure):
   };
 };
 
-export const removeEmpireTreasureItems = (state: PlayerState, treasure: Item): PlayerState => {
+export const removeEmpireTreasureItem = (state: PlayerState, treasure: Item): PlayerState => {
   return {
     ...state,
-    empireTreasures: state.empireTreasures.filter((t) => t !== treasure),
+    empireTreasures: state.empireTreasures.filter((t) => t.id !== treasure.id),
+  };
+};
+
+export const decrementItemCharges = (state: PlayerState, treasure: Item): PlayerState => {
+  return {
+    ...state,
+    empireTreasures: state.empireTreasures.map((t) =>
+      t.id === treasure.id ? { ...t, charge: treasure.charge - 1 } : t
+    ),
   };
 };

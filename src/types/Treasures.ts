@@ -11,7 +11,7 @@ export enum TreasureType {
   CLOAK_OF_DISPLACEMENT = 'Cloak of Shadows',
 
   // Items (Empire items which could be used like spells on Map)
-  WAND_TURN_UNDEAD = 'Wand of Turning',
+  WAND_OF_TURN_UNDEAD = 'Wand of Turning',
   ORB_OF_STORM = 'Orb of Storms',
   RESTORE_BUILDING = 'Seed of Renewal',
   AEGIS_SHARD = 'Aegis Shard',

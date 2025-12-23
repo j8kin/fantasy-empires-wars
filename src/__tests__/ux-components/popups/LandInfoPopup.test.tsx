@@ -1,14 +1,10 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import LandInfoPopup from '../../../ux-components/popups/LandInfoPopup';
 
-import { GameState } from '../../../state/GameState';
-import { LandState } from '../../../state/map/land/LandState';
-import { Armies } from '../../../state/army/ArmyState';
+import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { getLandId } from '../../../state/map/land/LandId';
-
-import { getLandOwner } from '../../../selectors/landSelectors';
+import { getLand, getLandOwner } from '../../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../../selectors/playerSelectors';
 import { getSpellById } from '../../../selectors/spellSelectors';
 import { startMoving } from '../../../systems/armyActions';
@@ -16,15 +12,21 @@ import { armyFactory } from '../../../factories/armyFactory';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
 import { effectFactory } from '../../../factories/effectFactory';
+import { relictFactory } from '../../../factories/treasureFactory';
+import { updateLandEffect } from '../../../systems/gameStateActions';
+import { NO_PLAYER } from '../../../domain/player/playerRepository';
 
 import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
 import { BuildingType } from '../../../types/Building';
 import { SpellName } from '../../../types/Spell';
 import { TreasureType } from '../../../types/Treasures';
+import type { GameState } from '../../../state/GameState';
+import type { LandState } from '../../../state/map/land/LandState';
+import type { Armies } from '../../../state/army/ArmyState';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
-import { relictFactory } from '../../../factories/treasureFactory';
+import { construct } from '../../../map/building/construct';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
@@ -105,7 +107,9 @@ describe('LandInfoPopup', () => {
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
     expect(getLandOwner(gameStateStub, mockTileState.mapPos)).toBe(gameStateStub.players[1].id);
-    expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
+    expect(screen.getByTestId('owner')).toHaveTextContent(
+      gameStateStub.players[1].playerProfile.name
+    );
   });
 
   it('displays both building and control information simultaneously', () => {
@@ -124,7 +128,9 @@ describe('LandInfoPopup', () => {
     expect(screen.getByText('Buildings:')).toBeInTheDocument();
     expect(screen.getByText('Stronghold')).toBeInTheDocument();
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
+    expect(screen.getByTestId('owner')).toHaveTextContent(
+      gameStateStub.players[1].playerProfile.name
+    );
   });
 
   it('displays land type information', () => {
@@ -153,6 +159,60 @@ describe('LandInfoPopup', () => {
     expect(screen.getByText(mockTileState.goldPerTurn.toString())).toBeInTheDocument();
   });
 
+  describe('Neutral lands display functionality', () => {
+    it('display neutral land information', () => {
+      const landPos = { row: 0, col: 0 };
+      const land = getLand(gameStateStub, landPos);
+      expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
+
+      renderWithProviders(
+        <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      expect(screen.getByText(land.land.id)).toBeInTheDocument();
+      expect(screen.getByText(land.land.alignment)).toBeInTheDocument();
+      expect(screen.getByText('Position:')).toBeInTheDocument();
+      expect(screen.getByText(land.mapPos.row + ', ' + land.mapPos.col)).toBeInTheDocument();
+      expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();
+      expect(screen.getByText(land.goldPerTurn.toString())).toBeInTheDocument();
+      expect(screen.getByText('Controlled By:')).toBeInTheDocument();
+      expect(screen.getByTestId('owner')).toHaveTextContent('none');
+      expect(screen.queryByText('Buildings:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Effects:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+    });
+
+    it('displays buildings on neutral lands', () => {
+      const landPos = { row: 0, col: 0 };
+      construct(gameStateStub, BuildingType.BARRACKS, landPos);
+      const land = getLand(gameStateStub, landPos);
+      expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
+
+      renderWithProviders(
+        <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      expect(screen.getByText(land.land.id)).toBeInTheDocument();
+      expect(screen.getByText(land.land.alignment)).toBeInTheDocument();
+      expect(screen.getByText('Position:')).toBeInTheDocument();
+      expect(screen.getByText(land.mapPos.row + ', ' + land.mapPos.col)).toBeInTheDocument();
+      expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();
+      expect(screen.getByText(land.goldPerTurn.toString())).toBeInTheDocument();
+      expect(screen.getByText('Controlled By:')).toBeInTheDocument();
+      /*************** Neutral land *************************/
+      expect(screen.getByTestId('owner')).toHaveTextContent('none');
+      /*************** Barack is visible ********************/
+      expect(screen.getByText('Buildings:')).toBeInTheDocument();
+      expect(screen.getByText('Barracks')).toBeInTheDocument();
+      /******************************************************/
+      expect(screen.queryByText('Effects:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+    });
+  });
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
@@ -341,35 +401,22 @@ describe('LandInfoPopup', () => {
     });
 
     it('displays only units section when tile has only non-hero units', () => {
-      const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const army1 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitType.ORC),
-      ]);
-      const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitType.BALLISTA),
-      ]);
+      const landPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1].mapPos;
+      Object.assign(
+        gameStateStub,
+        updateLandEffect(
+          gameStateStub,
+          landPos,
+          effectFactory(SpellName.VIEW_TERRITORY, gameStateStub.turnOwner) // opponent land visible only with this effect
+        )
+      );
 
-      const mockArmy: Armies = [army1, army2];
-
-      // Filter out any existing armies at this position and add only our test armies, set turnOwner
-      const gameStateWithArmy = {
-        ...gameStateStub,
-        turnOwner: landOwner,
-        armies: [
-          ...gameStateStub.armies.filter((army) => {
-            const armyPosition = army.movement.path[0];
-            return !(
-              armyPosition.row === mockTileState.mapPos.row &&
-              armyPosition.col === mockTileState.mapPos.col
-            );
-          }),
-          ...mockArmy,
-        ],
-      };
+      placeUnitsOnMap(regularsFactory(RegularUnitType.ORC), gameStateStub, landPos);
+      placeUnitsOnMap(regularsFactory(RegularUnitType.BALLISTA), gameStateStub, landPos);
 
       renderWithProviders(
-        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
-        gameStateWithArmy
+        <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
+        gameStateStub
       );
 
       expect(screen.getByText('Units:')).toBeInTheDocument();
@@ -429,6 +476,29 @@ describe('LandInfoPopup', () => {
         `${SpellName.EMBER_RAID} (${getSpellById(SpellName.EMBER_RAID).rules!.duration})`
       );
       expect(effectElement).toHaveStyle({ color: '#F44336' });
+    });
+
+    it('displays permanent effects with blue color when tile has permanent effects', () => {
+      const land = getPlayerLands(gameStateStub)[0];
+      const effect = effectFactory(TreasureType.AEGIS_SHARD, gameStateStub.turnOwner);
+      Object.assign(gameStateStub, updateLandEffect(gameStateStub, land.mapPos, effect));
+
+      renderWithProviders(
+        <LandInfoPopup landPos={land.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      // Check if effects section is displayed
+      expect(screen.getByText('Effects:')).toBeInTheDocument();
+      expect(
+        screen.getByText(`${TreasureType.AEGIS_SHARD} (${effect.rules!.duration})`)
+      ).toBeInTheDocument();
+
+      // Check if the effect has red color for negative effect
+      const effectElement = screen.getByText(
+        `${TreasureType.AEGIS_SHARD} (${effect.rules!.duration})`
+      );
+      expect(effectElement).toHaveStyle({ color: '#344CEB' });
     });
 
     it('displays multiple effects with correct colors when tile has multiple effects', () => {
@@ -537,26 +607,12 @@ describe('LandInfoPopup', () => {
       effect2.rules.duration = 5;
 
       // Add effects to the land and set the turnOwner to the land owner so effects are visible
-      const landId = getLandId(mockTileState.mapPos);
-      const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const gameStateWithEffects = {
-        ...gameStateStub,
-        turnOwner: landOwner, // Set turnOwner to landOwner to make effects visible
-        map: {
-          ...gameStateStub.map,
-          lands: {
-            ...gameStateStub.map.lands,
-            [landId]: {
-              ...gameStateStub.map.lands[landId],
-              effects: [effect1, effect2],
-            },
-          },
-        },
-      };
+      Object.assign(gameStateStub, updateLandEffect(gameStateStub, mockTileState.mapPos, effect1));
+      Object.assign(gameStateStub, updateLandEffect(gameStateStub, mockTileState.mapPos, effect2));
 
       renderWithProviders(
         <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
-        gameStateWithEffects
+        gameStateStub
       );
 
       // Check if effects are displayed with correct durations
@@ -565,6 +621,7 @@ describe('LandInfoPopup', () => {
       expect(screen.getByText(`${SpellName.VIEW_TERRITORY} (5)`)).toBeInTheDocument();
     });
   });
+
   describe('Illusion display functionality', () => {
     it('displays illusion message when land owner has Mirror of Illusion treasure', () => {
       const randomSpy = jest.spyOn(Math, 'random');
@@ -603,6 +660,65 @@ describe('LandInfoPopup', () => {
       expect(screen.queryByText('Buildings:')).not.toBeInTheDocument();
 
       randomSpy.mockRestore();
+    });
+  });
+
+  describe('Display corrupted land information', () => {
+    it('displays corrupted land information when tile is corrupted', () => {
+      mockTileState.corrupted = true;
+
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      expect(screen.getByText('Corrupted ' + mockTileState.land.id)).toBeInTheDocument();
+      expect(screen.getByText('Position:')).toBeInTheDocument();
+      expect(
+        screen.getByText(mockTileState.mapPos.row + ', ' + mockTileState.mapPos.col)
+      ).toBeInTheDocument();
+      expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();
+      expect(screen.getByText(mockTileState.goldPerTurn.toString())).toBeInTheDocument();
+    });
+  });
+
+  describe('VIEW_TERRITORY and COMPASS_OF_DOMINION effects', () => {
+    it('opponent territory is not visible without VIEW_TERRITORY effect', () => {
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+      expect(screen.queryByText('Buildings:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
+
+      // add VIEW_TERRITORY effect to the land
+      const effect = effectFactory(SpellName.VIEW_TERRITORY, gameStateStub.turnOwner);
+      Object.assign(gameStateStub, updateLandEffect(gameStateStub, mockTileState.mapPos, effect));
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+      expect(screen.getByText('Buildings:')).toBeInTheDocument();
+      expect(screen.getByText('Heroes:')).toBeInTheDocument();
+    });
+
+    it('opponent territory is not visible without COMPASS_OF_DOMINION effect', () => {
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+      expect(screen.queryByText('Buildings:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
+
+      // add COMPASS_OF_DOMINION effect to the land
+      const effect = effectFactory(TreasureType.COMPASS_OF_DOMINION, gameStateStub.turnOwner);
+      Object.assign(gameStateStub, updateLandEffect(gameStateStub, mockTileState.mapPos, effect));
+      renderWithProviders(
+        <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+      expect(screen.getByText('Buildings:')).toBeInTheDocument();
+      expect(screen.getByText('Heroes:')).toBeInTheDocument();
     });
   });
 });

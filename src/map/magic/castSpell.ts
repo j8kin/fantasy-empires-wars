@@ -11,14 +11,20 @@ import {
   getMaxHeroLevelByType,
   isMoving,
 } from '../../selectors/armySelectors';
-import { getLand, getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
+import {
+  getLand,
+  getLandOwner,
+  getTilesInRadius,
+  hasActiveEffect,
+} from '../../selectors/landSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import {
-  updatePlayerEffect,
-  updatePlayerMana,
-  updateLandEffect,
+  removeLandEffect,
   updateLand,
   updateLandBuildingSlots,
+  updateLandEffect,
+  updatePlayerEffect,
+  updatePlayerMana,
 } from '../../systems/gameStateActions';
 import { addArmyToGameState, addRegulars, updateArmyInGameState } from '../../systems/armyActions';
 import { applyArmyCasualtiesAtPosition } from './applyArmyCasualties';
@@ -37,6 +43,7 @@ import { LandType } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
 import { ManaType } from '../../types/Mana';
 import { TreasureType } from '../../types/Treasures';
+import { EffectType } from '../../types/Effect';
 import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
 import type { Spell } from '../../types/Spell';
 import type { GameState } from '../../state/GameState';
@@ -67,11 +74,26 @@ export const castSpell = (
   ) {
     const spell = getSpellById(spellName);
 
-    castWhiteManaSpell(state, spell, mainAffectedLand!);
-    castGreenManaSpell(state, spell, mainAffectedLand!);
-    castBlueManaSpell(state, spell, mainAffectedLand, secondaryAffectedLand, exchangeMana);
-    castRedManaSpell(state, spell, mainAffectedLand!);
-    castBlackManaSpell(state, spell, mainAffectedLand!);
+    const isLandUnderProtection =
+      mainAffectedLand != null
+        ? hasActiveEffect(getLand(state, mainAffectedLand), TreasureType.AEGIS_SHARD)
+        : false;
+
+    if (spell.rules?.type === EffectType.NEGATIVE && isLandUnderProtection) {
+      // a negative spell should be canceled when land under protection
+      const effectId = getLand(state, mainAffectedLand!).effects.find(
+        (e) => e.sourceId === TreasureType.AEGIS_SHARD
+      )!.id;
+      let updatedState = updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost);
+      updatedState = removeLandEffect(updatedState, mainAffectedLand!, effectId);
+      Object.assign(state, updatedState);
+    } else {
+      castWhiteManaSpell(state, spell, mainAffectedLand!);
+      castGreenManaSpell(state, spell, mainAffectedLand!);
+      castBlueManaSpell(state, spell, mainAffectedLand, secondaryAffectedLand, exchangeMana);
+      castRedManaSpell(state, spell, mainAffectedLand!);
+      castBlackManaSpell(state, spell, mainAffectedLand!);
+    }
   }
 };
 

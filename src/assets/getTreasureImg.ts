@@ -21,7 +21,7 @@ import starwellPrismImg from './treasures/starwell-prism.png';
 
 export const getTreasureImg = (treasure: EmpireTreasure) => {
   switch (treasure.treasure.type) {
-    case TreasureType.WAND_TURN_UNDEAD:
+    case TreasureType.WAND_OF_TURN_UNDEAD:
       return wandOfTurnUndeadImg;
     case TreasureType.ORB_OF_STORM:
       return orbOfStormImg;

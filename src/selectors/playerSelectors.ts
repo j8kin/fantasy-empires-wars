@@ -1,4 +1,5 @@
 import { isRelic } from '../domain/treasure/treasureRepository';
+import { playerFactory } from '../factories/playerFactory';
 
 import { EffectType } from '../types/Effect';
 import type { GameState } from '../state/GameState';
@@ -7,9 +8,12 @@ import type { LandState } from '../state/map/land/LandState';
 import type { SpellName } from '../types/Spell';
 import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatus } from '../types/Diplomacy';
+import { NO_PLAYER } from '../domain/player/playerRepository';
+
+const NONE = playerFactory(NO_PLAYER, 'computer');
 
 export const getPlayer = (state: GameState, id: string): PlayerState =>
-  state.players.find((p) => p.id === id)!;
+  state.players.find((p) => p.id === id) ?? NONE;
 
 export const getTurnOwner = (state: GameState): PlayerState => getPlayer(state, state.turnOwner);
 
@@ -48,6 +52,12 @@ export const hasTreasureByPlayer = (player: PlayerState, treasure: TreasureType)
 
 export const getTreasureItem = (player: PlayerState, itemType: TreasureType): Item | undefined => {
   const item = player.empireTreasures?.find((t) => t.treasure.type === itemType);
+  if (!item) return undefined;
+  return !isRelic(item) ? item : undefined;
+};
+
+export const getTreasureItemById = (player: PlayerState, itemId: string): Item | undefined => {
+  const item = player.empireTreasures?.find((t) => t.id === itemId);
   if (!item) return undefined;
   return !isRelic(item) ? item : undefined;
 };

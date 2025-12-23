@@ -7,7 +7,7 @@ import type { PlayerState } from '../../state/player/PlayerState';
  * BuildingTemplate represents static building characteristics
  * This is the template/configuration for a building type
  */
-export interface BuildingTemplate {
+export interface BuildingInfo {
   id: BuildingType;
   buildCost: number;
   maintainCost: number;
@@ -17,8 +17,8 @@ export interface BuildingTemplate {
 /**
  * Get static building information by type
  */
-export const getBuilding = (building: BuildingType): BuildingTemplate => {
-  switch (building) {
+export const getBuildingInfo = (buildingType: BuildingType): BuildingInfo => {
+  switch (buildingType) {
     case BuildingType.STRONGHOLD:
       return {
         id: BuildingType.STRONGHOLD,
@@ -39,7 +39,7 @@ export const getBuilding = (building: BuildingType): BuildingTemplate => {
     case BuildingType.BLUE_MAGE_TOWER:
     case BuildingType.RED_MAGE_TOWER:
       return {
-        id: building,
+        id: buildingType,
         buildCost: 15000,
         maintainCost: 2000,
         description: 'Allows recruitment of Mage units',
@@ -76,10 +76,10 @@ export const getBuilding = (building: BuildingType): BuildingTemplate => {
   }
 };
 
-export const getAllBuildings = (player: PlayerState): BuildingTemplate[] => {
+export const getAllBuildings = (player: PlayerState): BuildingInfo[] => {
   const playerProfile = player.playerProfile;
   return Object.values(BuildingType)
-    .map(getBuilding)
+    .map(getBuildingInfo)
     .filter(
       (building) =>
         !building.id.toString().includes('Mage Tower') ||

@@ -5,10 +5,15 @@ import { ArmyBriefInfo } from '../../state/army/ArmyState';
 import { UnitRank } from '../../state/army/RegularsState';
 import { getLandId } from '../../state/map/land/LandId';
 
-import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
+import {
+  getLand,
+  getLandOwner,
+  getTilesInRadius,
+  hasActiveEffect,
+} from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
-import { addPlayerLand } from '../../systems/gameStateActions';
+import { addPlayerLand, updateLandEffect } from '../../systems/gameStateActions';
 
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 
@@ -23,6 +28,11 @@ import { castSpell } from '../../map/magic/castSpell';
 
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { regularsFactory } from '../../factories/regularsFactory';
+import { effectFactory } from '../../factories/effectFactory';
+import { TreasureType } from '../../types/Treasures';
 
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -106,10 +116,6 @@ describe('Move Army', () => {
       'new Army with movement should be created into %s with pathLength: %s',
       (to: LandPosition, pathLength: number, path: string[]) => {
         const from = barracksLand.mapPos;
-        Object.assign(
-          gameStateStub,
-          addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, from)
-        );
         const armyBriefInfo: ArmyBriefInfo = {
           heroes: [],
           regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
@@ -297,6 +303,84 @@ describe('Move Army', () => {
   });
 
   describe('Perform movements', () => {
+    it('When army step on opponent land it became turn owners land and remove from opponet lands', () => {
+      const opponent = gameStateStub.players[1].id;
+      const opponentLand = getPlayerLands(gameStateStub, opponent)[1];
+      expect(getLandOwner(gameStateStub, opponentLand.mapPos)).toBe(opponent);
+      expect(getPlayerLands(gameStateStub, opponent).map((l) => getLandId(l.mapPos))).toContain(
+        getLandId(opponentLand.mapPos)
+      );
+      const from: LandPosition = getTilesInRadius(
+        getMapDimensions(gameStateStub),
+        opponentLand.mapPos,
+        1
+      ).find((l) => getLandOwner(gameStateStub, l) !== opponent)!; // move from neutral land
+
+      placeUnitsOnMap(regularsFactory(RegularUnitType.WARD_HANDS, 120), gameStateStub, from);
+
+      let armies = getArmiesAtPosition(gameStateStub, from);
+      const armyBriefInfo: ArmyBriefInfo = {
+        heroes: [],
+        regulars: [briefInfo(armies[0]).regulars[0]],
+      };
+
+      /******************* Start Movement *********************/
+      Object.assign(
+        gameStateStub,
+        startMovement(gameStateStub, from, opponentLand.mapPos, armyBriefInfo)
+      );
+      /******************* End Movement *********************/
+      testTurnManagement.makeNTurns(1);
+      /******************* Verify Ownership *********************/
+      armies = getArmiesAtPosition(gameStateStub, opponentLand.mapPos);
+      expect(armies.length).toBe(1);
+      expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(armies[0])).toBeFalsy();
+      expect(armies[0].regulars.length).toBe(1);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARD_HANDS);
+      expect(armies[0].regulars[0].count).toBeLessThan(120); // due to attrition penalty
+      // additionally verify that land is removed from opponent lands
+      expect(getPlayerLands(gameStateStub, opponent).map((l) => getLandId(l.mapPos))).not.toContain(
+        getLandId(opponentLand.mapPos)
+      );
+    });
+
+    it('When army occupy opponent land with DEED OF RECLAMATION effect then effect disappears', () => {
+      const from = barracksLand.mapPos;
+      const to = getTilesInRadius(getMapDimensions(gameStateStub), from, 1).find(
+        (l) => getLandOwner(gameStateStub, l) === NO_PLAYER.id
+      )!;
+
+      /******************* Add DEED OF RECLAMATION by opponent *********************/
+      Object.assign(
+        gameStateStub,
+        updateLandEffect(
+          gameStateStub,
+          to,
+          effectFactory(TreasureType.DEED_OF_RECLAMATION, gameStateStub.players[1].id)
+        )
+      );
+      Object.assign(gameStateStub, addPlayerLand(gameStateStub, gameStateStub.players[1].id, to));
+
+      /****************** Start Movement *********************/
+      // 20 regular units is not enough to conquer the new territory so it became neutral and DEED OF RECLAMATION effect disappears
+      const armyBriefInfo: ArmyBriefInfo = {
+        heroes: [],
+        regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+      };
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
+
+      /******************* End Movement *********************/
+      testTurnManagement.makeNTurns(1);
+      /******************* Verify Ownership *********************/
+      const armies = getArmiesAtPosition(gameStateStub, to);
+      expect(armies.length).toBe(0);
+      // land became neutral
+      expect(getLandOwner(gameStateStub, to)).toBe(NO_PLAYER.id);
+      // DEED OF RECLAMATION effect disappears
+      expect(getLand(gameStateStub, to).effects.length).toBe(0);
+    });
+
     it('Hero allowed to move without regular units only on owned territories', () => {
       const to = { row: homeLand.mapPos.row + 1, col: homeLand.mapPos.col };
       let armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);

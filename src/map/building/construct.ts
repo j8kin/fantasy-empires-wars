@@ -1,7 +1,7 @@
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
 import { buildingFactory } from '../../factories/buildingFactory';
-import { getBuilding } from '../../domain/building/buildingRepository';
+import { getBuildingInfo } from '../../domain/building/buildingRepository';
 import {
   addBuildingToLand,
   addPlayerLand,
@@ -22,7 +22,7 @@ export const construct = (
 ) => {
   const map = gameState.map;
   const turnOwner = getTurnOwner(gameState);
-  const building = getBuilding(buildingType);
+  const building = getBuildingInfo(buildingType);
   if (turnOwner.vault < building.buildCost && gameState.turn > 1) {
     return;
   }

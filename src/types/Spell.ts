@@ -67,7 +67,7 @@ const WhiteMagicSpells: Spell[] = [
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.WHITE,
     rules: {
-      type: EffectType.POSITIVE,
+      type: EffectType.NEGATIVE,
       target: EffectTarget.LAND,
       duration: 1, // this spell apply to player and not allow to cast it more then once on the same player on the same turn
     },
@@ -103,6 +103,11 @@ const WhiteMagicSpells: Spell[] = [
     manaCost: 60,
     apply: SpellTarget.PLAYER, // todo: probably both to be able cast on ally
     manaType: ManaType.WHITE,
+    rules: {
+      type: EffectType.POSITIVE,
+      target: EffectTarget.LAND,
+      duration: 0, // effect applies immediately and not stored in the effect stack
+    },
   },
 ];
 
@@ -137,6 +142,11 @@ const BlueMagicSpells: Spell[] = [
     manaCost: 50,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.BLUE,
+    rules: {
+      type: EffectType.NEGATIVE,
+      target: EffectTarget.LAND,
+      duration: 0, // effect applies immediately and not stored in the effect stack
+    },
     penalty: generatePenaltyConfig(0.2, 0.35, 5, 5),
   },
   {
@@ -179,6 +189,11 @@ const GreenMagicSpells: Spell[] = [
     manaCost: 70,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.GREEN,
+    rules: {
+      type: EffectType.NEGATIVE,
+      target: EffectTarget.LAND,
+      duration: 0, // effect applies immediately and not stored in the effect stack
+    },
     penalty: generatePenaltyConfig(0.15, 0.25, 5, 5),
   },
   {
@@ -188,6 +203,11 @@ const GreenMagicSpells: Spell[] = [
     manaCost: 100,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.GREEN,
+    rules: {
+      type: EffectType.NEGATIVE,
+      target: EffectTarget.LAND,
+      duration: 0, // effect applies immediately and not stored in the effect stack
+    },
     penalty: generatePenaltyConfig(0.1, 0.2, 5, 5),
   },
 ];
@@ -219,6 +239,11 @@ const RedMagicSpells: Spell[] = [
     manaCost: 100,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.RED,
+    rules: {
+      type: EffectType.NEGATIVE,
+      target: EffectTarget.LAND,
+      duration: 0, // effect applies immediately and not stored in the effect stack
+    },
     penalty: generatePenaltyConfig(0.15, 0.2, 5, 5),
   },
   {
@@ -228,6 +253,11 @@ const RedMagicSpells: Spell[] = [
     manaCost: 150,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.RED,
+    rules: {
+      type: EffectType.NEGATIVE,
+      target: EffectTarget.LAND,
+      duration: 0, // effect applies immediately and not stored in the effect stack
+    },
     penalty: generatePenaltyConfig(0.35, 0.45, 20, 20),
   },
 ];
@@ -246,6 +276,11 @@ const BlackMagicSpells: Spell[] = [
     manaCost: 75,
     apply: SpellTarget.OPPONENT,
     manaType: ManaType.BLACK,
+    rules: {
+      type: EffectType.NEGATIVE,
+      target: EffectTarget.LAND,
+      duration: 0, // effect applies immediately and not stored in the effect stack
+    },
     penalty: generatePenaltyConfig(0.25, 0.4, 5, 5),
   },
   {
@@ -263,6 +298,11 @@ const BlackMagicSpells: Spell[] = [
     manaCost: 150,
     apply: SpellTarget.ALL,
     manaType: ManaType.BLACK,
+    rules: {
+      type: EffectType.NEGATIVE,
+      target: EffectTarget.LAND,
+      duration: 0, // effect applies immediately and not stored in the effect stack
+    },
   },
 ];
 
