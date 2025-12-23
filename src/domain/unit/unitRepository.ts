@@ -1,5 +1,6 @@
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
+import { BuildingName } from '../../types/Building';
 import type { BaseUnitStats } from '../../types/BaseUnit';
 import type { UnitType } from '../../types/UnitType';
 
@@ -14,6 +15,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.NEUTRAL,
         recruitCost: 300,
         maintainCost: 2,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Local hands risen in necessity, their resolve rough but unbroken against Orrivane’s growing dread.',
       };
@@ -26,6 +28,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.NEUTRAL,
         recruitCost: 500,
         maintainCost: 4,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Hardened veterans of countless skirmishes, these soldiers fight for gold, glory, or the fragile peace that follows both.',
       };
@@ -38,6 +41,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.LAWFUL,
         recruitCost: 800,
         maintainCost: 5,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Clad in runed steel and bound by oath, Dwarves hold the line like mountains given form—unyielding, proud, and slow to fall.',
       };
@@ -50,6 +54,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.CHAOTIC,
         recruitCost: 800,
         maintainCost: 7,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Raised beyond fear and freed from breath, the Undead march in silence—enduring not by life, but refusal to fall.',
       };
@@ -62,6 +67,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.CHAOTIC,
         recruitCost: 600,
         maintainCost: 4.5,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Forged in chaos and fire, Orcs live for the clash of steel—each battle a hymn to their untamed hunger for conquest.',
       };
@@ -76,6 +82,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.NEUTRAL,
         recruitCost: 700,
         maintainCost: 3,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Small in stature, stubborn in spirit—halfling slingers pelt foes with stones and startling courage.',
       };
@@ -91,6 +98,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: unitType === RegularUnitName.ELF ? Alignment.LAWFUL : Alignment.CHAOTIC,
         recruitCost: 2500,
         maintainCost: 5,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           unitType === RegularUnitName.ELF
             ? 'Silent as moonlight and swift as wind through leaves, Elven archers strike before their foes even sense the bowstring’s whisper.'
@@ -109,6 +117,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.NEUTRAL,
         recruitCost: 1500,
         maintainCost: 150,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Ancient engines of precision death, Ballistae pierce armor and arrogance alike with thunderous finality.',
       };
@@ -121,6 +130,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.NEUTRAL,
         recruitCost: 1000,
         maintainCost: 50,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Stone-flingers of ruin, Catapults reduce fortresses to dust and kings to memory—patient, implacable, and deaf to mercy.',
       };
@@ -138,6 +148,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: unitType === HeroUnitName.WARSMITH ? Alignment.CHAOTIC : Alignment.LAWFUL,
         recruitCost: 1500,
         maintainCost: 100,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           unitType === HeroUnitName.FIGHTER
             ? 'Champions of the common folk, Fighters carry the banners of law and honor into every battle, their courage as sharp as their blades.'
@@ -155,6 +166,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.LAWFUL,
         recruitCost: 1500,
         maintainCost: 100,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Bearing hammers that have shattered both stone and legend, Hammerlords are dwarven paragons of strength and unyielding resolve.',
       };
@@ -170,6 +182,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.CHAOTIC,
         recruitCost: 1500,
         maintainCost: 100,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           'Once feared as destroyers, the Ogr champions now fight with grim purpose—seeking to silence all who dare wield the arcane.',
       };
@@ -186,6 +199,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: unitType === HeroUnitName.RANGER ? Alignment.LAWFUL : Alignment.CHAOTIC,
         recruitCost: 1500,
         maintainCost: 100,
+        recruitedIn: BuildingName.BARRACKS,
         description:
           unitType === HeroUnitName.RANGER
             ? 'Keepers of forgotten groves, Rangers walk unseen between root and shadow, striking swiftly to preserve the wild balance of Orrivane.'
@@ -204,6 +218,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.CHAOTIC,
         recruitCost: 2500,
         maintainCost: 100,
+        recruitedIn: BuildingName.RED_MAGE_TOWER,
         description:
           'Born of embers and fury, Pyromancers command the flames of creation—each spell a hymn to passion and ruin.',
       };
@@ -219,6 +234,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.LAWFUL,
         recruitCost: 2500,
         maintainCost: 100,
+        recruitedIn: BuildingName.WHITE_MAGE_TOWER,
         description:
           'Guided by celestial whispers, Clerics mend the wounds of body and spirit alike, their faith a shield against the growing dark.',
       };
@@ -234,6 +250,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.LAWFUL,
         recruitCost: 2500,
         maintainCost: 100,
+        recruitedIn: BuildingName.GREEN_MAGE_TOWER,
         description:
           'Bound to the heartbeat of the wild, Druids channel Orrivane’s living breath—healing, nurturing, and unleashing nature’s wrath.',
       };
@@ -249,6 +266,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.NEUTRAL,
         recruitCost: 2500,
         maintainCost: 100,
+        recruitedIn: BuildingName.BLUE_MAGE_TOWER,
         description:
           'Masters of unseen threads, Enchanters weave illusions and insight from pure thought, bending truth like light through a prism.',
       };
@@ -264,6 +282,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         alignment: Alignment.CHAOTIC,
         recruitCost: 2500,
         maintainCost: 100,
+        recruitedIn: BuildingName.BLACK_MAGE_TOWER,
         description:
           'Whisperers of death’s secrets, Necromancers blur the line between decay and command, binding restless souls to their grim will.',
       };

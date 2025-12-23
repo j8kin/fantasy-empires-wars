@@ -300,12 +300,12 @@ export const updateLand = (
  * Low-level function to update buildings at a specific land
  * @param gameState - Current game state
  * @param landPos - Position of the land
- * @param buildingUpdater - Function that takes a building and its index, returns updated building
+ * @param buildingUpdater - Function that takes a building and returns updated building
  */
 export const updateLandBuildings = (
   gameState: GameState,
   landPos: LandPosition,
-  buildingUpdater: (building: BuildingState, index: number) => BuildingState
+  buildingUpdater: (building: BuildingState) => BuildingState
 ): GameState => {
   return updateLandState(gameState, landPos, (land) => ({
     ...land,
@@ -374,22 +374,22 @@ export const clearLandBuildings = (gameState: GameState, landPos: LandPosition):
 export const startRecruitmentInSlot = (
   gameState: GameState,
   landPos: LandPosition,
-  buildingIndex: number,
+  building: BuildingState,
   unit: UnitType,
   turnsRemaining: number
 ): GameState => {
-  return updateLandBuildings(gameState, landPos, (building, idx) => {
-    if (idx !== buildingIndex) {
-      return building;
+  return updateLandBuildings(gameState, landPos, (b) => {
+    if (b.id !== building.id) {
+      return b;
     }
 
     // Find first available slot
-    const slotIndex = building.slots.findIndex((s) => !s.isOccupied);
+    const slotIndex = b.slots.findIndex((s) => !s.isOccupied);
     if (slotIndex === -1) {
-      return building; // No available slots
+      return b; // No available slots
     }
 
-    const updatedSlots = building.slots.map((slot, i) =>
+    const updatedSlots = b.slots.map((slot, i) =>
       i === slotIndex
         ? {
             isOccupied: true,
@@ -400,7 +400,7 @@ export const startRecruitmentInSlot = (
     );
 
     return {
-      ...building,
+      ...b,
       slots: updatedSlots,
     };
   });

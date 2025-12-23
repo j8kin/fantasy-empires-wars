@@ -1,6 +1,8 @@
 import type { BuildingType, RecruitmentSlot } from '../../../types/Building';
 
 export interface BuildingState {
-  type: BuildingType;
-  slots: RecruitmentSlot[];
+  /** UUID **/
+  readonly id: string;
+  readonly type: BuildingType;
+  readonly slots: RecruitmentSlot[];
 }

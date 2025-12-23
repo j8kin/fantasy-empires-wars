@@ -1,14 +1,25 @@
+import { v4 as uuid } from 'uuid';
 import { isMageTower } from '../domain/building/buildingRepository';
 
+import type { BuildingType, RecruitmentSlot } from '../types/Building';
 import { BuildingName } from '../types/Building';
 import { RegularUnitName } from '../types/UnitType';
 import type { BuildingState } from '../state/map/building/BuildingState';
-import type { RecruitmentSlot } from '../types/Building';
-import type { BuildingType } from '../types/Building';
 
 // Building slot constants
 const BARRACKS_SLOTS = 3;
 const MAGE_TOWER_SLOTS = 1;
+
+/**
+ * Factory function to create a building instance with proper slot initialization
+ */
+export const buildingFactory = (type: BuildingType): BuildingState => {
+  return {
+    id: Object.freeze(uuid()),
+    type: Object.freeze(type),
+    slots: slotsFactory(type),
+  };
+};
 
 /**
  * Create an empty recruitment slot
@@ -19,25 +30,16 @@ const recruitmentSlotFactory = (): RecruitmentSlot => ({
   turnsRemaining: 0, // Dummy value, ignored when isOccupied = false
 });
 
-/**
- * Factory function to create a building instance with proper slot initialization
- */
-export const buildingFactory = (type: BuildingType): BuildingState => {
-  const building: BuildingState = {
-    type: type,
-    slots: [],
-  };
-
-  if (type === BuildingName.BARRACKS) {
-    building.slots = Array(BARRACKS_SLOTS)
-      .fill(null)
-      .map(() => recruitmentSlotFactory());
-  } else if (isMageTower(type)) {
-    building.slots = Array(MAGE_TOWER_SLOTS)
+const slotsFactory = (buildingType: BuildingType): RecruitmentSlot[] => {
+  if (buildingType === BuildingName.BARRACKS) {
+    return Array(BARRACKS_SLOTS)
       .fill(null)
       .map(() => recruitmentSlotFactory());
   }
-  // Other buildings get empty slots array
-
-  return building;
+  if (isMageTower(buildingType)) {
+    return Array(MAGE_TOWER_SLOTS)
+      .fill(null)
+      .map(() => recruitmentSlotFactory());
+  }
+  return [];
 };
