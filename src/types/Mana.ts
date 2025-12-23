@@ -3,7 +3,7 @@ import type { LandType } from './Land';
 
 export const MAX_MANA = 200;
 
-export const ManaKind = {
+export const Mana = {
   WHITE: 'white',
   BLACK: 'black',
   GREEN: 'green',
@@ -11,12 +11,10 @@ export const ManaKind = {
   RED: 'red',
 } as const;
 
-export type ManaType = (typeof ManaKind)[keyof typeof ManaKind];
+export type ManaType = (typeof Mana)[keyof typeof Mana];
 
 export interface ManaSource {
   type: ManaType;
   heroTypes: HeroUnitType[];
   landKinds: LandType[];
 }
-
-export type Mana = Record<ManaType, number>;

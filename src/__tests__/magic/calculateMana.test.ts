@@ -7,7 +7,7 @@ import { getManaSource } from '../../domain/mana/manaSource';
 import { getSpecialLandKinds } from '../../domain/land/landQueries';
 import { getLandById } from '../../domain/land/landRepository';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-import { ManaKind, MAX_MANA } from '../../types/Mana';
+import { Mana, MAX_MANA } from '../../types/Mana';
 import { HeroUnitName } from '../../types/UnitType';
 import { LandKind } from '../../types/Land';
 import { TreasureName } from '../../types/Treasures';
@@ -41,7 +41,7 @@ describe('Calculate Mana', () => {
 
   const expectedMana = (manaType: ManaType, mana: number, playerId: number = 0): void => {
     expect(gameStateStub.players[playerId].mana[manaType]).toBe(mana > MAX_MANA ? MAX_MANA : mana); // mana is limited to MAX_MANA
-    Object.values(ManaKind)
+    Object.values(Mana)
       .filter((m) => m !== manaType)
       .forEach((m) => {
         expect(gameStateStub.players[playerId].mana[m]).toBe(0);
@@ -50,11 +50,11 @@ describe('Calculate Mana', () => {
 
   describe('only one initial mage', () => {
     it.each([
-      [HeroUnitName.NECROMANCER, ManaKind.BLACK, PREDEFINED_PLAYERS[1], 7],
-      [HeroUnitName.CLERIC, ManaKind.WHITE, PREDEFINED_PLAYERS[6], 6],
-      [HeroUnitName.ENCHANTER, ManaKind.BLUE, PREDEFINED_PLAYERS[7], 7],
-      [HeroUnitName.DRUID, ManaKind.GREEN, PREDEFINED_PLAYERS[12], 7],
-      [HeroUnitName.PYROMANCER, ManaKind.RED, PREDEFINED_PLAYERS[14], 6],
+      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 7],
+      [HeroUnitName.CLERIC, Mana.WHITE, PREDEFINED_PLAYERS[6], 6],
+      [HeroUnitName.ENCHANTER, Mana.BLUE, PREDEFINED_PLAYERS[7], 7],
+      [HeroUnitName.DRUID, Mana.GREEN, PREDEFINED_PLAYERS[12], 7],
+      [HeroUnitName.PYROMANCER, Mana.RED, PREDEFINED_PLAYERS[14], 6],
     ])(
       '%s produce only %s mana',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
@@ -83,11 +83,11 @@ describe('Calculate Mana', () => {
     );
 
     describe.each([
-      [HeroUnitName.NECROMANCER, ManaKind.BLACK, PREDEFINED_PLAYERS[1], 7],
-      [HeroUnitName.CLERIC, ManaKind.WHITE, PREDEFINED_PLAYERS[6], 6],
-      [HeroUnitName.ENCHANTER, ManaKind.BLUE, PREDEFINED_PLAYERS[7], 7],
-      [HeroUnitName.DRUID, ManaKind.GREEN, PREDEFINED_PLAYERS[12], 7],
-      [HeroUnitName.PYROMANCER, ManaKind.RED, PREDEFINED_PLAYERS[14], 6],
+      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 7],
+      [HeroUnitName.CLERIC, Mana.WHITE, PREDEFINED_PLAYERS[6], 6],
+      [HeroUnitName.ENCHANTER, Mana.BLUE, PREDEFINED_PLAYERS[7], 7],
+      [HeroUnitName.DRUID, Mana.GREEN, PREDEFINED_PLAYERS[12], 7],
+      [HeroUnitName.PYROMANCER, Mana.RED, PREDEFINED_PLAYERS[14], 6],
     ])(
       'special land has no effect if player (%s) not own them',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
@@ -123,11 +123,11 @@ describe('Calculate Mana', () => {
     );
 
     describe.each([
-      [HeroUnitName.NECROMANCER, ManaKind.BLACK, PREDEFINED_PLAYERS[1], 7],
-      [HeroUnitName.CLERIC, ManaKind.WHITE, PREDEFINED_PLAYERS[6], 6],
-      [HeroUnitName.ENCHANTER, ManaKind.BLUE, PREDEFINED_PLAYERS[7], 7],
-      [HeroUnitName.DRUID, ManaKind.GREEN, PREDEFINED_PLAYERS[12], 7],
-      [HeroUnitName.PYROMANCER, ManaKind.RED, PREDEFINED_PLAYERS[14], 6],
+      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 7],
+      [HeroUnitName.CLERIC, Mana.WHITE, PREDEFINED_PLAYERS[6], 6],
+      [HeroUnitName.ENCHANTER, Mana.BLUE, PREDEFINED_PLAYERS[7], 7],
+      [HeroUnitName.DRUID, Mana.GREEN, PREDEFINED_PLAYERS[12], 7],
+      [HeroUnitName.PYROMANCER, Mana.RED, PREDEFINED_PLAYERS[14], 6],
     ])(
       'special land has no effect if other player then current (%s) own it',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
@@ -168,11 +168,11 @@ describe('Calculate Mana', () => {
     );
 
     describe.each([
-      [HeroUnitName.NECROMANCER, ManaKind.BLACK, PREDEFINED_PLAYERS[1], 7],
-      [HeroUnitName.CLERIC, ManaKind.WHITE, PREDEFINED_PLAYERS[6], 6],
-      [HeroUnitName.ENCHANTER, ManaKind.BLUE, PREDEFINED_PLAYERS[7], 7],
-      [HeroUnitName.DRUID, ManaKind.GREEN, PREDEFINED_PLAYERS[12], 7],
-      [HeroUnitName.PYROMANCER, ManaKind.RED, PREDEFINED_PLAYERS[14], 6],
+      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 7],
+      [HeroUnitName.CLERIC, Mana.WHITE, PREDEFINED_PLAYERS[6], 6],
+      [HeroUnitName.ENCHANTER, Mana.BLUE, PREDEFINED_PLAYERS[7], 7],
+      [HeroUnitName.DRUID, Mana.GREEN, PREDEFINED_PLAYERS[12], 7],
+      [HeroUnitName.PYROMANCER, Mana.RED, PREDEFINED_PLAYERS[14], 6],
     ])(
       'special land has effect if player (%s) own it and has hero of the related type',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
@@ -216,11 +216,11 @@ describe('Calculate Mana', () => {
 
   const expectManaOnTurn = (turn: number, base: number[]): void => {
     // verifying mana for all players when player[0] is turnOwner and that is why their mana on the previous turn
-    expectedMana(ManaKind.BLACK, base[0] * (turn - 2), 0);
-    expectedMana(ManaKind.WHITE, base[1] * (turn - 3), 1);
-    expectedMana(ManaKind.BLUE, base[2] * (turn - 3), 2);
-    expectedMana(ManaKind.GREEN, base[3] * (turn - 3), 3);
-    expectedMana(ManaKind.RED, base[4] * (turn - 3), 4);
+    expectedMana(Mana.BLACK, base[0] * (turn - 2), 0);
+    expectedMana(Mana.WHITE, base[1] * (turn - 3), 1);
+    expectedMana(Mana.BLUE, base[2] * (turn - 3), 2);
+    expectedMana(Mana.GREEN, base[3] * (turn - 3), 3);
+    expectedMana(Mana.RED, base[4] * (turn - 3), 4);
   };
 
   const baseMana = (player: PlayerState) => {
@@ -296,10 +296,10 @@ describe('Calculate Mana', () => {
 
     testTurnManagement.makeNTurns(1);
 
-    expect(gameStateStub.players[0].mana[ManaKind.RED]).toBe(1);
-    expect(gameStateStub.players[0].mana[ManaKind.BLACK]).toBe(7);
-    expect(gameStateStub.players[0].mana[ManaKind.WHITE]).toBe(0);
-    expect(gameStateStub.players[0].mana[ManaKind.BLUE]).toBe(0);
-    expect(gameStateStub.players[0].mana[ManaKind.GREEN]).toBe(0);
+    expect(gameStateStub.players[0].mana[Mana.RED]).toBe(1);
+    expect(gameStateStub.players[0].mana[Mana.BLACK]).toBe(7);
+    expect(gameStateStub.players[0].mana[Mana.WHITE]).toBe(0);
+    expect(gameStateStub.players[0].mana[Mana.BLUE]).toBe(0);
+    expect(gameStateStub.players[0].mana[Mana.GREEN]).toBe(0);
   });
 });

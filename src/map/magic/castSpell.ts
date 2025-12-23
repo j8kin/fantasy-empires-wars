@@ -40,7 +40,7 @@ import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 import { getAvailableToCastSpellLands } from './getAvailableToCastSpellLands';
 import { LandKind } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
-import { ManaKind } from '../../types/Mana';
+import { Mana } from '../../types/Mana';
 import { TreasureName } from '../../types/Treasures';
 import { EffectKind } from '../../types/Effect';
 import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName } from '../../types/UnitType';
@@ -200,7 +200,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       updatedState,
       updatedState.turnOwner,
       spell.manaType,
-      -Math.floor(spell.manaCost * (spell.manaType === ManaKind.GREEN && hasVerdantIdol ? 0.85 : 1))
+      -Math.floor(spell.manaCost * (spell.manaType === Mana.GREEN && hasVerdantIdol ? 0.85 : 1))
     )
   );
 };

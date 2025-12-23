@@ -1,4 +1,4 @@
-import { ManaKind } from '../types/Mana';
+import { Mana } from '../types/Mana';
 
 import type { PlayerState } from '../state/player/PlayerState';
 import type { PlayerProfile } from '../state/player/PlayerProfile';
@@ -17,11 +17,11 @@ export const playerFactory = (
     diplomacy: {},
     empireTreasures: [],
     mana: {
-      [ManaKind.WHITE]: 0,
-      [ManaKind.BLACK]: 0,
-      [ManaKind.GREEN]: 0,
-      [ManaKind.BLUE]: 0,
-      [ManaKind.RED]: 0,
+      [Mana.WHITE]: 0,
+      [Mana.BLACK]: 0,
+      [Mana.GREEN]: 0,
+      [Mana.BLUE]: 0,
+      [Mana.RED]: 0,
     },
     effects: [],
     quests: [],

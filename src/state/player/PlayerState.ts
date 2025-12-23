@@ -1,5 +1,5 @@
 import type { PlayerColorName } from '../../types/PlayerColors';
-import type { Mana } from '../../types/Mana';
+import type { ManaType } from '../../types/Mana';
 import type { HeroQuest } from '../../types/Quest';
 import type { EmpireTreasure } from '../../types/Treasures';
 import type { Diplomacy } from '../../types/Diplomacy';
@@ -13,7 +13,7 @@ export interface PlayerState {
   playerProfile: PlayerProfile;
   color: PlayerColorName;
 
-  mana: Mana;
+  mana: Record<ManaType, number>;
   effects: Effect[];
 
   vault: number;

@@ -11,7 +11,7 @@ import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getMinManaCost } from '../../selectors/spellSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { heroFactory } from '../../factories/heroFactory';
-import { ManaKind } from '../../types/Mana';
+import { Mana } from '../../types/Mana';
 import { HeroUnitName } from '../../types/UnitType';
 import type { GameState } from '../../state/GameState';
 
@@ -97,11 +97,11 @@ describe('VialPanel Integration Test', () => {
       );
       // Set mana values above minimum thresholds
       getTurnOwner(gameState).mana = {
-        [ManaKind.WHITE]: 1,
-        [ManaKind.BLUE]: 1,
-        [ManaKind.GREEN]: 1,
-        [ManaKind.RED]: 1,
-        [ManaKind.BLACK]: 1,
+        [Mana.WHITE]: 1,
+        [Mana.BLUE]: 1,
+        [Mana.GREEN]: 1,
+        [Mana.RED]: 1,
+        [Mana.BLACK]: 1,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -140,11 +140,11 @@ describe('VialPanel Integration Test', () => {
       );
 
       getTurnOwner(gameState).mana = {
-        [ManaKind.WHITE]: 1,
-        [ManaKind.BLUE]: 1,
-        [ManaKind.GREEN]: 1,
-        [ManaKind.RED]: 1,
-        [ManaKind.BLACK]: 1,
+        [Mana.WHITE]: 1,
+        [Mana.BLUE]: 1,
+        [Mana.GREEN]: 1,
+        [Mana.RED]: 1,
+        [Mana.BLACK]: 1,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -160,11 +160,11 @@ describe('VialPanel Integration Test', () => {
     it('should render no vials when all mana is below minimum thresholds', () => {
       // Set all mana types below minimum thresholds
       getTurnOwner(gameState).mana = {
-        [ManaKind.WHITE]: getMinManaCost(ManaKind.WHITE) - 1,
-        [ManaKind.BLUE]: getMinManaCost(ManaKind.BLUE) - 1,
-        [ManaKind.GREEN]: getMinManaCost(ManaKind.GREEN) - 1,
-        [ManaKind.RED]: getMinManaCost(ManaKind.RED) - 1,
-        [ManaKind.BLACK]: getMinManaCost(ManaKind.BLACK) - 1,
+        [Mana.WHITE]: getMinManaCost(Mana.WHITE) - 1,
+        [Mana.BLUE]: getMinManaCost(Mana.BLUE) - 1,
+        [Mana.GREEN]: getMinManaCost(Mana.GREEN) - 1,
+        [Mana.RED]: getMinManaCost(Mana.RED) - 1,
+        [Mana.BLACK]: getMinManaCost(Mana.BLACK) - 1,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -183,11 +183,11 @@ describe('VialPanel Integration Test', () => {
       nextPlayer(gameState); // Switch to AI player
       // Set mana values above minimum thresholds for AI player
       getTurnOwner(gameState).mana = {
-        [ManaKind.WHITE]: getMinManaCost(ManaKind.WHITE) + 10,
-        [ManaKind.BLUE]: getMinManaCost(ManaKind.BLUE) + 15,
-        [ManaKind.GREEN]: getMinManaCost(ManaKind.GREEN) + 20,
-        [ManaKind.RED]: getMinManaCost(ManaKind.RED) + 25,
-        [ManaKind.BLACK]: getMinManaCost(ManaKind.BLACK) + 30,
+        [Mana.WHITE]: getMinManaCost(Mana.WHITE) + 10,
+        [Mana.BLUE]: getMinManaCost(Mana.BLUE) + 15,
+        [Mana.GREEN]: getMinManaCost(Mana.GREEN) + 20,
+        [Mana.RED]: getMinManaCost(Mana.RED) + 25,
+        [Mana.BLACK]: getMinManaCost(Mana.BLACK) + 30,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -205,11 +205,11 @@ describe('VialPanel Integration Test', () => {
     it('should properly render ManaVial with different mana amounts', () => {
       // Set specific mana amounts to test ManaVial rendering
       getTurnOwner(gameState).mana = {
-        [ManaKind.WHITE]: 50, // Low mana
-        [ManaKind.BLUE]: 100, // Medium mana
-        [ManaKind.GREEN]: 200, // Max mana
-        [ManaKind.RED]: getMinManaCost(ManaKind.RED) - 1, // Below threshold (won't render)
-        [ManaKind.BLACK]: 150, // High mana
+        [Mana.WHITE]: 50, // Low mana
+        [Mana.BLUE]: 100, // Medium mana
+        [Mana.GREEN]: 200, // Max mana
+        [Mana.RED]: getMinManaCost(Mana.RED) - 1, // Below threshold (won't render)
+        [Mana.BLACK]: 150, // High mana
       };
 
       renderVialPanelWithGameState(gameState);
@@ -265,11 +265,11 @@ describe('VialPanel Integration Test', () => {
 
       const humanPlayer = getTurnOwner(gameState);
       humanPlayer.mana = {
-        [ManaKind.WHITE]: getMinManaCost(ManaKind.WHITE) + 10,
-        [ManaKind.BLUE]: getMinManaCost(ManaKind.BLUE) + 15,
-        [ManaKind.GREEN]: getMinManaCost(ManaKind.GREEN) + 20,
-        [ManaKind.RED]: getMinManaCost(ManaKind.RED) + 25,
-        [ManaKind.BLACK]: getMinManaCost(ManaKind.BLACK) + 30,
+        [Mana.WHITE]: getMinManaCost(Mana.WHITE) + 10,
+        [Mana.BLUE]: getMinManaCost(Mana.BLUE) + 15,
+        [Mana.GREEN]: getMinManaCost(Mana.GREEN) + 20,
+        [Mana.RED]: getMinManaCost(Mana.RED) + 25,
+        [Mana.BLACK]: getMinManaCost(Mana.BLACK) + 30,
       };
 
       const { rerender } = renderVialPanelWithGameState(gameState);
@@ -280,11 +280,11 @@ describe('VialPanel Integration Test', () => {
       // Now set mana to undefined/null for some types and re-render
       // This tests the ManaVial component's null handling (should return null)
       humanPlayer.mana = {
-        [ManaKind.WHITE]: getMinManaCost(ManaKind.WHITE) + 10,
-        [ManaKind.BLUE]: undefined as any,
-        [ManaKind.GREEN]: null as any,
-        [ManaKind.RED]: getMinManaCost(ManaKind.RED) + 25,
-        [ManaKind.BLACK]: 0, // Since hero exist vial should be rendered
+        [Mana.WHITE]: getMinManaCost(Mana.WHITE) + 10,
+        [Mana.BLUE]: undefined as any,
+        [Mana.GREEN]: null as any,
+        [Mana.RED]: getMinManaCost(Mana.RED) + 25,
+        [Mana.BLACK]: 0, // Since hero exist vial should be rendered
       };
 
       rerender(
@@ -323,11 +323,11 @@ describe('VialPanel Integration Test', () => {
       );
 
       getTurnOwner(gameState).mana = {
-        [ManaKind.WHITE]: 1,
-        [ManaKind.BLUE]: 1, // Won't render
-        [ManaKind.GREEN]: 1,
-        [ManaKind.RED]: 1, // Won't render
-        [ManaKind.BLACK]: 1,
+        [Mana.WHITE]: 1,
+        [Mana.BLUE]: 1, // Won't render
+        [Mana.GREEN]: 1,
+        [Mana.RED]: 1, // Won't render
+        [Mana.BLACK]: 1,
       };
 
       renderVialPanelWithGameState(gameState);

@@ -1,7 +1,6 @@
-import { AllSpells } from '../types/Spell';
-
-import type { SpellType, Spell } from '../types/Spell';
+import type { Spell, SpellType } from '../types/Spell';
 import type { ManaType } from '../types/Mana';
+import { AllSpells } from '../domain/spell/spellsRepository';
 
 export const getSpellById = (id: SpellType): Spell => AllSpells.find((spell) => spell.id === id)!;
 

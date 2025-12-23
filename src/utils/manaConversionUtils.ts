@@ -1,4 +1,4 @@
-import { ManaKind } from '../types/Mana';
+import { Mana } from '../types/Mana';
 import { Alignment } from '../types/Alignment';
 import type { ManaType } from '../types/Mana';
 import type { AlignmentType } from '../types/Alignment';
@@ -18,24 +18,24 @@ export const calculateManaConversionAmount = (
   switch (alignment) {
     case Alignment.CHAOTIC:
       switch (targetManaType) {
-        case ManaKind.BLACK:
-        case ManaKind.RED:
+        case Mana.BLACK:
+        case Mana.RED:
           return 90;
-        case ManaKind.GREEN:
+        case Mana.GREEN:
           return 75;
-        case ManaKind.WHITE:
+        case Mana.WHITE:
           return 50;
         default:
           return 0;
       }
     case Alignment.LAWFUL:
       switch (targetManaType) {
-        case ManaKind.WHITE:
-        case ManaKind.GREEN:
+        case Mana.WHITE:
+        case Mana.GREEN:
           return 90;
-        case ManaKind.RED:
+        case Mana.RED:
           return 75;
-        case ManaKind.BLACK:
+        case Mana.BLACK:
           return 50;
         default:
           return 0;

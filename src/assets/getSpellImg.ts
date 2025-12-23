@@ -1,5 +1,5 @@
 import { SpellName } from '../types/Spell';
-import { ManaKind } from '../types/Mana';
+import { Mana } from '../types/Mana';
 import type { ManaType } from '../types/Mana';
 import type { Spell } from '../types/Spell';
 
@@ -82,15 +82,15 @@ export const getSpellImg = (spell: Spell) => {
 
 export const getSpellEndAnimationImg = (manaType: ManaType) => {
   switch (manaType) {
-    case ManaKind.WHITE:
+    case Mana.WHITE:
       return whiteEndAnimationImg;
-    case ManaKind.BLACK:
+    case Mana.BLACK:
       return blackEndAnimationImg;
-    case ManaKind.GREEN:
+    case Mana.GREEN:
       return greenEndAnimationImg;
-    case ManaKind.RED:
+    case Mana.RED:
       return redEndAnimationImg;
-    case ManaKind.BLUE:
+    case Mana.BLUE:
       return blueEndAnimationImg;
   }
 };

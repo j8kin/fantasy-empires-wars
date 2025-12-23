@@ -10,7 +10,7 @@ import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPe
 import { changeOwner } from '../map/move-army/changeOwner';
 import { calculateMana } from '../map/magic/calculateMana';
 import { TreasureName } from '../types/Treasures';
-import { ManaKind } from '../types/Mana';
+import { Mana } from '../types/Mana';
 import type { GameState } from '../state/GameState';
 import type { EmpireEvent } from '../types/EmpireEvent';
 
@@ -57,7 +57,7 @@ export const startTurn = (
     // 10% reduction is already applied in `calculatePlayerIncome`
     Object.assign(
       gameState,
-      updatePlayerMana(gameState, player.id, ManaKind.BLACK, currentIncome * 0.001)
+      updatePlayerMana(gameState, player.id, Mana.BLACK, currentIncome * 0.001)
     );
   }
 

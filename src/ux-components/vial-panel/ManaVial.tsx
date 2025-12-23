@@ -8,8 +8,8 @@ import { getManaSource } from '../../domain/mana/manaSource';
 
 import { getManaVialImg } from '../../assets/getManaVialImg';
 
-import { ManaKind, MAX_MANA } from '../../types/Mana';
-import { AllSpells } from '../../types/Spell';
+import { Mana, MAX_MANA } from '../../types/Mana';
+import { AllSpells } from '../../domain/spell/spellsRepository';
 
 import type { GameState } from '../../state/GameState';
 import type { ManaType } from '../../types/Mana';
@@ -45,7 +45,7 @@ const calculateFillLevel = (gameState: GameState, manaType: ManaType, cMana: num
       return maxHeroLevel > 0 ? 10 : 0;
     case 1:
       // TURN_UNDEAD available to cast only if CLERIC hero is under control
-      if (manaType === ManaKind.WHITE && maxHeroLevel === 0) return 0;
+      if (manaType === Mana.WHITE && maxHeroLevel === 0) return 0;
       return 27;
     case 2:
       return 45;

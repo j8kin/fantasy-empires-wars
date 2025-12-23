@@ -11,7 +11,7 @@ import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { getPlayer } from '../../selectors/playerSelectors';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-import { ManaKind } from '../../types/Mana';
+import { Mana } from '../../types/Mana';
 
 import { generateMockMap } from '../utils/generateMockMap';
 
@@ -33,11 +33,11 @@ const renderWithProvider = (ui: React.ReactElement) => {
         const firstPlayer = getPlayer(newGameState, PREDEFINED_PLAYERS[0].id);
         firstPlayer.vault = 1500;
         firstPlayer.mana = {
-          [ManaKind.WHITE]: 100,
-          [ManaKind.BLACK]: 100,
-          [ManaKind.RED]: 100,
-          [ManaKind.GREEN]: 100,
-          [ManaKind.BLUE]: 100,
+          [Mana.WHITE]: 100,
+          [Mana.BLACK]: 100,
+          [Mana.RED]: 100,
+          [Mana.GREEN]: 100,
+          [Mana.BLUE]: 100,
         };
 
         updateGameState(newGameState);

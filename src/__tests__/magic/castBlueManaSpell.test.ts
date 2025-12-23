@@ -11,7 +11,7 @@ import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
 import { EffectKind } from '../../types/Effect';
-import { ManaKind } from '../../types/Mana';
+import { Mana } from '../../types/Mana';
 import { UnitRank } from '../../state/army/RegularsState';
 import type { GameState } from '../../state/GameState';
 import type { PlayerState } from '../../state/player/PlayerState';
@@ -211,18 +211,18 @@ describe('castBlueManaSpell', () => {
 
   describe('Cast ARCANE EXCHANGE spell', () => {
     it.each([
-      [90, ManaKind.WHITE, Alignment.LAWFUL],
-      [90, ManaKind.GREEN, Alignment.LAWFUL],
-      [75, ManaKind.RED, Alignment.LAWFUL],
-      [50, ManaKind.BLACK, Alignment.LAWFUL],
-      [95, ManaKind.WHITE, Alignment.NEUTRAL],
-      [95, ManaKind.GREEN, Alignment.NEUTRAL],
-      [95, ManaKind.RED, Alignment.NEUTRAL],
-      [95, ManaKind.BLACK, Alignment.NEUTRAL],
-      [50, ManaKind.WHITE, Alignment.CHAOTIC],
-      [75, ManaKind.GREEN, Alignment.CHAOTIC],
-      [90, ManaKind.RED, Alignment.CHAOTIC],
-      [90, ManaKind.BLACK, Alignment.CHAOTIC],
+      [90, Mana.WHITE, Alignment.LAWFUL],
+      [90, Mana.GREEN, Alignment.LAWFUL],
+      [75, Mana.RED, Alignment.LAWFUL],
+      [50, Mana.BLACK, Alignment.LAWFUL],
+      [95, Mana.WHITE, Alignment.NEUTRAL],
+      [95, Mana.GREEN, Alignment.NEUTRAL],
+      [95, Mana.RED, Alignment.NEUTRAL],
+      [95, Mana.BLACK, Alignment.NEUTRAL],
+      [50, Mana.WHITE, Alignment.CHAOTIC],
+      [75, Mana.GREEN, Alignment.CHAOTIC],
+      [90, Mana.RED, Alignment.CHAOTIC],
+      [90, Mana.BLACK, Alignment.CHAOTIC],
     ])(
       '100 Blue mana exchanged into %s %s mana for %s player',
       (mana: number, newManaType: ManaType, playerAlignment: AlignmentType) => {
@@ -243,15 +243,15 @@ describe('castBlueManaSpell', () => {
 
         gameStateStub.turnOwner = player.id;
         const turnOwnerMana = getTurnOwner(gameStateStub).mana;
-        turnOwnerMana[ManaKind.BLUE] = 200;
-        turnOwnerMana[ManaKind.WHITE] = 0;
-        turnOwnerMana[ManaKind.GREEN] = 0;
-        turnOwnerMana[ManaKind.RED] = 0;
-        turnOwnerMana[ManaKind.BLACK] = 0;
+        turnOwnerMana[Mana.BLUE] = 200;
+        turnOwnerMana[Mana.WHITE] = 0;
+        turnOwnerMana[Mana.GREEN] = 0;
+        turnOwnerMana[Mana.RED] = 0;
+        turnOwnerMana[Mana.BLACK] = 0;
 
         castSpell(gameStateStub, SpellName.EXCHANGE, undefined, undefined, newManaType);
 
-        expect(getTurnOwner(gameStateStub).mana[ManaKind.BLUE]).toBe(100);
+        expect(getTurnOwner(gameStateStub).mana[Mana.BLUE]).toBe(100);
         expect(getTurnOwner(gameStateStub).mana[newManaType]).toBe(mana);
       }
     );

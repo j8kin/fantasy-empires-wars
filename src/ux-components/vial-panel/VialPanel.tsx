@@ -9,7 +9,7 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { castSpell } from '../../map/magic/castSpell';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
-import { ManaKind } from '../../types/Mana';
+import { Mana } from '../../types/Mana';
 import { SpellName } from '../../types/Spell';
 
 import type { ManaType } from '../../types/Mana';
@@ -42,7 +42,7 @@ const VialPanel: React.FC = () => {
 
   if (isArcaneExchangeMode) {
     // In exchange mode, show all mana types except blue at max level
-    const exchangeableManaTypes = Object.values(ManaKind).filter((m) => m !== ManaKind.BLUE);
+    const exchangeableManaTypes = Object.values(Mana).filter((m) => m !== Mana.BLUE);
     return (
       <div className={styles.vialPanel} style={{ position: 'relative' }}>
         {exchangeableManaTypes.map((manaType) => (
@@ -65,7 +65,7 @@ const VialPanel: React.FC = () => {
   // Normal mode
   return (
     <div className={styles.vialPanel}>
-      {Object.values(ManaKind).map((m) => (
+      {Object.values(Mana).map((m) => (
         <ManaVial key={m} color={m} mana={turnOwner?.mana?.[m]} />
       ))}
     </div>

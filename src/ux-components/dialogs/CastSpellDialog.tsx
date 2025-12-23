@@ -11,8 +11,9 @@ import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCast
 
 import { getSpellImg } from '../../assets/getSpellImg';
 
+import { SpellName } from '../../types/Spell';
+import { AllSpells } from '../../domain/spell/spellsRepository';
 import type { SpellType } from '../../types/Spell';
-import { AllSpells, SpellName } from '../../types/Spell';
 
 const CastSpellDialog: React.FC = () => {
   const {
