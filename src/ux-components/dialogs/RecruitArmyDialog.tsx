@@ -130,17 +130,17 @@ const RecruitArmyDialog: React.FC = () => {
     .filter(
       (u) =>
         // non-mages should be recruited in BARRACKS only
-        (recruitBuilding.id === BuildingType.BARRACKS &&
+        (recruitBuilding.type === BuildingType.BARRACKS &&
           !isMageType(u) &&
           // The players, who reject magic, should be able to recruit their owned special heroes
           (u !== HeroUnitType.WARSMITH ||
             getTurnOwner(gameState).playerProfile.type === HeroUnitType.WARSMITH)) ||
         // mage Heroes should be recruited in related towers only
-        (u === HeroUnitType.CLERIC && recruitBuilding.id === BuildingType.WHITE_MAGE_TOWER) ||
-        (u === HeroUnitType.ENCHANTER && recruitBuilding.id === BuildingType.BLUE_MAGE_TOWER) ||
-        (u === HeroUnitType.DRUID && recruitBuilding.id === BuildingType.GREEN_MAGE_TOWER) ||
-        (u === HeroUnitType.PYROMANCER && recruitBuilding.id === BuildingType.RED_MAGE_TOWER) ||
-        (u === HeroUnitType.NECROMANCER && recruitBuilding.id === BuildingType.BLACK_MAGE_TOWER)
+        (u === HeroUnitType.CLERIC && recruitBuilding.type === BuildingType.WHITE_MAGE_TOWER) ||
+        (u === HeroUnitType.ENCHANTER && recruitBuilding.type === BuildingType.BLUE_MAGE_TOWER) ||
+        (u === HeroUnitType.DRUID && recruitBuilding.type === BuildingType.GREEN_MAGE_TOWER) ||
+        (u === HeroUnitType.PYROMANCER && recruitBuilding.type === BuildingType.RED_MAGE_TOWER) ||
+        (u === HeroUnitType.NECROMANCER && recruitBuilding.type === BuildingType.BLACK_MAGE_TOWER)
     )
     .map((unit) => typeToRecruitProps(unit))
     .sort((a, b) => sortArmyUnits(a) - sortArmyUnits(b));

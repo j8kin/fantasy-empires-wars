@@ -75,7 +75,7 @@ describe('LandInfoPopup', () => {
 
     // Find a tile controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getPlayerLands(gameStateStub, gameStateStub.players[1].id).find((l) =>
-      l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
     )!;
 
     jest.clearAllMocks();

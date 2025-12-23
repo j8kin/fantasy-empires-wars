@@ -27,13 +27,13 @@ export const getAvailableToCastSpellLands = (
       .filter((l) =>
         l.buildings.some(
           (b) =>
-            b.id === BuildingType.BLACK_MAGE_TOWER ||
-            b.id === BuildingType.OUTPOST ||
-            b.id === BuildingType.STRONGHOLD
+            b.type === BuildingType.BLACK_MAGE_TOWER ||
+            b.type === BuildingType.OUTPOST ||
+            b.type === BuildingType.STRONGHOLD
         )
       )
       .forEach((land) => {
-        const isStronghold = land.buildings.some((b) => b.id === BuildingType.STRONGHOLD);
+        const isStronghold = land.buildings.some((b) => b.type === BuildingType.STRONGHOLD);
         getTilesInRadius(
           getMapDimensions(gameState),
           land.mapPos,

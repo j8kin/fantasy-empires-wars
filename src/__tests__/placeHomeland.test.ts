@@ -8,7 +8,7 @@ import { GameState } from '../state/GameState';
 describe('Game Start: add player to map', () => {
   const getStrongholds = (gameState: GameState) =>
     Object.values(gameState.map.lands).filter((l) =>
-      l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
     );
 
   it('turnOwner should be placed on map on Turn 0', () => {

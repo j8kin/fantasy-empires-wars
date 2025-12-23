@@ -47,7 +47,7 @@ export const placeHomeland = (gameState: GameState) => {
 
   const existingPlayersHomelands = gameState.players
     .flatMap((p) => getPlayerLands(gameState, p.id))
-    .filter((l) => l.buildings.some((b) => b.id === BuildingType.STRONGHOLD));
+    .filter((l) => l.buildings.some((b) => b.type === BuildingType.STRONGHOLD));
 
   // get all lands which are not in radius 4 from any player's homeland'
   let freeToBuildLands = Object.keys(gameState.map.lands).filter(

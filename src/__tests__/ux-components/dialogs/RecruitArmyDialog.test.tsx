@@ -189,7 +189,7 @@ describe('RecruitArmyDialog', () => {
       // Fill all barracks slots
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(gameStateStub, landPos);
-      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
+      const barracks = land.buildings.find((b) => b.type === BuildingType.BARRACKS);
       if (barracks) {
         barracks.slots = [
           { unit: RegularUnitType.WARRIOR, turnsRemaining: 1, isOccupied: true },
@@ -642,7 +642,7 @@ describe('RecruitArmyDialog', () => {
       // Modify the game state after initial render by occupying some slots
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(gameStateStub, landPos);
-      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
+      const barracks = land.buildings.find((b) => b.type === BuildingType.BARRACKS);
       if (barracks) {
         // Occupy first slot
         barracks.slots[0].isOccupied = true;

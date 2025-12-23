@@ -43,7 +43,7 @@ describe('Recruitment', () => {
 
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
     )!;
   });
 

@@ -20,7 +20,7 @@ describe('getHostileLands', () => {
   beforeEach(() => {
     gameStateStub = createGameStateStub({ nPlayers: 2 });
     homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
     )!.mapPos;
   });
   it('return no hostile lans when all armies are near strongholds', () => {

@@ -25,7 +25,7 @@ export const destroyBuilding = (gameState: GameState, landPos: LandPosition): Ga
   const player = getLandOwner(gameState, landPos);
   const landId = getLandId(landPos);
   const isStronghold = gameState.map.lands[landId].buildings.some(
-    (b) => b.id === BuildingType.STRONGHOLD
+    (b) => b.type === BuildingType.STRONGHOLD
   );
 
   let updatedState = clearLandBuildings(gameState, landPos); // delete all buildings since only one could be on the land (todo: think about WALL it could be an additional building for now destroy all)
@@ -54,7 +54,7 @@ export const destroyBuilding = (gameState: GameState, landPos: LandPosition): Ga
       } else {
         // no army look for nearest stronghold
         const nearestStrongholds = getTilesInRadius(getMapDimensions(updatedState), l, 1).filter(
-          (l) => getLand(updatedState, l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
+          (l) => getLand(updatedState, l).buildings?.some((b) => b.type === BuildingType.STRONGHOLD)
         );
         if (nearestStrongholds && nearestStrongholds.length > 0) {
           if (!nearestStrongholds.some((s) => hasLand(owner, s))) {

@@ -28,7 +28,7 @@ export const startRecruiting = (
     // additionally verify that regular units and non-magic heroes are recruited in BARRACKS and mages are in mage tower
     if (isHeroType(unitType)) {
       if (!isMageType(unitType)) {
-        if (land.buildings[buildingIdx].id !== BuildingType.BARRACKS) {
+        if (land.buildings[buildingIdx].type !== BuildingType.BARRACKS) {
           return; // fallback: wrong building type for non-magic heroes
         }
       } else {
@@ -53,11 +53,11 @@ export const startRecruiting = (
           default:
             break; // fallback should never reach here
         }
-        if (expectedMageTower == null || land.buildings[buildingIdx].id !== expectedMageTower) {
+        if (expectedMageTower == null || land.buildings[buildingIdx].type !== expectedMageTower) {
           return;
         }
       }
-    } else if (land.buildings[buildingIdx].id !== BuildingType.BARRACKS) {
+    } else if (land.buildings[buildingIdx].type !== BuildingType.BARRACKS) {
       return; // fallback: wrong building type for regular units
     }
 

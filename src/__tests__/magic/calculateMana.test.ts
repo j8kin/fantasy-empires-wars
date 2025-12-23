@@ -96,7 +96,7 @@ describe('Calculate Mana', () => {
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
           const homeLand = getPlayerLands(gameStateStub).find((l) =>
-            l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+            l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
           )!;
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 2 }; // outside player land
           getLand(gameStateStub, specialLand).land = getLandById(landType);
@@ -136,7 +136,7 @@ describe('Calculate Mana', () => {
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
           const homeLandPlayer2 = getPlayerLands(gameStateStub, PREDEFINED_PLAYERS[13].id).find(
-            (l) => l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+            (l) => l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
           )!;
           const specialLand = {
             row: homeLandPlayer2.mapPos.row,
@@ -184,7 +184,7 @@ describe('Calculate Mana', () => {
           gameStateStub = createGameStateStub({ gamePlayers: players });
 
           const homeLand = getPlayerLands(gameStateStub).find((l) =>
-            l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+            l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
           )!;
 
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
@@ -281,7 +281,7 @@ describe('Calculate Mana', () => {
     );
 
     const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
     )!;
 
     getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandType.VOLCANO); // this should add red mana to player 0

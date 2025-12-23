@@ -44,7 +44,7 @@ export const changeOwner = (gameState: GameState): void => {
     // trying to find any other owners
     const neighbourLands = getTilesInRadius(getMapDimensions(updatedState), land.mapPos, 1);
     const nearestStronghold = neighbourLands.find((l) =>
-      getLand(updatedState, l).buildings?.some((b) => b.id === BuildingType.STRONGHOLD)
+      getLand(updatedState, l).buildings?.some((b) => b.type === BuildingType.STRONGHOLD)
     );
     if (nearestStronghold) {
       const newLandOwnerId = getLandOwner(updatedState, nearestStronghold);

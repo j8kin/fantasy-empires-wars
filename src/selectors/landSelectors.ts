@@ -86,7 +86,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       effects: [...land.effects],
       heroes: armies.flatMap((a) => a.heroes).map((h) => `${h.name} lvl: ${h.level}`),
       regulars: armies.flatMap((a) => a.regulars).map((r) => `${r.type} (${r.count})`),
-      buildings: land.buildings.map((b) => b.id),
+      buildings: land.buildings.map((b) => b.type),
     };
   } else {
     return {
@@ -100,7 +100,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       heroes: [],
       regulars: [],
       // return buildings only for neutral lands if VIEW_TERRITORY spell is not affected on opponent
-      buildings: landOwnerId === NO_PLAYER.id ? land.buildings.map((b) => b.id) : [],
+      buildings: landOwnerId === NO_PLAYER.id ? land.buildings.map((b) => b.type) : [],
     };
   }
 };
@@ -145,7 +145,7 @@ export const getRealmLands = (state: GameState): LandState[] => {
     }
   });
   const playerStrongholds = lands.filter((l) =>
-    l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+    l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
   );
   playerStrongholds.forEach((s) =>
     getTilesInRadius(state.map.dimensions, s.mapPos, 1).forEach((pos) =>

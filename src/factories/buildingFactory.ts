@@ -2,7 +2,8 @@ import { isMageTower } from '../domain/building/buildingRepository';
 
 import { BuildingType } from '../types/Building';
 import { RegularUnitType } from '../types/UnitType';
-import type { Building, RecruitmentSlot } from '../types/Building';
+import type { BuildingState } from '../state/map/building/BuildingState';
+import type { RecruitmentSlot } from '../types/Building';
 
 // Building slot constants
 const BARRACKS_SLOTS = 3;
@@ -20,9 +21,9 @@ const recruitmentSlotFactory = (): RecruitmentSlot => ({
 /**
  * Factory function to create a building instance with proper slot initialization
  */
-export const buildingFactory = (type: BuildingType): Building => {
-  const building: Building = {
-    id: type,
+export const buildingFactory = (type: BuildingType): BuildingState => {
+  const building: BuildingState = {
+    type: type,
     slots: [],
   };
 

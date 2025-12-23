@@ -13,7 +13,7 @@ export const calculateIncome = (gameState: GameState): number => {
 
   const playerLands = getPlayerLands(gameState);
   const playerStrongholds = playerLands
-    .filter((l) => l.buildings.some((b) => b.id === BuildingType.STRONGHOLD))
+    .filter((l) => l.buildings.some((b) => b.type === BuildingType.STRONGHOLD))
     .map((land) => land.mapPos);
 
   return playerLands.reduce((acc, land) => {
@@ -34,7 +34,7 @@ export const calculateIncome = (gameState: GameState): number => {
 
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Buildings#stronghold
     if (
-      !land.buildings.some((b) => b.id === BuildingType.STRONGHOLD) &&
+      !land.buildings.some((b) => b.type === BuildingType.STRONGHOLD) &&
       playerProfile.alignment === Alignment.CHAOTIC
     ) {
       landIncome = land.goldPerTurn * 0.8;

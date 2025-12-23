@@ -58,7 +58,7 @@ describe('Move Army', () => {
 
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
     )!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };

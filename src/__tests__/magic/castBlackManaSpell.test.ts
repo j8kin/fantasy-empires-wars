@@ -168,7 +168,7 @@ describe('castBlackManaSpell', () => {
 
     it('CORRUPTION Could be cast only radius 2 STRONGHOLD', () => {
       const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
-      expect(getLand(gameStateStub, homelandPos).buildings[0].id).toBe(BuildingType.STRONGHOLD);
+      expect(getLand(gameStateStub, homelandPos).buildings[0].type).toBe(BuildingType.STRONGHOLD);
       let castPosition: LandPosition = { row: homelandPos.row + 1, col: homelandPos.col };
       expect(getLand(gameStateStub, castPosition).corrupted).toBeFalsy();
 

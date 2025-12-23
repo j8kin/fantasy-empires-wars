@@ -20,7 +20,7 @@ export const getAvailableToConstructLands = (
         .filter(
           (land) =>
             (land.buildings.length === 0 ||
-              !land.buildings?.some((b) => b.id === BuildingType.WALL)) &&
+              !land.buildings?.some((b) => b.type === BuildingType.WALL)) &&
             getTilesInRadius(getMapDimensions(gameState), land.mapPos, 1, true).some(
               (tile) => getLandOwner(gameState, tile) !== turnOwner
             )
@@ -30,7 +30,7 @@ export const getAvailableToConstructLands = (
     case BuildingType.STRONGHOLD:
       const allStrongholds = gameState.players.flatMap((p) =>
         getPlayerLands(gameState, p.id).filter((l) =>
-          l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+          l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
         )
       );
       const strongholdsExcludedArea = allStrongholds.flatMap((stronghold) =>
@@ -53,7 +53,7 @@ export const getAvailableToConstructLands = (
         .filter(
           (land) =>
             land.buildings.length === 0 ||
-            (land.buildings.length === 1 && land.buildings[0].id === BuildingType.WALL)
+            (land.buildings.length === 1 && land.buildings[0].type === BuildingType.WALL)
         )
         .map((l) => getLandId(l.mapPos));
   }

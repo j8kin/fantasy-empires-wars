@@ -19,8 +19,3 @@ export interface RecruitmentSlot {
   unit: UnitType;
   turnsRemaining: number;
 }
-
-export interface Building {
-  id: BuildingType;
-  slots: RecruitmentSlot[];
-}
