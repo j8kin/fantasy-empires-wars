@@ -6,12 +6,13 @@ import { isHeroType, isMageType } from '../../domain/unit/unitTypeChecks';
 import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
 
-import { BuildingType } from '../../types/Building';
-import { TreasureType } from '../../types/Treasures';
-import { HeroUnitType } from '../../types/UnitType';
+import { BuildingName } from '../../types/Building';
+import { TreasureName } from '../../types/Treasures';
+import { HeroUnitName } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { BuildingType } from '../../types/Building';
 import type { UnitType } from '../../types/UnitType';
 
 export const startRecruiting = (
@@ -28,36 +29,36 @@ export const startRecruiting = (
     // additionally verify that regular units and non-magic heroes are recruited in BARRACKS and mages are in mage tower
     if (isHeroType(unitType)) {
       if (!isMageType(unitType)) {
-        if (land.buildings[buildingIdx].id !== BuildingType.BARRACKS) {
+        if (land.buildings[buildingIdx].type !== BuildingName.BARRACKS) {
           return; // fallback: wrong building type for non-magic heroes
         }
       } else {
         // fallback: wrong building type for mages
         let expectedMageTower: BuildingType | undefined = undefined;
         switch (unitType) {
-          case HeroUnitType.CLERIC:
-            expectedMageTower = BuildingType.WHITE_MAGE_TOWER;
+          case HeroUnitName.CLERIC:
+            expectedMageTower = BuildingName.WHITE_MAGE_TOWER;
             break;
-          case HeroUnitType.DRUID:
-            expectedMageTower = BuildingType.GREEN_MAGE_TOWER;
+          case HeroUnitName.DRUID:
+            expectedMageTower = BuildingName.GREEN_MAGE_TOWER;
             break;
-          case HeroUnitType.ENCHANTER:
-            expectedMageTower = BuildingType.BLUE_MAGE_TOWER;
+          case HeroUnitName.ENCHANTER:
+            expectedMageTower = BuildingName.BLUE_MAGE_TOWER;
             break;
-          case HeroUnitType.PYROMANCER:
-            expectedMageTower = BuildingType.RED_MAGE_TOWER;
+          case HeroUnitName.PYROMANCER:
+            expectedMageTower = BuildingName.RED_MAGE_TOWER;
             break;
-          case HeroUnitType.NECROMANCER:
-            expectedMageTower = BuildingType.BLACK_MAGE_TOWER;
+          case HeroUnitName.NECROMANCER:
+            expectedMageTower = BuildingName.BLACK_MAGE_TOWER;
             break;
           default:
             break; // fallback should never reach here
         }
-        if (expectedMageTower == null || land.buildings[buildingIdx].id !== expectedMageTower) {
+        if (expectedMageTower == null || land.buildings[buildingIdx].type !== expectedMageTower) {
           return;
         }
       }
-    } else if (land.buildings[buildingIdx].id !== BuildingType.BARRACKS) {
+    } else if (land.buildings[buildingIdx].type !== BuildingName.BARRACKS) {
       return; // fallback: wrong building type for regular units
     }
 
@@ -65,7 +66,7 @@ export const startRecruiting = (
     const availableGold = turnOwner.vault;
     if (availableGold != null && availableGold >= unitsBaseStats(unitType).recruitCost) {
       let newState: GameState = state;
-      const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureType.CROWN_OF_DOMINION);
+      const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureName.CROWN_OF_DOMINION);
 
       const costReduction = hasCrownOfDominion
         ? Math.ceil(unitsBaseStats(unitType).recruitCost * 0.85)

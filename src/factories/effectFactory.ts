@@ -3,10 +3,11 @@ import { getSpellById } from '../selectors/spellSelectors';
 import { getItem } from '../domain/treasure/treasureRepository';
 
 import { SpellName } from '../types/Spell';
+import type { SpellType } from '../types/Spell';
 import type { Effect, EffectSourceId } from '../types/Effect';
 
-const isSpellEffect = (effect: EffectSourceId): effect is SpellName => {
-  return Object.values(SpellName).includes(effect as SpellName);
+const isSpellEffect = (effect: EffectSourceId): effect is SpellType => {
+  return Object.values(SpellName).includes(effect as SpellType);
 };
 
 export const effectFactory = (sourceId: EffectSourceId, appliedBy: string): Effect => {

@@ -1,28 +1,29 @@
-import { MapState } from '../../state/map/MapState';
-import { MapDimensions } from '../../state/map/MapDimensions';
-import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
-
 import { getLandById } from '../../domain/land/landRepository';
-
-import { Land, LandType } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 
-const genLand = (alignment: Alignment | undefined): Land => {
+import type { MapState } from '../../state/map/MapState';
+import type { MapDimensions } from '../../state/map/MapDimensions';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { Land } from '../../types/Land';
+import type { AlignmentType } from '../../types/Alignment';
+
+const genLand = (alignment: AlignmentType | undefined): Land => {
   switch (alignment) {
     case Alignment.LAWFUL:
-      return getLandById(LandType.MOUNTAINS);
+      return getLandById(LandName.MOUNTAINS);
     case Alignment.NEUTRAL:
-      return getLandById(LandType.HILLS);
+      return getLandById(LandName.HILLS);
     case Alignment.CHAOTIC:
-      return getLandById(LandType.SWAMP);
+      return getLandById(LandName.SWAMP);
     default:
-      return getLandById(LandType.PLAINS);
+      return getLandById(LandName.PLAINS);
   }
 };
 export const generateMockMap = (
   dimensions: MapDimensions,
-  alignment: Alignment | undefined = undefined,
+  alignment: AlignmentType | undefined = undefined,
   income: number | undefined = undefined
 ): MapState => {
   const result: MapState = {

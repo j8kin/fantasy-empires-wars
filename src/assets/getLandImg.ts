@@ -1,4 +1,4 @@
-import { LandType } from '../types/Land';
+import { LandName } from '../types/Land';
 import type { LandState } from '../state/map/land/LandState';
 
 import darkForestImg from './lands/darkforest.png';
@@ -27,40 +27,40 @@ import greenForestCorruptedImg from './lands/green-forest-corrupted.png';
 
 export const getLandImg = (land: LandState): string | undefined => {
   switch (land.land.id) {
-    case LandType.PLAINS:
+    case LandName.PLAINS:
       return land.corrupted ? plainsCorruptedImg : plainsImg;
-    case LandType.HILLS:
+    case LandName.HILLS:
       return land.corrupted ? hillsCorruptedImg : hillsImg;
-    case LandType.MOUNTAINS:
+    case LandName.MOUNTAINS:
       return land.corrupted ? mountainsCorruptedImg : mountainsImg;
-    case LandType.GREEN_FOREST:
+    case LandName.GREEN_FOREST:
       return land.corrupted ? greenForestCorruptedImg : greenForestImg;
-    case LandType.DESERT:
+    case LandName.DESERT:
       return desertImg;
-    case LandType.SWAMP:
+    case LandName.SWAMP:
       return swampImg;
-    case LandType.DARK_FOREST:
+    case LandName.DARK_FOREST:
       return darkForestImg;
     // special lands
-    case LandType.VOLCANO:
+    case LandName.VOLCANO:
       return volcanoImg;
-    case LandType.LAVA:
+    case LandName.LAVA:
       return lavaImg;
-    case LandType.SUN_SPIRE_PEAKS:
+    case LandName.SUN_SPIRE_PEAKS:
       return sunSpirePeaks;
-    case LandType.GOLDEN_PLAINS:
+    case LandName.GOLDEN_PLAINS:
       return goldenPlains;
-    case LandType.CRISTAL_BASIN:
+    case LandName.CRISTAL_BASIN:
       return crystalBasinImg;
-    case LandType.MISTY_GLADES:
+    case LandName.MISTY_GLADES:
       return mistyGladesImg;
-    case LandType.SHADOW_MIRE:
+    case LandName.SHADOW_MIRE:
       return shadowMireImg;
-    case LandType.BLIGHTED_FEN:
+    case LandName.BLIGHTED_FEN:
       return blightedFenImg;
-    case LandType.HEARTWOOD_COVE:
+    case LandName.HEARTWOOD_COVE:
       return heartwoodGroveImg;
-    case LandType.VERDANT_GLADE:
+    case LandName.VERDANT_GLADE:
       return verdantGladeImg;
     default:
       return undefined;

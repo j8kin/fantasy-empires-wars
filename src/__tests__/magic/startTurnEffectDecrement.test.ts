@@ -1,11 +1,13 @@
-import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { startTurn } from '../../turn/startTurn';
-import { Effect, EffectTarget, EffectType } from '../../types/Effect';
+import { EffectKind, EffectTarget } from '../../types/Effect';
 import { SpellName } from '../../types/Spell';
-import { HeroUnitType } from '../../types/UnitType';
+import { HeroUnitName } from '../../types/UnitType';
+import type { GameState } from '../../state/GameState';
+import type { SpellType } from '../../types/Spell';
+import type { Effect, EffectType } from '../../types/Effect';
 
 import { createGameStateStub } from '../utils/createGameStateStub';
 
@@ -15,7 +17,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
   const createEffect = (
     id: string,
     type: EffectType,
-    spell: SpellName,
+    spell: SpellType,
     duration: number,
     castBy: string = 'player1'
   ): Effect => ({
@@ -45,21 +47,21 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
 
       // Set up effects on player, army, and land
       turnOwner.effects = [
-        createEffect('player1', EffectType.POSITIVE, SpellName.BLESSING, 3, turnOwnerId),
-        createEffect('player2', EffectType.NEGATIVE, SpellName.TORNADO, 1, turnOwnerId),
+        createEffect('player1', EffectKind.POSITIVE, SpellName.BLESSING, 3, turnOwnerId),
+        createEffect('player2', EffectKind.NEGATIVE, SpellName.TORNADO, 1, turnOwnerId),
       ];
 
       const army = armyFactory(turnOwnerId, { row: 1, col: 1 }, [
-        heroFactory(HeroUnitType.FIGHTER, 'Test Hero'),
+        heroFactory(HeroUnitName.FIGHTER, 'Test Hero'),
       ]);
-      army.effects = [createEffect('army1', EffectType.POSITIVE, SpellName.HEAL, 2, turnOwnerId)];
+      army.effects = [createEffect('army1', EffectKind.POSITIVE, SpellName.HEAL, 2, turnOwnerId)];
       gameState.armies = [army];
 
       const landId = '1-1';
       turnOwner.landsOwned.add(landId);
 
       gameState.map.lands[landId].effects = [
-        createEffect('land1', EffectType.POSITIVE, SpellName.FERTILE_LAND, 4, turnOwnerId),
+        createEffect('land1', EffectKind.POSITIVE, SpellName.FERTILE_LAND, 4, turnOwnerId),
       ];
 
       // Execute startTurn
@@ -89,7 +91,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       const gameState = createTestGameState(1);
       const turnOwner = gameState.players[0];
 
-      turnOwner.effects = [createEffect('player1', EffectType.POSITIVE, SpellName.BLESSING, 2)];
+      turnOwner.effects = [createEffect('player1', EffectKind.POSITIVE, SpellName.BLESSING, 2)];
 
       // Execute startTurn (should return early on turn 1)
       startTurn(gameState);
@@ -105,8 +107,8 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
 
       // Set up effects that will be tested for decrementation
       turnOwner.effects = [
-        createEffect('player1', EffectType.POSITIVE, SpellName.BLESSING, 1, turnOwner.id), // will be removed
-        createEffect('player2', EffectType.NEGATIVE, SpellName.TORNADO, 5, turnOwner.id), // will become 4
+        createEffect('player1', EffectKind.POSITIVE, SpellName.BLESSING, 1, turnOwner.id), // will be removed
+        createEffect('player2', EffectKind.NEGATIVE, SpellName.TORNADO, 5, turnOwner.id), // will become 4
       ];
 
       // Execute startTurn
@@ -131,25 +133,25 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
 
       // Set up effects for both players
       turnOwner.effects = [
-        createEffect('to1', EffectType.POSITIVE, SpellName.BLESSING, 3, turnOwner.id),
+        createEffect('to1', EffectKind.POSITIVE, SpellName.BLESSING, 3, turnOwner.id),
       ];
       otherPlayer.effects = [
-        createEffect('op1', EffectType.POSITIVE, SpellName.HEAL, 3, otherPlayer.id),
+        createEffect('op1', EffectKind.POSITIVE, SpellName.HEAL, 3, otherPlayer.id),
       ];
 
       // Set up armies for both players
       const turnOwnerArmy = armyFactory(turnOwner.id, { row: 1, col: 1 }, [
-        heroFactory(HeroUnitType.FIGHTER, 'Hero1'),
+        heroFactory(HeroUnitName.FIGHTER, 'Hero1'),
       ]);
       turnOwnerArmy.effects = [
-        createEffect('toa1', EffectType.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id),
+        createEffect('toa1', EffectKind.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id),
       ];
 
       const otherPlayerArmy = armyFactory(otherPlayer.id, { row: 2, col: 2 }, [
-        heroFactory(HeroUnitType.FIGHTER, 'Hero2'),
+        heroFactory(HeroUnitName.FIGHTER, 'Hero2'),
       ]);
       otherPlayerArmy.effects = [
-        createEffect('opa1', EffectType.NEGATIVE, SpellName.ENTANGLING_ROOTS, 2, otherPlayer.id),
+        createEffect('opa1', EffectKind.NEGATIVE, SpellName.ENTANGLING_ROOTS, 2, otherPlayer.id),
       ];
 
       gameState.armies = [turnOwnerArmy, otherPlayerArmy];
@@ -174,10 +176,10 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       const turnOwner = getTurnOwner(gameState);
 
       turnOwner.effects = [
-        createEffect('effect0', EffectType.POSITIVE, SpellName.VIEW_TERRITORY, 0, turnOwner.id), // should be removed
-        createEffect('effect1', EffectType.POSITIVE, SpellName.BLESSING, 1, turnOwner.id), // should be removed
-        createEffect('effect2', EffectType.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id), // becomes 1
-        createEffect('effect5', EffectType.POSITIVE, SpellName.HEAL, 5, turnOwner.id), // becomes 4
+        createEffect('effect0', EffectKind.POSITIVE, SpellName.VIEW_TERRITORY, 0, turnOwner.id), // should be removed
+        createEffect('effect1', EffectKind.POSITIVE, SpellName.BLESSING, 1, turnOwner.id), // should be removed
+        createEffect('effect2', EffectKind.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id), // becomes 1
+        createEffect('effect5', EffectKind.POSITIVE, SpellName.HEAL, 5, turnOwner.id), // becomes 4
       ];
 
       startTurn(gameState);

@@ -9,19 +9,20 @@ import { getArmiesAtPosition, getArmiesByPlayer, getPosition } from './armySelec
 import { getPlayerColorValue } from '../domain/ui/playerColors';
 import { getRandomElement } from '../domain/utils/random';
 import { NO_PLAYER } from '../domain/player/playerRepository';
-
-import { TreasureType } from '../types/Treasures';
+import { TreasureName } from '../types/Treasures';
 import { SpellName } from '../types/Spell';
 import { Alignment } from '../types/Alignment';
-import { EffectType } from '../types/Effect';
-import { BuildingType } from '../types/Building';
+import { EffectKind } from '../types/Effect';
+import { BuildingName } from '../types/Building';
 import { DiplomacyStatus } from '../types/Diplomacy';
-import type { Effect, EffectSourceId } from '../types/Effect';
 import type { GameState } from '../state/GameState';
+import type { MapDimensions } from '../state/map/MapDimensions';
 import type { LandPosition } from '../state/map/land/LandPosition';
 import type { LandState } from '../state/map/land/LandState';
 import type { LandType } from '../types/Land';
-import type { MapDimensions } from '../state/map/MapDimensions';
+import type { BuildingType } from '../types/Building';
+import type { AlignmentType } from '../types/Alignment';
+import type { Effect, EffectSourceId } from '../types/Effect';
 
 export const getLand = (state: GameState, landPos: LandPosition) =>
   state.map.lands[getLandId(landPos)];
@@ -33,7 +34,7 @@ interface LandInfo {
   owner: string;
   color: string;
   type: LandType;
-  alignment: Alignment;
+  alignment: AlignmentType;
   goldPerTurn: number;
   heroes: string[];
   regulars: string[];
@@ -50,12 +51,12 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
   const landOwnerColor = getPlayerColorValue(landOwner.color);
 
   const isIllusion =
-    hasTreasureByPlayer(landOwner, TreasureType.MIRROR_OF_ILLUSION) ||
+    hasTreasureByPlayer(landOwner, TreasureName.MIRROR_OF_ILLUSION) ||
     hasActiveEffect(land, SpellName.ILLUSION);
 
   const affectedByViewLand =
     hasActiveEffect(land, SpellName.VIEW_TERRITORY, state.turnOwner) ||
-    hasActiveEffect(land, TreasureType.COMPASS_OF_DOMINION, state.turnOwner);
+    hasActiveEffect(land, TreasureName.COMPASS_OF_DOMINION, state.turnOwner);
 
   if (landOwnerId !== NO_PLAYER.id && (landOwner.id === state.turnOwner || affectedByViewLand)) {
     if (isIllusion && landOwner.id !== state.turnOwner && affectedByViewLand) {
@@ -86,7 +87,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       effects: [...land.effects],
       heroes: armies.flatMap((a) => a.heroes).map((h) => `${h.name} lvl: ${h.level}`),
       regulars: armies.flatMap((a) => a.regulars).map((r) => `${r.type} (${r.count})`),
-      buildings: land.buildings.map((b) => b.id),
+      buildings: land.buildings.map((b) => b.type),
     };
   } else {
     return {
@@ -100,7 +101,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       heroes: [],
       regulars: [],
       // return buildings only for neutral lands if VIEW_TERRITORY spell is not affected on opponent
-      buildings: landOwnerId === NO_PLAYER.id ? land.buildings.map((b) => b.id) : [],
+      buildings: landOwnerId === NO_PLAYER.id ? land.buildings.map((b) => b.type) : [],
     };
   }
 };
@@ -126,7 +127,7 @@ export const hasActiveEffect = (
   return state.effects.some(
     (e) =>
       e.sourceId === effectSourceId &&
-      (e.rules.duration > 0 || e.rules.type === EffectType.PERMANENT) &&
+      (e.rules.duration > 0 || e.rules.type === EffectKind.PERMANENT) &&
       (appliedBy === undefined || e.appliedBy === appliedBy)
   );
 };
@@ -140,12 +141,12 @@ export const getRealmLands = (state: GameState): LandState[] => {
   const lands = getPlayerLands(state);
   // add all lands with DEED_OF_RECLAMATION effect
   lands.forEach((l) => {
-    if (l.effects.some((e) => e.sourceId === TreasureType.DEED_OF_RECLAMATION)) {
+    if (l.effects.some((e) => e.sourceId === TreasureName.DEED_OF_RECLAMATION)) {
       realm.add(l);
     }
   });
   const playerStrongholds = lands.filter((l) =>
-    l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+    l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
   );
   playerStrongholds.forEach((s) =>
     getTilesInRadius(state.map.dimensions, s.mapPos, 1).forEach((pos) =>

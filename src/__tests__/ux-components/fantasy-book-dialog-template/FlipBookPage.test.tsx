@@ -1,9 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import FlipBookPage, {
-  Slot,
-  FlipBookPageType,
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import type {
   FlipBookPageProps,
+  Slot,
+} from '../../../ux-components/fantasy-book-dialog-template/FlipBookPage';
+import FlipBookPage, {
+  FlipBookPageTypeName,
 } from '../../../ux-components/fantasy-book-dialog-template/FlipBookPage';
 
 // Mock CSS modules
@@ -437,10 +439,10 @@ describe('FlipBookPage Component', () => {
 
   describe('FlipBookPageType enum', () => {
     it('should export FlipBookPageType enum with correct values', () => {
-      expect(FlipBookPageType.SPELL).toBe('Spell');
-      expect(FlipBookPageType.BUILDING).toBe('Building');
-      expect(FlipBookPageType.RECRUIT).toBe('Recruit');
-      expect(FlipBookPageType.QUEST).toBe('Quest');
+      expect(FlipBookPageTypeName.SPELL).toBe('Spell');
+      expect(FlipBookPageTypeName.BUILDING).toBe('Building');
+      expect(FlipBookPageTypeName.RECRUIT).toBe('Recruit');
+      expect(FlipBookPageTypeName.QUEST).toBe('Quest');
     });
   });
 });

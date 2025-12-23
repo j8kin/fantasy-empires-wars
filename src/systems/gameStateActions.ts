@@ -6,12 +6,13 @@ import { MAX_MANA } from '../types/Mana';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
 import type { LandPosition } from '../state/map/land/LandPosition';
-import type { Building, RecruitmentSlot } from '../types/Building';
+import type { BuildingState } from '../state/map/building/BuildingState';
+import type { RecruitmentSlot } from '../types/Building';
 import type { HeroQuest } from '../types/Quest';
 import type { ManaType } from '../types/Mana';
 import type { Effect } from '../types/Effect';
 import type { EmpireTreasure } from '../types/Treasures';
-import type { TurnPhase } from '../turn/TurnPhase';
+import type { TurnPhaseType } from '../turn/TurnPhase';
 import type { UnitType } from '../types/UnitType';
 
 // ============================================================================
@@ -21,7 +22,7 @@ import type { UnitType } from '../types/UnitType';
 /**
  * Update the current turn phase
  */
-export const setTurnPhase = (gameState: GameState, phase: TurnPhase): GameState => {
+export const setTurnPhase = (gameState: GameState, phase: TurnPhaseType): GameState => {
   return {
     ...gameState,
     turnPhase: phase,
@@ -304,7 +305,7 @@ export const updateLand = (
 export const updateLandBuildings = (
   gameState: GameState,
   landPos: LandPosition,
-  buildingUpdater: (building: Building, index: number) => Building
+  buildingUpdater: (building: BuildingState, index: number) => BuildingState
 ): GameState => {
   return updateLandState(gameState, landPos, (land) => ({
     ...land,
@@ -348,7 +349,7 @@ export const updateLandBuildingSlots = (
 export const addBuildingToLand = (
   gameState: GameState,
   landPos: LandPosition,
-  building: Building
+  building: BuildingState
 ): GameState => {
   return updateLandState(gameState, landPos, (land) => ({
     ...land,

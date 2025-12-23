@@ -32,15 +32,15 @@ import {
   heroGainRelic,
 } from './questCompleteMessages';
 
-import { EmpireEventType } from '../../types/EmpireEvent';
-import { TreasureType } from '../../types/Treasures';
+import type { EmpireEvent } from '../../types/EmpireEvent';
+import { EmpireEventKind } from '../../types/EmpireEvent';
+import type { Artifact } from '../../types/Treasures';
+import { TreasureName } from '../../types/Treasures';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { HeroQuest, QuestType } from '../../types/Quest';
 import type { HeroState } from '../../state/army/HeroState';
-import type { Artifact } from '../../types/Treasures';
-import type { EmpireEvent } from '../../types/EmpireEvent';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
@@ -53,7 +53,7 @@ const calculateReward = (
   if (Math.random() > 0.55 - 0.05 * (quest.quest.level - 1)) {
     return {
       outcome: {
-        status: EmpireEventType.Neutral,
+        status: EmpireEventKind.Neutral,
         message: emptyHanded(quest.hero.name),
       },
       updatedHero: quest.hero, // No changes to hero
@@ -107,7 +107,7 @@ const gainArtifact = (
 
   return {
     outcome: {
-      status: EmpireEventType.Minor,
+      status: EmpireEventKind.Minor,
       message: heroGainArtifact(hero.name, heroArtifact),
     },
     updatedHero,
@@ -121,7 +121,7 @@ const gainItem = (state: GameState, hero: HeroState): EmpireEvent => {
   Object.assign(state, addPlayerEmpireTreasure(state, turnOwner.id, itemFactory(itemType)));
 
   return {
-    status: EmpireEventType.Positive,
+    status: EmpireEventKind.Positive,
     message: heroGainItem(hero.name, itemType),
   };
 };
@@ -142,7 +142,7 @@ const gainRelic = (state: GameState, hero: HeroState): EmpireEvent => {
     Object.assign(state, addPlayerEmpireTreasure(state, turnOwner.id, relictFactory(relicType)));
 
     return {
-      status: EmpireEventType.Legendary,
+      status: EmpireEventKind.Legendary,
       message: heroGainRelic(hero.name, relicType),
     };
   } else {
@@ -170,10 +170,10 @@ const questResults = (state: GameState, quest: HeroQuest): EmpireEvent => {
 
     returnHeroOnMap(state, hero, quest.land);
   } else {
-    if (hasTreasureByPlayer(turnOwner, TreasureType.MERCY_OF_ORRIVANE)) {
+    if (hasTreasureByPlayer(turnOwner, TreasureName.MERCY_OF_ORRIVANE)) {
       // No time to die, Orrivane gives a mercy but not a new level
       questOutcome = {
-        status: EmpireEventType.Success,
+        status: EmpireEventKind.Success,
         message: `${heroDieMessage(quest.hero.name)} Yet Orrivane remembered them, and the world bent so they might return.`,
       };
       returnHeroOnMap(state, quest.hero, quest.land);
@@ -186,13 +186,13 @@ const questResults = (state: GameState, quest: HeroQuest): EmpireEvent => {
           removeEmpireTreasureItem(
             turnOwner,
             // get first Mercy of Orrivane item and destroy it
-            getTreasureItem(turnOwner, TreasureType.MERCY_OF_ORRIVANE)!
+            getTreasureItem(turnOwner, TreasureName.MERCY_OF_ORRIVANE)!
           )
         )
       );
     } else {
       questOutcome = {
-        status: EmpireEventType.Negative,
+        status: EmpireEventKind.Negative,
         message: heroDieMessage(quest.hero.name),
       };
     }

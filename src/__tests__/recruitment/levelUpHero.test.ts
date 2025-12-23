@@ -1,72 +1,71 @@
-import { PlayerProfile } from '../../state/player/PlayerProfile';
 import { levelUpHero } from '../../systems/unitsActions';
 import { playerFactory } from '../../factories/playerFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { artifactFactory } from '../../factories/treasureFactory';
-
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-import { TreasureType } from '../../types/Treasures';
-
-import { HeroUnitType } from '../../types/UnitType';
+import { TreasureName } from '../../types/Treasures';
+import { HeroUnitName } from '../../types/UnitType';
+import type { HeroUnitType } from '../../types/UnitType';
+import type { PlayerProfile } from '../../state/player/PlayerProfile';
 
 describe('level up hero', () => {
   it.each([
     [
-      HeroUnitType.FIGHTER,
+      HeroUnitName.FIGHTER,
       1,
       PREDEFINED_PLAYERS[0],
       { attack: 32, defense: 3, range: 2, rangeDamage: 32, speed: 4, mana: undefined },
     ],
     [
-      HeroUnitType.NECROMANCER,
+      HeroUnitName.NECROMANCER,
       1,
       PREDEFINED_PLAYERS[1],
       { attack: 35, defense: 2, range: 25, rangeDamage: 36, speed: 2, mana: 1 },
     ],
     [
-      HeroUnitType.FIGHTER,
+      HeroUnitName.FIGHTER,
       9,
       PREDEFINED_PLAYERS[0],
       { attack: 50, defense: 6, range: 2, rangeDamage: 50, speed: 4, mana: undefined },
     ],
     [
-      HeroUnitType.NECROMANCER,
+      HeroUnitName.NECROMANCER,
       9,
       PREDEFINED_PLAYERS[1],
       { attack: 39, defense: 5, range: 25, rangeDamage: 52, speed: 2, mana: 5 },
     ],
     [
-      HeroUnitType.FIGHTER,
+      HeroUnitName.FIGHTER,
       31,
       PREDEFINED_PLAYERS[0],
       { attack: 99, defense: 16, range: 2, rangeDamage: 99, speed: 4, mana: undefined },
     ],
     [
-      HeroUnitType.NECROMANCER,
+      HeroUnitName.NECROMANCER,
       31,
       PREDEFINED_PLAYERS[1],
       { attack: 52, defense: 13, range: 25, rangeDamage: 96, speed: 2, mana: 18 },
     ],
     [
-      HeroUnitType.ENCHANTER,
+      HeroUnitName.ENCHANTER,
       31,
       PREDEFINED_PLAYERS[7],
       { attack: 61, defense: 15, range: 35, rangeDamage: 15, speed: 2, mana: 25 },
     ],
     [
-      HeroUnitType.CLERIC,
+      HeroUnitName.CLERIC,
       31,
       PREDEFINED_PLAYERS[6],
       { attack: 94, defense: 18, range: 2, rangeDamage: 94, speed: 2, mana: 16 },
     ],
     [
-      HeroUnitType.DRUID,
+      HeroUnitName.DRUID,
       31,
       PREDEFINED_PLAYERS[12],
       { attack: 97, defense: 16, range: 2, rangeDamage: 97, speed: 3, mana: 16 },
     ],
     [
-      HeroUnitType.PYROMANCER,
+      HeroUnitName.PYROMANCER,
       31,
       PREDEFINED_PLAYERS[14],
       { attack: 45, defense: 15, range: 30, rangeDamage: 85, speed: 2, mana: 16 },
@@ -97,7 +96,7 @@ describe('level up hero', () => {
     const playerProfile = player.playerProfile;
     const hero1 = heroFactory(playerProfile.type, 'Hero 1');
     const hero2 = heroFactory(playerProfile.type, 'Hero 2');
-    hero2.artifacts.push(artifactFactory(TreasureType.RING_OF_EXPERIENCE, 1));
+    hero2.artifacts.push(artifactFactory(TreasureName.RING_OF_EXPERIENCE, 1));
 
     levelUpHero(hero1, playerProfile.alignment);
     levelUpHero(hero2, playerProfile.alignment);
@@ -115,7 +114,7 @@ describe('level up hero', () => {
     const hero2 = heroFactory(playerProfile.type, 'Hero 2');
     while (hero2.level < 31) levelUpHero(hero2, playerProfile.alignment); // gain initial level: 31
     expect(hero2.level).toBe(31);
-    hero2.artifacts.push(artifactFactory(TreasureType.RING_OF_EXPERIENCE, 1));
+    hero2.artifacts.push(artifactFactory(TreasureName.RING_OF_EXPERIENCE, 1));
 
     levelUpHero(hero1, playerProfile.alignment);
     levelUpHero(hero2, playerProfile.alignment);

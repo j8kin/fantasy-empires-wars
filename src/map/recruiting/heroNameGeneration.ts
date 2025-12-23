@@ -1,6 +1,6 @@
 import { getRandomElement } from '../../domain/utils/random';
-
-import { HeroUnitType } from '../../types/UnitType';
+import { HeroUnitName } from '../../types/UnitType';
+import type { HeroUnitType } from '../../types/UnitType';
 
 const humanMaleNames: string[] = [
   'Cedric',
@@ -266,29 +266,29 @@ const generateOgrName = () => {
 
 export const generateHeroName = (unitType: HeroUnitType): string => {
   switch (unitType) {
-    case HeroUnitType.FIGHTER:
+    case HeroUnitName.FIGHTER:
       return generateHumanName();
-    case HeroUnitType.HAMMER_LORD:
+    case HeroUnitName.HAMMER_LORD:
       return generateDwarfName();
-    case HeroUnitType.OGR:
+    case HeroUnitName.OGR:
       return generateOgrName();
-    case HeroUnitType.RANGER:
+    case HeroUnitName.RANGER:
       return generateElfName();
-    case HeroUnitType.PYROMANCER:
+    case HeroUnitName.PYROMANCER:
       return generateOgrName();
-    case HeroUnitType.CLERIC:
+    case HeroUnitName.CLERIC:
       return generateHumanName();
-    case HeroUnitType.DRUID:
+    case HeroUnitName.DRUID:
       if (Math.random() < 0.5) {
         return generateHumanName();
       }
       return generateElfName();
-    case HeroUnitType.ENCHANTER:
+    case HeroUnitName.ENCHANTER:
       if (Math.random() < 0.5) {
         return generateHumanName();
       }
       return generateDwarfName();
-    case HeroUnitType.NECROMANCER:
+    case HeroUnitName.NECROMANCER:
       switch (getRandomElement(['human', 'elf', 'dwarf', 'ogr'])) {
         case 'human':
           return generateHumanName();

@@ -1,7 +1,7 @@
 import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { startTurn } from '../../turn/startTurn';
-import { BuildingType } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
 import { construct } from '../../map/building/construct';
 import { createGameStateStub } from '../utils/createGameStateStub';
@@ -15,7 +15,7 @@ describe('Start Turn phase', () => {
     gameStateStub.players.forEach((player) => {
       player.vault = 0;
     });
-    construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+    construct(gameStateStub, BuildingName.STRONGHOLD, { row: 3, col: 3 });
   });
 
   /** Test income and money calculation

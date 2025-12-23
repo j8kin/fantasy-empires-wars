@@ -3,8 +3,10 @@ import { getPlayerLands } from '../../selectors/playerSelectors';
 import { decrementEffectDurations } from '../../systems/effectActions';
 import { armyFactory } from '../../factories/armyFactory';
 
-import { Effect, EffectTarget, EffectType } from '../../types/Effect';
+import { EffectKind, EffectTarget } from '../../types/Effect';
 import { SpellName } from '../../types/Spell';
+import type { SpellType } from '../../types/Spell';
+import type { Effect, EffectType } from '../../types/Effect';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
@@ -19,7 +21,7 @@ describe('Effect Duration Manager', () => {
     const createEffect = (
       id: string,
       type: EffectType,
-      spell: SpellName,
+      spell: SpellType,
       duration: number,
       castBy: string
     ): Effect => ({
@@ -36,9 +38,9 @@ describe('Effect Duration Manager', () => {
     describe('Player effect duration decrement', () => {
       it('should decrement player effect durations by 1', () => {
         turnOwner.effects = [
-          createEffect('effect1', EffectType.POSITIVE, SpellName.BLESSING, 3, turnOwner.id),
-          createEffect('effect2', EffectType.NEGATIVE, SpellName.TORNADO, 5, turnOwner.id),
-          createEffect('effect3', EffectType.POSITIVE, SpellName.VIEW_TERRITORY, 1, turnOwner.id),
+          createEffect('effect1', EffectKind.POSITIVE, SpellName.BLESSING, 3, turnOwner.id),
+          createEffect('effect2', EffectKind.NEGATIVE, SpellName.TORNADO, 5, turnOwner.id),
+          createEffect('effect3', EffectKind.POSITIVE, SpellName.VIEW_TERRITORY, 1, turnOwner.id),
         ];
 
         decrementEffectDurations(gameState);
@@ -54,9 +56,9 @@ describe('Effect Duration Manager', () => {
 
       it('should remove player effects with duration <= 0', () => {
         turnOwner.effects = [
-          createEffect('effect1', EffectType.POSITIVE, SpellName.BLESSING, 1, turnOwner.id),
-          createEffect('effect2', EffectType.NEGATIVE, SpellName.TORNADO, 0, turnOwner.id),
-          createEffect('effect3', EffectType.POSITIVE, SpellName.VIEW_TERRITORY, 2, turnOwner.id),
+          createEffect('effect1', EffectKind.POSITIVE, SpellName.BLESSING, 1, turnOwner.id),
+          createEffect('effect2', EffectKind.NEGATIVE, SpellName.TORNADO, 0, turnOwner.id),
+          createEffect('effect3', EffectKind.POSITIVE, SpellName.VIEW_TERRITORY, 2, turnOwner.id),
         ];
 
         decrementEffectDurations(gameState);
@@ -80,19 +82,19 @@ describe('Effect Duration Manager', () => {
         // Create armies controlled by turn owner
         const army1 = armyFactory(turnOwnerId, { row: 1, col: 1 });
         army1.effects = [
-          createEffect('effect1', EffectType.POSITIVE, SpellName.BLESSING, 4, turnOwnerId),
-          createEffect('effect2', EffectType.NEGATIVE, SpellName.ENTANGLING_ROOTS, 1, turnOwnerId),
+          createEffect('effect1', EffectKind.POSITIVE, SpellName.BLESSING, 4, turnOwnerId),
+          createEffect('effect2', EffectKind.NEGATIVE, SpellName.ENTANGLING_ROOTS, 1, turnOwnerId),
         ];
 
         const army2 = armyFactory(turnOwnerId, { row: 2, col: 2 });
         army2.effects = [
-          createEffect('effect3', EffectType.NEGATIVE, SpellName.TORNADO, 2, turnOwnerId),
+          createEffect('effect3', EffectKind.NEGATIVE, SpellName.TORNADO, 2, turnOwnerId),
         ];
 
         // Create army controlled by different player (should not be affected)
         const otherPlayerArmy = armyFactory(gameState.players[1].id, { row: 3, col: 3 });
         otherPlayerArmy.effects = [
-          createEffect('effect4', EffectType.POSITIVE, SpellName.HEAL, 5, gameState.players[1].id),
+          createEffect('effect4', EffectKind.POSITIVE, SpellName.HEAL, 5, gameState.players[1].id),
         ];
 
         gameState.armies = [army1, army2, otherPlayerArmy];
@@ -134,18 +136,18 @@ describe('Effect Duration Manager', () => {
 
         // Add effects to lands
         gameState.map.lands[landId1].effects = [
-          createEffect('effect1', EffectType.POSITIVE, SpellName.FERTILE_LAND, 3, turnOwner.id),
-          createEffect('effect2', EffectType.NEGATIVE, SpellName.EMBER_RAID, 1, turnOwner.id),
+          createEffect('effect1', EffectKind.POSITIVE, SpellName.FERTILE_LAND, 3, turnOwner.id),
+          createEffect('effect2', EffectKind.NEGATIVE, SpellName.EMBER_RAID, 1, turnOwner.id),
         ];
 
         gameState.map.lands[landId2].effects = [
-          createEffect('effect3', EffectType.POSITIVE, SpellName.BLESSING, 2, turnOwner.id),
+          createEffect('effect3', EffectKind.POSITIVE, SpellName.BLESSING, 2, turnOwner.id),
         ];
 
         gameState.map.lands[landId3].effects = [
           createEffect(
             'effect4',
-            EffectType.NEGATIVE,
+            EffectKind.NEGATIVE,
             SpellName.TORNADO,
             4,
             gameState.players[1].id
@@ -185,15 +187,15 @@ describe('Effect Duration Manager', () => {
       it('should handle multiple entities with mixed effect durations', () => {
         // Player effects
         turnOwner.effects = [
-          createEffect('player1', EffectType.POSITIVE, SpellName.BLESSING, 1, turnOwnerId),
-          createEffect('player2', EffectType.NEGATIVE, SpellName.TORNADO, 3, turnOwnerId),
+          createEffect('player1', EffectKind.POSITIVE, SpellName.BLESSING, 1, turnOwnerId),
+          createEffect('player2', EffectKind.NEGATIVE, SpellName.TORNADO, 3, turnOwnerId),
         ];
 
         // Army effects
         const army = armyFactory(turnOwnerId, { row: 1, col: 1 });
         army.effects = [
-          createEffect('army1', EffectType.POSITIVE, SpellName.HEAL, 0, turnOwnerId),
-          createEffect('army2', EffectType.NEGATIVE, SpellName.ENTANGLING_ROOTS, 2, turnOwnerId),
+          createEffect('army1', EffectKind.POSITIVE, SpellName.HEAL, 0, turnOwnerId),
+          createEffect('army2', EffectKind.NEGATIVE, SpellName.ENTANGLING_ROOTS, 2, turnOwnerId),
         ];
         gameState.armies = [army];
 
@@ -201,7 +203,7 @@ describe('Effect Duration Manager', () => {
         const landId = getLandId(getPlayerLands(gameState, gameState.players[0].id)[0].mapPos);
 
         gameState.map.lands[landId].effects = [
-          createEffect('land1', EffectType.POSITIVE, SpellName.FERTILE_LAND, 4, turnOwnerId),
+          createEffect('land1', EffectKind.POSITIVE, SpellName.FERTILE_LAND, 4, turnOwnerId),
         ];
 
         decrementEffectDurations(gameState);
@@ -227,23 +229,23 @@ describe('Effect Duration Manager', () => {
 
         // Set up effects for both players
         turnOwner.effects = [
-          createEffect('to1', EffectType.POSITIVE, SpellName.BLESSING, 2, turnOwner.id),
+          createEffect('to1', EffectKind.POSITIVE, SpellName.BLESSING, 2, turnOwner.id),
         ];
         otherPlayer.effects = [
-          createEffect('op1', EffectType.POSITIVE, SpellName.HEAL, 2, otherPlayer.id),
+          createEffect('op1', EffectKind.POSITIVE, SpellName.HEAL, 2, otherPlayer.id),
         ];
 
         // Set up army for other player
         const otherArmy = armyFactory(otherPlayer.id, { row: 1, col: 1 });
         otherArmy.effects = [
-          createEffect('oa1', EffectType.NEGATIVE, SpellName.TORNADO, 2, otherPlayer.id),
+          createEffect('oa1', EffectKind.NEGATIVE, SpellName.TORNADO, 2, otherPlayer.id),
         ];
         gameState.armies = [otherArmy];
 
         const landId = getLandId(getPlayerLands(gameState, otherPlayer.id)[0].mapPos);
 
         gameState.map.lands[landId].effects = [
-          createEffect('ol1', EffectType.POSITIVE, SpellName.FERTILE_LAND, 2, otherPlayer.id),
+          createEffect('ol1', EffectKind.POSITIVE, SpellName.FERTILE_LAND, 2, otherPlayer.id),
         ];
 
         decrementEffectDurations(gameState);
@@ -260,7 +262,7 @@ describe('Effect Duration Manager', () => {
       it('should handle player with no owned lands or armies', () => {
         // Player has effects but no lands or armies
         turnOwner.effects = [
-          createEffect('p1', EffectType.POSITIVE, SpellName.BLESSING, 1, turnOwner.id),
+          createEffect('p1', EffectKind.POSITIVE, SpellName.BLESSING, 1, turnOwner.id),
         ];
         turnOwner.landsOwned.clear();
         gameState.armies = [];
@@ -275,16 +277,16 @@ describe('Effect Duration Manager', () => {
     describe('Effect type preservation', () => {
       it('should preserve both positive and negative effects during duration decrement', () => {
         turnOwner.effects = [
-          createEffect('pos1', EffectType.POSITIVE, SpellName.BLESSING, 3, turnOwner.id),
-          createEffect('neg1', EffectType.NEGATIVE, SpellName.TORNADO, 3, turnOwner.id),
+          createEffect('pos1', EffectKind.POSITIVE, SpellName.BLESSING, 3, turnOwner.id),
+          createEffect('neg1', EffectKind.NEGATIVE, SpellName.TORNADO, 3, turnOwner.id),
         ];
 
         decrementEffectDurations(gameState);
 
         expect(turnOwner.effects).toHaveLength(2);
 
-        const positiveEffect = turnOwner.effects.find((e) => e.rules.type === EffectType.POSITIVE);
-        const negativeEffect = turnOwner.effects.find((e) => e.rules.type === EffectType.NEGATIVE);
+        const positiveEffect = turnOwner.effects.find((e) => e.rules.type === EffectKind.POSITIVE);
+        const negativeEffect = turnOwner.effects.find((e) => e.rules.type === EffectKind.NEGATIVE);
 
         expect(positiveEffect?.rules.duration).toBe(2);
         expect(negativeEffect?.rules.duration).toBe(2);

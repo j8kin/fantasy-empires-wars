@@ -1,18 +1,23 @@
-import type { SpellName } from './Spell';
+import type { SpellType } from './Spell';
 import type { TreasureType } from './Treasures';
 
-export enum EffectTarget {
-  PLAYER = 'player',
-  ARMY = 'army',
-  LAND = 'land',
-}
-export enum EffectType {
-  POSITIVE = 'positive',
-  NEGATIVE = 'negative',
-  PERMANENT = 'permanent',
-}
+export const EffectTarget = {
+  PLAYER: 'player',
+  ARMY: 'army',
+  LAND: 'land',
+} as const;
 
-export type EffectSourceId = SpellName | TreasureType;
+export type EffectTargetType = (typeof EffectTarget)[keyof typeof EffectTarget];
+
+export const EffectKind = {
+  POSITIVE: 'positive',
+  NEGATIVE: 'negative',
+  PERMANENT: 'permanent',
+} as const;
+
+export type EffectType = (typeof EffectKind)[keyof typeof EffectKind];
+
+export type EffectSourceId = SpellType | TreasureType;
 
 export type Effect = {
   /** UUID **/
@@ -24,6 +29,6 @@ export type Effect = {
 
 export type EffectRules = {
   type: EffectType;
-  target: EffectTarget;
+  target: EffectTargetType;
   duration: number;
 };

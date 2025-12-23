@@ -1,6 +1,6 @@
 import type { PlayerState } from './player/PlayerState';
 import type { MapState } from './map/MapState';
-import type { TurnPhase } from '../turn/TurnPhase';
+import type { TurnPhaseType } from '../turn/TurnPhase';
 import type { Armies } from './army/ArmyState';
 
 export interface GameState {
@@ -12,5 +12,5 @@ export interface GameState {
 
   turn: number;
   turnOwner: string;
-  turnPhase: TurnPhase;
+  turnPhase: TurnPhaseType;
 }

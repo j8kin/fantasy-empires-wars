@@ -8,10 +8,9 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import { getAllBuildings } from '../../domain/building/buildingRepository';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { AllSpells } from '../../types/Spell';
-
-import { ButtonName } from '../../types/ButtonName';
+import { AllSpells } from '../../domain/spell/spellsRepository';
 import { SpellName } from '../../types/Spell';
+import { ButtonName } from '../../types/ButtonName';
 
 const MapActionsControl: React.FC = () => {
   const {

@@ -2,12 +2,12 @@ import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
 import { findShortestPath } from '../selectors/landSelectors';
 
-import { EffectType } from '../types/Effect';
+import { EffectKind } from '../types/Effect';
 import { RegularUnitType } from '../types/UnitType';
 import type { GameState } from '../state/GameState';
 import type { ArmyState } from '../state/army/ArmyState';
 import type { HeroState } from '../state/army/HeroState';
-import type { RegularsState, UnitRank } from '../state/army/RegularsState';
+import type { RegularsState, UnitRankType } from '../state/army/RegularsState';
 import type { LandPosition } from '../state/map/land/LandPosition';
 
 export const addHero = (state: ArmyState, hero: HeroState): ArmyState => {
@@ -55,7 +55,7 @@ export const addRegulars = (state: ArmyState, regulars: RegularsState): ArmyStat
 export const getRegulars = (
   state: ArmyState,
   unitType: RegularUnitType,
-  rank: UnitRank,
+  rank: UnitRankType,
   count: number
 ): { updatedArmy: ArmyState; regulars: RegularsState } | undefined => {
   const unitIdx = state.regulars.findIndex(
@@ -109,7 +109,7 @@ export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => 
   // Merge effects: combine all negative effects from both armies, positive effects disappear
   // prevent an abusing system when one unit split with good effect and combine with another huge army
   const allEffects = [...target.effects, ...source.effects];
-  const mergedEffects = allEffects.filter((effect) => effect.rules.type === EffectType.NEGATIVE);
+  const mergedEffects = allEffects.filter((effect) => effect.rules.type === EffectKind.NEGATIVE);
 
   return {
     ...target,

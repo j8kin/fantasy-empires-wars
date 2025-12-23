@@ -2,9 +2,9 @@ import { getPlayerLands, getTurnOwner, hasTreasureByPlayer } from '../../selecto
 import { getAllHeroes } from '../../selectors/armySelectors';
 import { updatePlayerMana } from '../../systems/gameStateActions';
 import { getManaSource } from '../../domain/mana/manaSource';
-import { getSpecialLandTypes } from '../../domain/land/landQueries';
+import { getSpecialLandKinds } from '../../domain/land/landQueries';
 
-import { TreasureType } from '../../types/Treasures';
+import { TreasureName } from '../../types/Treasures';
 import type { GameState } from '../../state/GameState';
 
 export const calculateMana = (gameState: GameState): GameState => {
@@ -12,7 +12,7 @@ export const calculateMana = (gameState: GameState): GameState => {
 
   const allHeroes = getAllHeroes(gameState, true);
 
-  const hasHeartStone = hasTreasureByPlayer(turnOwner, TreasureType.HEARTSTONE_OF_ORRIVANE);
+  const hasHeartStone = hasTreasureByPlayer(turnOwner, TreasureName.HEARTSTONE_OF_ORRIVANE);
 
   let updatedState = gameState;
 
@@ -22,9 +22,9 @@ export const calculateMana = (gameState: GameState): GameState => {
   });
 
   getPlayerLands(updatedState)
-    .filter((land) => getSpecialLandTypes().includes(land.land.id))
+    .filter((land) => getSpecialLandKinds().includes(land.land.id))
     .forEach((land) => {
-      const manaSource = getManaSource({ landType: land.land.id })!;
+      const manaSource = getManaSource({ landKind: land.land.id })!;
       if (allHeroes.some((h) => manaSource.heroTypes.includes(h.type))) {
         updatedState = updatePlayerMana(updatedState, turnOwner.id, manaSource.type, 1); // each special land gives 1 mana of a related type
       }

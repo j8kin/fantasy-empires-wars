@@ -3,20 +3,21 @@ import { getPlayerLands, hasActiveEffectByPlayer } from '../../selectors/playerS
 import { getArmiesByPlayer, getPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getLand, getTilesInRadius, hasActiveEffect } from '../../selectors/landSelectors';
-import { getRegularLandTypes } from '../../domain/land/landQueries';
+import { getRegularLandKinds } from '../../domain/land/landQueries';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { SpellName, SpellTarget } from '../../types/Spell';
 import { EffectTarget } from '../../types/Effect';
-import { BuildingType } from '../../types/Building';
-import { LandType } from '../../types/Land';
+import { BuildingName } from '../../types/Building';
+import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { LandState } from '../../state/map/land/LandState';
+import type { SpellType } from '../../types/Spell';
 
 export const getAvailableToCastSpellLands = (
   gameState: GameState,
-  spellName: SpellName
+  spellName: SpellType
 ): string[] => {
   const spell = getSpellById(spellName);
 
@@ -27,13 +28,13 @@ export const getAvailableToCastSpellLands = (
       .filter((l) =>
         l.buildings.some(
           (b) =>
-            b.id === BuildingType.BLACK_MAGE_TOWER ||
-            b.id === BuildingType.OUTPOST ||
-            b.id === BuildingType.STRONGHOLD
+            b.type === BuildingName.BLACK_MAGE_TOWER ||
+            b.type === BuildingName.OUTPOST ||
+            b.type === BuildingName.STRONGHOLD
         )
       )
       .forEach((land) => {
-        const isStronghold = land.buildings.some((b) => b.id === BuildingType.STRONGHOLD);
+        const isStronghold = land.buildings.some((b) => b.type === BuildingName.STRONGHOLD);
         getTilesInRadius(
           getMapDimensions(gameState),
           land.mapPos,
@@ -49,7 +50,7 @@ export const getAvailableToCastSpellLands = (
     return Array.from(affectedLands);
   }
 
-  if (spell.apply === SpellTarget.PLAYER) {
+  if (spell.target === SpellTarget.PLAYER) {
     if (spell.rules?.target === EffectTarget.ARMY) {
       return getArmiesByPlayer(gameState)
         .filter((army) => !army.effects.some((e) => e.sourceId === spellName))
@@ -61,7 +62,7 @@ export const getAvailableToCastSpellLands = (
   }
 
   const playerFiltered =
-    spell.apply === SpellTarget.OPPONENT
+    spell.target === SpellTarget.OPPONENT
       ? gameState.players.filter((p) => p.id !== gameState.turnOwner)
       : gameState.players;
 
@@ -75,8 +76,8 @@ export const getAvailableToCastSpellLands = (
 const canBeCorrupted = (land: LandState): boolean => {
   return (
     land.land.alignment !== Alignment.CHAOTIC &&
-    land.land.id !== LandType.DESERT &&
+    land.land.id !== LandName.DESERT &&
     !land.corrupted &&
-    getRegularLandTypes().includes(land.land.id)
+    getRegularLandKinds().includes(land.land.id)
   );
 };

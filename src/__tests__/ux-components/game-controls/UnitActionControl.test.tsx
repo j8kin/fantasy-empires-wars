@@ -13,8 +13,8 @@ import { startRecruiting } from '../../../map/recruiting/startRecruiting';
 import { construct } from '../../../map/building/construct';
 
 import { ButtonName } from '../../../types/ButtonName';
-import { BuildingType } from '../../../types/Building';
-import { RegularUnitType } from '../../../types/UnitType';
+import { BuildingName } from '../../../types/Building';
+import { RegularUnitName } from '../../../types/UnitType';
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 
@@ -89,7 +89,7 @@ describe('UnitActionControl', () => {
       const barracksPosition: LandPosition = { row: 3, col: 3 };
 
       // Add barracks to a land owned by the turn owner
-      construct(gameState, BuildingType.BARRACKS, barracksPosition);
+      construct(gameState, BuildingName.BARRACKS, barracksPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -105,7 +105,7 @@ describe('UnitActionControl', () => {
       const towerPosition: LandPosition = { row: 3, col: 3 };
 
       // Add white mage tower to a land owned by the turn owner
-      construct(gameState, BuildingType.WHITE_MAGE_TOWER, towerPosition);
+      construct(gameState, BuildingName.WHITE_MAGE_TOWER, towerPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -121,12 +121,12 @@ describe('UnitActionControl', () => {
       const barracksPosition: LandPosition = { row: 3, col: 3 };
 
       // Add barracks with full slots
-      construct(gameState, BuildingType.BARRACKS, barracksPosition);
+      construct(gameState, BuildingName.BARRACKS, barracksPosition);
 
       // Fill all slots in the barracks
-      startRecruiting(gameState, barracksPosition, RegularUnitType.WARRIOR);
-      startRecruiting(gameState, barracksPosition, RegularUnitType.WARRIOR);
-      startRecruiting(gameState, barracksPosition, RegularUnitType.WARRIOR);
+      startRecruiting(gameState, barracksPosition, RegularUnitName.WARRIOR);
+      startRecruiting(gameState, barracksPosition, RegularUnitName.WARRIOR);
+      startRecruiting(gameState, barracksPosition, RegularUnitName.WARRIOR);
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -214,7 +214,7 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add a non-hero unit
-      const nonHeroUnit = regularsFactory(RegularUnitType.WARRIOR);
+      const nonHeroUnit = regularsFactory(RegularUnitName.WARRIOR);
       placeUnitsOnMap(nonHeroUnit, gameState, armyPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
@@ -273,7 +273,7 @@ describe('UnitActionControl', () => {
       const armyPosition: LandPosition = { row: 3, col: 3 };
 
       // Add army with movements
-      const unit = regularsFactory(RegularUnitType.WARRIOR);
+      const unit = regularsFactory(RegularUnitName.WARRIOR);
       placeUnitsOnMap(unit, gameState, armyPosition);
 
       const armies = getArmiesAtPosition(gameState, armyPosition);
@@ -360,7 +360,7 @@ describe('UnitActionControl', () => {
       const position: LandPosition = { row: 3, col: 3 };
 
       // Add multiple recruitment buildings
-      construct(gameState, BuildingType.BARRACKS, position);
+      construct(gameState, BuildingName.BARRACKS, position);
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -416,7 +416,7 @@ describe('UnitActionControl', () => {
   describe('All Mage Tower Types', () => {
     it('highlights lands with white mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingType.WHITE_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.WHITE_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -426,7 +426,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with black mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingType.BLACK_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.BLACK_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -436,7 +436,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with blue mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingType.BLUE_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.BLUE_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -446,7 +446,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with green mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingType.GREEN_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.GREEN_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -456,7 +456,7 @@ describe('UnitActionControl', () => {
 
     it('highlights lands with red mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingType.RED_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.RED_MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 

@@ -12,11 +12,12 @@ import { construct } from '../../../map/building/construct';
 import { startRecruiting as mockStartRecruiting } from '../../../map/recruiting/startRecruiting';
 
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
+import { BuildingName } from '../../../types/Building';
+import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
 
-import { BuildingType } from '../../../types/Building';
-import { HeroUnitType, RegularUnitType, UnitType } from '../../../types/UnitType';
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
+import type { UnitType } from '../../../types/UnitType';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 
@@ -145,17 +146,17 @@ describe('RecruitArmyDialog', () => {
 
     // Add a barracks with available slots to the first player's land
     const landPos: LandPosition = { row: 3, col: 3 };
-    construct(gameStateStub, BuildingType.BARRACKS, landPos);
+    construct(gameStateStub, BuildingName.BARRACKS, landPos);
 
     // Ensure the barracks has available slots (2 total, 0 used)
     const land = getLand(gameStateStub, landPos);
 
     // Set up some units to recruit - use units that would be available on Plains land
     land.land.unitsToRecruit = [
-      RegularUnitType.WARRIOR,
-      RegularUnitType.BALLISTA,
-      HeroUnitType.WARSMITH,
-      HeroUnitType.FIGHTER,
+      RegularUnitName.WARRIOR,
+      RegularUnitName.BALLISTA,
+      HeroUnitName.WARSMITH,
+      HeroUnitName.FIGHTER,
     ];
   });
 
@@ -189,12 +190,12 @@ describe('RecruitArmyDialog', () => {
       // Fill all barracks slots
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(gameStateStub, landPos);
-      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
+      const barracks = land.buildings.find((b) => b.type === BuildingName.BARRACKS);
       if (barracks) {
         barracks.slots = [
-          { unit: RegularUnitType.WARRIOR, turnsRemaining: 1, isOccupied: true },
-          { unit: RegularUnitType.BALLISTA, turnsRemaining: 2, isOccupied: true },
-          { unit: RegularUnitType.WARRIOR, turnsRemaining: 1, isOccupied: true },
+          { unit: RegularUnitName.WARRIOR, turnsRemaining: 1, isOccupied: true },
+          { unit: RegularUnitName.BALLISTA, turnsRemaining: 2, isOccupied: true },
+          { unit: RegularUnitName.WARRIOR, turnsRemaining: 1, isOccupied: true },
         ];
       }
 
@@ -267,8 +268,8 @@ describe('RecruitArmyDialog', () => {
       const land = getLand(gameStateStub, landPos);
       land.land.unitsToRecruit = [
         ...land.land.unitsToRecruit,
-        HeroUnitType.CLERIC,
-        HeroUnitType.PYROMANCER,
+        HeroUnitName.CLERIC,
+        HeroUnitName.PYROMANCER,
       ];
 
       renderWithProviders(<RecruitArmyDialog />);
@@ -306,7 +307,7 @@ describe('RecruitArmyDialog', () => {
       expect(mockStartRecruiting).toHaveBeenCalledWith(
         gameStateStub,
         { row: 3, col: 3 },
-        RegularUnitType.WARRIOR // First unit in sorted list
+        RegularUnitName.WARRIOR // First unit in sorted list
       );
     });
 
@@ -386,7 +387,7 @@ describe('RecruitArmyDialog', () => {
       expect(mockStartRecruiting).toHaveBeenCalledWith(
         gameStateStub,
         { row: 3, col: 3 },
-        RegularUnitType.WARRIOR // First unit in the list
+        RegularUnitName.WARRIOR // First unit in the list
       );
       expect(mockApplicationContext.setShowRecruitArmyDialog).toHaveBeenCalledWith(false);
     });
@@ -420,13 +421,13 @@ describe('RecruitArmyDialog', () => {
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;
 
-      construct(gameStateStub, BuildingType.WHITE_MAGE_TOWER, landPos);
+      construct(gameStateStub, BuildingName.WHITE_MAGE_TOWER, landPos);
 
       // Add cleric to available units
       land.land.unitsToRecruit = [
-        RegularUnitType.WARRIOR,
-        HeroUnitType.CLERIC,
-        HeroUnitType.PYROMANCER,
+        RegularUnitName.WARRIOR,
+        HeroUnitName.CLERIC,
+        HeroUnitName.PYROMANCER,
       ];
 
       renderWithProviders(<RecruitArmyDialog />);
@@ -450,9 +451,9 @@ describe('RecruitArmyDialog', () => {
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;
 
-      construct(gameStateStub, BuildingType.RED_MAGE_TOWER, landPos);
+      construct(gameStateStub, BuildingName.RED_MAGE_TOWER, landPos);
 
-      land.land.unitsToRecruit = [HeroUnitType.PYROMANCER, HeroUnitType.CLERIC];
+      land.land.unitsToRecruit = [HeroUnitName.PYROMANCER, HeroUnitName.CLERIC];
 
       renderWithProviders(<RecruitArmyDialog />);
 
@@ -475,9 +476,9 @@ describe('RecruitArmyDialog', () => {
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;
 
-      construct(gameStateStub, BuildingType.BLUE_MAGE_TOWER, landPos);
+      construct(gameStateStub, BuildingName.BLUE_MAGE_TOWER, landPos);
 
-      land.land.unitsToRecruit = [HeroUnitType.ENCHANTER, HeroUnitType.CLERIC];
+      land.land.unitsToRecruit = [HeroUnitName.ENCHANTER, HeroUnitName.CLERIC];
 
       renderWithProviders(<RecruitArmyDialog />);
 
@@ -500,9 +501,9 @@ describe('RecruitArmyDialog', () => {
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;
 
-      construct(gameStateStub, BuildingType.GREEN_MAGE_TOWER, landPos);
+      construct(gameStateStub, BuildingName.GREEN_MAGE_TOWER, landPos);
 
-      land.land.unitsToRecruit = [HeroUnitType.DRUID, HeroUnitType.CLERIC];
+      land.land.unitsToRecruit = [HeroUnitName.DRUID, HeroUnitName.CLERIC];
 
       renderWithProviders(<RecruitArmyDialog />);
 
@@ -525,9 +526,9 @@ describe('RecruitArmyDialog', () => {
       // Give the player enough money to build the mage tower (costs 15000)
       getTurnOwner(gameStateStub).vault = 20000;
 
-      construct(gameStateStub, BuildingType.BLACK_MAGE_TOWER, landPos);
+      construct(gameStateStub, BuildingName.BLACK_MAGE_TOWER, landPos);
 
-      land.land.unitsToRecruit = [HeroUnitType.NECROMANCER, HeroUnitType.CLERIC];
+      land.land.unitsToRecruit = [HeroUnitName.NECROMANCER, HeroUnitName.CLERIC];
 
       renderWithProviders(<RecruitArmyDialog />);
 
@@ -547,17 +548,17 @@ describe('RecruitArmyDialog', () => {
 
       // Add a barracks with available slots to the first player's land
       const landPos: LandPosition = { row: 3, col: 3 };
-      construct(gameStateStub, BuildingType.BARRACKS, landPos);
+      construct(gameStateStub, BuildingName.BARRACKS, landPos);
 
       // Ensure the barracks has available slots (2 total, 0 used)
       const land = getLand(gameStateStub, landPos);
 
       // Set up some units to recruit including WARSMITH
       land.land.unitsToRecruit = [
-        RegularUnitType.WARRIOR,
-        RegularUnitType.BALLISTA,
-        HeroUnitType.WARSMITH,
-        HeroUnitType.FIGHTER,
+        RegularUnitName.WARRIOR,
+        RegularUnitName.BALLISTA,
+        HeroUnitName.WARSMITH,
+        HeroUnitName.FIGHTER,
       ];
 
       renderWithProviders(<RecruitArmyDialog />);
@@ -576,13 +577,13 @@ describe('RecruitArmyDialog', () => {
 
       // Add a barracks with available slots to the first player's land
       const landPos: LandPosition = { row: 3, col: 3 };
-      construct(gameStateStub, BuildingType.BARRACKS, landPos);
+      construct(gameStateStub, BuildingName.BARRACKS, landPos);
 
       // Ensure the barracks has available slots (2 total, 0 used)
       const land = getLand(gameStateStub, landPos);
 
       // Set units for recruitment but Warsmith should be filtered out
-      land.land.unitsToRecruit = [RegularUnitType.WARRIOR, RegularUnitType.BALLISTA];
+      land.land.unitsToRecruit = [RegularUnitName.WARRIOR, RegularUnitName.BALLISTA];
 
       renderWithProviders(<RecruitArmyDialog />);
 
@@ -642,7 +643,7 @@ describe('RecruitArmyDialog', () => {
       // Modify the game state after initial render by occupying some slots
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(gameStateStub, landPos);
-      const barracks = land.buildings.find((b) => b.id === BuildingType.BARRACKS);
+      const barracks = land.buildings.find((b) => b.type === BuildingName.BARRACKS);
       if (barracks) {
         // Occupy first slot
         barracks.slots[0].isOccupied = true;

@@ -1,6 +1,3 @@
-import { GameState } from '../../state/GameState';
-import { UnitRank } from '../../state/army/RegularsState';
-import { PlayerState } from '../../state/player/PlayerState';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { getLandOwner } from '../../selectors/landSelectors';
@@ -10,11 +7,16 @@ import { startMoving } from '../../systems/armyActions';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { castSpell } from '../../map/magic/castSpell';
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
-import { EffectType } from '../../types/Effect';
-import { ManaType } from '../../types/Mana';
+import { EffectKind } from '../../types/Effect';
+import { Mana } from '../../types/Mana';
+import { UnitRank } from '../../state/army/RegularsState';
+import type { GameState } from '../../state/GameState';
+import type { PlayerState } from '../../state/player/PlayerState';
+import type { AlignmentType } from '../../types/Alignment';
+import type { ManaType } from '../../types/Mana';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
@@ -48,7 +50,7 @@ describe('castBlueManaSpell', () => {
 
         if (maxEnchanterLevel > 0) {
           // add ENCHANTER on Map
-          const hero = heroFactory(HeroUnitType.ENCHANTER, `Enchanter Level ${maxEnchanterLevel}`);
+          const hero = heroFactory(HeroUnitName.ENCHANTER, `Enchanter Level ${maxEnchanterLevel}`);
           while (hero.level < maxEnchanterLevel) levelUpHero(hero, Alignment.LAWFUL);
           placeUnitsOnMap(hero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
         }
@@ -64,7 +66,7 @@ describe('castBlueManaSpell', () => {
         affectedLands.forEach((l) => {
           expect(l.effects).toHaveLength(1);
           expect(l.effects[0].sourceId).toBe(SpellName.ILLUSION);
-          expect(l.effects[0].rules.type).toBe(EffectType.POSITIVE);
+          expect(l.effects[0].rules.type).toBe(EffectKind.POSITIVE);
           expect(l.effects[0].rules.duration).toBe(3);
           expect(l.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
         });
@@ -77,7 +79,7 @@ describe('castBlueManaSpell', () => {
       const lands = getPlayerLands(gameStateStub);
       const fromPos = lands[1].mapPos;
       const toPos = lands[4].mapPos;
-      placeUnitsOnMap(regularsFactory(RegularUnitType.HALFLING, 120), gameStateStub, fromPos);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.HALFLING, 120), gameStateStub, fromPos);
       expect(isMoving(getArmiesAtPosition(gameStateStub, fromPos)[0])).toBeFalsy();
 
       const blueMana = getTurnOwner(gameStateStub).mana.blue;
@@ -90,7 +92,7 @@ describe('castBlueManaSpell', () => {
       const teleportedArmy = getArmiesAtPosition(gameStateStub, toPos);
       expect(teleportedArmy).toHaveLength(1);
       expect(teleportedArmy[0].regulars).toHaveLength(1);
-      expect(teleportedArmy[0].regulars[0].type).toBe(RegularUnitType.HALFLING);
+      expect(teleportedArmy[0].regulars[0].type).toBe(RegularUnitName.HALFLING);
       expect(teleportedArmy[0].regulars[0].count).toBe(120);
       expect(isMoving(teleportedArmy[0])).toBeFalsy();
     });
@@ -99,7 +101,7 @@ describe('castBlueManaSpell', () => {
       const lands = getPlayerLands(gameStateStub);
       const fromPos = lands[1].mapPos;
       const toPos = lands[4].mapPos;
-      placeUnitsOnMap(regularsFactory(RegularUnitType.HALFLING, 120), gameStateStub, fromPos);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.HALFLING, 120), gameStateStub, fromPos);
       const movingArmy = getArmiesAtPosition(gameStateStub, fromPos)[0];
       startMoving(movingArmy, lands[3].mapPos); // start moving to another land
       expect(isMoving(getArmiesAtPosition(gameStateStub, fromPos)[0])).toBeTruthy();
@@ -112,7 +114,7 @@ describe('castBlueManaSpell', () => {
       const teleportedArmy = getArmiesAtPosition(gameStateStub, toPos);
       expect(teleportedArmy).toHaveLength(1);
       expect(teleportedArmy[0].regulars).toHaveLength(1);
-      expect(teleportedArmy[0].regulars[0].type).toBe(RegularUnitType.HALFLING);
+      expect(teleportedArmy[0].regulars[0].type).toBe(RegularUnitName.HALFLING);
       expect(teleportedArmy[0].regulars[0].count).toBe(120);
       expect(isMoving(teleportedArmy[0])).toBeFalsy(); // teleported army should became stational
     });
@@ -121,9 +123,9 @@ describe('castBlueManaSpell', () => {
       const lands = getPlayerLands(gameStateStub);
       const fromPos = lands[1].mapPos;
       const toPos = lands[4].mapPos;
-      placeUnitsOnMap(regularsFactory(RegularUnitType.HALFLING, 120), gameStateStub, fromPos); // players army
+      placeUnitsOnMap(regularsFactory(RegularUnitName.HALFLING, 120), gameStateStub, fromPos); // players army
       gameStateStub.turnOwner = gameStateStub.players[1].id;
-      placeUnitsOnMap(regularsFactory(RegularUnitType.WARD_HANDS, 120), gameStateStub, fromPos); // opponent army
+      placeUnitsOnMap(regularsFactory(RegularUnitName.WARD_HANDS, 120), gameStateStub, fromPos); // opponent army
       expect(getArmiesAtPosition(gameStateStub, fromPos)).toHaveLength(2);
 
       gameStateStub.turnOwner = gameStateStub.players[0].id; // change back turn owner to player 0
@@ -133,13 +135,13 @@ describe('castBlueManaSpell', () => {
       const player2Army = getArmiesAtPosition(gameStateStub, fromPos);
       expect(player2Army).toHaveLength(1);
       expect(player2Army[0].regulars).toHaveLength(1);
-      expect(player2Army[0].regulars[0].type).toBe(RegularUnitType.WARD_HANDS);
+      expect(player2Army[0].regulars[0].type).toBe(RegularUnitName.WARD_HANDS);
       expect(player2Army[0].regulars[0].count).toBe(120);
 
       const teleportedArmy = getArmiesAtPosition(gameStateStub, toPos);
       expect(teleportedArmy).toHaveLength(1);
       expect(teleportedArmy[0].regulars).toHaveLength(1);
-      expect(teleportedArmy[0].regulars[0].type).toBe(RegularUnitType.HALFLING);
+      expect(teleportedArmy[0].regulars[0].type).toBe(RegularUnitName.HALFLING);
       expect(teleportedArmy[0].regulars[0].count).toBe(120);
     });
 
@@ -162,14 +164,14 @@ describe('castBlueManaSpell', () => {
       (maxEnchanterLevel: number) => {
         if (maxEnchanterLevel > 0) {
           // add ENCHANTER on Map
-          const hero = heroFactory(HeroUnitType.ENCHANTER, `Enchanter Level ${maxEnchanterLevel}`);
+          const hero = heroFactory(HeroUnitName.ENCHANTER, `Enchanter Level ${maxEnchanterLevel}`);
           while (hero.level < maxEnchanterLevel) levelUpHero(hero, Alignment.LAWFUL);
           placeUnitsOnMap(hero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
         }
 
         gameStateStub.turnOwner = gameStateStub.players[1].id;
         const opponentLandPos = getPlayerLands(gameStateStub)[1].mapPos;
-        placeUnitsOnMap(regularsFactory(RegularUnitType.ORC, 120), gameStateStub, opponentLandPos);
+        placeUnitsOnMap(regularsFactory(RegularUnitName.ORC, 120), gameStateStub, opponentLandPos);
         expect(getArmiesAtPosition(gameStateStub, opponentLandPos)).toHaveLength(1);
 
         gameStateStub.turnOwner = gameStateStub.players[0].id; // cast Tornado from player 0 on Player 1's land'
@@ -186,7 +188,7 @@ describe('castBlueManaSpell', () => {
         const opponentArmy = getArmiesAtPosition(gameStateStub, opponentLandPos);
         expect(opponentArmy).toHaveLength(1);
         expect(opponentArmy[0].regulars).toHaveLength(1);
-        expect(opponentArmy[0].regulars[0].type).toBe(RegularUnitType.ORC);
+        expect(opponentArmy[0].regulars[0].type).toBe(RegularUnitName.ORC);
         expect(opponentArmy[0].regulars[0].rank).toBe(UnitRank.REGULAR);
         expect(opponentArmy[0].regulars[0].count).toBe(78);
 
@@ -196,7 +198,7 @@ describe('castBlueManaSpell', () => {
 
     it('Corner case: Tornado kill at least 5 units and destroy army', () => {
       const opponentLandPos = getPlayerLands(gameStateStub)[1].mapPos;
-      placeUnitsOnMap(regularsFactory(RegularUnitType.ORC, 5), gameStateStub, opponentLandPos);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.ORC, 5), gameStateStub, opponentLandPos);
       expect(getArmiesAtPosition(gameStateStub, opponentLandPos)).toHaveLength(1);
 
       gameStateStub.turnOwner = gameStateStub.players[1].id; // cast Tornado from player 1 on Player 0's land'
@@ -209,21 +211,21 @@ describe('castBlueManaSpell', () => {
 
   describe('Cast ARCANE EXCHANGE spell', () => {
     it.each([
-      [90, ManaType.WHITE, Alignment.LAWFUL],
-      [90, ManaType.GREEN, Alignment.LAWFUL],
-      [75, ManaType.RED, Alignment.LAWFUL],
-      [50, ManaType.BLACK, Alignment.LAWFUL],
-      [95, ManaType.WHITE, Alignment.NEUTRAL],
-      [95, ManaType.GREEN, Alignment.NEUTRAL],
-      [95, ManaType.RED, Alignment.NEUTRAL],
-      [95, ManaType.BLACK, Alignment.NEUTRAL],
-      [50, ManaType.WHITE, Alignment.CHAOTIC],
-      [75, ManaType.GREEN, Alignment.CHAOTIC],
-      [90, ManaType.RED, Alignment.CHAOTIC],
-      [90, ManaType.BLACK, Alignment.CHAOTIC],
+      [90, Mana.WHITE, Alignment.LAWFUL],
+      [90, Mana.GREEN, Alignment.LAWFUL],
+      [75, Mana.RED, Alignment.LAWFUL],
+      [50, Mana.BLACK, Alignment.LAWFUL],
+      [95, Mana.WHITE, Alignment.NEUTRAL],
+      [95, Mana.GREEN, Alignment.NEUTRAL],
+      [95, Mana.RED, Alignment.NEUTRAL],
+      [95, Mana.BLACK, Alignment.NEUTRAL],
+      [50, Mana.WHITE, Alignment.CHAOTIC],
+      [75, Mana.GREEN, Alignment.CHAOTIC],
+      [90, Mana.RED, Alignment.CHAOTIC],
+      [90, Mana.BLACK, Alignment.CHAOTIC],
     ])(
       '100 Blue mana exchanged into %s %s mana for %s player',
-      (mana: number, newManaType: ManaType, playerAlignment: Alignment) => {
+      (mana: number, newManaType: ManaType, playerAlignment: AlignmentType) => {
         let player: PlayerState;
         switch (playerAlignment) {
           case Alignment.LAWFUL:
@@ -241,15 +243,15 @@ describe('castBlueManaSpell', () => {
 
         gameStateStub.turnOwner = player.id;
         const turnOwnerMana = getTurnOwner(gameStateStub).mana;
-        turnOwnerMana[ManaType.BLUE] = 200;
-        turnOwnerMana[ManaType.WHITE] = 0;
-        turnOwnerMana[ManaType.GREEN] = 0;
-        turnOwnerMana[ManaType.RED] = 0;
-        turnOwnerMana[ManaType.BLACK] = 0;
+        turnOwnerMana[Mana.BLUE] = 200;
+        turnOwnerMana[Mana.WHITE] = 0;
+        turnOwnerMana[Mana.GREEN] = 0;
+        turnOwnerMana[Mana.RED] = 0;
+        turnOwnerMana[Mana.BLACK] = 0;
 
         castSpell(gameStateStub, SpellName.EXCHANGE, undefined, undefined, newManaType);
 
-        expect(getTurnOwner(gameStateStub).mana[ManaType.BLUE]).toBe(100);
+        expect(getTurnOwner(gameStateStub).mana[Mana.BLUE]).toBe(100);
         expect(getTurnOwner(gameStateStub).mana[newManaType]).toBe(mana);
       }
     );

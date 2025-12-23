@@ -1,7 +1,7 @@
-import { GameState } from '../../state/GameState';
-import { TurnManager } from '../../turn/TurnManager';
-import { TurnPhase } from '../../turn/TurnPhase';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { TurnManager } from '../../turn/TurnManager';
+import type { GameState } from '../../state/GameState';
+import type { TurnPhaseType } from '../../turn/TurnPhase';
 
 import { createGameStateStub } from '../utils/createGameStateStub';
 
@@ -25,12 +25,12 @@ describe('Turn Mechanics with Different Map Sizes', () => {
     (mapSize) => {
       const gameState = createGameState(mapSize as 'small' | 'medium' | 'large' | 'huge');
 
-      let turnPhaseChanges: { gameState: GameState; phase: TurnPhase }[] = [];
+      let turnPhaseChanges: { gameState: GameState; phase: TurnPhaseType }[] = [];
       let gameOverCalled = false;
       let progressCalled = false;
 
       const turnManager = new TurnManager({
-        onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
+        onTurnPhaseChange: (gameState: GameState, phase: TurnPhaseType) => {
           turnPhaseChanges.push({ gameState, phase });
         },
         onGameOver: (_message: string) => {
@@ -68,11 +68,11 @@ describe('Turn Mechanics with Different Map Sizes', () => {
     (mapSize) => {
       const gameState = createGameState(mapSize as 'small' | 'medium' | 'large' | 'huge');
 
-      let turnPhaseChanges: { gameState: GameState; phase: TurnPhase }[] = [];
+      let turnPhaseChanges: { gameState: GameState; phase: TurnPhaseType }[] = [];
       let gameOverCalled = false;
 
       const turnManager = new TurnManager({
-        onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
+        onTurnPhaseChange: (gameState: GameState, phase: TurnPhaseType) => {
           turnPhaseChanges.push({ gameState, phase });
         },
         onGameOver: (_message: string) => {

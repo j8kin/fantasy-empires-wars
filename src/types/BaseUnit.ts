@@ -1,4 +1,4 @@
-import type { Alignment } from './Alignment';
+import type { AlignmentType } from './Alignment';
 import type { HeroState } from '../state/army/HeroState';
 import type { RegularsState } from '../state/army/RegularsState';
 
@@ -11,7 +11,7 @@ export interface BaseUnitStats {
   rangeDamage?: number;
   health: number;
   speed: number;
-  alignment: Alignment;
+  alignment: AlignmentType;
   recruitCost: number;
   maintainCost: number;
   description: string;

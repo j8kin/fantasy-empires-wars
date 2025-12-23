@@ -7,14 +7,14 @@ import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 
 import VialPanel from '../../ux-components/vial-panel/VialPanel';
 
-import { GameState } from '../../state/GameState';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getMinManaCost } from '../../selectors/spellSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { heroFactory } from '../../factories/heroFactory';
+import { Mana } from '../../types/Mana';
+import { HeroUnitName } from '../../types/UnitType';
+import type { GameState } from '../../state/GameState';
 
-import { ManaType } from '../../types/Mana';
-import { HeroUnitType } from '../../types/UnitType';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 
@@ -71,37 +71,37 @@ describe('VialPanel Integration Test', () => {
   describe('Human player scenarios', () => {
     it('should render mana vials for human player with sufficient mana', () => {
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+        heroFactory(HeroUnitName.CLERIC, HeroUnitName.CLERIC),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.ENCHANTER, HeroUnitType.ENCHANTER),
+        heroFactory(HeroUnitName.ENCHANTER, HeroUnitName.ENCHANTER),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.DRUID, HeroUnitType.DRUID),
+        heroFactory(HeroUnitName.DRUID, HeroUnitName.DRUID),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.PYROMANCER, HeroUnitType.PYROMANCER),
+        heroFactory(HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+        heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       // Set mana values above minimum thresholds
       getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: 1,
-        [ManaType.BLUE]: 1,
-        [ManaType.GREEN]: 1,
-        [ManaType.RED]: 1,
-        [ManaType.BLACK]: 1,
+        [Mana.WHITE]: 1,
+        [Mana.BLUE]: 1,
+        [Mana.GREEN]: 1,
+        [Mana.RED]: 1,
+        [Mana.BLACK]: 1,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -124,27 +124,27 @@ describe('VialPanel Integration Test', () => {
     it('should only render vials for mana types with sufficient mana', () => {
       // Display only mana when related mage is available if mana level below minimum threshold
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+        heroFactory(HeroUnitName.CLERIC, HeroUnitName.CLERIC),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.DRUID, HeroUnitType.DRUID),
+        heroFactory(HeroUnitName.DRUID, HeroUnitName.DRUID),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+        heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
 
       getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: 1,
-        [ManaType.BLUE]: 1,
-        [ManaType.GREEN]: 1,
-        [ManaType.RED]: 1,
-        [ManaType.BLACK]: 1,
+        [Mana.WHITE]: 1,
+        [Mana.BLUE]: 1,
+        [Mana.GREEN]: 1,
+        [Mana.RED]: 1,
+        [Mana.BLACK]: 1,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -160,11 +160,11 @@ describe('VialPanel Integration Test', () => {
     it('should render no vials when all mana is below minimum thresholds', () => {
       // Set all mana types below minimum thresholds
       getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) - 1,
-        [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) - 1,
-        [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) - 1,
-        [ManaType.RED]: getMinManaCost(ManaType.RED) - 1,
-        [ManaType.BLACK]: getMinManaCost(ManaType.BLACK) - 1,
+        [Mana.WHITE]: getMinManaCost(Mana.WHITE) - 1,
+        [Mana.BLUE]: getMinManaCost(Mana.BLUE) - 1,
+        [Mana.GREEN]: getMinManaCost(Mana.GREEN) - 1,
+        [Mana.RED]: getMinManaCost(Mana.RED) - 1,
+        [Mana.BLACK]: getMinManaCost(Mana.BLACK) - 1,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -183,11 +183,11 @@ describe('VialPanel Integration Test', () => {
       nextPlayer(gameState); // Switch to AI player
       // Set mana values above minimum thresholds for AI player
       getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
-        [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) + 15,
-        [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) + 20,
-        [ManaType.RED]: getMinManaCost(ManaType.RED) + 25,
-        [ManaType.BLACK]: getMinManaCost(ManaType.BLACK) + 30,
+        [Mana.WHITE]: getMinManaCost(Mana.WHITE) + 10,
+        [Mana.BLUE]: getMinManaCost(Mana.BLUE) + 15,
+        [Mana.GREEN]: getMinManaCost(Mana.GREEN) + 20,
+        [Mana.RED]: getMinManaCost(Mana.RED) + 25,
+        [Mana.BLACK]: getMinManaCost(Mana.BLACK) + 30,
       };
 
       renderVialPanelWithGameState(gameState);
@@ -205,11 +205,11 @@ describe('VialPanel Integration Test', () => {
     it('should properly render ManaVial with different mana amounts', () => {
       // Set specific mana amounts to test ManaVial rendering
       getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: 50, // Low mana
-        [ManaType.BLUE]: 100, // Medium mana
-        [ManaType.GREEN]: 200, // Max mana
-        [ManaType.RED]: getMinManaCost(ManaType.RED) - 1, // Below threshold (won't render)
-        [ManaType.BLACK]: 150, // High mana
+        [Mana.WHITE]: 50, // Low mana
+        [Mana.BLUE]: 100, // Medium mana
+        [Mana.GREEN]: 200, // Max mana
+        [Mana.RED]: getMinManaCost(Mana.RED) - 1, // Below threshold (won't render)
+        [Mana.BLACK]: 150, // High mana
       };
 
       renderVialPanelWithGameState(gameState);
@@ -238,38 +238,38 @@ describe('VialPanel Integration Test', () => {
     it('should handle null/undefined mana values gracefully', () => {
       // place all mages to verify that null/zero mana handled properly
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+        heroFactory(HeroUnitName.CLERIC, HeroUnitName.CLERIC),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.ENCHANTER, HeroUnitType.ENCHANTER),
+        heroFactory(HeroUnitName.ENCHANTER, HeroUnitName.ENCHANTER),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.DRUID, HeroUnitType.DRUID),
+        heroFactory(HeroUnitName.DRUID, HeroUnitName.DRUID),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.PYROMANCER, HeroUnitType.PYROMANCER),
+        heroFactory(HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+        heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
 
       const humanPlayer = getTurnOwner(gameState);
       humanPlayer.mana = {
-        [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
-        [ManaType.BLUE]: getMinManaCost(ManaType.BLUE) + 15,
-        [ManaType.GREEN]: getMinManaCost(ManaType.GREEN) + 20,
-        [ManaType.RED]: getMinManaCost(ManaType.RED) + 25,
-        [ManaType.BLACK]: getMinManaCost(ManaType.BLACK) + 30,
+        [Mana.WHITE]: getMinManaCost(Mana.WHITE) + 10,
+        [Mana.BLUE]: getMinManaCost(Mana.BLUE) + 15,
+        [Mana.GREEN]: getMinManaCost(Mana.GREEN) + 20,
+        [Mana.RED]: getMinManaCost(Mana.RED) + 25,
+        [Mana.BLACK]: getMinManaCost(Mana.BLACK) + 30,
       };
 
       const { rerender } = renderVialPanelWithGameState(gameState);
@@ -280,11 +280,11 @@ describe('VialPanel Integration Test', () => {
       // Now set mana to undefined/null for some types and re-render
       // This tests the ManaVial component's null handling (should return null)
       humanPlayer.mana = {
-        [ManaType.WHITE]: getMinManaCost(ManaType.WHITE) + 10,
-        [ManaType.BLUE]: undefined as any,
-        [ManaType.GREEN]: null as any,
-        [ManaType.RED]: getMinManaCost(ManaType.RED) + 25,
-        [ManaType.BLACK]: 0, // Since hero exist vial should be rendered
+        [Mana.WHITE]: getMinManaCost(Mana.WHITE) + 10,
+        [Mana.BLUE]: undefined as any,
+        [Mana.GREEN]: null as any,
+        [Mana.RED]: getMinManaCost(Mana.RED) + 25,
+        [Mana.BLACK]: 0, // Since hero exist vial should be rendered
       };
 
       rerender(
@@ -307,27 +307,27 @@ describe('VialPanel Integration Test', () => {
   describe('Component structure and styling', () => {
     it('should render with correct CSS classes and structure', () => {
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+        heroFactory(HeroUnitName.CLERIC, HeroUnitName.CLERIC),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.DRUID, HeroUnitType.DRUID),
+        heroFactory(HeroUnitName.DRUID, HeroUnitName.DRUID),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+        heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
         gameState,
         getPlayerLands(gameState)[0].mapPos
       );
 
       getTurnOwner(gameState).mana = {
-        [ManaType.WHITE]: 1,
-        [ManaType.BLUE]: 1, // Won't render
-        [ManaType.GREEN]: 1,
-        [ManaType.RED]: 1, // Won't render
-        [ManaType.BLACK]: 1,
+        [Mana.WHITE]: 1,
+        [Mana.BLUE]: 1, // Won't render
+        [Mana.GREEN]: 1,
+        [Mana.RED]: 1, // Won't render
+        [Mana.BLACK]: 1,
       };
 
       renderVialPanelWithGameState(gameState);

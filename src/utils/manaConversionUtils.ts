@@ -1,5 +1,7 @@
-import { ManaType } from '../types/Mana';
+import { Mana } from '../types/Mana';
 import { Alignment } from '../types/Alignment';
+import type { ManaType } from '../types/Mana';
+import type { AlignmentType } from '../types/Alignment';
 
 /**
  * Calculates the mana conversion amount based on player alignment and target mana type.
@@ -10,30 +12,30 @@ import { Alignment } from '../types/Alignment';
  * @returns The amount of mana that will be gained from the conversion
  */
 export const calculateManaConversionAmount = (
-  alignment: Alignment,
+  alignment: AlignmentType,
   targetManaType: ManaType
 ): number => {
   switch (alignment) {
     case Alignment.CHAOTIC:
       switch (targetManaType) {
-        case ManaType.BLACK:
-        case ManaType.RED:
+        case Mana.BLACK:
+        case Mana.RED:
           return 90;
-        case ManaType.GREEN:
+        case Mana.GREEN:
           return 75;
-        case ManaType.WHITE:
+        case Mana.WHITE:
           return 50;
         default:
           return 0;
       }
     case Alignment.LAWFUL:
       switch (targetManaType) {
-        case ManaType.WHITE:
-        case ManaType.GREEN:
+        case Mana.WHITE:
+        case Mana.GREEN:
           return 90;
-        case ManaType.RED:
+        case Mana.RED:
           return 75;
-        case ManaType.BLACK:
+        case Mana.BLACK:
           return 50;
         default:
           return 0;

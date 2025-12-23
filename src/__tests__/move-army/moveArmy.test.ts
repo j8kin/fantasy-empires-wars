@@ -1,10 +1,4 @@
-import { GameState } from '../../state/GameState';
-import { LandState } from '../../state/map/land/LandState';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { ArmyBriefInfo } from '../../state/army/ArmyState';
-import { UnitRank } from '../../state/army/RegularsState';
 import { getLandId } from '../../state/map/land/LandId';
-
 import {
   getLand,
   getLandOwner,
@@ -14,25 +8,27 @@ import {
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addPlayerLand, updateLandEffect } from '../../systems/gameStateActions';
-
-import { NO_PLAYER } from '../../domain/player/playerRepository';
-
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
-import { BuildingType } from '../../types/Building';
-import { SpellName } from '../../types/Spell';
-
+import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { regularsFactory } from '../../factories/regularsFactory';
+import { effectFactory } from '../../factories/effectFactory';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
 import { castSpell } from '../../map/magic/castSpell';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
+import { TreasureName } from '../../types/Treasures';
+import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { BuildingName } from '../../types/Building';
+import { SpellName } from '../../types/Spell';
+import { UnitRank } from '../../state/army/RegularsState';
+import type { GameState } from '../../state/GameState';
+import type { LandState } from '../../state/map/land/LandState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { ArmyBriefInfo } from '../../state/army/ArmyState';
 
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { regularsFactory } from '../../factories/regularsFactory';
-import { effectFactory } from '../../factories/effectFactory';
-import { TreasureType } from '../../types/Treasures';
 
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -58,32 +54,32 @@ describe('Move Army', () => {
 
     // createDefaultGameStateStub place Homeland Stronghold by default
     homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.id === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
     )!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    construct(gameStateStub, BuildingType.BARRACKS, barracksPos);
+    construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
     barracksLand = getLand(gameStateStub, barracksPos);
 
-    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
-    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
-    startRecruiting(gameStateStub, barracksPos, HeroUnitType.FIGHTER);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, HeroUnitName.FIGHTER);
 
     testTurnManagement.makeNTurns(1);
     let armies = getArmiesAtPosition(gameStateStub, barracksPos);
     expect(armies.length).toBe(1);
     expect(armies[0].regulars[0].count).toBe(40);
 
-    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
-    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
 
     testTurnManagement.makeNTurns(1);
     armies = getArmiesAtPosition(gameStateStub, barracksPos);
     expect(armies.length).toBe(1);
     expect(armies[0].regulars[0].count).toBe(80);
 
-    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
-    startRecruiting(gameStateStub, barracksPos, RegularUnitType.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
+    startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
 
     testTurnManagement.makeNTurns(1);
 
@@ -93,9 +89,9 @@ describe('Move Army', () => {
     expect(isMoving(armies[0])).toBeFalsy();
     expect(armies[0].heroes.length).toBe(1); // 1 hero
     expect(armies[0].regulars.length).toBe(1); // and 120 warriors
-    expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+    expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
     expect(armies[0].regulars[0].count).toBe(120);
-    expect(armies[0].heroes[0].type).toBe(HeroUnitType.FIGHTER);
+    expect(armies[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
   });
 
   afterEach(() => {
@@ -118,7 +114,7 @@ describe('Move Army', () => {
         const from = barracksLand.mapPos;
         const armyBriefInfo: ArmyBriefInfo = {
           heroes: [],
-          regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+          regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
         };
 
         Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -128,9 +124,9 @@ describe('Move Army', () => {
         // "old" army"
         expect(armies[0].regulars.length).toBe(1);
         expect(armies[0].heroes.length).toBe(1);
-        expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+        expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
         expect(armies[0].regulars[0].count).toBe(100);
-        expect(armies[0].heroes[0].type).toBe(HeroUnitType.FIGHTER);
+        expect(armies[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
         expect(isMoving(armies[0])).toBeFalsy();
 
         // "new" army
@@ -147,7 +143,7 @@ describe('Move Army', () => {
       const to = { row: 3, col: 5 };
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
-        regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -156,7 +152,7 @@ describe('Move Army', () => {
       const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies.length).toBe(2);
       expect(armies[0].heroes.length).toBe(1);
-      expect(armies[0].heroes[0].type).toBe(HeroUnitType.FIGHTER);
+      expect(armies[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
       expect(isMoving(armies[0])).toBeFalsy();
 
       expect(armies[1].regulars[0].count).toBe(120);
@@ -187,7 +183,7 @@ describe('Move Army', () => {
       let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [briefInfo(armies[0]).heroes[0]],
-        regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -196,7 +192,7 @@ describe('Move Army', () => {
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies.length).toBe(2);
       expect(armies[0].regulars.length).toBe(1);
-      expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(armies[0].regulars[0].count).toBe(100);
       expect(isMoving(armies[0])).toBeFalsy();
 
@@ -204,8 +200,8 @@ describe('Move Army', () => {
       expect(armies[1].regulars.length).toBe(1);
       expect(isMoving(armies[1])).toBeTruthy();
 
-      expect(armies[1].heroes[0].type).toBe(HeroUnitType.FIGHTER);
-      expect(armies[1].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(armies[1].heroes[0].type).toBe(HeroUnitName.FIGHTER);
+      expect(armies[1].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(armies[1].regulars[0].count).toBe(20);
     });
 
@@ -215,7 +211,7 @@ describe('Move Army', () => {
       let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [briefInfo(armies[0]).heroes[0]],
-        regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -223,11 +219,11 @@ describe('Move Army', () => {
       // only new army remains
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies.length).toBe(1);
-      expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(armies[0].regulars[0].count).toBe(120);
 
       expect(armies[0].heroes.length).toBe(1);
-      expect(armies[0].heroes[0].type).toBe(HeroUnitType.FIGHTER);
+      expect(armies[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
       expect(isMoving(armies[0])).toBeTruthy();
     });
 
@@ -236,7 +232,7 @@ describe('Move Army', () => {
         const emptyLand = getLand(gameStateStub, { row: 1, col: 1 });
         const armyBriefInfo: ArmyBriefInfo = {
           heroes: [],
-          regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+          regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
         };
         let armies = getArmiesAtPosition(gameStateStub, emptyLand.mapPos);
 
@@ -252,9 +248,9 @@ describe('Move Army', () => {
         expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
         expect(isMoving(armies[0])).toBeFalsy();
         expect(armies[0].heroes.length).toBe(1); // 1 hero
-        expect(armies[0].heroes[0].type).toBe(HeroUnitType.FIGHTER);
+        expect(armies[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
         expect(armies[0].regulars.length).toBe(1); // and 120 warriors
-        expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+        expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
         expect(armies[0].regulars[0].count).toBe(120);
       });
       it('not enough units to move', () => {
@@ -263,7 +259,7 @@ describe('Move Army', () => {
         let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
         const armyBriefInfo: ArmyBriefInfo = {
           heroes: [briefInfo(armies[0]).heroes[0]],
-          regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 1000 }],
+          regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 1000 }],
         };
 
         Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -273,9 +269,9 @@ describe('Move Army', () => {
         expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
         expect(isMoving(armies[0])).toBeFalsy();
         expect(armies[0].heroes.length).toBe(1); // 1 hero
-        expect(armies[0].heroes[0].type).toBe(HeroUnitType.FIGHTER);
+        expect(armies[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
         expect(armies[0].regulars.length).toBe(1); // and 120 warriors
-        expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+        expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
         expect(armies[0].regulars[0].count).toBe(120);
       });
 
@@ -283,7 +279,7 @@ describe('Move Army', () => {
         const from = barracksLand.mapPos;
         const to = { row: 3, col: 5 };
         const armyBriefInfo: ArmyBriefInfo = {
-          heroes: [{ name: 'Invalid hero name', type: HeroUnitType.CLERIC, level: 1 }],
+          heroes: [{ name: 'Invalid hero name', type: HeroUnitName.CLERIC, level: 1 }],
           regulars: [],
         };
 
@@ -294,9 +290,9 @@ describe('Move Army', () => {
         expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
         expect(isMoving(armies[0])).toBeFalsy();
         expect(armies[0].heroes.length).toBe(1); // 1 hero
-        expect(armies[0].heroes[0].type).toBe(HeroUnitType.FIGHTER);
+        expect(armies[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
         expect(armies[0].regulars.length).toBe(1); // 1 and 120 warriors
-        expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+        expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
         expect(armies[0].regulars[0].count).toBe(120);
       });
     });
@@ -316,7 +312,7 @@ describe('Move Army', () => {
         1
       ).find((l) => getLandOwner(gameStateStub, l) !== opponent)!; // move from neutral land
 
-      placeUnitsOnMap(regularsFactory(RegularUnitType.WARD_HANDS, 120), gameStateStub, from);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.WARD_HANDS, 120), gameStateStub, from);
 
       let armies = getArmiesAtPosition(gameStateStub, from);
       const armyBriefInfo: ArmyBriefInfo = {
@@ -337,7 +333,7 @@ describe('Move Army', () => {
       expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
       expect(isMoving(armies[0])).toBeFalsy();
       expect(armies[0].regulars.length).toBe(1);
-      expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARD_HANDS);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARD_HANDS);
       expect(armies[0].regulars[0].count).toBeLessThan(120); // due to attrition penalty
       // additionally verify that land is removed from opponent lands
       expect(getPlayerLands(gameStateStub, opponent).map((l) => getLandId(l.mapPos))).not.toContain(
@@ -357,7 +353,7 @@ describe('Move Army', () => {
         updateLandEffect(
           gameStateStub,
           to,
-          effectFactory(TreasureType.DEED_OF_RECLAMATION, gameStateStub.players[1].id)
+          effectFactory(TreasureName.DEED_OF_RECLAMATION, gameStateStub.players[1].id)
         )
       );
       Object.assign(gameStateStub, addPlayerLand(gameStateStub, gameStateStub.players[1].id, to));
@@ -366,7 +362,7 @@ describe('Move Army', () => {
       // 20 regular units is not enough to conquer the new territory so it became neutral and DEED OF RECLAMATION effect disappears
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
-        regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
       };
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
 
@@ -435,7 +431,7 @@ describe('Move Army', () => {
       expect(stationedArmy.heroes.length).toBe(2);
       expect(stationedArmy.heroes[0].name).toBe('Alaric the Bold'); // hero comes from homeland
       expect(stationedArmy.heroes[1].name).not.toBe('Alaric the Bold');
-      expect(stationedArmy.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(stationedArmy.regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(stationedArmy.regulars[0].count).toBe(120);
       expect(stationedArmy.controlledBy).toBe(getTurnOwner(gameStateStub).id);
     });
@@ -446,7 +442,7 @@ describe('Move Army', () => {
       expect(armies.length).toBe(1);
       expect(armies[0].heroes.length).toBe(1);
       expect(armies[0].regulars.length).toBe(1);
-      expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(armies[0].regulars[0].count).toBe(120);
 
       const to = { row: 3, col: 5 };
@@ -454,7 +450,7 @@ describe('Move Army', () => {
 
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
-        regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -474,7 +470,7 @@ describe('Move Army', () => {
       expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
       expect(isMoving(armies[0])).toBeFalsy();
       expect(armies[0].regulars.length).toBe(1);
-      expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(armies[0].regulars[0].count).toBe(79); // attrition penalty (the same due to randomSpy)
 
       randomSpy.mockRestore();
@@ -486,7 +482,7 @@ describe('Move Army', () => {
       expect(armies.length).toBe(1);
       expect(armies[0].heroes.length).toBe(1);
       expect(armies[0].regulars.length).toBe(1);
-      expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(armies[0].regulars[0].count).toBe(120);
 
       const to = { row: 3, col: 5 };
@@ -494,7 +490,7 @@ describe('Move Army', () => {
 
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
-        regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -517,7 +513,7 @@ describe('Move Army', () => {
       expect(armies.length).toBe(1);
       expect(armies[0].heroes.length).toBe(1);
       expect(armies[0].regulars.length).toBe(1);
-      expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(armies[0].regulars[0].count).toBe(120);
 
       const to = { row: 3, col: 5 };
@@ -526,7 +522,7 @@ describe('Move Army', () => {
       // first army is moved to new territory
       const ArmyBriefInfo1: ArmyBriefInfo = {
         heroes: [],
-        regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, ArmyBriefInfo1));
@@ -536,7 +532,7 @@ describe('Move Army', () => {
       // second army is moved to the same territory
       const ArmyBriefInfo2: ArmyBriefInfo = {
         heroes: [],
-        regulars: [{ id: RegularUnitType.WARRIOR, rank: UnitRank.REGULAR, count: 35 }], // 35 regular units is not enough to conquer the new territory
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 35 }], // 35 regular units is not enough to conquer the new territory
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, ArmyBriefInfo2));
@@ -555,7 +551,7 @@ describe('Move Army', () => {
       expect(armies.length).toBe(1);
       expect(armies[0].regulars.length).toBe(1);
       expect(armies[0].heroes.length).toBe(0);
-      expect(armies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(armies[0].regulars[0].count).toBe(14);
       expect(getLandOwner(gameStateStub, to)).toBe(getTurnOwner(gameStateStub).id); // new territory owner is not changed
 

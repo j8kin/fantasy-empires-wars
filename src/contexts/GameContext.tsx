@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode, useRef } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react';
 import type { GameState } from '../state/GameState';
 import { TurnManager, TurnManagerCallbacks } from '../turn/TurnManager';
-import type { TurnPhase } from '../turn/TurnPhase';
+import type { TurnPhaseType } from '../turn/TurnPhase';
 import type { EmpireEvent } from '../types/EmpireEvent';
 
 interface GameContextType {
@@ -33,7 +33,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
 
   const createDefaultCallbacks = useCallback((): TurnManagerCallbacks => {
     return {
-      onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
+      onTurnPhaseChange: (gameState: GameState, phase: TurnPhaseType) => {
         setGameState(gameState);
       },
       onGameOver: (message: string) => {

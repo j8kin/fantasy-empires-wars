@@ -9,11 +9,12 @@ import { construct } from '../../map/building/construct';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
-import { BuildingType } from '../../types/Building';
-import { LandType } from '../../types/Land';
+import { BuildingName } from '../../types/Building';
+import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { PlayerProfile } from '../../state/player/PlayerProfile';
+import type { AlignmentType } from '../../types/Alignment';
 
 import { createGameStateStub, defaultBattlefieldSizeStub } from '../utils/createGameStateStub';
 import { generateMockMap } from '../utils/generateMockMap';
@@ -21,7 +22,7 @@ import { generateMockMap } from '../utils/generateMockMap';
 describe('Calculate Income', () => {
   let gameStateStub: GameState;
 
-  const getPlayer = (alignment: Alignment): PlayerProfile => {
+  const getPlayer = (alignment: AlignmentType): PlayerProfile => {
     switch (alignment) {
       case Alignment.LAWFUL:
         return PREDEFINED_PLAYERS[0]; // Alaric - LAWFUL
@@ -67,7 +68,7 @@ describe('Calculate Income', () => {
     [Alignment.LAWFUL, Alignment.LAWFUL, 910],
   ])(
     'Calculate income for player with alignment %s in %s land alignment',
-    (playerAlignment: Alignment, allLandsAlignment: Alignment, expectedIncome: number) => {
+    (playerAlignment: AlignmentType, allLandsAlignment: AlignmentType, expectedIncome: number) => {
       const player = getPlayer(playerAlignment);
 
       gameStateStub = gameStateFactory(
@@ -75,7 +76,7 @@ describe('Calculate Income', () => {
       );
       addPlayerToGameState(gameStateStub, player, 'human');
       // add stronghold
-      construct(gameStateStub, BuildingType.STRONGHOLD, { row: 3, col: 3 });
+      construct(gameStateStub, BuildingName.STRONGHOLD, { row: 3, col: 3 });
       const income = calculateIncome(gameStateStub);
       expect(income).toBe(expectedIncome);
     }
@@ -93,7 +94,7 @@ describe('Calculate Income', () => {
     ['0%', Alignment.CHAOTIC, 7, 100], // the second land with 100% penalty
   ])(
     'Calculate income with penalty (%s) if it is not stronghold land and Player has %s alignment',
-    (penalty: string, playerAlignment: Alignment, landCol: number, expected: number) => {
+    (penalty: string, playerAlignment: AlignmentType, landCol: number, expected: number) => {
       const player = getPlayer(playerAlignment);
 
       addPlayerToGameState(gameStateStub, player, 'human');
@@ -105,7 +106,7 @@ describe('Calculate Income', () => {
       );
       gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
       gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].buildings = [
-        buildingFactory(BuildingType.STRONGHOLD),
+        buildingFactory(BuildingName.STRONGHOLD),
       ];
 
       // additional land (should be calculated with penalty
@@ -122,18 +123,18 @@ describe('Calculate Income', () => {
   );
 
   it.each([
-    [Alignment.LAWFUL, LandType.PLAINS, 100],
-    [Alignment.LAWFUL, LandType.VOLCANO, 80],
-    [Alignment.LAWFUL, LandType.MOUNTAINS, 130],
-    [Alignment.CHAOTIC, LandType.PLAINS, 100],
-    [Alignment.CHAOTIC, LandType.VOLCANO, 200],
-    [Alignment.CHAOTIC, LandType.MOUNTAINS, 50],
-    [Alignment.NEUTRAL, LandType.PLAINS, 100],
-    [Alignment.NEUTRAL, LandType.VOLCANO, 100],
-    [Alignment.NEUTRAL, LandType.MOUNTAINS, 100],
+    [Alignment.LAWFUL, LandName.PLAINS, 100],
+    [Alignment.LAWFUL, LandName.VOLCANO, 80],
+    [Alignment.LAWFUL, LandName.MOUNTAINS, 130],
+    [Alignment.CHAOTIC, LandName.PLAINS, 100],
+    [Alignment.CHAOTIC, LandName.VOLCANO, 200],
+    [Alignment.CHAOTIC, LandName.MOUNTAINS, 50],
+    [Alignment.NEUTRAL, LandName.PLAINS, 100],
+    [Alignment.NEUTRAL, LandName.VOLCANO, 100],
+    [Alignment.NEUTRAL, LandName.MOUNTAINS, 100],
   ])(
     `Calculate income with land alignment penalty based on player's alignment`,
-    (playerAlignment: Alignment, land, expected) => {
+    (playerAlignment: AlignmentType, land, expected) => {
       const player = getPlayer(playerAlignment);
 
       addPlayerToGameState(gameStateStub, player, 'human');
@@ -146,7 +147,7 @@ describe('Calculate Income', () => {
       );
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
-        buildingFactory(BuildingType.STRONGHOLD),
+        buildingFactory(BuildingName.STRONGHOLD),
       ];
 
       const income = calculateIncome(gameStateStub);
@@ -160,10 +161,10 @@ describe('Calculate Income', () => {
     [Alignment.CHAOTIC, 100, 200], // CORRUPTED has positive effect
   ])(
     'CORRUPTED Land treated as CHAOTIC Land type and has affect for %s player',
-    (pAlignment: Alignment, incomeBefore: number, incomeAfter: number) => {
+    (pAlignment: AlignmentType, incomeBefore: number, incomeAfter: number) => {
       const player = getPlayer(pAlignment);
       addPlayerToGameState(gameStateStub, player, 'human');
-      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(LandType.PLAINS);
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(LandName.PLAINS);
       Object.assign(
         gameStateStub,
         addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 4, col: 4 })
@@ -171,7 +172,7 @@ describe('Calculate Income', () => {
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
 
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
-        buildingFactory(BuildingType.STRONGHOLD),
+        buildingFactory(BuildingName.STRONGHOLD),
       ];
 
       let income = calculateIncome(gameStateStub);

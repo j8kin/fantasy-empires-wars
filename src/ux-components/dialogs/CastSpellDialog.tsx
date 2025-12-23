@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect } from 'react';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
+import FlipBookPage, { FlipBookPageTypeName } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCastSpellLands';
-import { AllSpells } from '../../types/Spell';
-
-import { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
-import { SpellName } from '../../types/Spell';
 
 import { getSpellImg } from '../../assets/getSpellImg';
+
+import { SpellName } from '../../types/Spell';
+import { AllSpells } from '../../domain/spell/spellsRepository';
+import type { SpellType } from '../../types/Spell';
 
 const CastSpellDialog: React.FC = () => {
   const {
@@ -37,9 +37,9 @@ const CastSpellDialog: React.FC = () => {
   }, [setShowCastSpellDialog, setIsArcaneExchangeMode]);
 
   const createSpellClickHandler = useCallback(
-    (spellId: SpellName) => {
+    (spellId: SpellType) => {
       return () => {
-        setSelectedLandAction(`${FlipBookPageType.SPELL}: ${spellId}`);
+        setSelectedLandAction(`${FlipBookPageTypeName.SPELL}: ${spellId}`);
         const spell = getSpellById(spellId);
 
         // Handle Arcane Exchange spell differently - don't glow any lands, just enter exchange mode
@@ -104,7 +104,7 @@ const CastSpellDialog: React.FC = () => {
           cost={spell.manaCost}
           costLabel="Mana Cost"
           onClose={handleDialogClose}
-          onIconClick={createSpellClickHandler(spell.id as SpellName)}
+          onIconClick={createSpellClickHandler(spell.id as SpellType)}
         />
       ))}
     </FlipBook>

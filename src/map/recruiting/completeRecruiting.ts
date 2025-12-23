@@ -12,7 +12,7 @@ import { isHeroType } from '../../domain/unit/unitTypeChecks';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 
-import { EmpireEventType } from '../../types/EmpireEvent';
+import { EmpireEventKind } from '../../types/EmpireEvent';
 import type { EmpireEvent } from '../../types/EmpireEvent';
 import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
@@ -49,7 +49,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
           if (isHeroType(s.unit)) {
             const newHero = heroFactory(s.unit, generateHeroName(s.unit));
             recruitEvents.push({
-              status: EmpireEventType.Success,
+              status: EmpireEventKind.Success,
               message: heroRecruitingMessage(newHero),
             });
 

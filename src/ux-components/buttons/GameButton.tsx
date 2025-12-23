@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
-import { ButtonName } from '../../types/ButtonName';
+import { ButtonType, ButtonName } from '../../types/ButtonName';
 
 import buttonImg from '../../assets/buttons/Button.png';
 
 export interface GameButtonProps {
-  buttonName: ButtonName;
+  buttonName: ButtonType;
   // Use the standard React mouse event handler for an img element; callers may ignore the event
   onClick?: React.MouseEventHandler<HTMLImageElement>;
 }

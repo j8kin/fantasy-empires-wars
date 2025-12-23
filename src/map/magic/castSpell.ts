@@ -38,16 +38,18 @@ import { destroyBuilding } from '../building/destroyBuilding';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 import { getAvailableToCastSpellLands } from './getAvailableToCastSpellLands';
-
-import { LandType } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
-import { ManaType } from '../../types/Mana';
-import { TreasureType } from '../../types/Treasures';
-import { EffectType } from '../../types/Effect';
-import { HeroUnitType, MAX_HERO_LEVEL, RegularUnitType } from '../../types/UnitType';
-import type { Spell } from '../../types/Spell';
+import { Mana } from '../../types/Mana';
+import { TreasureName } from '../../types/Treasures';
+import { EffectKind } from '../../types/Effect';
+import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName } from '../../types/UnitType';
+
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { Spell, SpellType } from '../../types/Spell';
+import type { ManaType } from '../../types/Mana';
+import type { RegularUnitType } from '../../types/UnitType';
 import type { PenaltyConfig } from '../../domain/army/armyPenaltyCalculator';
 
 /**
@@ -60,7 +62,7 @@ import type { PenaltyConfig } from '../../domain/army/armyPenaltyCalculator';
  */
 export const castSpell = (
   state: GameState,
-  spellName: SpellName,
+  spellName: SpellType,
   mainAffectedLand?: LandPosition,
   secondaryAffectedLand?: LandPosition,
   exchangeMana?: ManaType
@@ -76,13 +78,13 @@ export const castSpell = (
 
     const isLandUnderProtection =
       mainAffectedLand != null
-        ? hasActiveEffect(getLand(state, mainAffectedLand), TreasureType.AEGIS_SHARD)
+        ? hasActiveEffect(getLand(state, mainAffectedLand), TreasureName.AEGIS_SHARD)
         : false;
 
-    if (spell.rules?.type === EffectType.NEGATIVE && isLandUnderProtection) {
+    if (spell.rules?.type === EffectKind.NEGATIVE && isLandUnderProtection) {
       // a negative spell should be canceled when land under protection
       const effectId = getLand(state, mainAffectedLand!).effects.find(
-        (e) => e.sourceId === TreasureType.AEGIS_SHARD
+        (e) => e.sourceId === TreasureName.AEGIS_SHARD
       )!.id;
       let updatedState = updatePlayerMana(state, state.turnOwner, spell.manaType, -spell.manaCost);
       updatedState = removeLandEffect(updatedState, mainAffectedLand!, effectId);
@@ -105,7 +107,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       // TURN_UNDEAD effect is active only once per player per turn
       if (hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) return;
 
-      const maxClericLevel = getMaxHeroLevelByType(state, HeroUnitType.CLERIC);
+      const maxClericLevel = getMaxHeroLevelByType(state, HeroUnitName.CLERIC);
       updatedState = updatePlayerEffect(
         updatedState,
         player.id,
@@ -115,7 +117,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
 
       updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos!, [
-        RegularUnitType.UNDEAD,
+        RegularUnitName.UNDEAD,
       ]);
       break;
 
@@ -157,7 +159,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
   let maxDruidLevel: number = 0;
   switch (spell.id) {
     case SpellName.FERTILE_LAND:
-      maxDruidLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.DRUID);
+      maxDruidLevel = getMaxHeroLevelByType(updatedState, HeroUnitName.DRUID);
       updatedState = applyEffectOnRandomLands(updatedState, spell, landPos!, maxDruidLevel);
       break;
 
@@ -170,7 +172,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       break;
 
     case SpellName.BEAST_ATTACK:
-      maxDruidLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.DRUID);
+      maxDruidLevel = getMaxHeroLevelByType(updatedState, HeroUnitName.DRUID);
       // penalty increased based on max hero level
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxDruidLevel);
 
@@ -190,7 +192,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       return; // skip other school spells
   }
 
-  const hasVerdantIdol = hasTreasureByPlayer(getTurnOwner(updatedState), TreasureType.VERDANT_IDOL);
+  const hasVerdantIdol = hasTreasureByPlayer(getTurnOwner(updatedState), TreasureName.VERDANT_IDOL);
 
   Object.assign(
     state,
@@ -198,7 +200,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       updatedState,
       updatedState.turnOwner,
       spell.manaType,
-      -Math.floor(spell.manaCost * (spell.manaType === ManaType.GREEN && hasVerdantIdol ? 0.85 : 1))
+      -Math.floor(spell.manaCost * (spell.manaType === Mana.GREEN && hasVerdantIdol ? 0.85 : 1))
     )
   );
 };
@@ -213,7 +215,7 @@ const castBlueManaSpell = (
   let updatedState: GameState = state;
   switch (spell.id) {
     case SpellName.ILLUSION:
-      const maxEnchanterLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.ENCHANTER);
+      const maxEnchanterLevel = getMaxHeroLevelByType(updatedState, HeroUnitName.ENCHANTER);
       updatedState = applyEffectOnRandomLands(updatedState, spell, landPos!, maxEnchanterLevel);
       break;
 
@@ -280,9 +282,9 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
           (u) =>
             !isHeroType(u) &&
             !isWarMachine(u) &&
-            u !== RegularUnitType.WARD_HANDS &&
-            u !== RegularUnitType.WARRIOR // to recruit uniq type then WARRIOR
-        ) ?? RegularUnitType.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
+            u !== RegularUnitName.WARD_HANDS &&
+            u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
+        ) ?? RegularUnitName.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
 
       const newArmy = armyFactory(updatedState.turnOwner, landPos, undefined, [
         regularsFactory(forgedUnitType as RegularUnitType, 60), // the same as 3 slots in Barracks
@@ -291,7 +293,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       break;
 
     case SpellName.FIRESTORM:
-      const maxPyromancerLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.PYROMANCER);
+      const maxPyromancerLevel = getMaxHeroLevelByType(updatedState, HeroUnitName.PYROMANCER);
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxPyromancerLevel);
 
       getTilesInRadius(getMapDimensions(updatedState), landPos, 1, false).forEach((l) => {
@@ -300,7 +302,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       break;
 
     case SpellName.METEOR_SHOWER:
-      const maxMageLvl = getMaxHeroLevelByType(updatedState, HeroUnitType.PYROMANCER);
+      const maxMageLvl = getMaxHeroLevelByType(updatedState, HeroUnitName.PYROMANCER);
       const showerPenaltyCfg = calculatePenaltyConfig(spell.penalty!, maxMageLvl);
 
       updatedState = applyArmyCasualtiesAtPosition(updatedState, showerPenaltyCfg, landPos!);
@@ -324,9 +326,9 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
   let updatedState: GameState = state;
   switch (spell.id) {
     case SpellName.SUMMON_UNDEAD:
-      const maxNecromancerLevel = getMaxHeroLevelByType(updatedState, HeroUnitType.NECROMANCER);
+      const maxNecromancerLevel = getMaxHeroLevelByType(updatedState, HeroUnitName.NECROMANCER);
       const undeadSummoned = regularsFactory(
-        RegularUnitType.UNDEAD,
+        RegularUnitName.UNDEAD,
         Math.ceil(getRandomInt(40, 60) * (1 + maxNecromancerLevel / MAX_HERO_LEVEL))
       );
       const stationaryArmy = getArmiesAtPosition(updatedState, landPos).find(
@@ -358,19 +360,19 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
 
       // change units to recruit based on land type
       const unitsToRecruit =
-        land.land.id === LandType.GREEN_FOREST
+        land.land.id === LandName.GREEN_FOREST
           ? [
-              RegularUnitType.ORC,
-              RegularUnitType.DARK_ELF,
-              RegularUnitType.BALLISTA,
-              RegularUnitType.CATAPULT,
-              HeroUnitType.SHADOW_BLADE,
+              RegularUnitName.ORC,
+              RegularUnitName.DARK_ELF,
+              RegularUnitName.BALLISTA,
+              RegularUnitName.CATAPULT,
+              HeroUnitName.SHADOW_BLADE,
             ]
           : [
-              RegularUnitType.ORC,
-              RegularUnitType.BALLISTA,
-              RegularUnitType.CATAPULT,
-              HeroUnitType.OGR,
+              RegularUnitName.ORC,
+              RegularUnitName.BALLISTA,
+              RegularUnitName.CATAPULT,
+              HeroUnitName.OGR,
             ];
 
       updatedState = updateLand(updatedState, landPos, {

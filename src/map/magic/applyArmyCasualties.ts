@@ -3,7 +3,7 @@ import { getArmiesAtPositionByPlayers } from '../../selectors/armySelectors';
 import { calculateAndApplyArmyPenalties } from '../../domain/army/armyPenaltyCalculator';
 import { cleanupArmies, updateArmyInGameState } from '../../systems/armyActions';
 
-import { TreasureType } from '../../types/Treasures';
+import { TreasureName } from '../../types/Treasures';
 import { RegularUnitType } from '../../types/UnitType';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
@@ -39,7 +39,7 @@ export const applyArmyCasualtiesAtPosition = (
     const updatedArmies = calculateAndApplyArmyPenalties(
       playerArmiesAtPosition,
       penaltyConfig,
-      hasTreasureByPlayer(p, TreasureType.SHARD_OF_THE_SILENT_ANVIL),
+      hasTreasureByPlayer(p, TreasureName.SHARD_OF_THE_SILENT_ANVIL),
       units
     );
 

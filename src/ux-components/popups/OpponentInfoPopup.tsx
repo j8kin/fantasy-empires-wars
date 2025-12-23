@@ -7,12 +7,11 @@ import PopupWrapper from './PopupWrapper';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getAlignmentColor } from '../../domain/ui/alignmentColors';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
-
 import { DiplomacyStatus } from '../../types/Diplomacy';
+
 import type { PopupProps } from './PopupWrapper';
 import type { PlayerState } from '../../state/player/PlayerState';
 

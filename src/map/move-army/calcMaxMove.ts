@@ -1,11 +1,10 @@
 import { isWarMachine } from '../../domain/unit/unitTypeChecks';
-
 import { UnitRank } from '../../state/army/RegularsState';
-import type { RegularsState } from '../../state/army/RegularsState';
+import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
 
 export const MAX_MOVE = 4;
 
-const maxKill = (n: number, rank: UnitRank) => {
+const maxKill = (n: number, rank: UnitRankType) => {
   switch (rank) {
     case UnitRank.REGULAR:
       return Math.max(Math.ceil(n * 0.1), 60);

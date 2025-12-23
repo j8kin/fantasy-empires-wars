@@ -1,14 +1,16 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import CastSpellDialog from '../../../ux-components/dialogs/CastSpellDialog';
+
 import { GameProvider } from '../../../contexts/GameContext';
 import {
   ApplicationContextProvider,
   useApplicationContext,
 } from '../../../contexts/ApplicationContext';
-import { AllSpells } from '../../../types/Spell';
+import { AllSpells } from '../../../domain/spell/spellsRepository';
+import type { GameState } from '../../../state/GameState';
+
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
-import { GameState } from '../../../state/GameState';
 
 // Mock CSS modules
 jest.mock(

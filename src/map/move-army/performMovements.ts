@@ -2,9 +2,8 @@ import { getArmiesByPlayer, getPosition, isMoving } from '../../selectors/armySe
 import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
 import { moveArmy, updateArmyInGameState } from '../../systems/armyActions';
 import { mergeArmiesAtPositions } from './mergeArmiesAtPositions';
-
 import { SpellName } from '../../types/Spell';
-import { TreasureType } from '../../types/Treasures';
+import { TreasureName } from '../../types/Treasures';
 import type { GameState } from '../../state/GameState';
 
 export const performMovements = (state: GameState): GameState => {
@@ -15,7 +14,7 @@ export const performMovements = (state: GameState): GameState => {
     (army) =>
       isMoving(army) &&
       !hasActiveEffect(getLand(state, getPosition(army)), SpellName.ENTANGLING_ROOTS) &&
-      !hasActiveEffect(getLand(state, getPosition(army)), TreasureType.HOURGLASS_OF_DELAY)
+      !hasActiveEffect(getLand(state, getPosition(army)), TreasureName.HOURGLASS_OF_DELAY)
   );
 
   let updatedState = state;

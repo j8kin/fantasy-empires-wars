@@ -4,13 +4,13 @@ import { setTurnPhase } from '../systems/gameStateActions';
 import { startTurn } from './startTurn';
 import { endTurn } from './endTurn';
 import { mainAiTurn } from './mainAiTurn';
-
 import { TurnPhase } from './TurnPhase';
+import type { TurnPhaseType } from './TurnPhase';
 import type { GameState } from '../state/GameState';
 import type { EmpireEvent } from '../types/EmpireEvent';
 
 export interface TurnManagerCallbacks {
-  onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => void;
+  onTurnPhaseChange: (gameState: GameState, phase: TurnPhaseType) => void;
   onGameOver: (message: string) => void;
   onStartProgress: (message: string) => void;
   onHideProgress: () => void;
@@ -47,7 +47,7 @@ export class TurnManager {
    * @param gameState The game state to update
    * @param phase The phase to transition to
    */
-  private transitionToPhase(gameState: GameState, phase: TurnPhase): void {
+  private transitionToPhase(gameState: GameState, phase: TurnPhaseType): void {
     Object.assign(gameState, setTurnPhase(gameState, phase));
     this.callbacks.onTurnPhaseChange(gameState, phase);
   }

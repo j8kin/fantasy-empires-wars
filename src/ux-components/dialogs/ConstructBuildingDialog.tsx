@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
-import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
+import FlipBookPage, { FlipBookPageTypeName } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
@@ -10,8 +10,8 @@ import { getAvailableToConstructLands } from '../../map/building/getAvailableToC
 
 import { getBuildingImg } from '../../assets/getBuildingImg';
 
-import { FlipBookPageType } from '../fantasy-book-dialog-template/FlipBookPage';
-import { BuildingType } from '../../types/Building';
+import type { BuildingType } from '../../types/Building';
+import { BuildingName } from '../../types/Building';
 
 const ConstructBuildingDialog: React.FC = () => {
   const {
@@ -30,7 +30,7 @@ const ConstructBuildingDialog: React.FC = () => {
   const createBuildingClickHandler = useCallback(
     (buildingType: BuildingType) => {
       return () => {
-        setSelectedLandAction(`${FlipBookPageType.BUILDING}: ${buildingType}`);
+        setSelectedLandAction(`${FlipBookPageTypeName.BUILDING}: ${buildingType}`);
 
         // Add tiles to the glowing tiles set for visual highlighting
         getAvailableToConstructLands(gameState!, buildingType).forEach((tileId) => {
@@ -66,22 +66,22 @@ const ConstructBuildingDialog: React.FC = () => {
 
   if (landsWithoutBuildings.length === 0) {
     // trying to allocate lands where only WALLS are constructed (if barracks allowed then other buildings are allowed)
-    if (getAvailableToConstructLands(gameState!, BuildingType.BARRACKS).length === 0) {
+    if (getAvailableToConstructLands(gameState!, BuildingName.BARRACKS).length === 0) {
       // probably only WALLS are allowed to be constructed
-      if (getAvailableToConstructLands(gameState!, BuildingType.WALL).length === 0) {
+      if (getAvailableToConstructLands(gameState!, BuildingName.WALL).length === 0) {
         return null;
       }
     }
   }
   const isStrongholdAllowed =
-    getAvailableToConstructLands(gameState!, BuildingType.STRONGHOLD).length > 0;
+    getAvailableToConstructLands(gameState!, BuildingName.STRONGHOLD).length > 0;
 
   const selectedPlayer = getTurnOwner(gameState);
   const availableBuildings = selectedPlayer
     ? getAllBuildings(selectedPlayer).filter(
         (building) =>
           building.buildCost <= selectedPlayer.vault! &&
-          (building.id !== BuildingType.STRONGHOLD || isStrongholdAllowed)
+          (building.id !== BuildingName.STRONGHOLD || isStrongholdAllowed)
       )
     : [];
 

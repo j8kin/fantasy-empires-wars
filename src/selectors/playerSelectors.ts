@@ -1,14 +1,13 @@
 import { isRelic } from '../domain/treasure/treasureRepository';
 import { playerFactory } from '../factories/playerFactory';
-
-import { EffectType } from '../types/Effect';
+import { NO_PLAYER } from '../domain/player/playerRepository';
+import { EffectKind } from '../types/Effect';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
 import type { LandState } from '../state/map/land/LandState';
-import type { SpellName } from '../types/Spell';
+import type { SpellType } from '../types/Spell';
 import type { Item, TreasureType } from '../types/Treasures';
-import type { DiplomacyStatus } from '../types/Diplomacy';
-import { NO_PLAYER } from '../domain/player/playerRepository';
+import type { DiplomacyStatusType } from '../types/Diplomacy';
 
 const NONE = playerFactory(NO_PLAYER, 'computer');
 
@@ -32,7 +31,7 @@ export const getPlayerLands = (state: GameState, playerId?: string): LandState[]
  */
 export const getPlayersByDiplomacy = (
   gameState: GameState,
-  statuses: DiplomacyStatus[]
+  statuses: DiplomacyStatusType[]
 ): PlayerState[] => {
   const { turnOwner } = gameState;
   return gameState.players.filter(
@@ -40,9 +39,9 @@ export const getPlayersByDiplomacy = (
   );
 };
 
-export const hasActiveEffectByPlayer = (state: PlayerState, spellId: SpellName): boolean => {
+export const hasActiveEffectByPlayer = (state: PlayerState, spellId: SpellType): boolean => {
   return state.effects.some(
-    (e) => e.sourceId === spellId && (e.rules.duration > 0 || e.rules.type === EffectType.PERMANENT)
+    (e) => e.sourceId === spellId && (e.rules.duration > 0 || e.rules.type === EffectKind.PERMANENT)
   );
 };
 

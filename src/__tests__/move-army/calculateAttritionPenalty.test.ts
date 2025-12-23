@@ -1,18 +1,17 @@
-import { GameState } from '../../state/GameState';
-import { RegularsState, UnitRank } from '../../state/army/RegularsState';
-import { ArmyState } from '../../state/army/ArmyState';
+import { UnitRank } from '../../state/army/RegularsState';
+import type { GameState } from '../../state/GameState';
+import type { ArmyState } from '../../state/army/ArmyState';
+import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
+import type { RegularUnitType } from '../../types/UnitType';
+import { RegularUnitName } from '../../types/UnitType';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { hasLand } from '../../systems/playerActions';
-import { addRegulars } from '../../systems/armyActions';
-import { addArmyToGameState } from '../../systems/armyActions';
-
+import { addArmyToGameState, addRegulars } from '../../systems/armyActions';
 import { armyFactory } from '../../factories/armyFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
-
-import { RegularUnitType } from '../../types/UnitType';
 
 import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
@@ -42,7 +41,7 @@ describe('Calculate Attrition Penalty', () => {
   const testCreateRegularUnit = (
     unit: RegularUnitType,
     count: number = 20,
-    level: UnitRank = UnitRank.REGULAR
+    level: UnitRankType = UnitRank.REGULAR
   ): RegularsState => ({
     ...regularsFactory(unit),
     rank: level,
@@ -98,7 +97,7 @@ describe('Calculate Attrition Penalty', () => {
       army2Initial: number,
       army1Loss: number,
       army2Loss: number,
-      rank: UnitRank
+      rank: UnitRankType
     ) => {
       randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
@@ -107,11 +106,11 @@ describe('Calculate Attrition Penalty', () => {
 
       Object.assign(
         army1,
-        addRegulars(army1, testCreateRegularUnit(RegularUnitType.WARRIOR, army1Initial, rank))
+        addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, army1Initial, rank))
       );
       Object.assign(
         army2,
-        addRegulars(army2, testCreateRegularUnit(RegularUnitType.WARRIOR, army2Initial, rank))
+        addRegulars(army2, testCreateRegularUnit(RegularUnitName.WARRIOR, army2Initial, rank))
       );
 
       // place armies using centralized system
@@ -123,11 +122,11 @@ describe('Calculate Attrition Penalty', () => {
       const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
       expect(currentArmies.length).toBe(2);
       expect(currentArmies[0].regulars.length).toBe(1);
-      expect(currentArmies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(currentArmies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(currentArmies[0].regulars[0].count).toBe(army1Initial - army1Loss);
 
       expect(currentArmies[1].regulars.length).toBe(1);
-      expect(currentArmies[1].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(currentArmies[1].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(currentArmies[1].regulars[0].count).toBe(army2Initial - army2Loss);
     }
   );
@@ -140,11 +139,11 @@ describe('Calculate Attrition Penalty', () => {
 
     Object.assign(
       army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR))
+      addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, 100, UnitRank.REGULAR))
     );
     Object.assign(
       army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitType.BALLISTA, 1, UnitRank.REGULAR))
+      addRegulars(army1, testCreateRegularUnit(RegularUnitName.BALLISTA, 1, UnitRank.REGULAR))
     );
 
     // place army using centralized system
@@ -155,7 +154,7 @@ describe('Calculate Attrition Penalty', () => {
     const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
     expect(currentArmies.length).toBe(1);
     expect(currentArmies[0].regulars.length).toBe(1); // no ballista unit in the army
-    expect(currentArmies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+    expect(currentArmies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
     expect(currentArmies[0].regulars[0].count).toBe(100 - 30); // -30 instead of 50 because of the ballista
   });
 
@@ -167,15 +166,15 @@ describe('Calculate Attrition Penalty', () => {
 
     Object.assign(
       army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitType.WARRIOR, 100, UnitRank.REGULAR))
+      addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, 100, UnitRank.REGULAR))
     );
     Object.assign(
       army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitType.BALLISTA, 1, UnitRank.REGULAR))
+      addRegulars(army1, testCreateRegularUnit(RegularUnitName.BALLISTA, 1, UnitRank.REGULAR))
     );
     Object.assign(
       army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitType.CATAPULT, 2, UnitRank.REGULAR))
+      addRegulars(army1, testCreateRegularUnit(RegularUnitName.CATAPULT, 2, UnitRank.REGULAR))
     );
 
     // place army using centralized system
@@ -186,10 +185,10 @@ describe('Calculate Attrition Penalty', () => {
     const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
     expect(currentArmies.length).toBe(1);
     expect(currentArmies[0].regulars.length).toBe(2); // no ballista unit in the army
-    expect(currentArmies[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
+    expect(currentArmies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
     expect(currentArmies[0].regulars[0].count).toBe(100 - 10); // -30 instead of 50 because of the ballista and catapult
 
-    expect(currentArmies[0].regulars[1].type).toBe(RegularUnitType.CATAPULT);
+    expect(currentArmies[0].regulars[1].type).toBe(RegularUnitName.CATAPULT);
     expect(currentArmies[0].regulars[1].count).toBe(1); // 2 catapults are destroyed
   });
 
@@ -202,7 +201,7 @@ describe('Calculate Attrition Penalty', () => {
     // 40-60 minimum should be killed it means army will be destroyed
     Object.assign(
       army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitType.WARRIOR, 30, UnitRank.REGULAR))
+      addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, 30, UnitRank.REGULAR))
     );
 
     // place army using centralized system

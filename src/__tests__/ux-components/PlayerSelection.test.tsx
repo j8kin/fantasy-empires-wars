@@ -2,10 +2,11 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+
 import PlayerSelection from '../../ux-components/player-selection/PlayerSelection';
+
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-
 import { Alignment } from '../../types/Alignment';
 
 const renderWithProvider = (ui: React.ReactElement) =>
