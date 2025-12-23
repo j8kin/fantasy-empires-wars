@@ -3,7 +3,7 @@ import { getTurnOwner } from './playerSelectors';
 import { isMageType } from '../domain/unit/unitTypeChecks';
 import type { GameState } from '../state/GameState';
 import type { LandPosition } from '../state/map/land/LandPosition';
-import type { Armies, ArmyState, ArmyBriefInfo } from '../state/army/ArmyState';
+import type { ArmyBriefInfo, ArmyState } from '../state/army/ArmyState';
 import type { HeroState } from '../state/army/HeroState';
 import type { HeroUnitType } from '../types/UnitType';
 import type { TreasureType } from '../types/Treasures';
@@ -27,7 +27,7 @@ export const getPosition = (state: ArmyState): LandPosition =>
 /**
  * Get all armies at a specific land position
  */
-export const getArmiesAtPosition = (gameState: GameState, position: LandPosition): Armies => {
+export const getArmiesAtPosition = (gameState: GameState, position: LandPosition): ArmyState[] => {
   return gameState.armies.filter((army) => {
     if (isMoving(army)) {
       // For moving armies, check if they're currently at this position in their path
@@ -51,7 +51,7 @@ export const getArmiesAtPositionByPlayers = (
   gameState: GameState,
   position: LandPosition,
   players: string[]
-): Armies => {
+): ArmyState[] => {
   return getArmiesAtPosition(gameState, position).filter((army) =>
     players.includes(army.controlledBy)
   );
@@ -73,7 +73,7 @@ export const hasArmiesAtPositionByPlayer = (
 /**
  * Get all armies controlled by a specific player
  */
-export const getArmiesByPlayer = (gameState: GameState, playerId?: string): Armies => {
+export const getArmiesByPlayer = (gameState: GameState, playerId?: string): ArmyState[] => {
   return gameState.armies.filter((army) => army.controlledBy === (playerId ?? gameState.turnOwner));
 };
 
@@ -87,14 +87,14 @@ export const findArmyById = (gameState: GameState, armyId: string): ArmyState | 
 /**
  * Get moving armies
  */
-export const getMovingArmies = (gameState: GameState): Armies => {
+export const getMovingArmies = (gameState: GameState): ArmyState[] => {
   return gameState.armies.filter(isMoving);
 };
 
 /**
  * Get stationary armies
  */
-export const getStationaryArmies = (gameState: GameState, playerId?: string): Armies => {
+export const getStationaryArmies = (gameState: GameState, playerId?: string): ArmyState[] => {
   return gameState.armies.filter(
     (army) => !isMoving(army) && (!playerId || army.controlledBy === playerId)
   );

@@ -17,5 +17,3 @@ export interface ArmyState {
   movement: MovementState;
   effects: Effect[];
 }
-
-export type Armies = ArmyState[];

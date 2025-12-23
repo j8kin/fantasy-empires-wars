@@ -22,7 +22,7 @@ import { SpellName } from '../../../types/Spell';
 import { TreasureName } from '../../../types/Treasures';
 import type { GameState } from '../../../state/GameState';
 import type { LandState } from '../../../state/map/land/LandState';
-import type { Armies } from '../../../state/army/ArmyState';
+import type { ArmyState } from '../../../state/army/ArmyState';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
@@ -221,7 +221,7 @@ describe('LandInfoPopup', () => {
       const army2 = armyFactory(landOwner, mockTileState.mapPos, [
         heroFactory(HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER),
       ]);
-      const mockArmy: Armies = [army1, army2];
+      const mockArmy: ArmyState[] = [army1, army2];
 
       // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
@@ -254,7 +254,7 @@ describe('LandInfoPopup', () => {
         heroFactory(HeroUnitName.FIGHTER, 'Gareth Dawnhart'),
       ]);
 
-      const mockArmy: Armies = [fighter1, fighter2, fighter3];
+      const mockArmy: ArmyState[] = [fighter1, fighter2, fighter3];
 
       // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
@@ -283,7 +283,7 @@ describe('LandInfoPopup', () => {
         regularsFactory(RegularUnitName.DWARF),
       ]);
 
-      const mockArmy: Armies = [army1, army2];
+      const mockArmy: ArmyState[] = [army1, army2];
 
       // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
@@ -322,7 +322,7 @@ describe('LandInfoPopup', () => {
         regularsFactory(RegularUnitName.ELF),
       ]);
 
-      const mockArmy: Armies = [army1, army2, army3, army4, army5];
+      const mockArmy: ArmyState[] = [army1, army2, army3, army4, army5];
 
       // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
@@ -379,7 +379,7 @@ describe('LandInfoPopup', () => {
         heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
       ]);
 
-      const mockArmy: Armies = [army1, army2];
+      const mockArmy: ArmyState[] = [army1, army2];
 
       // Add armies to centralized system and set turnOwner to landOwner so armies are visible
       const gameStateWithArmy = {
