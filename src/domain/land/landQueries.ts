@@ -1,4 +1,4 @@
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import type { LandType } from '../../types/Land';
 
 /**
@@ -6,16 +6,16 @@ import type { LandType } from '../../types/Land';
  * @returns Array of special land types
  */
 export const getSpecialLandKinds = (): LandType[] => [
-  LandKind.VOLCANO,
-  LandKind.LAVA,
-  LandKind.SUN_SPIRE_PEAKS,
-  LandKind.GOLDEN_PLAINS,
-  LandKind.HEARTWOOD_COVE,
-  LandKind.VERDANT_GLADE,
-  LandKind.CRISTAL_BASIN,
-  LandKind.MISTY_GLADES,
-  LandKind.SHADOW_MIRE,
-  LandKind.BLIGHTED_FEN,
+  LandName.VOLCANO,
+  LandName.LAVA,
+  LandName.SUN_SPIRE_PEAKS,
+  LandName.GOLDEN_PLAINS,
+  LandName.HEARTWOOD_COVE,
+  LandName.VERDANT_GLADE,
+  LandName.CRISTAL_BASIN,
+  LandName.MISTY_GLADES,
+  LandName.SHADOW_MIRE,
+  LandName.BLIGHTED_FEN,
 ];
 
 /**
@@ -24,13 +24,13 @@ export const getSpecialLandKinds = (): LandType[] => [
  */
 export const getRegularLandKinds = (): LandType[] => {
   return [
-    LandKind.PLAINS,
-    LandKind.MOUNTAINS,
-    LandKind.GREEN_FOREST,
-    LandKind.DARK_FOREST,
-    LandKind.HILLS,
-    LandKind.SWAMP,
-    LandKind.DESERT,
+    LandName.PLAINS,
+    LandName.MOUNTAINS,
+    LandName.GREEN_FOREST,
+    LandName.DARK_FOREST,
+    LandName.HILLS,
+    LandName.SWAMP,
+    LandName.DESERT,
   ];
 };
 
@@ -40,10 +40,10 @@ export const getRegularLandKinds = (): LandType[] => {
  */
 export const getMainSpecialLandKinds = (): LandType[] => {
   return [
-    LandKind.VOLCANO,
-    LandKind.SUN_SPIRE_PEAKS,
-    LandKind.HEARTWOOD_COVE,
-    LandKind.CRISTAL_BASIN,
-    LandKind.SHADOW_MIRE,
+    LandName.VOLCANO,
+    LandName.SUN_SPIRE_PEAKS,
+    LandName.HEARTWOOD_COVE,
+    LandName.CRISTAL_BASIN,
+    LandName.SHADOW_MIRE,
   ];
 };

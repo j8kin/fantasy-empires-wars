@@ -3,7 +3,7 @@ import type { UnitType } from './UnitType';
 
 // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
 
-export const LandKind = {
+export const LandName = {
   NONE: 'None',
   // Regular lands
   PLAINS: 'Plains',
@@ -26,7 +26,7 @@ export const LandKind = {
   BLIGHTED_FEN: 'Blighted Fen',
 } as const;
 
-export type LandType = (typeof LandKind)[keyof typeof LandKind];
+export type LandType = (typeof LandName)[keyof typeof LandName];
 
 export interface Land {
   id: LandType;

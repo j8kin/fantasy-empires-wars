@@ -16,7 +16,7 @@ import { UnitRank } from '../../state/army/RegularsState';
 import { SpellName } from '../../types/Spell';
 import { Alignment } from '../../types/Alignment';
 import { BuildingName } from '../../types/Building';
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import type { GameState } from '../../state/GameState';
 import type { LandType } from '../../types/Land';
 import type { LandPosition } from '../../state/map/land/LandPosition';
@@ -162,10 +162,10 @@ describe('castBlackManaSpell', () => {
 
   describe('Cast CORRUPTION spell', () => {
     const affectedLandKinds: LandType[] = [
-      LandKind.MOUNTAINS,
-      LandKind.PLAINS,
-      LandKind.GREEN_FOREST,
-      LandKind.HILLS,
+      LandName.MOUNTAINS,
+      LandName.PLAINS,
+      LandName.GREEN_FOREST,
+      LandName.HILLS,
     ];
 
     it('CORRUPTION Could be cast only radius 2 STRONGHOLD', () => {
@@ -216,7 +216,7 @@ describe('castBlackManaSpell', () => {
         expect(corruptedLand.corrupted).toBeTruthy();
 
         let availableForRecruit: UnitType[];
-        if (landKind === LandKind.GREEN_FOREST) {
+        if (landKind === LandName.GREEN_FOREST) {
           availableForRecruit = [
             RegularUnitName.ORC,
             RegularUnitName.DARK_ELF,
@@ -237,7 +237,7 @@ describe('castBlackManaSpell', () => {
     );
 
     it.each(
-      Object.values(LandKind)
+      Object.values(LandName)
         .filter((l) => !affectedLandKinds.includes(l))
         .map((l) => [l])
     )('Land type %s is not affected by CURRUPTION spell', (landKind: LandType) => {

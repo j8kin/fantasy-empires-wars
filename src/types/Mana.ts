@@ -16,5 +16,5 @@ export type ManaType = (typeof Mana)[keyof typeof Mana];
 export interface ManaSource {
   type: ManaType;
   heroTypes: HeroUnitType[];
-  landKinds: LandType[];
+  landTypes: LandType[];
 }

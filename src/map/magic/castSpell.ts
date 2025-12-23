@@ -38,7 +38,7 @@ import { destroyBuilding } from '../building/destroyBuilding';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 import { getAvailableToCastSpellLands } from './getAvailableToCastSpellLands';
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
 import { Mana } from '../../types/Mana';
 import { TreasureName } from '../../types/Treasures';
@@ -360,7 +360,7 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
 
       // change units to recruit based on land type
       const unitsToRecruit =
-        land.land.id === LandKind.GREEN_FOREST
+        land.land.id === LandName.GREEN_FOREST
           ? [
               RegularUnitName.ORC,
               RegularUnitName.DARK_ELF,

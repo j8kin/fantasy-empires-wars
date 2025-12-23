@@ -47,7 +47,7 @@ export interface Spell {
   description: string;
   manaCost: number;
   manaType: ManaType;
-  apply: SpellTargetType;
+  target: SpellTargetType;
   rules?: EffectRules;
   penalty?: PenaltyConfig;
 }

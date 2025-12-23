@@ -12,7 +12,7 @@ import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { UnitRank } from '../../state/army/RegularsState';
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
 import { BuildingName } from '../../types/Building';
 import { EffectKind } from '../../types/Effect';
@@ -181,23 +181,23 @@ describe('castRedManaSpell', () => {
   });
   describe('Cast FORGE OF WAR spell', () => {
     it.each([
-      [LandKind.PLAINS, RegularUnitName.WARRIOR],
-      [LandKind.MOUNTAINS, RegularUnitName.DWARF],
-      [LandKind.GREEN_FOREST, RegularUnitName.ELF],
-      [LandKind.DARK_FOREST, RegularUnitName.DARK_ELF],
-      [LandKind.HILLS, RegularUnitName.HALFLING],
-      [LandKind.SWAMP, RegularUnitName.ORC],
-      [LandKind.DESERT, RegularUnitName.WARRIOR],
-      [LandKind.VOLCANO, RegularUnitName.ORC],
-      [LandKind.LAVA, RegularUnitName.ORC],
-      [LandKind.SUN_SPIRE_PEAKS, RegularUnitName.DWARF],
-      [LandKind.GOLDEN_PLAINS, RegularUnitName.DWARF],
-      [LandKind.HEARTWOOD_COVE, RegularUnitName.ELF],
-      [LandKind.VERDANT_GLADE, RegularUnitName.ELF],
-      [LandKind.CRISTAL_BASIN, RegularUnitName.WARRIOR],
-      [LandKind.MISTY_GLADES, RegularUnitName.WARRIOR],
-      [LandKind.SHADOW_MIRE, RegularUnitName.ORC],
-      [LandKind.BLIGHTED_FEN, RegularUnitName.ORC],
+      [LandName.PLAINS, RegularUnitName.WARRIOR],
+      [LandName.MOUNTAINS, RegularUnitName.DWARF],
+      [LandName.GREEN_FOREST, RegularUnitName.ELF],
+      [LandName.DARK_FOREST, RegularUnitName.DARK_ELF],
+      [LandName.HILLS, RegularUnitName.HALFLING],
+      [LandName.SWAMP, RegularUnitName.ORC],
+      [LandName.DESERT, RegularUnitName.WARRIOR],
+      [LandName.VOLCANO, RegularUnitName.ORC],
+      [LandName.LAVA, RegularUnitName.ORC],
+      [LandName.SUN_SPIRE_PEAKS, RegularUnitName.DWARF],
+      [LandName.GOLDEN_PLAINS, RegularUnitName.DWARF],
+      [LandName.HEARTWOOD_COVE, RegularUnitName.ELF],
+      [LandName.VERDANT_GLADE, RegularUnitName.ELF],
+      [LandName.CRISTAL_BASIN, RegularUnitName.WARRIOR],
+      [LandName.MISTY_GLADES, RegularUnitName.WARRIOR],
+      [LandName.SHADOW_MIRE, RegularUnitName.ORC],
+      [LandName.BLIGHTED_FEN, RegularUnitName.ORC],
     ])(
       'Cast FORGE OF WAR on Land (%s) recruit 60 %s',
       (landKind: LandType, recruitType: RegularUnitType) => {

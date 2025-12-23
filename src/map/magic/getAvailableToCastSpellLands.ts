@@ -9,7 +9,7 @@ import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { SpellName, SpellTarget } from '../../types/Spell';
 import { EffectTarget } from '../../types/Effect';
 import { BuildingName } from '../../types/Building';
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { LandState } from '../../state/map/land/LandState';
@@ -50,7 +50,7 @@ export const getAvailableToCastSpellLands = (
     return Array.from(affectedLands);
   }
 
-  if (spell.apply === SpellTarget.PLAYER) {
+  if (spell.target === SpellTarget.PLAYER) {
     if (spell.rules?.target === EffectTarget.ARMY) {
       return getArmiesByPlayer(gameState)
         .filter((army) => !army.effects.some((e) => e.sourceId === spellName))
@@ -62,7 +62,7 @@ export const getAvailableToCastSpellLands = (
   }
 
   const playerFiltered =
-    spell.apply === SpellTarget.OPPONENT
+    spell.target === SpellTarget.OPPONENT
       ? gameState.players.filter((p) => p.id !== gameState.turnOwner)
       : gameState.players;
 
@@ -76,7 +76,7 @@ export const getAvailableToCastSpellLands = (
 const canBeCorrupted = (land: LandState): boolean => {
   return (
     land.land.alignment !== Alignment.CHAOTIC &&
-    land.land.id !== LandKind.DESERT &&
+    land.land.id !== LandName.DESERT &&
     !land.corrupted &&
     getRegularLandKinds().includes(land.land.id)
   );

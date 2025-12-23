@@ -6,5 +6,3 @@ export const DiplomacyStatus = {
 } as const;
 
 export type DiplomacyStatusType = (typeof DiplomacyStatus)[keyof typeof DiplomacyStatus];
-
-export type Diplomacy = Record<string, DiplomacyStatusType>;

@@ -10,7 +10,7 @@ import { calculateIncome } from '../../map/vault/calculateIncome';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
 import { BuildingName } from '../../types/Building';
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { PlayerProfile } from '../../state/player/PlayerProfile';
@@ -123,15 +123,15 @@ describe('Calculate Income', () => {
   );
 
   it.each([
-    [Alignment.LAWFUL, LandKind.PLAINS, 100],
-    [Alignment.LAWFUL, LandKind.VOLCANO, 80],
-    [Alignment.LAWFUL, LandKind.MOUNTAINS, 130],
-    [Alignment.CHAOTIC, LandKind.PLAINS, 100],
-    [Alignment.CHAOTIC, LandKind.VOLCANO, 200],
-    [Alignment.CHAOTIC, LandKind.MOUNTAINS, 50],
-    [Alignment.NEUTRAL, LandKind.PLAINS, 100],
-    [Alignment.NEUTRAL, LandKind.VOLCANO, 100],
-    [Alignment.NEUTRAL, LandKind.MOUNTAINS, 100],
+    [Alignment.LAWFUL, LandName.PLAINS, 100],
+    [Alignment.LAWFUL, LandName.VOLCANO, 80],
+    [Alignment.LAWFUL, LandName.MOUNTAINS, 130],
+    [Alignment.CHAOTIC, LandName.PLAINS, 100],
+    [Alignment.CHAOTIC, LandName.VOLCANO, 200],
+    [Alignment.CHAOTIC, LandName.MOUNTAINS, 50],
+    [Alignment.NEUTRAL, LandName.PLAINS, 100],
+    [Alignment.NEUTRAL, LandName.VOLCANO, 100],
+    [Alignment.NEUTRAL, LandName.MOUNTAINS, 100],
   ])(
     `Calculate income with land alignment penalty based on player's alignment`,
     (playerAlignment: AlignmentType, land, expected) => {
@@ -164,7 +164,7 @@ describe('Calculate Income', () => {
     (pAlignment: AlignmentType, incomeBefore: number, incomeAfter: number) => {
       const player = getPlayer(pAlignment);
       addPlayerToGameState(gameStateStub, player, 'human');
-      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(LandKind.PLAINS);
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(LandName.PLAINS);
       Object.assign(
         gameStateStub,
         addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 4, col: 4 })

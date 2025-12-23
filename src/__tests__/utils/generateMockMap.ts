@@ -1,6 +1,6 @@
 import { getLandId } from '../../state/map/land/LandId';
 import { getLandById } from '../../domain/land/landRepository';
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 
 import type { MapState } from '../../state/map/MapState';
@@ -12,13 +12,13 @@ import type { AlignmentType } from '../../types/Alignment';
 const genLand = (alignment: AlignmentType | undefined): Land => {
   switch (alignment) {
     case Alignment.LAWFUL:
-      return getLandById(LandKind.MOUNTAINS);
+      return getLandById(LandName.MOUNTAINS);
     case Alignment.NEUTRAL:
-      return getLandById(LandKind.HILLS);
+      return getLandById(LandName.HILLS);
     case Alignment.CHAOTIC:
-      return getLandById(LandKind.SWAMP);
+      return getLandById(LandName.SWAMP);
     default:
-      return getLandById(LandKind.PLAINS);
+      return getLandById(LandName.PLAINS);
   }
 };
 export const generateMockMap = (

@@ -9,7 +9,7 @@ import { getLandById } from '../../domain/land/landRepository';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { Mana, MAX_MANA } from '../../types/Mana';
 import { HeroUnitName } from '../../types/UnitType';
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import { TreasureName } from '../../types/Treasures';
 import { BuildingName } from '../../types/Building';
 import type { GameState } from '../../state/GameState';
@@ -230,15 +230,15 @@ describe('Calculate Mana', () => {
     const playerSpecialLands = realmLands.filter(
       (l) =>
         (player.playerProfile.type === HeroUnitName.NECROMANCER &&
-          (l.land.id === LandKind.BLIGHTED_FEN || l.land.id === LandKind.SHADOW_MIRE)) ||
+          (l.land.id === LandName.BLIGHTED_FEN || l.land.id === LandName.SHADOW_MIRE)) ||
         (player.playerProfile.type === HeroUnitName.CLERIC &&
-          (l.land.id === LandKind.SUN_SPIRE_PEAKS || l.land.id === LandKind.GOLDEN_PLAINS)) ||
+          (l.land.id === LandName.SUN_SPIRE_PEAKS || l.land.id === LandName.GOLDEN_PLAINS)) ||
         (player.playerProfile.type === HeroUnitName.ENCHANTER &&
-          (l.land.id === LandKind.CRISTAL_BASIN || l.land.id === LandKind.MISTY_GLADES)) ||
+          (l.land.id === LandName.CRISTAL_BASIN || l.land.id === LandName.MISTY_GLADES)) ||
         (player.playerProfile.type === HeroUnitName.DRUID &&
-          (l.land.id === LandKind.HEARTWOOD_COVE || l.land.id === LandKind.VERDANT_GLADE)) ||
+          (l.land.id === LandName.HEARTWOOD_COVE || l.land.id === LandName.VERDANT_GLADE)) ||
         (player.playerProfile.type === HeroUnitName.PYROMANCER &&
-          (l.land.id === LandKind.VOLCANO || l.land.id === LandKind.LAVA))
+          (l.land.id === LandName.VOLCANO || l.land.id === LandName.LAVA))
     ).length;
     const playerHero = getArmiesByPlayer(gameStateStub, player.id)[0].heroes[0];
     return (playerHero.mana || 0) + playerSpecialLands;
@@ -285,7 +285,7 @@ describe('Calculate Mana', () => {
       l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
     )!;
 
-    getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandKind.VOLCANO); // this should add red mana to player 0
+    getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandName.VOLCANO); // this should add red mana to player 0
 
     testTurnManagement.setGameState(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);

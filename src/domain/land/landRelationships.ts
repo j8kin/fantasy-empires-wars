@@ -1,4 +1,4 @@
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import type { LandType } from '../../types/Land';
 
 /**
@@ -8,16 +8,16 @@ import type { LandType } from '../../types/Land';
  */
 export const getSurroundingLands = (landKind: LandType): LandType[] => {
   switch (landKind) {
-    case LandKind.VOLCANO:
-      return [LandKind.MOUNTAINS, LandKind.DARK_FOREST];
-    case LandKind.SUN_SPIRE_PEAKS:
-      return [LandKind.DARK_FOREST, LandKind.HILLS];
-    case LandKind.HEARTWOOD_COVE:
-      return [LandKind.SWAMP, LandKind.GREEN_FOREST];
-    case LandKind.CRISTAL_BASIN:
-      return [LandKind.DESERT, LandKind.HILLS];
-    case LandKind.SHADOW_MIRE:
-      return [LandKind.PLAINS, LandKind.SWAMP];
+    case LandName.VOLCANO:
+      return [LandName.MOUNTAINS, LandName.DARK_FOREST];
+    case LandName.SUN_SPIRE_PEAKS:
+      return [LandName.DARK_FOREST, LandName.HILLS];
+    case LandName.HEARTWOOD_COVE:
+      return [LandName.SWAMP, LandName.GREEN_FOREST];
+    case LandName.CRISTAL_BASIN:
+      return [LandName.DESERT, LandName.HILLS];
+    case LandName.SHADOW_MIRE:
+      return [LandName.PLAINS, LandName.SWAMP];
     default:
       return [];
   }
@@ -30,17 +30,17 @@ export const getSurroundingLands = (landKind: LandType): LandType[] => {
  */
 export const getNearSpecialLandKinds = (id: LandType): LandType => {
   switch (id) {
-    case LandKind.VOLCANO:
-      return LandKind.LAVA;
-    case LandKind.SUN_SPIRE_PEAKS:
-      return LandKind.GOLDEN_PLAINS;
-    case LandKind.HEARTWOOD_COVE:
-      return LandKind.VERDANT_GLADE;
-    case LandKind.CRISTAL_BASIN:
-      return LandKind.MISTY_GLADES;
-    case LandKind.SHADOW_MIRE:
-      return LandKind.BLIGHTED_FEN;
+    case LandName.VOLCANO:
+      return LandName.LAVA;
+    case LandName.SUN_SPIRE_PEAKS:
+      return LandName.GOLDEN_PLAINS;
+    case LandName.HEARTWOOD_COVE:
+      return LandName.VERDANT_GLADE;
+    case LandName.CRISTAL_BASIN:
+      return LandName.MISTY_GLADES;
+    case LandName.SHADOW_MIRE:
+      return LandName.BLIGHTED_FEN;
     default:
-      return LandKind.NONE;
+      return LandName.NONE;
   }
 };

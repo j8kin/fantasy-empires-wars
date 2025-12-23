@@ -1,4 +1,4 @@
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import type { UnitType } from '../../types/UnitType';
@@ -29,36 +29,36 @@ const commonUnitsToRecruit: UnitType[] = [
  */
 export const getLandById = (id: LandType): Land => {
   switch (id) {
-    case LandKind.PLAINS:
+    case LandName.PLAINS:
       return {
-        id: LandKind.PLAINS,
+        id: LandName.PLAINS,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
         goldPerTurn: { min: 650, max: 1000 },
         description:
           'Wide open fields where wind carries old war songs, and wanderers vanish beneath endless sky.',
       };
-    case LandKind.MOUNTAINS:
+    case LandName.MOUNTAINS:
       return {
-        id: LandKind.MOUNTAINS,
+        id: LandName.MOUNTAINS,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
         goldPerTurn: { min: 900, max: 1150 },
         description:
           'Stone giants forged in ancient upheaval; their frozen peaks guard secrets older than kingdoms.',
       };
-    case LandKind.GREEN_FOREST:
+    case LandName.GREEN_FOREST:
       return {
-        id: LandKind.GREEN_FOREST,
+        id: LandName.GREEN_FOREST,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.ELF, HeroUnitName.RANGER],
         goldPerTurn: { min: 800, max: 950 },
         description:
           'Sunlit woods where gentle spirits linger, guiding hunters, wanderers, and the lost.',
       };
-    case LandKind.DARK_FOREST:
+    case LandName.DARK_FOREST:
       return {
-        id: LandKind.DARK_FOREST,
+        id: LandName.DARK_FOREST,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [
           ...commonUnitsToRecruit,
@@ -69,27 +69,27 @@ export const getLandById = (id: LandType): Land => {
         description:
           'A brooding woodland where moonlight falters, and unseen things watch from between twisted boughs.',
       };
-    case LandKind.HILLS:
+    case LandName.HILLS:
       return {
-        id: LandKind.HILLS,
+        id: LandName.HILLS,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.HALFLING, HeroUnitName.FIGHTER],
         goldPerTurn: { min: 500, max: 700 },
         description:
           'Rolling highlands shaped by time and storms, favored by scouts who read stories in every ridge.',
       };
-    case LandKind.SWAMP:
+    case LandName.SWAMP:
       return {
-        id: LandKind.SWAMP,
+        id: LandName.SWAMP,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 350, max: 550 },
         description:
           'Murk and moss entwine here, where each step sinks into whispers of forgotten, half-drowned tales.',
       };
-    case LandKind.DESERT:
+    case LandName.DESERT:
       return {
-        id: LandKind.DESERT,
+        id: LandName.DESERT,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [
           ...commonUnitsToRecruit,
@@ -103,36 +103,36 @@ export const getLandById = (id: LandType): Land => {
           'Endless dunes scorched by merciless suns, hiding relics swallowed by empires long fallen.',
       };
     // special lands
-    case LandKind.VOLCANO:
+    case LandName.VOLCANO:
       return {
-        id: LandKind.VOLCANO,
+        id: LandName.VOLCANO,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 1000, max: 1000 },
         description:
           'A furious mountain whose molten heart roars beneath the world, hungry for offerings of stone.',
       };
-    case LandKind.LAVA:
+    case LandName.LAVA:
       return {
-        id: LandKind.LAVA,
+        id: LandName.LAVA,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 500, max: 600 },
         description:
           "A seething river of fire where earth's skin tears open, leaving only heat, ruin, and trembling air.",
       };
-    case LandKind.SUN_SPIRE_PEAKS:
+    case LandName.SUN_SPIRE_PEAKS:
       return {
-        id: LandKind.SUN_SPIRE_PEAKS,
+        id: LandName.SUN_SPIRE_PEAKS,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
         goldPerTurn: { min: 1000, max: 1000 },
         description:
           'Radiant heights bathed in celestial fire, said to echo with the hymns of the first dawn.',
       };
-    case LandKind.GOLDEN_PLAINS:
+    case LandName.GOLDEN_PLAINS:
       return {
-        id: LandKind.GOLDEN_PLAINS,
+        id: LandName.GOLDEN_PLAINS,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [
           ...commonUnitsToRecruit,
@@ -144,54 +144,54 @@ export const getLandById = (id: LandType): Land => {
         description:
           "Grasses shimmer like sun-forged metal, nurturing harvests blessed by the land's ancient warmth.",
       };
-    case LandKind.HEARTWOOD_COVE:
+    case LandName.HEARTWOOD_COVE:
       return {
-        id: LandKind.HEARTWOOD_COVE,
+        id: LandName.HEARTWOOD_COVE,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.ELF, HeroUnitName.RANGER],
         goldPerTurn: { min: 1000, max: 1000 },
         description:
           'The cradle of living forests, where colossal trees whisper the pulse of Orrivane itself.',
       };
-    case LandKind.VERDANT_GLADE:
+    case LandName.VERDANT_GLADE:
       return {
-        id: LandKind.VERDANT_GLADE,
+        id: LandName.VERDANT_GLADE,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.ELF, HeroUnitName.RANGER],
         goldPerTurn: { min: 500, max: 600 },
         description:
           'A lush sanctuary bursting with wild growth, where nature unfurls in joyous, untamed abundance.',
       };
-    case LandKind.CRISTAL_BASIN:
+    case LandName.CRISTAL_BASIN:
       return {
-        id: LandKind.CRISTAL_BASIN,
+        id: LandName.CRISTAL_BASIN,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
         goldPerTurn: { min: 1000, max: 1000 },
         description:
           'A hollow of shimmering crystal veins that catch stray moonlight, bending it into spectral hues.',
       };
-    case LandKind.MISTY_GLADES:
+    case LandName.MISTY_GLADES:
       return {
-        id: LandKind.MISTY_GLADES,
+        id: LandName.MISTY_GLADES,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
         goldPerTurn: { min: 500, max: 600 },
         description:
           'Cool lowlands veiled in drifting blue mist, where sound softens and time feels strangely thin.',
       };
-    case LandKind.SHADOW_MIRE:
+    case LandName.SHADOW_MIRE:
       return {
-        id: LandKind.SHADOW_MIRE,
+        id: LandName.SHADOW_MIRE,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 1000, max: 1000 },
         description:
           'A stagnant bog where shadows cling to the water, feeding on fear as readily as decay.',
       };
-    case LandKind.BLIGHTED_FEN:
+    case LandName.BLIGHTED_FEN:
       return {
-        id: LandKind.BLIGHTED_FEN,
+        id: LandName.BLIGHTED_FEN,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 500, max: 600 },
@@ -201,7 +201,7 @@ export const getLandById = (id: LandType): Land => {
     default:
       // used on map generation
       return {
-        id: LandKind.NONE,
+        id: LandName.NONE,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [],
         goldPerTurn: { min: 0, max: 0 },

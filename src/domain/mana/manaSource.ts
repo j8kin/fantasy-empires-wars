@@ -1,6 +1,6 @@
 import { Mana } from '../../types/Mana';
 import { HeroUnitName } from '../../types/UnitType';
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 import type { LandType } from '../../types/Land';
 import type { ManaType } from '../../types/Mana';
 import type { ManaSource } from '../../types/Mana';
@@ -10,27 +10,27 @@ const MANA_SOURCES: ManaSource[] = [
   {
     type: Mana.BLACK,
     heroTypes: [HeroUnitName.NECROMANCER],
-    landKinds: [LandKind.SHADOW_MIRE, LandKind.BLIGHTED_FEN],
+    landTypes: [LandName.SHADOW_MIRE, LandName.BLIGHTED_FEN],
   },
   {
     type: Mana.RED,
     heroTypes: [HeroUnitName.PYROMANCER],
-    landKinds: [LandKind.VOLCANO, LandKind.LAVA],
+    landTypes: [LandName.VOLCANO, LandName.LAVA],
   },
   {
     type: Mana.BLUE,
     heroTypes: [HeroUnitName.ENCHANTER],
-    landKinds: [LandKind.CRISTAL_BASIN, LandKind.MISTY_GLADES],
+    landTypes: [LandName.CRISTAL_BASIN, LandName.MISTY_GLADES],
   },
   {
     type: Mana.GREEN,
     heroTypes: [HeroUnitName.DRUID],
-    landKinds: [LandKind.HEARTWOOD_COVE, LandKind.VERDANT_GLADE],
+    landTypes: [LandName.HEARTWOOD_COVE, LandName.VERDANT_GLADE],
   },
   {
     type: Mana.WHITE,
     heroTypes: [HeroUnitName.CLERIC],
-    landKinds: [LandKind.SUN_SPIRE_PEAKS, LandKind.GOLDEN_PLAINS],
+    landTypes: [LandName.SUN_SPIRE_PEAKS, LandName.GOLDEN_PLAINS],
   },
 ];
 
@@ -52,6 +52,6 @@ export const getManaSource = ({
     (source) =>
       (manaType != null && source.type === manaType) ||
       (heroType != null && source.heroTypes.includes(heroType)) ||
-      (landKind != null && source.landKinds.includes(landKind))
+      (landKind != null && source.landTypes.includes(landKind))
   );
 };

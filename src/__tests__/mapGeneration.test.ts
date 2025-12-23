@@ -1,5 +1,5 @@
 import { MapDimensions } from '../state/map/MapDimensions';
-import { LandKind } from '../types/Land';
+import { LandName } from '../types/Land';
 import { getNearSpecialLandKinds } from '../domain/land/landRelationships';
 import { getMainSpecialLandKinds } from '../domain/land/landQueries';
 
@@ -21,7 +21,7 @@ describe('Map Generation', () => {
 
     // All tiles should be controlled by a neutral player
     Object.values(lands.lands).forEach((land) => {
-      expect(land.land.id).not.toBe(LandKind.NONE);
+      expect(land.land.id).not.toBe(LandName.NONE);
       expect(land.goldPerTurn).toBeGreaterThan(0);
     });
 

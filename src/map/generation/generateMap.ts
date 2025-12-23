@@ -4,7 +4,7 @@ import { getLandById } from '../../domain/land/landRepository';
 import { getMainSpecialLandKinds, getRegularLandKinds } from '../../domain/land/landQueries';
 import { getSurroundingLands, getNearSpecialLandKinds } from '../../domain/land/landRelationships';
 import { getRandomElement } from '../../domain/utils/random';
-import { LandKind } from '../../types/Land';
+import { LandName } from '../../types/Land';
 
 import type { LandType } from '../../types/Land';
 import type { Land } from '../../types/Land';
@@ -20,7 +20,7 @@ const calculateBaseLandGold = (land: Land): number => {
 };
 
 const getRandomEmptyLand = (tiles: MapLands): LandState | undefined => {
-  const emptyLands = Object.values(tiles).filter((tile) => tile.land.id === LandKind.NONE);
+  const emptyLands = Object.values(tiles).filter((tile) => tile.land.id === LandName.NONE);
   if (emptyLands.length === 0) return undefined;
   return getRandomElement(emptyLands);
 };
@@ -28,7 +28,7 @@ const getRandomEmptyLand = (tiles: MapLands): LandState | undefined => {
 const getEmptyNeighbors = (battlefield: MapState, position: LandPosition): LandState[] => {
   return getTilesInRadius(battlefield.dimensions, position, 1)
     .map((pos) => battlefield.lands[getLandId(pos)])
-    .filter((tile) => tile.land.id === LandKind.NONE);
+    .filter((tile) => tile.land.id === LandName.NONE);
 };
 
 const getRandomNoneNeighbor = (battlefield: MapState, pos: LandPosition): LandState | undefined => {
@@ -49,7 +49,7 @@ const createEmptyBattlefield = (dimensions: MapDimensions): MapLands => {
 
       battlefield[getLandId(mapPos)] = {
         mapPos: mapPos,
-        land: getLandById(LandKind.NONE), // Temporary, will be overwritten
+        land: getLandById(LandName.NONE), // Temporary, will be overwritten
         goldPerTurn: 0, // Will be calculated later
         buildings: [],
         effects: [],
@@ -77,7 +77,7 @@ const placeSpecialLand = (battlefield: MapState, landKind: LandType) => {
   if (freeToPlaceLands.length === 0) {
     // fallback to any land free land
     freeToPlaceLands = Object.values(battlefield.lands)
-      .filter((land) => land.land.id === LandKind.NONE)
+      .filter((land) => land.land.id === LandName.NONE)
       .map((l) => getLandId(l.mapPos));
   }
 
@@ -154,8 +154,8 @@ export const generateMap = (dimensions: MapDimensions): MapState => {
 
   // if we have empty lands fill with deserts
   Object.values(battlefield.lands)
-    .filter((tile) => tile.land.id === LandKind.NONE)
-    .forEach((tile) => (tile.land = getLandById(LandKind.DESERT)));
+    .filter((tile) => tile.land.id === LandName.NONE)
+    .forEach((tile) => (tile.land = getLandById(LandName.DESERT)));
 
   // Calculate gold for all tiles
   Object.values(battlefield.lands).forEach((tile) => {
