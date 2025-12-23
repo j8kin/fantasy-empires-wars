@@ -9,9 +9,9 @@ import {
 } from '../../systems/gameStateActions';
 import { destroyBuilding } from './destroyBuilding';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
-
-import { TreasureType } from '../../types/Treasures';
-import { BuildingType } from '../../types/Building';
+import { TreasureName } from '../../types/Treasures';
+import type { BuildingType } from '../../types/Building';
+import { BuildingKind } from '../../types/Building';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 
@@ -31,11 +31,11 @@ export const construct = (
   let updatedState = gameState;
 
   switch (buildingType) {
-    case BuildingType.DEMOLITION:
+    case BuildingKind.DEMOLITION:
       updatedState = destroyBuilding(updatedState, position);
       break;
 
-    case BuildingType.STRONGHOLD:
+    case BuildingKind.STRONGHOLD:
       updatedState = addBuildingToLand(updatedState, position, buildingFactory(buildingType));
       updatedState = addPlayerLand(updatedState, turnOwner.id, position);
 
@@ -55,7 +55,7 @@ export const construct = (
 
   // if player has Crown of Dominion, reduce cost by 15%
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes'-Quests
-  const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureType.CROWN_OF_DOMINION);
+  const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureName.CROWN_OF_DOMINION);
 
   if (gameState.turn > 1) {
     const cost = hasCrownOfDominion ? Math.ceil(building.buildCost * 0.85) : building.buildCost;

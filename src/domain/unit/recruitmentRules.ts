@@ -1,5 +1,5 @@
 import { isHeroType } from './unitTypeChecks';
-import { RegularUnitType } from '../../types/UnitType';
+import { RegularUnitName } from '../../types/UnitType';
 import type { UnitType } from '../../types/UnitType';
 
 /**
@@ -11,12 +11,12 @@ export const getRecruitDuration = (unitType: UnitType): number => {
   if (isHeroType(unitType)) return 3;
 
   switch (unitType) {
-    case RegularUnitType.CATAPULT:
-    case RegularUnitType.BALLISTA:
+    case RegularUnitName.CATAPULT:
+    case RegularUnitName.BALLISTA:
       return 3;
-    case RegularUnitType.HALFLING:
-    case RegularUnitType.ELF:
-    case RegularUnitType.DARK_ELF:
+    case RegularUnitName.HALFLING:
+    case RegularUnitName.ELF:
+    case RegularUnitName.DARK_ELF:
       return 2;
     default:
       return 1;

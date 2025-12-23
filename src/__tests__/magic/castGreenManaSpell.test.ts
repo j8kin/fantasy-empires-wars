@@ -1,6 +1,3 @@
-import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/map/land/LandPosition';
-
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, getMaxHeroLevelByType } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
@@ -8,18 +5,21 @@ import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
-
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
-import { Alignment } from '../../types/Alignment';
-import { SpellName } from '../../types/Spell';
-import { EffectType } from '../../types/Effect';
-import { TreasureType } from '../../types/Treasures';
+import { relictFactory } from '../../factories/treasureFactory';
 import { castSpell } from '../../map/magic/castSpell';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 
+import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { Alignment } from '../../types/Alignment';
+import { SpellName } from '../../types/Spell';
+import { EffectKind } from '../../types/Effect';
+import { TreasureName } from '../../types/Treasures';
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { SpellType } from '../../types/Spell';
+
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { relictFactory } from '../../factories/treasureFactory';
 
 describe('castGreenManaSpell', () => {
   let gameStateStub: GameState;
@@ -50,7 +50,7 @@ describe('castGreenManaSpell', () => {
 
         if (maxDruidLvl > 0) {
           // add DRUID on Map
-          const hero = heroFactory(HeroUnitType.DRUID, `Druid Level ${maxDruidLvl}`);
+          const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
           while (hero.level < maxDruidLvl) levelUpHero(hero, Alignment.LAWFUL);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
@@ -66,7 +66,7 @@ describe('castGreenManaSpell', () => {
         affectedLands.forEach((l) => {
           expect(l.effects).toHaveLength(1);
           expect(l.effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
-          expect(l.effects[0].rules.type).toBe(EffectType.POSITIVE);
+          expect(l.effects[0].rules.type).toBe(EffectKind.POSITIVE);
           expect(l.effects[0].rules.duration).toBe(2);
           expect(l.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
         });
@@ -79,7 +79,7 @@ describe('castGreenManaSpell', () => {
       const homeLandIncome = homeLand.goldPerTurn;
 
       // no DRUIDS only one land would be affected by FERTILE LAND spell
-      expect(getMaxHeroLevelByType(gameStateStub, HeroUnitType.DRUID)).toBe(0);
+      expect(getMaxHeroLevelByType(gameStateStub, HeroUnitName.DRUID)).toBe(0);
 
       castSpell(gameStateStub, SpellName.FERTILE_LAND, homeLand.mapPos);
 
@@ -108,7 +108,7 @@ describe('castGreenManaSpell', () => {
 
         if (maxDruidLvl > 0) {
           // add DRUID on Map
-          const hero = heroFactory(HeroUnitType.DRUID, `Druid Level ${maxDruidLvl}`);
+          const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
           while (hero.level < maxDruidLvl) levelUpHero(hero, Alignment.LAWFUL);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
@@ -129,7 +129,7 @@ describe('castGreenManaSpell', () => {
         const opponentHomeLand = getLand(gameStateStub, opponentHomeLandPos);
         expect(opponentHomeLand.effects).toHaveLength(1);
         expect(opponentHomeLand.effects[0].sourceId).toBe(SpellName.ENTANGLING_ROOTS);
-        expect(opponentHomeLand.effects[0].rules.type).toBe(EffectType.NEGATIVE);
+        expect(opponentHomeLand.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
         expect(opponentHomeLand.effects[0].rules.duration).toBe(1);
       }
     );
@@ -143,7 +143,7 @@ describe('castGreenManaSpell', () => {
 
       // setup Opponent army
       gameStateStub.turnOwner = gameStateStub.players[1].id;
-      placeUnitsOnMap(regularsFactory(RegularUnitType.ORC, 120), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.ORC, 120), gameStateStub, opponentLand);
       gameStateStub.turnOwner = gameStateStub.players[0].id;
 
       randomSpy = jest.spyOn(Math, 'random');
@@ -174,7 +174,7 @@ describe('castGreenManaSpell', () => {
         const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
         if (maxDruidLvl > 0) {
           // add DRUID on Map
-          const hero = heroFactory(HeroUnitType.DRUID, `Druid Level ${maxDruidLvl}`);
+          const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
           while (hero.level < maxDruidLvl) levelUpHero(hero, Alignment.LAWFUL);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
@@ -190,7 +190,7 @@ describe('castGreenManaSpell', () => {
         const woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
         expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army
         expect(woundedOpponentArmy[1].regulars).toHaveLength(1);
-        expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitType.ORC);
+        expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitName.ORC);
         expect(woundedOpponentArmy[1].regulars[0].count).toBe(120 - nKilled);
       }
     );
@@ -204,7 +204,7 @@ describe('castGreenManaSpell', () => {
       const woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
       expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army
       expect(woundedOpponentArmy[1].regulars).toHaveLength(1);
-      expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitType.ORC);
+      expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitName.ORC);
       expect(woundedOpponentArmy[1].regulars[0].count).toBe(120 - 19);
     });
 
@@ -213,7 +213,7 @@ describe('castGreenManaSpell', () => {
       // setup Opponent army
       gameStateStub.turnOwner = gameStateStub.players[1].id;
       // This spell at least kills 5 regulars and destroys the army in this case
-      placeUnitsOnMap(regularsFactory(RegularUnitType.ORC, 5), gameStateStub, minArmyLandPos);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.ORC, 5), gameStateStub, minArmyLandPos);
       gameStateStub.turnOwner = gameStateStub.players[0].id;
 
       // minimize damage from spell to make sure that even in this case all units would be destroyed
@@ -235,7 +235,7 @@ describe('castGreenManaSpell', () => {
       let woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
       expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army
       expect(woundedOpponentArmy[1].regulars).toHaveLength(1);
-      expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitType.ORC);
+      expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitName.ORC);
       expect(woundedOpponentArmy[1].regulars[0].count).toBe(120 - 19);
 
       // Cast BEAST ATTACK second time
@@ -244,7 +244,7 @@ describe('castGreenManaSpell', () => {
       woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
       expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army
       expect(woundedOpponentArmy[1].regulars).toHaveLength(1);
-      expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitType.ORC);
+      expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitName.ORC);
       // spell damage based on %% of units that is why on second tyme it is less then on first time
       expect(woundedOpponentArmy[1].regulars[0].count).toBe(120 - 19 - 16);
     });
@@ -257,7 +257,7 @@ describe('castGreenManaSpell', () => {
       opponentLand = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
 
       gameStateStub.turnOwner = gameStateStub.players[1].id;
-      placeUnitsOnMap(regularsFactory(RegularUnitType.ORC, 120), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.ORC, 120), gameStateStub, opponentLand);
       gameStateStub.turnOwner = gameStateStub.players[0].id;
 
       randomSpy = jest.spyOn(Math, 'random');
@@ -273,7 +273,7 @@ describe('castGreenManaSpell', () => {
         const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
         if (maxDruidLvl > 0) {
           // add DRUID on Map
-          const hero = heroFactory(HeroUnitType.DRUID, `Druid Level ${maxDruidLvl}`);
+          const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
           while (hero.level < maxDruidLvl) levelUpHero(hero, Alignment.LAWFUL);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
@@ -288,7 +288,7 @@ describe('castGreenManaSpell', () => {
         const woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
         expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army
         expect(woundedOpponentArmy[1].regulars).toHaveLength(1);
-        expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitType.ORC);
+        expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitName.ORC);
         expect(woundedOpponentArmy[1].regulars[0].count).toBe(120 - 24);
       }
     );
@@ -309,7 +309,7 @@ describe('castGreenManaSpell', () => {
     SpellName.BEAST_ATTACK,
     SpellName.ENTANGLING_ROOTS,
     SpellName.EARTHQUAKE,
-  ])('If VERDANT IDOL is in treasury GREEN spells (%s) cost 15% less', (spellName: SpellName) => {
+  ])('If VERDANT IDOL is in treasury GREEN spells (%s) cost 15% less', (spellName: SpellType) => {
     let dummyLand: LandPosition =
       spellName === SpellName.FERTILE_LAND
         ? getPlayerLands(gameStateStub)[0].mapPos
@@ -319,7 +319,7 @@ describe('castGreenManaSpell', () => {
 
     expect(getTurnOwner(gameStateStub).mana.green).toBe(200 - getSpellById(spellName).manaCost);
 
-    getTurnOwner(gameStateStub).empireTreasures.push(relictFactory(TreasureType.VERDANT_IDOL));
+    getTurnOwner(gameStateStub).empireTreasures.push(relictFactory(TreasureName.VERDANT_IDOL));
 
     // select another land to cast spell to avoid situation that it is not possible to cast spell on the same land
     dummyLand =

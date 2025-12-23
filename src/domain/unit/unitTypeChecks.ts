@@ -1,5 +1,5 @@
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
-import type { UnitType } from '../../types/UnitType';
+import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import type { HeroUnitType, UnitType } from '../../types/UnitType';
 
 /**
  * Type guard to check if a unit type is a hero unit
@@ -7,7 +7,7 @@ import type { UnitType } from '../../types/UnitType';
  * @returns true if the unit is a hero type
  */
 export const isHeroType = (unitType: UnitType): unitType is HeroUnitType => {
-  return Object.values(HeroUnitType).includes(unitType as HeroUnitType);
+  return Object.values(HeroUnitName).includes(unitType as HeroUnitType);
 };
 
 /**
@@ -16,7 +16,7 @@ export const isHeroType = (unitType: UnitType): unitType is HeroUnitType => {
  * @returns true if the unit is a war machine
  */
 export const isWarMachine = (unitType: UnitType): boolean =>
-  unitType === RegularUnitType.BALLISTA || unitType === RegularUnitType.CATAPULT;
+  unitType === RegularUnitName.BALLISTA || unitType === RegularUnitName.CATAPULT;
 
 /**
  * Checks if a unit is a mage type hero
@@ -25,10 +25,10 @@ export const isWarMachine = (unitType: UnitType): boolean =>
  */
 export const isMageType = (unitType: UnitType): boolean => {
   return (
-    unitType === HeroUnitType.PYROMANCER ||
-    unitType === HeroUnitType.DRUID ||
-    unitType === HeroUnitType.ENCHANTER ||
-    unitType === HeroUnitType.CLERIC ||
-    unitType === HeroUnitType.NECROMANCER
+    unitType === HeroUnitName.PYROMANCER ||
+    unitType === HeroUnitName.DRUID ||
+    unitType === HeroUnitName.ENCHANTER ||
+    unitType === HeroUnitName.CLERIC ||
+    unitType === HeroUnitName.NECROMANCER
   );
 };

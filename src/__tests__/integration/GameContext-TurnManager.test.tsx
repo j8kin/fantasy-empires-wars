@@ -6,7 +6,7 @@ import { calculateIncome } from '../../map/vault/calculateIncome';
 import { calculateMaintenance } from '../../map/vault/calculateMaintenance';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { nextPlayer } from '../../systems/playerActions';
-import { TurnPhase } from '../../turn/TurnPhase';
+import { TurnPhaseType } from '../../turn/TurnPhase';
 
 // Mock TurnManager
 jest.mock('../../turn/TurnManager');
@@ -201,7 +201,7 @@ describe('GameContext-TurnManager Integration', () => {
       const gameStateStub = createGameStateStub();
 
       const customCallbacks = {
-        onTurnPhaseChange: (gameState: GameState, phase: TurnPhase) => {
+        onTurnPhaseChange: (gameState: GameState, phase: TurnPhaseType) => {
           expect(gameState).toBeDefined();
           expect(phase).toBeDefined();
         },

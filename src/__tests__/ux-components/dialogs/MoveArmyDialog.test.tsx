@@ -4,8 +4,6 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
-import { GameState } from '../../../state/GameState';
-import { LandPosition } from '../../../state/map/land/LandPosition';
 import { UnitRank } from '../../../state/army/RegularsState';
 
 import { getArmiesAtPosition } from '../../../selectors/armySelectors';
@@ -15,8 +13,11 @@ import { armyFactory } from '../../../factories/armyFactory';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
 
-import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
+import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
 import { Alignment } from '../../../types/Alignment';
+
+import type { GameState } from '../../../state/GameState';
+import type { LandPosition } from '../../../state/map/land/LandPosition';
 
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 import { startMovement as mockStartMovement } from '../../../map/move-army/startMovement';
@@ -142,13 +143,13 @@ describe('MoveArmyDialog', () => {
   let toPosition: LandPosition;
 
   const createMockUnits = () => {
-    const warrior = regularsFactory(RegularUnitType.WARRIOR);
+    const warrior = regularsFactory(RegularUnitName.WARRIOR);
     warrior.count = 10;
 
-    const dwarf = regularsFactory(RegularUnitType.DWARF);
+    const dwarf = regularsFactory(RegularUnitName.DWARF);
     dwarf.count = 5;
 
-    const hero = heroFactory(HeroUnitType.FIGHTER, 'TestHero');
+    const hero = heroFactory(HeroUnitName.FIGHTER, 'TestHero');
     levelUpHero(hero, Alignment.LAWFUL);
 
     return { warrior, dwarf, hero };
@@ -596,8 +597,8 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with only heroes
       gameStateStub.armies = [];
 
-      const hero1 = heroFactory(HeroUnitType.FIGHTER, 'Hero1');
-      const hero2 = heroFactory(HeroUnitType.CLERIC, 'Hero2');
+      const hero1 = heroFactory(HeroUnitName.FIGHTER, 'Hero1');
+      const hero2 = heroFactory(HeroUnitName.CLERIC, 'Hero2');
 
       const heroOnlyArmy = armyFactory(gameStateStub.turnOwner, fromPosition, [hero1, hero2]);
       gameStateStub.armies.push(heroOnlyArmy);
@@ -612,7 +613,7 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with only regular units
       gameStateStub.armies = [];
 
-      const warrior = regularsFactory(RegularUnitType.WARRIOR);
+      const warrior = regularsFactory(RegularUnitName.WARRIOR);
       warrior.count = 15;
 
       const regularOnlyArmy = armyFactory(gameStateStub.turnOwner, fromPosition, undefined, [
@@ -630,7 +631,7 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with single count units
       gameStateStub.armies = [];
 
-      const warrior = regularsFactory(RegularUnitType.WARRIOR);
+      const warrior = regularsFactory(RegularUnitName.WARRIOR);
       warrior.count = 1;
 
       const singleCountArmy = armyFactory(gameStateStub.turnOwner, fromPosition, undefined, [
@@ -661,12 +662,12 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with different ranked units
       gameStateStub.armies = [];
 
-      const veteranWarrior = regularsFactory(RegularUnitType.WARRIOR);
+      const veteranWarrior = regularsFactory(RegularUnitName.WARRIOR);
       levelUpRegulars(veteranWarrior, Alignment.LAWFUL);
       expect(veteranWarrior.rank).toBe(UnitRank.VETERAN);
       veteranWarrior.count = 8;
 
-      const eliteWarrior = regularsFactory(RegularUnitType.WARRIOR);
+      const eliteWarrior = regularsFactory(RegularUnitName.WARRIOR);
       levelUpRegulars(eliteWarrior, Alignment.LAWFUL);
       levelUpRegulars(eliteWarrior, Alignment.LAWFUL);
       expect(eliteWarrior.rank).toBe(UnitRank.ELITE);
@@ -711,7 +712,7 @@ describe('MoveArmyDialog', () => {
       };
 
       // Add army to new position
-      const warrior = regularsFactory(RegularUnitType.WARRIOR);
+      const warrior = regularsFactory(RegularUnitName.WARRIOR);
 
       const newPositionArmy = armyFactory(gameStateStub.turnOwner, { row: 5, col: 5 }, undefined, [
         warrior,

@@ -2,7 +2,7 @@ import { getPlayerLands, getTurnOwner } from '../selectors/playerSelectors';
 import { getArmiesByPlayer } from '../selectors/armySelectors';
 
 import { SpellName } from '../types/Spell';
-import { EffectType } from '../types/Effect';
+import { EffectKind } from '../types/Effect';
 import type { GameState } from '../state/GameState';
 import type { Effect } from '../types/Effect';
 
@@ -19,7 +19,7 @@ const decrementAndFilterEffects = (effects: Effect[], castById: string): Effect[
       // Only decrement effects cast by the specified player
       if (effect.appliedBy === castById || effect.sourceId === SpellName.TURN_UNDEAD) {
         // Don't decrement permanent effects
-        if (effect.rules.type === EffectType.PERMANENT) return effect;
+        if (effect.rules.type === EffectKind.PERMANENT) return effect;
 
         return {
           ...effect,
@@ -35,7 +35,7 @@ const decrementAndFilterEffects = (effects: Effect[], castById: string): Effect[
     .filter((effect) => {
       // Remove effects that were cast by the specified player and have expired
       if (effect.appliedBy === castById || effect.sourceId === SpellName.TURN_UNDEAD) {
-        return effect.rules.type === EffectType.PERMANENT || effect.rules.duration > 0;
+        return effect.rules.type === EffectKind.PERMANENT || effect.rules.duration > 0;
       }
       // Keep effects that were not cast by the specified player regardless of duration
       return true;

@@ -1,27 +1,30 @@
-import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { UnitRank } from '../../state/army/RegularsState';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getLand } from '../../selectors/landSelectors';
+import { getSpellById } from '../../selectors/spellSelectors';
+import { regularsFactory } from '../../factories/regularsFactory';
+import { levelUpHero } from '../../systems/unitsActions';
+import { heroFactory } from '../../factories/heroFactory';
 import { getLandById } from '../../domain/land/landRepository';
 import { castSpell } from '../../map/magic/castSpell';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
-import { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
-import { LandType } from '../../types/Land';
+import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { UnitRank } from '../../state/army/RegularsState';
+import { LandKind } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
-import { BuildingType } from '../../types/Building';
-import { EffectType } from '../../types/Effect';
+import { BuildingKind } from '../../types/Building';
+import { EffectKind } from '../../types/Effect';
+import { Alignment } from '../../types/Alignment';
+import type { GameState } from '../../state/GameState';
+import type { LandType } from '../../types/Land';
+import type { BuildingType } from '../../types/Building';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { RegularUnitType, UnitType } from '../../types/UnitType';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { getSpellById } from '../../selectors/spellSelectors';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { regularsFactory } from '../../factories/regularsFactory';
-import { heroFactory } from '../../factories/heroFactory';
-import { levelUpHero } from '../../systems/unitsActions';
-import { Alignment } from '../../types/Alignment';
 
 describe('castRedManaSpell', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -39,10 +42,10 @@ describe('castRedManaSpell', () => {
   describe('Cast EMBER RAID spell', () => {
     describe('EMBER RAID effects current recruiting', () => {
       it.each([
-        [HeroUnitType.NECROMANCER, BuildingType.BLACK_MAGE_TOWER, 4],
-        [HeroUnitType.FIGHTER, BuildingType.BARRACKS, 4],
-        [RegularUnitType.WARRIOR, BuildingType.BARRACKS, 2],
-        [RegularUnitType.CATAPULT, BuildingType.BARRACKS, 4],
+        [HeroUnitName.NECROMANCER, BuildingKind.BLACK_MAGE_TOWER, 4],
+        [HeroUnitName.FIGHTER, BuildingKind.BARRACKS, 4],
+        [RegularUnitName.WARRIOR, BuildingKind.BARRACKS, 2],
+        [RegularUnitName.CATAPULT, BuildingKind.BARRACKS, 4],
       ])(
         'Recruiting %s in %s affected and became %s',
         (unit: UnitType, building: BuildingType, newNTurn: number) => {
@@ -64,7 +67,7 @@ describe('castRedManaSpell', () => {
           expect(reqLand.effects).toHaveLength(1);
           expect(reqLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
           expect(reqLand.effects[0].appliedBy).toBe(gameStateStub.players[1].id);
-          expect(reqLand.effects[0].rules.type).toBe(EffectType.NEGATIVE);
+          expect(reqLand.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
           expect(reqLand.effects[0].rules.duration).toBe(3);
 
           expect(reqLand.buildings).toHaveLength(1);
@@ -75,10 +78,10 @@ describe('castRedManaSpell', () => {
     });
     describe('EMBER RAID effects new recruiting if effect active', () => {
       it.each([
-        [HeroUnitType.CLERIC, BuildingType.WHITE_MAGE_TOWER, 4],
-        [HeroUnitType.RANGER, BuildingType.BARRACKS, 4],
-        [RegularUnitType.ELF, BuildingType.BARRACKS, 3],
-        [RegularUnitType.BALLISTA, BuildingType.BARRACKS, 4],
+        [HeroUnitName.CLERIC, BuildingKind.WHITE_MAGE_TOWER, 4],
+        [HeroUnitName.RANGER, BuildingKind.BARRACKS, 4],
+        [RegularUnitName.ELF, BuildingKind.BARRACKS, 3],
+        [RegularUnitName.BALLISTA, BuildingKind.BARRACKS, 4],
       ])(
         'Recruiting %s in %s affected and became %s',
         (unit: UnitType, building: BuildingType, newNTurn: number) => {
@@ -102,7 +105,7 @@ describe('castRedManaSpell', () => {
           expect(reqLand.effects).toHaveLength(1);
           expect(reqLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
           expect(reqLand.effects[0].appliedBy).toBe(gameStateStub.players[1].id);
-          expect(reqLand.effects[0].rules.type).toBe(EffectType.NEGATIVE);
+          expect(reqLand.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
           expect(reqLand.effects[0].rules.duration).toBe(3);
 
           expect(reqLand.buildings).toHaveLength(1);
@@ -161,45 +164,45 @@ describe('castRedManaSpell', () => {
 
       // change turnOwner construct building and start recruiting
       gameStateStub.turnOwner = gameStateStub.players[1].id;
-      construct(gameStateStub, BuildingType.BARRACKS, opponentLandPos);
-      startRecruiting(gameStateStub, opponentLandPos, RegularUnitType.WARRIOR);
+      construct(gameStateStub, BuildingKind.BARRACKS, opponentLandPos);
+      startRecruiting(gameStateStub, opponentLandPos, RegularUnitName.WARRIOR);
 
       const opponentLand = getLand(gameStateStub, opponentLandPos);
       expect(opponentLand.effects).toHaveLength(1); // effect not disappear due to construction
       expect(opponentLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
       expect(opponentLand.effects[0].appliedBy).toBe(gameStateStub.players[0].id);
-      expect(opponentLand.effects[0].rules.type).toBe(EffectType.NEGATIVE);
+      expect(opponentLand.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
       expect(opponentLand.effects[0].rules.duration).toBe(3);
 
       expect(opponentLand.buildings).toHaveLength(1);
-      expect(opponentLand.buildings[0].slots![0].unit).toBe(RegularUnitType.WARRIOR);
+      expect(opponentLand.buildings[0].slots![0].unit).toBe(RegularUnitName.WARRIOR);
       expect(opponentLand.buildings[0].slots![0].turnsRemaining).toBe(2); // EMBER RAID effect
     });
   });
   describe('Cast FORGE OF WAR spell', () => {
     it.each([
-      [LandType.PLAINS, RegularUnitType.WARRIOR],
-      [LandType.MOUNTAINS, RegularUnitType.DWARF],
-      [LandType.GREEN_FOREST, RegularUnitType.ELF],
-      [LandType.DARK_FOREST, RegularUnitType.DARK_ELF],
-      [LandType.HILLS, RegularUnitType.HALFLING],
-      [LandType.SWAMP, RegularUnitType.ORC],
-      [LandType.DESERT, RegularUnitType.WARRIOR],
-      [LandType.VOLCANO, RegularUnitType.ORC],
-      [LandType.LAVA, RegularUnitType.ORC],
-      [LandType.SUN_SPIRE_PEAKS, RegularUnitType.DWARF],
-      [LandType.GOLDEN_PLAINS, RegularUnitType.DWARF],
-      [LandType.HEARTWOOD_COVE, RegularUnitType.ELF],
-      [LandType.VERDANT_GLADE, RegularUnitType.ELF],
-      [LandType.CRISTAL_BASIN, RegularUnitType.WARRIOR],
-      [LandType.MISTY_GLADES, RegularUnitType.WARRIOR],
-      [LandType.SHADOW_MIRE, RegularUnitType.ORC],
-      [LandType.BLIGHTED_FEN, RegularUnitType.ORC],
+      [LandKind.PLAINS, RegularUnitName.WARRIOR],
+      [LandKind.MOUNTAINS, RegularUnitName.DWARF],
+      [LandKind.GREEN_FOREST, RegularUnitName.ELF],
+      [LandKind.DARK_FOREST, RegularUnitName.DARK_ELF],
+      [LandKind.HILLS, RegularUnitName.HALFLING],
+      [LandKind.SWAMP, RegularUnitName.ORC],
+      [LandKind.DESERT, RegularUnitName.WARRIOR],
+      [LandKind.VOLCANO, RegularUnitName.ORC],
+      [LandKind.LAVA, RegularUnitName.ORC],
+      [LandKind.SUN_SPIRE_PEAKS, RegularUnitName.DWARF],
+      [LandKind.GOLDEN_PLAINS, RegularUnitName.DWARF],
+      [LandKind.HEARTWOOD_COVE, RegularUnitName.ELF],
+      [LandKind.VERDANT_GLADE, RegularUnitName.ELF],
+      [LandKind.CRISTAL_BASIN, RegularUnitName.WARRIOR],
+      [LandKind.MISTY_GLADES, RegularUnitName.WARRIOR],
+      [LandKind.SHADOW_MIRE, RegularUnitName.ORC],
+      [LandKind.BLIGHTED_FEN, RegularUnitName.ORC],
     ])(
       'Cast FORGE OF WAR on Land (%s) recruit 60 %s',
-      (landType: LandType, recruitType: RegularUnitType) => {
+      (landKind: LandType, recruitType: RegularUnitType) => {
         const homeLand = getPlayerLands(gameStateStub)[0];
-        homeLand.land = getLandById(landType);
+        homeLand.land = getLandById(landKind);
         expect(
           getArmiesAtPosition(gameStateStub, homeLand.mapPos).flatMap((a) => a.regulars)
         ).toHaveLength(0);
@@ -231,7 +234,7 @@ describe('castRedManaSpell', () => {
       // change turn owner and place units on all lands to make sure that FIRESTORM affects all lands
       gameStateStub.turnOwner = gameStateStub.players[1].id;
       opponentLands.forEach((l) =>
-        placeUnitsOnMap(regularsFactory(RegularUnitType.WARRIOR, 100), gameStateStub, l)
+        placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR, 100), gameStateStub, l)
       );
 
       // change turn Owner back
@@ -256,7 +259,7 @@ describe('castRedManaSpell', () => {
         const army = getArmiesAtPosition(gameStateStub, l).find((a) => a.regulars.length > 0);
 
         expect(army).toBeDefined();
-        expect(army!.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+        expect(army!.regulars[0].type).toBe(RegularUnitName.WARRIOR);
         expect(army!.regulars[0].count).toBe(80);
       });
     });
@@ -281,7 +284,7 @@ describe('castRedManaSpell', () => {
         const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
         if (maxPyrLvl > 0) {
           // add PYROMANCER on Map
-          const hero = heroFactory(HeroUnitType.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
+          const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
           while (hero.level < maxPyrLvl) levelUpHero(hero, Alignment.LAWFUL);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
@@ -296,7 +299,7 @@ describe('castRedManaSpell', () => {
           const army = getArmiesAtPosition(gameStateStub, l).find((a) => a.regulars.length > 0);
 
           expect(army).toBeDefined();
-          expect(army!.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+          expect(army!.regulars[0].type).toBe(RegularUnitName.WARRIOR);
           expect(army!.regulars[0].count).toBe(100 - nKilled);
         });
       }
@@ -310,7 +313,7 @@ describe('castRedManaSpell', () => {
 
       // change turn owner and place units on all lands to make sure that FIRESTORM affects all lands
       gameStateStub.turnOwner = gameStateStub.players[1].id;
-      placeUnitsOnMap(regularsFactory(RegularUnitType.WARRIOR, 100), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR, 100), gameStateStub, opponentLand);
 
       // change turn Owner back
       gameStateStub.turnOwner = gameStateStub.players[0].id;
@@ -342,7 +345,7 @@ describe('castRedManaSpell', () => {
         const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
         if (maxPyrLvl > 0) {
           // add PYROMANCER on Map
-          const hero = heroFactory(HeroUnitType.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
+          const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
           while (hero.level < maxPyrLvl) levelUpHero(hero, Alignment.LAWFUL);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
@@ -358,7 +361,7 @@ describe('castRedManaSpell', () => {
         );
 
         expect(army).toBeDefined();
-        expect(army!.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+        expect(army!.regulars[0].type).toBe(RegularUnitName.WARRIOR);
         expect(army!.regulars[0].count).toBe(100 - nKilled);
       }
     );
@@ -380,7 +383,7 @@ describe('castRedManaSpell', () => {
         const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
         if (maxPyrLvl > 0) {
           // add PYROMANCER on Map
-          const hero = heroFactory(HeroUnitType.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
+          const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
           while (hero.level < maxPyrLvl) levelUpHero(hero, Alignment.LAWFUL);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }

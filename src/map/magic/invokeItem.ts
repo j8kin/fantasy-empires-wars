@@ -11,10 +11,9 @@ import { effectFactory } from '../../factories/effectFactory';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { applyArmyCasualtiesAtPosition } from './applyArmyCasualties';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
-
-import { TreasureType } from '../../types/Treasures';
-import { RegularUnitType } from '../../types/UnitType';
-import { EffectType } from '../../types/Effect';
+import { TreasureName } from '../../types/Treasures';
+import { RegularUnitName } from '../../types/UnitType';
+import { EffectKind } from '../../types/Effect';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { PenaltyConfig } from '../../domain/army/armyPenaltyCalculator';
@@ -45,21 +44,21 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
 
   let updatedState: GameState = state;
   switch (treasureItem.treasure.type) {
-    case TreasureType.WAND_OF_TURN_UNDEAD:
+    case TreasureName.WAND_OF_TURN_UNDEAD:
       updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos, [
-        RegularUnitType.UNDEAD,
+        RegularUnitName.UNDEAD,
       ]);
       break;
 
-    case TreasureType.ORB_OF_STORM:
+    case TreasureName.ORB_OF_STORM:
       updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos);
       break;
 
-    case TreasureType.RESTORE_BUILDING:
+    case TreasureName.RESTORE_BUILDING:
       // todo implement after battle outcome implemented
       break;
 
-    case TreasureType.AEGIS_SHARD:
+    case TreasureName.AEGIS_SHARD:
       updatedState = updateLandEffect(
         updatedState,
         landPos,
@@ -67,21 +66,21 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
       );
       break;
 
-    case TreasureType.RESURRECTION:
+    case TreasureName.RESURRECTION:
       // todo implement after battle outcome implemented
       break;
 
-    case TreasureType.STONE_OF_RENEWAL:
+    case TreasureName.STONE_OF_RENEWAL:
       // remove one negative effect from the land
       const effectToCancel = getLand(updatedState, landPos).effects.find(
-        (e) => e.rules.type === EffectType.NEGATIVE
+        (e) => e.rules.type === EffectKind.NEGATIVE
       );
       if (effectToCancel) {
         updatedState = removeLandEffect(updatedState, landPos, effectToCancel.id);
       }
       break;
 
-    case TreasureType.COMPASS_OF_DOMINION:
+    case TreasureName.COMPASS_OF_DOMINION:
       const landOwner = getLandOwner(updatedState, landPos);
       // todo when fog of war implemented reveal all visible lands of the player
       const landsToReveal = getTilesInRadius(getMapDimensions(state), landPos, 1, false).filter(
@@ -97,7 +96,7 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
       });
       break;
 
-    case TreasureType.DEED_OF_RECLAMATION:
+    case TreasureName.DEED_OF_RECLAMATION:
       // own neutral land
       if (getLandOwner(updatedState, landPos) === NO_PLAYER.id) {
         updatedState = addPlayerLand(updatedState, updatedState.turnOwner, landPos);
@@ -109,11 +108,11 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
       }
       break;
 
-    case TreasureType.HOURGLASS_OF_DELAY:
+    case TreasureName.HOURGLASS_OF_DELAY:
       updatedState = updateLandEffect(
         updatedState,
         landPos,
-        effectFactory(TreasureType.HOURGLASS_OF_DELAY, updatedState.turnOwner)
+        effectFactory(TreasureName.HOURGLASS_OF_DELAY, updatedState.turnOwner)
       );
       break;
 

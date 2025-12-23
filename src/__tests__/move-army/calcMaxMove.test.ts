@@ -1,9 +1,10 @@
 import { levelUpRegulars } from '../../systems/unitsActions';
-import { RegularUnitType } from '../../types/UnitType';
-import { UnitRank } from '../../state/army/RegularsState';
-import { Alignment } from '../../types/Alignment';
 import { calcMaxMove } from '../../map/move-army/calcMaxMove';
 import { regularsFactory } from '../../factories/regularsFactory';
+import { RegularUnitName } from '../../types/UnitType';
+import { UnitRank } from '../../state/army/RegularsState';
+import { Alignment } from '../../types/Alignment';
+import type { UnitRankType } from '../../state/army/RegularsState';
 
 describe('calcMaxMove', () => {
   it.each([
@@ -22,8 +23,8 @@ describe('calcMaxMove', () => {
     [UnitRank.ELITE, 70, 3],
     [UnitRank.ELITE, 110, 4],
     [UnitRank.ELITE, 140, 4],
-  ])('%s units: %s -> %s moves', (unitRank: UnitRank, num: number, expTurns: number) => {
-    const unit = regularsFactory(RegularUnitType.WARRIOR);
+  ])('%s units: %s -> %s moves', (unitRank: UnitRankType, num: number, expTurns: number) => {
+    const unit = regularsFactory(RegularUnitName.WARRIOR);
     while (unit.rank !== unitRank) levelUpRegulars(unit, Alignment.LAWFUL);
     unit.count = num;
 

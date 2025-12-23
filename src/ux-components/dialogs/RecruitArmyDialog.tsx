@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
+import type { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
@@ -8,15 +9,13 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getLand } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getAvailableSlotsCount, hasAvailableSlot } from '../../selectors/buildingSelectors';
-import { isWarMachine, isMageType, isHeroType } from '../../domain/unit/unitTypeChecks';
+import { isHeroType, isMageType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
-
 import { getUnitImg } from '../../assets/getUnitImg';
 
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
-import { BuildingType } from '../../types/Building';
-import type { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
+import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { BuildingKind } from '../../types/Building';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { UnitType } from '../../types/UnitType';
 
@@ -112,7 +111,7 @@ const RecruitArmyDialog: React.FC = () => {
   if (!recruitBuilding) return null;
 
   const sortArmyUnits = (unit: RecruitUnitProps): number => {
-    if (unit.id === RegularUnitType.WARD_HANDS) return 0;
+    if (unit.id === RegularUnitName.WARD_HANDS) return 0;
     if (isWarMachine(unit.id)) return 2;
     if (isHeroType(unit.id)) return 3;
     return 1;
@@ -130,17 +129,17 @@ const RecruitArmyDialog: React.FC = () => {
     .filter(
       (u) =>
         // non-mages should be recruited in BARRACKS only
-        (recruitBuilding.type === BuildingType.BARRACKS &&
+        (recruitBuilding.type === BuildingKind.BARRACKS &&
           !isMageType(u) &&
           // The players, who reject magic, should be able to recruit their owned special heroes
-          (u !== HeroUnitType.WARSMITH ||
-            getTurnOwner(gameState).playerProfile.type === HeroUnitType.WARSMITH)) ||
+          (u !== HeroUnitName.WARSMITH ||
+            getTurnOwner(gameState).playerProfile.type === HeroUnitName.WARSMITH)) ||
         // mage Heroes should be recruited in related towers only
-        (u === HeroUnitType.CLERIC && recruitBuilding.type === BuildingType.WHITE_MAGE_TOWER) ||
-        (u === HeroUnitType.ENCHANTER && recruitBuilding.type === BuildingType.BLUE_MAGE_TOWER) ||
-        (u === HeroUnitType.DRUID && recruitBuilding.type === BuildingType.GREEN_MAGE_TOWER) ||
-        (u === HeroUnitType.PYROMANCER && recruitBuilding.type === BuildingType.RED_MAGE_TOWER) ||
-        (u === HeroUnitType.NECROMANCER && recruitBuilding.type === BuildingType.BLACK_MAGE_TOWER)
+        (u === HeroUnitName.CLERIC && recruitBuilding.type === BuildingKind.WHITE_MAGE_TOWER) ||
+        (u === HeroUnitName.ENCHANTER && recruitBuilding.type === BuildingKind.BLUE_MAGE_TOWER) ||
+        (u === HeroUnitName.DRUID && recruitBuilding.type === BuildingKind.GREEN_MAGE_TOWER) ||
+        (u === HeroUnitName.PYROMANCER && recruitBuilding.type === BuildingKind.RED_MAGE_TOWER) ||
+        (u === HeroUnitName.NECROMANCER && recruitBuilding.type === BuildingKind.BLACK_MAGE_TOWER)
     )
     .map((unit) => typeToRecruitProps(unit))
     .sort((a, b) => sortArmyUnits(a) - sortArmyUnits(b));

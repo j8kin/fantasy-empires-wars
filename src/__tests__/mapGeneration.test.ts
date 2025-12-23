@@ -1,7 +1,7 @@
 import { MapDimensions } from '../state/map/MapDimensions';
-import { LandType } from '../types/Land';
-import { getNearSpecialLandTypes } from '../domain/land/landRelationships';
-import { getMainSpecialLandTypes } from '../domain/land/landQueries';
+import { LandKind } from '../types/Land';
+import { getNearSpecialLandKinds } from '../domain/land/landRelationships';
+import { getMainSpecialLandKinds } from '../domain/land/landQueries';
 
 import { generateMap } from '../map/generation/generateMap';
 import { defaultBattlefieldSizeStub } from './utils/createGameStateStub';
@@ -21,27 +21,27 @@ describe('Map Generation', () => {
 
     // All tiles should be controlled by a neutral player
     Object.values(lands.lands).forEach((land) => {
-      expect(land.land.id).not.toBe(LandType.NONE);
+      expect(land.land.id).not.toBe(LandKind.NONE);
       expect(land.goldPerTurn).toBeGreaterThan(0);
     });
 
     // Special lands should be generated
-    getMainSpecialLandTypes().forEach((landType) => {
-      expect(Object.values(lands.lands).some((land) => land.land.id === landType)).toBeTruthy();
-      expect(Object.values(lands.lands).filter((land) => land.land.id === landType).length).toBe(1);
+    getMainSpecialLandKinds().forEach((LandKind) => {
+      expect(Object.values(lands.lands).some((land) => land.land.id === LandKind)).toBeTruthy();
+      expect(Object.values(lands.lands).filter((land) => land.land.id === LandKind).length).toBe(1);
       expect(
         Object.values(lands.lands).some(
-          (land) => land.land.id === getNearSpecialLandTypes(landType)
+          (land) => land.land.id === getNearSpecialLandKinds(LandKind)
         )
       ).toBeTruthy();
       expect(
         Object.values(lands.lands).filter(
-          (land) => land.land.id === getNearSpecialLandTypes(landType)
+          (land) => land.land.id === getNearSpecialLandKinds(LandKind)
         ).length
       ).toBeGreaterThan(1);
       expect(
         Object.values(lands.lands).filter(
-          (land) => land.land.id === getNearSpecialLandTypes(landType)
+          (land) => land.land.id === getNearSpecialLandKinds(LandKind)
         ).length
       ).toBeLessThan(6);
     });

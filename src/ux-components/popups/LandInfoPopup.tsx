@@ -6,13 +6,13 @@ import PopupWrapper from './PopupWrapper';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-
 import { getLandInfo } from '../../selectors/landSelectors';
 import { getAlignmentColor } from '../../domain/ui/alignmentColors';
+import { EffectKind } from '../../types/Effect';
 
 import type { PopupProps } from './PopupWrapper';
 import type { LandPosition } from '../../state/map/land/LandPosition';
-import { EffectType } from '../../types/Effect';
+import type { EffectType } from '../../types/Effect';
 
 interface LandCharacteristicsPopupProps extends PopupProps {
   landPos: LandPosition;
@@ -20,11 +20,11 @@ interface LandCharacteristicsPopupProps extends PopupProps {
 
 const getEffectColor = (effectType: EffectType): string => {
   switch (effectType) {
-    case EffectType.POSITIVE:
+    case EffectKind.POSITIVE:
       return '#4CAF50';
-    case EffectType.NEGATIVE:
+    case EffectKind.NEGATIVE:
       return '#F44336';
-    case EffectType.PERMANENT:
+    case EffectKind.PERMANENT:
       return '#344ceb';
   }
 };

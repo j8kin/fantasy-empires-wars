@@ -8,11 +8,11 @@ import { addPlayerLand, removeLandEffect, removePlayerLand } from '../../systems
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { hasArmiesAtPositionByPlayer } from '../../selectors/armySelectors';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
-
-import { BuildingType } from '../../types/Building';
-import type { GameState } from '../../state/GameState';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
-import { TreasureType } from '../../types/Treasures';
+import { BuildingKind } from '../../types/Building';
+import { TreasureName } from '../../types/Treasures';
+
+import type { GameState } from '../../state/GameState';
 
 export const changeOwner = (gameState: GameState): void => {
   const turnOwner = getTurnOwner(gameState);
@@ -24,7 +24,7 @@ export const changeOwner = (gameState: GameState): void => {
     if (prevOwner !== turnOwner.id && prevOwner !== NO_PLAYER.id) {
       updatedState = removePlayerLand(updatedState, prevOwner, land.mapPos);
       const deedOfReclamation = land.effects.find(
-        (e) => e.sourceId === TreasureType.DEED_OF_RECLAMATION
+        (e) => e.sourceId === TreasureName.DEED_OF_RECLAMATION
       );
       if (deedOfReclamation != null) {
         updatedState = removeLandEffect(updatedState, land.mapPos, deedOfReclamation.id);
@@ -44,7 +44,7 @@ export const changeOwner = (gameState: GameState): void => {
     // trying to find any other owners
     const neighbourLands = getTilesInRadius(getMapDimensions(updatedState), land.mapPos, 1);
     const nearestStronghold = neighbourLands.find((l) =>
-      getLand(updatedState, l).buildings?.some((b) => b.type === BuildingType.STRONGHOLD)
+      getLand(updatedState, l).buildings?.some((b) => b.type === BuildingKind.STRONGHOLD)
     );
     if (nearestStronghold) {
       const newLandOwnerId = getLandOwner(updatedState, nearestStronghold);

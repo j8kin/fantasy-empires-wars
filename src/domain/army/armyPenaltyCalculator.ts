@@ -1,8 +1,7 @@
-import { UnitRank } from '../../state/army/RegularsState';
 import { isWarMachine } from '../unit/unitTypeChecks';
 import { getRegulars } from '../../systems/armyActions';
-
-import type { RegularsState } from '../../state/army/RegularsState';
+import { UnitRank } from '../../state/army/RegularsState';
+import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
 import type { ArmyState } from '../../state/army/ArmyState';
 import type { RegularUnitType } from '../../types/UnitType';
 
@@ -127,7 +126,7 @@ const calculatePenaltyLoss = (
  */
 export const applyArmyPenalty = (
   army: ArmyState,
-  unitsToLoss: Record<UnitRank, number>,
+  unitsToLoss: Record<UnitRankType, number>,
   unitTypesInvolved?: RegularUnitType[]
 ): ArmyState => {
   let updatedArmy = army;
@@ -231,7 +230,7 @@ export const calculateAndApplyArmyPenalties = (
 
   return armies.map((army) => {
     const normUnits = normalizeArmyUnits(army.regulars, unitTypesInvolved);
-    const unitsToLoss: Record<UnitRank, number> = {
+    const unitsToLoss: Record<UnitRankType, number> = {
       [UnitRank.REGULAR]:
         loss.regular.total !== 0
           ? calcLoss(normUnits.regular, loss.regular, hasShardOfTheSilentAnvil)

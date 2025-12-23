@@ -18,10 +18,11 @@ import { castSpell } from '../../map/magic/castSpell';
 import { calcMaxMove } from '../../map/move-army/calcMaxMove';
 import { MAX_MOVE } from '../../map/move-army/calcMaxMove';
 import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
+import { SpellName } from '../../types/Spell';
 
 import { getLandImg } from '../../assets/getLandImg';
 
-import { SpellName } from '../../types/Spell';
+import type { SpellType } from '../../types/Spell';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { BuildingType } from '../../types/Building';
 
@@ -109,7 +110,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
 
           return;
         }
-        const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellName);
+        const spellToCast = getSpellById(selectedLandAction?.substring(7) as SpellType);
         const selectedPlayer = gameState?.turnOwner;
         if (selectedPlayer) {
           // Calculate screen position for animation

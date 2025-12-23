@@ -10,7 +10,7 @@ import { getRandomElement } from '../../domain/utils/random';
 import { construct } from '../building/construct';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
-import { BuildingType } from '../../types/Building';
+import { BuildingKind } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { LandState } from '../../state/map/land/LandState';
@@ -47,7 +47,7 @@ export const placeHomeland = (gameState: GameState) => {
 
   const existingPlayersHomelands = gameState.players
     .flatMap((p) => getPlayerLands(gameState, p.id))
-    .filter((l) => l.buildings.some((b) => b.type === BuildingType.STRONGHOLD));
+    .filter((l) => l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD));
 
   // get all lands which are not in radius 4 from any player's homeland'
   let freeToBuildLands = Object.keys(gameState.map.lands).filter(
@@ -100,7 +100,7 @@ export const placeHomeland = (gameState: GameState) => {
   }
 
   // Place Strong into homeland first
-  construct(gameState, BuildingType.STRONGHOLD, homeland.mapPos);
+  construct(gameState, BuildingKind.STRONGHOLD, homeland.mapPos);
 
   // Place Barracks on the same alignment land except homeland
   let possibleBarracksLands = getPlayerLands(gameState).filter(
@@ -110,7 +110,7 @@ export const placeHomeland = (gameState: GameState) => {
     // fall back to any land if no alignment match
     possibleBarracksLands = getPlayerLands(gameState).filter((l) => l.buildings.length === 0);
   }
-  construct(gameState, BuildingType.BARRACKS, getRandomElement(possibleBarracksLands).mapPos);
+  construct(gameState, BuildingKind.BARRACKS, getRandomElement(possibleBarracksLands).mapPos);
 
   assignPlayerHero(homeland, gameState!);
 };

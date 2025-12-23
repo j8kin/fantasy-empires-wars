@@ -1,5 +1,5 @@
-import { HeroUnitType, RegularUnitType } from '../types/UnitType';
 import type { UnitType } from '../types/UnitType';
+import { HeroUnitName, RegularUnitName } from '../types/UnitType';
 
 import wardHandsImg from './army/ward-hands.png';
 import warriorImg from './army/warrior.png';
@@ -26,49 +26,49 @@ import necromancerImg from './army/necromancer.png';
 
 export const getUnitImg = (unit: UnitType) => {
   switch (unit) {
-    case RegularUnitType.WARD_HANDS:
+    case RegularUnitName.WARD_HANDS:
       return wardHandsImg;
-    case RegularUnitType.WARRIOR:
+    case RegularUnitName.WARRIOR:
       return warriorImg;
-    case RegularUnitType.DWARF:
+    case RegularUnitName.DWARF:
       return dwarfImg;
-    case RegularUnitType.HALFLING:
+    case RegularUnitName.HALFLING:
       return halflingImg;
-    case RegularUnitType.ELF:
+    case RegularUnitName.ELF:
       return elfImg;
-    case RegularUnitType.DARK_ELF:
+    case RegularUnitName.DARK_ELF:
       return darkElfImg;
-    case RegularUnitType.UNDEAD:
+    case RegularUnitName.UNDEAD:
       return undeadImg;
-    case RegularUnitType.ORC:
+    case RegularUnitName.ORC:
       return orcImg;
-    case RegularUnitType.BALLISTA:
+    case RegularUnitName.BALLISTA:
       return ballistaImg;
-    case RegularUnitType.CATAPULT:
+    case RegularUnitName.CATAPULT:
       return catapultImg;
 
-    case HeroUnitType.WARSMITH:
+    case HeroUnitName.WARSMITH:
       return warsmithImg;
-    case HeroUnitType.FIGHTER:
+    case HeroUnitName.FIGHTER:
       return fightableImg;
-    case HeroUnitType.HAMMER_LORD:
+    case HeroUnitName.HAMMER_LORD:
       return hummerLordImg;
-    case HeroUnitType.RANGER:
+    case HeroUnitName.RANGER:
       return rangerImg;
-    case HeroUnitType.SHADOW_BLADE:
+    case HeroUnitName.SHADOW_BLADE:
       return shadowBladeImg;
-    case HeroUnitType.OGR:
+    case HeroUnitName.OGR:
       return ogrImg;
 
-    case HeroUnitType.CLERIC:
+    case HeroUnitName.CLERIC:
       return clericImg;
-    case HeroUnitType.DRUID:
+    case HeroUnitName.DRUID:
       return druidImg;
-    case HeroUnitType.ENCHANTER:
+    case HeroUnitName.ENCHANTER:
       return enchanterImg;
-    case HeroUnitType.PYROMANCER:
+    case HeroUnitName.PYROMANCER:
       return pyromancerImg;
-    case HeroUnitType.NECROMANCER:
+    case HeroUnitName.NECROMANCER:
       return necromancerImg;
 
     default:

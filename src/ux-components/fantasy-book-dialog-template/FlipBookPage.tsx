@@ -8,12 +8,14 @@ export interface Slot {
   name: string;
 }
 
-export enum FlipBookPageType {
-  SPELL = 'Spell',
-  BUILDING = 'Building',
-  RECRUIT = 'Recruit',
-  QUEST = 'Quest',
-}
+export const FlipBookPageTypeName = {
+  SPELL: 'Spell',
+  BUILDING: 'Building',
+  RECRUIT: 'Recruit',
+  QUEST: 'Quest',
+} as const;
+
+export type FlipBookPageType = (typeof FlipBookPageTypeName)[keyof typeof FlipBookPageTypeName];
 
 export interface FlipBookPageProps {
   pageNum: number;

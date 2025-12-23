@@ -1,11 +1,12 @@
 import { Alignment } from '../../types/Alignment';
+import type { AlignmentType } from '../../types/Alignment';
 
 /**
  * Returns the color associated with a player's alignment
  * @param alignment The player's alignment
  * @returns The RGB color code for the alignment
  */
-export const getAlignmentColor = (alignment: Alignment): string => {
+export const getAlignmentColor = (alignment: AlignmentType): string => {
   switch (alignment) {
     case Alignment.LAWFUL:
       return 'rgb(74, 144, 226)'; // Blue

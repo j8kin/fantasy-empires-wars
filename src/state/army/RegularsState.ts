@@ -1,15 +1,17 @@
 import type { RegularUnitType } from '../../types/UnitType';
 import type { BaseUnitStats } from '../../types/BaseUnit';
 
-export enum UnitRank {
-  REGULAR = 'regular',
-  VETERAN = 'veteran',
-  ELITE = 'elite',
-}
+export const UnitRank = {
+  REGULAR: 'regular',
+  VETERAN: 'veteran',
+  ELITE: 'elite',
+} as const;
+
+export type UnitRankType = (typeof UnitRank)[keyof typeof UnitRank];
 
 export interface RegularsState {
   type: RegularUnitType;
-  rank: UnitRank;
+  rank: UnitRankType;
   count: number;
   baseStats: BaseUnitStats;
 }

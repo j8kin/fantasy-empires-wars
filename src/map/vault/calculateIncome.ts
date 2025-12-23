@@ -1,7 +1,7 @@
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { calculateHexDistance, hasActiveEffect } from '../../selectors/landSelectors';
 
-import { BuildingType } from '../../types/Building';
+import { BuildingKind } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
 import type { GameState } from '../../state/GameState';
@@ -13,7 +13,7 @@ export const calculateIncome = (gameState: GameState): number => {
 
   const playerLands = getPlayerLands(gameState);
   const playerStrongholds = playerLands
-    .filter((l) => l.buildings.some((b) => b.type === BuildingType.STRONGHOLD))
+    .filter((l) => l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD))
     .map((land) => land.mapPos);
 
   return playerLands.reduce((acc, land) => {
@@ -34,7 +34,7 @@ export const calculateIncome = (gameState: GameState): number => {
 
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Buildings#stronghold
     if (
-      !land.buildings.some((b) => b.type === BuildingType.STRONGHOLD) &&
+      !land.buildings.some((b) => b.type === BuildingKind.STRONGHOLD) &&
       playerProfile.alignment === Alignment.CHAOTIC
     ) {
       landIncome = land.goldPerTurn * 0.8;

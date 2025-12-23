@@ -2,7 +2,7 @@ import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelecto
 import { calculateIncome } from './calculateIncome';
 import { calculateMaintenance } from './calculateMaintenance';
 
-import { TreasureType } from '../../types/Treasures';
+import { TreasureName } from '../../types/Treasures';
 import type { GameState } from '../../state/GameState';
 
 /**
@@ -25,8 +25,8 @@ export const calculatePlayerIncome = (gameState: GameState): number => {
   let netIncome = calculateIncome(gameState) - calculateMaintenance(gameState);
 
   // Apply empire treasure effects
-  const hasObsidianChalice = hasTreasureByPlayer(turnOwner, TreasureType.OBSIDIAN_CHALICE);
-  const hasBannerOfUnity = hasTreasureByPlayer(turnOwner, TreasureType.BANNER_OF_UNITY);
+  const hasObsidianChalice = hasTreasureByPlayer(turnOwner, TreasureName.OBSIDIAN_CHALICE);
+  const hasBannerOfUnity = hasTreasureByPlayer(turnOwner, TreasureName.BANNER_OF_UNITY);
 
   // Banner of Unity increases income by 25%
   netIncome = hasBannerOfUnity ? Math.ceil(netIncome * 1.25) : netIncome;

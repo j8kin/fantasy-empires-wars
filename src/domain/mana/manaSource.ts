@@ -1,54 +1,57 @@
-import { ManaType } from '../../types/Mana';
-import { HeroUnitType } from '../../types/UnitType';
-import { LandType } from '../../types/Land';
+import { ManaKind } from '../../types/Mana';
+import { HeroUnitName } from '../../types/UnitType';
+import { LandKind } from '../../types/Land';
+import type { LandType } from '../../types/Land';
+import type { ManaType } from '../../types/Mana';
 import type { ManaSource } from '../../types/Mana';
+import type { HeroUnitType } from '../../types/UnitType';
 
 const MANA_SOURCES: ManaSource[] = [
   {
-    type: ManaType.BLACK,
-    heroTypes: [HeroUnitType.NECROMANCER],
-    landTypes: [LandType.SHADOW_MIRE, LandType.BLIGHTED_FEN],
+    type: ManaKind.BLACK,
+    heroTypes: [HeroUnitName.NECROMANCER],
+    landKinds: [LandKind.SHADOW_MIRE, LandKind.BLIGHTED_FEN],
   },
   {
-    type: ManaType.RED,
-    heroTypes: [HeroUnitType.PYROMANCER],
-    landTypes: [LandType.VOLCANO, LandType.LAVA],
+    type: ManaKind.RED,
+    heroTypes: [HeroUnitName.PYROMANCER],
+    landKinds: [LandKind.VOLCANO, LandKind.LAVA],
   },
   {
-    type: ManaType.BLUE,
-    heroTypes: [HeroUnitType.ENCHANTER],
-    landTypes: [LandType.CRISTAL_BASIN, LandType.MISTY_GLADES],
+    type: ManaKind.BLUE,
+    heroTypes: [HeroUnitName.ENCHANTER],
+    landKinds: [LandKind.CRISTAL_BASIN, LandKind.MISTY_GLADES],
   },
   {
-    type: ManaType.GREEN,
-    heroTypes: [HeroUnitType.DRUID],
-    landTypes: [LandType.HEARTWOOD_COVE, LandType.VERDANT_GLADE],
+    type: ManaKind.GREEN,
+    heroTypes: [HeroUnitName.DRUID],
+    landKinds: [LandKind.HEARTWOOD_COVE, LandKind.VERDANT_GLADE],
   },
   {
-    type: ManaType.WHITE,
-    heroTypes: [HeroUnitType.CLERIC],
-    landTypes: [LandType.SUN_SPIRE_PEAKS, LandType.GOLDEN_PLAINS],
+    type: ManaKind.WHITE,
+    heroTypes: [HeroUnitName.CLERIC],
+    landKinds: [LandKind.SUN_SPIRE_PEAKS, LandKind.GOLDEN_PLAINS],
   },
 ];
 
 /**
  * Finds mana source by hero type or land type
- * @param params - Object containing heroType and/or landType to search by
+ * @param params - Object containing heroType and/or LandKind to search by
  * @returns The matching mana source, or undefined if not found
  */
 export const getManaSource = ({
   manaType,
   heroType,
-  landType,
+  landKind,
 }: {
   manaType?: ManaType;
   heroType?: HeroUnitType;
-  landType?: LandType;
+  landKind?: LandType;
 }): ManaSource | undefined => {
   return MANA_SOURCES.find(
     (source) =>
       (manaType != null && source.type === manaType) ||
       (heroType != null && source.heroTypes.includes(heroType)) ||
-      (landType != null && source.landTypes.includes(landType))
+      (landKind != null && source.landKinds.includes(landKind))
   );
 };

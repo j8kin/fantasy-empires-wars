@@ -1,10 +1,10 @@
 import { v4 as uuid } from 'uuid';
 import { getRandomInt } from '../domain/utils/random';
 import { artifacts, items, relicts } from '../domain/treasure/treasureRepository';
-
-import { TreasureType } from '../types/Treasures';
+import { TreasureName } from '../types/Treasures';
 import { Alignment } from '../types/Alignment';
-import type { Artifact, EmpireTreasure, Relic } from '../types/Treasures';
+import type { Artifact, EmpireTreasure, Relic, TreasureType } from '../types/Treasures';
+import type { AlignmentType } from '../types/Alignment';
 
 export const artifactFactory = (treasureType: TreasureType, level: number): Artifact => {
   return {
@@ -30,13 +30,13 @@ export const relictFactory = (treasureType: TreasureType): Relic => {
   };
 };
 
-export const getRelicAlignment = (relicType: TreasureType): Alignment => {
+export const getRelicAlignment = (relicType: TreasureType): AlignmentType => {
   switch (relicType) {
-    case TreasureType.STARWELL_PRISM:
+    case TreasureName.STARWELL_PRISM:
       return Alignment.NEUTRAL;
-    case TreasureType.VERDANT_IDOL:
+    case TreasureName.VERDANT_IDOL:
       return Alignment.LAWFUL;
-    case TreasureType.OBSIDIAN_CHALICE:
+    case TreasureName.OBSIDIAN_CHALICE:
       return Alignment.CHAOTIC;
     default:
       return Alignment.NONE;
@@ -45,16 +45,16 @@ export const getRelicAlignment = (relicType: TreasureType): Alignment => {
 
 const getCharge = (itemType: TreasureType): number => {
   switch (itemType) {
-    case TreasureType.RESTORE_BUILDING:
-    case TreasureType.AEGIS_SHARD:
-    case TreasureType.RESURRECTION:
-    case TreasureType.MERCY_OF_ORRIVANE:
+    case TreasureName.RESTORE_BUILDING:
+    case TreasureName.AEGIS_SHARD:
+    case TreasureName.RESURRECTION:
+    case TreasureName.MERCY_OF_ORRIVANE:
       return 1;
-    case TreasureType.COMPASS_OF_DOMINION:
-    case TreasureType.DEED_OF_RECLAMATION:
-    case TreasureType.HOURGLASS_OF_DELAY:
+    case TreasureName.COMPASS_OF_DOMINION:
+    case TreasureName.DEED_OF_RECLAMATION:
+    case TreasureName.HOURGLASS_OF_DELAY:
       return 2;
-    case TreasureType.STONE_OF_RENEWAL:
+    case TreasureName.STONE_OF_RENEWAL:
       return 3;
     default:
       return getRandomInt(6, 10);

@@ -14,19 +14,18 @@ import { regularsFactory } from '../../../factories/regularsFactory';
 import { effectFactory } from '../../../factories/effectFactory';
 import { relictFactory } from '../../../factories/treasureFactory';
 import { updateLandEffect } from '../../../systems/gameStateActions';
+import { construct } from '../../../map/building/construct';
 import { NO_PLAYER } from '../../../domain/player/playerRepository';
-
-import { HeroUnitType, RegularUnitType } from '../../../types/UnitType';
-import { BuildingType } from '../../../types/Building';
+import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
+import { BuildingKind } from '../../../types/Building';
 import { SpellName } from '../../../types/Spell';
-import { TreasureType } from '../../../types/Treasures';
+import { TreasureName } from '../../../types/Treasures';
 import type { GameState } from '../../../state/GameState';
 import type { LandState } from '../../../state/map/land/LandState';
 import type { Armies } from '../../../state/army/ArmyState';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
-import { construct } from '../../../map/building/construct';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
@@ -75,7 +74,7 @@ describe('LandInfoPopup', () => {
 
     // Find a tile controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getPlayerLands(gameStateStub, gameStateStub.players[1].id).find((l) =>
-      l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
     )!;
 
     jest.clearAllMocks();
@@ -186,7 +185,7 @@ describe('LandInfoPopup', () => {
 
     it('displays buildings on neutral lands', () => {
       const landPos = { row: 0, col: 0 };
-      construct(gameStateStub, BuildingType.BARRACKS, landPos);
+      construct(gameStateStub, BuildingKind.BARRACKS, landPos);
       const land = getLand(gameStateStub, landPos);
       expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
 
@@ -217,10 +216,10 @@ describe('LandInfoPopup', () => {
     it('displays heroes when tile has heroes', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
       const army1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
+        heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
       ]);
       const army2 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitType.PYROMANCER, HeroUnitType.PYROMANCER),
+        heroFactory(HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER),
       ]);
       const mockArmy: Armies = [army1, army2];
 
@@ -244,15 +243,15 @@ describe('LandInfoPopup', () => {
     it('displays multiple heroes of same type with different names', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
       const fighter1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitType.FIGHTER, 'Cedric Brightshield'),
+        heroFactory(HeroUnitName.FIGHTER, 'Cedric Brightshield'),
       ]);
 
       const fighter2 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitType.FIGHTER, 'Rowan Ashborne'),
+        heroFactory(HeroUnitName.FIGHTER, 'Rowan Ashborne'),
       ]);
 
       const fighter3 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitType.FIGHTER, 'Gareth Dawnhart'),
+        heroFactory(HeroUnitName.FIGHTER, 'Gareth Dawnhart'),
       ]);
 
       const mockArmy: Armies = [fighter1, fighter2, fighter3];
@@ -278,10 +277,10 @@ describe('LandInfoPopup', () => {
     it('displays units when tile has non-hero units', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
       const army1 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitType.WARRIOR),
+        regularsFactory(RegularUnitName.WARRIOR),
       ]);
       const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitType.DWARF),
+        regularsFactory(RegularUnitName.DWARF),
       ]);
 
       const mockArmy: Armies = [army1, army2];
@@ -304,23 +303,23 @@ describe('LandInfoPopup', () => {
     });
 
     it('displays both heroes and units when tile has mixed army', () => {
-      const regularWarriors = regularsFactory(RegularUnitType.WARRIOR);
+      const regularWarriors = regularsFactory(RegularUnitName.WARRIOR);
       regularWarriors.count = 5;
 
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
       const army1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
+        heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
       ]);
       const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [regularWarriors]);
       const army3 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitType.DWARF),
+        regularsFactory(RegularUnitName.DWARF),
       ]);
       startMoving(army3, { row: 1, col: 1 });
       const army4 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitType.CLERIC, HeroUnitType.CLERIC),
+        heroFactory(HeroUnitName.CLERIC, HeroUnitName.CLERIC),
       ]);
       const army5 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitType.ELF),
+        regularsFactory(RegularUnitName.ELF),
       ]);
 
       const mockArmy: Armies = [army1, army2, army3, army4, army5];
@@ -374,10 +373,10 @@ describe('LandInfoPopup', () => {
     it('displays only heroes section when tile has only heroes', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
       const army1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitType.RANGER, HeroUnitType.RANGER),
+        heroFactory(HeroUnitName.RANGER, HeroUnitName.RANGER),
       ]);
       const army2 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitType.NECROMANCER, HeroUnitType.NECROMANCER),
+        heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
       ]);
 
       const mockArmy: Armies = [army1, army2];
@@ -411,8 +410,8 @@ describe('LandInfoPopup', () => {
         )
       );
 
-      placeUnitsOnMap(regularsFactory(RegularUnitType.ORC), gameStateStub, landPos);
-      placeUnitsOnMap(regularsFactory(RegularUnitType.BALLISTA), gameStateStub, landPos);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.ORC), gameStateStub, landPos);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.BALLISTA), gameStateStub, landPos);
 
       renderWithProviders(
         <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
@@ -480,7 +479,7 @@ describe('LandInfoPopup', () => {
 
     it('displays permanent effects with blue color when tile has permanent effects', () => {
       const land = getPlayerLands(gameStateStub)[0];
-      const effect = effectFactory(TreasureType.AEGIS_SHARD, gameStateStub.turnOwner);
+      const effect = effectFactory(TreasureName.AEGIS_SHARD, gameStateStub.turnOwner);
       Object.assign(gameStateStub, updateLandEffect(gameStateStub, land.mapPos, effect));
 
       renderWithProviders(
@@ -491,12 +490,12 @@ describe('LandInfoPopup', () => {
       // Check if effects section is displayed
       expect(screen.getByText('Effects:')).toBeInTheDocument();
       expect(
-        screen.getByText(`${TreasureType.AEGIS_SHARD} (${effect.rules!.duration})`)
+        screen.getByText(`${TreasureName.AEGIS_SHARD} (${effect.rules!.duration})`)
       ).toBeInTheDocument();
 
       // Check if the effect has red color for negative effect
       const effectElement = screen.getByText(
-        `${TreasureType.AEGIS_SHARD} (${effect.rules!.duration})`
+        `${TreasureName.AEGIS_SHARD} (${effect.rules!.duration})`
       );
       expect(effectElement).toHaveStyle({ color: '#344CEB' });
     });
@@ -567,12 +566,12 @@ describe('LandInfoPopup', () => {
       mockTileState.effects.push(effectFactory(SpellName.BLESSING, gameStateStub.turnOwner));
       mockTileState.effects.push(effectFactory(SpellName.VIEW_TERRITORY, gameStateStub.turnOwner));
       placeUnitsOnMap(
-        heroFactory(HeroUnitType.FIGHTER, HeroUnitType.FIGHTER),
+        heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
         gameStateStub,
         mockTileState.mapPos
       );
       placeUnitsOnMap(
-        regularsFactory(RegularUnitType.WARRIOR),
+        regularsFactory(RegularUnitName.WARRIOR),
         gameStateStub,
         mockTileState.mapPos
       );
@@ -627,7 +626,7 @@ describe('LandInfoPopup', () => {
       const randomSpy = jest.spyOn(Math, 'random');
       randomSpy.mockReturnValue(0);
 
-      gameStateStub.players[1].empireTreasures.push(relictFactory(TreasureType.MIRROR_OF_ILLUSION));
+      gameStateStub.players[1].empireTreasures.push(relictFactory(TreasureName.MIRROR_OF_ILLUSION));
 
       mockTileState.effects.push(effectFactory(SpellName.VIEW_TERRITORY, gameStateStub.turnOwner));
 
@@ -711,7 +710,7 @@ describe('LandInfoPopup', () => {
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
 
       // add COMPASS_OF_DOMINION effect to the land
-      const effect = effectFactory(TreasureType.COMPASS_OF_DOMINION, gameStateStub.turnOwner);
+      const effect = effectFactory(TreasureName.COMPASS_OF_DOMINION, gameStateStub.turnOwner);
       Object.assign(gameStateStub, updateLandEffect(gameStateStub, mockTileState.mapPos, effect));
       renderWithProviders(
         <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,

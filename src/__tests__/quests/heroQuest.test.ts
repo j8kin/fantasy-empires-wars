@@ -1,10 +1,10 @@
 import { getLand } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import {
-  isMoving,
+  findArmyByHero,
   findLandByHeroName,
   getArmiesAtPosition,
-  findArmyByHero,
+  isMoving,
 } from '../../selectors/armySelectors';
 import { getAvailableSlotsCount, hasAvailableSlot } from '../../selectors/buildingSelectors';
 import { nextPlayer } from '../../systems/playerActions';
@@ -12,13 +12,13 @@ import { startQuest } from '../../map/quest/startQuest';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-
-import { TreasureType } from '../../types/Treasures';
-import { BuildingType } from '../../types/Building';
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import { TreasureName } from '../../types/Treasures';
+import { BuildingKind } from '../../types/Building';
+import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import type { GameState } from '../../state/GameState';
-import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { HeroState } from '../../state/army/HeroState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { BuildingType } from '../../types/Building';
 import type { QuestType } from '../../types/Quest';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
@@ -171,7 +171,7 @@ describe('Hero Quest', () => {
     expect(armies[0].heroes[0].artifacts.length).toBe(0);
     expect(getTurnOwner(gameStateStub).empireTreasures.length).toBe(1);
     expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-      TreasureType.WAND_OF_TURN_UNDEAD
+      TreasureName.WAND_OF_TURN_UNDEAD
     ); // quest reward
 
     // verify that hero stats are incremented exact new stats calculation verified separately
@@ -201,24 +201,24 @@ describe('Hero Quest', () => {
     testTurnManagement.waitStartPhaseComplete();
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
     )!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    constructBuilding(BuildingType.BARRACKS, barracksPos);
+    constructBuilding(BuildingKind.BARRACKS, barracksPos);
 
     let barracksLand = getLand(gameStateStub, barracksPos);
     const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
     expect(armies.length).toBe(0);
 
     // Recruiting 3 heroes of the same type in barracks
-    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
-    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
-    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
+    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
+    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
+    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
     barracksLand = getLand(gameStateStub, barracksPos);
-    expect(barracksLand.buildings[0].slots![0].unit).toBe(HeroUnitType.FIGHTER);
-    expect(barracksLand.buildings[0].slots![1].unit).toBe(HeroUnitType.FIGHTER);
-    expect(barracksLand.buildings[0].slots![2].unit).toBe(HeroUnitType.FIGHTER);
+    expect(barracksLand.buildings[0].slots![0].unit).toBe(HeroUnitName.FIGHTER);
+    expect(barracksLand.buildings[0].slots![1].unit).toBe(HeroUnitName.FIGHTER);
+    expect(barracksLand.buildings[0].slots![2].unit).toBe(HeroUnitName.FIGHTER);
 
     testTurnManagement.makeNTurns(3);
 
@@ -261,7 +261,7 @@ describe('Hero Quest', () => {
     armiesReturn[0].heroes.forEach((armyUnit) => {
       expect(armyUnit.level).toBe(2);
       expect(armyUnit.artifacts.length).toBe(1);
-      expect(armyUnit.artifacts[0].treasure.type).toBe(TreasureType.BOOTS_OF_SPEED);
+      expect(armyUnit.artifacts[0].treasure.type).toBe(TreasureName.BOOTS_OF_SPEED);
     });
   });
 
@@ -269,19 +269,19 @@ describe('Hero Quest', () => {
     testTurnManagement.waitStartPhaseComplete();
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingType.STRONGHOLD)
+      l.buildings.some((b) => b.type === BuildingKind.STRONGHOLD)
     )!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    constructBuilding(BuildingType.BARRACKS, barracksPos);
+    constructBuilding(BuildingKind.BARRACKS, barracksPos);
 
     const barracksLand = getLand(gameStateStub, barracksPos);
     const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
     expect(armies.length).toBe(0);
 
     // Recruit one regular and one hero unit
-    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitType.FIGHTER);
-    startRecruiting(gameStateStub, barracksLand.mapPos, RegularUnitType.WARRIOR);
+    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
+    startRecruiting(gameStateStub, barracksLand.mapPos, RegularUnitName.WARRIOR);
 
     testTurnManagement.makeNTurns(3);
 
@@ -315,12 +315,12 @@ describe('Hero Quest', () => {
     expect(armiesQuestComplete[0].heroes.length).toBe(1);
     expect(armiesQuestComplete[0].regulars.length).toBe(1);
 
-    expect(armiesQuestComplete[0].regulars[0].type).toBe(RegularUnitType.WARRIOR);
-    expect(armiesQuestComplete[0].heroes[0].type).toBe(HeroUnitType.FIGHTER);
+    expect(armiesQuestComplete[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
+    expect(armiesQuestComplete[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
     expect(armiesQuestComplete[0].heroes[0].level).toBe(2);
     expect(armiesQuestComplete[0].heroes[0].artifacts.length).toBe(1);
     expect(armiesQuestComplete[0].heroes[0].artifacts[0].treasure.type).toBe(
-      TreasureType.BOOTS_OF_SPEED
+      TreasureName.BOOTS_OF_SPEED
     );
   });
 

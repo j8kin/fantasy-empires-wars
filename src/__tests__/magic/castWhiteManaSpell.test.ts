@@ -1,5 +1,3 @@
-import { GameState } from '../../state/GameState';
-import { LandPosition } from '../../state/map/land/LandPosition';
 import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { findArmyById, getArmiesAtPosition } from '../../selectors/armySelectors';
@@ -7,14 +5,16 @@ import { getLand, getLandInfo, hasActiveEffect } from '../../selectors/landSelec
 import { getSpellById } from '../../selectors/spellSelectors';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';
-
-import { HeroUnitType, RegularUnitType } from '../../types/UnitType';
-import { SpellName } from '../../types/Spell';
-import { BuildingType } from '../../types/Building';
-import { EffectType } from '../../types/Effect';
-
 import { castSpell } from '../../map/magic/castSpell';
 import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCastSpellLands';
+
+import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { SpellName } from '../../types/Spell';
+import { BuildingKind } from '../../types/Building';
+import { EffectKind } from '../../types/Effect';
+
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
@@ -32,7 +32,7 @@ describe('castWhiteManaSpell', () => {
     gameStateStub = createDefaultGameStateStub();
     getTurnOwner(gameStateStub).mana.white = 200;
     placeUnitsOnMap(
-      heroFactory(HeroUnitType.CLERIC, 'Cleric Level 1'),
+      heroFactory(HeroUnitName.CLERIC, 'Cleric Level 1'),
       gameStateStub,
       getPlayerLands(gameStateStub)[0].mapPos
     );
@@ -45,27 +45,27 @@ describe('castWhiteManaSpell', () => {
 
   describe('Cast TURN_UNDEAD spell', () => {
     it('Number of UNDEAD units decremented', () => {
-      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.UNDEAD, 120), gameStateStub, opponentLand);
 
       randomSpy.mockReturnValue(0.99); // maximize damage from spell
 
       castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
 
       const undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
-        a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
+        a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars.length).toBe(1);
-      expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
+      expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
     });
 
     it('Army destroyed if all units killed', () => {
-      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 2), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.UNDEAD, 2), gameStateStub, opponentLand);
 
       randomSpy.mockReturnValue(0.99); // maximize damage from spell
       const undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
-        a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
+        a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       )!;
 
       castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
@@ -73,24 +73,24 @@ describe('castWhiteManaSpell', () => {
       expect(findArmyById(gameStateStub, undeadArmy.id)).toBeUndefined(); // army destroyed
       expect(
         getArmiesAtPosition(gameStateStub, opponentLand).filter((a) =>
-          a.regulars.some((r) => r.type === RegularUnitType.UNDEAD)
+          a.regulars.some((r) => r.type === RegularUnitName.UNDEAD)
         )
       ).toHaveLength(0); // no UNDEAD armies left
     });
 
     it('TURN UNDEAD should be casted only once per turn', () => {
-      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.UNDEAD, 120), gameStateStub, opponentLand);
 
       randomSpy.mockReturnValue(1); // maximize damage from spell
 
       castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
 
       let undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
-        a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
+        a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars.length).toBe(1);
-      expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
+      expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
 
       const whiteMana = getTurnOwner(gameStateStub).mana.white;
@@ -99,18 +99,18 @@ describe('castWhiteManaSpell', () => {
 
       // check that spell is not affected by the second cast
       undeadArmy = getArmiesAtPosition(gameStateStub, opponentLand).find((a) =>
-        a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
+        a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
 
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars.length).toBe(1);
-      expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
+      expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // the same as in the first cast
     });
 
     it('Only UNDEAD units can be affected by TURN UNDEAD spell', () => {
-      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 120), gameStateStub, opponentLand);
-      placeUnitsOnMap(regularsFactory(RegularUnitType.WARRIOR, 120), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.UNDEAD, 120), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR, 120), gameStateStub, opponentLand);
 
       randomSpy.mockReturnValue(0.99); // maximize damage from spell
 
@@ -119,19 +119,19 @@ describe('castWhiteManaSpell', () => {
       expect(armies).toHaveLength(3); // initial hero, undead army and warrior army
 
       const undeadArmy = armies.find((a) =>
-        a.regulars.some((u) => u.type === RegularUnitType.UNDEAD)
+        a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars.length).toBe(1);
-      expect(undeadArmy?.regulars[0].type).toBe(RegularUnitType.UNDEAD);
+      expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
 
       const warriorArmy = armies.find((a) =>
-        a.regulars.some((u) => u.type === RegularUnitType.WARRIOR)
+        a.regulars.some((u) => u.type === RegularUnitName.WARRIOR)
       );
       expect(warriorArmy).toBeDefined();
       expect(warriorArmy?.regulars.length).toBe(1);
-      expect(warriorArmy?.regulars[0].type).toBe(RegularUnitType.WARRIOR);
+      expect(warriorArmy?.regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(warriorArmy?.regulars[0].count).toBe(120); // warrior army not affected by spell
     });
 
@@ -216,7 +216,7 @@ describe('castWhiteManaSpell', () => {
 
       // opponent land 0 is homeland: have an initial hero and stronghold
       const opponentLand = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
-      placeUnitsOnMap(regularsFactory(RegularUnitType.UNDEAD, 1), gameStateStub, opponentLand);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.UNDEAD, 1), gameStateStub, opponentLand);
 
       const landInfo = getLandInfo(gameStateStub, opponentLand);
       // verify that effect not added to the land yet
@@ -243,9 +243,9 @@ describe('castWhiteManaSpell', () => {
       expect(landInfoWithEffect.heroes).toHaveLength(1);
       expect(landInfoWithEffect.heroes[0]).toBe('Morgana Shadowweaver lvl: 12');
       expect(landInfoWithEffect.regulars).toHaveLength(1);
-      expect(landInfoWithEffect.regulars[0]).toBe(`${RegularUnitType.UNDEAD} (1)`);
+      expect(landInfoWithEffect.regulars[0]).toBe(`${RegularUnitName.UNDEAD} (1)`);
       expect(landInfoWithEffect.buildings).toHaveLength(1);
-      expect(landInfoWithEffect.buildings[0]).toBe(BuildingType.STRONGHOLD);
+      expect(landInfoWithEffect.buildings[0]).toBe(BuildingKind.STRONGHOLD);
 
       testTurnManagement.makeNTurns(1);
 
@@ -269,7 +269,7 @@ describe('castWhiteManaSpell', () => {
       const homeland = getLand(gameStateStub, homelandPos);
       expect(homeland.effects).toHaveLength(1);
       expect(homeland.effects[0].sourceId).toBe(SpellName.BLESSING);
-      expect(homeland.effects[0].rules.type).toBe(EffectType.POSITIVE);
+      expect(homeland.effects[0].rules.type).toBe(EffectKind.POSITIVE);
       expect(homeland.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
       expect(homeland.effects[0].rules.duration).toBe(3);
 

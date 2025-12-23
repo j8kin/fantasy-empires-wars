@@ -1,5 +1,5 @@
 import { getTurnOwner, hasTreasureByPlayer } from '../selectors/playerSelectors';
-import { updatePlayerVault, updatePlayerMana } from '../systems/gameStateActions';
+import { updatePlayerMana, updatePlayerVault } from '../systems/gameStateActions';
 import { decrementEffectDurations } from '../systems/effectActions';
 import { calculatePlayerIncome } from '../map/vault/calculatePlayerIncome';
 import { placeHomeland } from '../map/generation/placeHomeland';
@@ -9,9 +9,8 @@ import { mergeArmiesAtPositions } from '../map/move-army/mergeArmiesAtPositions'
 import { calculateAttritionPenalty } from '../map/move-army/calculateAttritionPenalty';
 import { changeOwner } from '../map/move-army/changeOwner';
 import { calculateMana } from '../map/magic/calculateMana';
-
-import { TreasureType } from '../types/Treasures';
-import { ManaType } from '../types/Mana';
+import { TreasureName } from '../types/Treasures';
+import { ManaKind } from '../types/Mana';
 import type { GameState } from '../state/GameState';
 import type { EmpireEvent } from '../types/EmpireEvent';
 
@@ -50,7 +49,7 @@ export const startTurn = (
   const currentIncome = calculatePlayerIncome(gameState);
 
   // Handle empire treasure effects that have side effects (mana conversion)
-  const hasObsidianChalice = hasTreasureByPlayer(player, TreasureType.OBSIDIAN_CHALICE);
+  const hasObsidianChalice = hasTreasureByPlayer(player, TreasureName.OBSIDIAN_CHALICE);
 
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Heroes'-Quests#-empire-artifacts-permanent
   // OBSIDIAN_CHALICE effect: convert 10% of income to 0.1% of black mana
@@ -58,7 +57,7 @@ export const startTurn = (
     // 10% reduction is already applied in `calculatePlayerIncome`
     Object.assign(
       gameState,
-      updatePlayerMana(gameState, player.id, ManaType.BLACK, currentIncome * 0.001)
+      updatePlayerMana(gameState, player.id, ManaKind.BLACK, currentIncome * 0.001)
     );
   }
 

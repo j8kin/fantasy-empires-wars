@@ -1,7 +1,8 @@
 import { unitsBaseStats } from '../domain/unit/unitRepository';
 import { UnitRank } from '../state/army/RegularsState';
-import { RegularUnitType } from '../types/UnitType';
 import type { RegularsState } from '../state/army/RegularsState';
+import type { RegularUnitType } from '../types/UnitType';
+import { RegularUnitName } from '../types/UnitType';
 
 export const regularsFactory = (
   unitType: RegularUnitType,
@@ -17,12 +18,12 @@ export const regularsFactory = (
 
 const getRegularUnitCount = (unitType: RegularUnitType): number => {
   switch (unitType) {
-    case RegularUnitType.WARD_HANDS:
+    case RegularUnitName.WARD_HANDS:
       return 30;
-    case RegularUnitType.HALFLING:
+    case RegularUnitName.HALFLING:
       return 25;
-    case RegularUnitType.BALLISTA:
-    case RegularUnitType.CATAPULT:
+    case RegularUnitName.BALLISTA:
+    case RegularUnitName.CATAPULT:
       return 1;
     default:
       return 20;

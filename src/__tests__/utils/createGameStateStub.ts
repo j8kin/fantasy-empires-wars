@@ -8,13 +8,10 @@ import { addPlayerToGameState, nextPlayer } from '../../systems/playerActions';
 import { levelUpHero } from '../../systems/unitsActions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 import { heroFactory } from '../../factories/heroFactory';
-
-import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-
-import { BuildingType } from '../../types/Building';
-
 import { construct } from '../../map/building/construct';
 import { generateMap } from '../../map/generation/generateMap';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { BuildingKind } from '../../types/Building';
 
 import { generateMockMap } from './generateMockMap';
 import { placeUnitsOnMap } from './placeUnitsOnMap';
@@ -47,7 +44,7 @@ export const createGameStateStub = ({
     for (let i = 0; i < playersProfile.length; i++) {
       const turnOwner = getTurnOwner(stubGameState);
       const homeland: LandPosition = { row: 3 + (i % 2), col: 3 + i * 5 };
-      construct(stubGameState, BuildingType.STRONGHOLD, homeland);
+      construct(stubGameState, BuildingKind.STRONGHOLD, homeland);
 
       const playerProfile = turnOwner.playerProfile;
       const hero = heroFactory(playerProfile.type, playerProfile.name);

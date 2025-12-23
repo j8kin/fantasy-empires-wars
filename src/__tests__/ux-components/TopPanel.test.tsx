@@ -8,14 +8,12 @@ import { defaultTileDimensions } from '../../ux-components/fantasy-border-frame/
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { addPlayerToGameState } from '../../systems/playerActions';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-
 import { getPlayer } from '../../selectors/playerSelectors';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { ManaKind } from '../../types/Mana';
 
 import { generateMockMap } from '../utils/generateMockMap';
-
-import { ManaType } from '../../types/Mana';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -35,11 +33,11 @@ const renderWithProvider = (ui: React.ReactElement) => {
         const firstPlayer = getPlayer(newGameState, PREDEFINED_PLAYERS[0].id);
         firstPlayer.vault = 1500;
         firstPlayer.mana = {
-          [ManaType.WHITE]: 100,
-          [ManaType.BLACK]: 100,
-          [ManaType.RED]: 100,
-          [ManaType.GREEN]: 100,
-          [ManaType.BLUE]: 100,
+          [ManaKind.WHITE]: 100,
+          [ManaKind.BLACK]: 100,
+          [ManaKind.RED]: 100,
+          [ManaKind.GREEN]: 100,
+          [ManaKind.BLUE]: 100,
         };
 
         updateGameState(newGameState);

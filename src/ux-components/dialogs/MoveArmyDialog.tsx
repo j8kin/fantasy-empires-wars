@@ -7,13 +7,14 @@ import GameButton from '../buttons/GameButton';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { briefInfo, isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
+import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { startMovement } from '../../map/move-army/startMovement';
 
 import { ButtonName } from '../../types/ButtonName';
 import { UnitRank } from '../../state/army/RegularsState';
 import type { ArmyBriefInfo } from '../../state/army/ArmyState';
-import type { HeroUnitType } from '../../types/UnitType';
+import type { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import type { UnitRankType } from '../../state/army/RegularsState';
 
 // Consolidate units of the same type and rank
 const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {
@@ -21,7 +22,7 @@ const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {
   const consolidatedHeroes = [...army.heroes];
 
   // Consolidate regulars by type and rank
-  const consolidatedRegulars: { id: any; rank: UnitRank; count: number }[] = [];
+  const consolidatedRegulars: { id: RegularUnitType; rank: UnitRankType; count: number }[] = [];
 
   army.regulars.forEach((unit) => {
     const existingIdx = consolidatedRegulars.findIndex(
@@ -133,7 +134,7 @@ const MoveArmyDialog: React.FC = () => {
   };
 
   // Helper function to get unit CSS class based on type and rank
-  const getUnitColorClass = (rank: UnitRank): string => {
+  const getUnitColorClass = (rank: UnitRankType): string => {
     switch (rank) {
       case UnitRank.REGULAR:
         return styles.regularUnit;
@@ -310,7 +311,7 @@ const MoveArmyDialog: React.FC = () => {
           (h) => h.name === heroUnit.name && h.type === heroUnit.type && h.level === heroUnit.level
         );
       } else {
-        const reg = selectedUnit as { id: string; rank: UnitRank };
+        const reg = selectedUnit as { id: string; rank: UnitRankType };
         return arr.regulars.findIndex((u) => u.id === reg.id && u.rank === reg.rank);
       }
     };
@@ -381,7 +382,7 @@ const MoveArmyDialog: React.FC = () => {
     );
   };
   const renderRegularUnit = (
-    unit: { id: string; rank: UnitRank; count: number },
+    unit: { id: string; rank: UnitRankType; count: number },
     index: number,
     fromArray: ArmyBriefInfo,
     direction: 'right' | 'left'

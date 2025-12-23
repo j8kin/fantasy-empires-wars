@@ -12,7 +12,7 @@ import type { HeroQuest } from '../types/Quest';
 import type { ManaType } from '../types/Mana';
 import type { Effect } from '../types/Effect';
 import type { EmpireTreasure } from '../types/Treasures';
-import type { TurnPhase } from '../turn/TurnPhase';
+import type { TurnPhaseType } from '../turn/TurnPhase';
 import type { UnitType } from '../types/UnitType';
 
 // ============================================================================
@@ -22,7 +22,7 @@ import type { UnitType } from '../types/UnitType';
 /**
  * Update the current turn phase
  */
-export const setTurnPhase = (gameState: GameState, phase: TurnPhase): GameState => {
+export const setTurnPhase = (gameState: GameState, phase: TurnPhaseType): GameState => {
   return {
     ...gameState,
     turnPhase: phase,
