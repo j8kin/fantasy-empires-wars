@@ -1,22 +1,26 @@
 import { getLandId } from '../../state/map/land/LandId';
 import { addPlayerToGameState } from '../../systems/playerActions';
-import { addPlayerLand } from '../../systems/gameStateActions';
+import { addPlayerEmpireTreasure, addPlayerLand } from '../../systems/gameStateActions';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { gameStateFactory } from '../../factories/gameStateFactory';
 import { buildingFactory } from '../../factories/buildingFactory';
 import { getLandById } from '../../domain/land/landRepository';
 import { construct } from '../../map/building/construct';
 import { calculateIncome } from '../../map/vault/calculateIncome';
-import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-
+import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { itemFactory } from '../../factories/treasureFactory';
+import { invokeItem } from '../../map/magic/invokeItem';
+import { calculateHexDistance, getLandOwner, getPlayerLands } from '../../selectors/landSelectors';
+import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { BuildingName } from '../../types/Building';
 import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
+import { TreasureName } from '../../types/Treasures';
 import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { PlayerProfile } from '../../state/player/PlayerProfile';
 import type { AlignmentType } from '../../types/Alignment';
 
-import { createGameStateStub, defaultBattlefieldSizeStub } from '../utils/createGameStateStub';
+import { createGameStateStub } from '../utils/createGameStateStub';
 import { generateMockMap } from '../utils/generateMockMap';
 
 describe('Calculate Income', () => {
@@ -39,126 +43,33 @@ describe('Calculate Income', () => {
     gameStateStub = createGameStateStub({ addPlayersHomeland: false, nPlayers: 0 });
   });
 
-  it('No land owned', () => {
-    addPlayerToGameState(gameStateStub, PREDEFINED_PLAYERS[0], 'human');
-    const income = calculateIncome(gameStateStub);
-    expect(income).toBe(0);
-  });
-
-  it('Corner case: No owned strongholds', () => {
-    addPlayerToGameState(gameStateStub, PREDEFINED_PLAYERS[0], 'human');
-    Object.assign(
-      gameStateStub,
-      addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 5, col: 5 })
-    );
-
-    const income = calculateIncome(gameStateStub);
-    expect(income).toBe(0);
-  });
-
   it.each([
-    [Alignment.CHAOTIC, Alignment.CHAOTIC, 1160],
-    [Alignment.CHAOTIC, Alignment.NEUTRAL, 580],
-    [Alignment.CHAOTIC, Alignment.LAWFUL, 290],
-    [Alignment.NEUTRAL, Alignment.CHAOTIC, 700],
-    [Alignment.NEUTRAL, Alignment.NEUTRAL, 700],
-    [Alignment.NEUTRAL, Alignment.LAWFUL, 700],
-    [Alignment.LAWFUL, Alignment.CHAOTIC, 560],
-    [Alignment.LAWFUL, Alignment.NEUTRAL, 700],
-    [Alignment.LAWFUL, Alignment.LAWFUL, 910],
+    [Alignment.CHAOTIC, Alignment.CHAOTIC, 1102], //(1*1*100 + 6*0.8*100)*1.9 = 1102
+    [Alignment.CHAOTIC, Alignment.NEUTRAL, 580], //(1*1*100 + 6*0.8*100)*1 = 640
+    [Alignment.CHAOTIC, Alignment.LAWFUL, 290], //(1*1*100 + 6*0.8*100)*0.5 = 320
+    [Alignment.NEUTRAL, Alignment.NEUTRAL, 700], // 7*100 = 700
+    [Alignment.NEUTRAL, Alignment.LAWFUL, 700], // Neutral players don't have neither benefits
+    [Alignment.NEUTRAL, Alignment.CHAOTIC, 700], //  nor penalties from alignment
+    [Alignment.LAWFUL, Alignment.CHAOTIC, 560], //(7*1*100)*0.8 = 560
+    [Alignment.LAWFUL, Alignment.NEUTRAL, 700], //(7*1*100)*1 = 700
+    [Alignment.LAWFUL, Alignment.LAWFUL, 980], //(7*1*100)*1.4 = 980
   ])(
     'Calculate income for player with alignment %s in %s land alignment',
     (playerAlignment: AlignmentType, allLandsAlignment: AlignmentType, expectedIncome: number) => {
-      const player = getPlayer(playerAlignment);
-
-      gameStateStub = gameStateFactory(
-        generateMockMap(defaultBattlefieldSizeStub, allLandsAlignment, 100)
-      );
-      addPlayerToGameState(gameStateStub, player, 'human');
-      // add stronghold
+      gameStateStub.map = generateMockMap(getMapDimensions(gameStateStub), allLandsAlignment, 100);
+      addPlayerToGameState(gameStateStub, getPlayer(playerAlignment), 'human');
+      gameStateStub.players[0].vault = 1000000;
       construct(gameStateStub, BuildingName.STRONGHOLD, { row: 3, col: 3 });
-      const income = calculateIncome(gameStateStub);
-      expect(income).toBe(expectedIncome);
+
+      expect(getPlayerLands(gameStateStub)).toHaveLength(7);
+      expect(calculateIncome(gameStateStub)).toBe(expectedIncome);
     }
   );
 
   it.each([
-    ['100%', Alignment.LAWFUL, 5, 100], // only one land
-    ['100%', Alignment.LAWFUL, 6, 200], // the second land with 10% penalty
-    ['0%', Alignment.LAWFUL, 7, 100], // the second land with 0% penalty
-    ['100%', Alignment.NEUTRAL, 5, 100], // only one land
-    ['100%', Alignment.NEUTRAL, 6, 200], // the second land with 0% penalty
-    ['0%', Alignment.NEUTRAL, 7, 100], // the second land with 100% penalty
-    ['100%', Alignment.CHAOTIC, 5, 100], // only one land
-    ['80%', Alignment.CHAOTIC, 6, 180], // the second land with 20% penalty
-    ['0%', Alignment.CHAOTIC, 7, 100], // the second land with 100% penalty
-  ])(
-    'Calculate income with penalty (%s) if it is not stronghold land and Player has %s alignment',
-    (penalty: string, playerAlignment: AlignmentType, landCol: number, expected: number) => {
-      const player = getPlayer(playerAlignment);
-
-      addPlayerToGameState(gameStateStub, player, 'human');
-
-      // stronghold
-      Object.assign(
-        gameStateStub,
-        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 5, col: 5 })
-      );
-      gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].goldPerTurn = 100;
-      gameStateStub.map.lands[getLandId({ row: 5, col: 5 })].buildings = [
-        buildingFactory(BuildingName.STRONGHOLD),
-      ];
-
-      // additional land (should be calculated with penalty
-      Object.assign(
-        gameStateStub,
-        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 5, col: landCol })
-      );
-      gameStateStub.map.lands[getLandId({ row: 5, col: landCol })].goldPerTurn = 100;
-
-      const income = calculateIncome(gameStateStub);
-
-      expect(income).toBe(expected);
-    }
-  );
-
-  it.each([
-    [Alignment.LAWFUL, LandName.PLAINS, 100],
-    [Alignment.LAWFUL, LandName.VOLCANO, 80],
-    [Alignment.LAWFUL, LandName.MOUNTAINS, 130],
-    [Alignment.CHAOTIC, LandName.PLAINS, 100],
-    [Alignment.CHAOTIC, LandName.VOLCANO, 200],
-    [Alignment.CHAOTIC, LandName.MOUNTAINS, 50],
-    [Alignment.NEUTRAL, LandName.PLAINS, 100],
-    [Alignment.NEUTRAL, LandName.VOLCANO, 100],
-    [Alignment.NEUTRAL, LandName.MOUNTAINS, 100],
-  ])(
-    `Calculate income with land alignment penalty based on player's alignment`,
-    (playerAlignment: AlignmentType, land, expected) => {
-      const player = getPlayer(playerAlignment);
-
-      addPlayerToGameState(gameStateStub, player, 'human');
-
-      // add different type land in the stronghold radius to demonstrate different income calculations
-      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(land);
-      Object.assign(
-        gameStateStub,
-        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 4, col: 4 })
-      );
-      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
-      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
-        buildingFactory(BuildingName.STRONGHOLD),
-      ];
-
-      const income = calculateIncome(gameStateStub);
-      expect(income).toBe(expected);
-    }
-  );
-
-  it.each([
-    [Alignment.LAWFUL, 100, 80], // CORRUPTED has negative effect
-    [Alignment.NEUTRAL, 100, 100], // CORRUPTED has NO effect
-    [Alignment.CHAOTIC, 100, 200], // CORRUPTED has positive effect
+    [Alignment.LAWFUL, 598, 578], // CORRUPTED has negative effect
+    [Alignment.NEUTRAL, 598, 598], // CORRUPTED has NO effect
+    [Alignment.CHAOTIC, 502, 592], // CORRUPTED has positive effect
   ])(
     'CORRUPTED Land treated as CHAOTIC Land type and has affect for %s player',
     (pAlignment: AlignmentType, incomeBefore: number, incomeAfter: number) => {
@@ -185,4 +96,50 @@ describe('Calculate Income', () => {
       expect(income).toBe(incomeAfter); // treated as CHAOTIC Land type
     }
   );
+
+  it('Land with DEED_OF_RECLAMATION effect treated as players land and generate income', () => {
+    const homeLand: LandPosition = { row: 3, col: 3 };
+    gameStateStub.map = generateMockMap(getMapDimensions(gameStateStub), Alignment.NEUTRAL, 100);
+    addPlayerToGameState(gameStateStub, getPlayer(Alignment.NEUTRAL), 'human');
+    gameStateStub.players[0].vault = 1000000;
+    construct(gameStateStub, BuildingName.STRONGHOLD, homeLand);
+
+    expect(getPlayerLands(gameStateStub)).toHaveLength(7);
+    /********** VERIFY INCOME ************/
+    expect(calculateIncome(gameStateStub)).toBe(700);
+    /************************************/
+
+    const deedOfReclamation = itemFactory(TreasureName.DEED_OF_RECLAMATION);
+    Object.assign(
+      gameStateStub,
+      addPlayerEmpireTreasure(gameStateStub, gameStateStub.turnOwner, deedOfReclamation)
+    );
+    const farLand: LandPosition = { row: 0, col: 0 };
+    expect(getLandOwner(gameStateStub, farLand)).toBe(NO_PLAYER.id);
+    expect(calculateHexDistance(getMapDimensions(gameStateStub), homeLand, farLand)).toBe(5);
+    invokeItem(gameStateStub, deedOfReclamation.id, farLand);
+
+    /********** VERIFY INCOME ************/
+    expect(calculateIncome(gameStateStub)).toBe(700 + 100);
+    /************************************/
+  });
+
+  describe('Corner cases', () => {
+    it('No land owned', () => {
+      addPlayerToGameState(gameStateStub, PREDEFINED_PLAYERS[0], 'human');
+      expect(getPlayerLands(gameStateStub)).toHaveLength(0);
+      expect(calculateIncome(gameStateStub)).toBe(0);
+    });
+
+    it('No owned strongholds', () => {
+      addPlayerToGameState(gameStateStub, PREDEFINED_PLAYERS[0], 'human');
+      Object.assign(
+        gameStateStub,
+        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 5, col: 5 })
+      );
+      expect(getPlayerLands(gameStateStub)).toHaveLength(1);
+
+      expect(calculateIncome(gameStateStub)).toBe(0);
+    });
+  });
 });

@@ -1,4 +1,4 @@
-import { getPlayerLands } from '../../selectors/playerSelectors';
+import { getPlayerLands } from '../../selectors/landSelectors';
 import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { getBuildingInfo } from '../../domain/building/buildingRepository';
 

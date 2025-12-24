@@ -3,6 +3,7 @@ import {
   getLand,
   getLandOwner,
   getTilesInRadius,
+  hasBuilding,
 } from '../../selectors/landSelectors';
 import { addPlayerLand, removeLandEffect, removePlayerLand } from '../../systems/gameStateActions';
 import { getTurnOwner } from '../../selectors/playerSelectors';
@@ -44,7 +45,7 @@ export const changeOwner = (gameState: GameState): void => {
     // trying to find any other owners
     const neighbourLands = getTilesInRadius(getMapDimensions(updatedState), land.mapPos, 1);
     const nearestStronghold = neighbourLands.find((l) =>
-      getLand(updatedState, l).buildings?.some((b) => b.type === BuildingName.STRONGHOLD)
+      hasBuilding(getLand(updatedState, l), BuildingName.STRONGHOLD)
     );
     if (nearestStronghold) {
       const newLandOwnerId = getLandOwner(updatedState, nearestStronghold);

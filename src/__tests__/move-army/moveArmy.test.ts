@@ -2,10 +2,12 @@ import { getLandId } from '../../state/map/land/LandId';
 import {
   getLand,
   getLandOwner,
+  getPlayerLands,
   getTilesInRadius,
   hasActiveEffect,
+  hasBuilding,
 } from '../../selectors/landSelectors';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addPlayerLand, updateLandEffect } from '../../systems/gameStateActions';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
@@ -53,9 +55,7 @@ describe('Move Army', () => {
     testTurnManagement.waitStartPhaseComplete();
 
     // createDefaultGameStateStub place Homeland Stronghold by default
-    homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
-    )!;
+    homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     construct(gameStateStub, BuildingName.BARRACKS, barracksPos);

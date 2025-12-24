@@ -5,9 +5,9 @@ import Avatar from '../avatars/Avatar';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-
 import { getLandId } from '../../state/map/land/LandId';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayerLands } from '../../selectors/landSelectors';
 import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
 
 interface PlayerSummaryProps {

@@ -1,5 +1,5 @@
 import { getLandId } from '../../state/map/land/LandId';
-import { getPlayerLands } from '../../selectors/playerSelectors';
+import { getPlayerLands } from '../../selectors/landSelectors';
 import { decrementEffectDurations } from '../../systems/effectActions';
 import { armyFactory } from '../../factories/armyFactory';
 

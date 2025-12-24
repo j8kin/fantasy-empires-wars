@@ -1,11 +1,16 @@
 import { findArmyById, getArmiesAtPosition } from '../../selectors/armySelectors';
 import {
-  getPlayerLands,
   getTreasureItem,
   getTreasureItemById,
   getTurnOwner,
 } from '../../selectors/playerSelectors';
-import { getLand, hasActiveEffect } from '../../selectors/landSelectors';
+import {
+  calculateHexDistance,
+  getLand,
+  getLandOwner,
+  getPlayerLands,
+  hasActiveEffect,
+} from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';
 import { regularsFactory } from '../../factories/regularsFactory';
@@ -13,11 +18,13 @@ import { itemFactory } from '../../factories/treasureFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { invokeItem } from '../../map/magic/invokeItem';
 import { castSpell } from '../../map/magic/castSpell';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { EffectKind } from '../../types/Effect';
 import { SpellName } from '../../types/Spell';
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { TreasureName } from '../../types/Treasures';
 import { Alignment } from '../../types/Alignment';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { Item, TreasureType } from '../../types/Treasures';
@@ -550,6 +557,102 @@ describe('invokeItems', () => {
       expect(revealedLands).toHaveLength(4);
       expect(revealedLands.every((l) => l.effects.length === 1)).toBe(true);
       expect(revealedLands.every((l) => l.effects[0].rules.duration === 2)).toBe(true);
+    });
+  });
+
+  // test that DEED_OF_RECLAMATION effect gone when the opponent occupies land tested in MoveArmy.test.ts
+  describe('Use DEED_OF_RECLAMATION', () => {
+    beforeEach(() => {
+      treasureItem = addTreasureItemToPlayer(TreasureName.DEED_OF_RECLAMATION)!;
+    });
+
+    it('should change ownership of neutral land to player', () => {
+      const landPos: LandPosition = { row: 0, col: 0 };
+      expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
+
+      /************** USE DEED_OF_RECLAMATION *********************/
+      invokeItem(gameStateStub, treasureItem.id, landPos);
+      /************************************************************/
+      expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
+      const land = getLand(gameStateStub, landPos);
+      expect(hasActiveEffect(land, TreasureName.DEED_OF_RECLAMATION)).toBeTruthy();
+      expect(land.effects[0].rules.duration).toBe(0);
+      expect(land.effects[0].rules.type).toBe(EffectKind.PERMANENT);
+    });
+
+    it('lands with DEED_OF_RECLAMATION treated as non-hostile land and no Attrition Penalty to the players army', () => {
+      jest.useFakeTimers();
+
+      const testTurnManagement = new TestTurnManagement(gameStateStub);
+      testTurnManagement.startNewTurn(gameStateStub);
+      testTurnManagement.waitStartPhaseComplete();
+
+      /************** NEUTRAL LAND FAR FROM HOMELAND *********************/
+      const landPos: LandPosition = { row: 0, col: 0 };
+      expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
+      const homeland = getPlayerLands(gameStateStub)[0];
+      expect(
+        calculateHexDistance(getMapDimensions(gameStateStub), homeland.mapPos, landPos)
+      ).toBeGreaterThan(2);
+      /***** PLACE PLAYER's army ********/
+      placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR, 120), gameStateStub, landPos);
+
+      /************** USE DEED_OF_RECLAMATION *********************/
+      invokeItem(gameStateStub, treasureItem.id, landPos);
+      /************************************************************/
+
+      testTurnManagement.makeNTurns(10);
+
+      // effect still exists
+      const effectedLand = getLand(gameStateStub, landPos);
+      expect(hasActiveEffect(effectedLand, TreasureName.DEED_OF_RECLAMATION)).toBeTruthy();
+      expect(effectedLand.effects[0].rules.type).toBe(EffectKind.PERMANENT);
+      expect(effectedLand.effects[0].rules.duration).toBe(0);
+
+      /******** ARMY EXISTS and no Attrition Penalty ********/
+      const army = getArmiesAtPosition(gameStateStub, landPos);
+      expect(army).toHaveLength(1);
+      expect(army[0].regulars[0].count).toBe(120);
+      expect(army[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
+
+      jest.useRealTimers();
+    });
+
+    it('should have no affect on players land', () => {
+      const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
+
+      /************** USE DEED_OF_RECLAMATION *********************/
+      invokeItem(gameStateStub, treasureItem.id, homelandPos);
+      /************************************************************/
+      expect(
+        hasActiveEffect(getLand(gameStateStub, homelandPos), TreasureName.DEED_OF_RECLAMATION)
+      ).toBeFalsy();
+    });
+
+    it('should have no affect on opponent land', () => {
+      expect(getLandOwner(gameStateStub, opponentLand)).not.toBe(gameStateStub.turnOwner);
+      /************** USE DEED_OF_RECLAMATION *********************/
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+      expect(
+        hasActiveEffect(getLand(gameStateStub, opponentLand), TreasureName.DEED_OF_RECLAMATION)
+      ).toBeFalsy();
+    });
+  });
+
+  describe('Use HOURGLASS_OF_DELAY', () => {
+    beforeEach(() => {
+      treasureItem = addTreasureItemToPlayer(TreasureName.HOURGLASS_OF_DELAY)!;
+    });
+
+    it('should be added to the land', () => {
+      /************** USE HOURGLASS_OF_DELAY *********************/
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+      const land = getLand(gameStateStub, opponentLand);
+      expect(hasActiveEffect(land, TreasureName.HOURGLASS_OF_DELAY)).toBeTruthy();
+      expect(land.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
+      expect(land.effects[0].rules.duration).toBe(1);
     });
   });
 });

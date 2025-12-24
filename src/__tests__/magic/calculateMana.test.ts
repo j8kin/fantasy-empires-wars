@@ -1,10 +1,9 @@
-import { getLand } from '../../selectors/landSelectors';
-import { getPlayerLands } from '../../selectors/playerSelectors';
+import { getLand, getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
 import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { relictFactory } from '../../factories/treasureFactory';
 import { getManaSource } from '../../domain/mana/manaSource';
-import { getSpecialLandKinds } from '../../domain/land/landQueries';
+import { getSpecialLandKinds } from '../../domain/land/landRelationships';
 import { getLandById } from '../../domain/land/landRepository';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { Mana, MAX_MANA } from '../../types/Mana';
@@ -97,7 +96,7 @@ describe('Calculate Mana', () => {
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
           const homeLand = getPlayerLands(gameStateStub).find((l) =>
-            l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
+            hasBuilding(l, BuildingName.STRONGHOLD)
           )!;
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 2 }; // outside player land
           getLand(gameStateStub, specialLand).land = getLandById(LandKind);
@@ -137,7 +136,7 @@ describe('Calculate Mana', () => {
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
           const homeLandPlayer2 = getPlayerLands(gameStateStub, PREDEFINED_PLAYERS[13].id).find(
-            (l) => l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
+            (l) => hasBuilding(l, BuildingName.STRONGHOLD)
           )!;
           const specialLand = {
             row: homeLandPlayer2.mapPos.row,
@@ -185,7 +184,7 @@ describe('Calculate Mana', () => {
           gameStateStub = createGameStateStub({ gamePlayers: players });
 
           const homeLand = getPlayerLands(gameStateStub).find((l) =>
-            l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
+            hasBuilding(l, BuildingName.STRONGHOLD)
           )!;
 
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
@@ -282,7 +281,7 @@ describe('Calculate Mana', () => {
     );
 
     const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
+      hasBuilding(l, BuildingName.STRONGHOLD)
     )!;
 
     getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandName.VOLCANO); // this should add red mana to player 0

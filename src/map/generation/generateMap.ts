@@ -1,8 +1,12 @@
 import { getLandId } from '../../state/map/land/LandId';
 import { getTilesInRadius } from '../../selectors/landSelectors';
 import { getLandById } from '../../domain/land/landRepository';
-import { getMainSpecialLandKinds, getRegularLandKinds } from '../../domain/land/landQueries';
-import { getSurroundingLands, getNearSpecialLandKinds } from '../../domain/land/landRelationships';
+import {
+  getSurroundingLands,
+  getNearSpecialLandKinds,
+  getMainSpecialLandKinds,
+  getRegularLandKinds,
+} from '../../domain/land/landRelationships';
 import { getRandomElement } from '../../domain/utils/random';
 import { LandName } from '../../types/Land';
 

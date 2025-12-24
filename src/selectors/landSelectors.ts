@@ -1,10 +1,5 @@
 import { getLandId } from '../state/map/land/LandId';
-import {
-  getPlayer,
-  getPlayerLands,
-  getPlayersByDiplomacy,
-  hasTreasureByPlayer,
-} from './playerSelectors';
+import { getPlayer, getPlayersByDiplomacy, hasTreasureByPlayer } from './playerSelectors';
 import { getArmiesAtPosition, getArmiesByPlayer, getPosition } from './armySelectors';
 import { getPlayerColorValue } from '../domain/ui/playerColors';
 import { getRandomElement } from '../domain/utils/random';
@@ -21,8 +16,8 @@ import type { LandPosition } from '../state/map/land/LandPosition';
 import type { LandState } from '../state/map/land/LandState';
 import type { LandType } from '../types/Land';
 import type { BuildingType } from '../types/Building';
-import type { AlignmentType } from '../types/Alignment';
 import type { Effect, EffectSourceId } from '../types/Effect';
+import type { AlignmentType } from '../types/Alignment';
 
 export const getLand = (state: GameState, landPos: LandPosition) =>
   state.map.lands[getLandId(landPos)];
@@ -132,6 +127,23 @@ export const hasActiveEffect = (
   );
 };
 
+export const hasBuilding = (state: LandState, buildingType: BuildingType): boolean => {
+  return state.buildings.some((b) => b.type === buildingType);
+};
+
+/*
+ * There are three type of getLands:
+ * 1. getPlayerLands - return all lands controlled by player (realm + hostile)
+ * 2. getRealmLands - return all lands in STRONGHOLD radius or have DEED_OF_RECLAMATION effect
+ * 3. getHostileLands - return all lands controlled by player or allies outside owners STRONGHOLD radius
+ */
+export const getPlayerLands = (state: GameState, playerId?: string): LandState[] => {
+  return getPlayer(state, playerId ?? state.turnOwner)
+    .landsOwned.values()
+    .toArray()
+    .map((landId) => state.map.lands[landId]);
+};
+
 /**
  * return all lands controlled by all strongholds of the player or have DEED_OF_RECLAMATION effect
  **/
@@ -141,13 +153,12 @@ export const getRealmLands = (state: GameState): LandState[] => {
   const lands = getPlayerLands(state);
   // add all lands with DEED_OF_RECLAMATION effect
   lands.forEach((l) => {
-    if (l.effects.some((e) => e.sourceId === TreasureName.DEED_OF_RECLAMATION)) {
+    if (hasActiveEffect(l, TreasureName.DEED_OF_RECLAMATION)) {
       realm.add(l);
     }
   });
-  const playerStrongholds = lands.filter((l) =>
-    l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
-  );
+  const playerStrongholds = lands.filter((l) => hasBuilding(l, BuildingName.STRONGHOLD));
+
   playerStrongholds.forEach((s) =>
     getTilesInRadius(state.map.dimensions, s.mapPos, 1).forEach((pos) =>
       realm.add(getLand(state, pos))
@@ -180,6 +191,7 @@ export const getHostileLands = (gameState: GameState): LandState[] => {
   alliesLands.forEach((land) => hostileLands.delete(land));
   return hostileLands.values().toArray();
 };
+
 export const calculateHexDistance = (
   dimensions: MapDimensions,
   startPoint: LandPosition,
@@ -298,6 +310,7 @@ export const getTilesInRadius = (
   }
   return excludeCenter ? excludePosition(tilesInRadius, center) : tilesInRadius;
 };
+
 const isValidPosition = (dimensions: MapDimensions, pos: LandPosition): boolean => {
   const { rows, cols } = dimensions;
   if (pos.row < 0 || pos.row >= rows) return false;
@@ -309,7 +322,9 @@ const getValidNeighbors = (dimensions: MapDimensions, pos: LandPosition): LandPo
   return getHexNeighbors(pos).filter((pos) => isValidPosition(dimensions, pos));
 };
 
-// Get neighbors for hexagonal grid (offset coordinates)
+/** Get neighbors for hexagonal grid (offset coordinates)
+ * @param pos - position to get neighbors for
+ */
 const getHexNeighbors = (pos: LandPosition): LandPosition[] => {
   const isEvenRow = pos.row % 2 === 0;
 

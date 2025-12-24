@@ -1,7 +1,12 @@
 import { getLandId } from '../../state/map/land/LandId';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { findArmyById, getArmiesAtPosition } from '../../selectors/armySelectors';
-import { getLand, getLandInfo, hasActiveEffect } from '../../selectors/landSelectors';
+import {
+  getLand,
+  getLandInfo,
+  getPlayerLands,
+  hasActiveEffect,
+} from '../../selectors/landSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';

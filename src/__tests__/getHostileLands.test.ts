@@ -1,6 +1,10 @@
 import { getLandId } from '../state/map/land/LandId';
-import { getPlayerLands } from '../selectors/playerSelectors';
-import { getHostileLands, getLandOwner } from '../selectors/landSelectors';
+import {
+  getHostileLands,
+  getLandOwner,
+  getPlayerLands,
+  hasBuilding,
+} from '../selectors/landSelectors';
 import { heroFactory } from '../factories/heroFactory';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { BuildingName } from '../types/Building';
@@ -19,7 +23,7 @@ describe('getHostileLands', () => {
   beforeEach(() => {
     gameStateStub = createGameStateStub({ nPlayers: 2 });
     homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
+      hasBuilding(l, BuildingName.STRONGHOLD)
     )!.mapPos;
   });
   it('return no hostile lans when all armies are near strongholds', () => {

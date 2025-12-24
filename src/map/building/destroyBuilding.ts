@@ -1,5 +1,10 @@
 import { getLandId } from '../../state/map/land/LandId';
-import { getLand, getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
+import {
+  getLand,
+  getLandOwner,
+  getTilesInRadius,
+  hasBuilding,
+} from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { hasLand } from '../../systems/playerActions';
@@ -24,9 +29,7 @@ import type { LandPosition } from '../../state/map/land/LandPosition';
 export const destroyBuilding = (gameState: GameState, landPos: LandPosition): GameState => {
   const player = getLandOwner(gameState, landPos);
   const landId = getLandId(landPos);
-  const isStronghold = gameState.map.lands[landId].buildings.some(
-    (b) => b.type === BuildingName.STRONGHOLD
-  );
+  const isStronghold = hasBuilding(gameState.map.lands[landId], BuildingName.STRONGHOLD);
 
   let updatedState = clearLandBuildings(gameState, landPos); // delete all buildings since only one could be on the land (todo: think about WALL it could be an additional building for now destroy all)
 
@@ -54,7 +57,7 @@ export const destroyBuilding = (gameState: GameState, landPos: LandPosition): Ga
       } else {
         // no army look for nearest stronghold
         const nearestStrongholds = getTilesInRadius(getMapDimensions(updatedState), l, 1).filter(
-          (l) => getLand(updatedState, l).buildings?.some((b) => b.type === BuildingName.STRONGHOLD)
+          (l) => hasBuilding(getLand(updatedState, l), BuildingName.STRONGHOLD)
         );
         if (nearestStrongholds && nearestStrongholds.length > 0) {
           if (!nearestStrongholds.some((s) => hasLand(owner, s))) {

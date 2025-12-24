@@ -1,5 +1,5 @@
-import { getLand } from '../../selectors/landSelectors';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getLand, getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import {
   findArmyByHero,
   findLandByHeroName,
@@ -201,7 +201,7 @@ describe('Hero Quest', () => {
     testTurnManagement.waitStartPhaseComplete();
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
+      hasBuilding(l, BuildingName.STRONGHOLD)
     )!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
@@ -269,7 +269,7 @@ describe('Hero Quest', () => {
     testTurnManagement.waitStartPhaseComplete();
     // Initial condition: Recruiting 3 heroes of the same type in barracks
     const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
+      hasBuilding(l, BuildingName.STRONGHOLD)
     )!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };

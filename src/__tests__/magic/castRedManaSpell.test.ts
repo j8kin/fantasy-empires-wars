@@ -1,6 +1,6 @@
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
-import { getLand } from '../../selectors/landSelectors';
+import { getLand, getPlayerLands } from '../../selectors/landSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { levelUpHero } from '../../systems/unitsActions';

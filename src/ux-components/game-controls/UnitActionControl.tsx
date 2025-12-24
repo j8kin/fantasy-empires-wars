@@ -7,15 +7,15 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
 import { getLandId } from '../../state/map/land/LandId';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import {
-  getPosition,
-  isMoving,
   findAllHeroesOnMap,
   getArmiesByPlayer,
+  getPosition,
+  isMoving,
 } from '../../selectors/armySelectors';
 import { hasAvailableSlot } from '../../selectors/buildingSelectors';
-
+import { getPlayerLands } from '../../selectors/landSelectors';
 import { ButtonName } from '../../types/ButtonName';
 
 const UnitActionControl: React.FC = () => {
