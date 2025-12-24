@@ -14,6 +14,7 @@ import ignatius from '../assets/avatars/ignatius.png';
 import ember from '../assets/avatars/ember.png';
 import selene from '../assets/avatars/selene.png';
 import kaer from '../assets/avatars/kaer.png';
+import nullwarden from '../assets/avatars/nullwarden.png';
 
 export const getAvatarImg = (name: string) => {
   switch (name) {
@@ -49,6 +50,8 @@ export const getAvatarImg = (name: string) => {
       return ember;
     case 'kaer':
       return kaer;
+    case 'nullwarden':
+      return nullwarden;
     default:
       return undefined;
   }

@@ -94,6 +94,7 @@ export const levelUpRegulars = (regular: RegularsState, playerAlignment: Alignme
 const baseStatsLevelUpParameters = (unitType: HeroUnitType | RegularUnitType) => {
   switch (unitType) {
     case HeroUnitName.WARSMITH:
+    case HeroUnitName.ZEALOT:
     case RegularUnitName.ORC:
       return { attack: 2.7, defense: 0.6, health: 6, rangeDamage: 2.7, mana: 0 };
     case HeroUnitName.FIGHTER:

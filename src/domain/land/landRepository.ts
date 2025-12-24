@@ -20,6 +20,7 @@ const commonUnitsToRecruit: UnitType[] = [
   HeroUnitName.NECROMANCER,
   // special non-magical Hero recruit only by related player type
   HeroUnitName.WARSMITH,
+  HeroUnitName.ZEALOT,
 ];
 
 /**

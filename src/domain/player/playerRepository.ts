@@ -178,4 +178,15 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     description: 'A fierce sorceress whose burning passion fuels her destructive fire magic.',
     color: 'red',
   },
+  {
+    id: 'nullwarden',
+    name: 'Nullwarden Dravane',
+    alignment: Alignment.LAWFUL,
+    race: 'Human',
+    type: HeroUnitName.ZEALOT,
+    level: 28,
+    description:
+      'Sworn to silence the arcane, Nullwardens fight not for faith, but for a world unchained from magic.',
+    color: 'perl-white',
+  },
 ];

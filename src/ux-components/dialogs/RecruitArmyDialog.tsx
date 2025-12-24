@@ -129,7 +129,9 @@ const RecruitArmyDialog: React.FC = () => {
       (u) =>
         unitsBaseStats(u).recruitedIn === recruitBuilding.type &&
         (u !== HeroUnitName.WARSMITH ||
-          getTurnOwner(gameState).playerProfile.type === HeroUnitName.WARSMITH)
+          getTurnOwner(gameState).playerProfile.type === HeroUnitName.WARSMITH) &&
+        (u !== HeroUnitName.ZEALOT ||
+          getTurnOwner(gameState).playerProfile.type === HeroUnitName.ZEALOT)
     )
     .map((unit) => typeToRecruitProps(unit))
     .sort((a, b) => sortArmyUnits(a) - sortArmyUnits(b));

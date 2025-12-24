@@ -16,8 +16,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 300,
         maintainCost: 2,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Local hands risen in necessity, their resolve rough but unbroken against Orrivane’s growing dread.',
+        description: getDescription(unitType),
       };
     case RegularUnitName.WARRIOR:
       return {
@@ -29,8 +28,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 500,
         maintainCost: 4,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Hardened veterans of countless skirmishes, these soldiers fight for gold, glory, or the fragile peace that follows both.',
+        description: getDescription(unitType),
       };
     case RegularUnitName.DWARF:
       return {
@@ -42,8 +40,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 800,
         maintainCost: 5,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Clad in runed steel and bound by oath, Dwarves hold the line like mountains given form—unyielding, proud, and slow to fall.',
+        description: getDescription(unitType),
       };
     case RegularUnitName.UNDEAD:
       return {
@@ -55,8 +52,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 800,
         maintainCost: 7,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Raised beyond fear and freed from breath, the Undead march in silence—enduring not by life, but refusal to fall.',
+        description: getDescription(unitType),
       };
     case RegularUnitName.ORC:
       return {
@@ -68,8 +64,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 600,
         maintainCost: 4.5,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Forged in chaos and fire, Orcs live for the clash of steel—each battle a hymn to their untamed hunger for conquest.',
+        description: getDescription(unitType),
       };
     case RegularUnitName.HALFLING:
       return {
@@ -83,8 +78,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 700,
         maintainCost: 3,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Small in stature, stubborn in spirit—halfling slingers pelt foes with stones and startling courage.',
+        description: getDescription(unitType),
       };
     case RegularUnitName.ELF:
     case RegularUnitName.DARK_ELF:
@@ -99,10 +93,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 2500,
         maintainCost: 5,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          unitType === RegularUnitName.ELF
-            ? 'Silent as moonlight and swift as wind through leaves, Elven archers strike before their foes even sense the bowstring’s whisper.'
-            : 'Born beneath shadowed groves, Dark Elves blend beauty with cruelty—their arrows carry both poison and pride.',
+        description: getDescription(unitType),
       };
     // War Machines
     // Catapult do not damage anything only destroy buildings/walls
@@ -118,8 +109,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 1500,
         maintainCost: 150,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Ancient engines of precision death, Ballistae pierce armor and arrogance alike with thunderous finality.',
+        description: getDescription(unitType),
       };
     case RegularUnitName.CATAPULT:
       return {
@@ -131,13 +121,13 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 1000,
         maintainCost: 50,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Stone-flingers of ruin, Catapults reduce fortresses to dust and kings to memory—patient, implacable, and deaf to mercy.',
+        description: getDescription(unitType),
       };
     // HEROES
     // Human warrior hero
     case HeroUnitName.WARSMITH:
     case HeroUnitName.FIGHTER:
+    case HeroUnitName.ZEALOT:
       return {
         attack: 30,
         defense: 3,
@@ -149,10 +139,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 1500,
         maintainCost: 100,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          unitType === HeroUnitName.FIGHTER
-            ? 'Champions of the common folk, Fighters carry the banners of law and honor into every battle, their courage as sharp as their blades.'
-            : 'Forged in the fires of rebellion, Warsmiths temper chaos into strategy—each strike a protest against tyranny and weakness.',
+        description: getDescription(unitType),
       };
     // Dwarf hero
     case HeroUnitName.HAMMER_LORD:
@@ -167,8 +154,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 1500,
         maintainCost: 100,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Bearing hammers that have shattered both stone and legend, Hammerlords are dwarven paragons of strength and unyielding resolve.',
+        description: getDescription(unitType),
       };
     // Orc hero
     case HeroUnitName.OGR:
@@ -183,8 +169,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 1500,
         maintainCost: 100,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          'Once feared as destroyers, the Ogr champions now fight with grim purpose—seeking to silence all who dare wield the arcane.',
+        description: getDescription(unitType),
       };
     // Elf hero
     case HeroUnitName.SHADOW_BLADE:
@@ -200,10 +185,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 1500,
         maintainCost: 100,
         recruitedIn: BuildingName.BARRACKS,
-        description:
-          unitType === HeroUnitName.RANGER
-            ? 'Keepers of forgotten groves, Rangers walk unseen between root and shadow, striking swiftly to preserve the wild balance of Orrivane.'
-            : 'A silent killer born of twilight, where loyalty is as thin as moonlight.',
+        description: getDescription(unitType),
       };
     // Mage Heroes
     // Pyromancer - produce red mana
@@ -219,8 +201,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 2500,
         maintainCost: 100,
         recruitedIn: BuildingName.RED_MAGE_TOWER,
-        description:
-          'Born of embers and fury, Pyromancers command the flames of creation—each spell a hymn to passion and ruin.',
+        description: getDescription(unitType),
       };
     // Cleric - produce white mana
     case HeroUnitName.CLERIC:
@@ -235,8 +216,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 2500,
         maintainCost: 100,
         recruitedIn: BuildingName.WHITE_MAGE_TOWER,
-        description:
-          'Guided by celestial whispers, Clerics mend the wounds of body and spirit alike, their faith a shield against the growing dark.',
+        description: getDescription(unitType),
       };
     // Druid - produce green mana
     case HeroUnitName.DRUID:
@@ -251,8 +231,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 2500,
         maintainCost: 100,
         recruitedIn: BuildingName.GREEN_MAGE_TOWER,
-        description:
-          'Bound to the heartbeat of the wild, Druids channel Orrivane’s living breath—healing, nurturing, and unleashing nature’s wrath.',
+        description: getDescription(unitType),
       };
     // Enchanter - produce blue mana
     case HeroUnitName.ENCHANTER:
@@ -267,8 +246,7 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 2500,
         maintainCost: 100,
         recruitedIn: BuildingName.BLUE_MAGE_TOWER,
-        description:
-          'Masters of unseen threads, Enchanters weave illusions and insight from pure thought, bending truth like light through a prism.',
+        description: getDescription(unitType),
       };
     // Necromancer - produce black mana
     case HeroUnitName.NECROMANCER:
@@ -283,8 +261,58 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
         recruitCost: 2500,
         maintainCost: 100,
         recruitedIn: BuildingName.BLACK_MAGE_TOWER,
-        description:
-          'Whisperers of death’s secrets, Necromancers blur the line between decay and command, binding restless souls to their grim will.',
+        description: getDescription(unitType),
       };
+  }
+};
+
+const getDescription = (unitType: UnitType): string => {
+  switch (unitType) {
+    // REGULARS
+    case RegularUnitName.WARD_HANDS:
+      return 'Local hands risen in necessity, their resolve rough but unbroken against Orrivane’s growing dread.';
+    case RegularUnitName.WARRIOR:
+      return 'Hardened veterans of countless skirmishes, these soldiers fight for gold, glory, or the fragile peace that follows both.';
+    case RegularUnitName.DWARF:
+      return 'Clad in runed steel and bound by oath, Dwarves hold the line like mountains given form—unyielding, proud, and slow to fall.';
+    case RegularUnitName.UNDEAD:
+      return 'Raised beyond fear and freed from breath, the Undead march in silence—enduring not by life, but refusal to fall.';
+    case RegularUnitName.ORC:
+      return 'Forged in chaos and fire, Orcs live for the clash of steel—each battle a hymn to their untamed hunger for conquest.';
+    case RegularUnitName.HALFLING:
+      return 'Small in stature, stubborn in spirit—halfling slingers pelt foes with stones and startling courage.';
+    case RegularUnitName.ELF:
+      return 'Silent as moonlight and swift as wind through leaves, Elven archers strike before their foes even sense the bowstring’s whisper.';
+    case RegularUnitName.DARK_ELF:
+      return 'Born beneath shadowed groves, Dark Elves blend beauty with cruelty—their arrows carry both poison and pride.';
+    case RegularUnitName.BALLISTA:
+      return 'Ancient engines of precision death, Ballistae pierce armor and arrogance alike with thunderous finality.';
+    case RegularUnitName.CATAPULT:
+      return 'Stone-flingers of ruin, Catapults reduce fortresses to dust and kings to memory—patient, implacable, and deaf to mercy.';
+    // HEROES
+    case HeroUnitName.WARSMITH:
+      return 'Forged in the fires of rebellion, Warsmiths temper chaos into strategy—each strike a protest against tyranny and weakness.';
+    case HeroUnitName.FIGHTER:
+      return 'Champions of the common folk, Fighters carry the banners of law and honor into every battle, their courage as sharp as their blades.';
+    case HeroUnitName.ZEALOT:
+      return 'Sworn to silence the arcane, Nullwardens fight not for faith, but for a world unchained from magic.';
+    case HeroUnitName.HAMMER_LORD:
+      return 'Bearing hammers that have shattered both stone and legend, Hammerlords are dwarven paragons of strength and unyielding resolve.';
+    case HeroUnitName.OGR:
+      return 'Once feared as destroyers, the Ogr champions now fight with grim purpose—seeking to silence all who dare wield the arcane.';
+    case HeroUnitName.SHADOW_BLADE:
+      return 'A silent killer born of twilight, where loyalty is as thin as moonlight.';
+    case HeroUnitName.RANGER:
+      return 'Keepers of forgotten groves, Rangers walk unseen between root and shadow, striking swiftly to preserve the wild balance of Orrivane.';
+    case HeroUnitName.PYROMANCER:
+      return 'Born of embers and fury, Pyromancers command the flames of creation—each spell a hymn to passion and ruin.';
+    case HeroUnitName.CLERIC:
+      return 'Guided by celestial whispers, Clerics mend the wounds of body and spirit alike, their faith a shield against the growing dark.';
+    case HeroUnitName.DRUID:
+      return 'Bound to the heartbeat of the wild, Druids channel Orrivane’s living breath—healing, nurturing, and unleashing nature’s wrath.';
+    case HeroUnitName.ENCHANTER:
+      return 'Masters of unseen threads, Enchanters weave illusions and insight from pure thought, bending truth like light through a prism.';
+    case HeroUnitName.NECROMANCER:
+      return 'Whisperers of death’s secrets, Necromancers blur the line between decay and command, binding restless souls to their grim will.';
   }
 };

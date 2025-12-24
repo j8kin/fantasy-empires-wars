@@ -1,5 +1,6 @@
 export type PlayerColorName =
   | 'white' // use for neutral Lands which no one controls
+  | 'perl-white'
   | 'blue'
   | 'red'
   | 'green'
@@ -18,6 +19,7 @@ export interface PlayerColor {
 
 export const PLAYER_COLORS: PlayerColor[] = [
   { name: 'blue', value: '#4A90E2', displayName: 'Blue' },
+  { name: 'perl-white', value: '#EFE8D8', displayName: 'Perl White' },
   { name: 'red', value: '#C0392B', displayName: 'Red' },
   { name: 'green', value: '#27AE60', displayName: 'Green' },
   { name: 'orange', value: '#E67E22', displayName: 'Orange' },
