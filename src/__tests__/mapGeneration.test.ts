@@ -1,10 +1,8 @@
-import { MapDimensions } from '../state/map/MapDimensions';
-import { LandName } from '../types/Land';
-import { getNearSpecialLandKinds } from '../domain/land/landRelationships';
-import { getMainSpecialLandKinds } from '../domain/land/landQueries';
-
+import { getMainSpecialLandKinds, getNearSpecialLandKinds } from '../domain/land/landRelationships';
 import { generateMap } from '../map/generation/generateMap';
+import { LandName } from '../types/Land';
 import { defaultBattlefieldSizeStub } from './utils/createGameStateStub';
+import type { MapDimensions } from '../state/map/MapDimensions';
 
 describe('Map Generation', () => {
   it.each([

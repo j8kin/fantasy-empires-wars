@@ -9,7 +9,7 @@ import {
   hasActiveEffect,
   hasBuilding,
 } from '../../selectors/landSelectors';
-import { getRegularLandKinds } from '../../domain/land/landQueries';
+import { getRegularLandKinds } from '../../domain/land/landRelationships';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { SpellName, SpellTarget } from '../../types/Spell';

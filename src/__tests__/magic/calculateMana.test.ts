@@ -3,7 +3,7 @@ import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { relictFactory } from '../../factories/treasureFactory';
 import { getManaSource } from '../../domain/mana/manaSource';
-import { getSpecialLandKinds } from '../../domain/land/landQueries';
+import { getSpecialLandKinds } from '../../domain/land/landRelationships';
 import { getLandById } from '../../domain/land/landRepository';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { Mana, MAX_MANA } from '../../types/Mana';

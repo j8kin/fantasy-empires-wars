@@ -2,7 +2,7 @@ import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelecto
 import { getAllHeroes } from '../../selectors/armySelectors';
 import { updatePlayerMana } from '../../systems/gameStateActions';
 import { getManaSource } from '../../domain/mana/manaSource';
-import { getSpecialLandKinds } from '../../domain/land/landQueries';
+import { getSpecialLandKinds } from '../../domain/land/landRelationships';
 import { getRealmLands } from '../../selectors/landSelectors';
 import { TreasureName } from '../../types/Treasures';
 import type { GameState } from '../../state/GameState';

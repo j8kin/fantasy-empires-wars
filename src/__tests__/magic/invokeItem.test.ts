@@ -560,6 +560,7 @@ describe('invokeItems', () => {
     });
   });
 
+  // test that DEED_OF_RECLAMATION effect gone when the opponent occupies land tested in MoveArmy.test.ts
   describe('Use DEED_OF_RECLAMATION', () => {
     beforeEach(() => {
       treasureItem = addTreasureItemToPlayer(TreasureName.DEED_OF_RECLAMATION)!;
@@ -615,6 +616,43 @@ describe('invokeItems', () => {
       expect(army[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
 
       jest.useRealTimers();
+    });
+
+    it('should have no affect on players land', () => {
+      const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
+
+      /************** USE DEED_OF_RECLAMATION *********************/
+      invokeItem(gameStateStub, treasureItem.id, homelandPos);
+      /************************************************************/
+      expect(
+        hasActiveEffect(getLand(gameStateStub, homelandPos), TreasureName.DEED_OF_RECLAMATION)
+      ).toBeFalsy();
+    });
+
+    it('should have no affect on opponent land', () => {
+      expect(getLandOwner(gameStateStub, opponentLand)).not.toBe(gameStateStub.turnOwner);
+      /************** USE DEED_OF_RECLAMATION *********************/
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+      expect(
+        hasActiveEffect(getLand(gameStateStub, opponentLand), TreasureName.DEED_OF_RECLAMATION)
+      ).toBeFalsy();
+    });
+  });
+
+  describe('Use HOURGLASS_OF_DELAY', () => {
+    beforeEach(() => {
+      treasureItem = addTreasureItemToPlayer(TreasureName.HOURGLASS_OF_DELAY)!;
+    });
+
+    it('should be added to the land', () => {
+      /************** USE HOURGLASS_OF_DELAY *********************/
+      invokeItem(gameStateStub, treasureItem.id, opponentLand);
+      /************************************************************/
+      const land = getLand(gameStateStub, opponentLand);
+      expect(hasActiveEffect(land, TreasureName.HOURGLASS_OF_DELAY)).toBeTruthy();
+      expect(land.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
+      expect(land.effects[0].rules.duration).toBe(1);
     });
   });
 });
