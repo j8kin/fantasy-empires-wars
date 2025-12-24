@@ -14,14 +14,11 @@ export const startQuest = (state: GameState, heroName: string, questType: QuestT
 
   // remove hero from the army
   const heroAndArmy = getHero(heroArmy, heroName)!;
-  Object.assign(state, updateArmyInGameState(state, heroAndArmy.updatedArmy));
-
   const questLandPosition = getPosition(heroAndArmy.updatedArmy);
 
-  Object.assign(state, cleanupArmies(state));
-
-  Object.assign(
-    state,
-    addPlayerQuest(state, heroQuestFactory(questType, heroAndArmy.hero, questLandPosition))
+  const updatedState: GameState = addPlayerQuest(
+    cleanupArmies(updateArmyInGameState(state, heroAndArmy.updatedArmy)),
+    heroQuestFactory(questType, heroAndArmy.hero, questLandPosition)
   );
+  Object.assign(state, updatedState);
 };

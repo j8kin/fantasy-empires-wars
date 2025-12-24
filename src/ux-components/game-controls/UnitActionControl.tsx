@@ -19,7 +19,13 @@ import { getPlayerLands } from '../../selectors/landSelectors';
 import { ButtonName } from '../../types/ButtonName';
 
 const UnitActionControl: React.FC = () => {
-  const { addGlowingTile, clearAllGlow, setSelectedLandAction } = useApplicationContext();
+  const {
+    addGlowingTile,
+    clearAllGlow,
+    setSelectedLandAction,
+    setErrorMessagePopupMessage,
+    setShowErrorMessagePopup,
+  } = useApplicationContext();
   const { gameState } = useGameContext();
 
   const handleShowRecruitArmyDialog = useCallback(
@@ -35,15 +41,28 @@ const UnitActionControl: React.FC = () => {
       const recruitmentLands = getPlayerLands(gameState).filter((l) =>
         l.buildings.some((b) => hasAvailableSlot(b))
       );
-
-      setSelectedLandAction('Recruit');
-      // Add glowing to all recruitment lands
-      recruitmentLands.forEach((land) => {
-        const tileId = getLandId(land.mapPos);
-        addGlowingTile(tileId);
-      });
+      if (recruitmentLands.length === 0) {
+        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+          setErrorMessagePopupMessage('No mustering grounds stand ready here.');
+          setShowErrorMessagePopup(true);
+        }
+      } else {
+        setSelectedLandAction('Recruit');
+        // Add glowing to all recruitment lands
+        recruitmentLands.forEach((land) => {
+          const tileId = getLandId(land.mapPos);
+          addGlowingTile(tileId);
+        });
+      }
     },
-    [gameState, clearAllGlow, setSelectedLandAction, addGlowingTile]
+    [
+      gameState,
+      clearAllGlow,
+      setErrorMessagePopupMessage,
+      setShowErrorMessagePopup,
+      setSelectedLandAction,
+      addGlowingTile,
+    ]
   );
 
   const handleShowSendHeroInQuestDialog = useCallback(
@@ -57,12 +76,25 @@ const UnitActionControl: React.FC = () => {
 
       // Get all lands owned by current player that have heroes
       const questLands = findAllHeroesOnMap(gameState).map((r) => r.position);
-
-      setSelectedLandAction('Quest');
-      // Add glowing to all quest lands
-      questLands.forEach((land) => addGlowingTile(getLandId(land)));
+      if (questLands.length === 0) {
+        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+          setErrorMessagePopupMessage('No Hero may be spared for Quest.');
+          setShowErrorMessagePopup(true);
+        }
+      } else {
+        setSelectedLandAction('Quest');
+        // Add glowing to all quest lands
+        questLands.forEach((land) => addGlowingTile(getLandId(land)));
+      }
     },
-    [gameState, clearAllGlow, setSelectedLandAction, addGlowingTile]
+    [
+      gameState,
+      clearAllGlow,
+      setErrorMessagePopupMessage,
+      setShowErrorMessagePopup,
+      setSelectedLandAction,
+      addGlowingTile,
+    ]
   );
 
   const handleShowMoveAmyDialog = useCallback(
@@ -78,14 +110,28 @@ const UnitActionControl: React.FC = () => {
         .filter((army) => !isMoving(army))
         .flatMap(getPosition);
 
-      setSelectedLandAction('MoveArmyFrom');
-      // Add glowing to all army lands
-      armyLands.forEach((land) => {
-        const tileId = getLandId(land);
-        addGlowingTile(tileId);
-      });
+      if (armyLands.length === 0) {
+        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+          setErrorMessagePopupMessage('No armies are ready to march.');
+          setShowErrorMessagePopup(true);
+        }
+      } else {
+        setSelectedLandAction('MoveArmyFrom');
+        // Add glowing to all army lands
+        armyLands.forEach((land) => {
+          const tileId = getLandId(land);
+          addGlowingTile(tileId);
+        });
+      }
     },
-    [addGlowingTile, clearAllGlow, gameState, setSelectedLandAction]
+    [
+      addGlowingTile,
+      clearAllGlow,
+      gameState,
+      setErrorMessagePopupMessage,
+      setSelectedLandAction,
+      setShowErrorMessagePopup,
+    ]
   );
 
   if (gameState == null || getTurnOwner(gameState).playerType !== 'human') return null;
