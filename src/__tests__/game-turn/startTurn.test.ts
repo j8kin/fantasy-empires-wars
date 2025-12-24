@@ -1,11 +1,11 @@
-import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { startTurn } from '../../turn/startTurn';
-import { BuildingName } from '../../types/Building';
 import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
 import { construct } from '../../map/building/construct';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { nextPlayer } from '../../systems/playerActions';
+import { BuildingName } from '../../types/Building';
+import type { GameState } from '../../state/GameState';
 
 describe('Start Turn phase', () => {
   let gameStateStub: GameState;

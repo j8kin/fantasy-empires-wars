@@ -1,5 +1,6 @@
 import { startTurn } from '../turn/startTurn';
 import { endTurn } from '../turn/endTurn';
+import { hasBuilding } from '../selectors/landSelectors';
 import { BuildingName } from '../types/Building';
 import type { GameState } from '../state/GameState';
 import type { MapDimensions } from '../state/map/MapDimensions';
@@ -8,9 +9,7 @@ import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createG
 
 describe('Game Start: add player to map', () => {
   const getStrongholds = (gameState: GameState) =>
-    Object.values(gameState.map.lands).filter((l) =>
-      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
-    );
+    Object.values(gameState.map.lands).filter((l) => hasBuilding(l, BuildingName.STRONGHOLD));
 
   it('turnOwner should be placed on map on Turn 0', () => {
     const gameState = createGameStateStub({

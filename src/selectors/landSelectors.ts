@@ -132,6 +132,10 @@ export const hasActiveEffect = (
   );
 };
 
+export const hasBuilding = (state: LandState, buildingType: BuildingType): boolean => {
+  return state.buildings.some((b) => b.type === buildingType);
+};
+
 /**
  * return all lands controlled by all strongholds of the player or have DEED_OF_RECLAMATION effect
  **/
@@ -141,13 +145,12 @@ export const getRealmLands = (state: GameState): LandState[] => {
   const lands = getPlayerLands(state);
   // add all lands with DEED_OF_RECLAMATION effect
   lands.forEach((l) => {
-    if (l.effects.some((e) => e.sourceId === TreasureName.DEED_OF_RECLAMATION)) {
+    if (hasActiveEffect(l, TreasureName.DEED_OF_RECLAMATION)) {
       realm.add(l);
     }
   });
-  const playerStrongholds = lands.filter((l) =>
-    l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
-  );
+  const playerStrongholds = lands.filter((l) => hasBuilding(l, BuildingName.STRONGHOLD));
+
   playerStrongholds.forEach((s) =>
     getTilesInRadius(state.map.dimensions, s.mapPos, 1).forEach((pos) =>
       realm.add(getLand(state, pos))

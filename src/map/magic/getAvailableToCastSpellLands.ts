@@ -2,7 +2,12 @@ import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer, getPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { getLand, getTilesInRadius, hasActiveEffect } from '../../selectors/landSelectors';
+import {
+  getLand,
+  getTilesInRadius,
+  hasActiveEffect,
+  hasBuilding,
+} from '../../selectors/landSelectors';
 import { getRegularLandKinds } from '../../domain/land/landQueries';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
@@ -25,16 +30,14 @@ export const getAvailableToCastSpellLands = (
     const affectedLands = new Set<string>();
 
     getPlayerLands(gameState)
-      .filter((l) =>
-        l.buildings.some(
-          (b) =>
-            b.type === BuildingName.BLACK_MAGE_TOWER ||
-            b.type === BuildingName.OUTPOST ||
-            b.type === BuildingName.STRONGHOLD
-        )
+      .filter(
+        (l) =>
+          hasBuilding(l, BuildingName.BLACK_MAGE_TOWER) ||
+          hasBuilding(l, BuildingName.OUTPOST) ||
+          hasBuilding(l, BuildingName.STRONGHOLD)
       )
       .forEach((land) => {
-        const isStronghold = land.buildings.some((b) => b.type === BuildingName.STRONGHOLD);
+        const isStronghold = hasBuilding(land, BuildingName.STRONGHOLD);
         getTilesInRadius(
           getMapDimensions(gameState),
           land.mapPos,

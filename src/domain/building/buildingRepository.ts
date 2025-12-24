@@ -83,7 +83,7 @@ export const getAllBuildings = (player: PlayerState): BuildingInfo[] => {
     .map(getBuildingInfo)
     .filter(
       (building) =>
-        !building.id.toString().includes('Mage Tower') ||
+        !isMageTower(building.id) ||
         building.id === BuildingName.BLUE_MAGE_TOWER ||
         (building.id === BuildingName.WHITE_MAGE_TOWER &&
           playerProfile.type === HeroUnitName.CLERIC) ||

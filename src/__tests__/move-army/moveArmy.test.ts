@@ -4,6 +4,7 @@ import {
   getLandOwner,
   getTilesInRadius,
   hasActiveEffect,
+  hasBuilding,
 } from '../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
@@ -53,9 +54,7 @@ describe('Move Army', () => {
     testTurnManagement.waitStartPhaseComplete();
 
     // createDefaultGameStateStub place Homeland Stronghold by default
-    homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
-    )!;
+    homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
 
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     construct(gameStateStub, BuildingName.BARRACKS, barracksPos);

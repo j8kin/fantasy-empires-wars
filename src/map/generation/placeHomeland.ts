@@ -1,6 +1,6 @@
 import { getLandId } from '../../state/map/land/LandId';
 import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
-import { getTilesInRadius } from '../../selectors/landSelectors';
+import { getTilesInRadius, hasBuilding } from '../../selectors/landSelectors';
 import { hasLand } from '../../systems/playerActions';
 import { levelUpHero } from '../../systems/unitsActions';
 import { addArmyToGameState } from '../../systems/armyActions';
@@ -47,7 +47,7 @@ export const placeHomeland = (gameState: GameState) => {
 
   const existingPlayersHomelands = gameState.players
     .flatMap((p) => getPlayerLands(gameState, p.id))
-    .filter((l) => l.buildings.some((b) => b.type === BuildingName.STRONGHOLD));
+    .filter((l) => hasBuilding(l, BuildingName.STRONGHOLD));
 
   // get all lands which are not in radius 4 from any player's homeland'
   let freeToBuildLands = Object.keys(gameState.map.lands).filter(

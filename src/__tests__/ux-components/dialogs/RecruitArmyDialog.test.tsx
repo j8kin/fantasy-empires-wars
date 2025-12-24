@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
 
-import { getLand, getLandOwner } from '../../../selectors/landSelectors';
+import { getLand, getLandOwner, hasBuilding } from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
 import { construct } from '../../../map/building/construct';
 import { startRecruiting } from '../../../map/recruiting/startRecruiting';
@@ -179,9 +179,7 @@ describe('RecruitArmyDialog', () => {
     it('should not render when no barracks exists', () => {
       // Remove the barracks
       const landPos: LandPosition = { row: 3, col: 3 };
-      expect(
-        getLand(gameStateStub, landPos).buildings.some((b) => b.type === BuildingName.BARRACKS)
-      ).toBeFalsy();
+      expect(hasBuilding(getLand(gameStateStub, landPos), BuildingName.BARRACKS)).toBeFalsy();
       mockApplicationContext.actionLandPosition = landPos;
 
       renderWithProviders(<RecruitArmyDialog />);
@@ -191,9 +189,7 @@ describe('RecruitArmyDialog', () => {
     it('should not render when barracks has no available slots', () => {
       // Fill all barracks slots
       getTurnOwner(gameStateStub).vault = 100000;
-      expect(
-        getLand(gameStateStub, barracksPos).buildings.some((b) => b.type === BuildingName.BARRACKS)
-      ).toBeTruthy();
+      expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
       mockApplicationContext.actionLandPosition = barracksPos;
 
       startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
@@ -458,9 +454,7 @@ describe('RecruitArmyDialog', () => {
       gameStateStub.turnOwner = gameStateStub.players[0].id;
       expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.WARSMITH);
 
-      expect(
-        getLand(gameStateStub, barracksPos).buildings.some((b) => b.type === BuildingName.BARRACKS)
-      ).toBeTruthy();
+      expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
       expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
 
       renderWithProviders(<RecruitArmyDialog />);

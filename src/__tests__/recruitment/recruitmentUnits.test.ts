@@ -1,4 +1,4 @@
-import { getLand } from '../../selectors/landSelectors';
+import { getLand, hasBuilding } from '../../selectors/landSelectors';
 import { getPlayer, getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { getAvailableSlotsCount, getOccupiedSlotsCount } from '../../selectors/buildingSelectors';
@@ -43,9 +43,7 @@ describe('Recruitment', () => {
     testTurnManagement.waitStartPhaseComplete();
 
     // createDefaultGameStateStub place Homeland Stronghold by default
-    homeLand = getPlayerLands(gameStateStub).find((l) =>
-      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
-    )!;
+    homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
   });
 
   afterEach(() => {

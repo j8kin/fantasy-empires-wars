@@ -4,7 +4,7 @@ import LandInfoPopup from '../../../ux-components/popups/LandInfoPopup';
 
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { getLandId } from '../../../state/map/land/LandId';
-import { getLand, getLandOwner } from '../../../selectors/landSelectors';
+import { getLand, getLandOwner, hasBuilding } from '../../../selectors/landSelectors';
 import { getPlayerLands, getTurnOwner } from '../../../selectors/playerSelectors';
 import { getSpellById } from '../../../selectors/spellSelectors';
 import { startMoving } from '../../../systems/armyActions';
@@ -74,7 +74,7 @@ describe('LandInfoPopup', () => {
 
     // Find a tile controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getPlayerLands(gameStateStub, gameStateStub.players[1].id).find((l) =>
-      l.buildings.some((b) => b.type === BuildingName.STRONGHOLD)
+      hasBuilding(l, BuildingName.STRONGHOLD)
     )!;
 
     jest.clearAllMocks();
