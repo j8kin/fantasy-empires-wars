@@ -1,7 +1,7 @@
 import { getLandId } from '../../state/map/land/LandId';
 import { addPlayerToGameState } from '../../systems/playerActions';
 import { addPlayerEmpireTreasure, addPlayerLand } from '../../systems/gameStateActions';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { buildingFactory } from '../../factories/buildingFactory';
 import { getLandById } from '../../domain/land/landRepository';
 import { construct } from '../../map/building/construct';
@@ -9,7 +9,7 @@ import { calculateIncome } from '../../map/vault/calculateIncome';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { itemFactory } from '../../factories/treasureFactory';
 import { invokeItem } from '../../map/magic/invokeItem';
-import { calculateHexDistance, getLandOwner } from '../../selectors/landSelectors';
+import { calculateHexDistance, getLandOwner, getPlayerLands } from '../../selectors/landSelectors';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { BuildingName } from '../../types/Building';
 import { LandName } from '../../types/Land';

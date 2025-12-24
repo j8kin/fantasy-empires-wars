@@ -1,5 +1,5 @@
-import { getLand, hasBuilding } from '../../selectors/landSelectors';
-import { getPlayer, getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getLand, getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
+import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { getAvailableSlotsCount, getOccupiedSlotsCount } from '../../selectors/buildingSelectors';
 import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';

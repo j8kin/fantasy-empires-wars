@@ -1,5 +1,5 @@
 import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
-import { getPlayerLands } from '../../selectors/playerSelectors';
+import { getPlayerLands } from '../../selectors/landSelectors';
 import { addHero, addRegulars } from '../../systems/armyActions';
 import {
   decrementPlayerRecruitmentSlots,

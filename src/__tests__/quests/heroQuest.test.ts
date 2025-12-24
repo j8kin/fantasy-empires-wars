@@ -1,5 +1,5 @@
-import { getLand, hasBuilding } from '../../selectors/landSelectors';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getLand, getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import {
   findArmyByHero,
   findLandByHeroName,

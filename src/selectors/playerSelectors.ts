@@ -4,7 +4,6 @@ import { NO_PLAYER } from '../domain/player/playerRepository';
 import { EffectKind } from '../types/Effect';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
-import type { LandState } from '../state/map/land/LandState';
 import type { SpellType } from '../types/Spell';
 import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatusType } from '../types/Diplomacy';
@@ -15,13 +14,6 @@ export const getPlayer = (state: GameState, id: string): PlayerState =>
   state.players.find((p) => p.id === id) ?? NONE;
 
 export const getTurnOwner = (state: GameState): PlayerState => getPlayer(state, state.turnOwner);
-
-export const getPlayerLands = (state: GameState, playerId?: string): LandState[] => {
-  return getPlayer(state, playerId ?? state.turnOwner)
-    .landsOwned.values()
-    .toArray()
-    .map((landId) => state.map.lands[landId]);
-};
 
 /**
  * Filters players by diplomacy status relative to turn owner

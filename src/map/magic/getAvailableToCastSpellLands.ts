@@ -1,9 +1,10 @@
 import { getLandId } from '../../state/map/land/LandId';
-import { getPlayerLands, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
+import { hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getArmiesByPlayer, getPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import {
   getLand,
+  getPlayerLands,
   getTilesInRadius,
   hasActiveEffect,
   hasBuilding,

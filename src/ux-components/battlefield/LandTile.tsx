@@ -6,8 +6,13 @@ import { useGameContext } from '../../contexts/GameContext';
 import LandInfoPopup from '../popups/LandInfoPopup';
 
 import { getLandId } from '../../state/map/land/LandId';
-import { getLandOwner, getRealmLands, getTilesInRadius } from '../../selectors/landSelectors';
-import { getPlayer, getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import {
+  getLandOwner,
+  getPlayerLands,
+  getRealmLands,
+  getTilesInRadius,
+} from '../../selectors/landSelectors';
+import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getBuildingInfo } from '../../domain/building/buildingRepository';

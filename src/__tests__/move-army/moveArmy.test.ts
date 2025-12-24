@@ -2,11 +2,12 @@ import { getLandId } from '../../state/map/land/LandId';
 import {
   getLand,
   getLandOwner,
+  getPlayerLands,
   getTilesInRadius,
   hasActiveEffect,
   hasBuilding,
 } from '../../selectors/landSelectors';
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addPlayerLand, updateLandEffect } from '../../systems/gameStateActions';
 import { getMapDimensions } from '../../utils/screenPositionUtils';

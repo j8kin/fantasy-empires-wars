@@ -1,9 +1,9 @@
-import { getPlayerLands, getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
+import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getAllHeroes } from '../../selectors/armySelectors';
 import { updatePlayerMana } from '../../systems/gameStateActions';
 import { getManaSource } from '../../domain/mana/manaSource';
 import { getSpecialLandKinds } from '../../domain/land/landQueries';
-
+import { getRealmLands } from '../../selectors/landSelectors';
 import { TreasureName } from '../../types/Treasures';
 import type { GameState } from '../../state/GameState';
 
@@ -21,7 +21,7 @@ export const calculateMana = (gameState: GameState): GameState => {
     updatedState = updatePlayerMana(updatedState, turnOwner.id, manaSource.type, mage.mana || 0);
   });
 
-  getPlayerLands(updatedState)
+  getRealmLands(updatedState)
     .filter((land) => getSpecialLandKinds().includes(land.land.id))
     .forEach((land) => {
       const manaSource = getManaSource({ landKind: land.land.id })!;

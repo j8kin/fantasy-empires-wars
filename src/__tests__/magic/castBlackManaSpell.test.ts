@@ -1,11 +1,11 @@
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import {
   getArmiesAtPositionByPlayers,
   getArmiesByPlayer,
   getMaxHeroLevelByType,
 } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { getLand } from '../../selectors/landSelectors';
+import { getLand, getPlayerLands } from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';

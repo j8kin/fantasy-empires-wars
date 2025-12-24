@@ -1,6 +1,10 @@
 import { getLandId } from '../../state/map/land/LandId';
-import { getLandOwner, getTilesInRadius, hasBuilding } from '../../selectors/landSelectors';
-import { getPlayerLands } from '../../selectors/playerSelectors';
+import {
+  getLandOwner,
+  getPlayerLands,
+  getTilesInRadius,
+  hasBuilding,
+} from '../../selectors/landSelectors';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { BuildingName } from '../../types/Building';

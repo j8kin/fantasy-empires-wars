@@ -4,7 +4,8 @@ import userEvent from '@testing-library/user-event';
 
 import SendHeroInQuestDialog from '../../../ux-components/dialogs/SendHeroInQuestDialog';
 
-import { getPlayerLands, getTurnOwner } from '../../../selectors/playerSelectors';
+import { getTurnOwner } from '../../../selectors/playerSelectors';
+import { getPlayerLands } from '../../../selectors/landSelectors';
 import { findAllHeroesOnMap, getArmiesAtPosition } from '../../../selectors/armySelectors';
 import { addHero } from '../../../systems/armyActions';
 import { levelUpHero } from '../../../systems/unitsActions';

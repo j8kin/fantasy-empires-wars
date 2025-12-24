@@ -1,6 +1,5 @@
 import { findArmyById, getArmiesAtPosition } from '../../selectors/armySelectors';
 import {
-  getPlayerLands,
   getTreasureItem,
   getTreasureItemById,
   getTurnOwner,
@@ -9,6 +8,7 @@ import {
   calculateHexDistance,
   getLand,
   getLandOwner,
+  getPlayerLands,
   hasActiveEffect,
 } from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';

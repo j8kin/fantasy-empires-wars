@@ -1,6 +1,10 @@
 import { getLandId } from '../state/map/land/LandId';
-import { getPlayerLands } from '../selectors/playerSelectors';
-import { getHostileLands, getLandOwner, hasBuilding } from '../selectors/landSelectors';
+import {
+  getHostileLands,
+  getLandOwner,
+  getPlayerLands,
+  hasBuilding,
+} from '../selectors/landSelectors';
 import { heroFactory } from '../factories/heroFactory';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { BuildingName } from '../types/Building';

@@ -1,5 +1,4 @@
-import { getLand, hasBuilding } from '../../selectors/landSelectors';
-import { getPlayerLands } from '../../selectors/playerSelectors';
+import { getLand, getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
 import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { relictFactory } from '../../factories/treasureFactory';

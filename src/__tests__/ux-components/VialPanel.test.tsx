@@ -7,7 +7,8 @@ import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 
 import VialPanel from '../../ux-components/vial-panel/VialPanel';
 
-import { getPlayerLands, getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayerLands } from '../../selectors/landSelectors';
 import { getMinManaCost } from '../../selectors/spellSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { heroFactory } from '../../factories/heroFactory';

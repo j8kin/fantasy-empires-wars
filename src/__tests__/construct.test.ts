@@ -1,6 +1,6 @@
 import { getLandId } from '../state/map/land/LandId';
-import { getLand, getTilesInRadius } from '../selectors/landSelectors';
-import { getPlayer, getPlayerLands, getTurnOwner } from '../selectors/playerSelectors';
+import { getLand, getPlayerLands, getTilesInRadius } from '../selectors/landSelectors';
+import { getPlayer, getTurnOwner } from '../selectors/playerSelectors';
 import { getBuildingInfo } from '../domain/building/buildingRepository';
 import { addPlayerEmpireTreasure } from '../systems/gameStateActions';
 import { getArmiesAtPosition } from '../selectors/armySelectors';
