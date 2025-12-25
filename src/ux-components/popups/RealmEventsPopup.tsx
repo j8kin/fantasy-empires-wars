@@ -27,7 +27,6 @@ const getEventBorderColor = (status: EmpireEventType): string => {
     case 'legendary':
       return '#6A0DAD';
   }
-  return '#ffd700';
 };
 
 const RealmEventsPopup: React.FC<PopupProps> = ({ screenPosition }) => {
