@@ -28,7 +28,7 @@ export const itemFactory = (treasureType: TreasureType): EmpireTreasure => {
 export const relictFactory = (treasureType: TreasureType): Relic => {
   return {
     id: Object.freeze(uuid()),
-    alignment: getRelicAlignment(treasureType),
+    alignment: Object.freeze(getRelicAlignment(treasureType)),
     treasure: Object.freeze(relicts.find((item) => item.type === treasureType)!),
   };
 };

@@ -1,4 +1,4 @@
-import { isRelic } from '../domain/treasure/treasureRepository';
+import { isItem } from '../domain/treasure/treasureRepository';
 import { playerFactory } from '../factories/playerFactory';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { EffectKind } from '../types/Effect';
@@ -49,11 +49,11 @@ export const hasTreasureByPlayer = (player: PlayerState, treasure: TreasureType)
 export const getTreasureItem = (player: PlayerState, itemType: TreasureType): Item | undefined => {
   const item = player.empireTreasures?.find((t) => t.treasure.type === itemType);
   if (!item) return undefined;
-  return !isRelic(item) ? item : undefined;
+  return isItem(item) ? item : undefined;
 };
 
 export const getTreasureItemById = (player: PlayerState, itemId: string): Item | undefined => {
   const item = player.empireTreasures?.find((t) => t.id === itemId);
   if (!item) return undefined;
-  return !isRelic(item) ? item : undefined;
+  return isItem(item) ? item : undefined;
 };

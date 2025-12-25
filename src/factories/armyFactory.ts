@@ -12,7 +12,7 @@ export const armyFactory = (
   initRegulars: RegularsState[] = []
 ): ArmyState => {
   return {
-    id: uuid(),
+    id: Object.freeze(uuid()),
     controlledBy: Object.freeze(controlledBy),
     heroes: [...initHeroes],
     regulars: [...initRegulars],

@@ -6,12 +6,11 @@ import FlipBookPage, { FlipBookPageTypeName } from '../fantasy-book-dialog-templ
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { isRelic } from '../../domain/treasure/treasureRepository';
+import { isItem } from '../../domain/treasure/treasureRepository';
 import { getValidMagicLands } from '../../map/magic/getValidMagicLands';
 
 import { getTreasureImg } from '../../assets/getTreasureImg';
 
-import { TreasureName } from '../../types/Treasures';
 import type { Item } from '../../types/Treasures';
 
 const EmpireTreasureDialog: React.FC = () => {
@@ -47,7 +46,7 @@ const EmpireTreasureDialog: React.FC = () => {
   if (!gameState || !showEmpireTreasureDialog) return null;
 
   const availableItems = getTurnOwner(gameState).empireTreasures.sort(
-    (a, b) => Number(isRelic(a)) - Number(isRelic(b))
+    (a, b) => Number(!isItem(a)) - Number(!isItem(b))
   );
 
   if (availableItems.length === 0) return null;
@@ -65,9 +64,9 @@ const EmpireTreasureDialog: React.FC = () => {
           onClose={handleDialogClose}
           // Relic items are permanent, and they are not "usable" that is why disable click on them
           onIconClick={
-            isRelic(treasure) || treasure.treasure.type === TreasureName.MERCY_OF_ORRIVANE
-              ? undefined
-              : createItemClickHandler(treasure)
+            isItem(treasure) && treasure.treasure.isConsumable
+              ? createItemClickHandler(treasure)
+              : undefined
           }
         />
       ))}

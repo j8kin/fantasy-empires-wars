@@ -23,7 +23,7 @@ import {
 } from '../../factories/treasureFactory';
 import { artifacts, items, relicts } from '../../domain/treasure/treasureRepository';
 import { getQuest } from '../../domain/quest/questRepository';
-import { getRandomElement } from '../../domain/utils/random';
+import { getRandomElement, getRandomInt } from '../../domain/utils/random';
 import {
   emptyHanded,
   heroDieMessage,
@@ -93,10 +93,11 @@ const gainArtifact = (
   hero: HeroState,
   questType: QuestType
 ): { outcome: EmpireEvent; updatedHero: HeroState } => {
+  const artifact = getRandomElement(artifacts);
   const baseArtifactLevel = getQuest(questType).level;
   const heroArtifact: Artifact = artifactFactory(
-    getRandomElement(artifacts).type,
-    getRandomElement([baseArtifactLevel, baseArtifactLevel + 1, baseArtifactLevel + 2])
+    artifact.type,
+    artifact.isConsumable ? getRandomInt(baseArtifactLevel, baseArtifactLevel + 2) : 0
   );
   // todo if hero already has artifact, then allow user to choose between two artifacts
 

@@ -43,6 +43,7 @@ export interface Treasure {
   description: string;
   rules?: EffectRules;
   target?: MagicTargetType;
+  isConsumable: boolean;
 }
 
 // Hero items
