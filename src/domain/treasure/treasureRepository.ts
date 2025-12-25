@@ -1,5 +1,6 @@
 import { TreasureName } from '../../types/Treasures';
 import { EffectKind, EffectTarget } from '../../types/Effect';
+import { MagicTarget } from '../../types/MagicTarget';
 import type { EmpireTreasure, Relic, Treasure, TreasureType } from '../../types/Treasures';
 
 export const artifacts: Treasure[] = [
@@ -40,21 +41,25 @@ export const items: Treasure[] = [
     type: TreasureName.WAND_OF_TURN_UNDEAD,
     lore: 'Glows faintly when darkness rises, whispering the forgotten prayers of light.',
     description: 'Turns undead on the selected land',
+    target: MagicTarget.OPPONENT,
   },
   {
     type: TreasureName.ORB_OF_STORM,
     lore: 'Within its swirling mist sleeps the echo of a tempest god.',
     description: 'Casts Tornado spell',
+    target: MagicTarget.OPPONENT,
   },
   {
     type: TreasureName.RESTORE_BUILDING,
     lore: 'This seed sprouts overnight into a structure born of the world’s memory.',
     description: 'Restores one destroyed building. Even Stronghold on neutral land is restored',
+    target: MagicTarget.PLAYER,
   },
   {
     type: TreasureName.AEGIS_SHARD,
     lore: 'A dormant ward that shatters the moment true harm is attempted.',
     description: 'Negates the next hostile spell on one land',
+    target: MagicTarget.PLAYER,
     rules: {
       type: EffectKind.PERMANENT,
       target: EffectTarget.LAND,
@@ -65,16 +70,19 @@ export const items: Treasure[] = [
     type: TreasureName.RESURRECTION,
     lore: 'Burns with immortal fire; rebirth always comes with the scent of ash.',
     description: 'Revives a fallen hero once',
+    target: MagicTarget.PLAYER,
   },
   {
     type: TreasureName.STONE_OF_RENEWAL,
     lore: 'Ancient and patient, it remembers how the land once was.',
     description: 'Removes one negative effect from a land',
+    target: MagicTarget.PLAYER,
   },
   {
     type: TreasureName.COMPASS_OF_DOMINION,
     lore: 'Its needle bends toward power, not north.',
     description: 'Reveals all lands owned by one player for 2 turns',
+    target: MagicTarget.OPPONENT,
     rules: {
       type: EffectKind.POSITIVE,
       target: EffectTarget.LAND,
@@ -85,6 +93,7 @@ export const items: Treasure[] = [
     type: TreasureName.DEED_OF_RECLAMATION,
     lore: 'An ancient charter granting fleeting dominion by forgotten law.',
     description: 'Claim a neutral land for income and mana only',
+    target: MagicTarget.OPPONENT, // actually NO_PLAYER lands could be affected
     rules: {
       type: EffectKind.PERMANENT,
       target: EffectTarget.LAND,
@@ -95,6 +104,7 @@ export const items: Treasure[] = [
     type: TreasureName.MERCY_OF_ORRIVANE,
     lore: 'When fate turns cruel, Orrivane opens a hidden path home.',
     description: 'First hero lost on a quest instead escapes to a stronghold',
+    target: MagicTarget.PLAYER,
     rules: {
       type: EffectKind.PERMANENT,
       target: EffectTarget.PLAYER,
@@ -105,6 +115,7 @@ export const items: Treasure[] = [
     type: TreasureName.HOURGLASS_OF_DELAY,
     lore: 'A timeless tool of the ancient gods; it delays the time of the world.',
     description: 'All armies on land could not move for one turn',
+    target: MagicTarget.OPPONENT,
     rules: {
       type: EffectKind.NEGATIVE,
       target: EffectTarget.LAND,

@@ -125,7 +125,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
           // Start spell cast animation in MainView
           showSpellAnimation(spellToCast.manaType, mapPosition, screenPosition);
 
-          castSpell(gameState, spellToCast.id, mapPosition);
+          castSpell(gameState, spellToCast.type, mapPosition);
           updateGameState(gameState);
 
           // Show success message after a short delay to let animation start

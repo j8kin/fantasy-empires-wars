@@ -31,7 +31,7 @@ import redEndAnimationImg from './spells/_animation/red-end.png';
 import blueEndAnimationImg from './spells/_animation/blue-end.png';
 
 export const getSpellImg = (spell: Spell) => {
-  switch (spell.id) {
+  switch (spell.type) {
     // white spells
     case SpellName.BLESSING:
       return blessingImg;

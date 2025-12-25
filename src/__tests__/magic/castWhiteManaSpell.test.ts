@@ -11,7 +11,7 @@ import { getSpellById } from '../../selectors/spellSelectors';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { castSpell } from '../../map/magic/castSpell';
-import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCastSpellLands';
+import { getValidMagicLands } from '../../map/magic/getValidMagicLands';
 
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
@@ -157,10 +157,7 @@ describe('castWhiteManaSpell', () => {
         getLandId(l.mapPos)
       );
       const opponentLand = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
-      let availableToCastSpellLands = getAvailableToCastSpellLands(
-        gameStateStub,
-        SpellName.TURN_UNDEAD
-      );
+      let availableToCastSpellLands = getValidMagicLands(gameStateStub, SpellName.TURN_UNDEAD);
       expect(
         opponetLands.every((landId) => availableToCastSpellLands.includes(landId))
       ).toBeTruthy();
@@ -169,10 +166,7 @@ describe('castWhiteManaSpell', () => {
       castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
       /***********************************/
 
-      availableToCastSpellLands = getAvailableToCastSpellLands(
-        gameStateStub,
-        SpellName.TURN_UNDEAD
-      );
+      availableToCastSpellLands = getValidMagicLands(gameStateStub, SpellName.TURN_UNDEAD);
       expect(
         opponetLands.every((landId) => availableToCastSpellLands.includes(landId))
       ).toBeFalsy();
@@ -181,10 +175,7 @@ describe('castWhiteManaSpell', () => {
       testTurnManagement.makeNTurns(1);
       /**************************************/
 
-      availableToCastSpellLands = getAvailableToCastSpellLands(
-        gameStateStub,
-        SpellName.TURN_UNDEAD
-      );
+      availableToCastSpellLands = getValidMagicLands(gameStateStub, SpellName.TURN_UNDEAD);
       expect(
         opponetLands.every((landId) => availableToCastSpellLands.includes(landId))
       ).toBeTruthy();

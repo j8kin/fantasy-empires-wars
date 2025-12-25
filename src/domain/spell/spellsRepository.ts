@@ -1,5 +1,6 @@
 import { Mana } from '../../types/Mana';
-import { SpellName, SpellTarget } from '../../types/Spell';
+import { MagicTarget } from '../../types/MagicTarget';
+import { SpellName } from '../../types/Spell';
 import { EffectKind, EffectTarget } from '../../types/Effect';
 import type { PenaltyConfig } from '../army/armyPenaltyCalculator';
 import type { Spell } from '../../types/Spell';
@@ -17,10 +18,10 @@ const generatePenaltyConfig = (
 
 const WhiteMagicSpells: Spell[] = [
   {
-    id: SpellName.TURN_UNDEAD,
+    type: SpellName.TURN_UNDEAD,
     description: 'Turns undead on the selected land',
     manaCost: 0,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.WHITE,
     rules: {
       type: EffectKind.NEGATIVE,
@@ -30,10 +31,10 @@ const WhiteMagicSpells: Spell[] = [
     penalty: generatePenaltyConfig(0, 0, 40, 60),
   },
   {
-    id: SpellName.VIEW_TERRITORY,
+    type: SpellName.VIEW_TERRITORY,
     description: "Reveals information about an opponent's territory",
     manaCost: 25,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.WHITE,
     rules: {
       type: EffectKind.POSITIVE,
@@ -42,10 +43,10 @@ const WhiteMagicSpells: Spell[] = [
     },
   },
   {
-    id: SpellName.BLESSING,
+    type: SpellName.BLESSING,
     description: 'Increases defense of all units on a territory for 3 turns (+20%)',
     manaCost: 40,
-    target: SpellTarget.PLAYER, // todo: probably both to be able cast on ally
+    target: MagicTarget.PLAYER, // todo: probably both to be able cast on ally
     manaType: Mana.WHITE,
     rules: {
       type: EffectKind.POSITIVE,
@@ -54,10 +55,10 @@ const WhiteMagicSpells: Spell[] = [
     },
   },
   {
-    id: SpellName.HEAL,
+    type: SpellName.HEAL,
     description: 'Restores 20–30% of lost units after battle (cannot resurrect heroes)',
     manaCost: 60,
-    target: SpellTarget.PLAYER, // todo: probably both to be able cast on ally
+    target: MagicTarget.PLAYER, // todo: probably both to be able cast on ally
     manaType: Mana.WHITE,
     rules: {
       type: EffectKind.POSITIVE,
@@ -68,10 +69,10 @@ const WhiteMagicSpells: Spell[] = [
 ];
 const BlueMagicSpells: Spell[] = [
   {
-    id: SpellName.ILLUSION,
+    type: SpellName.ILLUSION,
     description: 'Temporarily conceals territory information in and around the targeted land.',
     manaCost: 25,
-    target: SpellTarget.PLAYER,
+    target: MagicTarget.PLAYER,
     manaType: Mana.BLUE,
     rules: {
       type: EffectKind.POSITIVE,
@@ -80,10 +81,10 @@ const BlueMagicSpells: Spell[] = [
     },
   },
   {
-    id: SpellName.TELEPORT,
+    type: SpellName.TELEPORT,
     description: 'Instantly move one army to a friendly stronghold',
     manaCost: 45,
-    target: SpellTarget.PLAYER,
+    target: MagicTarget.PLAYER,
     manaType: Mana.BLUE,
     rules: {
       type: EffectKind.POSITIVE,
@@ -92,10 +93,10 @@ const BlueMagicSpells: Spell[] = [
     },
   },
   {
-    id: SpellName.TORNADO,
+    type: SpellName.TORNADO,
     description: 'Kills 20–35% of all troops (heroes may be killed based on level)',
     manaCost: 50,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.BLUE,
     rules: {
       type: EffectKind.NEGATIVE,
@@ -105,19 +106,19 @@ const BlueMagicSpells: Spell[] = [
     penalty: generatePenaltyConfig(0.2, 0.35, 5, 5),
   },
   {
-    id: SpellName.EXCHANGE,
+    type: SpellName.EXCHANGE,
     description: 'Exchange 100 Blue mana into another mana source with penalty',
     manaCost: 100,
-    target: SpellTarget.PLAYER,
+    target: MagicTarget.PLAYER,
     manaType: Mana.BLUE,
   },
 ];
 const GreenMagicSpells: Spell[] = [
   {
-    id: SpellName.FERTILE_LAND,
+    type: SpellName.FERTILE_LAND,
     description: 'Increase gold production on lands in radius 1 by +50% for 2 turns',
     manaCost: 40,
-    target: SpellTarget.PLAYER,
+    target: MagicTarget.PLAYER,
     manaType: Mana.GREEN,
     rules: {
       type: EffectKind.POSITIVE,
@@ -126,10 +127,10 @@ const GreenMagicSpells: Spell[] = [
     },
   },
   {
-    id: SpellName.ENTANGLING_ROOTS,
+    type: SpellName.ENTANGLING_ROOTS,
     description: 'Enemy army on a territory cannot move for 1 turn',
     manaCost: 60,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.GREEN,
     rules: {
       type: EffectKind.NEGATIVE,
@@ -138,10 +139,10 @@ const GreenMagicSpells: Spell[] = [
     },
   },
   {
-    id: SpellName.BEAST_ATTACK,
+    type: SpellName.BEAST_ATTACK,
     description: 'Kills 15–25% of all troops (heroes may be killed based on level)',
     manaCost: 70,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.GREEN,
     rules: {
       type: EffectKind.NEGATIVE,
@@ -151,11 +152,11 @@ const GreenMagicSpells: Spell[] = [
     penalty: generatePenaltyConfig(0.15, 0.25, 5, 5),
   },
   {
-    id: SpellName.EARTHQUAKE,
+    type: SpellName.EARTHQUAKE,
     description:
       'Kills 10–20% of all troops, 40% chance to destroy a building (heroes may be killed based on level)',
     manaCost: 100,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.GREEN,
     rules: {
       type: EffectKind.NEGATIVE,
@@ -168,11 +169,11 @@ const GreenMagicSpells: Spell[] = [
 
 const RedMagicSpells: Spell[] = [
   {
-    id: SpellName.EMBER_RAID,
+    type: SpellName.EMBER_RAID,
     description:
       'Sabotages enemy recruitment: adds +1 turn to ongoing unit training and prevents repeated casting on the same territory for 3 turns.',
     manaCost: 30,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.RED,
     rules: {
       type: EffectKind.NEGATIVE,
@@ -181,17 +182,17 @@ const RedMagicSpells: Spell[] = [
     },
   },
   {
-    id: SpellName.FORGE_OF_WAR,
+    type: SpellName.FORGE_OF_WAR,
     description: 'Instantly recruits pack of uniq unit type available in a territory',
     manaCost: 50,
-    target: SpellTarget.PLAYER,
+    target: MagicTarget.PLAYER,
     manaType: Mana.RED,
   },
   {
-    id: SpellName.FIRESTORM,
+    type: SpellName.FIRESTORM,
     description: 'Damages units in radius 1 lands at once (15–20% each)',
     manaCost: 100,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.RED,
     rules: {
       type: EffectKind.NEGATIVE,
@@ -201,11 +202,11 @@ const RedMagicSpells: Spell[] = [
     penalty: generatePenaltyConfig(0.15, 0.2, 5, 5),
   },
   {
-    id: SpellName.METEOR_SHOWER,
+    type: SpellName.METEOR_SHOWER,
     description:
       'Kills 35–45% of all troops, 50% chance to destroy a building (heroes may be killed based on level)',
     manaCost: 150,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.RED,
     rules: {
       type: EffectKind.NEGATIVE,
@@ -218,17 +219,17 @@ const RedMagicSpells: Spell[] = [
 
 const BlackMagicSpells: Spell[] = [
   {
-    id: SpellName.SUMMON_UNDEAD,
+    type: SpellName.SUMMON_UNDEAD,
     description: 'Summons 30–60 undead troops depending on maximum Necromancer level',
     manaCost: 25,
-    target: SpellTarget.PLAYER,
+    target: MagicTarget.PLAYER,
     manaType: Mana.BLACK,
   },
   {
-    id: SpellName.PLAGUE,
+    type: SpellName.PLAGUE,
     description: 'Kills 25–40% of all troops (heroes may be killed based on level)',
     manaCost: 75,
-    target: SpellTarget.OPPONENT,
+    target: MagicTarget.OPPONENT,
     manaType: Mana.BLACK,
     rules: {
       type: EffectKind.NEGATIVE,
@@ -238,19 +239,19 @@ const BlackMagicSpells: Spell[] = [
     penalty: generatePenaltyConfig(0.25, 0.4, 5, 5),
   },
   {
-    id: SpellName.RAISE_DEAD_HERO,
+    type: SpellName.RAISE_DEAD_HERO,
     description:
       'Revives fallen in battle or by magic Heroes as an Undead Hero (loses original alignment)',
     manaCost: 100,
-    target: SpellTarget.PLAYER,
+    target: MagicTarget.PLAYER,
     manaType: Mana.BLACK,
   },
   {
-    id: SpellName.CORRUPTION,
+    type: SpellName.CORRUPTION,
     description:
       'Converts neutral land into chaotic land (if no stronghold present, only 6 lands per game)',
     manaCost: 150,
-    target: SpellTarget.ALL,
+    target: MagicTarget.ALL,
     manaType: Mana.BLACK,
     rules: {
       type: EffectKind.NEGATIVE,

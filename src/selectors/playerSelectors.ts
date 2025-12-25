@@ -4,7 +4,7 @@ import { NO_PLAYER } from '../domain/player/playerRepository';
 import { EffectKind } from '../types/Effect';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
-import type { SpellType } from '../types/Spell';
+import type { EffectSourceId } from '../types/Effect';
 import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatusType } from '../types/Diplomacy';
 
@@ -31,9 +31,14 @@ export const getPlayersByDiplomacy = (
   );
 };
 
-export const hasActiveEffectByPlayer = (state: PlayerState, spellId: SpellType): boolean => {
+export const hasActiveEffectByPlayer = (
+  state: PlayerState,
+  effectSourceId: EffectSourceId
+): boolean => {
   return state.effects.some(
-    (e) => e.sourceId === spellId && (e.rules.duration > 0 || e.rules.type === EffectKind.PERMANENT)
+    (e) =>
+      e.sourceId === effectSourceId &&
+      (e.rules.duration > 0 || e.rules.type === EffectKind.PERMANENT)
   );
 };
 

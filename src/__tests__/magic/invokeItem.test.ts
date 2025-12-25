@@ -567,7 +567,7 @@ describe('invokeItems', () => {
     });
 
     it('should change ownership of neutral land to player', () => {
-      const landPos: LandPosition = { row: 0, col: 0 };
+      const landPos: LandPosition = { row: 0, col: 3 };
       expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
 
       /************** USE DEED_OF_RECLAMATION *********************/
@@ -588,12 +588,12 @@ describe('invokeItems', () => {
       testTurnManagement.waitStartPhaseComplete();
 
       /************** NEUTRAL LAND FAR FROM HOMELAND *********************/
-      const landPos: LandPosition = { row: 0, col: 0 };
+      const landPos: LandPosition = { row: 0, col: 3 };
       expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
       const homeland = getPlayerLands(gameStateStub)[0];
-      expect(
-        calculateHexDistance(getMapDimensions(gameStateStub), homeland.mapPos, landPos)
-      ).toBeGreaterThan(2);
+      expect(calculateHexDistance(getMapDimensions(gameStateStub), homeland.mapPos, landPos)).toBe(
+        3
+      );
       /***** PLACE PLAYER's army ********/
       placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR, 120), gameStateStub, landPos);
 

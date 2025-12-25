@@ -1,5 +1,6 @@
 import type { AlignmentType } from './Alignment';
 import type { EffectRules } from './Effect';
+import type { MagicTargetType } from './MagicTarget';
 
 export const TreasureName = {
   // Artifacts (Heroes personal items)
@@ -41,6 +42,7 @@ export interface Treasure {
   lore: string;
   description: string;
   rules?: EffectRules;
+  target?: MagicTargetType;
 }
 
 // Hero items
@@ -57,6 +59,7 @@ export interface Item {
   id: string;
   charge: number;
   treasure: Treasure;
+  target: MagicTargetType;
 }
 
 // Items that have a permanent effect on the Game State

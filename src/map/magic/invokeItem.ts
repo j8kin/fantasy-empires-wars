@@ -10,6 +10,8 @@ import { decrementItemCharges, removeEmpireTreasureItem } from '../../systems/pl
 import { effectFactory } from '../../factories/effectFactory';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { applyArmyCasualtiesAtPosition } from './applyArmyCasualties';
+import { getValidMagicLands } from './getValidMagicLands';
+import { getLandId } from '../../state/map/land/LandId';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
 import { RegularUnitName } from '../../types/UnitType';
@@ -23,6 +25,8 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
   const treasureItem = getTreasureItemById(turnOwner, itemId);
 
   if (!treasureItem) return; // fallback should never happen
+
+  if (!getValidMagicLands(state, treasureItem.treasure.type).includes(getLandId(landPos))) return;
 
   // since it is possible to use multiple time the items should not be killer feature
   const penaltyConfig: PenaltyConfig = {
