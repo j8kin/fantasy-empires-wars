@@ -180,13 +180,12 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
   },
   {
     id: 'nullwarden',
-    name: 'Nullwarden Dravane',
+    name: 'Thane Nullwarden',
     alignment: Alignment.LAWFUL,
     race: 'Human',
     type: HeroUnitName.ZEALOT,
     level: 28,
-    description:
-      'Sworn to silence the arcane, Nullwardens fight not for faith, but for a world unchained from magic.',
+    description: 'A zealot of iron faith, sworn to purge magic from Orrivane.',
     color: 'perl-white',
   },
 ];
