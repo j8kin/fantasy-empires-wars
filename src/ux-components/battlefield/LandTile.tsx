@@ -128,14 +128,9 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
 
           castSpell(gameState, spellToCast.type, mapPosition);
           updateGameState(gameState);
-
-          // Show success message after a short delay to let animation start
-          // setTimeout(() => {
-          //   alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
-          // }, 100);
         }
       } else if (selectedLandAction?.startsWith('Item: ')) {
-        const itemId = selectedLandAction?.substring(6);
+        const itemId = selectedLandAction?.substring(6); // UUID allow using exact item when it is more than 1 in treasures
         if (itemId) {
           invokeItem(gameState, itemId, mapPosition);
           updateGameState(gameState);

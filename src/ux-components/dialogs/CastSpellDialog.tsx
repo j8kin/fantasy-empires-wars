@@ -104,7 +104,7 @@ const CastSpellDialog: React.FC = () => {
           cost={spell.manaCost}
           costLabel="Mana Cost"
           onClose={handleDialogClose}
-          onIconClick={createSpellClickHandler(spell.type as SpellType)}
+          onIconClick={createSpellClickHandler(spell.type)}
         />
       ))}
     </FlipBook>
