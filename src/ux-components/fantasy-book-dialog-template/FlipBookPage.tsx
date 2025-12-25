@@ -10,6 +10,7 @@ export interface Slot {
 
 export const FlipBookPageTypeName = {
   SPELL: 'Spell',
+  ITEM: 'Item',
   BUILDING: 'Building',
   RECRUIT: 'Recruit',
   QUEST: 'Quest',

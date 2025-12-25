@@ -20,6 +20,7 @@ import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { calculateTileScreenPosition, getMapDimensions } from '../../utils/screenPositionUtils';
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
+import { invokeItem } from '../../map/magic/invokeItem';
 import { calcMaxMove } from '../../map/move-army/calcMaxMove';
 import { MAX_MOVE } from '../../map/move-army/calcMaxMove';
 import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
@@ -132,6 +133,12 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
           // setTimeout(() => {
           //   alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
           // }, 100);
+        }
+      } else if (selectedLandAction?.startsWith('Item: ')) {
+        const itemId = selectedLandAction?.substring(6);
+        if (itemId) {
+          invokeItem(gameState, itemId, mapPosition);
+          updateGameState(gameState);
         }
       } else if (selectedLandAction?.startsWith('Building: ')) {
         const buildingToConstruct = selectedLandAction?.substring(10) as BuildingType;
