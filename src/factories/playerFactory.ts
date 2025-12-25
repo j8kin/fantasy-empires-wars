@@ -1,8 +1,7 @@
 import { Mana } from '../types/Mana';
 
 import type { PlayerState } from '../state/player/PlayerState';
-import type { PlayerProfile } from '../state/player/PlayerProfile';
-import type { PlayerType } from '../state/player/PlayerType';
+import type { PlayerProfile, PlayerType } from '../state/player/PlayerProfile';
 
 export const playerFactory = (
   profile: PlayerProfile,

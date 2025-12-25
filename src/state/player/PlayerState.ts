@@ -4,8 +4,7 @@ import type { HeroQuest } from '../../types/Quest';
 import type { EmpireTreasure } from '../../types/Treasures';
 import type { DiplomacyStatusType } from '../../types/Diplomacy';
 import type { Effect } from '../../types/Effect';
-import type { PlayerProfile } from './PlayerProfile';
-import type { PlayerType } from './PlayerType';
+import type { PlayerProfile, PlayerType } from './PlayerProfile';
 
 export interface PlayerState {
   id: string; // todo UUUID
