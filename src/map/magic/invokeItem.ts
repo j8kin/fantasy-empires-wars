@@ -12,7 +12,6 @@ import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { applyArmyCasualtiesAtPosition } from './applyArmyCasualties';
 import { getValidMagicLands } from './getValidMagicLands';
 import { getLandId } from '../../state/map/land/LandId';
-import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
 import { RegularUnitName } from '../../types/UnitType';
 import { EffectKind } from '../../types/Effect';
@@ -101,15 +100,13 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
       break;
 
     case TreasureName.DEED_OF_RECLAMATION:
-      // own neutral land
-      if (getLandOwner(updatedState, landPos) === NO_PLAYER.id) {
-        updatedState = addPlayerLand(updatedState, updatedState.turnOwner, landPos);
-        updatedState = updateLandEffect(
-          updatedState,
-          landPos,
-          effectFactory(treasureItem.treasure.type, updatedState.turnOwner)
-        );
-      }
+      // landPos is valid and check in getValidMagicLands
+      updatedState = addPlayerLand(updatedState, updatedState.turnOwner, landPos);
+      updatedState = updateLandEffect(
+        updatedState,
+        landPos,
+        effectFactory(treasureItem.treasure.type, updatedState.turnOwner)
+      );
       break;
 
     case TreasureName.HOURGLASS_OF_DELAY:
