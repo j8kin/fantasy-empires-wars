@@ -1,6 +1,7 @@
 import type { ManaType } from './Mana';
 import type { EffectRules } from './Effect';
 import type { PenaltyConfig } from '../domain/army/armyPenaltyCalculator';
+import type { MagicTargetType } from './MagicTarget';
 
 // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
 
@@ -34,20 +35,12 @@ export const SpellName = {
 
 export type SpellType = (typeof SpellName)[keyof typeof SpellName];
 
-export const SpellTarget = {
-  PLAYER: 'player',
-  OPPONENT: 'opponent',
-  ALL: 'all',
-} as const;
-
-export type SpellTargetType = (typeof SpellTarget)[keyof typeof SpellTarget];
-
 export interface Spell {
-  id: SpellType;
+  type: SpellType;
   description: string;
   manaCost: number;
   manaType: ManaType;
-  target: SpellTargetType;
+  target: MagicTargetType;
   rules?: EffectRules;
   penalty?: PenaltyConfig;
 }

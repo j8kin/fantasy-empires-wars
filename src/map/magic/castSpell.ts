@@ -37,7 +37,7 @@ import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
-import { getAvailableToCastSpellLands } from './getAvailableToCastSpellLands';
+import { getValidMagicLands } from './getValidMagicLands';
 import { LandName } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
 import { Mana } from '../../types/Mana';
@@ -72,7 +72,7 @@ export const castSpell = (
   // double-check that land is correctly selected to reuse this method in AI turn
   if (
     spellName === SpellName.EXCHANGE ||
-    getAvailableToCastSpellLands(state, spellName).includes(getLandId(mainAffectedLand!))
+    getValidMagicLands(state, spellName).includes(getLandId(mainAffectedLand!))
   ) {
     const spell = getSpellById(spellName);
 
@@ -101,7 +101,7 @@ export const castSpell = (
 
 const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
   let updatedState: GameState = state;
-  switch (spell.id) {
+  switch (spell.type) {
     case SpellName.TURN_UNDEAD:
       const player = getPlayer(updatedState, getLandOwner(state, landPos));
       // TURN_UNDEAD effect is active only once per player per turn
@@ -111,7 +111,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       updatedState = updatePlayerEffect(
         updatedState,
         player.id,
-        effectFactory(spell.id, state.turnOwner)
+        effectFactory(spell.type, state.turnOwner)
       );
 
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
@@ -125,7 +125,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       updatedState = updateLandEffect(
         updatedState,
         landPos,
-        effectFactory(spell.id, state.turnOwner)
+        effectFactory(spell.type, state.turnOwner)
       );
       break;
 
@@ -136,7 +136,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
           updatedState = updateLandEffect(
             updatedState,
             l,
-            effectFactory(spell.id, updatedState.turnOwner)
+            effectFactory(spell.type, updatedState.turnOwner)
           );
         });
       break;
@@ -157,7 +157,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
 const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPosition): void => {
   let updatedState: GameState = state;
   let maxDruidLevel: number = 0;
-  switch (spell.id) {
+  switch (spell.type) {
     case SpellName.FERTILE_LAND:
       maxDruidLevel = getMaxHeroLevelByType(updatedState, HeroUnitName.DRUID);
       updatedState = applyEffectOnRandomLands(updatedState, spell, landPos!, maxDruidLevel);
@@ -167,7 +167,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       updatedState = updateLandEffect(
         updatedState,
         landPos,
-        effectFactory(spell.id, updatedState.turnOwner)
+        effectFactory(spell.type, updatedState.turnOwner)
       );
       break;
 
@@ -213,7 +213,7 @@ const castBlueManaSpell = (
   exchangeMana?: ManaType
 ) => {
   let updatedState: GameState = state;
-  switch (spell.id) {
+  switch (spell.type) {
     case SpellName.ILLUSION:
       const maxEnchanterLevel = getMaxHeroLevelByType(updatedState, HeroUnitName.ENCHANTER);
       updatedState = applyEffectOnRandomLands(updatedState, spell, landPos!, maxEnchanterLevel);
@@ -260,12 +260,12 @@ const castBlueManaSpell = (
 
 const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
   let updatedState: GameState = state;
-  switch (spell.id) {
+  switch (spell.type) {
     case SpellName.EMBER_RAID:
       updatedState = updateLandEffect(
         updatedState,
         landPos,
-        effectFactory(spell.id, updatedState.turnOwner)
+        effectFactory(spell.type, updatedState.turnOwner)
       );
       // Delay all recruitment by incrementing turnsRemaining by 1
       updatedState = updateLandBuildingSlots(updatedState, landPos, (slots) =>
@@ -324,7 +324,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
 
 const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
   let updatedState: GameState = state;
-  switch (spell.id) {
+  switch (spell.type) {
     case SpellName.SUMMON_UNDEAD:
       const maxNecromancerLevel = getMaxHeroLevelByType(updatedState, HeroUnitName.NECROMANCER);
       const undeadSummoned = regularsFactory(
@@ -411,7 +411,7 @@ const applyEffectOnRandomLands = (
 
   let updatedState = state;
   [landPos, ...selectedLandPositions].forEach((l) => {
-    updatedState = updateLandEffect(updatedState, l, effectFactory(spell.id, state.turnOwner));
+    updatedState = updateLandEffect(updatedState, l, effectFactory(spell.type, state.turnOwner));
   });
 
   return updatedState;

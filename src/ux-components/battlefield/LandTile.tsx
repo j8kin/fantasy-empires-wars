@@ -12,7 +12,7 @@ import {
   getRealmLands,
   getTilesInRadius,
 } from '../../selectors/landSelectors';
-import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
+import { getPlayer, getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getBuildingInfo } from '../../domain/building/buildingRepository';
@@ -20,7 +20,9 @@ import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { calculateTileScreenPosition, getMapDimensions } from '../../utils/screenPositionUtils';
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
+import { invokeItem } from '../../map/magic/invokeItem';
 import { calcMaxMove } from '../../map/move-army/calcMaxMove';
+import { getRandomElement } from '../../domain/utils/random';
 import { MAX_MOVE } from '../../map/move-army/calcMaxMove';
 import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
 import { SpellName } from '../../types/Spell';
@@ -30,6 +32,7 @@ import { getLandImg } from '../../assets/getLandImg';
 import type { SpellType } from '../../types/Spell';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { BuildingType } from '../../types/Building';
+import type { TreasureType } from '../../types/Treasures';
 
 export interface HexTileProps {
   mapPosition: LandPosition;
@@ -51,6 +54,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
     addGlowingTile,
     setMoveArmyPath,
     showSpellAnimation,
+    showHeroOutcome,
   } = useApplicationContext();
   const { gameState, updateGameState } = useGameContext();
 
@@ -125,13 +129,24 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
           // Start spell cast animation in MainView
           showSpellAnimation(spellToCast.manaType, mapPosition, screenPosition);
 
-          castSpell(gameState, spellToCast.id, mapPosition);
+          castSpell(gameState, spellToCast.type, mapPosition);
           updateGameState(gameState);
-
-          // Show success message after a short delay to let animation start
-          // setTimeout(() => {
-          //   alert(`Cast ${spellToCast.id} on Land ${tileId}.`);
-          // }, 100);
+        }
+      } else if (selectedLandAction?.startsWith('Item: ')) {
+        const itemId = selectedLandAction?.substring(6); // UUID allow using exact item when it is more than 1 in treasures
+        if (itemId) {
+          const item = getTreasureItemById(getTurnOwner(gameState), itemId)!;
+          invokeItem(gameState, itemId, mapPosition);
+          if (!getTreasureItemById(getTurnOwner(gameState), itemId)) {
+            // item is not invoked since no charges
+            showHeroOutcome([
+              {
+                status: 'negative',
+                message: itemLostMessage(item.treasure.type),
+              },
+            ]);
+          }
+          updateGameState(gameState);
         }
       } else if (selectedLandAction?.startsWith('Building: ')) {
         const buildingToConstruct = selectedLandAction?.substring(10) as BuildingType;
@@ -217,3 +232,17 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
 };
 
 export default LandTile;
+
+const itemLostMessage = (item: TreasureType): string => {
+  const message = [
+    `With a final whisper, ${item} crumbles into lifeless dust.`,
+    `The magic bound to ${item} fades, leaving only ash behind.`,
+    `A hollow echo rings as ${item} shatters into nothingness.`,
+    `The power within ${item} collapses, undone by its own use.`,
+    `Orrivane reclaims what was borrowed—${item} is no more.`,
+    `Bound power disperses; ${item} has served its final hour.`,
+    `${item} breaks, spent beyond recovery.`,
+    `Nothing remains of ${item} but scattered fragments.`,
+  ];
+  return getRandomElement(message);
+};

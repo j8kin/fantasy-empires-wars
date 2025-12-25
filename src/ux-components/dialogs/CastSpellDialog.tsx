@@ -7,7 +7,7 @@ import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
-import { getAvailableToCastSpellLands } from '../../map/magic/getAvailableToCastSpellLands';
+import { getValidMagicLands } from '../../map/magic/getValidMagicLands';
 
 import { getSpellImg } from '../../assets/getSpellImg';
 
@@ -47,7 +47,7 @@ const CastSpellDialog: React.FC = () => {
           setIsArcaneExchangeMode(true);
         } else {
           // Add tiles to the glowing tiles set for visual highlighting for other spells
-          getAvailableToCastSpellLands(gameState!, spell.id).forEach((tileId) => {
+          getValidMagicLands(gameState!, spell.type).forEach((tileId) => {
             addGlowingTile(tileId);
           });
         }
@@ -60,11 +60,11 @@ const CastSpellDialog: React.FC = () => {
 
   useEffect(() => {
     if (selectedLandAction && showCastSpellDialog) {
-      const spell = AllSpells.find((s) => s.id === selectedLandAction);
+      const spell = AllSpells.find((s) => s.type === selectedLandAction);
       if (spell) {
         setTimeout(() => {
           alert(
-            `Casting ${spell.id}!\n\nMana Cost: ${spell.manaCost}\n\nEffect: ${spell.description}`
+            `Casting ${spell.type}!\n\nMana Cost: ${spell.manaCost}\n\nEffect: ${spell.description}`
           );
           handleDialogClose();
         }, 100);
@@ -87,7 +87,7 @@ const CastSpellDialog: React.FC = () => {
     ? AllSpells.filter(
         (spell) =>
           spell.manaCost <= playerMana[spell.manaType] &&
-          (spell.id !== SpellName.TURN_UNDEAD || turnUndeadSpellCastAvailable)
+          (spell.type !== SpellName.TURN_UNDEAD || turnUndeadSpellCastAvailable)
       )
     : [];
 
@@ -95,16 +95,16 @@ const CastSpellDialog: React.FC = () => {
     <FlipBook onClickOutside={handleDialogClose}>
       {availableSpells.map((spell, index) => (
         <FlipBookPage
-          key={spell.id}
+          key={spell.type}
           pageNum={index}
           lorePage={1027}
-          header={spell.id}
+          header={spell.type}
           iconPath={getSpellImg(spell)}
           description={spell.description}
           cost={spell.manaCost}
           costLabel="Mana Cost"
           onClose={handleDialogClose}
-          onIconClick={createSpellClickHandler(spell.id as SpellType)}
+          onIconClick={createSpellClickHandler(spell.type)}
         />
       ))}
     </FlipBook>

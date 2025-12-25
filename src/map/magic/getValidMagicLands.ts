@@ -4,6 +4,7 @@ import { getArmiesByPlayer, getPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import {
   getLand,
+  getLandOwner,
   getPlayerLands,
   getTilesInRadius,
   hasActiveEffect,
@@ -11,23 +12,30 @@ import {
 } from '../../selectors/landSelectors';
 import { getRegularLandKinds } from '../../domain/land/landRelationships';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { getItem } from '../../domain/treasure/treasureRepository';
 
-import { SpellName, SpellTarget } from '../../types/Spell';
+import { SpellName } from '../../types/Spell';
+import { TreasureName } from '../../types/Treasures';
+import { MagicTarget } from '../../types/MagicTarget';
 import { EffectTarget } from '../../types/Effect';
 import { BuildingName } from '../../types/Building';
 import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
 import type { GameState } from '../../state/GameState';
 import type { LandState } from '../../state/map/land/LandState';
-import type { SpellType } from '../../types/Spell';
+import type { Spell, SpellType } from '../../types/Spell';
+import type { Treasure, TreasureType } from '../../types/Treasures';
 
-export const getAvailableToCastSpellLands = (
+export const getValidMagicLands = (
   gameState: GameState,
-  spellName: SpellType
+  magicSource: SpellType | TreasureType
 ): string[] => {
-  const spell = getSpellById(spellName);
+  const magic: Spell | Treasure = Object.values(SpellName).includes(magicSource as SpellType)
+    ? getSpellById(magicSource as SpellType)
+    : getItem(magicSource as TreasureType);
 
-  if (spell.id === SpellName.CORRUPTION) {
+  if (magic.type === SpellName.CORRUPTION) {
     const affectedLands = new Set<string>();
 
     getPlayerLands(gameState)
@@ -54,26 +62,42 @@ export const getAvailableToCastSpellLands = (
     return Array.from(affectedLands);
   }
 
-  if (spell.target === SpellTarget.PLAYER) {
-    if (spell.rules?.target === EffectTarget.ARMY) {
+  if (magic.type === TreasureName.DEED_OF_RECLAMATION) {
+    const affectedLands = new Set<string>();
+    getPlayerLands(gameState)
+      .filter(
+        (l) => hasBuilding(l, BuildingName.OUTPOST) || hasBuilding(l, BuildingName.STRONGHOLD)
+      )
+      .forEach((land) => {
+        getTilesInRadius(getMapDimensions(gameState), land.mapPos, 3).forEach((l) => {
+          if (getLandOwner(gameState, l) === NO_PLAYER.id) {
+            affectedLands.add(getLandId(l));
+          }
+        });
+      });
+    return Array.from(affectedLands);
+  }
+
+  if (magic.target === MagicTarget.PLAYER) {
+    if (magic.rules?.target === EffectTarget.ARMY) {
       return getArmiesByPlayer(gameState)
-        .filter((army) => !army.effects.some((e) => e.sourceId === spellName))
+        .filter((army) => !army.effects.some((e) => e.sourceId === magicSource))
         .flatMap((a) => getLandId(getPosition(a)));
     }
     return getPlayerLands(gameState)
-      .filter((l) => !hasActiveEffect(l, spellName))
+      .filter((l) => !hasActiveEffect(l, magicSource))
       .flatMap((l) => getLandId(l.mapPos));
   }
 
   const playerFiltered =
-    spell.target === SpellTarget.OPPONENT
+    magic.target === MagicTarget.OPPONENT
       ? gameState.players.filter((p) => p.id !== gameState.turnOwner)
       : gameState.players;
 
   return playerFiltered
-    .filter((p) => !hasActiveEffectByPlayer(p, spellName))
+    .filter((p) => !hasActiveEffectByPlayer(p, magicSource))
     .flatMap((p) => getPlayerLands(gameState, p.id))
-    .filter((l) => !hasActiveEffect(l, spellName))
+    .filter((l) => !hasActiveEffect(l, magicSource))
     .flatMap((l) => getLandId(l.mapPos));
 };
 

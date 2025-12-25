@@ -160,10 +160,10 @@ describe('CastSpellDialog Component', () => {
       fireEvent.click(screen.getByTestId('show-dialog'));
 
       AllSpells.forEach((spell) => {
-        expect(screen.getByTestId(`FlipBookPage-${spell.id}`)).toBeInTheDocument();
-        expect(screen.getByText(spell.id)).toBeInTheDocument();
+        expect(screen.getByTestId(`FlipBookPage-${spell.type}`)).toBeInTheDocument();
+        expect(screen.getByText(spell.type)).toBeInTheDocument();
         expect(screen.getByText(spell.description)).toBeInTheDocument();
-        expect(screen.getByTestId(`cost-${spell.id}`)).toHaveTextContent(
+        expect(screen.getByTestId(`cost-${spell.type}`)).toHaveTextContent(
           `Mana Cost: ${spell.manaCost}`
         );
       });
@@ -176,9 +176,9 @@ describe('CastSpellDialog Component', () => {
       fireEvent.click(screen.getByTestId('show-dialog'));
 
       const testSpell = AllSpells[0]; // Test with first spell
-      expect(screen.getByText(testSpell.id)).toBeInTheDocument();
+      expect(screen.getByText(testSpell.type)).toBeInTheDocument();
       expect(screen.getByText(testSpell.description)).toBeInTheDocument();
-      expect(screen.getByTestId(`cost-${testSpell.id}`)).toHaveTextContent(
+      expect(screen.getByTestId(`cost-${testSpell.type}`)).toHaveTextContent(
         `Mana Cost: ${testSpell.manaCost}`
       );
     });
@@ -190,7 +190,7 @@ describe('CastSpellDialog Component', () => {
       // Test a few different spells with different mana costs
       const spellsToTest = AllSpells.slice(0, 3);
       spellsToTest.forEach((spell) => {
-        const costElement = screen.getByTestId(`cost-${spell.id}`);
+        const costElement = screen.getByTestId(`cost-${spell.type}`);
         expect(costElement).toHaveTextContent(`Mana Cost: ${spell.manaCost}`);
       });
     });
@@ -202,11 +202,11 @@ describe('CastSpellDialog Component', () => {
       fireEvent.click(screen.getByTestId('show-dialog'));
 
       const testSpell = AllSpells[0];
-      const selectButton = screen.getByTestId(`select-spell-${testSpell.id}`);
+      const selectButton = screen.getByTestId(`select-spell-${testSpell.type}`);
 
       fireEvent.click(selectButton);
 
-      expect(mockFlipBookPageClick).toHaveBeenCalledWith(testSpell.id);
+      expect(mockFlipBookPageClick).toHaveBeenCalledWith(testSpell.type);
     });
 
     it('handles spell selection for different spell types', () => {
@@ -216,9 +216,9 @@ describe('CastSpellDialog Component', () => {
       const spellsToTest = AllSpells.slice(0, 2);
       spellsToTest.forEach((spell, index) => {
         fireEvent.click(screen.getByTestId('show-dialog'));
-        const selectButton = screen.getByTestId(`select-spell-${spell.id}`);
+        const selectButton = screen.getByTestId(`select-spell-${spell.type}`);
         fireEvent.click(selectButton);
-        expect(mockFlipBookPageClick).toHaveBeenNthCalledWith(index + 1, spell.id);
+        expect(mockFlipBookPageClick).toHaveBeenNthCalledWith(index + 1, spell.type);
       });
     });
   });
@@ -260,12 +260,12 @@ describe('CastSpellDialog Component', () => {
       fireEvent.click(screen.getByTestId('show-dialog'));
 
       const testSpell = AllSpells[0];
-      const selectButton = screen.getByTestId(`select-spell-${testSpell.id}`);
+      const selectButton = screen.getByTestId(`select-spell-${testSpell.type}`);
 
       fireEvent.click(selectButton);
 
       // Should trigger spell selection
-      expect(mockFlipBookPageClick).toHaveBeenCalledWith(testSpell.id);
+      expect(mockFlipBookPageClick).toHaveBeenCalledWith(testSpell.type);
     });
   });
 
@@ -276,7 +276,7 @@ describe('CastSpellDialog Component', () => {
 
       // All spells should render even if some icons are missing
       AllSpells.forEach((spell) => {
-        expect(screen.getByTestId(`FlipBookPage-${spell.id}`)).toBeInTheDocument();
+        expect(screen.getByTestId(`FlipBookPage-${spell.type}`)).toBeInTheDocument();
       });
     });
   });
@@ -310,8 +310,8 @@ describe('CastSpellDialog Component', () => {
       fireEvent.click(screen.getByTestId('show-dialog'));
 
       AllSpells.forEach((spell) => {
-        const selectButton = screen.getByTestId(`select-spell-${spell.id}`);
-        expect(selectButton).toHaveTextContent(`Select ${spell.id}`);
+        const selectButton = screen.getByTestId(`select-spell-${spell.type}`);
+        expect(selectButton).toHaveTextContent(`Select ${spell.type}`);
         expect(selectButton).toBeEnabled();
       });
     });

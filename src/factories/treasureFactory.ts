@@ -3,6 +3,7 @@ import { getRandomInt } from '../domain/utils/random';
 import { artifacts, items, relicts } from '../domain/treasure/treasureRepository';
 import { TreasureName } from '../types/Treasures';
 import { Alignment } from '../types/Alignment';
+import { MagicTarget } from '../types/MagicTarget';
 import type { Artifact, EmpireTreasure, Relic, TreasureType } from '../types/Treasures';
 import type { AlignmentType } from '../types/Alignment';
 
@@ -15,10 +16,12 @@ export const artifactFactory = (treasureType: TreasureType, level: number): Arti
 };
 
 export const itemFactory = (treasureType: TreasureType): EmpireTreasure => {
+  const item = items.find((item) => item.type === treasureType)!;
   return {
     id: Object.freeze(uuid()),
     charge: getCharge(treasureType),
-    treasure: Object.freeze(items.find((item) => item.type === treasureType)!),
+    treasure: Object.freeze(item),
+    target: Object.freeze(item.target ?? MagicTarget.ALL),
   };
 };
 

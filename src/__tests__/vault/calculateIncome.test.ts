@@ -114,9 +114,9 @@ describe('Calculate Income', () => {
       gameStateStub,
       addPlayerEmpireTreasure(gameStateStub, gameStateStub.turnOwner, deedOfReclamation)
     );
-    const farLand: LandPosition = { row: 0, col: 0 };
+    const farLand: LandPosition = { row: 0, col: 3 };
     expect(getLandOwner(gameStateStub, farLand)).toBe(NO_PLAYER.id);
-    expect(calculateHexDistance(getMapDimensions(gameStateStub), homeLand, farLand)).toBe(5);
+    expect(calculateHexDistance(getMapDimensions(gameStateStub), homeLand, farLand)).toBe(3);
     invokeItem(gameStateStub, deedOfReclamation.id, farLand);
 
     /********** VERIFY INCOME ************/
