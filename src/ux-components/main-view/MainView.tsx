@@ -41,7 +41,7 @@ const MainViewContent: React.FC = () => {
     showProgressPopup,
     progressMessage,
     showErrorMessagePopup,
-    showHeroOutcomePopup,
+    showEmpireEventsPopup,
     gameStarted,
     clearAllGlow,
     setSelectedLandAction,
@@ -50,7 +50,7 @@ const MainViewContent: React.FC = () => {
     setShowProgressPopup,
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
-    showHeroOutcome,
+    showEmpireEvents,
     spellAnimation,
     hideSpellAnimation,
   } = useApplicationContext();
@@ -81,7 +81,7 @@ const MainViewContent: React.FC = () => {
         console.log('Computer player turn - AI not implemented yet');
       },
       onEmpireEventResult: (results: EmpireEvent[]) => {
-        showHeroOutcome(results);
+        showEmpireEvents(results);
       },
     });
   }, [
@@ -90,7 +90,7 @@ const MainViewContent: React.FC = () => {
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
     setTurnManagerCallbacks,
-    showHeroOutcome,
+    showEmpireEvents,
   ]);
 
   // Start the first turn when game begins (only once per game)
@@ -192,7 +192,7 @@ const MainViewContent: React.FC = () => {
       )}
 
       {/* Quest Results Popup */}
-      {showHeroOutcomePopup && (
+      {showEmpireEventsPopup && (
         <RealmEventsPopup
           screenPosition={{
             x: typeof window !== 'undefined' ? (window.innerWidth - 500) / 2 : 0,

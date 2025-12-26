@@ -55,11 +55,11 @@ interface ApplicationContextType {
   showSelectOpponentDialog: boolean;
   showProgressPopup: boolean;
 
-  // Quest Results Popup
-  showHeroOutcomePopup: boolean;
-  setShowHeroOutcomePopup: (show: boolean) => void;
-  heroOutcome: EmpireEvent[];
-  setHeroOutcome: (results: EmpireEvent[]) => void;
+  // Empire Events (hero quests, recruiting, using items etc) Popup
+  showEmpireEventsPopup: boolean;
+  setShowEmpireEventsPopup: (show: boolean) => void;
+  empireEvents: EmpireEvent[];
+  setEmpireEvents: (results: EmpireEvent[]) => void;
 
   // Dialog data
   selectedOpponent: PlayerState | undefined;
@@ -143,9 +143,9 @@ interface ApplicationContextType {
   ) => void;
   hideSelectOpponentDialog: () => void;
 
-  // Hero Outcome actions
-  showHeroOutcome: (results: EmpireEvent[]) => void;
-  hideHeroOutcome: () => void;
+  // Empire Events actions
+  showEmpireEvents: (results: EmpireEvent[]) => void;
+  hideEmpireEvents: () => void;
 }
 
 const ApplicationContext = createContext<ApplicationContextType | undefined>(undefined);
@@ -171,8 +171,8 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [showProgressPopup, setShowProgressPopup] = useState<boolean>(false);
 
   // Quest Results Popup states
-  const [showHeroOutcomePopup, setShowHeroOutcomePopup] = useState<boolean>(false);
-  const [heroOutcome, setHeroOutcome] = useState<EmpireEvent[]>([]);
+  const [showEmpireEventsPopup, setShowEmpireEventsPopup] = useState<boolean>(false);
+  const [empireEvents, setEmpireEvents] = useState<EmpireEvent[]>([]);
 
   // Dialog data
   const [selectedOpponent, setSelectedOpponent] = useState<PlayerState | undefined>(undefined);
@@ -277,15 +277,15 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     setGlowingTiles(new Set());
   }, []);
 
-  // Hero Outcome actions
-  const showHeroOutcome = useCallback((results: EmpireEvent[]) => {
-    setHeroOutcome(results);
-    setShowHeroOutcomePopup(true);
+  // Empire Events actions
+  const showEmpireEvents = useCallback((results: EmpireEvent[]) => {
+    setEmpireEvents(results);
+    setShowEmpireEventsPopup(true);
   }, []);
 
-  const hideHeroOutcome = useCallback(() => {
-    setShowHeroOutcomePopup(false);
-    setHeroOutcome([]);
+  const hideEmpireEvents = useCallback(() => {
+    setShowEmpireEventsPopup(false);
+    setEmpireEvents([]);
   }, []);
 
   // Spell animation actions
@@ -331,10 +331,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         showProgressPopup,
 
         // Quest Results Popup
-        showHeroOutcomePopup,
-        setShowHeroOutcomePopup,
-        heroOutcome,
-        setHeroOutcome,
+        showEmpireEventsPopup,
+        setShowEmpireEventsPopup,
+        empireEvents,
+        setEmpireEvents,
 
         // Dialog data
         selectedOpponent,
@@ -411,9 +411,9 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         showSelectOpponentDialogWithConfig,
         hideSelectOpponentDialog,
 
-        // Hero Outcome actions
-        showHeroOutcome,
-        hideHeroOutcome,
+        // Empire Events actions
+        showEmpireEvents,
+        hideEmpireEvents,
       }}
     >
       {children}

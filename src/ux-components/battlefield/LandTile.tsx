@@ -55,7 +55,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
     addGlowingTile,
     setMoveArmyPath,
     showSpellAnimation,
-    showHeroOutcome,
+    showEmpireEvents,
   } = useApplicationContext();
   const { gameState, updateGameState } = useGameContext();
 
@@ -140,7 +140,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
           invokeItem(gameState, itemId, mapPosition);
           if (!getTreasureItemById(getTurnOwner(gameState), itemId)) {
             // item is not invoked since no charges
-            showHeroOutcome([
+            showEmpireEvents([
               {
                 status: EmpireEventKind.Negative,
                 message: itemLostMessage(item.treasure.type),

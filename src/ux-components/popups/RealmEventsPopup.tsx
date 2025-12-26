@@ -30,14 +30,14 @@ const getEventBorderColor = (status: EmpireEventType): string => {
 };
 
 const RealmEventsPopup: React.FC<PopupProps> = ({ screenPosition }) => {
-  const { heroOutcome, hideHeroOutcome } = useApplicationContext();
+  const { empireEvents, hideEmpireEvents } = useApplicationContext();
 
-  if (!heroOutcome || heroOutcome.length === 0) {
+  if (!empireEvents || empireEvents.length === 0) {
     return null;
   }
 
   const headerHeight = 82;
-  const popupHeight = heroOutcome.reduce(
+  const popupHeight = empireEvents.reduce(
     (acc, heroOutcome) => acc + getMessageHeight(heroOutcome.message),
     0
   );
@@ -48,14 +48,14 @@ const RealmEventsPopup: React.FC<PopupProps> = ({ screenPosition }) => {
       screenPosition={screenPosition}
       dimensions={{ width: 500, height: heights > 498 ? 498 : heights }}
       accessible={true}
-      onClose={hideHeroOutcome}
+      onClose={hideEmpireEvents}
     >
       <div className={styles.popupContent}>
         <div className={styles.header}>
           <h3 className={styles.title}>Echoes of the Realm</h3>
         </div>
         <div className={styles.results}>
-          {heroOutcome.map((result, index) => (
+          {empireEvents.map((result, index) => (
             <div
               key={index}
               className={styles.resultMessage}
