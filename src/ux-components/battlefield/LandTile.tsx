@@ -65,7 +65,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
   const battlefieldTile = gameState!.map.lands[getLandId(mapPosition)];
 
   if (!battlefieldTile) {
-    return <div className={styles.hexTile} title="Empty Tile" />;
+    return <div className={styles.hexTile} title="Empty Tile" data-testid="land-tile" />;
   }
 
   const imageSrc = getLandImg(battlefieldTile);
@@ -218,6 +218,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
         onContextMenu={handleRightClick}
         onClick={handleClick}
         style={{ backgroundColor: getBackgroundColor() }}
+        data-testid="land-tile"
       >
         {imageSrc ? (
           <img src={imageSrc} alt={altText} className={styles.hexTileImg} />
