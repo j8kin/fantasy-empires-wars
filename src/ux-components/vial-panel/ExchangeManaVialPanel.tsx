@@ -1,10 +1,19 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import styles from './css/ExchangeManaVialPanel.module.css';
+import vialPanelStyles from './css/VialPanel.module.css';
+import cn from 'classnames';
 
 import ManaVial from './ManaVial';
+import { useGameContext } from '../../contexts/GameContext';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { castSpell } from '../../map/magic/castSpell';
+import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
+import { Mana } from '../../types/Mana';
+import { SpellName } from '../../types/Spell';
+
 import type { ManaType } from '../../types/Mana';
 
-// Component for exchange mode vials that show conversion rates and handle clicking
 interface ExchangeVialProps {
   color: ManaType;
   conversionAmount: number;
@@ -13,7 +22,7 @@ interface ExchangeVialProps {
   onHover: (manaType: ManaType | null) => void;
 }
 
-const ExchangeManaVialPanel: React.FC<ExchangeVialProps> = ({
+const ExchangeVial: React.FC<ExchangeVialProps> = ({
   color,
   conversionAmount,
   onExchange,
@@ -32,25 +41,12 @@ const ExchangeManaVialPanel: React.FC<ExchangeVialProps> = ({
     onHover(null);
   }, [onHover]);
 
-  const vialStyle = isHovered
-    ? {
-        filter: 'brightness(1.5)',
-        cursor: 'pointer',
-        transform: 'scale(1.1)',
-        transition: 'all 0.2s ease',
-      }
-    : {
-        cursor: 'pointer',
-        transition: 'all 0.2s ease',
-      };
-
   return (
     <div
       className={styles.exchangeVialContainer}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={vialStyle}
       title={`Exchange to ${conversionAmount} ${color} mana`}
     >
       <ManaVial color={color} mana={1000} />
@@ -59,6 +55,53 @@ const ExchangeManaVialPanel: React.FC<ExchangeVialProps> = ({
           +{conversionAmount} {color}
         </div>
       )}
+    </div>
+  );
+};
+
+const ExchangeManaVialPanel: React.FC = () => {
+  const { gameState, updateGameState } = useGameContext();
+  const { setIsArcaneExchangeMode } = useApplicationContext();
+  const [hoveredMana, setHoveredMana] = useState<ManaType | null>(null);
+
+  // Handle exchange of mana
+  const handleExchange = useCallback(
+    (targetManaType: ManaType) => {
+      if (gameState) {
+        // Cast the spell with the selected mana type
+        castSpell(gameState, SpellName.EXCHANGE, undefined, undefined, targetManaType);
+        updateGameState(gameState);
+
+        // Exit exchange mode
+        setIsArcaneExchangeMode(false);
+      }
+    },
+    [gameState, updateGameState, setIsArcaneExchangeMode]
+  );
+
+  if (!gameState) return null;
+  const turnOwner = getTurnOwner(gameState);
+
+  if (!turnOwner || turnOwner.playerType !== 'human') return null;
+
+  // In exchange mode, show all mana types except blue at max level
+  const exchangeableManaTypes = Object.values(Mana).filter((m) => m !== Mana.BLUE);
+
+  return (
+    <div className={cn(vialPanelStyles.vialPanel, styles.vialPanel)}>
+      {exchangeableManaTypes.map((manaType) => (
+        <ExchangeVial
+          key={manaType}
+          color={manaType}
+          conversionAmount={calculateManaConversionAmount(
+            turnOwner.playerProfile.alignment,
+            manaType
+          )}
+          onExchange={handleExchange}
+          isHovered={hoveredMana === manaType}
+          onHover={setHoveredMana}
+        />
+      ))}
     </div>
   );
 };

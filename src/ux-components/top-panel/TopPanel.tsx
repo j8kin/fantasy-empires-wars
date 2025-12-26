@@ -2,16 +2,17 @@ import React from 'react';
 import styles from './css/TopPanel.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameControl from '../game-controls/GameControl';
 import MapActionsControl from '../game-controls/MapActionsControl';
 import UnitActionControl from '../game-controls/UnitActionControl';
 import VialPanel from '../vial-panel/VialPanel';
+import ExchangeManaVialPanel from '../vial-panel/ExchangeManaVialPanel';
 import OpponentsPanel from '../opponents-panel/OpponentsPanel';
 import PlayerSummary from '../player/PlayerSummary';
 import GameButton from '../buttons/GameButton';
-
 import { ButtonName } from '../../types/ButtonName';
 import type { FrameSize } from '../../contexts/ApplicationContext';
 
@@ -22,6 +23,7 @@ export interface TopPanelProps {
 
 const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
   const { endCurrentTurn } = useGameContext();
+  const { isArcaneExchangeMode } = useApplicationContext();
 
   const avatarSize = height - Math.min(tileDimensions.height, tileDimensions.width) * 2 - 10;
 
@@ -49,8 +51,8 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
           {/* Display Player Info only if Game Started */}
           <PlayerSummary avatarSize={avatarSize} />
 
-          {/* Center - Mana Vials only if Game Started */}
-          <VialPanel />
+          {/* Center - Mana Vials or Exchange Panel based on mode */}
+          {isArcaneExchangeMode ? <ExchangeManaVialPanel /> : <VialPanel />}
 
           {/* Display Opponents only if Game Started */}
           <OpponentsPanel />
