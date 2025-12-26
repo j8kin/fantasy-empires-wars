@@ -2,6 +2,8 @@
 
 A fantasy-themed strategic warfare game built with React TypeScript. Immerse yourself in a rich fantasy world featuring hexagonal tactical combat, complex resource management, and deep strategic gameplay with moral choice systems.
 
+![codecov](https://codecov.io/gh/j8kin/fantasy-empires-wars/branch/master/graph/badge.svg)
+
 ## 🎮 Game Features
 
 ### Core Gameplay
@@ -34,7 +36,3 @@ A fantasy-themed strategic warfare game built with React TypeScript. Immerse you
 ## Demo
 
 🎮 **[View Live Demo](https://j8kin.github.io/fantasy-empires-wars)**
-
-### Code covarage
-
-![codecov](https://codecov.io/gh/j8kin/fantasy-empires-wars/branch/master/graph/badge.svg)
