@@ -82,237 +82,266 @@ describe('Hero Quest', () => {
     expect(getTurnOwner(gameStateStub).quests[0].remainTurnsInQuest).toBe(expectedRemainTurns); // counter should be decreased during start phase
   };
 
-  it('When player send hero to Quest it should "disappear" from Battlefield', () => {
-    expect(gameStateStub.turn).toBe(2);
-    expect(getTurnOwner(gameStateStub).quests.length).toBe(0); // no quests at the game start
+  describe('Base Quest Mechanics', () => {
+    it('When player send hero to Quest it should "disappear" from Battlefield', () => {
+      expect(gameStateStub.turn).toBe(2);
+      expect(getTurnOwner(gameStateStub).quests.length).toBe(0); // no quests at the game start
 
-    // all action could be done only on main phase on other phases all actions are performed automatically
-    testTurnManagement.waitStartPhaseComplete();
+      // all action could be done only on main phase on other phases all actions are performed automatically
+      testTurnManagement.waitStartPhaseComplete();
 
-    // get hero before quest start to verify that hero is not returned to the map and placed in Quest
-    const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-    startQuest(gameStateStub, heroName, easyQuest);
-    checkQuest(easyQuest, hero, heroLandPos, 4);
+      // get hero before quest start to verify that hero is not returned to the map and placed in Quest
+      const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
+      startQuest(gameStateStub, heroName, easyQuest);
+      checkQuest(easyQuest, hero, heroLandPos, 4);
 
-    expect(getArmiesAtPosition(gameStateStub, heroLandPos).length).toBe(0);
-  });
-
-  it('When hero is on Quest on next START phase counter (remainTurnsInQuest) should be decreased', () => {
-    expect(gameStateStub.turn).toBe(2);
-    testTurnManagement.waitStartPhaseComplete();
-
-    // get hero before quest start to verify that hero is not returned to the map and placed in Quest
-    const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-    startQuest(gameStateStub, heroName, easyQuest);
-    checkQuest(easyQuest, hero, heroLandPos, 4);
-
-    testTurnManagement.makeNTurns(1);
-
-    checkQuest(easyQuest, hero, heroLandPos, 3);
-  });
-
-  it('When hero Quest is complete and hero survive it should be placed back on the sam land', () => {
-    randomSpy.mockReturnValue(0.01); // always survive
-
-    const heroLevel = findArmyByHero(gameStateStub, heroName)!.heroes[0].level;
-    expect(gameStateStub.turn).toBe(2);
-    testTurnManagement.waitStartPhaseComplete();
-
-    // get hero before quest start to verify that hero is not returned to the map and placed in Quest
-    const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-    startQuest(gameStateStub, heroName, easyQuest);
-    checkQuest(easyQuest, hero, heroLandPos, 4);
-
-    testTurnManagement.makeNTurns(4);
-
-    expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
-    const armies = getArmiesAtPosition(gameStateStub, heroLandPos);
-    expect(armies.length).toBe(1);
-    expect(armies[0].heroes[0]).toEqual(
-      expect.objectContaining({
-        name: hero.name,
-        type: hero.type,
-        level: hero.level,
-      })
-    );
-    expect(armies[0].heroes[0].level).toBe(heroLevel); // hero level not incremented since his level is 8 and he goes into easy quest for level 1-5 heroes
-  });
-
-  it(`When hero Quest is complete and hero survive if his level is related to quest level`, () => {
-    randomSpy.mockReturnValue(0.01); // always survive
-    const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-    const heroBaseStatsBefore = { ...hero.baseStats };
-
-    const heroLevel = hero.level;
-    expect(gameStateStub.turn).toBe(2);
-    testTurnManagement.waitStartPhaseComplete();
-
-    startQuest(gameStateStub, heroName, mediumQuest);
-    checkQuest(mediumQuest, hero, heroLandPos, 5);
-
-    testTurnManagement.makeNTurns(5);
-
-    expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
-    const armies = getArmiesAtPosition(gameStateStub, heroLandPos);
-    expect(armies.length).toBe(1);
-    expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
-    expect(isMoving(armies[0])).toBeFalsy();
-    expect(armies[0].heroes[0].id).toBe(hero.id);
-    expect(armies[0].heroes[0].name).toBe(hero.name);
-    expect(armies[0].heroes[0].level).toBe(heroLevel + 1); // level incremented
-    expect(armies[0].heroes[0].artifacts.length).toBe(0);
-    expect(getTurnOwner(gameStateStub).empireTreasures.length).toBe(1);
-    expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-      TreasureName.WAND_OF_TURN_UNDEAD
-    ); // quest reward
-
-    // verify that hero stats are incremented exact new stats calculation verified separately
-    expect(hero.baseStats.attack).toBeGreaterThan(heroBaseStatsBefore.attack);
-    expect(hero.baseStats.defense).toBe(heroBaseStatsBefore.defense); // in levelUpHero used Math.floor and 6.52 for level 9 is 6 (the same as previous level)
-    expect(hero.baseStats.health).toBeGreaterThan(heroBaseStatsBefore.health);
-    expect(hero.baseStats.rangeDamage).toBeGreaterThan(heroBaseStatsBefore.rangeDamage!);
-    // not changed parameters
-    expect(hero.baseStats.speed).toBe(heroBaseStatsBefore.speed);
-    expect(hero.baseStats.range).toBe(heroBaseStatsBefore.range);
-    expect(hero.mana).not.toBeDefined();
-  });
-
-  const constructBuilding = (buildingType: BuildingType, pos: LandPosition): void => {
-    construct(gameStateStub, buildingType, pos);
-    const barracksLand = getLand(gameStateStub, pos);
-
-    expect(gameStateStub.turn).toBe(2);
-
-    expect(barracksLand).toBeDefined();
-    const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
-    expect(armies.length).toBe(0);
-    expect(hasAvailableSlot(barracksLand.buildings[0])).toBeTruthy();
-  };
-
-  it('Couple heroes returned from quest at the same time should be placed on the same land', () => {
-    testTurnManagement.waitStartPhaseComplete();
-    // Initial condition: Recruiting 3 heroes of the same type in barracks
-    const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      hasBuilding(l, BuildingName.STRONGHOLD)
-    )!;
-
-    const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    constructBuilding(BuildingName.BARRACKS, barracksPos);
-
-    let barracksLand = getLand(gameStateStub, barracksPos);
-    const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
-    expect(armies.length).toBe(0);
-
-    // Recruiting 3 heroes of the same type in barracks
-    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
-    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
-    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
-    barracksLand = getLand(gameStateStub, barracksPos);
-    expect(barracksLand.buildings[0].slots![0].unit).toBe(HeroUnitName.FIGHTER);
-    expect(barracksLand.buildings[0].slots![1].unit).toBe(HeroUnitName.FIGHTER);
-    expect(barracksLand.buildings[0].slots![2].unit).toBe(HeroUnitName.FIGHTER);
-
-    testTurnManagement.makeNTurns(3);
-
-    // heroes are recruited and available for quests
-    expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(
-      3
-    );
-
-    // heroes recruited and available for quests
-    const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
-    expect(armiesRecruited.length).toBe(1);
-    expect(armiesRecruited[0].heroes.length).toBe(3);
-
-    /* ********************** SEND TO QUEST ******************* */
-    randomSpy.mockReturnValue(0); // always survive (to successfully return all 3 heroes to the same land)
-    const heroes = [...armiesRecruited[0].heroes];
-    heroes.forEach((hero) => startQuest(gameStateStub, hero.name, easyQuest));
-    expect(heroes.length).toBe(3);
-
-    expect(getTurnOwner(gameStateStub).quests.length).toBe(3);
-    getTurnOwner(gameStateStub).quests.forEach((quest) => {
-      expect(quest.land).toBe(barracksLand.mapPos);
-      expect(quest.remainTurnsInQuest).toBe(4);
-      expect(quest.hero).toBeDefined();
-      expect(quest.hero!.level).toBe(1);
-      expect(quest.quest.id).toBe(easyQuest);
+      expect(getArmiesAtPosition(gameStateStub, heroLandPos).length).toBe(0);
     });
 
-    expect(getArmiesAtPosition(gameStateStub, barracksLand.mapPos).length).toBe(0);
+    it('When hero is on Quest on next START phase counter (remainTurnsInQuest) should be decreased', () => {
+      expect(gameStateStub.turn).toBe(2);
+      testTurnManagement.waitStartPhaseComplete();
 
-    testTurnManagement.makeNTurns(4);
+      // get hero before quest start to verify that hero is not returned to the map and placed in Quest
+      const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
+      startQuest(gameStateStub, heroName, easyQuest);
+      checkQuest(easyQuest, hero, heroLandPos, 4);
 
-    const armiesReturn = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
-    expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
-    expect(armiesReturn.length).toBe(1);
-    expect(armiesReturn[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
-    expect(isMoving(armiesReturn[0])).toBeFalsy();
-    expect(armiesReturn[0].heroes.length).toBe(3);
+      testTurnManagement.makeNTurns(1);
 
-    armiesReturn[0].heroes.forEach((armyUnit) => {
-      expect(armyUnit.level).toBe(2);
-      expect(armyUnit.artifacts.length).toBe(1);
-      expect(armyUnit.artifacts[0].treasure.type).toBe(TreasureName.BOOTS_OF_SPEED);
+      checkQuest(easyQuest, hero, heroLandPos, 3);
     });
-  });
 
-  it('hero returned from quest correctly merge into existing stationed Army', () => {
-    testTurnManagement.waitStartPhaseComplete();
-    // Initial condition: Recruiting 3 heroes of the same type in barracks
-    const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      hasBuilding(l, BuildingName.STRONGHOLD)
-    )!;
+    it('When hero Quest is complete and hero survive it should be placed back on the sam land', () => {
+      randomSpy.mockReturnValue(0.01); // always survive
 
-    const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-    constructBuilding(BuildingName.BARRACKS, barracksPos);
+      const heroLevel = findArmyByHero(gameStateStub, heroName)!.heroes[0].level;
+      expect(gameStateStub.turn).toBe(2);
+      testTurnManagement.waitStartPhaseComplete();
 
-    const barracksLand = getLand(gameStateStub, barracksPos);
-    const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
-    expect(armies.length).toBe(0);
+      // get hero before quest start to verify that hero is not returned to the map and placed in Quest
+      const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
+      startQuest(gameStateStub, heroName, easyQuest);
+      checkQuest(easyQuest, hero, heroLandPos, 4);
 
-    // Recruit one regular and one hero unit
-    startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
-    startRecruiting(gameStateStub, barracksLand.mapPos, RegularUnitName.WARRIOR);
+      testTurnManagement.makeNTurns(4);
 
-    testTurnManagement.makeNTurns(3);
+      expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
+      const armies = getArmiesAtPosition(gameStateStub, heroLandPos);
+      expect(armies.length).toBe(1);
+      expect(armies[0].heroes[0]).toEqual(
+        expect.objectContaining({
+          name: hero.name,
+          type: hero.type,
+          level: hero.level,
+        })
+      );
+      expect(armies[0].heroes[0].level).toBe(heroLevel); // hero level not incremented since his level is 8 and he goes into easy quest for level 1-5 heroes
+    });
 
-    expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(
-      3
-    );
+    it(`When hero Quest is complete and hero survive if his level is related to quest level`, () => {
+      randomSpy.mockReturnValue(0.01); // always survive
+      const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
+      const heroBaseStatsBefore = { ...hero.baseStats };
 
-    const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
-    expect(armiesRecruited.length).toBe(1);
-    expect(armiesRecruited[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
-    expect(isMoving(armiesRecruited[0])).toBeFalsy();
-    expect(armiesRecruited[0].heroes.length).toBe(1);
-    expect(armiesRecruited[0].regulars.length).toBe(1);
+      const heroLevel = hero.level;
+      expect(gameStateStub.turn).toBe(2);
+      testTurnManagement.waitStartPhaseComplete();
 
-    /* ********************** SEND TO QUEST ******************* */
-    randomSpy.mockReturnValue(0.01); // always survive (to successfully return all 3 heroes to the same land)
-    const hero = armiesRecruited[0].heroes[0];
-    startQuest(gameStateStub, hero.name, easyQuest);
-    const armiesQuestSend = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
-    expect(armiesQuestSend.length).toBe(1);
-    expect(armiesQuestSend[0].heroes.length).toBe(0);
-    expect(armiesQuestSend[0].regulars.length).toBe(1);
+      startQuest(gameStateStub, heroName, mediumQuest);
+      checkQuest(mediumQuest, hero, heroLandPos, 5);
 
-    testTurnManagement.makeNTurns(4);
+      testTurnManagement.makeNTurns(5);
 
-    const armiesQuestComplete = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
-    expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
-    expect(armiesQuestComplete.length).toBe(1);
-    expect(armiesQuestComplete[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
-    expect(isMoving(armiesQuestComplete[0])).toBeFalsy();
-    expect(armiesQuestComplete[0].heroes.length).toBe(1);
-    expect(armiesQuestComplete[0].regulars.length).toBe(1);
+      expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
+      const armies = getArmiesAtPosition(gameStateStub, heroLandPos);
+      expect(armies.length).toBe(1);
+      expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(armies[0])).toBeFalsy();
+      expect(armies[0].heroes[0].id).toBe(hero.id);
+      expect(armies[0].heroes[0].name).toBe(hero.name);
+      expect(armies[0].heroes[0].level).toBe(heroLevel + 1); // level incremented
+      expect(armies[0].heroes[0].artifacts.length).toBe(0);
+      expect(getTurnOwner(gameStateStub).empireTreasures.length).toBe(1);
+      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
+        TreasureName.WAND_OF_TURN_UNDEAD
+      ); // quest reward
 
-    expect(armiesQuestComplete[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
-    expect(armiesQuestComplete[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
-    expect(armiesQuestComplete[0].heroes[0].level).toBe(2);
-    expect(armiesQuestComplete[0].heroes[0].artifacts.length).toBe(1);
-    expect(armiesQuestComplete[0].heroes[0].artifacts[0].treasure.type).toBe(
-      TreasureName.BOOTS_OF_SPEED
+      // verify that hero stats are incremented exact new stats calculation verified separately
+      expect(hero.baseStats.attack).toBeGreaterThan(heroBaseStatsBefore.attack);
+      expect(hero.baseStats.defense).toBe(heroBaseStatsBefore.defense); // in levelUpHero used Math.floor and 6.52 for level 9 is 6 (the same as previous level)
+      expect(hero.baseStats.health).toBeGreaterThan(heroBaseStatsBefore.health);
+      expect(hero.baseStats.rangeDamage).toBeGreaterThan(heroBaseStatsBefore.rangeDamage!);
+      // not changed parameters
+      expect(hero.baseStats.speed).toBe(heroBaseStatsBefore.speed);
+      expect(hero.baseStats.range).toBe(heroBaseStatsBefore.range);
+      expect(hero.mana).not.toBeDefined();
+    });
+
+    const constructBuilding = (buildingType: BuildingType, pos: LandPosition): void => {
+      construct(gameStateStub, buildingType, pos);
+      const barracksLand = getLand(gameStateStub, pos);
+
+      expect(gameStateStub.turn).toBe(2);
+
+      expect(barracksLand).toBeDefined();
+      const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+      expect(armies.length).toBe(0);
+      expect(hasAvailableSlot(barracksLand.buildings[0])).toBeTruthy();
+    };
+
+    it('Couple heroes returned from quest at the same time should be placed on the same land', () => {
+      testTurnManagement.waitStartPhaseComplete();
+      // Initial condition: Recruiting 3 heroes of the same type in barracks
+      const homeLand = getPlayerLands(gameStateStub).find((l) =>
+        hasBuilding(l, BuildingName.STRONGHOLD)
+      )!;
+
+      const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+      constructBuilding(BuildingName.BARRACKS, barracksPos);
+
+      let barracksLand = getLand(gameStateStub, barracksPos);
+      const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+      expect(armies.length).toBe(0);
+
+      // Recruiting 3 heroes of the same type in barracks
+      startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
+      startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
+      startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
+      barracksLand = getLand(gameStateStub, barracksPos);
+      expect(barracksLand.buildings[0].slots![0].unit).toBe(HeroUnitName.FIGHTER);
+      expect(barracksLand.buildings[0].slots![1].unit).toBe(HeroUnitName.FIGHTER);
+      expect(barracksLand.buildings[0].slots![2].unit).toBe(HeroUnitName.FIGHTER);
+
+      testTurnManagement.makeNTurns(3);
+
+      // heroes are recruited and available for quests
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(
+        3
+      );
+
+      // heroes recruited and available for quests
+      const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+      expect(armiesRecruited.length).toBe(1);
+      expect(armiesRecruited[0].heroes.length).toBe(3);
+
+      /* ********************** SEND TO QUEST ******************* */
+      randomSpy.mockReturnValue(0); // always survive (to successfully return all 3 heroes to the same land)
+      const heroes = [...armiesRecruited[0].heroes];
+      expect(heroes.length).toBe(3);
+      heroes.forEach((hero) => startQuest(gameStateStub, hero.name, easyQuest));
+
+      expect(getTurnOwner(gameStateStub).quests.length).toBe(3);
+      getTurnOwner(gameStateStub).quests.forEach((quest) => {
+        expect(quest.land).toBe(barracksLand.mapPos);
+        expect(quest.remainTurnsInQuest).toBe(4);
+        expect(quest.hero).toBeDefined();
+        expect(quest.hero!.level).toBe(1);
+        expect(quest.quest.id).toBe(easyQuest);
+      });
+
+      expect(getArmiesAtPosition(gameStateStub, barracksLand.mapPos).length).toBe(0);
+
+      testTurnManagement.makeNTurns(4);
+
+      const armiesReturn = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+      expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
+      expect(armiesReturn.length).toBe(1);
+      expect(armiesReturn[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(armiesReturn[0])).toBeFalsy();
+      expect(armiesReturn[0].heroes.length).toBe(3);
+
+      armiesReturn[0].heroes.forEach((armyUnit) => {
+        expect(armyUnit.level).toBe(2);
+        expect(armyUnit.artifacts.length).toBe(1);
+        expect(armyUnit.artifacts[0].treasure.type).toBe(TreasureName.BOOTS_OF_SPEED);
+      });
+    });
+
+    it('hero returned from quest correctly merge into existing stationed Army', () => {
+      testTurnManagement.waitStartPhaseComplete();
+      // Initial condition: Recruiting a hero in barracks
+      const homeLand = getPlayerLands(gameStateStub).find((l) =>
+        hasBuilding(l, BuildingName.STRONGHOLD)
+      )!;
+
+      const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+      constructBuilding(BuildingName.BARRACKS, barracksPos);
+
+      const barracksLand = getLand(gameStateStub, barracksPos);
+      const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+      expect(armies.length).toBe(0);
+
+      // Recruit one regular and one hero unit
+      startRecruiting(gameStateStub, barracksLand.mapPos, HeroUnitName.FIGHTER);
+      startRecruiting(gameStateStub, barracksLand.mapPos, RegularUnitName.WARRIOR);
+
+      testTurnManagement.makeNTurns(3);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(
+        3
+      );
+
+      const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+      expect(armiesRecruited.length).toBe(1);
+      expect(armiesRecruited[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(armiesRecruited[0])).toBeFalsy();
+      expect(armiesRecruited[0].heroes.length).toBe(1);
+      expect(armiesRecruited[0].regulars.length).toBe(1);
+
+      /* ********************** SEND TO QUEST ******************* */
+      randomSpy.mockReturnValue(0.01); // always survive (to successfully return hero to the same land)
+      const hero = armiesRecruited[0].heroes[0];
+      startQuest(gameStateStub, hero.name, easyQuest);
+      const armiesQuestSend = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+      expect(armiesQuestSend.length).toBe(1);
+      expect(armiesQuestSend[0].heroes.length).toBe(0);
+      expect(armiesQuestSend[0].regulars.length).toBe(1);
+
+      testTurnManagement.makeNTurns(4);
+
+      // verify that hero merge into stationed army with existing regulars
+      const armiesQuestComplete = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+      expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
+      expect(armiesQuestComplete.length).toBe(1);
+      expect(armiesQuestComplete[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(armiesQuestComplete[0])).toBeFalsy();
+      expect(armiesQuestComplete[0].heroes.length).toBe(1);
+      expect(armiesQuestComplete[0].regulars.length).toBe(1);
+
+      expect(armiesQuestComplete[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
+      expect(armiesQuestComplete[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
+      expect(armiesQuestComplete[0].heroes[0].level).toBe(2);
+      expect(armiesQuestComplete[0].heroes[0].artifacts.length).toBe(1);
+      expect(armiesQuestComplete[0].heroes[0].artifacts[0].treasure.type).toBe(
+        TreasureName.BOOTS_OF_SPEED
+      );
+    });
+
+    it.each([
+      [mediumQuest, 0.55],
+      [hardQuest, 0.3],
+      [impossibleQuest, 0.05],
+    ])(
+      'Hi risk awarded with gain high level of hero',
+      (questType: QuestType, chanceToSurvive: number) => {
+        // create new 1 level hero
+        const luckyHero = heroFactory(HeroUnitName.FIGHTER, 'Lucky Hero');
+        placeUnitsOnMap(luckyHero, gameStateStub, heroLandPos);
+        const quest = getQuest(questType);
+        randomSpy.mockReturnValueOnce(chanceToSurvive); // survive in Quest
+
+        /********************** SEND TO QUEST ********************/
+        testTurnManagement.waitStartPhaseComplete();
+        startQuest(gameStateStub, luckyHero.name, questType);
+        testTurnManagement.makeNTurns(quest.length + 1);
+        /*********************************************************/
+        const heroAfterQuest = findArmyByHero(gameStateStub, luckyHero.name)?.heroes?.find(
+          (h) => h.name === luckyHero.name
+        );
+        expect(heroAfterQuest).toBeDefined();
+        expect(heroAfterQuest!.level).toBe((quest.level - 1) * 5); // gain level up to min level of quest - reward for the risk
+      }
     );
   });
 
@@ -612,8 +641,10 @@ describe('Hero Quest', () => {
 
       // get hero before quest start to verify that hero is not returned to the map and placed in Quest
       const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
+      /********************** SEND TO QUEST ********************/
       startQuest(gameStateStub, heroName, mediumQuest);
       checkQuest(mediumQuest, hero, heroLandPos, 5);
+      /*********************************************************/
 
       testTurnManagement.makeNTurns(5);
 
@@ -644,7 +675,7 @@ describe('Hero Quest', () => {
       expect(findLandByHeroName(gameStateStub, maxLevelHero.name)).toBeUndefined(); // hero is dead not returned to the map
     });
 
-    it('Hero survive if player has MERCY_OF_ORRIVANE in treasury', () => {
+    it('Hero survive if player has MERCY_OF_ORRIVANE in treasury and hero level >= 10', () => {
       Object.assign(
         gameStateStub,
         addPlayerEmpireTreasure(
@@ -664,10 +695,13 @@ describe('Hero Quest', () => {
 
       // get hero before quest start to verify that hero is not returned to the map and placed in Quest
       const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-      startQuest(gameStateStub, heroName, mediumQuest);
-      checkQuest(mediumQuest, hero, heroLandPos, 5);
+      while (hero.level < 10) levelUpHero(hero, Alignment.LAWFUL); // increase level to 10
+      /********************** SEND TO QUEST ********************/
+      startQuest(gameStateStub, heroName, hardQuest);
+      checkQuest(hardQuest, hero, heroLandPos, 6);
+      /**************************************************/
 
-      testTurnManagement.makeNTurns(5);
+      testTurnManagement.makeNTurns(6);
 
       expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
 
@@ -678,6 +712,43 @@ describe('Hero Quest', () => {
       expect(
         hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)
       ).toBeFalsy();
+    });
+
+    it('Hero die even if player has MERCY_OF_ORRIVANE in treasury but hero level < 10', () => {
+      Object.assign(
+        gameStateStub,
+        addPlayerEmpireTreasure(
+          gameStateStub,
+          gameStateStub.turnOwner,
+          itemFactory(TreasureName.MERCY_OF_ORRIVANE)
+        )
+      );
+      expect(
+        hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)
+      ).toBeTruthy();
+
+      randomSpy.mockReturnValue(1.0); // always die
+
+      expect(gameStateStub.turn).toBe(2);
+      testTurnManagement.waitStartPhaseComplete();
+
+      // get hero before quest start to verify that hero is not returned to the map and placed in Quest
+      const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
+      expect(hero.level).toBeLessThan(10);
+      /********************** SEND TO QUEST ********************/
+      startQuest(gameStateStub, heroName, hardQuest);
+      checkQuest(hardQuest, hero, heroLandPos, 6);
+      /**************************************************/
+
+      testTurnManagement.makeNTurns(6);
+
+      expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
+
+      expect(findLandByHeroName(gameStateStub, hero.name)).toBeUndefined(); // hero is not survived
+      // item still exists
+      expect(
+        hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)
+      ).toBeTruthy();
     });
 
     it('If player has two MERCY_OF_ORRIVANE in treasury only one should be used', () => {
@@ -709,10 +780,13 @@ describe('Hero Quest', () => {
 
       // get hero before quest start to verify that hero is not returned to the map and placed in Quest
       const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-      startQuest(gameStateStub, heroName, mediumQuest);
-      checkQuest(mediumQuest, hero, heroLandPos, 5);
+      while (hero.level < 10) levelUpHero(hero, Alignment.LAWFUL); // increase level to 10 to be aligned with MERCY_OF_ORRIVANE
+      /********************** SEND TO QUEST ********************/
+      startQuest(gameStateStub, heroName, hardQuest);
+      checkQuest(hardQuest, hero, heroLandPos, 6);
+      /**************************************************/
 
-      testTurnManagement.makeNTurns(5);
+      testTurnManagement.makeNTurns(6);
 
       expect(getTurnOwner(gameStateStub).quests.length).toBe(0);
 

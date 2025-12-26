@@ -166,12 +166,14 @@ const questResults = (state: GameState, quest: HeroQuest): EmpireEvent => {
     const hero: HeroState = { ...rewardResult.updatedHero }; // Use potentially updated hero with artifacts
 
     if (hero.level < quest.quest.level * 5) {
-      levelUpHero(hero, turnOwner.playerProfile.alignment);
+      do {
+        levelUpHero(hero, turnOwner.playerProfile.alignment);
+      } while (hero.level < (quest.quest.level - 1) * 5); // promote to lower quest level for risky players!
     }
 
     returnHeroOnMap(state, hero, quest.land);
   } else {
-    if (hasTreasureByPlayer(turnOwner, TreasureName.MERCY_OF_ORRIVANE)) {
+    if (hasTreasureByPlayer(turnOwner, TreasureName.MERCY_OF_ORRIVANE) && quest.hero.level >= 10) {
       // No time to die, Orrivane gives a mercy but not a new level
       questOutcome = {
         status: EmpireEventKind.Success,
