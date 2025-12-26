@@ -48,6 +48,7 @@ const ExchangeVial: React.FC<ExchangeVialProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       title={`Exchange to ${conversionAmount} ${color} mana`}
+      data-testid={`exchange-vial-${color}`}
     >
       <ManaVial color={color} mana={1000} />
       {isHovered && (
@@ -88,7 +89,10 @@ const ExchangeManaVialPanel: React.FC = () => {
   const exchangeableManaTypes = Object.values(Mana).filter((m) => m !== Mana.BLUE);
 
   return (
-    <div className={cn(vialPanelStyles.vialPanel, styles.vialPanel)}>
+    <div
+      className={cn(vialPanelStyles.vialPanel, styles.vialPanel)}
+      data-testid="exchange-vial-panel"
+    >
       {exchangeableManaTypes.map((manaType) => (
         <ExchangeVial
           key={manaType}
