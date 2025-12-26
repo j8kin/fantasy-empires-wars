@@ -48,7 +48,7 @@ export const getRelicAlignment = (relicType: TreasureType): AlignmentType => {
 
 const getCharge = (itemType: TreasureType): number => {
   switch (itemType) {
-    case TreasureName.RESTORE_BUILDING:
+    case TreasureName.SEED_OF_RENEWAL:
     case TreasureName.AEGIS_SHARD:
     case TreasureName.RESURRECTION:
     case TreasureName.MERCY_OF_ORRIVANE:
@@ -57,7 +57,7 @@ const getCharge = (itemType: TreasureType): number => {
     case TreasureName.DEED_OF_RECLAMATION:
     case TreasureName.HOURGLASS_OF_DELAY:
       return 2;
-    case TreasureName.STONE_OF_RENEWAL:
+    case TreasureName.GLYPH_OF_SEVERANCE:
       return 3;
     default:
       return getRandomInt(6, 10);

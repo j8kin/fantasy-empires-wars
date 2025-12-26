@@ -455,11 +455,11 @@ describe('invokeItems', () => {
     });
   });
 
-  describe('Use STONE_OF_RENEWAL', () => {
+  describe('Use GLYPH_OF_SEVERANCE', () => {
     let playerLand: LandPosition;
 
     beforeEach(() => {
-      treasureItem = addTreasureItemToPlayer(TreasureName.STONE_OF_RENEWAL)!;
+      treasureItem = addTreasureItemToPlayer(TreasureName.GLYPH_OF_SEVERANCE)!;
       playerLand = getPlayerLands(gameStateStub)[0].mapPos;
     });
 
@@ -476,12 +476,12 @@ describe('invokeItems', () => {
 
       expect(getLand(gameStateStub, playerLand).effects).toHaveLength(2);
 
-      /************** USE STONE_OF_RENEWAL *********************/
+      /************** USE GLYPH_OF_SEVERANCE *********************/
       invokeItem(gameStateStub, treasureItem.id, playerLand);
       /************************************************************/
       expect(getLand(gameStateStub, playerLand).effects).toHaveLength(1);
 
-      /************** USE STONE_OF_RENEWAL Second time *********************/
+      /************** USE GLYPH_OF_SEVERANCE Second time *********************/
       invokeItem(gameStateStub, treasureItem.id, playerLand);
       /************************************************************/
       expect(getLand(gameStateStub, playerLand).effects).toHaveLength(0);
@@ -501,7 +501,7 @@ describe('invokeItems', () => {
       expect(getLand(gameStateStub, playerLand).effects).toHaveLength(2);
 
       const charges = getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge;
-      /************** USE STONE_OF_RENEWAL *********************/
+      /************** USE GLYPH_OF_SEVERANCE *********************/
       invokeItem(gameStateStub, treasureItem.id, playerLand);
       /************************************************************/
       expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge).toBe(
@@ -512,7 +512,7 @@ describe('invokeItems', () => {
       expect(land.effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
       expect(land.effects[0].rules.type).toBe(EffectKind.POSITIVE);
 
-      /************** USE STONE_OF_RENEWAL the second time *********************/
+      /************** USE GLYPH_OF_SEVERANCE the second time *********************/
       invokeItem(gameStateStub, treasureItem.id, playerLand);
       /************************************************************/
       expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge).toBe(

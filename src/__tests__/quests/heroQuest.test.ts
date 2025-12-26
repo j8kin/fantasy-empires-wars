@@ -466,7 +466,7 @@ describe('Hero Quest', () => {
 
     it.each([
       [TreasureName.AEGIS_SHARD, mediumQuest],
-      [TreasureName.RESTORE_BUILDING, hardQuest],
+      [TreasureName.SEED_OF_RENEWAL, hardQuest],
       [TreasureName.RESURRECTION, impossibleQuest],
     ])(
       'Item %s could be obtained in quest %s',
@@ -511,7 +511,7 @@ describe('Hero Quest', () => {
       expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
       expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-        TreasureName.RESTORE_BUILDING
+        TreasureName.SEED_OF_RENEWAL
       );
 
       /********************** SEND TO QUEST ********************/
@@ -521,10 +521,10 @@ describe('Hero Quest', () => {
       expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(2);
       expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-        TreasureName.RESTORE_BUILDING
+        TreasureName.SEED_OF_RENEWAL
       );
       expect(getTurnOwner(gameStateStub).empireTreasures[1].treasure.type).toBe(
-        TreasureName.RESTORE_BUILDING
+        TreasureName.SEED_OF_RENEWAL
       );
     });
   });

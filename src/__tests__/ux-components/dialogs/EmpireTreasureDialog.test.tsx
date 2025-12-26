@@ -432,7 +432,7 @@ describe('EmpireTreasureDialog', () => {
     it('should handle multiple consumable items', () => {
       const item1 = itemFactory(TreasureName.WAND_OF_TURN_UNDEAD);
       const item2 = itemFactory(TreasureName.ORB_OF_STORM);
-      const item3 = itemFactory(TreasureName.RESTORE_BUILDING);
+      const item3 = itemFactory(TreasureName.SEED_OF_RENEWAL);
 
       getTurnOwner(gameStateStub).empireTreasures.push(item1, item2, item3);
 
@@ -506,7 +506,7 @@ describe('EmpireTreasureDialog', () => {
 
   describe('Treasure Type Filtering', () => {
     it('should display all types of treasures', () => {
-      const item1 = itemFactory(TreasureName.RESTORE_BUILDING);
+      const item1 = itemFactory(TreasureName.SEED_OF_RENEWAL);
       const item2 = itemFactory(TreasureName.AEGIS_SHARD);
       const item3 = itemFactory(TreasureName.RESURRECTION);
       const relic1 = relictFactory(TreasureName.CROWN_OF_DOMINION);
@@ -522,7 +522,7 @@ describe('EmpireTreasureDialog', () => {
 
     it('should handle treasure with different targets', () => {
       const opponentTargetItem = itemFactory(TreasureName.WAND_OF_TURN_UNDEAD);
-      const playerTargetItem = itemFactory(TreasureName.RESTORE_BUILDING);
+      const playerTargetItem = itemFactory(TreasureName.SEED_OF_RENEWAL);
 
       getTurnOwner(gameStateStub).empireTreasures.push(opponentTargetItem, playerTargetItem);
 

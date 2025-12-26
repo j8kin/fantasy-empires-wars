@@ -57,7 +57,7 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
       updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos);
       break;
 
-    case TreasureName.RESTORE_BUILDING:
+    case TreasureName.SEED_OF_RENEWAL:
       // todo implement after battle outcome implemented
       break;
 
@@ -73,7 +73,7 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
       // todo implement after battle outcome implemented
       break;
 
-    case TreasureName.STONE_OF_RENEWAL:
+    case TreasureName.GLYPH_OF_SEVERANCE:
       // remove one negative effect from the land
       const effectToCancel = getLand(updatedState, landPos).effects.find(
         (e) => e.rules.type === EffectKind.NEGATIVE

@@ -14,10 +14,10 @@ export const TreasureName = {
   // Items (Empire items which could be used like spells on Map)
   WAND_OF_TURN_UNDEAD: 'Wand of Turning',
   ORB_OF_STORM: 'Orb of Storms',
-  RESTORE_BUILDING: 'Seed of Renewal',
+  SEED_OF_RENEWAL: 'Seed of Renewal',
   AEGIS_SHARD: 'Aegis Shard',
   RESURRECTION: 'Phoenix Feather',
-  STONE_OF_RENEWAL: 'Stone of Renewal',
+  GLYPH_OF_SEVERANCE: 'Glyph of Severance',
   COMPASS_OF_DOMINION: 'Compass of Dominion',
   DEED_OF_RECLAMATION: 'Deed of Reclamation',
   MERCY_OF_ORRIVANE: 'Mercy of Orrivane',

@@ -58,7 +58,7 @@ export const items: Treasure[] = [
     isConsumable: true,
   },
   {
-    type: TreasureName.RESTORE_BUILDING,
+    type: TreasureName.SEED_OF_RENEWAL,
     lore: 'This seed sprouts overnight into a structure born of the world’s memory.',
     description: 'Restores one destroyed building. Even Stronghold on neutral land is restored',
     target: MagicTarget.PLAYER,
@@ -84,7 +84,7 @@ export const items: Treasure[] = [
     isConsumable: true,
   },
   {
-    type: TreasureName.STONE_OF_RENEWAL,
+    type: TreasureName.GLYPH_OF_SEVERANCE,
     lore: 'Ancient and patient, it remembers how the land once was.',
     description: 'Removes one negative effect from a land',
     target: MagicTarget.PLAYER,
