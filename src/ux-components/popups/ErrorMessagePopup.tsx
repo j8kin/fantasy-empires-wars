@@ -15,7 +15,11 @@ const ErrorMessagePopup: React.FC<PopupProps> = ({ screenPosition }) => {
       dimensions={{ width: 400, height: 100 }}
       accessible={true}
     >
-      <div className={styles.popupContent} style={{ height: '60px', justifyContent: 'center' }}>
+      <div
+        className={styles.popupContent}
+        style={{ height: '60px', justifyContent: 'center' }}
+        data-testid="error-message-popup-content"
+      >
         <div className={styles.message}>{errorMessagePopupMessage}</div>
       </div>
     </PopupWrapper>
