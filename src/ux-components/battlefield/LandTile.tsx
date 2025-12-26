@@ -26,6 +26,7 @@ import { getRandomElement } from '../../domain/utils/random';
 import { MAX_MOVE } from '../../map/move-army/calcMaxMove';
 import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
 import { SpellName } from '../../types/Spell';
+import { EmpireEventKind } from '../../types/EmpireEvent';
 
 import { getLandImg } from '../../assets/getLandImg';
 
@@ -141,7 +142,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
             // item is not invoked since no charges
             showHeroOutcome([
               {
-                status: 'negative',
+                status: EmpireEventKind.Negative,
                 message: itemLostMessage(item.treasure.type),
               },
             ]);
