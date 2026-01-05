@@ -4,18 +4,21 @@ import type { LandPosition } from '../state/map/land/LandPosition';
 import type { HeroState } from '../state/army/HeroState';
 import type { RegularsState } from '../state/army/RegularsState';
 import type { ArmyState } from '../state/army/ArmyState';
+import type { WarMachineState } from '../state/army/WarMachineState';
 
 export const armyFactory = (
   controlledBy: string,
   position: LandPosition,
   initHeroes: HeroState[] = [],
-  initRegulars: RegularsState[] = []
+  initRegulars: RegularsState[] = [],
+  initWarMachines: WarMachineState[] = []
 ): ArmyState => {
   return {
     id: Object.freeze(uuid()),
     controlledBy: Object.freeze(controlledBy),
     heroes: [...initHeroes],
     regulars: [...initRegulars],
+    warMachines: [...initWarMachines],
     movement: movementFactory(position),
     effects: [],
   };

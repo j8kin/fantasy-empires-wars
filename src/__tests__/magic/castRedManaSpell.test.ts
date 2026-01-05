@@ -10,7 +10,7 @@ import { castSpell } from '../../map/magic/castSpell';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { UnitRank } from '../../state/army/RegularsState';
 import { LandName } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
@@ -45,7 +45,7 @@ describe('castRedManaSpell', () => {
         [HeroUnitName.NECROMANCER, BuildingName.BLACK_MAGE_TOWER, 4],
         [HeroUnitName.FIGHTER, BuildingName.BARRACKS, 4],
         [RegularUnitName.WARRIOR, BuildingName.BARRACKS, 2],
-        [RegularUnitName.CATAPULT, BuildingName.BARRACKS, 4],
+        [WarMachineName.CATAPULT, BuildingName.BARRACKS, 4],
       ])(
         'Recruiting %s in %s affected and became %s',
         (unit: UnitType, building: BuildingType, newNTurn: number) => {
@@ -81,7 +81,7 @@ describe('castRedManaSpell', () => {
         [HeroUnitName.CLERIC, BuildingName.WHITE_MAGE_TOWER, 4],
         [HeroUnitName.RANGER, BuildingName.BARRACKS, 4],
         [RegularUnitName.ELF, BuildingName.BARRACKS, 3],
-        [RegularUnitName.BALLISTA, BuildingName.BARRACKS, 4],
+        [WarMachineName.BALLISTA, BuildingName.BARRACKS, 4],
       ])(
         'Recruiting %s in %s affected and became %s',
         (unit: UnitType, building: BuildingType, newNTurn: number) => {

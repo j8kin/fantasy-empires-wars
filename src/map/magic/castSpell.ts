@@ -43,7 +43,12 @@ import { SpellName } from '../../types/Spell';
 import { Mana } from '../../types/Mana';
 import { TreasureName } from '../../types/Treasures';
 import { EffectKind } from '../../types/Effect';
-import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName } from '../../types/UnitType';
+import {
+  HeroUnitName,
+  MAX_HERO_LEVEL,
+  RegularUnitName,
+  WarMachineName,
+} from '../../types/UnitType';
 
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
@@ -364,14 +369,18 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
           ? [
               RegularUnitName.ORC,
               RegularUnitName.DARK_ELF,
-              RegularUnitName.BALLISTA,
-              RegularUnitName.CATAPULT,
+              WarMachineName.BALLISTA,
+              WarMachineName.CATAPULT,
+              WarMachineName.SIEGE_TOWER,
+              WarMachineName.BATTERING_RAM,
               HeroUnitName.SHADOW_BLADE,
             ]
           : [
               RegularUnitName.ORC,
-              RegularUnitName.BALLISTA,
-              RegularUnitName.CATAPULT,
+              WarMachineName.BALLISTA,
+              WarMachineName.CATAPULT,
+              WarMachineName.SIEGE_TOWER,
+              WarMachineName.BATTERING_RAM,
               HeroUnitName.OGR,
             ];
 

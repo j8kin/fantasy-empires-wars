@@ -33,6 +33,7 @@ interface LandInfo {
   goldPerTurn: number;
   heroes: string[];
   regulars: string[];
+  warMachines: string[];
   buildings: BuildingType[];
   effects: Effect[];
   isCorrupted: boolean;
@@ -64,6 +65,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
         effects: [],
         heroes: [],
         regulars: [],
+        warMachines: [],
         buildings: [],
         isCorrupted: land.corrupted,
         illusionMsg: getRandomElement(ILLUSION_MESSAGES),
@@ -82,6 +84,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       effects: [...land.effects],
       heroes: armies.flatMap((a) => a.heroes).map((h) => `${h.name} lvl: ${h.level}`),
       regulars: armies.flatMap((a) => a.regulars).map((r) => `${r.type} (${r.count})`),
+      warMachines: armies.flatMap((a) => a.warMachines).map((w) => `${w.type} (${w.count})`),
       buildings: land.buildings.map((b) => b.type),
     };
   } else {
@@ -95,6 +98,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       effects: [],
       heroes: [],
       regulars: [],
+      warMachines: [],
       // return buildings only for neutral lands if VIEW_TERRITORY spell is not affected on opponent
       buildings: landOwnerId === NO_PLAYER.id ? land.buildings.map((b) => b.type) : [],
     };

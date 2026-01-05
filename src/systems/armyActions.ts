@@ -9,6 +9,7 @@ import type { ArmyState } from '../state/army/ArmyState';
 import type { HeroState } from '../state/army/HeroState';
 import type { RegularsState, UnitRankType } from '../state/army/RegularsState';
 import type { LandPosition } from '../state/map/land/LandPosition';
+import { WarMachineState } from '../state/army/WarMachineState';
 
 export const addHero = (state: ArmyState, hero: HeroState): ArmyState => {
   return {
@@ -48,6 +49,25 @@ export const addRegulars = (state: ArmyState, regulars: RegularsState): ArmyStat
     return {
       ...state,
       regulars: [...state.regulars, regulars],
+    };
+  }
+};
+
+export const addWarMachines = (state: ArmyState, warMachines: WarMachineState): ArmyState => {
+  const unitIdx = state.warMachines.findIndex((u) => u.type === warMachines.type);
+  if (unitIdx !== -1) {
+    // Update existing unit count
+    return {
+      ...state,
+      warMachines: state.warMachines.map((unit, idx) =>
+        idx === unitIdx ? { ...unit, count: unit.count + warMachines.count } : unit
+      ),
+    };
+  } else {
+    // Add new unit
+    return {
+      ...state,
+      warMachines: [...state.warMachines, warMachines],
     };
   }
 };

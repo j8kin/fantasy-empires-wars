@@ -1,6 +1,6 @@
 import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getPlayerLands } from '../../selectors/landSelectors';
-import { addHero, addRegulars } from '../../systems/armyActions';
+import { addHero, addRegulars, addWarMachines } from '../../systems/armyActions';
 import {
   decrementPlayerRecruitmentSlots,
   freePlayerCompletedRecruitmentSlots,
@@ -8,7 +8,7 @@ import {
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
-import { isHeroType } from '../../domain/unit/unitTypeChecks';
+import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 
@@ -16,6 +16,7 @@ import { EmpireEventKind } from '../../types/EmpireEvent';
 import type { EmpireEvent } from '../../types/EmpireEvent';
 import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
+import { warMachineFactory } from '../../factories/warMachineFactory';
 
 export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
   const recruitEvents: EmpireEvent[] = [];
@@ -63,16 +64,28 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
               newArmies.push(newArmy);
             }
           } else {
-            const newRegulars = regularsFactory(s.unit);
-
-            if (stationedArmy) {
-              // Get the latest version of this army (might have been updated already)
-              const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
-              const updatedArmy = addRegulars(currentArmy, newRegulars);
-              armiesToUpdate.set(stationedArmy.id, updatedArmy);
+            if (isWarMachine(s.unit)) {
+              const newWarMachine = warMachineFactory(s.unit);
+              if (stationedArmy) {
+                const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
+                const updatedArmy = addWarMachines(currentArmy, newWarMachine);
+                armiesToUpdate.set(stationedArmy.id, updatedArmy);
+              } else {
+                newArmies.push(
+                  armyFactory(turnOwner, l.mapPos, undefined, undefined, [newWarMachine])
+                );
+              }
             } else {
-              const newArmy = armyFactory(turnOwner, l.mapPos, undefined, [newRegulars]);
-              newArmies.push(newArmy);
+              const newRegulars = regularsFactory(s.unit);
+
+              if (stationedArmy) {
+                // Get the latest version of this army (might have been updated already)
+                const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
+                const updatedArmy = addRegulars(currentArmy, newRegulars);
+                armiesToUpdate.set(stationedArmy.id, updatedArmy);
+              } else {
+                newArmies.push(armyFactory(turnOwner, l.mapPos, undefined, [newRegulars]));
+              }
             }
           }
         });

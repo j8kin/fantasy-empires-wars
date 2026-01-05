@@ -12,7 +12,7 @@ import { playerFactory } from '../../../factories/playerFactory';
 
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { BuildingName } from '../../../types/Building';
-import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
 
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
@@ -153,7 +153,7 @@ describe('RecruitArmyDialog', () => {
     // Set up some units to recruit - use units that would be available on Plains land
     land.land.unitsToRecruit = [
       RegularUnitName.WARRIOR,
-      RegularUnitName.BALLISTA,
+      WarMachineName.BALLISTA,
       HeroUnitName.WARSMITH,
       HeroUnitName.FIGHTER,
       RegularUnitName.WARD_HANDS, // to make sure it will sorted
@@ -193,7 +193,7 @@ describe('RecruitArmyDialog', () => {
       mockApplicationContext.actionLandPosition = barracksPos;
 
       startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
-      startRecruiting(gameStateStub, barracksPos, RegularUnitName.BALLISTA);
+      startRecruiting(gameStateStub, barracksPos, WarMachineName.BALLISTA);
       startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
 
       renderWithProviders(<RecruitArmyDialog />);

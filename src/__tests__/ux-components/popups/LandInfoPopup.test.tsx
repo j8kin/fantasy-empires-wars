@@ -21,7 +21,7 @@ import { relictFactory } from '../../../factories/treasureFactory';
 import { updateLandEffect } from '../../../systems/gameStateActions';
 import { construct } from '../../../map/building/construct';
 import { NO_PLAYER } from '../../../domain/player/playerRepository';
-import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
 import { BuildingName } from '../../../types/Building';
 import { SpellName } from '../../../types/Spell';
 import { TreasureName } from '../../../types/Treasures';
@@ -31,6 +31,7 @@ import type { ArmyState } from '../../../state/army/ArmyState';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { warMachineFactory } from '../../../factories/warMachineFactory';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
@@ -186,6 +187,7 @@ describe('LandInfoPopup', () => {
       expect(screen.queryByText('Effects:')).not.toBeInTheDocument();
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
       expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.queryByText('War Machines:')).not.toBeInTheDocument();
     });
 
     it('displays buildings on neutral lands', () => {
@@ -215,6 +217,7 @@ describe('LandInfoPopup', () => {
       expect(screen.queryByText('Effects:')).not.toBeInTheDocument();
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
       expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.queryByText('War Machines:')).not.toBeInTheDocument();
     });
   });
   describe('Army display functionality', () => {
@@ -373,6 +376,7 @@ describe('LandInfoPopup', () => {
 
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
       expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.queryByText('War Machines:')).not.toBeInTheDocument();
     });
 
     it('displays only heroes section when tile has only heroes', () => {
@@ -402,6 +406,7 @@ describe('LandInfoPopup', () => {
       expect(screen.getByText('Ranger lvl: 1')).toBeInTheDocument();
       expect(screen.getByText('Necromancer lvl: 1')).toBeInTheDocument();
       expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.queryByText('War Machines:')).not.toBeInTheDocument();
     });
 
     it('displays only units section when tile has only non-hero units', () => {
@@ -416,7 +421,7 @@ describe('LandInfoPopup', () => {
       );
 
       placeUnitsOnMap(regularsFactory(RegularUnitName.ORC), gameStateStub, landPos);
-      placeUnitsOnMap(regularsFactory(RegularUnitName.BALLISTA), gameStateStub, landPos);
+      placeUnitsOnMap(warMachineFactory(WarMachineName.BALLISTA), gameStateStub, landPos);
 
       renderWithProviders(
         <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
@@ -425,6 +430,7 @@ describe('LandInfoPopup', () => {
 
       expect(screen.getByText('Units:')).toBeInTheDocument();
       expect(screen.getByText('Orc (20)')).toBeInTheDocument();
+      expect(screen.getByText('War Machines:')).toBeInTheDocument();
       expect(screen.getByText('Ballista (1)')).toBeInTheDocument();
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
     });

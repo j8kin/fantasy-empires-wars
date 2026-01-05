@@ -70,6 +70,9 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
     if (landInfo.regulars.length > 0) {
       calculatedHeight += landInfo.regulars.length * armyRowHeight;
     }
+    if (landInfo.warMachines.length > 0) {
+      calculatedHeight += landInfo.warMachines.length * armyRowHeight;
+    }
   }
 
   //  Final height calculation
@@ -206,6 +209,18 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
                       <span className={`${commonStyles.label} ${styles.label}`}>Units:</span>
                       <div className={styles.buildingsList}>
                         {landInfo.regulars.map((unit, index) => (
+                          <span key={index} className={commonStyles.value}>
+                            {unit}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {landInfo.warMachines.length > 0 && (
+                    <div className={`${commonStyles.row} ${styles.row}`}>
+                      <span className={`${commonStyles.label} ${styles.label}`}>War Machines:</span>
+                      <div className={styles.buildingsList}>
+                        {landInfo.warMachines.map((unit, index) => (
                           <span key={index} className={commonStyles.value}>
                             {unit}
                           </span>

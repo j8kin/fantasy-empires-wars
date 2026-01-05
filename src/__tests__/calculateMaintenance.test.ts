@@ -1,19 +1,22 @@
 import type { GameState } from '../state/GameState';
 import type { LandPosition } from '../state/map/land/LandPosition';
+import type { UnitRankType } from '../state/army/RegularsState';
+import type { RegularUnitType, WarMachineType } from '../types/UnitType';
 
 import { getTurnOwner } from '../selectors/playerSelectors';
 import { addPlayerLand } from '../systems/gameStateActions';
-import { addRegulars } from '../systems/armyActions';
+import { addRegulars, addWarMachines } from '../systems/armyActions';
 import { levelUpHero, levelUpRegulars } from '../systems/unitsActions';
 import { heroFactory } from '../factories/heroFactory';
 import { regularsFactory } from '../factories/regularsFactory';
 import { armyFactory } from '../factories/armyFactory';
 import { calculateMaintenance } from '../map/vault/calculateMaintenance';
 import { construct } from '../map/building/construct';
+import { warMachineFactory } from '../factories/warMachineFactory';
 
-import { BuildingName } from '../types/Building';
 import { UnitRank } from '../state/army/RegularsState';
-import { HeroUnitName, RegularUnitName } from '../types/UnitType';
+import { BuildingName } from '../types/Building';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
 import { Alignment } from '../types/Alignment';
 
 import { createGameStateStub } from './utils/createGameStateStub';
@@ -70,21 +73,40 @@ describe('Calculate Maintenance', () => {
       [RegularUnitName.ORC, UnitRank.REGULAR, 20, 90], // orc maintenance is not an integer number
       [RegularUnitName.ELF, UnitRank.REGULAR, 1, 5],
       [RegularUnitName.DARK_ELF, UnitRank.REGULAR, 1, 5],
-      [RegularUnitName.BALLISTA, UnitRank.REGULAR, 1, 150],
-      [RegularUnitName.CATAPULT, UnitRank.REGULAR, 1, 50],
-    ])('RegularUnit %s maintenance level %s quantity %s', (regular, level, quantity, expected) => {
+    ])(
+      'RegularUnit %s maintenance level %s quantity %s',
+      (regular: RegularUnitType, level: UnitRankType, quantity: number, expected: number) => {
+        Object.assign(
+          gameStateStub,
+          addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 0, col: 0 })
+        );
+        const regularUnit = regularsFactory(regular);
+        while (regularUnit.rank !== level) {
+          levelUpRegulars(regularUnit, Alignment.LAWFUL);
+        }
+        regularUnit.count = quantity;
+
+        gameStateStub.armies = [
+          armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, undefined, [regularUnit]),
+        ];
+        const maintenance = calculateMaintenance(gameStateStub);
+        expect(maintenance).toBe(expected);
+      }
+    );
+    it.each([
+      [WarMachineName.BALLISTA, 150],
+      [WarMachineName.CATAPULT, 250],
+      [WarMachineName.BATTERING_RAM, 50],
+      [WarMachineName.SIEGE_TOWER, 250],
+    ])('WarMachine %s maintenance', (regular: WarMachineType, expected: number) => {
       Object.assign(
         gameStateStub,
         addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 0, col: 0 })
       );
-      const regularUnit = regularsFactory(regular);
-      while (regularUnit.rank !== level) {
-        levelUpRegulars(regularUnit, Alignment.LAWFUL);
-      }
-      regularUnit.count = quantity;
-
       gameStateStub.armies = [
-        armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, undefined, [regularUnit]),
+        armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, undefined, undefined, [
+          warMachineFactory(regular),
+        ]),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -105,7 +127,7 @@ describe('Calculate Maintenance', () => {
         heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
       ]);
       Object.assign(army, addRegulars(army, regularsFactory(RegularUnitName.DWARF)));
-      Object.assign(army, addRegulars(army, regularsFactory(RegularUnitName.BALLISTA)));
+      Object.assign(army, addWarMachines(army, warMachineFactory(WarMachineName.BALLISTA)));
       Object.assign(army, addRegulars(army, elitDwarf));
 
       gameStateStub.armies = [army];

@@ -11,7 +11,7 @@ import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { getLandById } from '../../domain/land/landRepository';
 import { castSpell } from '../../map/magic/castSpell';
-import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { UnitRank } from '../../state/army/RegularsState';
 import { SpellName } from '../../types/Spell';
 import { Alignment } from '../../types/Alignment';
@@ -220,15 +220,19 @@ describe('castBlackManaSpell', () => {
           availableForRecruit = [
             RegularUnitName.ORC,
             RegularUnitName.DARK_ELF,
-            RegularUnitName.BALLISTA,
-            RegularUnitName.CATAPULT,
+            WarMachineName.BALLISTA,
+            WarMachineName.CATAPULT,
+            WarMachineName.SIEGE_TOWER,
+            WarMachineName.BATTERING_RAM,
             HeroUnitName.SHADOW_BLADE,
           ];
         } else {
           availableForRecruit = [
             RegularUnitName.ORC,
-            RegularUnitName.BALLISTA,
-            RegularUnitName.CATAPULT,
+            WarMachineName.BALLISTA,
+            WarMachineName.CATAPULT,
+            WarMachineName.SIEGE_TOWER,
+            WarMachineName.BATTERING_RAM,
             HeroUnitName.OGR,
           ];
         }

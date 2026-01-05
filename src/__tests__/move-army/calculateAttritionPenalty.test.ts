@@ -2,19 +2,20 @@ import { UnitRank } from '../../state/army/RegularsState';
 import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
 import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
-import type { RegularUnitType } from '../../types/UnitType';
+import { RegularUnitType, WarMachineName } from '../../types/UnitType';
 import { RegularUnitName } from '../../types/UnitType';
 
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { hasLand } from '../../systems/playerActions';
-import { addArmyToGameState, addRegulars } from '../../systems/armyActions';
+import { addArmyToGameState, addRegulars, addWarMachines } from '../../systems/armyActions';
 import { armyFactory } from '../../factories/armyFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 
 import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { warMachineFactory } from '../../factories/warMachineFactory';
 
 describe('Calculate Attrition Penalty', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -141,10 +142,7 @@ describe('Calculate Attrition Penalty', () => {
       army1,
       addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, 100, UnitRank.REGULAR))
     );
-    Object.assign(
-      army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitName.BALLISTA, 1, UnitRank.REGULAR))
-    );
+    Object.assign(army1, addWarMachines(army1, warMachineFactory(WarMachineName.BALLISTA)));
 
     // place army using centralized system
     Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army1));
@@ -168,14 +166,9 @@ describe('Calculate Attrition Penalty', () => {
       army1,
       addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, 100, UnitRank.REGULAR))
     );
-    Object.assign(
-      army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitName.BALLISTA, 1, UnitRank.REGULAR))
-    );
-    Object.assign(
-      army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitName.CATAPULT, 2, UnitRank.REGULAR))
-    );
+    Object.assign(army1, addWarMachines(army1, warMachineFactory(WarMachineName.BALLISTA)));
+    Object.assign(army1, addWarMachines(army1, warMachineFactory(WarMachineName.CATAPULT)));
+    Object.assign(army1, addWarMachines(army1, warMachineFactory(WarMachineName.CATAPULT)));
 
     // place army using centralized system
     Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army1));
@@ -188,7 +181,7 @@ describe('Calculate Attrition Penalty', () => {
     expect(currentArmies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
     expect(currentArmies[0].regulars[0].count).toBe(100 - 10); // -30 instead of 50 because of the ballista and catapult
 
-    expect(currentArmies[0].regulars[1].type).toBe(RegularUnitName.CATAPULT);
+    expect(currentArmies[0].regulars[1].type).toBe(WarMachineName.CATAPULT);
     expect(currentArmies[0].regulars[1].count).toBe(1); // 2 catapults are destroyed
   });
 

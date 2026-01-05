@@ -1,6 +1,6 @@
 import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
-import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import type { UnitType } from '../../types/UnitType';
 import type { Land, LandType } from '../../types/Land';
 
@@ -10,8 +10,10 @@ const commonUnitsToRecruit: UnitType[] = [
   // common regular unit available on all lands
   RegularUnitName.WARD_HANDS,
   // war machines
-  RegularUnitName.BALLISTA,
-  RegularUnitName.CATAPULT,
+  WarMachineName.BALLISTA,
+  WarMachineName.CATAPULT,
+  WarMachineName.BATTERING_RAM,
+  WarMachineName.SIEGE_TOWER,
   // mages (could be restricted based available mage towers)
   HeroUnitName.PYROMANCER,
   HeroUnitName.DRUID,

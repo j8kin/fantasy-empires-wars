@@ -1,14 +1,13 @@
-import { GameState } from '../../state/GameState';
-import { HeroState } from '../../state/army/HeroState';
-import { RegularsState } from '../../state/army/RegularsState';
-import { LandPosition } from '../../state/map/land/LandPosition';
-
 import { armyFactory } from '../../factories/armyFactory';
-
-import { isHeroType } from '../../domain/unit/unitTypeChecks';
-import { Unit } from '../../types/BaseUnit';
-
+import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { addArmyToGameState } from '../../systems/armyActions';
+
+import type { GameState } from '../../state/GameState';
+import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { Unit } from '../../types/BaseUnit';
+import type { HeroState } from '../../state/army/HeroState';
+import type { RegularsState } from '../../state/army/RegularsState';
+import type { WarMachineState } from '../../state/army/WarMachineState';
 
 /**
  * test function. Should not be used in integration tests related on TurnManagement
@@ -21,7 +20,13 @@ export const placeUnitsOnMap = (unit: Unit, gameState: GameState, landPos: LandP
   if (isHeroType(unit.type)) {
     newArmy = armyFactory(gameState.turnOwner, landPos, [unit as HeroState]);
   } else {
-    newArmy = armyFactory(gameState.turnOwner, landPos, undefined, [unit as RegularsState]);
+    if (isWarMachine(unit.type)) {
+      newArmy = armyFactory(gameState.turnOwner, landPos, undefined, undefined, [
+        unit as WarMachineState,
+      ]);
+    } else {
+      newArmy = armyFactory(gameState.turnOwner, landPos, undefined, [unit as RegularsState]);
+    }
   }
   Object.assign(gameState, addArmyToGameState(gameState, newArmy));
 };

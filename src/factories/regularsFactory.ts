@@ -1,7 +1,7 @@
 import { unitsBaseStats } from '../domain/unit/unitRepository';
 import { UnitRank } from '../state/army/RegularsState';
 import type { RegularsState } from '../state/army/RegularsState';
-import type { RegularUnitType } from '../types/UnitType';
+import { RegularUnitType } from '../types/UnitType';
 import { RegularUnitName } from '../types/UnitType';
 
 export const regularsFactory = (
@@ -22,9 +22,6 @@ const getRegularUnitCount = (unitType: RegularUnitType): number => {
       return 30;
     case RegularUnitName.HALFLING:
       return 25;
-    case RegularUnitName.BALLISTA:
-    case RegularUnitName.CATAPULT:
-      return 1;
     default:
       return 20;
   }

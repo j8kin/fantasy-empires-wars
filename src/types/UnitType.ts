@@ -6,12 +6,19 @@ export const RegularUnitName = {
   HALFLING: 'Halfling',
   ELF: 'Elf',
   DARK_ELF: 'Dark-Elf',
-  BALLISTA: 'Ballista',
-  CATAPULT: 'Catapult',
   UNDEAD: 'Undead',
 } as const;
 
 export type RegularUnitType = (typeof RegularUnitName)[keyof typeof RegularUnitName];
+
+export const WarMachineName = {
+  BALLISTA: 'Ballista',
+  CATAPULT: 'Catapult',
+  BATTERING_RAM: 'Battering Ram',
+  SIEGE_TOWER: 'Siege Tower',
+};
+
+export type WarMachineType = (typeof WarMachineName)[keyof typeof WarMachineName];
 
 export const HeroUnitName = {
   // non-mage heroes units
@@ -33,6 +40,6 @@ export const HeroUnitName = {
 
 export type HeroUnitType = (typeof HeroUnitName)[keyof typeof HeroUnitName];
 
-export type UnitType = RegularUnitType | HeroUnitType;
+export type UnitType = RegularUnitType | HeroUnitType | WarMachineType;
 
 export const MAX_HERO_LEVEL = 32;
