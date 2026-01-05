@@ -1,10 +1,3 @@
-import { UnitRank } from '../../state/army/RegularsState';
-import type { GameState } from '../../state/GameState';
-import type { ArmyState } from '../../state/army/ArmyState';
-import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
-import { RegularUnitType, WarMachineName } from '../../types/UnitType';
-import { RegularUnitName } from '../../types/UnitType';
-
 import { getLand, getLandOwner } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
@@ -12,10 +5,18 @@ import { hasLand } from '../../systems/playerActions';
 import { addArmyToGameState, addRegulars, addWarMachines } from '../../systems/armyActions';
 import { armyFactory } from '../../factories/armyFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
+import { warMachineFactory } from '../../factories/warMachineFactory';
+import { UnitRank } from '../../state/army/RegularsState';
+import { WarMachineName } from '../../types/UnitType';
+import { RegularUnitName } from '../../types/UnitType';
+
+import type { GameState } from '../../state/GameState';
+import type { ArmyState } from '../../state/army/ArmyState';
+import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
+import type { RegularUnitType } from '../../types/UnitType';
 
 import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { warMachineFactory } from '../../factories/warMachineFactory';
 
 describe('Calculate Attrition Penalty', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -132,7 +133,7 @@ describe('Calculate Attrition Penalty', () => {
     }
   );
 
-  it('War-machines counted as 20 units', () => {
+  it('War-machines are not included in attrition penalty calculation', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
@@ -151,12 +152,14 @@ describe('Calculate Attrition Penalty', () => {
 
     const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
     expect(currentArmies.length).toBe(1);
-    expect(currentArmies[0].regulars.length).toBe(1); // no ballista unit in the army
+    expect(currentArmies[0].regulars.length).toBe(1);
     expect(currentArmies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
-    expect(currentArmies[0].regulars[0].count).toBe(100 - 30); // -30 instead of 50 because of the ballista
+    expect(currentArmies[0].regulars[0].count).toBe(50); // 50% of 100 warriors lost, war machines not counted
+    expect(currentArmies[0].warMachines.length).toBe(1); // ballista remains untouched in separate field
+    expect(currentArmies[0].warMachines[0].type).toBe(WarMachineName.BALLISTA);
   });
 
-  it('War-machines counted as 20 units, 3 war-machines totally on land', () => {
+  it('War-machines with multiple war machines remain separate and untouched', () => {
     randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
@@ -177,12 +180,16 @@ describe('Calculate Attrition Penalty', () => {
 
     const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
     expect(currentArmies.length).toBe(1);
-    expect(currentArmies[0].regulars.length).toBe(2); // no ballista unit in the army
+    expect(currentArmies[0].regulars.length).toBe(1); // only warriors in regulars
     expect(currentArmies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
-    expect(currentArmies[0].regulars[0].count).toBe(100 - 10); // -30 instead of 50 because of the ballista and catapult
+    expect(currentArmies[0].regulars[0].count).toBe(50); // 50% of 100 warriors lost
 
-    expect(currentArmies[0].regulars[1].type).toBe(WarMachineName.CATAPULT);
-    expect(currentArmies[0].regulars[1].count).toBe(1); // 2 catapults are destroyed
+    // All war machines remain in separate field (grouped by type)
+    expect(currentArmies[0].warMachines.length).toBe(2);
+    expect(currentArmies[0].warMachines[0].type).toBe(WarMachineName.BALLISTA);
+    expect(currentArmies[0].warMachines[0].count).toBe(1);
+    expect(currentArmies[0].warMachines[1].type).toBe(WarMachineName.CATAPULT);
+    expect(currentArmies[0].warMachines[1].count).toBe(2); // 2 catapults grouped together
   });
 
   it('Army destroyed if all units killed', () => {
