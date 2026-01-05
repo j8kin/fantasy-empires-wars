@@ -115,6 +115,7 @@ describe('Move Army', () => {
         const armyBriefInfo: ArmyBriefInfo = {
           heroes: [],
           regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+          warMachines: [],
         };
 
         Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -144,6 +145,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
         regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
+        warMachines: [],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -167,6 +169,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [briefInfo(armies[0]).heroes[0]],
         regulars: [],
+        warMachines: [],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -184,6 +187,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [briefInfo(armies[0]).heroes[0]],
         regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+        warMachines: [],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -212,6 +216,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [briefInfo(armies[0]).heroes[0]],
         regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
+        warMachines: [],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -233,6 +238,7 @@ describe('Move Army', () => {
         const armyBriefInfo: ArmyBriefInfo = {
           heroes: [],
           regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+          warMachines: [],
         };
         let armies = getArmiesAtPosition(gameStateStub, emptyLand.mapPos);
 
@@ -260,6 +266,7 @@ describe('Move Army', () => {
         const armyBriefInfo: ArmyBriefInfo = {
           heroes: [briefInfo(armies[0]).heroes[0]],
           regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 1000 }],
+          warMachines: [],
         };
 
         Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -281,6 +288,7 @@ describe('Move Army', () => {
         const armyBriefInfo: ArmyBriefInfo = {
           heroes: [{ name: 'Invalid hero name', type: HeroUnitName.CLERIC, level: 1 }],
           regulars: [],
+          warMachines: [],
         };
 
         Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -318,6 +326,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
         regulars: [briefInfo(armies[0]).regulars[0]],
+        warMachines: [],
       };
 
       /******************* Start Movement *********************/
@@ -363,6 +372,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
         regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+        warMachines: [],
       };
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
 
@@ -383,6 +393,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [briefInfo(armies[0]).heroes[0]], // initial hero in homeland
         regulars: [],
+        warMachines: [],
       };
 
       Object.assign(
@@ -407,6 +418,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [briefInfo(armies[0]).heroes[0]], // initial hero in homeland
         regulars: [],
+        warMachines: [],
       };
 
       expect(armies.length).toBe(1);
@@ -451,6 +463,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
         regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 120 }],
+        warMachines: [],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -491,6 +504,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
         regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
+        warMachines: [],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
@@ -523,6 +537,7 @@ describe('Move Army', () => {
       const ArmyBriefInfo1: ArmyBriefInfo = {
         heroes: [],
         regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }], // 20 regular units is not enough to conquer the new territory
+        warMachines: [],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, ArmyBriefInfo1));
@@ -533,6 +548,7 @@ describe('Move Army', () => {
       const ArmyBriefInfo2: ArmyBriefInfo = {
         heroes: [],
         regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 35 }], // 35 regular units is not enough to conquer the new territory
+        warMachines: [],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, ArmyBriefInfo2));
@@ -574,6 +590,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [briefInfo(armies[0]).heroes[0]], // initial hero in homeland
         regulars: [],
+        warMachines: [],
       };
 
       Object.assign(

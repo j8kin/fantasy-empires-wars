@@ -13,7 +13,7 @@ import { startMovement } from '../../map/move-army/startMovement';
 import { ButtonName } from '../../types/ButtonName';
 import { UnitRank } from '../../state/army/RegularsState';
 import type { ArmyBriefInfo } from '../../state/army/ArmyState';
-import type { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import type { HeroUnitType, RegularUnitType, WarMachineType } from '../../types/UnitType';
 import type { UnitRankType } from '../../state/army/RegularsState';
 
 // Consolidate units of the same type and rank
@@ -41,9 +41,28 @@ const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {
     }
   });
 
+  // Consolidate war machines by type
+  const consolidatedWarMachines: { type: WarMachineType; count: number }[] = [];
+
+  army.warMachines.forEach((unit) => {
+    const existingIdx = consolidatedWarMachines.findIndex((u) => u.type === unit.type);
+
+    if (existingIdx !== -1) {
+      // Merge with existing unit
+      consolidatedWarMachines[existingIdx] = {
+        ...consolidatedWarMachines[existingIdx],
+        count: consolidatedWarMachines[existingIdx].count + unit.count,
+      };
+    } else {
+      // Add new unit
+      consolidatedWarMachines.push({ ...unit });
+    }
+  });
+
   return {
     heroes: consolidatedHeroes,
     regulars: consolidatedRegulars,
+    warMachines: consolidatedWarMachines,
   };
 };
 
@@ -85,6 +104,7 @@ const MoveArmyDialog: React.FC = () => {
     fromUnitsRef.current = {
       heroes: stationedArmy.flatMap((a) => briefInfo(a).heroes),
       regulars: stationedArmy.flatMap((a) => briefInfo(a).regulars),
+      warMachines: stationedArmy.flatMap((a) => briefInfo(a).warMachines),
     };
     toUnitsRef.current = undefined;
     triggerUpdate();
@@ -150,6 +170,7 @@ const MoveArmyDialog: React.FC = () => {
     const newToUnits: ArmyBriefInfo = {
       heroes: [...(toUnits?.heroes ?? []), ...(fromUnits?.heroes ?? [])],
       regulars: [...(toUnits?.regulars ?? []), ...(fromUnits?.regulars ?? [])],
+      warMachines: [...(toUnits?.warMachines ?? []), ...(fromUnits?.warMachines ?? [])],
     };
 
     // Consolidate units of the same type and rank
@@ -168,12 +189,14 @@ const MoveArmyDialog: React.FC = () => {
     const unitsToMove: ArmyBriefInfo = {
       heroes: [...(sourceUnits?.heroes ?? [])],
       regulars: [],
+      warMachines: [],
     };
 
     // Units remaining in source
     const remainingUnits: ArmyBriefInfo = {
       heroes: [], // Heroes move completely
       regulars: [],
+      warMachines: [],
     };
 
     // Handle regulars - split them in half
@@ -189,10 +212,24 @@ const MoveArmyDialog: React.FC = () => {
       }
     });
 
+    // Handle war machines - split them in half
+    sourceUnits?.warMachines?.forEach((unit) => {
+      const halfCount = Math.ceil(unit.count / 2);
+      if (halfCount === unit.count) {
+        // Move entire unit if it can't be split
+        unitsToMove.warMachines.push(unit);
+      } else {
+        // Split the unit
+        unitsToMove.warMachines.push({ ...unit, count: halfCount });
+        remainingUnits.warMachines.push({ ...unit, count: unit.count - halfCount });
+      }
+    });
+
     // Combine moved units with existing destination units
     const newDestination: ArmyBriefInfo = {
       heroes: [...(destinationUnits?.heroes ?? []), ...unitsToMove.heroes],
       regulars: [...(destinationUnits?.regulars ?? []), ...unitsToMove.regulars],
+      warMachines: [...(destinationUnits?.warMachines ?? []), ...unitsToMove.warMachines],
     };
 
     // Consolidate units of the same type and rank
@@ -213,7 +250,7 @@ const MoveArmyDialog: React.FC = () => {
     fromArray: ArmyBriefInfo,
     toArray: ArmyBriefInfo,
     unitIndex: number,
-    type: 'hero' | 'regular',
+    type: 'hero' | 'regular' | 'warMachine',
     direction: 'right' | 'left'
   ) => {
     if (type === 'hero') {
@@ -234,7 +271,7 @@ const MoveArmyDialog: React.FC = () => {
         updateToUnits(newFrom);
         updateFromUnits(newTo);
       }
-    } else {
+    } else if (type === 'regular') {
       const regularUnit = fromArray.regulars[unitIndex];
       if (!regularUnit) return;
 
@@ -272,13 +309,51 @@ const MoveArmyDialog: React.FC = () => {
         updateToUnits(newFrom);
         updateFromUnits(newTo);
       }
+    } else if (type === 'warMachine') {
+      const warMachineUnit = fromArray.warMachines[unitIndex];
+      if (!warMachineUnit) return;
+
+      // Remove/Decrement from source
+      let newFromWarMachines;
+      if (warMachineUnit.count === 1) {
+        newFromWarMachines = fromArray.warMachines.filter((_, index) => index !== unitIndex);
+      } else {
+        newFromWarMachines = fromArray.warMachines.map((u, index) =>
+          index === unitIndex ? { ...u, count: u.count - 1 } : u
+        );
+      }
+
+      // Add/Increment to destination
+      const existingUnitIndex = toArray.warMachines.findIndex(
+        (u) => u.type === warMachineUnit.type
+      );
+
+      let newToWarMachines;
+      if (existingUnitIndex >= 0) {
+        newToWarMachines = toArray.warMachines.map((u, index) =>
+          index === existingUnitIndex ? { ...u, count: u.count + 1 } : u
+        );
+      } else {
+        newToWarMachines = [...toArray.warMachines, { ...warMachineUnit, count: 1 }];
+      }
+
+      const newFrom = { ...fromArray, warMachines: newFromWarMachines };
+      const newTo = { ...toArray, warMachines: newToWarMachines };
+
+      if (direction === 'right') {
+        updateFromUnits(newFrom);
+        updateToUnits(newTo);
+      } else {
+        updateToUnits(newFrom);
+        updateFromUnits(newTo);
+      }
     }
   };
 
   const handleMouseDown = (
     fromArray: ArmyBriefInfo,
     unitIndex: number,
-    type: 'hero' | 'regular',
+    type: 'hero' | 'regular' | 'warMachine',
     direction: 'right' | 'left'
   ) => {
     // Clear any existing interval
@@ -288,14 +363,18 @@ const MoveArmyDialog: React.FC = () => {
 
     // Snapshot the selected unit identity
     const selectedUnit =
-      type === 'hero' ? fromArray.heroes[unitIndex] : fromArray.regulars[unitIndex];
+      type === 'hero'
+        ? fromArray.heroes[unitIndex]
+        : type === 'regular'
+          ? fromArray.regulars[unitIndex]
+          : fromArray.warMachines[unitIndex];
 
     if (!selectedUnit) return;
 
     // Move one unit immediately using current refs
     // Initialize toUnitsRef if it's undefined
     if (toUnitsRef.current === undefined) {
-      toUnitsRef.current = { heroes: [], regulars: [] };
+      toUnitsRef.current = { heroes: [], regulars: [], warMachines: [] };
     }
 
     const currentFrom = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
@@ -310,9 +389,12 @@ const MoveArmyDialog: React.FC = () => {
         return arr.heroes.findIndex(
           (h) => h.name === heroUnit.name && h.type === heroUnit.type && h.level === heroUnit.level
         );
-      } else {
+      } else if (type === 'regular') {
         const reg = selectedUnit as { id: string; rank: UnitRankType };
         return arr.regulars.findIndex((u) => u.id === reg.id && u.rank === reg.rank);
+      } else {
+        const wm = selectedUnit as { type: WarMachineType };
+        return arr.warMachines.findIndex((u) => u.type === wm.type);
       }
     };
 
@@ -408,6 +490,29 @@ const MoveArmyDialog: React.FC = () => {
     );
   };
 
+  const renderWarMachineUnit = (
+    unit: { type: WarMachineType; count: number },
+    index: number,
+    fromArray: ArmyBriefInfo,
+    direction: 'right' | 'left'
+  ) => {
+    return (
+      <div
+        data-testid={`${unit.type}-${index}`}
+        key={`${unit.type}-${index}`}
+        className={`${styles.unitItem} ${styles.warMachineUnit}`}
+        onMouseDown={() => handleMouseDown(fromArray, index, 'warMachine', direction)}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div>
+          <div className={styles.unitName}>{unit.type}</div>
+          <div className={styles.unitDetails}>Count: {unit.count}</div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div
       data-testid="MoveArmyDialog"
@@ -438,6 +543,9 @@ const MoveArmyDialog: React.FC = () => {
                     )}
                     {fromUnits.regulars.map((unit, index) =>
                       renderRegularUnit(unit, index, fromUnits, 'right')
+                    )}
+                    {fromUnits.warMachines.map((unit, index) =>
+                      renderWarMachineUnit(unit, index, fromUnits, 'right')
                     )}
                   </>
                 )}
@@ -492,6 +600,9 @@ const MoveArmyDialog: React.FC = () => {
                     )}
                     {toUnits.regulars.map((unit, index) =>
                       renderRegularUnit(unit, index, toUnits, 'left')
+                    )}
+                    {toUnits.warMachines.map((unit, index) =>
+                      renderWarMachineUnit(unit, index, toUnits, 'left')
                     )}
                   </>
                 )}

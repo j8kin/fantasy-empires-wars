@@ -104,6 +104,35 @@ export const getRegulars = (
   }
 };
 
+export const getWarMachines = (
+  state: ArmyState,
+  type: WarMachineState['type'],
+  count: number
+): { updatedArmy: ArmyState; warMachines: WarMachineState } | undefined => {
+  const unitIdx = state.warMachines.findIndex((u) => u.type === type && u.count >= count);
+  if (unitIdx === -1) return undefined;
+  const unit = state.warMachines[unitIdx];
+
+  if (unit.count === count) {
+    // Remove the entire unit
+    const updatedArmy = {
+      ...state,
+      warMachines: state.warMachines.filter((_, idx) => idx !== unitIdx),
+    };
+    return { updatedArmy, warMachines: unit };
+  } else {
+    // Reduce the unit count
+    const updatedArmy = {
+      ...state,
+      warMachines: state.warMachines.map((u, idx) =>
+        idx === unitIdx ? { ...u, count: u.count - count } : u
+      ),
+    };
+    const warMachinesToReturn = { type: unit.type, count };
+    return { updatedArmy, warMachines: warMachinesToReturn };
+  }
+};
+
 export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => {
   // Merge heroes
   const mergedHeroes = [...target.heroes, ...source.heroes];
@@ -126,6 +155,22 @@ export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => 
     }
   });
 
+  // Merge war machines
+  const mergedWarMachines = [...target.warMachines];
+  source.warMachines.forEach((sourceUnit) => {
+    const existingIdx = mergedWarMachines.findIndex((u) => u.type === sourceUnit.type);
+    if (existingIdx !== -1) {
+      // Update existing unit count
+      mergedWarMachines[existingIdx] = {
+        ...mergedWarMachines[existingIdx],
+        count: mergedWarMachines[existingIdx].count + sourceUnit.count,
+      };
+    } else {
+      // Add new unit
+      mergedWarMachines.push(sourceUnit);
+    }
+  });
+
   // Merge effects: combine all negative effects from both armies, positive effects disappear
   // prevent an abusing system when one unit split with good effect and combine with another huge army
   const allEffects = [...target.effects, ...source.effects];
@@ -135,6 +180,7 @@ export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => 
     ...target,
     heroes: mergedHeroes,
     regulars: mergedRegulars,
+    warMachines: mergedWarMachines,
     effects: mergedEffects,
   };
 
