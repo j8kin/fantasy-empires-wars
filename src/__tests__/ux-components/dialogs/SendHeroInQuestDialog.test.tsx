@@ -166,12 +166,14 @@ describe('SendHeroInQuestDialog', () => {
   describe('Dialog Visibility', () => {
     it('should not render when showSendHeroInQuestDialog is false', () => {
       renderWithProviders(<SendHeroInQuestDialog />, { showSendHeroInQuestDialog: false });
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
     });
 
     it('should not render when gameState is null', () => {
       renderWithProviders(<SendHeroInQuestDialog />, { gameState: null as any });
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
     });
 
     it('should render when showSendHeroInQuestDialog is true and gameState exists with heroes', () => {
@@ -184,7 +186,8 @@ describe('SendHeroInQuestDialog', () => {
       gameStateStub.armies = [];
 
       renderWithProviders(<SendHeroInQuestDialog />);
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
     });
 
     it('should not render when no lands with heroes exist for current player', () => {
@@ -196,7 +199,8 @@ describe('SendHeroInQuestDialog', () => {
       );
 
       renderWithProviders(<SendHeroInQuestDialog />);
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
     });
 
     it('should not render when actionLandPosition is undefined', () => {
@@ -204,7 +208,8 @@ describe('SendHeroInQuestDialog', () => {
         actionLandPosition: undefined,
         showSendHeroInQuestDialog: true, // Ensure dialog would show if actionLandPosition was valid
       });
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
     });
   });
 
@@ -421,8 +426,9 @@ describe('SendHeroInQuestDialog', () => {
       // Re-render with updated context
       rerender(<SendHeroInQuestDialog />);
 
-      // Should not render when closed
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      // Should not be visible when closed
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
     });
   });
 
@@ -436,9 +442,10 @@ describe('SendHeroInQuestDialog', () => {
       // Remove all armies (and thus all heroes) from centralized system
       emptyHeroesGameState.armies = [];
 
-      // Render with empty heroes state - should not render
+      // Render with empty heroes state - should not be Visible
       renderWithProviders(<SendHeroInQuestDialog />, { gameState: emptyHeroesGameState });
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
 
       consoleSpy.mockRestore();
     });

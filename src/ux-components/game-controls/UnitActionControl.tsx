@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Activity, useCallback } from 'react';
 import styles from './css/GameControl.module.css';
 
 import GameButton from '../buttons/GameButton';
@@ -134,14 +134,16 @@ const UnitActionControl: React.FC = () => {
     ]
   );
 
-  if (gameState == null || getTurnOwner(gameState).playerType !== 'human') return null;
+  const isHuman = gameState ? getTurnOwner(gameState).playerType === 'human' : false;
 
   return (
-    <div className={styles.gameControlContainer} data-testid="game-control-container">
-      <GameButton buttonName={ButtonName.RECRUIT} onClick={handleShowRecruitArmyDialog} />
-      <GameButton buttonName={ButtonName.MOVE} onClick={handleShowMoveAmyDialog} />
-      <GameButton buttonName={ButtonName.QUEST} onClick={handleShowSendHeroInQuestDialog} />
-    </div>
+    <Activity mode={isHuman ? 'visible' : 'hidden'}>
+      <div className={styles.gameControlContainer} data-testid="game-control-container">
+        <GameButton buttonName={ButtonName.RECRUIT} onClick={handleShowRecruitArmyDialog} />
+        <GameButton buttonName={ButtonName.MOVE} onClick={handleShowMoveAmyDialog} />
+        <GameButton buttonName={ButtonName.QUEST} onClick={handleShowSendHeroInQuestDialog} />
+      </div>
+    </Activity>
   );
 };
 

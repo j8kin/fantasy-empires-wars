@@ -164,7 +164,8 @@ describe('UnitActionControl', () => {
 
       render(<UnitActionControl />, { wrapper: TestWrapper });
 
-      expect(screen.queryByTestId(`game-button-${ButtonName.RECRUIT}`)).not.toBeInTheDocument();
+      expect(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`)).toBeInTheDocument();
+      expect(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`)).not.toBeVisible();
     });
   });
 
@@ -251,7 +252,8 @@ describe('UnitActionControl', () => {
 
       render(<UnitActionControl />, { wrapper: TestWrapper });
 
-      expect(screen.queryByTestId(`game-button-${ButtonName.QUEST}`)).not.toBeInTheDocument();
+      expect(screen.getByTestId(`game-button-${ButtonName.QUEST}`)).toBeInTheDocument();
+      expect(screen.getByTestId(`game-button-${ButtonName.QUEST}`)).not.toBeVisible();
     });
   });
 
@@ -315,7 +317,8 @@ describe('UnitActionControl', () => {
 
       render(<UnitActionControl />, { wrapper: TestWrapper });
 
-      expect(screen.queryByTestId(`game-button-${ButtonName.MOVE}`)).not.toBeInTheDocument();
+      expect(screen.getByTestId(`game-button-${ButtonName.MOVE}`)).toBeInTheDocument();
+      expect(screen.getByTestId(`game-button-${ButtonName.MOVE}`)).not.toBeVisible();
     });
   });
 

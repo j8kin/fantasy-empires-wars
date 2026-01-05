@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import React, { useEffect, useRef } from 'react';
+import React, { Activity, useEffect, useRef } from 'react';
 import styles from './css/Background.module.css';
 
 import TopPanel from '../top-panel/TopPanel';
@@ -171,7 +171,7 @@ const MainViewContent: React.FC = () => {
       <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />
 
       {/* Progress Popup - shown as overlay */}
-      {showProgressPopup && (
+      <Activity mode={showProgressPopup ? 'visible' : 'hidden'}>
         <ProgressPopup
           screenPosition={{
             x: typeof window !== 'undefined' ? (window.innerWidth - 400) / 2 : 0,
@@ -179,27 +179,27 @@ const MainViewContent: React.FC = () => {
           }}
           message={progressMessage}
         />
-      )}
+      </Activity>
 
       {/* Error Message Popup (use setErrorMessagePopupMessage to set message to display) */}
-      {showErrorMessagePopup && (
+      <Activity mode={showErrorMessagePopup ? 'visible' : 'hidden'}>
         <ErrorMessagePopup
           screenPosition={{
             x: typeof window !== 'undefined' ? (window.innerWidth - 400) / 2 : 0,
             y: typeof window !== 'undefined' ? (window.innerHeight - 200) / 2 : 0,
           }}
         />
-      )}
+      </Activity>
 
       {/* Quest Results Popup */}
-      {showEmpireEventsPopup && (
+      <Activity mode={showEmpireEventsPopup ? 'visible' : 'hidden'}>
         <RealmEventsPopup
           screenPosition={{
             x: typeof window !== 'undefined' ? (window.innerWidth - 500) / 2 : 0,
             y: typeof window !== 'undefined' ? (window.innerHeight - 400) / 2 : 0,
           }}
         />
-      )}
+      </Activity>
 
       {/* Spell Cast Animation - positioned absolutely over the battlefield */}
       {spellAnimation && (

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Activity, useCallback } from 'react';
 import styles from './css/GameControl.module.css';
 
 import GameButton from '../buttons/GameButton';
@@ -87,14 +87,16 @@ const MapActionsControl: React.FC = () => {
     setShowErrorMessagePopup,
   ]);
 
-  if (gameState == null || getTurnOwner(gameState).playerType !== 'human') return null;
+  const isHuman = gameState ? getTurnOwner(gameState).playerType === 'human' : false;
 
   return (
-    <div className={styles.gameControlContainer}>
-      <GameButton buttonName={ButtonName.BUILD} onClick={handleShowConstructBuildingDialog} />
-      <GameButton buttonName={ButtonName.CAST} onClick={handleShowCastSpellDialog} />
-      <GameButton buttonName={ButtonName.ITEMS} onClick={handleShowEmpireTreasureDialog} />
-    </div>
+    <Activity mode={isHuman ? 'visible' : 'hidden'}>
+      <div className={styles.gameControlContainer}>
+        <GameButton buttonName={ButtonName.BUILD} onClick={handleShowConstructBuildingDialog} />
+        <GameButton buttonName={ButtonName.CAST} onClick={handleShowCastSpellDialog} />
+        <GameButton buttonName={ButtonName.ITEMS} onClick={handleShowEmpireTreasureDialog} />
+      </div>
+    </Activity>
   );
 };
 

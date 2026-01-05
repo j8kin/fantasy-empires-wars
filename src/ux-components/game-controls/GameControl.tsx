@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Activity, useCallback } from 'react';
 import styles from './css/GameControl.module.css';
 
 import GameButton from '../buttons/GameButton';
@@ -21,14 +21,16 @@ const GameControl: React.FC = () => {
     setShowSaveDialog(true);
   }, [setShowSaveDialog]);
 
-  if (gameState && getTurnOwner(gameState).playerType !== 'human') return null;
+  const isHuman = gameState ? getTurnOwner(gameState).playerType === 'human' : false;
 
   return (
-    <div className={styles.gameControlContainer}>
-      <GameButton buttonName={ButtonName.NEW} onClick={handleShowStartWindow} />
-      <GameButton buttonName={ButtonName.LOAD} />
-      <GameButton buttonName={ButtonName.SAVE} onClick={handleShowSaveDialog} />
-    </div>
+    <Activity mode={isHuman ? 'visible' : 'hidden'}>
+      <div className={styles.gameControlContainer}>
+        <GameButton buttonName={ButtonName.NEW} onClick={handleShowStartWindow} />
+        <GameButton buttonName={ButtonName.LOAD} />
+        <GameButton buttonName={ButtonName.SAVE} onClick={handleShowSaveDialog} />
+      </div>
+    </Activity>
   );
 };
 

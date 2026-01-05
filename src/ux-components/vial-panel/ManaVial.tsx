@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Activity } from 'react';
 import styles from './css/ManaVial.module.css';
 
 import { useGameContext } from '../../contexts/GameContext';
@@ -41,7 +41,7 @@ const calculateFillLevel = (gameState: GameState, manaType: ManaType, cMana: num
 
   switch (availableSpells) {
     case 0:
-      // if not enough mana and no mage under control, return 0 fill level
+      // if not enough mana and no mage under control, return 0
       return maxHeroLevel > 0 ? 10 : 0;
     case 1:
       // TURN_UNDEAD available to cast only if CLERIC hero is under control
@@ -58,16 +58,11 @@ const calculateFillLevel = (gameState: GameState, manaType: ManaType, cMana: num
 
 const ManaVial: React.FC<FilledManaVialProps> = ({ color, mana }) => {
   const { gameState } = useGameContext();
-
-  if (gameState == null || mana == null) return null;
-
-  const fillLevel = calculateFillLevel(gameState, color, mana);
-
-  if (fillLevel === 0) return null;
+  const fillLevel = gameState && mana ? calculateFillLevel(gameState, color, mana) : 0;
 
   const [baseColor, darkerColor] = getManaGradient(color);
   const fillStyle: React.CSSProperties = {
-    // Fill from bottom based on spell availability
+    // Fill from the bottom based on spell availability
     background: `linear-gradient(${baseColor}, ${darkerColor})`,
     boxShadow: `0 0 8px ${getManaColor(color)}80`,
     height: `${fillLevel}%`,
@@ -76,13 +71,15 @@ const ManaVial: React.FC<FilledManaVialProps> = ({ color, mana }) => {
   };
 
   return (
-    <div className={styles.vialContainer} data-testid={color + '-filled-mana-vial'}>
-      <div className={styles.fillContainer}>
-        <div className={styles.fillContent} style={fillStyle}></div>
-        <div className={styles.fillBorder}></div>
+    <Activity mode={gameState && mana && fillLevel > 0 ? 'visible' : 'hidden'}>
+      <div className={styles.vialContainer} data-testid={color + '-filled-mana-vial'}>
+        <div className={styles.fillContainer}>
+          <div className={styles.fillContent} style={fillStyle}></div>
+          <div className={styles.fillBorder}></div>
+        </div>
+        <img src={getManaVialImg()} className={styles.vialImage} alt={`${color} mana vial`} />
       </div>
-      <img src={getManaVialImg()} className={styles.vialImage} alt={`${color} mana vial`} />
-    </div>
+    </Activity>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { Activity, useCallback, useEffect } from 'react';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageTypeName } from '../fantasy-book-dialog-template/FlipBookPage';
 
@@ -61,11 +61,12 @@ const ConstructBuildingDialog: React.FC = () => {
     }
   }, [gameState, handleClose, selectedLandAction, showConstructBuildingDialog]);
 
-  if (!gameState || !showConstructBuildingDialog) return null;
+  const turnOwner = gameState ? getTurnOwner(gameState) : undefined;
 
-  const landsWithoutBuildings = getPlayerLands(gameState).filter((l) => l.buildings.length === 0);
+  const landsWithoutBuildings =
+    gameState != null ? getPlayerLands(gameState).filter((l) => l.buildings.length === 0) : [];
 
-  if (landsWithoutBuildings.length === 0) {
+  if ((gameState != null && landsWithoutBuildings.length) === 0) {
     // trying to allocate lands where only WALLS are constructed (if barracks allowed then other buildings are allowed)
     if (getAvailableToConstructLands(gameState!, BuildingName.BARRACKS).length === 0) {
       // probably only WALLS are allowed to be constructed
@@ -74,36 +75,41 @@ const ConstructBuildingDialog: React.FC = () => {
       }
     }
   }
-  const isStrongholdAllowed =
-    getAvailableToConstructLands(gameState!, BuildingName.STRONGHOLD).length > 0;
 
-  const selectedPlayer = getTurnOwner(gameState);
-  const availableBuildings = selectedPlayer
-    ? getAllBuildings(selectedPlayer).filter(
+  const isStrongholdAllowed =
+    gameState != null &&
+    getAvailableToConstructLands(gameState, BuildingName.STRONGHOLD).length > 0;
+
+  const availableBuildings = turnOwner
+    ? getAllBuildings(turnOwner).filter(
         (building) =>
-          building.buildCost <= selectedPlayer.vault! &&
+          building.buildCost <= turnOwner.vault! &&
           (building.id !== BuildingName.STRONGHOLD || isStrongholdAllowed)
       )
     : [];
 
   return (
-    <FlipBook onClickOutside={handleClose}>
-      {availableBuildings.map((building, index) => (
-        <FlipBookPage
-          key={building.id}
-          pageNum={index}
-          lorePage={2351}
-          header={building.id}
-          iconPath={getBuildingImg(building.id)}
-          description={building.description}
-          cost={building.buildCost}
-          costLabel="Build Cost"
-          maintainCost={building.maintainCost}
-          onClose={handleClose}
-          onIconClick={createBuildingClickHandler(building.id as BuildingType)}
-        />
-      ))}
-    </FlipBook>
+    <Activity
+      mode={showConstructBuildingDialog && availableBuildings.length > 0 ? 'visible' : 'hidden'}
+    >
+      <FlipBook onClickOutside={handleClose}>
+        {availableBuildings.map((building, index) => (
+          <FlipBookPage
+            key={building.id}
+            pageNum={index}
+            lorePage={2351}
+            header={building.id}
+            iconPath={getBuildingImg(building.id)}
+            description={building.description}
+            cost={building.buildCost}
+            costLabel="Build Cost"
+            maintainCost={building.maintainCost}
+            onClose={handleClose}
+            onIconClick={createBuildingClickHandler(building.id as BuildingType)}
+          />
+        ))}
+      </FlipBook>
+    </Activity>
   );
 };
 

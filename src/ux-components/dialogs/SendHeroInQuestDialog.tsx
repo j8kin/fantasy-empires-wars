@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, Activity } from 'react';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
@@ -73,21 +73,10 @@ const SendHeroInQuestDialog: React.FC = () => {
     [gameState, handleClose]
   );
 
-  if (!gameState || !showSendHeroInQuestDialog || !actionLandPosition) return undefined;
-
-  const armiesAtPosition = getArmiesAtPosition(gameState, actionLandPosition);
-
-  // If no armies with heroes are available, don't render content
-  if (armiesAtPosition.length === 0) {
-    return null;
-  }
-
-  const availableUnits = armiesAtPosition.flatMap((armyUnit) => armyUnit.heroes);
-
-  // If no heroes are available, don't render content
-  if (availableUnits.length === 0) {
-    return null;
-  }
+  const availableUnits =
+    gameState != null && actionLandPosition != null
+      ? getArmiesAtPosition(gameState, actionLandPosition).flatMap((armyUnit) => armyUnit.heroes)
+      : [];
 
   const slots: Slot[] = availableUnits.map((hero) => ({
     id: hero.name,
@@ -95,23 +84,25 @@ const SendHeroInQuestDialog: React.FC = () => {
   }));
 
   return (
-    <FlipBook onClickOutside={handleClose}>
-      {getAllQuests().map((quest, questLevel) => (
-        <FlipBookPage
-          key={quest.id}
-          pageNum={questLevel}
-          lorePage={1417}
-          header={quest.id}
-          iconPath={getQuestImg(quest.id)}
-          description={quest.description}
-          onClose={handleClose}
-          slots={slots}
-          onSlotClick={createSlotClickHandler(questLevel)}
-          onIconClick={createQuestClickHandler(questLevel, availableUnits)}
-          usedSlots={usedSlots}
-        />
-      ))}
-    </FlipBook>
+    <Activity mode={showSendHeroInQuestDialog && slots.length > 0 ? 'visible' : 'hidden'}>
+      <FlipBook onClickOutside={handleClose}>
+        {getAllQuests().map((quest, questLevel) => (
+          <FlipBookPage
+            key={quest.id}
+            pageNum={questLevel}
+            lorePage={1417}
+            header={quest.id}
+            iconPath={getQuestImg(quest.id)}
+            description={quest.description}
+            onClose={handleClose}
+            slots={slots}
+            onSlotClick={createSlotClickHandler(questLevel)}
+            onIconClick={createQuestClickHandler(questLevel, availableUnits)}
+            usedSlots={usedSlots}
+          />
+        ))}
+      </FlipBook>
+    </Activity>
   );
 };
 

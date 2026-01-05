@@ -154,12 +154,14 @@ describe('ConstructBuildingDialog', () => {
   describe('Dialog Visibility', () => {
     it('should not render when showConstructBuildingDialog is false', () => {
       renderWithProviders(<ConstructBuildingDialog />, { showConstructBuildingDialog: false });
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
     });
 
     it('should not render when gameState is null', () => {
       renderWithProviders(<ConstructBuildingDialog />, { gameState: null as any });
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
     });
 
     it('should render when showConstructBuildingDialog is true and gameState exists', () => {
@@ -458,7 +460,8 @@ describe('ConstructBuildingDialog', () => {
       rerender(<ConstructBuildingDialog />);
 
       // Should not render when closed
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).not.toBeVisible();
 
       // Reopen dialog
       mockApplicationContext.showConstructBuildingDialog = true;
@@ -466,6 +469,7 @@ describe('ConstructBuildingDialog', () => {
 
       // Should render again
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId('flip-book')).toBeVisible();
     });
   });
 

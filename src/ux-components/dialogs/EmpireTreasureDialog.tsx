@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Activity, useCallback } from 'react';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageTypeName } from '../fantasy-book-dialog-template/FlipBookPage';
@@ -43,34 +43,40 @@ const EmpireTreasureDialog: React.FC = () => {
     [gameState, setSelectedLandAction, addGlowingTile, handleDialogClose]
   );
 
-  if (!gameState || !showEmpireTreasureDialog) return null;
+  const turnOwner = gameState ? getTurnOwner(gameState) : undefined;
 
-  const availableItems = getTurnOwner(gameState).empireTreasures.sort(
+  const availableItems = turnOwner?.empireTreasures.sort(
     (a, b) => Number(!isItem(a)) - Number(!isItem(b))
   );
 
-  if (availableItems.length === 0) return null;
-
   return (
-    <FlipBook onClickOutside={handleDialogClose}>
-      {availableItems.map((treasure, index) => (
-        <FlipBookPage
-          key={treasure.treasure.type}
-          pageNum={index}
-          lorePage={913}
-          header={treasure.treasure.type}
-          iconPath={getTreasureImg(treasure)}
-          description={treasure.treasure.description}
-          onClose={handleDialogClose}
-          // Relic items are permanent, and they are not "usable" that is why disable click on them
-          onIconClick={
-            isItem(treasure) && treasure.treasure.isConsumable
-              ? createItemClickHandler(treasure)
-              : undefined
-          }
-        />
-      ))}
-    </FlipBook>
+    <Activity
+      mode={
+        showEmpireTreasureDialog && availableItems != null && availableItems.length > 0
+          ? 'visible'
+          : 'hidden'
+      }
+    >
+      <FlipBook onClickOutside={handleDialogClose}>
+        {availableItems?.map((treasure, index) => (
+          <FlipBookPage
+            key={treasure.treasure.type}
+            pageNum={index}
+            lorePage={913}
+            header={treasure.treasure.type}
+            iconPath={getTreasureImg(treasure)}
+            description={treasure.treasure.description}
+            onClose={handleDialogClose}
+            // Relic items are permanent, and they are not "usable" that is why disable click on them
+            onIconClick={
+              isItem(treasure) && treasure.treasure.isConsumable
+                ? createItemClickHandler(treasure)
+                : undefined
+            }
+          />
+        ))}
+      </FlipBook>
+    </Activity>
   );
 };
 export default EmpireTreasureDialog;

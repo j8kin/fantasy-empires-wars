@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Activity } from 'react';
 import styles from './css/VialPanel.module.css';
 
 import ManaVial from './ManaVial';
@@ -9,18 +9,16 @@ import { Mana } from '../../types/Mana';
 
 const VialPanel: React.FC = () => {
   const { gameState } = useGameContext();
-
-  if (!gameState) return null;
-  const turnOwner = getTurnOwner(gameState);
-
-  if (!turnOwner || turnOwner.playerType !== 'human') return null;
+  const turnOwner = gameState ? getTurnOwner(gameState) : undefined;
 
   return (
-    <div className={styles.vialPanel}>
-      {Object.values(Mana).map((m) => (
-        <ManaVial key={m} color={m} mana={turnOwner?.mana?.[m]} />
-      ))}
-    </div>
+    <Activity mode={!gameState || turnOwner?.playerType !== 'human' ? 'hidden' : 'visible'}>
+      <div className={styles.vialPanel}>
+        {Object.values(Mana).map((m) => (
+          <ManaVial key={m} color={m} mana={turnOwner?.mana?.[m]} />
+        ))}
+      </div>
+    </Activity>
   );
 };
 

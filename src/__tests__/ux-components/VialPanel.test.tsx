@@ -12,7 +12,7 @@ import { getPlayerLands } from '../../selectors/landSelectors';
 import { getMinManaCost } from '../../selectors/spellSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { heroFactory } from '../../factories/heroFactory';
-import { Mana } from '../../types/Mana';
+import { Mana, ManaType } from '../../types/Mana';
 import { HeroUnitName } from '../../types/UnitType';
 import type { GameState } from '../../state/GameState';
 
@@ -69,6 +69,15 @@ describe('VialPanel Integration Test', () => {
     gameState = createGameStateStub({ nPlayers: 2 });
   });
 
+  const checkVialVisibility = (manaVisibilities: Record<ManaType, boolean>) => {
+    Object.entries(manaVisibilities).forEach(([manaType, isVisible]) => {
+      const vial = screen.getByTestId(`${manaType}-filled-mana-vial`);
+      expect(vial).toBeInTheDocument();
+      isVisible ? expect(vial).toBeVisible() : expect(vial).not.toBeVisible();
+      expect(screen.getByAltText(`${manaType} mana vial`)).toBeInTheDocument();
+    });
+  };
+
   describe('Human player scenarios', () => {
     it('should render mana vials for human player with sufficient mana', () => {
       placeUnitsOnMap(
@@ -108,18 +117,35 @@ describe('VialPanel Integration Test', () => {
       renderVialPanelWithGameState(gameState);
 
       // Check that all mana vials are rendered
-      expect(screen.getByTestId('white-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.getByTestId('blue-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.getByTestId('green-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.getByTestId('red-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.getByTestId('black-filled-mana-vial')).toBeInTheDocument();
+      checkVialVisibility({
+        [Mana.WHITE]: true,
+        [Mana.BLUE]: true,
+        [Mana.GREEN]: true,
+        [Mana.RED]: true,
+        [Mana.BLACK]: true,
+      });
+    });
 
-      // Check that ManaVial components render their alt text
-      expect(screen.getByAltText('white mana vial')).toBeInTheDocument();
-      expect(screen.getByAltText('blue mana vial')).toBeInTheDocument();
-      expect(screen.getByAltText('green mana vial')).toBeInTheDocument();
-      expect(screen.getByAltText('red mana vial')).toBeInTheDocument();
-      expect(screen.getByAltText('black mana vial')).toBeInTheDocument();
+    it('should render no vials when all mana is below minimum thresholds', () => {
+      // Set all mana types below minimum thresholds
+      getTurnOwner(gameState).mana = {
+        [Mana.WHITE]: getMinManaCost(Mana.WHITE) - 1,
+        [Mana.BLUE]: getMinManaCost(Mana.BLUE) - 1,
+        [Mana.GREEN]: getMinManaCost(Mana.GREEN) - 1,
+        [Mana.RED]: getMinManaCost(Mana.RED) - 1,
+        [Mana.BLACK]: getMinManaCost(Mana.BLACK) - 1,
+      };
+
+      renderVialPanelWithGameState(gameState);
+
+      // Check that no mana vials are visible
+      checkVialVisibility({
+        [Mana.WHITE]: false,
+        [Mana.BLUE]: false,
+        [Mana.GREEN]: false,
+        [Mana.RED]: false,
+        [Mana.BLACK]: false,
+      });
     });
 
     it('should only render vials for mana types with sufficient mana', () => {
@@ -150,32 +176,14 @@ describe('VialPanel Integration Test', () => {
 
       renderVialPanelWithGameState(gameState);
 
-      // Check that only sufficient mana vials are rendered
-      expect(screen.getByTestId('white-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.queryByTestId('blue-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.getByTestId('green-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.queryByTestId('red-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.getByTestId('black-filled-mana-vial')).toBeInTheDocument();
-    });
-
-    it('should render no vials when all mana is below minimum thresholds', () => {
-      // Set all mana types below minimum thresholds
-      getTurnOwner(gameState).mana = {
-        [Mana.WHITE]: getMinManaCost(Mana.WHITE) - 1,
-        [Mana.BLUE]: getMinManaCost(Mana.BLUE) - 1,
-        [Mana.GREEN]: getMinManaCost(Mana.GREEN) - 1,
-        [Mana.RED]: getMinManaCost(Mana.RED) - 1,
-        [Mana.BLACK]: getMinManaCost(Mana.BLACK) - 1,
-      };
-
-      renderVialPanelWithGameState(gameState);
-
-      // Check that no mana vials are rendered
-      expect(screen.queryByTestId('white-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('blue-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('green-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('red-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('black-filled-mana-vial')).not.toBeInTheDocument();
+      // Check that only sufficient mana vials are visible
+      checkVialVisibility({
+        [Mana.WHITE]: true,
+        [Mana.BLUE]: false,
+        [Mana.GREEN]: true,
+        [Mana.RED]: false,
+        [Mana.BLACK]: true,
+      });
     });
   });
 
@@ -193,12 +201,14 @@ describe('VialPanel Integration Test', () => {
 
       renderVialPanelWithGameState(gameState);
 
-      // Check that no mana vials are rendered for AI player
-      expect(screen.queryByTestId('white-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('blue-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('green-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('red-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('black-filled-mana-vial')).not.toBeInTheDocument();
+      // Check that no mana vials are visible for AI player
+      checkVialVisibility({
+        [Mana.WHITE]: false,
+        [Mana.BLUE]: false,
+        [Mana.GREEN]: false,
+        [Mana.RED]: false,
+        [Mana.BLACK]: false,
+      });
     });
   });
 
@@ -216,24 +226,13 @@ describe('VialPanel Integration Test', () => {
       renderVialPanelWithGameState(gameState);
 
       // Check that ManaVials render with proper styling
-      const whiteManaVial = screen.getByTestId('white-filled-mana-vial');
-      const blueManaVial = screen.getByTestId('blue-filled-mana-vial');
-      const greenManaVial = screen.getByTestId('green-filled-mana-vial');
-      const blackManaVial = screen.getByTestId('black-filled-mana-vial');
-
-      expect(whiteManaVial).toBeInTheDocument();
-      expect(blueManaVial).toBeInTheDocument();
-      expect(greenManaVial).toBeInTheDocument();
-      expect(blackManaVial).toBeInTheDocument();
-
-      // Red mana vial should not render as it's below threshold
-      expect(screen.queryByTestId('red-filled-mana-vial')).not.toBeInTheDocument();
-
-      // Check that images are rendered for each vial
-      expect(screen.getByAltText('white mana vial')).toBeInTheDocument();
-      expect(screen.getByAltText('blue mana vial')).toBeInTheDocument();
-      expect(screen.getByAltText('green mana vial')).toBeInTheDocument();
-      expect(screen.getByAltText('black mana vial')).toBeInTheDocument();
+      checkVialVisibility({
+        [Mana.WHITE]: true,
+        [Mana.BLUE]: true,
+        [Mana.GREEN]: true,
+        [Mana.RED]: false, // Red mana vial should not be visible as it's below a threshold
+        [Mana.BLACK]: true,
+      });
     });
 
     it('should handle null/undefined mana values gracefully', () => {
@@ -276,6 +275,14 @@ describe('VialPanel Integration Test', () => {
       const { rerender } = renderVialPanelWithGameState(gameState);
 
       // Initially all vials should render
+      checkVialVisibility({
+        [Mana.WHITE]: true,
+        [Mana.BLUE]: true,
+        [Mana.GREEN]: true,
+        [Mana.RED]: true,
+        [Mana.BLACK]: true,
+      });
+
       expect(screen.getByTestId('white-filled-mana-vial')).toBeInTheDocument();
 
       // Now set mana to undefined/null for some types and re-render
@@ -297,11 +304,13 @@ describe('VialPanel Integration Test', () => {
       );
 
       // Only white and red vials should render
-      expect(screen.getByTestId('white-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.queryByTestId('blue-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('green-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.getByTestId('red-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.getByTestId('black-filled-mana-vial')).toBeInTheDocument();
+      checkVialVisibility({
+        [Mana.WHITE]: true,
+        [Mana.BLUE]: false,
+        [Mana.GREEN]: false,
+        [Mana.RED]: true,
+        [Mana.BLACK]: false,
+      });
     });
   });
 
@@ -335,18 +344,20 @@ describe('VialPanel Integration Test', () => {
 
       // Check that ManaVial components have correct structure using accessible queries
       const vialContainers = screen.getAllByTestId(/filled-mana-vial$/i);
-      expect(vialContainers).toHaveLength(3); // Only 3 should render
+      expect(vialContainers).toHaveLength(5); // Only 3 should render
 
       // Check for images by their accessible name (alt text)
       const vialImages = screen.getAllByRole('img', { name: /mana vial/i });
       expect(vialImages).toHaveLength(3);
 
       // Verify that the mana vials are rendered correctly
-      expect(screen.getByTestId('white-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.queryByTestId('blue-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.getByTestId('green-filled-mana-vial')).toBeInTheDocument();
-      expect(screen.queryByTestId('red-filled-mana-vial')).not.toBeInTheDocument();
-      expect(screen.getByTestId('black-filled-mana-vial')).toBeInTheDocument();
+      checkVialVisibility({
+        [Mana.WHITE]: true,
+        [Mana.BLUE]: false,
+        [Mana.GREEN]: true,
+        [Mana.RED]: false,
+        [Mana.BLACK]: true,
+      });
     });
   });
 });
