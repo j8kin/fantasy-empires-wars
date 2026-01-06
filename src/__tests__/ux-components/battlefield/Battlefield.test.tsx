@@ -1,28 +1,29 @@
 import { render, screen, within } from '@testing-library/react';
-import Battlefield from '../../ux-components/battlefield/Battlefield';
+import Battlefield from '../../../ux-components/battlefield/Battlefield';
 
-import { GameState } from '../../state/GameState';
+import { gameStateFactory } from '../../../factories/gameStateFactory';
 
-import { FantasyBorderFrameProps } from '../../ux-components/fantasy-border-frame/FantasyBorderFrame';
-import { HexTileProps } from '../../ux-components/battlefield/LandTile';
-import { createGameStateStub } from '../utils/createGameStateStub';
-import { MapDimensions } from '../../state/map/MapDimensions';
-import { gameStateFactory } from '../../factories/gameStateFactory';
+import type{ GameState } from '../../../state/GameState';
+import type { MapDimensions } from '../../../state/map/MapDimensions';
+import type { FantasyBorderFrameProps } from '../../../ux-components/fantasy-border-frame/FantasyBorderFrame';
+import type { HexTileProps } from '../../../ux-components/battlefield/LandTile';
+
+import { createGameStateStub } from '../../utils/createGameStateStub';
 
 // Mock CSS modules
-jest.mock('../../ux-components/battlefield/css/Battlefield.module.css', () => ({
+jest.mock('../../../ux-components/battlefield/css/Battlefield.module.css', () => ({
   mapContainer: 'mocked-map-container',
 }));
 
-jest.mock('../../ux-components/battlefield/css/Hexagonal.module.css', () => ({
+jest.mock('../../../ux-components/battlefield/css/Hexagonal.module.css', () => ({
   'hex-row': 'mocked-hex-row',
 }));
 
 // Mock HexTile component
-jest.mock('../../ux-components/battlefield/LandTile', () => {
-  const { getLandId } = require('../../state/map/land/LandId');
-  const { useGameContext } = require('../../contexts/GameContext');
-  const { getLandOwner } = require('../../selectors/landSelectors');
+jest.mock('../../../ux-components/battlefield/LandTile', () => {
+  const { getLandId } = require('../../../state/map/land/LandId');
+  const { useGameContext } = require('../../../contexts/GameContext');
+  const { getLandOwner } = require('../../../selectors/landSelectors');
 
   return (props: HexTileProps) => {
     const { mapPosition } = props;
@@ -45,7 +46,7 @@ jest.mock('../../ux-components/battlefield/LandTile', () => {
 });
 
 // Mock FantasyBorderFrame
-jest.mock('../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
+jest.mock('../../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
   return (props: FantasyBorderFrameProps) => {
     return (
       <div
@@ -74,8 +75,8 @@ const createGameStateStubNewMapSize = (mapDimensions: MapDimensions): GameState 
 let mockGameState: GameState;
 
 // Mock GameContext to provide the game state
-jest.mock('../../contexts/GameContext', () => ({
-  ...jest.requireActual('../../contexts/GameContext'),
+jest.mock('../../../contexts/GameContext', () => ({
+  ...jest.requireActual('../../../contexts/GameContext'),
   useGameContext: () => ({
     gameState: mockGameState || createGameStateStubNewMapSize({ rows: 9, cols: 18 }),
     updateTile: jest.fn(),

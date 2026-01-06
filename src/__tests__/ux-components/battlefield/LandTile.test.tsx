@@ -53,11 +53,6 @@ jest.mock('../../../ux-components/popups/LandInfoPopup', () => {
   );
 });
 
-// Mock getLandImg
-jest.mock('../../../assets/getLandImg', () => ({
-  getLandImg: jest.fn(() => '/mock-land-image.png'),
-}));
-
 // Mock castSpell
 jest.mock('../../../map/magic/castSpell', () => ({
   castSpell: jest.fn(),

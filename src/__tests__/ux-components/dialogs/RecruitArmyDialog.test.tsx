@@ -17,14 +17,10 @@ import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/Un
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 import type { BuildingType } from '../../../types/Building';
-import type { HeroUnitType, UnitType } from '../../../types/UnitType';
+import type { HeroUnitType } from '../../../types/UnitType';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { getAvailableSlotsCount } from '../../../selectors/buildingSelectors';
-
-jest.mock('../../../assets/getUnitImg', () => ({
-  getUnitImg: jest.fn((unitType: UnitType) => `mock-image-${unitType}.png`),
-}));
 
 // Mock context hooks
 const mockApplicationContext = {

@@ -19,11 +19,6 @@ import type { GameState } from '../../state/GameState';
 import { createGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 
-// Mock the image import
-jest.mock('../../assets/getManaVialImg', () => ({
-  getManaVialImg: () => 'mock-vial-image.png',
-}));
-
 // Mock CSS modules
 jest.mock('../../ux-components/vial-panel/css/VialPanel.module.css', () => ({
   vialPanel: 'vialPanel',

@@ -66,14 +66,6 @@ jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', ()
   };
 });
 
-// Mock spell images
-jest.mock('../../../assets/spells/white/blessing.png', () => 'blessing.png');
-jest.mock('../../../assets/spells/white/heal.png', () => 'heal.png');
-jest.mock('../../../assets/spells/white/turn-undead.png', () => 'turn-undead.png');
-jest.mock('../../../assets/spells/white/view.png', () => 'view.png');
-jest.mock('../../../assets/spells/blue/illusion.png', () => 'illusion.png');
-jest.mock('../../../assets/spells/blue/teleport.png', () => 'teleport.png');
-
 const CastSpellDialogWithContext: React.FC = () => (
   <ApplicationContextProvider>
     <GameProvider>

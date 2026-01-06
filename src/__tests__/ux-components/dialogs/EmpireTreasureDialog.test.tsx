@@ -6,15 +6,12 @@ import EmpireTreasureDialog from '../../../ux-components/dialogs/EmpireTreasureD
 
 import { getTurnOwner } from '../../../selectors/playerSelectors';
 import { itemFactory, relictFactory } from '../../../factories/treasureFactory';
-import { getTreasureImg } from '../../../assets/getTreasureImg';
 import { getValidMagicLands } from '../../../map/magic/getValidMagicLands';
 import { TreasureName } from '../../../types/Treasures';
 import type { GameState } from '../../../state/GameState';
 import type { Item } from '../../../types/Treasures';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
-
-jest.mock('../../../assets/getTreasureImg');
 
 jest.mock('../../../map/magic/getValidMagicLands');
 
@@ -162,11 +159,6 @@ describe('EmpireTreasureDialog', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-
-    // Mock getTreasureImg to return a valid image path
-    (getTreasureImg as jest.Mock).mockImplementation(
-      (treasure: any) => `mock-treasure-${treasure.treasure.type}.png`
-    );
 
     // Mock getValidMagicLands to return an array of tile IDs
     (getValidMagicLands as jest.Mock).mockReturnValue(['3-3', '4-4', '5-5']);

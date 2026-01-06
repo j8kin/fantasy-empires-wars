@@ -16,13 +16,8 @@ import { Alignment } from '../../../types/Alignment';
 
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
-import type { BuildingType } from '../../../types/Building';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
-
-jest.mock('../../../assets/getBuildingImg', () => ({
-  getBuildingImg: jest.fn((buildingType: BuildingType) => `mock-image-${buildingType}.png`),
-}));
 
 // Mock context hooks
 const mockApplicationContext = {

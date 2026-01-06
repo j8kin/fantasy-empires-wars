@@ -14,19 +14,16 @@ import { getTurnOwner } from '../../selectors/playerSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { castSpell } from '../../map/magic/castSpell';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { Mana } from '../../types/Mana';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
 import type { GameState } from '../../state/GameState';
 
 import { createGameStateStub } from '../utils/createGameStateStub';
-import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 
 // Mock dependencies
 jest.mock('../../map/magic/castSpell');
-jest.mock('../../assets/getManaVialImg', () => ({
-  getManaVialImg: () => 'mock-vial-image.png',
-}));
 
 // Mock CSS modules
 jest.mock('../../ux-components/vial-panel/css/VialPanel.module.css', () => ({

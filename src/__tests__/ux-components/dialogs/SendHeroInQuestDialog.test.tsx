@@ -26,10 +26,6 @@ jest.mock('../../../map/quest/startQuest', () => ({
   startQuest: jest.fn(),
 }));
 
-jest.mock('../../../assets/getQuestImg', () => ({
-  getQuestImg: jest.fn((questId: string) => `mock-quest-image-${questId}.png`),
-}));
-
 // Mock context hooks
 const mockApplicationContext = {
   showSendHeroInQuestDialog: true,

@@ -151,6 +151,7 @@ describe('Recruitment', () => {
       [RegularUnitName.ELF, 2],
       [RegularUnitName.HALFLING, 2],
       [RegularUnitName.DARK_ELF, 2],
+
       [WarMachineName.CATAPULT, 3],
       [WarMachineName.BALLISTA, 3],
       [WarMachineName.SIEGE_TOWER, 2],
@@ -164,10 +165,13 @@ describe('Recruitment', () => {
         verifyRecruitSlot(barracksLand.mapPos, 0, 1, unitType, nTurns);
       }
     );
+
     it.each([
+      [30, RegularUnitName.WARD_HANDS, 1],
       [20, RegularUnitName.WARRIOR, 1],
       [20, RegularUnitName.DWARF, 1],
       [20, RegularUnitName.ORC, 1],
+      [25, RegularUnitName.HALFLING, 2],
       [20, RegularUnitName.ELF, 2],
       [20, RegularUnitName.DARK_ELF, 2],
     ])(
@@ -199,6 +203,8 @@ describe('Recruitment', () => {
     it.each([
       [1, WarMachineName.CATAPULT, 3],
       [1, WarMachineName.BALLISTA, 3],
+      [1, WarMachineName.BATTERING_RAM, 1],
+      [1, WarMachineName.SIEGE_TOWER, 2],
     ])(
       '%s units (%s) should be start recruited in (%s) turns in Barracks',
       (nUnits: number, unitType: RegularUnitType | WarMachineType, nTurns: number) => {
