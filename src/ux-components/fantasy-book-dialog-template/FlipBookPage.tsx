@@ -142,6 +142,8 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                       data-testid={'flipbook-slot-' + slot.id}
                       key={slot.id}
                       onClick={(e) => handleSlotClick(e, slot)}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onMouseUp={(e) => e.stopPropagation()}
                       className={styles.slot}
                     >
                       <span className={styles.descriptionText}>{slot.name}</span>
