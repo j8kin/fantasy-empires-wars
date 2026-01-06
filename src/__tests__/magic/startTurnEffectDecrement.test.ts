@@ -51,9 +51,11 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
         createEffect('player2', EffectKind.NEGATIVE, SpellName.TORNADO, 1, turnOwnerId),
       ];
 
-      const army = armyFactory(turnOwnerId, { row: 1, col: 1 }, [
-        heroFactory(HeroUnitName.FIGHTER, 'Test Hero'),
-      ]);
+      const army = armyFactory(
+        turnOwnerId,
+        { row: 1, col: 1 },
+        { heroes: [heroFactory(HeroUnitName.FIGHTER, 'Test Hero')] }
+      );
       army.effects = [createEffect('army1', EffectKind.POSITIVE, SpellName.HEAL, 2, turnOwnerId)];
       gameState.armies = [army];
 
@@ -140,16 +142,20 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       ];
 
       // Set up armies for both players
-      const turnOwnerArmy = armyFactory(turnOwner.id, { row: 1, col: 1 }, [
-        heroFactory(HeroUnitName.FIGHTER, 'Hero1'),
-      ]);
+      const turnOwnerArmy = armyFactory(
+        turnOwner.id,
+        { row: 1, col: 1 },
+        { heroes: [heroFactory(HeroUnitName.FIGHTER, 'Hero1')] }
+      );
       turnOwnerArmy.effects = [
         createEffect('toa1', EffectKind.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id),
       ];
 
-      const otherPlayerArmy = armyFactory(otherPlayer.id, { row: 2, col: 2 }, [
-        heroFactory(HeroUnitName.FIGHTER, 'Hero2'),
-      ]);
+      const otherPlayerArmy = armyFactory(
+        otherPlayer.id,
+        { row: 2, col: 2 },
+        { heroes: [heroFactory(HeroUnitName.FIGHTER, 'Hero2')] }
+      );
       otherPlayerArmy.effects = [
         createEffect('opa1', EffectKind.NEGATIVE, SpellName.ENTANGLING_ROOTS, 2, otherPlayer.id),
       ];

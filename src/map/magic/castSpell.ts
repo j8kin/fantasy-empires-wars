@@ -282,7 +282,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       break;
 
     case SpellName.FORGE_OF_WAR:
-      const forgedUnitType =
+      const forgedUnitType: RegularUnitType =
         getLand(updatedState, landPos).land.unitsToRecruit.find(
           (u) =>
             !isHeroType(u) &&
@@ -291,9 +291,10 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
             u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
         ) ?? RegularUnitName.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
 
-      const newArmy = armyFactory(updatedState.turnOwner, landPos, undefined, [
-        regularsFactory(forgedUnitType as RegularUnitType, 60), // the same as 3 slots in Barracks
-      ]);
+      const newArmy = armyFactory(updatedState.turnOwner, landPos, {
+        // the same as 3 slots in Barracks
+        regulars: [regularsFactory(forgedUnitType, 60)],
+      });
       updatedState = addArmyToGameState(updatedState, newArmy);
       break;
 
@@ -347,7 +348,7 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       } else {
         updatedState = addArmyToGameState(
           updatedState,
-          armyFactory(updatedState.turnOwner, landPos, undefined, [undeadSummoned])
+          armyFactory(updatedState.turnOwner, landPos, { regulars: [undeadSummoned] })
         );
       }
       break;

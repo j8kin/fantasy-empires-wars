@@ -9,16 +9,24 @@ import type { WarMachineState } from '../state/army/WarMachineState';
 export const armyFactory = (
   controlledBy: string,
   position: LandPosition,
-  initHeroes: HeroState[] = [],
-  initRegulars: RegularsState[] = [],
-  initWarMachines: WarMachineState[] = []
+  {
+    heroes = [],
+    regulars = [],
+    warMachines = [],
+  }:
+    | {
+        heroes?: HeroState[];
+        regulars?: RegularsState[];
+        warMachines?: WarMachineState[];
+      }
+    | undefined = { heroes: [], regulars: [], warMachines: [] }
 ): ArmyState => {
   return {
     id: Object.freeze(uuid()),
     controlledBy: Object.freeze(controlledBy),
-    heroes: [...initHeroes],
-    regulars: [...initRegulars],
-    warMachines: [...initWarMachines],
+    heroes: [...heroes],
+    regulars: [...regulars],
+    warMachines: [...warMachines],
     movement: movementFactory(position),
     effects: [],
   };

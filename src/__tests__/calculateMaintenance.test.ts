@@ -54,7 +54,7 @@ describe('Calculate Maintenance', () => {
       }
 
       gameStateStub.armies = [
-        armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, [heroUnit]),
+        armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, { heroes: [heroUnit] }),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -87,7 +87,11 @@ describe('Calculate Maintenance', () => {
         regularUnit.count = quantity;
 
         gameStateStub.armies = [
-          armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, undefined, [regularUnit]),
+          armyFactory(
+            getTurnOwner(gameStateStub).id,
+            { row: 0, col: 0 },
+            { regulars: [regularUnit] }
+          ),
         ];
         const maintenance = calculateMaintenance(gameStateStub);
         expect(maintenance).toBe(expected);
@@ -104,9 +108,11 @@ describe('Calculate Maintenance', () => {
         addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 0, col: 0 })
       );
       gameStateStub.armies = [
-        armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, undefined, undefined, [
-          warMachineFactory(regular),
-        ]),
+        armyFactory(
+          getTurnOwner(gameStateStub).id,
+          { row: 0, col: 0 },
+          { warMachines: [warMachineFactory(regular)] }
+        ),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -123,9 +129,11 @@ describe('Calculate Maintenance', () => {
         gameStateStub,
         addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 0, col: 0 })
       );
-      const army = armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, [
-        heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
-      ]);
+      const army = armyFactory(
+        getTurnOwner(gameStateStub).id,
+        { row: 0, col: 0 },
+        { heroes: [heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER)] }
+      );
       Object.assign(army, addRegulars(army, regularsFactory(RegularUnitName.DWARF)));
       Object.assign(army, addWarMachines(army, warMachineFactory(WarMachineName.BALLISTA)));
       Object.assign(army, addRegulars(army, elitDwarf));

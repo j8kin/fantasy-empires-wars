@@ -223,12 +223,12 @@ describe('LandInfoPopup', () => {
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const army1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
-      ]);
-      const army2 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER),
-      ]);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, {
+        heroes: [heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER)],
+      });
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, {
+        heroes: [heroFactory(HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER)],
+      });
       const mockArmy: ArmyState[] = [army1, army2];
 
       // Add armies to centralized system and set turnOwner to landOwner so armies are visible
@@ -250,17 +250,17 @@ describe('LandInfoPopup', () => {
 
     it('displays multiple heroes of same type with different names', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const fighter1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, 'Cedric Brightshield'),
-      ]);
+      const fighter1 = armyFactory(landOwner, mockTileState.mapPos, {
+        heroes: [heroFactory(HeroUnitName.FIGHTER, 'Cedric Brightshield')],
+      });
 
-      const fighter2 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, 'Rowan Ashborne'),
-      ]);
+      const fighter2 = armyFactory(landOwner, mockTileState.mapPos, {
+        heroes: [heroFactory(HeroUnitName.FIGHTER, 'Rowan Ashborne')],
+      });
 
-      const fighter3 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, 'Gareth Dawnhart'),
-      ]);
+      const fighter3 = armyFactory(landOwner, mockTileState.mapPos, {
+        heroes: [heroFactory(HeroUnitName.FIGHTER, 'Gareth Dawnhart')],
+      });
 
       const mockArmy: ArmyState[] = [fighter1, fighter2, fighter3];
 
@@ -284,12 +284,12 @@ describe('LandInfoPopup', () => {
 
     it('displays units when tile has non-hero units', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const army1 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitName.WARRIOR),
-      ]);
-      const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitName.DWARF),
-      ]);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, {
+        regulars: [regularsFactory(RegularUnitName.WARRIOR)],
+      });
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, {
+        regulars: [regularsFactory(RegularUnitName.DWARF)],
+      });
 
       const mockArmy: ArmyState[] = [army1, army2];
 
@@ -315,20 +315,22 @@ describe('LandInfoPopup', () => {
       regularWarriors.count = 5;
 
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const army1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
-      ]);
-      const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [regularWarriors]);
-      const army3 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitName.DWARF),
-      ]);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, {
+        heroes: [heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER)],
+      });
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, {
+        regulars: [regularWarriors],
+      });
+      const army3 = armyFactory(landOwner, mockTileState.mapPos, {
+        regulars: [regularsFactory(RegularUnitName.DWARF)],
+      });
       startMoving(army3, { row: 1, col: 1 });
-      const army4 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.CLERIC, HeroUnitName.CLERIC),
-      ]);
-      const army5 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitName.ELF),
-      ]);
+      const army4 = armyFactory(landOwner, mockTileState.mapPos, {
+        heroes: [heroFactory(HeroUnitName.CLERIC, HeroUnitName.CLERIC)],
+      });
+      const army5 = armyFactory(landOwner, mockTileState.mapPos, {
+        regulars: [regularsFactory(RegularUnitName.ELF)],
+      });
 
       const mockArmy: ArmyState[] = [army1, army2, army3, army4, army5];
 
@@ -381,12 +383,12 @@ describe('LandInfoPopup', () => {
 
     it('displays only heroes section when tile has only heroes', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const army1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.RANGER, HeroUnitName.RANGER),
-      ]);
-      const army2 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
-      ]);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, {
+        heroes: [heroFactory(HeroUnitName.RANGER, HeroUnitName.RANGER)],
+      });
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, {
+        heroes: [heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER)],
+      });
 
       const mockArmy: ArmyState[] = [army1, army2];
 

@@ -60,7 +60,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
               const updatedArmy = addHero(currentArmy, newHero);
               armiesToUpdate.set(stationedArmy.id, updatedArmy);
             } else {
-              const newArmy = armyFactory(turnOwner, l.mapPos, [newHero]);
+              const newArmy = armyFactory(turnOwner, l.mapPos, { heroes: [newHero] });
               newArmies.push(newArmy);
             }
           } else {
@@ -71,9 +71,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
                 const updatedArmy = addWarMachines(currentArmy, newWarMachine);
                 armiesToUpdate.set(stationedArmy.id, updatedArmy);
               } else {
-                newArmies.push(
-                  armyFactory(turnOwner, l.mapPos, undefined, undefined, [newWarMachine])
-                );
+                newArmies.push(armyFactory(turnOwner, l.mapPos, { warMachines: [newWarMachine] }));
               }
             } else {
               const newRegulars = regularsFactory(s.unit);
@@ -84,7 +82,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
                 const updatedArmy = addRegulars(currentArmy, newRegulars);
                 armiesToUpdate.set(stationedArmy.id, updatedArmy);
               } else {
-                newArmies.push(armyFactory(turnOwner, l.mapPos, undefined, [newRegulars]));
+                newArmies.push(armyFactory(turnOwner, l.mapPos, { regulars: [newRegulars] }));
               }
             }
           }
