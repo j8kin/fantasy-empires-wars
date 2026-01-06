@@ -72,7 +72,7 @@ describe('OpponentsPanel', () => {
 
     // Should render 2 provided opponents
     const avatars = await screen.findAllByRole('img', { name: /.+/ });
-    expect(avatars.length).toBe(2);
+    expect(avatars).toHaveLength(2);
   });
 
   it('renders all opponents provided in gameState (including NO_PLAYER if present)', async () => {
@@ -104,7 +104,7 @@ describe('OpponentsPanel', () => {
     // Should render NO_PLAYER opponents as provided (no fallback to random generation)
     // NO_PLAYER renders as "EMPTY" text, not images
     const emptyPlayers = await screen.findAllByText('EMPTY');
-    expect(emptyPlayers.length).toBe(2);
+    expect(emptyPlayers).toHaveLength(2);
   });
 
   it('works correctly with mixed valid opponents and EmptyPlayer', async () => {
@@ -136,7 +136,7 @@ describe('OpponentsPanel', () => {
     // With empty providedOpponents, the component should render no opponents
     // Wait a moment for any potential renders
     await new Promise((resolve) => setTimeout(resolve, 100));
-    expect(screen.queryAllByRole('img', { name: /.+/ }).length).toBe(0);
+    expect(screen.queryAllByRole('img', { name: /.+/ })).toHaveLength(0);
   });
 
   // Tests for direct gameState rendering
@@ -146,7 +146,7 @@ describe('OpponentsPanel', () => {
 
       // Should render exactly the provided opponents
       const avatars = await screen.findAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(7);
+      expect(avatars).toHaveLength(7);
     });
 
     it('correctly handles switching between different opponent sets', () => {
@@ -165,7 +165,7 @@ describe('OpponentsPanel', () => {
 
       // Should now show 4 opponents
       const avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(4);
+      expect(avatars).toHaveLength(4);
     });
 
     it('handles switching from all EmptyPlayer to different opponents', () => {
@@ -173,7 +173,7 @@ describe('OpponentsPanel', () => {
 
       // Should render 3 NO_PLAYER opponents
       let emptyPlayers = screen.getAllByText('EMPTY');
-      expect(emptyPlayers.length).toBe(3);
+      expect(emptyPlayers).toHaveLength(3);
 
       // Now switch to a different configuration
       rerender(
@@ -184,7 +184,7 @@ describe('OpponentsPanel', () => {
 
       // Should now render 1 NO_PLAYER opponent
       emptyPlayers = screen.getAllByText('EMPTY');
-      expect(emptyPlayers.length).toBe(1);
+      expect(emptyPlayers).toHaveLength(1);
     });
 
     it('correctly handles mixed scenarios with varying numbers of EmptyPlayer', () => {
@@ -240,7 +240,7 @@ describe('OpponentsPanel', () => {
 
       // Verify still only 1 opponent
       const avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(1);
+      expect(avatars).toHaveLength(1);
       expect(screen.getByAltText(PREDEFINED_PLAYERS[1].name)).toBeInTheDocument();
     });
 
@@ -250,7 +250,7 @@ describe('OpponentsPanel', () => {
 
       // Should render 7 opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(7);
+      expect(avatars).toHaveLength(7);
 
       // Now switch to 4 opponents (simulating Medium map)
       rerender(
@@ -261,7 +261,7 @@ describe('OpponentsPanel', () => {
 
       // Should now render exactly 4 opponents
       avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(4);
+      expect(avatars).toHaveLength(4);
     });
 
     it('correctly updates when switching opponent sets', () => {
@@ -269,7 +269,7 @@ describe('OpponentsPanel', () => {
 
       // Should show 7 opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(7);
+      expect(avatars).toHaveLength(7);
 
       // Now switch to Medium map with 4 provided opponents
       rerender(
@@ -280,7 +280,7 @@ describe('OpponentsPanel', () => {
 
       // Should now show exactly 4 opponents
       avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(4);
+      expect(avatars).toHaveLength(4);
     });
 
     it('renders correct number of opponents after gameState updates', () => {
@@ -288,7 +288,7 @@ describe('OpponentsPanel', () => {
 
       // Should render 7 opponents
       let avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(7);
+      expect(avatars).toHaveLength(7);
 
       // Switch to smaller number of opponents (4)
       rerender(
@@ -299,7 +299,7 @@ describe('OpponentsPanel', () => {
 
       // Should now render exactly 4 opponents
       avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(4);
+      expect(avatars).toHaveLength(4);
 
       // Switch to very small number (2)
       rerender(
@@ -310,7 +310,7 @@ describe('OpponentsPanel', () => {
 
       // Should now render exactly 2 opponents
       avatars = screen.getAllByRole('img', { name: /.+/ });
-      expect(avatars.length).toBe(2);
+      expect(avatars).toHaveLength(2);
     });
   });
 });

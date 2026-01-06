@@ -292,7 +292,7 @@ describe('CastSpellDialog Component', () => {
       fireEvent.click(screen.getByTestId('show-dialog'));
 
       // Should render all spells without performance issues
-      expect(screen.getAllByText(/Mana Cost:/).length).toBe(AllSpells.length);
+      expect(screen.getAllByText(/Mana Cost:/)).toHaveLength(AllSpells.length);
     });
 
     it('handles dialog state changes efficiently', () => {
@@ -821,7 +821,7 @@ describe('CastSpellDialog Component', () => {
       expect(flipBook).toBeDefined();
       // If FlipBook renders, it should have no spell pages
       const pages = screen.queryAllByTestId(/FlipBookPage-/);
-      expect(pages.length).toBe(0);
+      expect(pages).toHaveLength(0);
     });
 
     it('renders nothing when no spells are affordable', () => {

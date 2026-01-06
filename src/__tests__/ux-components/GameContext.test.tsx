@@ -120,7 +120,7 @@ describe('GameContext', () => {
         result.current.updateGameState({ ...gameStateStub, turn: 2 });
       });
 
-      expect(MockedTurnManager.mock.calls.length).toBe(firstCallCount);
+      expect(MockedTurnManager.mock.calls).toHaveLength(firstCallCount);
     });
   });
 

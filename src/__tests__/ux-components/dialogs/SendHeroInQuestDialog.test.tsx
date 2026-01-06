@@ -298,7 +298,7 @@ describe('SendHeroInQuestDialog', () => {
       // Should show slot buttons for all heroes across all quest pages
       const allSlotButtons = screen.getAllByTestId(/flipbook-slot-/);
       // Each hero appears on each of the 4 quest pages
-      expect(allSlotButtons.length).toBe(heroesOnMap.length * 4);
+      expect(allSlotButtons).toHaveLength(heroesOnMap.length * 4);
     });
   });
 
@@ -338,7 +338,7 @@ describe('SendHeroInQuestDialog', () => {
 
       // Click on hero slot in first quest
       const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.name}`);
-      expect(heroSlots.length).toBe(4); // Should appear on all 4 quest pages
+      expect(heroSlots).toHaveLength(4); // Should appear on all 4 quest pages
 
       const firstHeroSlot = heroSlots[0];
       await user.click(firstHeroSlot);
@@ -644,7 +644,7 @@ describe('SendHeroInQuestDialog', () => {
       const heroSlots = within(questPage).getAllByTestId(/flipbook-slot-/);
 
       // Should now have 2 heroes * 1 quest = 2 slots
-      expect(heroSlots.length).toBe(2);
+      expect(heroSlots).toHaveLength(2);
 
       // Click different heroes - first hero
       await user.click(heroSlots[0]);

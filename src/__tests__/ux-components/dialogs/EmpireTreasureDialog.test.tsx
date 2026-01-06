@@ -240,7 +240,7 @@ describe('EmpireTreasureDialog', () => {
       renderWithProviders(<EmpireTreasureDialog />);
 
       const pages = screen.queryAllByTestId(/flipbook-page-/);
-      expect(pages.length).toBe(3);
+      expect(pages).toHaveLength(3);
     });
 
     it('should display non-consumable items', () => {
@@ -260,7 +260,7 @@ describe('EmpireTreasureDialog', () => {
 
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
       const pages = screen.queryAllByTestId(/flipbook-page-/);
-      expect(pages.length).toBe(1);
+      expect(pages).toHaveLength(1);
     });
   });
 
@@ -277,7 +277,7 @@ describe('EmpireTreasureDialog', () => {
       renderWithProviders(<EmpireTreasureDialog />);
 
       const pages = screen.queryAllByTestId(/flipbook-page-/);
-      expect(pages.length).toBe(4);
+      expect(pages).toHaveLength(4);
 
       // First two pages should be items (indices 0 and 1)
       // Last two pages should be relics (indices 2 and 3)
@@ -322,7 +322,7 @@ describe('EmpireTreasureDialog', () => {
       const icons = screen.queryAllByTestId('flipbook-icon');
 
       // Non-consumable items should not have click handlers
-      expect(icons.length).toBe(0);
+      expect(icons).toHaveLength(0);
     });
 
     it('should not handle click on relics', async () => {
@@ -334,7 +334,7 @@ describe('EmpireTreasureDialog', () => {
       const icons = screen.queryAllByTestId('flipbook-icon');
 
       // Relics should not have click handlers
-      expect(icons.length).toBe(0);
+      expect(icons).toHaveLength(0);
     });
 
     it('should add glowing tiles for valid magic lands', async () => {
@@ -435,7 +435,7 @@ describe('EmpireTreasureDialog', () => {
       renderWithProviders(<EmpireTreasureDialog />);
 
       const pages = screen.queryAllByTestId(/flipbook-page-/);
-      expect(pages.length).toBe(3);
+      expect(pages).toHaveLength(3);
     });
 
     it('should handle mixed consumable and non-consumable items', () => {
@@ -447,7 +447,7 @@ describe('EmpireTreasureDialog', () => {
       renderWithProviders(<EmpireTreasureDialog />);
 
       const pages = screen.queryAllByTestId(/flipbook-page-/);
-      expect(pages.length).toBe(2);
+      expect(pages).toHaveLength(2);
     });
   });
 
@@ -470,7 +470,7 @@ describe('EmpireTreasureDialog', () => {
 
       const turnOwner = getTurnOwner(gameStateStub);
       expect(turnOwner).toBeDefined();
-      expect(turnOwner.empireTreasures.length).toBe(1);
+      expect(turnOwner.empireTreasures).toHaveLength(1);
     });
 
     it('should handle dialog state changes', () => {
@@ -514,7 +514,7 @@ describe('EmpireTreasureDialog', () => {
       renderWithProviders(<EmpireTreasureDialog />);
 
       const pages = screen.queryAllByTestId(/flipbook-page-/);
-      expect(pages.length).toBe(5);
+      expect(pages).toHaveLength(5);
     });
 
     it('should handle treasure with different targets', () => {
@@ -526,7 +526,7 @@ describe('EmpireTreasureDialog', () => {
       renderWithProviders(<EmpireTreasureDialog />);
 
       const pages = screen.queryAllByTestId(/flipbook-page-/);
-      expect(pages.length).toBe(2);
+      expect(pages).toHaveLength(2);
     });
   });
 
@@ -557,7 +557,7 @@ describe('EmpireTreasureDialog', () => {
       const icons = screen.getAllByTestId('flipbook-icon');
 
       // Should have two clickable icons
-      expect(icons.length).toBe(2);
+      expect(icons).toHaveLength(2);
 
       // Click first item and verify it sets the correct ID
       await user.click(icons[0]);

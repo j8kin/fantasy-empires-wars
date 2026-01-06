@@ -122,12 +122,12 @@ describe('Calculate Attrition Penalty', () => {
       calculateAttritionPenalty(gameStateStub);
 
       const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
-      expect(currentArmies.length).toBe(2);
-      expect(currentArmies[0].regulars.length).toBe(1);
+      expect(currentArmies).toHaveLength(2);
+      expect(currentArmies[0].regulars).toHaveLength(1);
       expect(currentArmies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(currentArmies[0].regulars[0].count).toBe(army1Initial - army1Loss);
 
-      expect(currentArmies[1].regulars.length).toBe(1);
+      expect(currentArmies[1].regulars).toHaveLength(1);
       expect(currentArmies[1].regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(currentArmies[1].regulars[0].count).toBe(army2Initial - army2Loss);
     }
@@ -151,11 +151,11 @@ describe('Calculate Attrition Penalty', () => {
     calculateAttritionPenalty(gameStateStub);
 
     const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
-    expect(currentArmies.length).toBe(1);
-    expect(currentArmies[0].regulars.length).toBe(1);
+    expect(currentArmies).toHaveLength(1);
+    expect(currentArmies[0].regulars).toHaveLength(1);
     expect(currentArmies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
     expect(currentArmies[0].regulars[0].count).toBe(50); // 50% of 100 warriors lost, war machines not counted
-    expect(currentArmies[0].warMachines.length).toBe(1); // ballista remains untouched in separate field
+    expect(currentArmies[0].warMachines).toHaveLength(1); // ballista remains untouched in separate field
     expect(currentArmies[0].warMachines[0].type).toBe(WarMachineName.BALLISTA);
   });
 
@@ -179,13 +179,13 @@ describe('Calculate Attrition Penalty', () => {
     calculateAttritionPenalty(gameStateStub);
 
     const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
-    expect(currentArmies.length).toBe(1);
-    expect(currentArmies[0].regulars.length).toBe(1); // only warriors in regulars
+    expect(currentArmies).toHaveLength(1);
+    expect(currentArmies[0].regulars).toHaveLength(1); // only warriors in regulars
     expect(currentArmies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
     expect(currentArmies[0].regulars[0].count).toBe(50); // 50% of 100 warriors lost
 
     // All war machines remain in separate field (grouped by type)
-    expect(currentArmies[0].warMachines.length).toBe(2);
+    expect(currentArmies[0].warMachines).toHaveLength(2);
     expect(currentArmies[0].warMachines[0].type).toBe(WarMachineName.BALLISTA);
     expect(currentArmies[0].warMachines[0].count).toBe(1);
     expect(currentArmies[0].warMachines[1].type).toBe(WarMachineName.CATAPULT);
@@ -210,6 +210,6 @@ describe('Calculate Attrition Penalty', () => {
     calculateAttritionPenalty(gameStateStub);
 
     const currentArmies = getArmiesAtPosition(gameStateStub, armyLand.mapPos);
-    expect(currentArmies.length).toBe(0);
+    expect(currentArmies).toHaveLength(0);
   });
 });

@@ -154,7 +154,7 @@ describe('castBlackManaSpell', () => {
           gameStateStub.players[1].id,
         ]).flatMap((r) => r.regulars);
 
-        expect(regulars.length).toBe(1); // only orcs
+        expect(regulars).toHaveLength(1); // only orcs
         expect(regulars[0].count).toBe(120 - 48);
       }
     );

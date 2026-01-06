@@ -307,7 +307,7 @@ describe('GameContext-TurnManager Integration', () => {
       });
 
       // Should not create a new TurnManager
-      expect(constructorSpy.mock.calls.length).toBe(initialCallCount);
+      expect(constructorSpy.mock.calls).toHaveLength(initialCallCount);
 
       constructorSpy.mockRestore();
     });

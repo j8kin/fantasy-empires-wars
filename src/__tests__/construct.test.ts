@@ -108,7 +108,7 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingName.STRONGHOLD, strongholdPos);
       construct(gameStateStub, BuildingName.DEMOLITION, strongholdPos);
 
-      expect(gameStateStub.map.lands[getLandId(strongholdPos)].buildings.length).toBe(0);
+      expect(gameStateStub.map.lands[getLandId(strongholdPos)].buildings).toHaveLength(0);
 
       expect(getPlayerLands(gameStateStub, player1Id)).toHaveLength(0);
       expect(getPlayerLands(gameStateStub, player2Id)).toHaveLength(0);
@@ -125,7 +125,7 @@ describe('Construct Buildings', () => {
       expect(getLand(gameStateStub, strongholdPos).buildings[0].type).toBe(BuildingName.STRONGHOLD);
 
       // barracks is destroyed
-      expect(getLand(gameStateStub, buildingPos).buildings.length).toBe(0);
+      expect(getLand(gameStateStub, buildingPos).buildings).toHaveLength(0);
 
       // no player lands destroyed
       expectLands(getPlayer(gameStateStub, player1Id), getLandsInRadius(strongholdPos));
@@ -137,7 +137,7 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingName.DEMOLITION, strongholdPos);
 
       // stronghold is destroyed
-      expect(gameStateStub.map.lands[getLandId(strongholdPos)].buildings.length).toBe(0);
+      expect(gameStateStub.map.lands[getLandId(strongholdPos)].buildings).toHaveLength(0);
 
       // barracks is not destroyed
       expect(gameStateStub.map.lands[getLandId(buildingPos)].buildings[0].type).toBe(
@@ -173,11 +173,11 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingName.DEMOLITION, strongholdPos);
 
       // stronghold 1 is destroyed
-      expect(getLand(gameStateStub, strongholdPos).buildings.length).toBe(0);
+      expect(getLand(gameStateStub, strongholdPos).buildings).toHaveLength(0);
       // barracks and stronghold are not destroyed
 
       expect(getLand(gameStateStub, buildingPos).buildings[0].type).toBe(BuildingName.BARRACKS);
-      expect(getLand(gameStateStub, strongholdPos2).buildings.length).toBe(1);
+      expect(getLand(gameStateStub, strongholdPos2).buildings).toHaveLength(1);
 
       expectLands(getPlayer(gameStateStub, player1Id), getLandsInRadius(strongholdPos2));
     });
@@ -190,13 +190,13 @@ describe('Construct Buildings', () => {
       construct(gameStateStub, BuildingName.DEMOLITION, strongholdPos);
 
       // stronghold is destroyed
-      expect(getLand(gameStateStub, strongholdPos).buildings.length).toBe(0);
+      expect(getLand(gameStateStub, strongholdPos).buildings).toHaveLength(0);
 
       // the barracks is not destroyed
       expect(getLand(gameStateStub, buildingPos).buildings[0].type).toBe(BuildingName.BARRACKS);
       // army is not lost
       const armies = getArmiesAtPosition(gameStateStub, buildingPos);
-      expect(armies.length).toBe(1);
+      expect(armies).toHaveLength(1);
 
       // only one land still under control (with army)
       expect(getPlayerLands(gameStateStub, player1Id)).toHaveLength(1);
@@ -268,10 +268,10 @@ describe('Construct Buildings', () => {
       while (gameStateStub.turn < 2) nextPlayer(gameStateStub);
 
       expect(emptyLand).toBeDefined();
-      expect(emptyLand.buildings.length).toBe(0);
+      expect(emptyLand.buildings).toHaveLength(0);
 
       construct(gameStateStub, BuildingName.BARRACKS, emptyLand.mapPos);
-      expect(emptyLand.buildings.length).toBe(0); // not constructed
+      expect(emptyLand.buildings).toHaveLength(0); // not constructed
     });
   });
 });

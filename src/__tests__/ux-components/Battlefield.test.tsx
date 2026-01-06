@@ -249,8 +249,8 @@ describe('Battlefield Component', () => {
       expect(
         hexTiles.filter((tile) => tile.getAttribute('data-controlled-by')).length
       ).toBeGreaterThan(0);
-      expect(hexTiles.filter((tile) => tile.getAttribute('data-row')).length).toBe(158); // see createGameStateStubNew for map size
-      expect(hexTiles.filter((tile) => tile.getAttribute('data-col')).length).toBe(158); // see createGameStateStubNew for map size
+      expect(hexTiles.filter((tile) => tile.getAttribute('data-row'))).toHaveLength(158); // see createGameStateStubNew for map size
+      expect(hexTiles.filter((tile) => tile.getAttribute('data-col'))).toHaveLength(158); // see createGameStateStubNew for map size
     });
   });
 
@@ -337,7 +337,7 @@ describe('Battlefield Component', () => {
       const volcanoTiles = hexTiles.filter(
         (tile) => tile.getAttribute('data-land-type') === 'Volcano'
       );
-      expect(volcanoTiles.length).toBe(1);
+      expect(volcanoTiles).toHaveLength(1);
     });
   });
 });

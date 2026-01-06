@@ -239,7 +239,7 @@ describe('MoveArmyDialog', () => {
     it('should not render when stationed army has movements (is already moving)', () => {
       // Get the army at the position and set it to moving
       const armies = getArmiesAtPosition(gameStateStub, fromPosition);
-      expect(armies.length).toBe(1);
+      expect(armies).toHaveLength(1);
       startMoving(armies[0], toPosition);
 
       renderWithProviders(<MoveArmyDialog />);
