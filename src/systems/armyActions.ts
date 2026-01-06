@@ -1,6 +1,8 @@
+import { getLandId } from '../state/map/land/LandId';
+import { getPosition } from '../selectors/armySelectors';
+import { findShortestPath, getHostileLands } from '../selectors/landSelectors';
 import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
-import { findShortestPath } from '../selectors/landSelectors';
 
 import { EffectKind } from '../types/Effect';
 import { RegularUnitType } from '../types/UnitType';
@@ -219,11 +221,16 @@ export const removeArmyFromGameState = (gameState: GameState, armyId: string): G
 };
 
 /**
- * Remove all armies from GameState that don't have any regulars or heroes
+ * Remove all armies from GameState that don't have any regulars or heroes or war-machines
  */
 export const cleanupArmies = (gameState: GameState): GameState => {
+  const hostileLands = getHostileLands(gameState).map((land) => getLandId(land.mapPos));
   const validArmies = gameState.armies.filter(
-    (army) => army.regulars.length > 0 || army.heroes.length > 0
+    (army) =>
+      army.regulars.length > 0 ||
+      army.heroes.length > 0 ||
+      // war-machines without regular units in hostile lands are not survived
+      (army.warMachines.length > 0 && !hostileLands.includes(getLandId(getPosition(army))))
   );
   return { ...gameState, armies: validArmies };
 };
