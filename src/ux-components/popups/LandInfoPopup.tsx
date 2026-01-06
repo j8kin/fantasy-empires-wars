@@ -190,7 +190,9 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
                   </div>
                 </div>
               )}
-              {(landInfo.heroes.length > 0 || landInfo.regulars.length > 0) && (
+              {(landInfo.heroes.length > 0 ||
+                landInfo.regulars.length > 0 ||
+                landInfo.warMachines.length > 0) && (
                 <>
                   {landInfo.heroes.length > 0 && (
                     <div className={`${commonStyles.row} ${styles.row}`}>
