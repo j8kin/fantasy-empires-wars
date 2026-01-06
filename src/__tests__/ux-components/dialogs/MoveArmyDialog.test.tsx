@@ -208,10 +208,11 @@ describe('MoveArmyDialog', () => {
     const { warrior, dwarf, hero } = createMockUnits();
 
     // Create a single army with all units at the position (as the component expects)
-    const combinedArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
-      heroes: [hero],
-      regulars: [warrior, dwarf],
+    let combinedArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
+      hero,
     });
+    combinedArmy = addRegulars(combinedArmy, warrior);
+    combinedArmy = addRegulars(combinedArmy, dwarf);
     // Directly add to armies array instead of using addArmyToGameState
     gameStateStub.armies.push(combinedArmy);
   });
@@ -599,7 +600,7 @@ describe('MoveArmyDialog', () => {
       const hero2 = heroFactory(HeroUnitName.CLERIC, 'Hero2');
 
       const heroOnlyArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
-        heroes: [hero1],
+        hero: hero1,
       });
       Object.assign(heroOnlyArmy, addHero(heroOnlyArmy, hero2));
 
@@ -615,11 +616,8 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with only regular units
       gameStateStub.armies = [];
 
-      const warrior = regularsFactory(RegularUnitName.WARRIOR);
-      warrior.count = 15;
-
       const regularOnlyArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
-        regulars: [warrior],
+        regular: regularsFactory(RegularUnitName.WARRIOR, 15),
       });
       gameStateStub.armies.push(regularOnlyArmy);
 
@@ -633,11 +631,8 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with single count units
       gameStateStub.armies = [];
 
-      const warrior = regularsFactory(RegularUnitName.WARRIOR);
-      warrior.count = 1;
-
       const singleCountArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
-        regulars: [warrior],
+        regular: regularsFactory(RegularUnitName.WARRIOR, 1),
       });
       gameStateStub.armies.push(singleCountArmy);
 
@@ -664,19 +659,17 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with different ranked units
       gameStateStub.armies = [];
 
-      const veteranWarrior = regularsFactory(RegularUnitName.WARRIOR);
+      const veteranWarrior = regularsFactory(RegularUnitName.WARRIOR, 8);
       levelUpRegulars(veteranWarrior, Alignment.LAWFUL);
       expect(veteranWarrior.rank).toBe(UnitRank.VETERAN);
-      veteranWarrior.count = 8;
 
-      const eliteWarrior = regularsFactory(RegularUnitName.WARRIOR);
+      const eliteWarrior = regularsFactory(RegularUnitName.WARRIOR, 3);
       levelUpRegulars(eliteWarrior, Alignment.LAWFUL);
       levelUpRegulars(eliteWarrior, Alignment.LAWFUL);
       expect(eliteWarrior.rank).toBe(UnitRank.ELITE);
-      eliteWarrior.count = 3;
 
       const rankedUnitsArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
-        regulars: [veteranWarrior],
+        regular: veteranWarrior,
       });
       Object.assign(rankedUnitsArmy, addRegulars(rankedUnitsArmy, eliteWarrior));
       gameStateStub.armies.push(rankedUnitsArmy);
@@ -714,12 +707,10 @@ describe('MoveArmyDialog', () => {
       };
 
       // Add army to new position
-      const warrior = regularsFactory(RegularUnitName.WARRIOR);
-
       const newPositionArmy = armyFactory(
         gameStateStub.turnOwner,
         { row: 5, col: 5 },
-        { regulars: [warrior] }
+        { regular: regularsFactory(RegularUnitName.WARRIOR) }
       );
       gameStateStub.armies.push(newPositionArmy);
 

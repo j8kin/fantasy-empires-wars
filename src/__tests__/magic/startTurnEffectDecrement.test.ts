@@ -54,7 +54,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       const army = armyFactory(
         turnOwnerId,
         { row: 1, col: 1 },
-        { heroes: [heroFactory(HeroUnitName.FIGHTER, 'Test Hero')] }
+        { hero: heroFactory(HeroUnitName.FIGHTER, 'Test Hero') }
       );
       army.effects = [createEffect('army1', EffectKind.POSITIVE, SpellName.HEAL, 2, turnOwnerId)];
       gameState.armies = [army];
@@ -145,7 +145,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       const turnOwnerArmy = armyFactory(
         turnOwner.id,
         { row: 1, col: 1 },
-        { heroes: [heroFactory(HeroUnitName.FIGHTER, 'Hero1')] }
+        { hero: heroFactory(HeroUnitName.FIGHTER, 'Hero1') }
       );
       turnOwnerArmy.effects = [
         createEffect('toa1', EffectKind.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id),
@@ -154,7 +154,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       const otherPlayerArmy = armyFactory(
         otherPlayer.id,
         { row: 2, col: 2 },
-        { heroes: [heroFactory(HeroUnitName.FIGHTER, 'Hero2')] }
+        { hero: heroFactory(HeroUnitName.FIGHTER, 'Hero2') }
       );
       otherPlayerArmy.effects = [
         createEffect('opa1', EffectKind.NEGATIVE, SpellName.ENTANGLING_ROOTS, 2, otherPlayer.id),

@@ -293,7 +293,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
 
       const newArmy = armyFactory(updatedState.turnOwner, landPos, {
         // the same as 3 slots in Barracks
-        regulars: [regularsFactory(forgedUnitType, 60)],
+        regular: regularsFactory(forgedUnitType, 60),
       });
       updatedState = addArmyToGameState(updatedState, newArmy);
       break;
@@ -348,7 +348,7 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       } else {
         updatedState = addArmyToGameState(
           updatedState,
-          armyFactory(updatedState.turnOwner, landPos, { regulars: [undeadSummoned] })
+          armyFactory(updatedState.turnOwner, landPos, { regular: undeadSummoned })
         );
       }
       break;

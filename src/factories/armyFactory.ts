@@ -10,23 +10,23 @@ export const armyFactory = (
   controlledBy: string,
   position: LandPosition,
   {
-    heroes = [],
-    regulars = [],
-    warMachines = [],
+    hero,
+    regular,
+    warMachine,
   }:
     | {
-        heroes?: HeroState[];
-        regulars?: RegularsState[];
-        warMachines?: WarMachineState[];
+        hero?: HeroState;
+        regular?: RegularsState;
+        warMachine?: WarMachineState;
       }
-    | undefined = { heroes: [], regulars: [], warMachines: [] }
+    | undefined = {}
 ): ArmyState => {
   return {
     id: Object.freeze(uuid()),
     controlledBy: Object.freeze(controlledBy),
-    heroes: [...heroes],
-    regulars: [...regulars],
-    warMachines: [...warMachines],
+    heroes: hero ? [hero] : [],
+    regulars: regular ? [regular] : [],
+    warMachines: warMachine ? [warMachine] : [],
     movement: movementFactory(position),
     effects: [],
   };

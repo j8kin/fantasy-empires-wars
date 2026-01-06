@@ -43,18 +43,18 @@ describe('Calculate Maintenance', () => {
       [HeroUnitName.DRUID, 1, 100],
       [HeroUnitName.ENCHANTER, 1, 100],
       [HeroUnitName.NECROMANCER, 1, 100],
-    ])('Hero %s maintenance level %s', (hero, level, expected) => {
+    ])('Hero %s maintenance level %s', (heroType, level, expected) => {
       Object.assign(
         gameStateStub,
         addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 0, col: 0 })
       );
-      const heroUnit = heroFactory(hero, hero);
-      while (heroUnit.level < level) {
-        levelUpHero(heroUnit, Alignment.LAWFUL);
+      const hero = heroFactory(heroType, heroType);
+      while (hero.level < level) {
+        levelUpHero(hero, Alignment.LAWFUL);
       }
 
       gameStateStub.armies = [
-        armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, { heroes: [heroUnit] }),
+        armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, { hero }),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
       expect(maintenance).toBe(expected);
@@ -75,23 +75,19 @@ describe('Calculate Maintenance', () => {
       [RegularUnitName.DARK_ELF, UnitRank.REGULAR, 1, 5],
     ])(
       'RegularUnit %s maintenance level %s quantity %s',
-      (regular: RegularUnitType, level: UnitRankType, quantity: number, expected: number) => {
+      (regularType: RegularUnitType, level: UnitRankType, quantity: number, expected: number) => {
         Object.assign(
           gameStateStub,
           addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 0, col: 0 })
         );
-        const regularUnit = regularsFactory(regular);
-        while (regularUnit.rank !== level) {
-          levelUpRegulars(regularUnit, Alignment.LAWFUL);
+        const regular = regularsFactory(regularType);
+        while (regular.rank !== level) {
+          levelUpRegulars(regular, Alignment.LAWFUL);
         }
-        regularUnit.count = quantity;
+        regular.count = quantity;
 
         gameStateStub.armies = [
-          armyFactory(
-            getTurnOwner(gameStateStub).id,
-            { row: 0, col: 0 },
-            { regulars: [regularUnit] }
-          ),
+          armyFactory(getTurnOwner(gameStateStub).id, { row: 0, col: 0 }, { regular }),
         ];
         const maintenance = calculateMaintenance(gameStateStub);
         expect(maintenance).toBe(expected);
@@ -111,7 +107,7 @@ describe('Calculate Maintenance', () => {
         armyFactory(
           getTurnOwner(gameStateStub).id,
           { row: 0, col: 0 },
-          { warMachines: [warMachineFactory(regular)] }
+          { warMachine: warMachineFactory(regular) }
         ),
       ];
       const maintenance = calculateMaintenance(gameStateStub);
@@ -132,7 +128,7 @@ describe('Calculate Maintenance', () => {
       const army = armyFactory(
         getTurnOwner(gameStateStub).id,
         { row: 0, col: 0 },
-        { heroes: [heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER)] }
+        { hero: heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER) }
       );
       Object.assign(army, addRegulars(army, regularsFactory(RegularUnitName.DWARF)));
       Object.assign(army, addWarMachines(army, warMachineFactory(WarMachineName.BALLISTA)));

@@ -48,41 +48,41 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
           );
 
           if (isHeroType(s.unit)) {
-            const newHero = heroFactory(s.unit, generateHeroName(s.unit));
+            const hero = heroFactory(s.unit, generateHeroName(s.unit));
             recruitEvents.push({
               status: EmpireEventKind.Success,
-              message: heroRecruitingMessage(newHero),
+              message: heroRecruitingMessage(hero),
             });
 
             if (stationedArmy) {
               // Get the latest version of this army (might have been updated already)
               const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
-              const updatedArmy = addHero(currentArmy, newHero);
+              const updatedArmy = addHero(currentArmy, hero);
               armiesToUpdate.set(stationedArmy.id, updatedArmy);
             } else {
-              const newArmy = armyFactory(turnOwner, l.mapPos, { heroes: [newHero] });
+              const newArmy = armyFactory(turnOwner, l.mapPos, { hero });
               newArmies.push(newArmy);
             }
           } else {
             if (isWarMachine(s.unit)) {
-              const newWarMachine = warMachineFactory(s.unit);
+              const warMachine = warMachineFactory(s.unit);
               if (stationedArmy) {
                 const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
-                const updatedArmy = addWarMachines(currentArmy, newWarMachine);
+                const updatedArmy = addWarMachines(currentArmy, warMachine);
                 armiesToUpdate.set(stationedArmy.id, updatedArmy);
               } else {
-                newArmies.push(armyFactory(turnOwner, l.mapPos, { warMachines: [newWarMachine] }));
+                newArmies.push(armyFactory(turnOwner, l.mapPos, { warMachine }));
               }
             } else {
-              const newRegulars = regularsFactory(s.unit);
+              const regular = regularsFactory(s.unit);
 
               if (stationedArmy) {
                 // Get the latest version of this army (might have been updated already)
                 const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
-                const updatedArmy = addRegulars(currentArmy, newRegulars);
+                const updatedArmy = addRegulars(currentArmy, regular);
                 armiesToUpdate.set(stationedArmy.id, updatedArmy);
               } else {
-                newArmies.push(armyFactory(turnOwner, l.mapPos, { regulars: [newRegulars] }));
+                newArmies.push(armyFactory(turnOwner, l.mapPos, { regular }));
               }
             }
           }

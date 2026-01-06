@@ -216,7 +216,7 @@ const returnHeroOnMap = (state: GameState, hero: HeroState, landPosition: LandPo
     Object.assign(state, updateArmyInGameState(state, stationedArmy));
   } else {
     // no valid army found, create new one
-    const newArmy = armyFactory(state.turnOwner, landPosition, { heroes: [hero] });
+    const newArmy = armyFactory(state.turnOwner, landPosition, { hero });
     Object.assign(state, addArmyToGameState(state, newArmy));
   }
 };
