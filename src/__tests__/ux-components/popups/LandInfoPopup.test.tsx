@@ -411,6 +411,37 @@ describe('LandInfoPopup', () => {
       expect(screen.queryByText('War Machines:')).not.toBeInTheDocument();
     });
 
+    it('War-machines info display ignoring durability', () => {
+      const landPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1].mapPos;
+      Object.assign(
+        gameStateStub,
+        updateLandEffect(
+          gameStateStub,
+          landPos,
+          effectFactory(SpellName.VIEW_TERRITORY, gameStateStub.turnOwner) // opponent land visible only with this effect
+        )
+      );
+      const catapult1 = warMachineFactory(WarMachineName.CATAPULT);
+      catapult1.durability = 1;
+      catapult1.count = 3;
+      placeUnitsOnMap(catapult1, gameStateStub, landPos);
+
+      const catapult2 = warMachineFactory(WarMachineName.CATAPULT);
+      catapult2.durability = 7;
+      catapult2.count = 1;
+      placeUnitsOnMap(catapult2, gameStateStub, landPos);
+
+      renderWithProviders(
+        <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.getByText('War Machines:')).toBeInTheDocument();
+      expect(screen.getByText('Catapult (4)')).toBeInTheDocument();
+    });
+
     it('displays only units section when tile has only non-hero units', () => {
       const landPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1].mapPos;
       Object.assign(
