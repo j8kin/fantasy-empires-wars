@@ -103,6 +103,11 @@ const RecruitArmyDialog: React.FC = () => {
 
   const land = getLand(gameState, actionLandPosition);
 
+  const recruitBuilding = land.buildings.find((b) => hasAvailableSlot(b));
+
+  // If no recruit building is available (all slots filled), don't render content
+  if (!recruitBuilding) return null;
+
   const sortArmyUnits = (unit: RecruitUnitProps): number => {
     if (unit.id === RegularUnitName.WARD_HANDS) return 0;
     if (isWarMachine(unit.id)) return 2;
@@ -122,7 +127,7 @@ const RecruitArmyDialog: React.FC = () => {
   const availableUnits: RecruitUnitProps[] = land.land.unitsToRecruit
     .filter(
       (u) =>
-        unitsBaseStats(u).recruitedIn === land.buildings.find((b) => hasAvailableSlot(b))?.type &&
+        unitsBaseStats(u).recruitedIn === recruitBuilding.type &&
         (u !== HeroUnitName.WARSMITH ||
           getTurnOwner(gameState).playerProfile.type === HeroUnitName.WARSMITH) &&
         (u !== HeroUnitName.ZEALOT ||
