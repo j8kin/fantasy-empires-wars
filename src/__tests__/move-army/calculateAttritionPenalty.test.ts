@@ -6,14 +6,14 @@ import { addArmyToGameState, addRegulars, addWarMachines } from '../../systems/a
 import { armyFactory } from '../../factories/armyFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { warMachineFactory } from '../../factories/warMachineFactory';
+import { levelUpRegulars } from '../../systems/unitsActions';
 import { UnitRank } from '../../state/army/RegularsState';
 import { WarMachineName } from '../../types/UnitType';
 import { RegularUnitName } from '../../types/UnitType';
-
+import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
-import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
-import type { RegularUnitType } from '../../types/UnitType';
+import type { UnitRankType } from '../../state/army/RegularsState';
 
 import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
@@ -38,16 +38,6 @@ describe('Calculate Attrition Penalty', () => {
 
   afterEach(() => {
     randomSpy.mockRestore();
-  });
-
-  const testCreateRegularUnit = (
-    unit: RegularUnitType,
-    count: number = 20,
-    level: UnitRankType = UnitRank.REGULAR
-  ): RegularsState => ({
-    ...regularsFactory(unit),
-    rank: level,
-    count,
   });
 
   it('armies on lands owned by player should not be affected', () => {
@@ -106,18 +96,21 @@ describe('Calculate Attrition Penalty', () => {
       const armyLand = getLand(gameStateStub, armyLandPos);
       expect(getLandOwner(gameStateStub, armyLand.mapPos)).not.toBe(getTurnOwner(gameStateStub).id);
 
-      Object.assign(
-        army1,
-        addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, army1Initial, rank))
-      );
-      Object.assign(
-        army2,
-        addRegulars(army2, testCreateRegularUnit(RegularUnitName.WARRIOR, army2Initial, rank))
-      );
+      const regularUnit1 = regularsFactory(RegularUnitName.WARRIOR, army1Initial);
+      while (regularUnit1.rank !== rank) levelUpRegulars(regularUnit1, Alignment.LAWFUL);
+
+      const regularUnit2 = regularsFactory(RegularUnitName.WARRIOR, army2Initial);
+      while (regularUnit2.rank !== rank) levelUpRegulars(regularUnit2, Alignment.LAWFUL);
 
       // place armies using centralized system
-      Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army1));
-      Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army2));
+      Object.assign(
+        gameStateStub,
+        addArmyToGameState(gameStateStub, addRegulars(army1, regularUnit1))
+      );
+      Object.assign(
+        gameStateStub,
+        addArmyToGameState(gameStateStub, addRegulars(army2, regularUnit2))
+      );
 
       calculateAttritionPenalty(gameStateStub);
 
@@ -139,10 +132,7 @@ describe('Calculate Attrition Penalty', () => {
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
     expect(getLandOwner(gameStateStub, armyLand.mapPos)).not.toBe(getTurnOwner(gameStateStub).id);
 
-    Object.assign(
-      army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, 100, UnitRank.REGULAR))
-    );
+    Object.assign(army1, addRegulars(army1, regularsFactory(RegularUnitName.WARRIOR, 100)));
     Object.assign(army1, addWarMachines(army1, warMachineFactory(WarMachineName.BALLISTA)));
 
     // place army using centralized system
@@ -165,10 +155,7 @@ describe('Calculate Attrition Penalty', () => {
     const armyLand = getLand(gameStateStub, { row: 3, col: 5 });
     expect(getLandOwner(gameStateStub, armyLand.mapPos)).not.toBe(getTurnOwner(gameStateStub).id);
 
-    Object.assign(
-      army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, 100, UnitRank.REGULAR))
-    );
+    Object.assign(army1, addRegulars(army1, regularsFactory(RegularUnitName.WARRIOR, 100)));
     Object.assign(army1, addWarMachines(army1, warMachineFactory(WarMachineName.BALLISTA)));
     Object.assign(army1, addWarMachines(army1, warMachineFactory(WarMachineName.CATAPULT)));
     Object.assign(army1, addWarMachines(army1, warMachineFactory(WarMachineName.CATAPULT)));
@@ -199,10 +186,7 @@ describe('Calculate Attrition Penalty', () => {
     expect(getLandOwner(gameStateStub, armyLand.mapPos)).not.toBe(getTurnOwner(gameStateStub).id);
 
     // 40-60 minimum should be killed it means army will be destroyed
-    Object.assign(
-      army1,
-      addRegulars(army1, testCreateRegularUnit(RegularUnitName.WARRIOR, 30, UnitRank.REGULAR))
-    );
+    Object.assign(army1, addRegulars(army1, regularsFactory(RegularUnitName.WARRIOR, 30)));
 
     // place army using centralized system
     Object.assign(gameStateStub, addArmyToGameState(gameStateStub, army1));
