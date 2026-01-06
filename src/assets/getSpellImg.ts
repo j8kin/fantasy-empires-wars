@@ -1,7 +1,7 @@
 import { SpellName } from '../types/Spell';
 import { Mana } from '../types/Mana';
 import type { ManaType } from '../types/Mana';
-import type { Spell } from '../types/Spell';
+import type { Spell, SpellType } from '../types/Spell';
 
 import blessingImg from './spells/white/blessing.png';
 import healImg from './spells/white/heal.png';
@@ -30,67 +30,46 @@ import greenEndAnimationImg from './spells/_animation/green-end.png';
 import redEndAnimationImg from './spells/_animation/red-end.png';
 import blueEndAnimationImg from './spells/_animation/blue-end.png';
 
+const spellImg: Record<SpellType, string> = {
+  // white spells
+  [SpellName.BLESSING]: blessingImg,
+  [SpellName.HEAL]: healImg,
+  [SpellName.TURN_UNDEAD]: turnImg,
+  [SpellName.VIEW_TERRITORY]: viewImg,
+  // green spells
+  [SpellName.FERTILE_LAND]: fertileLandsImg,
+  [SpellName.ENTANGLING_ROOTS]: entangledRootsImg,
+  [SpellName.BEAST_ATTACK]: beastAttachImg,
+  [SpellName.EARTHQUAKE]: earthquakeImg,
+  // blue spells
+  [SpellName.ILLUSION]: illusionImg,
+  [SpellName.TELEPORT]: teleportImg,
+  [SpellName.TORNADO]: tornadoImg,
+  [SpellName.EXCHANGE]: arcaneExchangeImg,
+  // red spells
+  [SpellName.EMBER_RAID]: emberRaidImg,
+  [SpellName.FORGE_OF_WAR]: forgeOfWarImg,
+  [SpellName.FIRESTORM]: fireStormImg,
+  [SpellName.METEOR_SHOWER]: meteorShowerImg,
+  // black spells
+  [SpellName.SUMMON_UNDEAD]: summonUndeadImg,
+  [SpellName.RAISE_DEAD_HERO]: raiseDeadHeroImg,
+  [SpellName.PLAGUE]: plagueImg,
+  [SpellName.CORRUPTION]: corruptionImg,
+};
+
+const animationImg: Record<ManaType, string> = {
+  [Mana.WHITE]: whiteEndAnimationImg,
+  [Mana.GREEN]: greenEndAnimationImg,
+  [Mana.BLUE]: blueEndAnimationImg,
+  [Mana.RED]: redEndAnimationImg,
+  [Mana.BLACK]: blackEndAnimationImg,
+};
+
 export const getSpellImg = (spell: Spell) => {
-  switch (spell.type) {
-    // white spells
-    case SpellName.BLESSING:
-      return blessingImg;
-    case SpellName.HEAL:
-      return healImg;
-    case SpellName.TURN_UNDEAD:
-      return turnImg;
-    case SpellName.VIEW_TERRITORY:
-      return viewImg;
-    // blue spells
-    case SpellName.ILLUSION:
-      return illusionImg;
-    case SpellName.TELEPORT:
-      return teleportImg;
-    case SpellName.TORNADO:
-      return tornadoImg;
-    case SpellName.EXCHANGE:
-      return arcaneExchangeImg;
-    // green spells
-    case SpellName.FERTILE_LAND:
-      return fertileLandsImg;
-    case SpellName.ENTANGLING_ROOTS:
-      return entangledRootsImg;
-    case SpellName.BEAST_ATTACK:
-      return beastAttachImg;
-    case SpellName.EARTHQUAKE:
-      return earthquakeImg;
-    // red spells
-    case SpellName.EMBER_RAID:
-      return emberRaidImg;
-    case SpellName.FORGE_OF_WAR:
-      return forgeOfWarImg;
-    case SpellName.FIRESTORM:
-      return fireStormImg;
-    case SpellName.METEOR_SHOWER:
-      return meteorShowerImg;
-    // black spells
-    case SpellName.SUMMON_UNDEAD:
-      return summonUndeadImg;
-    case SpellName.RAISE_DEAD_HERO:
-      return raiseDeadHeroImg;
-    case SpellName.PLAGUE:
-      return plagueImg;
-    case SpellName.CORRUPTION:
-      return corruptionImg;
-  }
+  return spellImg[spell.type];
 };
 
 export const getSpellEndAnimationImg = (manaType: ManaType) => {
-  switch (manaType) {
-    case Mana.WHITE:
-      return whiteEndAnimationImg;
-    case Mana.BLACK:
-      return blackEndAnimationImg;
-    case Mana.GREEN:
-      return greenEndAnimationImg;
-    case Mana.RED:
-      return redEndAnimationImg;
-    case Mana.BLUE:
-      return blueEndAnimationImg;
-  }
+  return animationImg[manaType];
 };

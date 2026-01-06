@@ -16,43 +16,26 @@ import selene from '../assets/avatars/selene.png';
 import kaer from '../assets/avatars/kaer.png';
 import nullwarden from '../assets/avatars/nullwarden.png';
 
+const avatars: Record<string, string> = {
+  alaric: alaric,
+  morgana: morgana,
+  thorin: thorin,
+  vex: vex,
+  grimjaw: grimjaw,
+  serena: serena,
+  kael: kael,
+  elara: elara,
+  marcus: marcus,
+  lydia: lydia,
+  selene: selene,
+  elderoak: elderoak,
+  valdris: valdris,
+  ignatius: ignatius,
+  ember: ember,
+  kaer: kaer,
+  nullwarden: nullwarden,
+};
+
 export const getAvatarImg = (name: string) => {
-  switch (name) {
-    case 'alaric':
-      return alaric;
-    case 'morgana':
-      return morgana;
-    case 'thorin':
-      return thorin;
-    case 'vex':
-      return vex;
-    case 'grimjaw':
-      return grimjaw;
-    case 'serena':
-      return serena;
-    case 'kael':
-      return kael;
-    case 'elara':
-      return elara;
-    case 'marcus':
-      return marcus;
-    case 'lydia':
-      return lydia;
-    case 'selene':
-      return selene;
-    case 'elderoak':
-      return elderoak;
-    case 'valdris':
-      return valdris;
-    case 'ignatius':
-      return ignatius;
-    case 'ember':
-      return ember;
-    case 'kaer':
-      return kaer;
-    case 'nullwarden':
-      return nullwarden;
-    default:
-      return undefined;
-  }
+  return avatars[name];
 };

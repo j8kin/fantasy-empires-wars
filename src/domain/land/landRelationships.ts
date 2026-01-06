@@ -12,7 +12,7 @@ export const getSurroundingLands = (landKind: LandType): LandType[] => {
       return [LandName.MOUNTAINS, LandName.DARK_FOREST];
     case LandName.SUN_SPIRE_PEAKS:
       return [LandName.DARK_FOREST, LandName.HILLS];
-    case LandName.HEARTWOOD_COVE:
+    case LandName.HEARTWOOD_GROVE:
       return [LandName.SWAMP, LandName.GREEN_FOREST];
     case LandName.CRISTAL_BASIN:
       return [LandName.DESERT, LandName.HILLS];
@@ -34,7 +34,7 @@ export const getNearSpecialLandKinds = (id: LandType): LandType => {
       return LandName.LAVA;
     case LandName.SUN_SPIRE_PEAKS:
       return LandName.GOLDEN_PLAINS;
-    case LandName.HEARTWOOD_COVE:
+    case LandName.HEARTWOOD_GROVE:
       return LandName.VERDANT_GLADE;
     case LandName.CRISTAL_BASIN:
       return LandName.MISTY_GLADES;
@@ -54,7 +54,7 @@ export const getSpecialLandKinds = (): LandType[] => [
   LandName.LAVA,
   LandName.SUN_SPIRE_PEAKS,
   LandName.GOLDEN_PLAINS,
-  LandName.HEARTWOOD_COVE,
+  LandName.HEARTWOOD_GROVE,
   LandName.VERDANT_GLADE,
   LandName.CRISTAL_BASIN,
   LandName.MISTY_GLADES,
@@ -86,7 +86,7 @@ export const getMainSpecialLandKinds = (): LandType[] => {
   return [
     LandName.VOLCANO,
     LandName.SUN_SPIRE_PEAKS,
-    LandName.HEARTWOOD_COVE,
+    LandName.HEARTWOOD_GROVE,
     LandName.CRISTAL_BASIN,
     LandName.SHADOW_MIRE,
   ];

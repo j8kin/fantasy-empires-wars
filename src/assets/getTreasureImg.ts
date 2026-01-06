@@ -1,4 +1,4 @@
-import type { EmpireTreasure } from '../types/Treasures';
+import type { EmpireTreasure, TreasureType } from '../types/Treasures';
 import { TreasureName } from '../types/Treasures';
 
 import wandOfTurnUndeadImg from './treasures/turn-undead.png';
@@ -22,47 +22,30 @@ import obsidianChaliceImg from './treasures/obsidian-chalice.png';
 import verdantIdolImg from './treasures/verdant-idol.png';
 import starwellPrismImg from './treasures/starwell-prism.png';
 
-export const getTreasureImg = (treasure: EmpireTreasure) => {
-  switch (treasure.treasure.type) {
-    case TreasureName.WAND_OF_TURN_UNDEAD:
-      return wandOfTurnUndeadImg;
-    case TreasureName.ORB_OF_STORM:
-      return orbOfStormImg;
-    case TreasureName.SEED_OF_RENEWAL:
-      return seedOfRenewalImg;
-    case TreasureName.AEGIS_SHARD:
-      return aegisShardImg;
-    case TreasureName.RESURRECTION:
-      return phoenixFeatherImg;
-    case TreasureName.GLYPH_OF_SEVERANCE:
-      return glyphOfSeveranceImg;
-    case TreasureName.COMPASS_OF_DOMINION:
-      return compassOfDominionImg;
-    case TreasureName.DEED_OF_RECLAMATION:
-      return deedOfReclamationImg;
-    case TreasureName.MERCY_OF_ORRIVANE:
-      return mercyOfOrrivaneImg;
-    case TreasureName.HOURGLASS_OF_DELAY:
-      return hourglassOfDelayImg;
+const treasureImg: Partial<Record<TreasureType, string>> = {
+  // items
+  [TreasureName.WAND_OF_TURN_UNDEAD]: wandOfTurnUndeadImg,
+  [TreasureName.ORB_OF_STORM]: orbOfStormImg,
+  [TreasureName.SEED_OF_RENEWAL]: seedOfRenewalImg,
+  [TreasureName.AEGIS_SHARD]: aegisShardImg,
+  [TreasureName.RESURRECTION]: phoenixFeatherImg,
+  [TreasureName.GLYPH_OF_SEVERANCE]: glyphOfSeveranceImg,
+  [TreasureName.COMPASS_OF_DOMINION]: compassOfDominionImg,
+  [TreasureName.DEED_OF_RECLAMATION]: deedOfReclamationImg,
+  [TreasureName.MERCY_OF_ORRIVANE]: mercyOfOrrivaneImg,
+  [TreasureName.HOURGLASS_OF_DELAY]: hourglassOfDelayImg,
+  // relics
+  [TreasureName.MIRROR_OF_ILLUSION]: mirrorOfIllusionImg,
+  [TreasureName.BANNER_OF_UNITY]: bannerOfUnityImg,
+  [TreasureName.HEARTSTONE_OF_ORRIVANE]: heartstoneOfOrrivaneImg,
+  [TreasureName.SHARD_OF_THE_SILENT_ANVIL]: shardOfTheSilentAnvilImg,
+  [TreasureName.CROWN_OF_DOMINION]: crownOfDominionImg,
+  [TreasureName.SCEPTER_OF_TEMPESTS]: scepterOfTempestsImg,
+  [TreasureName.OBSIDIAN_CHALICE]: obsidianChaliceImg,
+  [TreasureName.VERDANT_IDOL]: verdantIdolImg,
+  [TreasureName.STARWELL_PRISM]: starwellPrismImg,
+};
 
-    case TreasureName.MIRROR_OF_ILLUSION:
-      return mirrorOfIllusionImg;
-    case TreasureName.BANNER_OF_UNITY:
-      return bannerOfUnityImg;
-    case TreasureName.HEARTSTONE_OF_ORRIVANE:
-      return heartstoneOfOrrivaneImg;
-    case TreasureName.SHARD_OF_THE_SILENT_ANVIL:
-      return shardOfTheSilentAnvilImg;
-    case TreasureName.CROWN_OF_DOMINION:
-      return crownOfDominionImg;
-    case TreasureName.SCEPTER_OF_TEMPESTS:
-      return scepterOfTempestsImg;
-    case TreasureName.OBSIDIAN_CHALICE:
-      return obsidianChaliceImg;
-    case TreasureName.VERDANT_IDOL:
-      return verdantIdolImg;
-    case TreasureName.STARWELL_PRISM:
-      return starwellPrismImg;
-  }
-  return undefined;
+export const getTreasureImg = (treasure: EmpireTreasure) => {
+  return treasureImg[treasure.treasure.type];
 };

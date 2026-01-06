@@ -25,7 +25,7 @@ const MANA_SOURCES: ManaSource[] = [
   {
     type: Mana.GREEN,
     heroTypes: [HeroUnitName.DRUID],
-    landTypes: [LandName.HEARTWOOD_COVE, LandName.VERDANT_GLADE],
+    landTypes: [LandName.HEARTWOOD_GROVE, LandName.VERDANT_GLADE],
   },
   {
     type: Mana.WHITE,

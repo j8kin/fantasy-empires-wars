@@ -18,7 +18,7 @@ export const LandName = {
   LAVA: 'Lava',
   SUN_SPIRE_PEAKS: 'Sunspire Peaks',
   GOLDEN_PLAINS: 'Golden Plains',
-  HEARTWOOD_COVE: 'Heartwood Grove',
+  HEARTWOOD_GROVE: 'Heartwood Grove',
   VERDANT_GLADE: 'Verdant Glade',
   CRISTAL_BASIN: 'Crystal Basin',
   MISTY_GLADES: 'Misty Glades',

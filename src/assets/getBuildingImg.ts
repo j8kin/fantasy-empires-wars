@@ -13,31 +13,20 @@ import outpostImg from './buildings/outpost.png';
 import wallImg from './buildings/wall.png';
 import demolishImg from './buildings/demolish.png';
 
+const buildingImg: Record<BuildingType, string> = {
+  [BuildingName.STRONGHOLD]: strongholdImg,
+  [BuildingName.BARRACKS]: barracksImg,
+  [BuildingName.WHITE_MAGE_TOWER]: mageTowerWhite,
+  [BuildingName.BLUE_MAGE_TOWER]: mageTowerBlue,
+  [BuildingName.GREEN_MAGE_TOWER]: mageTowerGreen,
+  [BuildingName.RED_MAGE_TOWER]: mageTowerRed,
+  [BuildingName.BLACK_MAGE_TOWER]: mageTowerBlack,
+  [BuildingName.OUTPOST]: outpostImg,
+  [BuildingName.WATCH_TOWER]: watchTowerImg,
+  [BuildingName.WALL]: wallImg,
+  [BuildingName.DEMOLITION]: demolishImg,
+};
+
 export const getBuildingImg = (building: BuildingType) => {
-  switch (building) {
-    case BuildingName.STRONGHOLD:
-      return strongholdImg;
-    case BuildingName.BARRACKS:
-      return barracksImg;
-    case BuildingName.WHITE_MAGE_TOWER:
-      return mageTowerWhite;
-    case BuildingName.BLUE_MAGE_TOWER:
-      return mageTowerBlue;
-    case BuildingName.GREEN_MAGE_TOWER:
-      return mageTowerGreen;
-    case BuildingName.RED_MAGE_TOWER:
-      return mageTowerRed;
-    case BuildingName.BLACK_MAGE_TOWER:
-      return mageTowerBlack;
-    case BuildingName.OUTPOST:
-      return outpostImg;
-    case BuildingName.WATCH_TOWER:
-      return watchTowerImg;
-    case BuildingName.WALL:
-      return wallImg;
-    case BuildingName.DEMOLITION:
-      return demolishImg;
-    default:
-      return undefined;
-  }
+  return buildingImg[building];
 };

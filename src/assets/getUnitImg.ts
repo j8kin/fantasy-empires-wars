@@ -9,12 +9,15 @@ import elfImg from './army/elf.png';
 import darkElfImg from './army/dark-elf.png';
 import orcImg from './army/orc.png';
 import undeadImg from './army/undead.png';
+
 import ballistaImg from './army/ballista.png';
 import catapultImg from './army/catapult.png';
+import batteringRamImg from './army/battering-ram.png';
+import siegeTowerImg from './army/siege-tower.png';
 
 import warsmithImg from './army/warsmith.png';
 import zealotImg from './army/zealot.png';
-import fightableImg from './army/fighter.png';
+import fighterImg from './army/fighter.png';
 import hummerLordImg from './army/hummerlord.png';
 import rangerImg from './army/ranger.png';
 import shadowBladeImg from './army/shadowblade.png';
@@ -25,56 +28,36 @@ import enchanterImg from './army/enchanter.png';
 import pyromancerImg from './army/pyromancer.png';
 import necromancerImg from './army/necromancer.png';
 
+const unitImg: Record<UnitType, string | undefined> = {
+  [RegularUnitName.WARD_HANDS]: wardHandsImg,
+  [RegularUnitName.WARRIOR]: warriorImg,
+  [RegularUnitName.DWARF]: dwarfImg,
+  [RegularUnitName.HALFLING]: halflingImg,
+  [RegularUnitName.ELF]: elfImg,
+  [RegularUnitName.DARK_ELF]: darkElfImg,
+  [RegularUnitName.UNDEAD]: undeadImg,
+  [RegularUnitName.ORC]: orcImg,
+
+  [WarMachineName.BALLISTA]: ballistaImg,
+  [WarMachineName.CATAPULT]: catapultImg,
+  [WarMachineName.BATTERING_RAM]: batteringRamImg,
+  [WarMachineName.SIEGE_TOWER]: siegeTowerImg,
+
+  [HeroUnitName.WARSMITH]: warsmithImg,
+  [HeroUnitName.ZEALOT]: zealotImg,
+  [HeroUnitName.FIGHTER]: fighterImg,
+  [HeroUnitName.HAMMER_LORD]: hummerLordImg,
+  [HeroUnitName.RANGER]: rangerImg,
+  [HeroUnitName.SHADOW_BLADE]: shadowBladeImg,
+  [HeroUnitName.OGR]: ogrImg,
+
+  [HeroUnitName.CLERIC]: clericImg,
+  [HeroUnitName.DRUID]: druidImg,
+  [HeroUnitName.ENCHANTER]: enchanterImg,
+  [HeroUnitName.PYROMANCER]: pyromancerImg,
+  [HeroUnitName.NECROMANCER]: necromancerImg,
+};
+
 export const getUnitImg = (unit: UnitType) => {
-  switch (unit) {
-    case RegularUnitName.WARD_HANDS:
-      return wardHandsImg;
-    case RegularUnitName.WARRIOR:
-      return warriorImg;
-    case RegularUnitName.DWARF:
-      return dwarfImg;
-    case RegularUnitName.HALFLING:
-      return halflingImg;
-    case RegularUnitName.ELF:
-      return elfImg;
-    case RegularUnitName.DARK_ELF:
-      return darkElfImg;
-    case RegularUnitName.UNDEAD:
-      return undeadImg;
-    case RegularUnitName.ORC:
-      return orcImg;
-    case WarMachineName.BALLISTA:
-      return ballistaImg;
-    case WarMachineName.CATAPULT:
-      return catapultImg;
-
-    case HeroUnitName.WARSMITH:
-      return warsmithImg;
-    case HeroUnitName.ZEALOT:
-      return zealotImg;
-    case HeroUnitName.FIGHTER:
-      return fightableImg;
-    case HeroUnitName.HAMMER_LORD:
-      return hummerLordImg;
-    case HeroUnitName.RANGER:
-      return rangerImg;
-    case HeroUnitName.SHADOW_BLADE:
-      return shadowBladeImg;
-    case HeroUnitName.OGR:
-      return ogrImg;
-
-    case HeroUnitName.CLERIC:
-      return clericImg;
-    case HeroUnitName.DRUID:
-      return druidImg;
-    case HeroUnitName.ENCHANTER:
-      return enchanterImg;
-    case HeroUnitName.PYROMANCER:
-      return pyromancerImg;
-    case HeroUnitName.NECROMANCER:
-      return necromancerImg;
-
-    default:
-      return undefined;
-  }
+  return unitImg[unit];
 };

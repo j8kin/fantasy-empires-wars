@@ -192,7 +192,7 @@ describe('castRedManaSpell', () => {
       [LandName.LAVA, RegularUnitName.ORC],
       [LandName.SUN_SPIRE_PEAKS, RegularUnitName.DWARF],
       [LandName.GOLDEN_PLAINS, RegularUnitName.DWARF],
-      [LandName.HEARTWOOD_COVE, RegularUnitName.ELF],
+      [LandName.HEARTWOOD_GROVE, RegularUnitName.ELF],
       [LandName.VERDANT_GLADE, RegularUnitName.ELF],
       [LandName.CRISTAL_BASIN, RegularUnitName.WARRIOR],
       [LandName.MISTY_GLADES, RegularUnitName.WARRIOR],

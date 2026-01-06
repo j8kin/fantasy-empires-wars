@@ -147,9 +147,9 @@ export const getLandById = (id: LandType): Land => {
         description:
           "Grasses shimmer like sun-forged metal, nurturing harvests blessed by the land's ancient warmth.",
       };
-    case LandName.HEARTWOOD_COVE:
+    case LandName.HEARTWOOD_GROVE:
       return {
-        id: LandName.HEARTWOOD_COVE,
+        id: LandName.HEARTWOOD_GROVE,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [...commonUnitsToRecruit, RegularUnitName.ELF, HeroUnitName.RANGER],
         goldPerTurn: { min: 1000, max: 1000 },

@@ -235,7 +235,7 @@ describe('Calculate Mana', () => {
         (player.playerProfile.type === HeroUnitName.ENCHANTER &&
           (l.land.id === LandName.CRISTAL_BASIN || l.land.id === LandName.MISTY_GLADES)) ||
         (player.playerProfile.type === HeroUnitName.DRUID &&
-          (l.land.id === LandName.HEARTWOOD_COVE || l.land.id === LandName.VERDANT_GLADE)) ||
+          (l.land.id === LandName.HEARTWOOD_GROVE || l.land.id === LandName.VERDANT_GLADE)) ||
         (player.playerProfile.type === HeroUnitName.PYROMANCER &&
           (l.land.id === LandName.VOLCANO || l.land.id === LandName.LAVA))
     ).length;
