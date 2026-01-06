@@ -3,7 +3,7 @@ import Battlefield from '../../../ux-components/battlefield/Battlefield';
 
 import { gameStateFactory } from '../../../factories/gameStateFactory';
 
-import type{ GameState } from '../../../state/GameState';
+import type { GameState } from '../../../state/GameState';
 import type { MapDimensions } from '../../../state/map/MapDimensions';
 import type { FantasyBorderFrameProps } from '../../../ux-components/fantasy-border-frame/FantasyBorderFrame';
 import type { HexTileProps } from '../../../ux-components/battlefield/LandTile';
