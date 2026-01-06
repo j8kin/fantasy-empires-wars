@@ -1,5 +1,5 @@
 import type { UnitType } from '../types/UnitType';
-import { HeroUnitName, RegularUnitName } from '../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
 
 import wardHandsImg from './army/ward-hands.png';
 import warriorImg from './army/warrior.png';
@@ -43,9 +43,9 @@ export const getUnitImg = (unit: UnitType) => {
       return undeadImg;
     case RegularUnitName.ORC:
       return orcImg;
-    case RegularUnitName.BALLISTA:
+    case WarMachineName.BALLISTA:
       return ballistaImg;
-    case RegularUnitName.CATAPULT:
+    case WarMachineName.CATAPULT:
       return catapultImg;
 
     case HeroUnitName.WARSMITH:

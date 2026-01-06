@@ -254,7 +254,7 @@ describe('ConstructBuildingDialog', () => {
       expect(getLand(gameStateStub, player0Homeland).buildings[0]?.type).toBe(
         BuildingName.STRONGHOLD
       );
-      expect(getLand(gameStateStub, remoteLand).buildings.length).toBe(0);
+      expect(getLand(gameStateStub, remoteLand).buildings).toHaveLength(0);
 
       // Make sure the player owns the remote land
       getTurnOwner(gameStateStub).landsOwned.add('6-6');
@@ -405,7 +405,7 @@ describe('ConstructBuildingDialog', () => {
       // Should not show any buildings or should show very few
       const pages = screen.queryAllByTestId(/flipbook-page-/);
       // With only 100 gold, no buildings should be available
-      expect(pages.length).toBe(0);
+      expect(pages).toHaveLength(0);
     });
 
     it('should handle empty player landsOwned', () => {

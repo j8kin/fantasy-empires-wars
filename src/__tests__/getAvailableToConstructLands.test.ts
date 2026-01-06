@@ -20,7 +20,7 @@ describe('getAvailableLands', () => {
 
   it('should return no available lands for non-stronghold building when player has no lands under control', () => {
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.BARRACKS);
-    expect(availableLands.length).toBe(0);
+    expect(availableLands).toHaveLength(0);
   });
 
   it('should return all available lands for non-stronghold building where there are no buildings', () => {
@@ -28,7 +28,7 @@ describe('getAvailableLands', () => {
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.BARRACKS);
 
-    expect(availableLands.length).toBe(6); // number of lands without stronghold
+    expect(availableLands).toHaveLength(6); // number of lands without stronghold
     // row 1
     expect(availableLands).toContain('2-3');
     expect(availableLands).toContain('2-4');
@@ -46,7 +46,7 @@ describe('getAvailableLands', () => {
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.STRONGHOLD);
 
-    expect(availableLands.length).toBe(0); // No lands available for construction
+    expect(availableLands).toHaveLength(0); // No lands available for construction
   });
 
   it('should return all available lands for stronghold building which controlled by army', () => {
@@ -63,7 +63,7 @@ describe('getAvailableLands', () => {
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.STRONGHOLD);
 
-    expect(availableLands.length).toBe(1); // one land available for construction
+    expect(availableLands).toHaveLength(1); // one land available for construction
     expect(availableLands).toContain('3-5');
   });
 
@@ -72,7 +72,7 @@ describe('getAvailableLands', () => {
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.WALL);
 
-    expect(availableLands.length).toBe(6); // number of border lands
+    expect(availableLands).toHaveLength(6); // number of border lands
     // row 1
     expect(availableLands).toContain('2-3');
     expect(availableLands).toContain('2-4');
@@ -91,7 +91,7 @@ describe('getAvailableLands', () => {
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.WALL);
 
-    expect(availableLands.length).toBe(6); // number of border lands
+    expect(availableLands).toHaveLength(6); // number of border lands
     // row 1
     expect(gameStateStub.map.lands['2-3'].buildings[0].type).toEqual(BuildingName.BARRACKS);
     expect(availableLands).toContain('2-3');
@@ -112,7 +112,7 @@ describe('getAvailableLands', () => {
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.WALL);
 
-    expect(availableLands.length).toBe(5); // number of lands outside radius 1 from stronghold
+    expect(availableLands).toHaveLength(5); // number of lands outside radius 1 from stronghold
     // row 1
     expect(gameStateStub.map.lands['2-3'].buildings[0].type).toEqual(BuildingName.BARRACKS);
     expect(gameStateStub.map.lands['2-3'].buildings[1].type).toEqual(BuildingName.WALL);
@@ -135,7 +135,7 @@ describe('getAvailableLands', () => {
     nextPlayer(gameStateStub);
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.WALL);
 
-    expect(availableLands.length).toBe(6); // number of lands outside radius 1 from stronghold
+    expect(availableLands).toHaveLength(6); // number of lands outside radius 1 from stronghold
     // row 1
     expect(availableLands).toContain('2-3');
     expect(availableLands).toContain('2-4');
@@ -154,7 +154,7 @@ describe('getAvailableLands', () => {
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.BARRACKS);
 
-    expect(availableLands.length).toBe(6); // number of lands without stronghold
+    expect(availableLands).toHaveLength(6); // number of lands without stronghold
     // row 1
     // border land with wall should be also available for construction
     expect(gameStateStub.map.lands['2-3'].buildings[0].type).toEqual(BuildingName.WALL);
@@ -175,6 +175,6 @@ describe('getAvailableLands', () => {
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.DEMOLITION);
 
-    expect(availableLands.length).toBe(2); // number of lands buildings
+    expect(availableLands).toHaveLength(2); // number of lands buildings
   });
 });

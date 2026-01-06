@@ -1,4 +1,4 @@
-import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { HeroUnitName, WarMachineName, WarMachineType } from '../../types/UnitType';
 import type { HeroUnitType, UnitType } from '../../types/UnitType';
 
 /**
@@ -11,12 +11,13 @@ export const isHeroType = (unitType: UnitType): unitType is HeroUnitType => {
 };
 
 /**
- * Checks if a unit is a war machine (Ballista or Catapult)
+ * Checks if a unit is a war machine
  * @param unitType - The unit type to check
  * @returns true if the unit is a war machine
  */
-export const isWarMachine = (unitType: UnitType): boolean =>
-  unitType === RegularUnitName.BALLISTA || unitType === RegularUnitName.CATAPULT;
+export const isWarMachine = (unitType: UnitType): unitType is WarMachineType => {
+  return Object.values(WarMachineName).includes(unitType as WarMachineType);
+};
 
 /**
  * Checks if a unit is a mage type hero

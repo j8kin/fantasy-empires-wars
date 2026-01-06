@@ -22,7 +22,7 @@ describe('End of Turn Phase', () => {
     expect(gameStateStub.turn).toBe(2);
     nextPlayer(gameStateStub);
     nextPlayer(gameStateStub);
-    expect(gameStateStub.players.length).toBe(3);
+    expect(gameStateStub.players).toHaveLength(3);
     expect(getTurnOwner(gameStateStub).id).toBe(gameStateStub.players[2].id);
     expect(gameStateStub.turn).toBe(2);
 

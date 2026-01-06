@@ -7,7 +7,7 @@ import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
 import { UnitRank } from '../../../state/army/RegularsState';
 
 import { getArmiesAtPosition } from '../../../selectors/armySelectors';
-import { startMoving } from '../../../systems/armyActions';
+import { addHero, addRegulars, startMoving } from '../../../systems/armyActions';
 import { levelUpHero, levelUpRegulars } from '../../../systems/unitsActions';
 import { armyFactory } from '../../../factories/armyFactory';
 import { heroFactory } from '../../../factories/heroFactory';
@@ -208,12 +208,11 @@ describe('MoveArmyDialog', () => {
     const { warrior, dwarf, hero } = createMockUnits();
 
     // Create a single army with all units at the position (as the component expects)
-    const combinedArmy = armyFactory(
-      gameStateStub.turnOwner,
-      fromPosition,
-      [hero],
-      [warrior, dwarf]
-    );
+    let combinedArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
+      hero,
+    });
+    combinedArmy = addRegulars(combinedArmy, warrior);
+    combinedArmy = addRegulars(combinedArmy, dwarf);
     // Directly add to armies array instead of using addArmyToGameState
     gameStateStub.armies.push(combinedArmy);
   });
@@ -240,7 +239,7 @@ describe('MoveArmyDialog', () => {
     it('should not render when stationed army has movements (is already moving)', () => {
       // Get the army at the position and set it to moving
       const armies = getArmiesAtPosition(gameStateStub, fromPosition);
-      expect(armies.length).toBe(1);
+      expect(armies).toHaveLength(1);
       startMoving(armies[0], toPosition);
 
       renderWithProviders(<MoveArmyDialog />);
@@ -600,7 +599,11 @@ describe('MoveArmyDialog', () => {
       const hero1 = heroFactory(HeroUnitName.FIGHTER, 'Hero1');
       const hero2 = heroFactory(HeroUnitName.CLERIC, 'Hero2');
 
-      const heroOnlyArmy = armyFactory(gameStateStub.turnOwner, fromPosition, [hero1, hero2]);
+      const heroOnlyArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
+        hero: hero1,
+      });
+      Object.assign(heroOnlyArmy, addHero(heroOnlyArmy, hero2));
+
       gameStateStub.armies.push(heroOnlyArmy);
 
       renderWithProviders(<MoveArmyDialog />);
@@ -613,12 +616,9 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with only regular units
       gameStateStub.armies = [];
 
-      const warrior = regularsFactory(RegularUnitName.WARRIOR);
-      warrior.count = 15;
-
-      const regularOnlyArmy = armyFactory(gameStateStub.turnOwner, fromPosition, undefined, [
-        warrior,
-      ]);
+      const regularOnlyArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
+        regular: regularsFactory(RegularUnitName.WARRIOR, 15),
+      });
       gameStateStub.armies.push(regularOnlyArmy);
 
       renderWithProviders(<MoveArmyDialog />);
@@ -631,12 +631,9 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with single count units
       gameStateStub.armies = [];
 
-      const warrior = regularsFactory(RegularUnitName.WARRIOR);
-      warrior.count = 1;
-
-      const singleCountArmy = armyFactory(gameStateStub.turnOwner, fromPosition, undefined, [
-        warrior,
-      ]);
+      const singleCountArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
+        regular: regularsFactory(RegularUnitName.WARRIOR, 1),
+      });
       gameStateStub.armies.push(singleCountArmy);
 
       const user = userEvent.setup();
@@ -662,21 +659,19 @@ describe('MoveArmyDialog', () => {
       // Clear all armies and create army with different ranked units
       gameStateStub.armies = [];
 
-      const veteranWarrior = regularsFactory(RegularUnitName.WARRIOR);
+      const veteranWarrior = regularsFactory(RegularUnitName.WARRIOR, 8);
       levelUpRegulars(veteranWarrior, Alignment.LAWFUL);
       expect(veteranWarrior.rank).toBe(UnitRank.VETERAN);
-      veteranWarrior.count = 8;
 
-      const eliteWarrior = regularsFactory(RegularUnitName.WARRIOR);
+      const eliteWarrior = regularsFactory(RegularUnitName.WARRIOR, 3);
       levelUpRegulars(eliteWarrior, Alignment.LAWFUL);
       levelUpRegulars(eliteWarrior, Alignment.LAWFUL);
       expect(eliteWarrior.rank).toBe(UnitRank.ELITE);
-      eliteWarrior.count = 3;
 
-      const rankedUnitsArmy = armyFactory(gameStateStub.turnOwner, fromPosition, undefined, [
-        veteranWarrior,
-        eliteWarrior,
-      ]);
+      const rankedUnitsArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {
+        regular: veteranWarrior,
+      });
+      Object.assign(rankedUnitsArmy, addRegulars(rankedUnitsArmy, eliteWarrior));
       gameStateStub.armies.push(rankedUnitsArmy);
 
       renderWithProviders(<MoveArmyDialog />);
@@ -712,11 +707,11 @@ describe('MoveArmyDialog', () => {
       };
 
       // Add army to new position
-      const warrior = regularsFactory(RegularUnitName.WARRIOR);
-
-      const newPositionArmy = armyFactory(gameStateStub.turnOwner, { row: 5, col: 5 }, undefined, [
-        warrior,
-      ]);
+      const newPositionArmy = armyFactory(
+        gameStateStub.turnOwner,
+        { row: 5, col: 5 },
+        { regular: regularsFactory(RegularUnitName.WARRIOR) }
+      );
       gameStateStub.armies.push(newPositionArmy);
 
       rerender(<MoveArmyDialog />);

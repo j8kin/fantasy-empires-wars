@@ -110,9 +110,6 @@ const baseStatsLevelUpParameters = (unitType: HeroUnitType | RegularUnitType) =>
     case RegularUnitName.HALFLING:
     case RegularUnitName.DARK_ELF:
     case RegularUnitName.ELF:
-    case RegularUnitName.BALLISTA:
-    case RegularUnitName.CATAPULT:
-      return { attack: 0.5, defense: 0.4, health: 5, rangeDamage: 1.5, mana: 0 };
     case HeroUnitName.ENCHANTER:
       return { attack: 1.5, defense: 0.4, health: 3, rangeDamage: 0, mana: 0.8 };
     case HeroUnitName.PYROMANCER:

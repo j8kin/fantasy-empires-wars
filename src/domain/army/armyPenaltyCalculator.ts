@@ -1,12 +1,8 @@
-import { isWarMachine } from '../unit/unitTypeChecks';
 import { getRegulars } from '../../systems/armyActions';
 import { UnitRank } from '../../state/army/RegularsState';
-import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
 import type { ArmyState } from '../../state/army/ArmyState';
+import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
 import type { RegularUnitType } from '../../types/UnitType';
-
-// The equivalent number of units per war machine to calculate penalties.
-const WARMACHINE_TO_UNIT = 20;
 
 export interface PenaltyConfig {
   regular: { minPct: number; maxPct: number; minAbs: number; maxAbs: number };
@@ -27,7 +23,7 @@ export interface PenaltyLoss {
 }
 
 /**
- * Normalizes army units by converting war machines to equivalent regular units
+ * Normalizes army units by counting regular units
  * @param units Array of regular units
  * @param unitTypesFilter Optional array of unit types to include in the calculation
  * @returns Normalized unit counts by rank
@@ -37,9 +33,9 @@ export const normalizeArmyUnits = (
   unitTypesFilter?: RegularUnitType[]
 ): NormalizedUnits => {
   const packs: NormalizedUnits = {
-    regular: 0,
-    veteran: 0,
-    elite: 0,
+    [UnitRank.REGULAR]: 0,
+    [UnitRank.VETERAN]: 0,
+    [UnitRank.ELITE]: 0,
   };
 
   Object.values(UnitRank).forEach((rank) => {
@@ -50,13 +46,7 @@ export const normalizeArmyUnits = (
       rankUnits = rankUnits.filter((u) => unitTypesFilter.includes(u.type));
     }
 
-    const warMachines = rankUnits
-      .filter((u) => isWarMachine(u.type))
-      .reduce((acc, unit) => acc + unit.count, 0);
-    const regularUnits = rankUnits
-      .filter((u) => !isWarMachine(u.type))
-      .reduce((acc, unit) => acc + unit.count, 0);
-    packs[rank as keyof NormalizedUnits] = warMachines * WARMACHINE_TO_UNIT + regularUnits;
+    packs[rank] = rankUnits.reduce((acc, unit) => acc + unit.count, 0);
   });
   return packs;
 };
@@ -132,48 +122,15 @@ export const applyArmyPenalty = (
   let updatedArmy = army;
 
   Object.values(UnitRank).forEach((rank) => {
-    let regUnitsWithRank = updatedArmy.regulars.filter(
-      (u) => u.rank === rank && !isWarMachine(u.type)
-    );
-    let warMachUnitsWithRank = updatedArmy.regulars.filter(
-      (u) => u.rank === rank && isWarMachine(u.type)
-    );
+    let regUnitsWithRank = updatedArmy.regulars.filter((u) => u.rank === rank);
 
     // Apply unit type filter if provided
     if (unitTypesInvolved && unitTypesInvolved.length > 0) {
       regUnitsWithRank = regUnitsWithRank.filter((u) => unitTypesInvolved.includes(u.type));
-      warMachUnitsWithRank = warMachUnitsWithRank.filter((u) => unitTypesInvolved.includes(u.type));
-    }
-    const toKill = unitsToLoss[rank];
-    const maxWarmachinesToKill = Math.min(
-      warMachUnitsWithRank.reduce((acc, m) => acc + m.count, 0),
-      Math.floor(toKill / WARMACHINE_TO_UNIT)
-    );
-
-    const regularsToKill = unitsToLoss[rank] - maxWarmachinesToKill * WARMACHINE_TO_UNIT;
-
-    // Remove war machines first
-    let rest = maxWarmachinesToKill;
-    while (rest > 0) {
-      for (let i = 0; i < warMachUnitsWithRank.length && rest > 0; i++) {
-        if (rest > 0) {
-          const toDelete = Math.min(warMachUnitsWithRank[i].count, rest);
-          const result = getRegulars(
-            updatedArmy,
-            warMachUnitsWithRank[i].type,
-            warMachUnitsWithRank[i].rank,
-            toDelete
-          );
-          if (result) {
-            updatedArmy = result.updatedArmy;
-          }
-          rest -= toDelete;
-        }
-      }
     }
 
-    // Then remove regular units
-    rest = regularsToKill;
+    // Remove regular units
+    let rest = unitsToLoss[rank];
     while (rest > 0) {
       for (let i = 0; i < regUnitsWithRank.length && rest > 0; i++) {
         if (rest > 0) {

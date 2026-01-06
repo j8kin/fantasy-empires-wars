@@ -1,14 +1,17 @@
+import { getLandId } from '../state/map/land/LandId';
+import { getPosition } from '../selectors/armySelectors';
+import { findShortestPath, getHostileLands } from '../selectors/landSelectors';
 import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
-import { findShortestPath } from '../selectors/landSelectors';
 
 import { EffectKind } from '../types/Effect';
-import { RegularUnitType } from '../types/UnitType';
+import { RegularUnitType, WarMachineType } from '../types/UnitType';
 import type { GameState } from '../state/GameState';
 import type { ArmyState } from '../state/army/ArmyState';
 import type { HeroState } from '../state/army/HeroState';
 import type { RegularsState, UnitRankType } from '../state/army/RegularsState';
 import type { LandPosition } from '../state/map/land/LandPosition';
+import { WarMachineState } from '../state/army/WarMachineState';
 
 export const addHero = (state: ArmyState, hero: HeroState): ArmyState => {
   return {
@@ -52,6 +55,25 @@ export const addRegulars = (state: ArmyState, regulars: RegularsState): ArmyStat
   }
 };
 
+export const addWarMachines = (state: ArmyState, warMachines: WarMachineState): ArmyState => {
+  const unitIdx = state.warMachines.findIndex((u) => u.type === warMachines.type);
+  if (unitIdx !== -1) {
+    // Update existing unit count
+    return {
+      ...state,
+      warMachines: state.warMachines.map((unit, idx) =>
+        idx === unitIdx ? { ...unit, count: unit.count + warMachines.count } : unit
+      ),
+    };
+  } else {
+    // Add new unit
+    return {
+      ...state,
+      warMachines: [...state.warMachines, warMachines],
+    };
+  }
+};
+
 export const getRegulars = (
   state: ArmyState,
   unitType: RegularUnitType,
@@ -84,6 +106,36 @@ export const getRegulars = (
   }
 };
 
+export const getWarMachines = (
+  state: ArmyState,
+  type: WarMachineType,
+  count: number,
+  durability: number
+): { updatedArmy: ArmyState; warMachines: WarMachineState } | undefined => {
+  const unitIdx = state.warMachines.findIndex((u) => u.type === type && u.count >= count);
+  if (unitIdx === -1) return undefined;
+  const unit = state.warMachines[unitIdx];
+
+  if (unit.count === count) {
+    // Remove the entire unit
+    const updatedArmy = {
+      ...state,
+      warMachines: state.warMachines.filter((_, idx) => idx !== unitIdx),
+    };
+    return { updatedArmy, warMachines: unit };
+  } else {
+    // Reduce the unit count
+    const updatedArmy = {
+      ...state,
+      warMachines: state.warMachines.map((u, idx) =>
+        idx === unitIdx ? { ...u, count: u.count - count } : u
+      ),
+    };
+    const warMachinesToReturn = { type: unit.type, count, durability };
+    return { updatedArmy, warMachines: warMachinesToReturn };
+  }
+};
+
 export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => {
   // Merge heroes
   const mergedHeroes = [...target.heroes, ...source.heroes];
@@ -106,6 +158,22 @@ export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => 
     }
   });
 
+  // Merge war machines
+  const mergedWarMachines = [...target.warMachines];
+  source.warMachines.forEach((sourceUnit) => {
+    const existingIdx = mergedWarMachines.findIndex((u) => u.type === sourceUnit.type);
+    if (existingIdx !== -1) {
+      // Update existing unit count
+      mergedWarMachines[existingIdx] = {
+        ...mergedWarMachines[existingIdx],
+        count: mergedWarMachines[existingIdx].count + sourceUnit.count,
+      };
+    } else {
+      // Add new unit
+      mergedWarMachines.push(sourceUnit);
+    }
+  });
+
   // Merge effects: combine all negative effects from both armies, positive effects disappear
   // prevent an abusing system when one unit split with good effect and combine with another huge army
   const allEffects = [...target.effects, ...source.effects];
@@ -115,6 +183,7 @@ export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => 
     ...target,
     heroes: mergedHeroes,
     regulars: mergedRegulars,
+    warMachines: mergedWarMachines,
     effects: mergedEffects,
   };
 
@@ -153,11 +222,16 @@ export const removeArmyFromGameState = (gameState: GameState, armyId: string): G
 };
 
 /**
- * Remove all armies from GameState that don't have any regulars or heroes
+ * Remove all armies from GameState that don't have any regulars or heroes or war-machines
  */
 export const cleanupArmies = (gameState: GameState): GameState => {
+  const hostileLands = getHostileLands(gameState).map((land) => getLandId(land.mapPos));
   const validArmies = gameState.armies.filter(
-    (army) => army.regulars.length > 0 || army.heroes.length > 0
+    (army) =>
+      army.regulars.length > 0 ||
+      army.heroes.length > 0 ||
+      // war-machines without regular units in hostile lands are not survived
+      (army.warMachines.length > 0 && !hostileLands.includes(getLandId(getPosition(army))))
   );
   return { ...gameState, armies: validArmies };
 };

@@ -82,7 +82,7 @@ describe('invokeItems', () => {
         a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(undeadArmy).toBeDefined();
-      expect(undeadArmy?.regulars.length).toBe(1);
+      expect(undeadArmy?.regulars).toHaveLength(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(60); // max damage from WAND_OF_TURN_UNDEAD = 60
     });
@@ -100,7 +100,7 @@ describe('invokeItems', () => {
         a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(undeadArmy).toBeDefined();
-      expect(undeadArmy?.regulars.length).toBe(1);
+      expect(undeadArmy?.regulars).toHaveLength(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(90); // min damage from WAND_OF_TURN_UNDEAD = 30
 
@@ -112,7 +112,7 @@ describe('invokeItems', () => {
         a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(undeadArmy).toBeDefined();
-      expect(undeadArmy?.regulars.length).toBe(1);
+      expect(undeadArmy?.regulars).toHaveLength(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(60); // decremented by 30 from previous invokeItem call
     });
@@ -185,7 +185,7 @@ describe('invokeItems', () => {
           a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
         );
         expect(undeadArmy).toBeDefined();
-        expect(undeadArmy?.regulars.length).toBe(1);
+        expect(undeadArmy?.regulars).toHaveLength(1);
         expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
         expect(undeadArmy?.regulars[0].count).toBe(75); // number of casualties are not related on CLERIC level
       }
@@ -227,7 +227,7 @@ describe('invokeItems', () => {
         a.regulars.some((u) => u.type === RegularUnitName.WARRIOR)
       );
       expect(regularArmy).toBeDefined();
-      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars).toHaveLength(1);
       expect(regularArmy?.regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(regularArmy?.regulars[0].count).toBe(60); // max damage from ORB_OF_STORM = 60
     });
@@ -246,7 +246,7 @@ describe('invokeItems', () => {
       )!.id;
       let regularArmy = findArmyById(gameStateStub, regularArmyId);
       expect(regularArmy).toBeDefined();
-      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars).toHaveLength(1);
       expect(regularArmy?.regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(regularArmy?.regulars[0].count).toBe(90); // min damage from ORB_OF_STORM = 30
 
@@ -256,7 +256,7 @@ describe('invokeItems', () => {
 
       regularArmy = regularArmy = findArmyById(gameStateStub, regularArmyId);
       expect(regularArmy).toBeDefined();
-      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars).toHaveLength(1);
       expect(regularArmy?.regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(regularArmy?.regulars[0].count).toBe(60); // decremented by 30 from previous invokeItem call
     });
@@ -322,7 +322,7 @@ describe('invokeItems', () => {
         a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(regularArmy).toBeDefined();
-      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars).toHaveLength(1);
       expect(regularArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(regularArmy?.regulars[0].count).toBe(75); // undead army also affected by ORB_OF_STORM
     });
@@ -354,7 +354,7 @@ describe('invokeItems', () => {
           a.regulars.some((u) => u.type === RegularUnitName.DARK_ELF)
         );
         expect(regularArmy).toBeDefined();
-        expect(regularArmy?.regulars.length).toBe(1);
+        expect(regularArmy?.regulars).toHaveLength(1);
         expect(regularArmy?.regulars[0].type).toBe(RegularUnitName.DARK_ELF);
         expect(regularArmy?.regulars[0].count).toBe(75); // number of casualties are not related on ENCHANTER level
       }
@@ -409,7 +409,7 @@ describe('invokeItems', () => {
       // verify that spell not affected due to AEGIS_SHARD
       let regularArmy = findArmyById(gameStateStub, regularArmyId);
       expect(regularArmy).toBeDefined();
-      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars).toHaveLength(1);
       expect(regularArmy?.regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(regularArmy?.regulars[0].count).toBe(120);
 
@@ -427,7 +427,7 @@ describe('invokeItems', () => {
 
       regularArmy = findArmyById(gameStateStub, regularArmyId);
       expect(regularArmy).toBeDefined();
-      expect(regularArmy?.regulars.length).toBe(1);
+      expect(regularArmy?.regulars).toHaveLength(1);
       expect(regularArmy?.regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(regularArmy?.regulars[0].count).toBe(87); // now land is not protected and army is affected by spell
     });

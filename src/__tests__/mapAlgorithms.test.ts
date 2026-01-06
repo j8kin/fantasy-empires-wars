@@ -19,17 +19,17 @@ describe('Map Algorithms', () => {
       it('should return all hexes for Left Upper corner', () => {
         const position = LeftUpperCorner;
         let tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
-        expect(tilesInRadius.length).toBe(1);
+        expect(tilesInRadius).toHaveLength(1);
         comparePositions(tilesInRadius[0], position);
 
         tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
-        expect(tilesInRadius.length).toBe(3);
+        expect(tilesInRadius).toHaveLength(3);
         comparePositions(tilesInRadius[0], position);
         comparePositions(tilesInRadius[1], { row: position.row, col: position.col + 1 });
         comparePositions(tilesInRadius[2], { row: position.row + 1, col: position.col });
 
         tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
-        expect(tilesInRadius.length).toBe(7);
+        expect(tilesInRadius).toHaveLength(7);
         comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
         comparePositions(tilesInRadius[1], { row: position.row, col: position.col + 1 });
         comparePositions(tilesInRadius[2], { row: position.row + 1, col: position.col });
@@ -42,17 +42,17 @@ describe('Map Algorithms', () => {
       it('should return all hexes for Right Upper corner', () => {
         const position = RightUpperCorner;
         let tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
-        expect(tilesInRadius.length).toBe(1);
+        expect(tilesInRadius).toHaveLength(1);
         comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
 
         tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
-        expect(tilesInRadius.length).toBe(3);
+        expect(tilesInRadius).toHaveLength(3);
         comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
         comparePositions(tilesInRadius[1], { row: position.row + 1, col: position.col - 1 });
         comparePositions(tilesInRadius[2], { row: position.row, col: position.col - 1 });
 
         tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
-        expect(tilesInRadius.length).toBe(7);
+        expect(tilesInRadius).toHaveLength(7);
         comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
         comparePositions(tilesInRadius[1], { row: position.row + 1, col: position.col - 1 });
         comparePositions(tilesInRadius[2], { row: position.row, col: position.col - 1 });
@@ -65,18 +65,18 @@ describe('Map Algorithms', () => {
       it('should return all hexes for Left Bottom corner', () => {
         const position = LeftBottomCorner;
         let tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
-        expect(tilesInRadius.length).toBe(1);
+        expect(tilesInRadius).toHaveLength(1);
         comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
 
         tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
-        expect(tilesInRadius.length).toBe(4);
+        expect(tilesInRadius).toHaveLength(4);
         comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
         comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
         comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col + 1 });
         comparePositions(tilesInRadius[3], { row: position.row, col: position.col + 1 });
 
         tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
-        expect(tilesInRadius.length).toBe(8);
+        expect(tilesInRadius).toHaveLength(8);
         comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
         comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
         comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col + 1 });
@@ -90,19 +90,19 @@ describe('Map Algorithms', () => {
       it('should return all hexes for Right Bottom corner', () => {
         const position = RightBottomCorner;
         let tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
-        expect(tilesInRadius.length).toBe(1);
+        expect(tilesInRadius).toHaveLength(1);
         expect(tilesInRadius[0].row).toBe(position.row);
         expect(tilesInRadius[0].col).toBe(position.col);
 
         tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
-        expect(tilesInRadius.length).toBe(4);
+        expect(tilesInRadius).toHaveLength(4);
         comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
         comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
         comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col + 1 });
         comparePositions(tilesInRadius[3], { row: position.row, col: position.col - 1 });
 
         tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
-        expect(tilesInRadius.length).toBe(8);
+        expect(tilesInRadius).toHaveLength(8);
         comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
         comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
         comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col + 1 });
@@ -122,14 +122,14 @@ describe('Map Algorithms', () => {
         it('should return all hexes for Radius 0', () => {
           const tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
 
-          expect(tilesInRadius.length).toBe(1);
+          expect(tilesInRadius).toHaveLength(1);
           comparePositions(tilesInRadius[0], position);
         });
 
         it('should return all hexes for Radius 1', () => {
           let tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
 
-          expect(tilesInRadius.length).toBe(5);
+          expect(tilesInRadius).toHaveLength(5);
           comparePositions(tilesInRadius[0], position);
           comparePositions(tilesInRadius[1], { row: position.row, col: position.col + 1 });
           comparePositions(tilesInRadius[2], { row: position.row + 1, col: position.col });
@@ -140,7 +140,7 @@ describe('Map Algorithms', () => {
         it('should return all hexes for Radius 2', () => {
           let tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
 
-          expect(tilesInRadius.length).toBe(12);
+          expect(tilesInRadius).toHaveLength(12);
           comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
           comparePositions(tilesInRadius[1], { row: position.row, col: position.col + 1 });
           comparePositions(tilesInRadius[2], { row: position.row + 1, col: position.col });
@@ -161,14 +161,14 @@ describe('Map Algorithms', () => {
         it('should return all hexes for Radius 0', () => {
           let tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
 
-          expect(tilesInRadius.length).toBe(1);
+          expect(tilesInRadius).toHaveLength(1);
           comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
         });
 
         it('should return all hexes for Radius 1', () => {
           let tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
 
-          expect(tilesInRadius.length).toBe(5);
+          expect(tilesInRadius).toHaveLength(5);
           comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
           comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col - 1 });
           comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col });
@@ -179,7 +179,7 @@ describe('Map Algorithms', () => {
         it('should return all hexes for Radius 2', () => {
           let tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
 
-          expect(tilesInRadius.length).toBe(12);
+          expect(tilesInRadius).toHaveLength(12);
           comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
           comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col - 1 });
           comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col });
@@ -203,14 +203,14 @@ describe('Map Algorithms', () => {
           it('should return all hexes for Radius 0', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
 
-            expect(tilesInRadius.length).toBe(1);
+            expect(tilesInRadius).toHaveLength(1);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
           });
 
           it('should return all hexes for Radius 1', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
 
-            expect(tilesInRadius.length).toBe(4);
+            expect(tilesInRadius).toHaveLength(4);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
             comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
             comparePositions(tilesInRadius[2], { row: position.row, col: position.col + 1 });
@@ -220,7 +220,7 @@ describe('Map Algorithms', () => {
           it('should return all hexes for Radius 2', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
 
-            expect(tilesInRadius.length).toBe(11);
+            expect(tilesInRadius).toHaveLength(11);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
             comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
             comparePositions(tilesInRadius[2], { row: position.row, col: position.col + 1 });
@@ -241,14 +241,14 @@ describe('Map Algorithms', () => {
           it('should return all hexes for Radius 0', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
 
-            expect(tilesInRadius.length).toBe(1);
+            expect(tilesInRadius).toHaveLength(1);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
           });
 
           it('should return all hexes for Radius 1', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
 
-            expect(tilesInRadius.length).toBe(6);
+            expect(tilesInRadius).toHaveLength(6);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
             comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
             comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col + 1 });
@@ -260,7 +260,7 @@ describe('Map Algorithms', () => {
           it('should return all hexes for Radius 2', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
 
-            expect(tilesInRadius.length).toBe(13);
+            expect(tilesInRadius).toHaveLength(13);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
             comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
             comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col + 1 });
@@ -286,14 +286,14 @@ describe('Map Algorithms', () => {
           it('should return all hexes for Radius 0', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
 
-            expect(tilesInRadius.length).toBe(1);
+            expect(tilesInRadius).toHaveLength(1);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
           });
 
           it('should return all hexes for Radius 1', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
 
-            expect(tilesInRadius.length).toBe(4);
+            expect(tilesInRadius).toHaveLength(4);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
             comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col - 1 });
             comparePositions(tilesInRadius[2], { row: position.row + 1, col: position.col - 1 });
@@ -303,7 +303,7 @@ describe('Map Algorithms', () => {
           it('should return all hexes for Radius 2', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
 
-            expect(tilesInRadius.length).toBe(11);
+            expect(tilesInRadius).toHaveLength(11);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
             comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col - 1 });
             comparePositions(tilesInRadius[2], { row: position.row + 1, col: position.col - 1 });
@@ -328,14 +328,14 @@ describe('Map Algorithms', () => {
           it('should return all hexes for Radius 0', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
 
-            expect(tilesInRadius.length).toBe(1);
+            expect(tilesInRadius).toHaveLength(1);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
           });
 
           it('should return all hexes for Radius 1', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
 
-            expect(tilesInRadius.length).toBe(6);
+            expect(tilesInRadius).toHaveLength(6);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
             comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
             comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col + 1 });
@@ -347,7 +347,7 @@ describe('Map Algorithms', () => {
           it('should return all hexes for Radius 2', () => {
             let tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
 
-            expect(tilesInRadius.length).toBe(13);
+            expect(tilesInRadius).toHaveLength(13);
             comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
             comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col });
             comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col + 1 });
@@ -374,14 +374,14 @@ describe('Map Algorithms', () => {
         it('should return all hexes for Radius 0', () => {
           const tilesInRadius = getTilesInRadius(mapDimensions, position, 0);
 
-          expect(tilesInRadius.length).toBe(1);
+          expect(tilesInRadius).toHaveLength(1);
           comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
         });
 
         it('should return all hexes for Radius 1', () => {
           const tilesInRadius = getTilesInRadius(mapDimensions, position, 1);
 
-          expect(tilesInRadius.length).toBe(7);
+          expect(tilesInRadius).toHaveLength(7);
           comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
           comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col - 1 });
           comparePositions(tilesInRadius[2], { row: position.row - 1, col: position.col });
@@ -394,7 +394,7 @@ describe('Map Algorithms', () => {
         it('should return all hexes for Radius 2', () => {
           const tilesInRadius = getTilesInRadius(mapDimensions, position, 2);
 
-          expect(tilesInRadius.length).toBe(19);
+          expect(tilesInRadius).toHaveLength(19);
           comparePositions(tilesInRadius[0], { row: position.row, col: position.col });
 
           comparePositions(tilesInRadius[1], { row: position.row - 1, col: position.col - 1 });

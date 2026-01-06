@@ -3,6 +3,7 @@ import { getArmiesByPlayer } from '../../selectors/armySelectors';
 import { getBuildingInfo } from '../../domain/building/buildingRepository';
 
 import type { GameState } from '../../state/GameState';
+import { unitsBaseStats } from '../../domain/unit/unitRepository';
 
 export const calculateMaintenance = (gameState: GameState): number => {
   const { turnOwner } = gameState;
@@ -25,7 +26,11 @@ export const calculateMaintenance = (gameState: GameState): number => {
     return (
       acc +
       army.heroes.reduce((acc, unit) => acc + unit.baseStats.maintainCost, 0) +
-      army.regulars.reduce((acc, unit) => acc + unit.baseStats.maintainCost * unit.count, 0)
+      army.regulars.reduce((acc, unit) => acc + unit.baseStats.maintainCost * unit.count, 0) +
+      army.warMachines.reduce(
+        (acc, unit) => acc + unitsBaseStats(unit.type).maintainCost * unit.count,
+        0
+      )
     );
   }, 0);
 

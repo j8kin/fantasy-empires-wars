@@ -18,6 +18,7 @@ import type { LandType } from '../types/Land';
 import type { BuildingType } from '../types/Building';
 import type { Effect, EffectSourceId } from '../types/Effect';
 import type { AlignmentType } from '../types/Alignment';
+import type { WarMachineType } from '../types/UnitType';
 
 export const getLand = (state: GameState, landPos: LandPosition) =>
   state.map.lands[getLandId(landPos)];
@@ -33,6 +34,7 @@ interface LandInfo {
   goldPerTurn: number;
   heroes: string[];
   regulars: string[];
+  warMachines: string[];
   buildings: BuildingType[];
   effects: Effect[];
   isCorrupted: boolean;
@@ -64,6 +66,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
         effects: [],
         heroes: [],
         regulars: [],
+        warMachines: [],
         buildings: [],
         isCorrupted: land.corrupted,
         illusionMsg: getRandomElement(ILLUSION_MESSAGES),
@@ -82,6 +85,18 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       effects: [...land.effects],
       heroes: armies.flatMap((a) => a.heroes).map((h) => `${h.name} lvl: ${h.level}`),
       regulars: armies.flatMap((a) => a.regulars).map((r) => `${r.type} (${r.count})`),
+      // ignore war-machines durability and return only type and count
+      warMachines: Object.entries(
+        armies
+          .flatMap((a) => a.warMachines)
+          .reduce(
+            (acc, w) => {
+              acc[w.type] = (acc[w.type] || 0) + w.count;
+              return acc;
+            },
+            {} as Record<WarMachineType, number>
+          )
+      ).map(([type, count]) => `${type} (${count})`),
       buildings: land.buildings.map((b) => b.type),
     };
   } else {
@@ -95,6 +110,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       effects: [],
       heroes: [],
       regulars: [],
+      warMachines: [],
       // return buildings only for neutral lands if VIEW_TERRITORY spell is not affected on opponent
       buildings: landOwnerId === NO_PLAYER.id ? land.buildings.map((b) => b.type) : [],
     };

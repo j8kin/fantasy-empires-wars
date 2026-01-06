@@ -60,7 +60,7 @@ describe('castWhiteManaSpell', () => {
         a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(undeadArmy).toBeDefined();
-      expect(undeadArmy?.regulars.length).toBe(1);
+      expect(undeadArmy?.regulars).toHaveLength(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
     });
@@ -94,7 +94,7 @@ describe('castWhiteManaSpell', () => {
         a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(undeadArmy).toBeDefined();
-      expect(undeadArmy?.regulars.length).toBe(1);
+      expect(undeadArmy?.regulars).toHaveLength(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
 
@@ -108,7 +108,7 @@ describe('castWhiteManaSpell', () => {
       );
 
       expect(undeadArmy).toBeDefined();
-      expect(undeadArmy?.regulars.length).toBe(1);
+      expect(undeadArmy?.regulars).toHaveLength(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // the same as in the first cast
     });
@@ -127,7 +127,7 @@ describe('castWhiteManaSpell', () => {
         a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
       );
       expect(undeadArmy).toBeDefined();
-      expect(undeadArmy?.regulars.length).toBe(1);
+      expect(undeadArmy?.regulars).toHaveLength(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
 
@@ -135,7 +135,7 @@ describe('castWhiteManaSpell', () => {
         a.regulars.some((u) => u.type === RegularUnitName.WARRIOR)
       );
       expect(warriorArmy).toBeDefined();
-      expect(warriorArmy?.regulars.length).toBe(1);
+      expect(warriorArmy?.regulars).toHaveLength(1);
       expect(warriorArmy?.regulars[0].type).toBe(RegularUnitName.WARRIOR);
       expect(warriorArmy?.regulars[0].count).toBe(120); // warrior army not affected by spell
     });

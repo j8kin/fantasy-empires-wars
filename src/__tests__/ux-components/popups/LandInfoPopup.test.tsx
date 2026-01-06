@@ -21,7 +21,7 @@ import { relictFactory } from '../../../factories/treasureFactory';
 import { updateLandEffect } from '../../../systems/gameStateActions';
 import { construct } from '../../../map/building/construct';
 import { NO_PLAYER } from '../../../domain/player/playerRepository';
-import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
 import { BuildingName } from '../../../types/Building';
 import { SpellName } from '../../../types/Spell';
 import { TreasureName } from '../../../types/Treasures';
@@ -31,6 +31,7 @@ import type { ArmyState } from '../../../state/army/ArmyState';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { warMachineFactory } from '../../../factories/warMachineFactory';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
@@ -186,6 +187,7 @@ describe('LandInfoPopup', () => {
       expect(screen.queryByText('Effects:')).not.toBeInTheDocument();
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
       expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.queryByText('War Machines:')).not.toBeInTheDocument();
     });
 
     it('displays buildings on neutral lands', () => {
@@ -215,17 +217,18 @@ describe('LandInfoPopup', () => {
       expect(screen.queryByText('Effects:')).not.toBeInTheDocument();
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
       expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.queryByText('War Machines:')).not.toBeInTheDocument();
     });
   });
   describe('Army display functionality', () => {
     it('displays heroes when tile has heroes', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const army1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
-      ]);
-      const army2 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER),
-      ]);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, {
+        hero: heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
+      });
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, {
+        hero: heroFactory(HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER),
+      });
       const mockArmy: ArmyState[] = [army1, army2];
 
       // Add armies to centralized system and set turnOwner to landOwner so armies are visible
@@ -247,17 +250,17 @@ describe('LandInfoPopup', () => {
 
     it('displays multiple heroes of same type with different names', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const fighter1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, 'Cedric Brightshield'),
-      ]);
+      const fighter1 = armyFactory(landOwner, mockTileState.mapPos, {
+        hero: heroFactory(HeroUnitName.FIGHTER, 'Cedric Brightshield'),
+      });
 
-      const fighter2 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, 'Rowan Ashborne'),
-      ]);
+      const fighter2 = armyFactory(landOwner, mockTileState.mapPos, {
+        hero: heroFactory(HeroUnitName.FIGHTER, 'Rowan Ashborne'),
+      });
 
-      const fighter3 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, 'Gareth Dawnhart'),
-      ]);
+      const fighter3 = armyFactory(landOwner, mockTileState.mapPos, {
+        hero: heroFactory(HeroUnitName.FIGHTER, 'Gareth Dawnhart'),
+      });
 
       const mockArmy: ArmyState[] = [fighter1, fighter2, fighter3];
 
@@ -281,12 +284,12 @@ describe('LandInfoPopup', () => {
 
     it('displays units when tile has non-hero units', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const army1 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitName.WARRIOR),
-      ]);
-      const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitName.DWARF),
-      ]);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, {
+        regular: regularsFactory(RegularUnitName.WARRIOR),
+      });
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, {
+        regular: regularsFactory(RegularUnitName.DWARF),
+      });
 
       const mockArmy: ArmyState[] = [army1, army2];
 
@@ -312,20 +315,22 @@ describe('LandInfoPopup', () => {
       regularWarriors.count = 5;
 
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const army1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
-      ]);
-      const army2 = armyFactory(landOwner, mockTileState.mapPos, undefined, [regularWarriors]);
-      const army3 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitName.DWARF),
-      ]);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, {
+        hero: heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
+      });
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, {
+        regular: regularWarriors,
+      });
+      const army3 = armyFactory(landOwner, mockTileState.mapPos, {
+        regular: regularsFactory(RegularUnitName.DWARF),
+      });
       startMoving(army3, { row: 1, col: 1 });
-      const army4 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.CLERIC, HeroUnitName.CLERIC),
-      ]);
-      const army5 = armyFactory(landOwner, mockTileState.mapPos, undefined, [
-        regularsFactory(RegularUnitName.ELF),
-      ]);
+      const army4 = armyFactory(landOwner, mockTileState.mapPos, {
+        hero: heroFactory(HeroUnitName.CLERIC, HeroUnitName.CLERIC),
+      });
+      const army5 = armyFactory(landOwner, mockTileState.mapPos, {
+        regular: regularsFactory(RegularUnitName.ELF),
+      });
 
       const mockArmy: ArmyState[] = [army1, army2, army3, army4, army5];
 
@@ -373,16 +378,17 @@ describe('LandInfoPopup', () => {
 
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
       expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.queryByText('War Machines:')).not.toBeInTheDocument();
     });
 
     it('displays only heroes section when tile has only heroes', () => {
       const landOwner = getLandOwner(gameStateStub, mockTileState.mapPos);
-      const army1 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.RANGER, HeroUnitName.RANGER),
-      ]);
-      const army2 = armyFactory(landOwner, mockTileState.mapPos, [
-        heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
-      ]);
+      const army1 = armyFactory(landOwner, mockTileState.mapPos, {
+        hero: heroFactory(HeroUnitName.RANGER, HeroUnitName.RANGER),
+      });
+      const army2 = armyFactory(landOwner, mockTileState.mapPos, {
+        hero: heroFactory(HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER),
+      });
 
       const mockArmy: ArmyState[] = [army1, army2];
 
@@ -402,6 +408,38 @@ describe('LandInfoPopup', () => {
       expect(screen.getByText('Ranger lvl: 1')).toBeInTheDocument();
       expect(screen.getByText('Necromancer lvl: 1')).toBeInTheDocument();
       expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.queryByText('War Machines:')).not.toBeInTheDocument();
+    });
+
+    it('War-machines info display ignoring durability', () => {
+      const landPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1].mapPos;
+      Object.assign(
+        gameStateStub,
+        updateLandEffect(
+          gameStateStub,
+          landPos,
+          effectFactory(SpellName.VIEW_TERRITORY, gameStateStub.turnOwner) // opponent land visible only with this effect
+        )
+      );
+      const catapult1 = warMachineFactory(WarMachineName.CATAPULT);
+      catapult1.durability = 1;
+      catapult1.count = 3;
+      placeUnitsOnMap(catapult1, gameStateStub, landPos);
+
+      const catapult2 = warMachineFactory(WarMachineName.CATAPULT);
+      catapult2.durability = 7;
+      catapult2.count = 1;
+      placeUnitsOnMap(catapult2, gameStateStub, landPos);
+
+      renderWithProviders(
+        <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
+        gameStateStub
+      );
+
+      expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
+      expect(screen.queryByText('Units:')).not.toBeInTheDocument();
+      expect(screen.getByText('War Machines:')).toBeInTheDocument();
+      expect(screen.getByText('Catapult (4)')).toBeInTheDocument();
     });
 
     it('displays only units section when tile has only non-hero units', () => {
@@ -416,7 +454,7 @@ describe('LandInfoPopup', () => {
       );
 
       placeUnitsOnMap(regularsFactory(RegularUnitName.ORC), gameStateStub, landPos);
-      placeUnitsOnMap(regularsFactory(RegularUnitName.BALLISTA), gameStateStub, landPos);
+      placeUnitsOnMap(warMachineFactory(WarMachineName.BALLISTA), gameStateStub, landPos);
 
       renderWithProviders(
         <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
@@ -425,6 +463,7 @@ describe('LandInfoPopup', () => {
 
       expect(screen.getByText('Units:')).toBeInTheDocument();
       expect(screen.getByText('Orc (20)')).toBeInTheDocument();
+      expect(screen.getByText('War Machines:')).toBeInTheDocument();
       expect(screen.getByText('Ballista (1)')).toBeInTheDocument();
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
     });

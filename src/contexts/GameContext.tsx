@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react';
-import type { GameState } from '../state/GameState';
 import { TurnManager, TurnManagerCallbacks } from '../turn/TurnManager';
+import type { GameState } from '../state/GameState';
 import type { TurnPhaseType } from '../turn/TurnPhase';
 import type { EmpireEvent } from '../types/EmpireEvent';
 

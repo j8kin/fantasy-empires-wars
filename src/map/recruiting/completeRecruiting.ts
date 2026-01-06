@@ -1,6 +1,6 @@
 import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getPlayerLands } from '../../selectors/landSelectors';
-import { addHero, addRegulars } from '../../systems/armyActions';
+import { addHero, addRegulars, addWarMachines } from '../../systems/armyActions';
 import {
   decrementPlayerRecruitmentSlots,
   freePlayerCompletedRecruitmentSlots,
@@ -8,7 +8,7 @@ import {
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
-import { isHeroType } from '../../domain/unit/unitTypeChecks';
+import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 
@@ -16,6 +16,7 @@ import { EmpireEventKind } from '../../types/EmpireEvent';
 import type { EmpireEvent } from '../../types/EmpireEvent';
 import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
+import { warMachineFactory } from '../../factories/warMachineFactory';
 
 export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
   const recruitEvents: EmpireEvent[] = [];
@@ -47,32 +48,42 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
           );
 
           if (isHeroType(s.unit)) {
-            const newHero = heroFactory(s.unit, generateHeroName(s.unit));
+            const hero = heroFactory(s.unit, generateHeroName(s.unit));
             recruitEvents.push({
               status: EmpireEventKind.Success,
-              message: heroRecruitingMessage(newHero),
+              message: heroRecruitingMessage(hero),
             });
 
             if (stationedArmy) {
               // Get the latest version of this army (might have been updated already)
               const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
-              const updatedArmy = addHero(currentArmy, newHero);
+              const updatedArmy = addHero(currentArmy, hero);
               armiesToUpdate.set(stationedArmy.id, updatedArmy);
             } else {
-              const newArmy = armyFactory(turnOwner, l.mapPos, [newHero]);
+              const newArmy = armyFactory(turnOwner, l.mapPos, { hero });
               newArmies.push(newArmy);
             }
           } else {
-            const newRegulars = regularsFactory(s.unit);
-
-            if (stationedArmy) {
-              // Get the latest version of this army (might have been updated already)
-              const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
-              const updatedArmy = addRegulars(currentArmy, newRegulars);
-              armiesToUpdate.set(stationedArmy.id, updatedArmy);
+            if (isWarMachine(s.unit)) {
+              const warMachine = warMachineFactory(s.unit);
+              if (stationedArmy) {
+                const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
+                const updatedArmy = addWarMachines(currentArmy, warMachine);
+                armiesToUpdate.set(stationedArmy.id, updatedArmy);
+              } else {
+                newArmies.push(armyFactory(turnOwner, l.mapPos, { warMachine }));
+              }
             } else {
-              const newArmy = armyFactory(turnOwner, l.mapPos, undefined, [newRegulars]);
-              newArmies.push(newArmy);
+              const regular = regularsFactory(s.unit);
+
+              if (stationedArmy) {
+                // Get the latest version of this army (might have been updated already)
+                const currentArmy = armiesToUpdate.get(stationedArmy.id) || stationedArmy;
+                const updatedArmy = addRegulars(currentArmy, regular);
+                armiesToUpdate.set(stationedArmy.id, updatedArmy);
+              } else {
+                newArmies.push(armyFactory(turnOwner, l.mapPos, { regular }));
+              }
             }
           }
         });

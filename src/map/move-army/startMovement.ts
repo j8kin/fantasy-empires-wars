@@ -1,5 +1,12 @@
 import { findShortestPath, getLandOwner } from '../../selectors/landSelectors';
-import { addHero, addRegulars, getHero, getRegulars } from '../../systems/armyActions';
+import {
+  addHero,
+  addRegulars,
+  addWarMachines,
+  getHero,
+  getRegulars,
+  getWarMachines,
+} from '../../systems/armyActions';
 import { getArmiesAtPosition, getPosition, isMoving } from '../../selectors/armySelectors';
 import {
   addArmyToGameState,
@@ -59,6 +66,17 @@ export const startMovement = (
     }
   }
 
+  for (let i = 0; i < units.warMachines.length; i++) {
+    const warMachine = units.warMachines[i];
+    if (
+      !stationedArmy.warMachines.some(
+        (u) => u.type === warMachine.type && u.count >= warMachine.count
+      )
+    ) {
+      return gameState; // fallback: not enough war machines in the stationed army
+    }
+  }
+
   // update stationed army: remove moved heroes and decrement regular units
   let movingArmy = armyFactory(gameState.turnOwner, from);
 
@@ -76,6 +94,18 @@ export const startMovement = (
     movingArmy = addRegulars(movingArmy, regularsResult.regulars);
   });
 
+  // Add war machines to moving army and update stationed army
+  units.warMachines.forEach((warMachine) => {
+    const warMachinesResult = getWarMachines(
+      stationedArmy,
+      warMachine.type,
+      warMachine.count,
+      warMachine.durability
+    )!;
+    stationedArmy = warMachinesResult.updatedArmy;
+    movingArmy = addWarMachines(movingArmy, warMachinesResult.warMachines);
+  });
+
   // Copy all effects from the stationed army to the moving army and update movement path
   movingArmy = {
     ...movingArmy,
@@ -90,7 +120,11 @@ export const startMovement = (
   let updatedState = gameState;
 
   // remove stationed army from GameState if it is empty, otherwise update it
-  if (stationedArmy.regulars.length === 0 && stationedArmy.heroes.length === 0) {
+  if (
+    stationedArmy.regulars.length === 0 &&
+    stationedArmy.heroes.length === 0 &&
+    stationedArmy.warMachines.length === 0
+  ) {
     updatedState = removeArmyFromGameState(updatedState, stationedArmy.id);
   } else {
     updatedState = updateArmyInGameState(updatedState, stationedArmy);

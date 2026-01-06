@@ -13,6 +13,11 @@ export const briefInfo = (state: ArmyState): ArmyBriefInfo => {
   return {
     heroes: state.heroes.map((h) => ({ name: h.name, type: h.type, level: h.level })),
     regulars: state.regulars.map((u) => ({ id: u.type, rank: u.rank, count: u.count })),
+    warMachines: state.warMachines.map((wm) => ({
+      type: wm.type,
+      count: wm.count,
+      durability: wm.durability,
+    })),
   };
 };
 
