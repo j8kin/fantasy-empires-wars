@@ -280,6 +280,7 @@ describe('Move Army', () => {
             {
               type: WarMachineName.CATAPULT,
               count: 1,
+              durability: 3,
             },
           ],
         };
@@ -503,7 +504,7 @@ describe('Move Army', () => {
       const armyBriefInfo: ArmyBriefInfo = {
         heroes: [],
         regulars: [],
-        warMachines: [{ type: WarMachineName.CATAPULT, count: 1 }],
+        warMachines: [{ type: WarMachineName.CATAPULT, count: 1, durability: 3 }],
       };
 
       Object.assign(
@@ -568,7 +569,7 @@ describe('Move Army', () => {
       const armyBriefInfo1: ArmyBriefInfo = {
         heroes: [],
         regulars: [],
-        warMachines: [{ type: WarMachineName.SIEGE_TOWER, count: 1 }],
+        warMachines: [{ type: WarMachineName.SIEGE_TOWER, count: 1, durability: 3 }],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo1));
@@ -576,7 +577,7 @@ describe('Move Army', () => {
       const armyBriefInfo2: ArmyBriefInfo = {
         heroes: [],
         regulars: [],
-        warMachines: [{ type: WarMachineName.CATAPULT, count: 1 }],
+        warMachines: [{ type: WarMachineName.CATAPULT, count: 1, durability: 3 }],
       };
 
       Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo2));

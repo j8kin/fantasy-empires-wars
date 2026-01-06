@@ -12,7 +12,12 @@ import { startMovement } from '../../map/move-army/startMovement';
 
 import { ButtonName } from '../../types/ButtonName';
 import { UnitRank } from '../../state/army/RegularsState';
-import type { ArmyBriefInfo } from '../../state/army/ArmyState';
+import type {
+  ArmyBriefInfo,
+  HeroBriefInfo,
+  RegularsBriefInfo,
+  WarMachinesBriefInfo,
+} from '../../state/army/ArmyState';
 import type { HeroUnitType, RegularUnitType, WarMachineType } from '../../types/UnitType';
 import type { UnitRankType } from '../../state/army/RegularsState';
 
@@ -42,7 +47,7 @@ const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {
   });
 
   // Consolidate war machines by type
-  const consolidatedWarMachines: { type: WarMachineType; count: number }[] = [];
+  const consolidatedWarMachines: { type: WarMachineType; count: number; durability: number }[] = [];
 
   army.warMachines.forEach((unit) => {
     const existingIdx = consolidatedWarMachines.findIndex((u) => u.type === unit.type);
@@ -440,7 +445,7 @@ const MoveArmyDialog: React.FC = () => {
 
   // Unit rendering component
   const renderHeroUnit = (
-    hero: { name: string; type: HeroUnitType; level: number },
+    hero: HeroBriefInfo,
     index: number,
     fromArray: ArmyBriefInfo,
     direction: 'right' | 'left'
@@ -463,8 +468,9 @@ const MoveArmyDialog: React.FC = () => {
       </div>
     );
   };
+
   const renderRegularUnit = (
-    unit: { id: string; rank: UnitRankType; count: number },
+    unit: RegularsBriefInfo,
     index: number,
     fromArray: ArmyBriefInfo,
     direction: 'right' | 'left'
@@ -491,7 +497,7 @@ const MoveArmyDialog: React.FC = () => {
   };
 
   const renderWarMachineUnit = (
-    unit: { type: WarMachineType; count: number },
+    unit: WarMachinesBriefInfo,
     index: number,
     fromArray: ArmyBriefInfo,
     direction: 'right' | 'left'
@@ -508,6 +514,7 @@ const MoveArmyDialog: React.FC = () => {
         <div>
           <div className={styles.unitName}>{unit.type}</div>
           <div className={styles.unitDetails}>Count: {unit.count}</div>
+          <div className={styles.unitDetails}>Durability: {unit.durability}</div>
         </div>
       </div>
     );

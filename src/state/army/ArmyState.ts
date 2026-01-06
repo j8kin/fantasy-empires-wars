@@ -5,10 +5,14 @@ import type { HeroState } from './HeroState';
 import type { MovementState } from './MovementState';
 import type { WarMachineState } from './WarMachineState';
 
+export type HeroBriefInfo = { name: string; type: HeroUnitType; level: number };
+export type RegularsBriefInfo = { id: RegularUnitType; rank: UnitRankType; count: number };
+export type WarMachinesBriefInfo = { type: WarMachineType; count: number; durability: number };
+
 export interface ArmyBriefInfo {
-  heroes: { name: string; type: HeroUnitType; level: number }[];
-  regulars: { id: RegularUnitType; rank: UnitRankType; count: number }[];
-  warMachines: { type: WarMachineType; count: number }[];
+  heroes: HeroBriefInfo[];
+  regulars: RegularsBriefInfo[];
+  warMachines: WarMachinesBriefInfo[];
 }
 
 export interface ArmyState {

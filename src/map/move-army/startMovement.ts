@@ -96,7 +96,12 @@ export const startMovement = (
 
   // Add war machines to moving army and update stationed army
   units.warMachines.forEach((warMachine) => {
-    const warMachinesResult = getWarMachines(stationedArmy, warMachine.type, warMachine.count)!;
+    const warMachinesResult = getWarMachines(
+      stationedArmy,
+      warMachine.type,
+      warMachine.count,
+      warMachine.durability
+    )!;
     stationedArmy = warMachinesResult.updatedArmy;
     movingArmy = addWarMachines(movingArmy, warMachinesResult.warMachines);
   });

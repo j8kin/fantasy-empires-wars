@@ -5,7 +5,7 @@ import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
 
 import { EffectKind } from '../types/Effect';
-import { RegularUnitType } from '../types/UnitType';
+import { RegularUnitType, WarMachineType } from '../types/UnitType';
 import type { GameState } from '../state/GameState';
 import type { ArmyState } from '../state/army/ArmyState';
 import type { HeroState } from '../state/army/HeroState';
@@ -108,8 +108,9 @@ export const getRegulars = (
 
 export const getWarMachines = (
   state: ArmyState,
-  type: WarMachineState['type'],
-  count: number
+  type: WarMachineType,
+  count: number,
+  durability: number
 ): { updatedArmy: ArmyState; warMachines: WarMachineState } | undefined => {
   const unitIdx = state.warMachines.findIndex((u) => u.type === type && u.count >= count);
   if (unitIdx === -1) return undefined;
@@ -130,7 +131,7 @@ export const getWarMachines = (
         idx === unitIdx ? { ...u, count: u.count - count } : u
       ),
     };
-    const warMachinesToReturn = { type: unit.type, count };
+    const warMachinesToReturn = { type: unit.type, count, durability };
     return { updatedArmy, warMachines: warMachinesToReturn };
   }
 };
