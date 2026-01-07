@@ -38,39 +38,54 @@ const playerTraitsFactory = (playerProfile: PlayerProfile): PlayerTraits => {
   };
 };
 
-const restrictedMagic = (playerProfile: PlayerProfile): ManaType[] => {
-  let restricted: ManaType[] = Object.values(Mana);
-  if (playerProfile.type === HeroUnitName.ZEALOT || playerProfile.type === HeroUnitName.WARSMITH) {
-    return restricted;
-  }
+const restrictedMagic = (playerProfile: PlayerProfile): Set<ManaType> => {
+  const restricted: Set<ManaType> = new Set();
+  Object.values(Mana).forEach((mana) => restricted.add(mana));
+
   switch (playerProfile.alignment) {
     case Alignment.LAWFUL:
-      restricted = [Mana.RED, Mana.BLACK];
+      restricted.delete(Mana.WHITE);
+      restricted.delete(Mana.GREEN);
+      restricted.delete(Mana.BLUE);
       break;
     case Alignment.NEUTRAL:
-      restricted = [Mana.WHITE, Mana.BLACK];
+      restricted.delete(Mana.GREEN);
+      restricted.delete(Mana.BLUE);
+      restricted.delete(Mana.RED);
       break;
     case Alignment.CHAOTIC:
-      restricted = [Mana.WHITE, Mana.GREEN];
+      restricted.delete(Mana.BLUE);
+      restricted.delete(Mana.RED);
+      restricted.delete(Mana.BLACK);
       break;
     default:
       break;
   }
   switch (playerProfile.type) {
     case HeroUnitName.CLERIC:
-      restricted = restricted.filter((mana) => mana !== Mana.WHITE);
+      restricted.delete(Mana.WHITE);
       break;
     case HeroUnitName.DRUID:
-      restricted = restricted.filter((mana) => mana !== Mana.GREEN);
+      restricted.delete(Mana.GREEN);
       break;
     case HeroUnitName.ENCHANTER:
-      restricted = restricted.filter((mana) => mana !== Mana.BLUE);
+      restricted.delete(Mana.BLUE);
       break;
     case HeroUnitName.PYROMANCER:
-      restricted = restricted.filter((mana) => mana !== Mana.RED);
+      restricted.delete(Mana.RED);
       break;
     case HeroUnitName.NECROMANCER:
-      restricted = restricted.filter((mana) => mana !== Mana.BLACK);
+      restricted.delete(Mana.BLACK);
+      break;
+
+    // non-magic Players
+    case HeroUnitName.ZEALOT:
+    case HeroUnitName.WARSMITH:
+      restricted.add(Mana.WHITE);
+      restricted.add(Mana.GREEN);
+      restricted.add(Mana.BLUE);
+      restricted.add(Mana.RED);
+      restricted.add(Mana.BLACK);
       break;
     default:
       break;

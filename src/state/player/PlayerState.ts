@@ -7,7 +7,7 @@ import type { Effect } from '../../types/Effect';
 import type { PlayerProfile, PlayerType } from './PlayerProfile';
 
 export interface PlayerTraits {
-  restrictedMagic: ManaType[];
+  restrictedMagic: Set<ManaType>;
 }
 
 export interface PlayerState {
