@@ -1,8 +1,12 @@
+import { getBuildingInfo } from '../domain/building/buildingRepository';
 import { Mana } from '../types/Mana';
 import { HeroUnitName } from '../types/UnitType';
 import { Alignment } from '../types/Alignment';
+import { BuildingName } from '../types/Building';
 import type { PlayerState, PlayerTraits } from '../state/player/PlayerState';
-import { PlayerProfile, PlayerType } from '../state/player/PlayerProfile';
+import type { PlayerProfile, PlayerType } from '../state/player/PlayerProfile';
+import type { BuildingInfo } from '../domain/building/buildingRepository';
+import type { BuildingType } from '../types/Building';
 import type { ManaType } from '../types/Mana';
 
 export const playerFactory = (
@@ -33,12 +37,35 @@ export const playerFactory = (
 };
 
 const playerTraitsFactory = (playerProfile: PlayerProfile): PlayerTraits => {
+  const restrictedMagic = getRestrictedMagic(playerProfile);
+  const availableBuildings = getAvailableBuildings(restrictedMagic);
+
   return {
-    restrictedMagic: restrictedMagic(playerProfile),
+    restrictedMagic: restrictedMagic,
+    availableBuildings: availableBuildings,
   };
 };
 
-const restrictedMagic = (playerProfile: PlayerProfile): Set<ManaType> => {
+const MANA_TO_MAGE_TOWER: Partial<Record<BuildingType, ManaType>> = {
+  [BuildingName.WHITE_MAGE_TOWER]: Mana.WHITE,
+  [BuildingName.GREEN_MAGE_TOWER]: Mana.GREEN,
+  [BuildingName.BLUE_MAGE_TOWER]: Mana.BLUE,
+  [BuildingName.RED_MAGE_TOWER]: Mana.RED,
+  [BuildingName.BLACK_MAGE_TOWER]: Mana.BLACK,
+};
+
+const getAvailableBuildings = (restrictedMagic: Set<ManaType>): Set<BuildingInfo> => {
+  return new Set(
+    Object.values(BuildingName)
+      .filter(
+        (building) =>
+          MANA_TO_MAGE_TOWER[building] == null || !restrictedMagic.has(MANA_TO_MAGE_TOWER[building])
+      )
+      .map(getBuildingInfo)
+  );
+};
+
+const getRestrictedMagic = (playerProfile: PlayerProfile): Set<ManaType> => {
   const restricted: Set<ManaType> = new Set();
   Object.values(Mana).forEach((mana) => restricted.add(mana));
 

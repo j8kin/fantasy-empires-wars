@@ -1,9 +1,7 @@
 import { v4 as uuid } from 'uuid';
-import { isMageTower } from '../domain/building/buildingRepository';
-
-import type { BuildingType, RecruitmentSlot } from '../types/Building';
 import { BuildingName } from '../types/Building';
 import { RegularUnitName } from '../types/UnitType';
+import type { BuildingType, RecruitmentSlot } from '../types/Building';
 import type { BuildingState } from '../state/map/building/BuildingState';
 
 // Building slot constants
@@ -29,6 +27,8 @@ const recruitmentSlotFactory = (): RecruitmentSlot => ({
   unit: RegularUnitName.WARRIOR, // Dummy value, ignored when isOccupied = false
   turnsRemaining: 0, // Dummy value, ignored when isOccupied = false
 });
+
+const isMageTower = (building: BuildingType): boolean => building.toString().includes('Mage Tower');
 
 const slotsFactory = (buildingType: BuildingType): RecruitmentSlot[] => {
   if (buildingType === BuildingName.BARRACKS) {

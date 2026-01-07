@@ -1,12 +1,11 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageTypeName } from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getAllowedBuildings, getTurnOwner } from '../../selectors/playerSelectors';
 import { getPlayerLands } from '../../selectors/landSelectors';
-import { getAllBuildings } from '../../domain/building/buildingRepository';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 import { getBuildingImg } from '../../assets/getBuildingImg';
 import { BuildingName } from '../../types/Building';
@@ -16,7 +15,6 @@ const ConstructBuildingDialog: React.FC = () => {
   const {
     showConstructBuildingDialog,
     setShowConstructBuildingDialog,
-    selectedLandAction,
     setSelectedLandAction,
     addGlowingTile,
   } = useApplicationContext();
@@ -42,23 +40,6 @@ const ConstructBuildingDialog: React.FC = () => {
     [gameState, setSelectedLandAction, addGlowingTile, handleClose]
   );
 
-  useEffect(() => {
-    if (selectedLandAction && showConstructBuildingDialog && gameState != null) {
-      const selectedPlayer = getTurnOwner(gameState);
-      if (selectedPlayer) {
-        const building = getAllBuildings(selectedPlayer).find((s) => s.id === selectedLandAction);
-        if (building) {
-          setTimeout(() => {
-            alert(
-              `Construct ${building.id}!\n\nBuild Cost: ${building.buildCost}\n\nEffect: ${building.description}`
-            );
-            handleClose();
-          }, 100);
-        }
-      }
-    }
-  }, [gameState, handleClose, selectedLandAction, showConstructBuildingDialog]);
-
   if (!showConstructBuildingDialog || gameState == null) return null;
 
   const turnOwner = getTurnOwner(gameState);
@@ -78,10 +59,8 @@ const ConstructBuildingDialog: React.FC = () => {
   const isStrongholdAllowed =
     getAvailableToConstructLands(gameState, BuildingName.STRONGHOLD).length > 0;
 
-  const availableBuildings = getAllBuildings(turnOwner).filter(
-    (building) =>
-      building.buildCost <= turnOwner.vault! &&
-      (building.id !== BuildingName.STRONGHOLD || isStrongholdAllowed)
+  const availableBuildings = getAllowedBuildings(turnOwner).filter(
+    (building) => building.type !== BuildingName.STRONGHOLD || isStrongholdAllowed
   );
 
   if (availableBuildings.length === 0) return null;
@@ -90,17 +69,17 @@ const ConstructBuildingDialog: React.FC = () => {
     <FlipBook onClickOutside={handleClose}>
       {availableBuildings.map((building, index) => (
         <FlipBookPage
-          key={building.id}
+          key={building.type}
           pageNum={index}
           lorePage={2351}
-          header={building.id}
-          iconPath={getBuildingImg(building.id)}
+          header={building.type}
+          iconPath={getBuildingImg(building.type)}
           description={building.description}
           cost={building.buildCost}
           costLabel="Build Cost"
           maintainCost={building.maintainCost}
           onClose={handleClose}
-          onIconClick={createBuildingClickHandler(building.id as BuildingType)}
+          onIconClick={createBuildingClickHandler(building.type as BuildingType)}
         />
       ))}
     </FlipBook>

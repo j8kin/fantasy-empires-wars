@@ -6,7 +6,6 @@ import GameButton from '../buttons/GameButton';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getAllBuildings } from '../../domain/building/buildingRepository';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { AllSpells } from '../../domain/spell/spellsRepository';
 import { SpellName } from '../../types/Spell';
@@ -50,7 +49,7 @@ const MapActionsControl: React.FC = () => {
     const selectedPlayer = getTurnOwner(gameState);
     if (!selectedPlayer) return;
     if (
-      getAllBuildings(selectedPlayer).some(
+      Array.from(selectedPlayer.traits.availableBuildings.values()).some(
         (building) => building.buildCost <= selectedPlayer.vault!
       )
     ) {

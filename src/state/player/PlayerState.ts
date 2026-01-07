@@ -1,13 +1,15 @@
+import type { PlayerProfile, PlayerType } from './PlayerProfile';
 import type { PlayerColorName } from '../../types/PlayerColors';
-import type { ManaType } from '../../types/Mana';
 import type { HeroQuest } from '../../types/Quest';
 import type { EmpireTreasure } from '../../types/Treasures';
-import type { DiplomacyStatusType } from '../../types/Diplomacy';
 import type { Effect } from '../../types/Effect';
-import type { PlayerProfile, PlayerType } from './PlayerProfile';
+import type { DiplomacyStatusType } from '../../types/Diplomacy';
+import type { ManaType } from '../../types/Mana';
+import type { BuildingInfo } from '../../domain/building/buildingRepository';
 
 export interface PlayerTraits {
   restrictedMagic: Set<ManaType>;
+  availableBuildings: Set<BuildingInfo>;
 }
 
 export interface PlayerState {

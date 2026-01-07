@@ -4,6 +4,7 @@ import { NO_PLAYER } from '../domain/player/playerRepository';
 import { EffectKind } from '../types/Effect';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
+import type { BuildingInfo } from '../domain/building/buildingRepository';
 import type { EffectSourceId } from '../types/Effect';
 import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatusType } from '../types/Diplomacy';
@@ -56,4 +57,10 @@ export const getTreasureItemById = (player: PlayerState, itemId: string): Item |
   const item = player.empireTreasures?.find((t) => t.id === itemId);
   if (!item) return undefined;
   return isItem(item) ? item : undefined;
+};
+
+export const getAllowedBuildings = (state: PlayerState): BuildingInfo[] => {
+  return Array.from(state.traits.availableBuildings.values()).filter(
+    (b) => b.buildCost <= state.vault
+  );
 };
