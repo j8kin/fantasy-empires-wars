@@ -46,7 +46,7 @@ describe('Game Start: add player to map', () => {
     ['test default', defaultBattlefieldSizeStub, 8],
   ])(
     'max players should be placed on real map %s size',
-    (size: string, dimensions: MapDimensions, maxPlayerNumber: number) => {
+    (_: string, dimensions: MapDimensions, maxPlayerNumber: number) => {
       const gameState = createGameStateStub({
         nPlayers: maxPlayerNumber,
         realBattlefield: true,
