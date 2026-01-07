@@ -15,7 +15,7 @@ jest.mock('react-pageflip', () => {
     className?: string;
     style?: React.CSSProperties;
     // accept any extra props without using `any`
-    [key: string]: unknown;
+    [_: string]: unknown;
   }) {
     return (
       <div
@@ -164,16 +164,6 @@ describe('FlipBook Component', () => {
       expect(backdrop).toBeInTheDocument();
     });
 
-    it('should not render backdrop when showBackdrop is false', () => {
-      render(
-        <FlipBook showBackdrop={false}>
-          <div>Test Page</div>
-        </FlipBook>
-      );
-
-      expect(screen.queryByTestId('flipbook-backdrop')).not.toBeInTheDocument();
-    });
-
     it('should call onClickOutside when backdrop is clicked', () => {
       const handleClickOutside = jest.fn();
       render(
@@ -238,37 +228,6 @@ describe('FlipBook Component', () => {
         alignItems: 'center',
         justifyContent: 'center',
       });
-    });
-  });
-
-  describe('Multiple Rendering Modes', () => {
-    it('should render with backdrop when showBackdrop is true', () => {
-      render(
-        <FlipBook showBackdrop={true}>
-          <div>Test Page</div>
-        </FlipBook>
-      );
-
-      // Should find backdrop
-      const backdrop = screen.getByTestId('flipbook-backdrop');
-      expect(backdrop).toBeInTheDocument();
-
-      // Should find flipbook inside backdrop
-      expect(screen.getByTestId('html-flipbook')).toBeInTheDocument();
-    });
-
-    it('should render without backdrop when showBackdrop is false', () => {
-      render(
-        <FlipBook showBackdrop={false}>
-          <div>Test Page</div>
-        </FlipBook>
-      );
-
-      // Should not find backdrop
-      expect(screen.queryByTestId('flipbook-backdrop')).not.toBeInTheDocument();
-
-      // Should still find flipbook
-      expect(screen.getByTestId('html-flipbook')).toBeInTheDocument();
     });
   });
 

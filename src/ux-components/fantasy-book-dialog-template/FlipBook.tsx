@@ -28,7 +28,6 @@ interface FlipBookProps {
   disableFlipByClick?: boolean;
   size?: 'fixed' | 'stretch';
   onClickOutside?: () => void;
-  showBackdrop?: boolean;
 }
 
 const FlipBook: React.FC<FlipBookProps> = ({
@@ -57,7 +56,6 @@ const FlipBook: React.FC<FlipBookProps> = ({
   disableFlipByClick = false,
   size = 'fixed',
   onClickOutside,
-  showBackdrop = true,
 }) => {
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && onClickOutside) {
@@ -67,62 +65,27 @@ const FlipBook: React.FC<FlipBookProps> = ({
 
   return (
     <>
-      {/* Backdrop */}
-      {showBackdrop && (
+      <div
+        data-testid="flipbook-backdrop"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: startZIndex - 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        onClick={handleBackdropClick}
+      >
         <div
-          data-testid="flipbook-backdrop"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: startZIndex - 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          onClick={handleBackdropClick}
+          data-testid="flipbook-container"
+          className={styles.flipbookContainer}
+          onClick={(e) => e.stopPropagation()}
         >
-          <div
-            data-testid="flipbook-container"
-            className={styles.flipbookContainer}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <HTMLFlipBook
-              width={width}
-              height={height}
-              size={size}
-              minWidth={minWidth || width}
-              minHeight={minHeight || height}
-              maxWidth={maxWidth || width}
-              maxHeight={maxHeight || height}
-              maxShadowOpacity={maxShadowOpacity}
-              showCover={showCover}
-              mobileScrollSupport={mobileScrollSupport}
-              startPage={startPage}
-              drawShadow={drawShadow}
-              flippingTime={flippingTime}
-              usePortrait={usePortrait}
-              startZIndex={startZIndex}
-              autoSize={autoSize}
-              clickEventForward={clickEventForward}
-              useMouseEvents={useMouseEvents}
-              swipeDistance={swipeDistance}
-              showPageCorners={showPageCorners}
-              disableFlipByClick={disableFlipByClick}
-              className={className}
-              style={style}
-            >
-              {children}
-            </HTMLFlipBook>
-          </div>
-        </div>
-      )}
-      {/* Original layout for when backdrop is disabled */}
-      {!showBackdrop && (
-        <div className={styles.flipbookContainer} data-testid="flipbook-container">
           <HTMLFlipBook
             width={width}
             height={height}
@@ -151,7 +114,7 @@ const FlipBook: React.FC<FlipBookProps> = ({
             {children}
           </HTMLFlipBook>
         </div>
-      )}
+      </div>
     </>
   );
 };
