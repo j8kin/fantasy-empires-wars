@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageTypeName } from '../fantasy-book-dialog-template/FlipBookPage';
@@ -19,7 +19,6 @@ const CastSpellDialog: React.FC = () => {
   const {
     showCastSpellDialog,
     setShowCastSpellDialog,
-    selectedLandAction,
     setSelectedLandAction,
     addGlowingTile,
     setIsArcaneExchangeMode,
@@ -57,20 +56,6 @@ const CastSpellDialog: React.FC = () => {
     },
     [gameState, setSelectedLandAction, addGlowingTile, handleClose, setIsArcaneExchangeMode]
   );
-
-  useEffect(() => {
-    if (selectedLandAction && showCastSpellDialog) {
-      const spell = AllSpells.find((s) => s.type === selectedLandAction);
-      if (spell) {
-        setTimeout(() => {
-          alert(
-            `Casting ${spell.type}!\n\nMana Cost: ${spell.manaCost}\n\nEffect: ${spell.description}`
-          );
-          handleDialogClose();
-        }, 100);
-      }
-    }
-  }, [selectedLandAction, showCastSpellDialog, handleDialogClose]);
 
   if (!showCastSpellDialog || gameState == null) return null;
 
