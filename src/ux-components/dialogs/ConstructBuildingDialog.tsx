@@ -1,4 +1,4 @@
-import React, { Activity, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage, { FlipBookPageTypeName } from '../fantasy-book-dialog-template/FlipBookPage';
 
@@ -8,11 +8,9 @@ import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getPlayerLands } from '../../selectors/landSelectors';
 import { getAllBuildings } from '../../domain/building/buildingRepository';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
-
 import { getBuildingImg } from '../../assets/getBuildingImg';
-
-import type { BuildingType } from '../../types/Building';
 import { BuildingName } from '../../types/Building';
+import type { BuildingType } from '../../types/Building';
 
 const ConstructBuildingDialog: React.FC = () => {
   const {
@@ -61,12 +59,13 @@ const ConstructBuildingDialog: React.FC = () => {
     }
   }, [gameState, handleClose, selectedLandAction, showConstructBuildingDialog]);
 
-  const turnOwner = gameState ? getTurnOwner(gameState) : undefined;
+  if (!showConstructBuildingDialog || gameState == null) return null;
 
-  const landsWithoutBuildings =
-    gameState != null ? getPlayerLands(gameState).filter((l) => l.buildings.length === 0) : [];
+  const turnOwner = getTurnOwner(gameState);
 
-  if ((gameState != null && landsWithoutBuildings.length) === 0) {
+  const landsWithoutBuildings = getPlayerLands(gameState).filter((l) => l.buildings.length === 0);
+
+  if (landsWithoutBuildings.length === 0) {
     // trying to allocate lands where only WALLS are constructed (if barracks allowed then other buildings are allowed)
     if (getAvailableToConstructLands(gameState!, BuildingName.BARRACKS).length === 0) {
       // probably only WALLS are allowed to be constructed
@@ -77,39 +76,34 @@ const ConstructBuildingDialog: React.FC = () => {
   }
 
   const isStrongholdAllowed =
-    gameState != null &&
     getAvailableToConstructLands(gameState, BuildingName.STRONGHOLD).length > 0;
 
-  const availableBuildings = turnOwner
-    ? getAllBuildings(turnOwner).filter(
-        (building) =>
-          building.buildCost <= turnOwner.vault! &&
-          (building.id !== BuildingName.STRONGHOLD || isStrongholdAllowed)
-      )
-    : [];
+  const availableBuildings = getAllBuildings(turnOwner).filter(
+    (building) =>
+      building.buildCost <= turnOwner.vault! &&
+      (building.id !== BuildingName.STRONGHOLD || isStrongholdAllowed)
+  );
+
+  if (availableBuildings.length === 0) return null;
 
   return (
-    <Activity
-      mode={showConstructBuildingDialog && availableBuildings.length > 0 ? 'visible' : 'hidden'}
-    >
-      <FlipBook onClickOutside={handleClose}>
-        {availableBuildings.map((building, index) => (
-          <FlipBookPage
-            key={building.id}
-            pageNum={index}
-            lorePage={2351}
-            header={building.id}
-            iconPath={getBuildingImg(building.id)}
-            description={building.description}
-            cost={building.buildCost}
-            costLabel="Build Cost"
-            maintainCost={building.maintainCost}
-            onClose={handleClose}
-            onIconClick={createBuildingClickHandler(building.id as BuildingType)}
-          />
-        ))}
-      </FlipBook>
-    </Activity>
+    <FlipBook onClickOutside={handleClose}>
+      {availableBuildings.map((building, index) => (
+        <FlipBookPage
+          key={building.id}
+          pageNum={index}
+          lorePage={2351}
+          header={building.id}
+          iconPath={getBuildingImg(building.id)}
+          description={building.description}
+          cost={building.buildCost}
+          costLabel="Build Cost"
+          maintainCost={building.maintainCost}
+          onClose={handleClose}
+          onIconClick={createBuildingClickHandler(building.id as BuildingType)}
+        />
+      ))}
+    </FlipBook>
   );
 };
 

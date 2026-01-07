@@ -176,21 +176,18 @@ describe('EmpireTreasureDialog', () => {
   describe('Dialog Visibility', () => {
     it('should not render when showEmpireTreasureDialog is false', () => {
       renderWithProviders(<EmpireTreasureDialog />, { showEmpireTreasureDialog: false });
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book')).not.toBeVisible();
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
     });
 
     it('should not render when gameState is null', () => {
       renderWithProviders(<EmpireTreasureDialog />, { gameState: null as any });
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book')).not.toBeVisible();
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
     });
 
     it('should not render when player has no treasures', () => {
       getTurnOwner(gameStateStub).empireTreasures = [];
       renderWithProviders(<EmpireTreasureDialog />);
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book')).not.toBeVisible();
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
     });
 
     it('should render when showEmpireTreasureDialog is true and player has treasures', () => {
@@ -413,8 +410,7 @@ describe('EmpireTreasureDialog', () => {
 
       renderWithProviders(<EmpireTreasureDialog />, { gameState: null as any });
 
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book')).not.toBeVisible();
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
     });
 
     it('should handle multiple consumable items', () => {
@@ -481,8 +477,7 @@ describe('EmpireTreasureDialog', () => {
       rerender(<EmpireTreasureDialog />);
 
       // Should not render when closed
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId('flip-book')).not.toBeVisible();
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
 
       // Reopen dialog
       mockApplicationContext.showEmpireTreasureDialog = true;

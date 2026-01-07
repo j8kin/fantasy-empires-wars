@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, Activity } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 
 import FlipBook from '../fantasy-book-dialog-template/FlipBook';
 import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
@@ -73,36 +73,37 @@ const SendHeroInQuestDialog: React.FC = () => {
     [gameState, handleClose]
   );
 
-  const availableUnits =
-    gameState != null && actionLandPosition != null
-      ? getArmiesAtPosition(gameState, actionLandPosition).flatMap((armyUnit) => armyUnit.heroes)
-      : [];
+  if (!showSendHeroInQuestDialog || actionLandPosition == null || gameState == null) return null;
+
+  const availableUnits = getArmiesAtPosition(gameState, actionLandPosition).flatMap(
+    (armyUnit) => armyUnit.heroes
+  );
 
   const slots: Slot[] = availableUnits.map((hero) => ({
     id: hero.name,
     name: `${hero.name.split(' ')[0]} Lvl: ${hero.level}`,
   }));
 
+  if (slots.length === 0) return null;
+
   return (
-    <Activity mode={showSendHeroInQuestDialog && slots.length > 0 ? 'visible' : 'hidden'}>
-      <FlipBook onClickOutside={handleClose}>
-        {getAllQuests().map((quest, questLevel) => (
-          <FlipBookPage
-            key={quest.id}
-            pageNum={questLevel}
-            lorePage={1417}
-            header={quest.id}
-            iconPath={getQuestImg(quest.id)}
-            description={quest.description}
-            onClose={handleClose}
-            slots={slots}
-            onSlotClick={createSlotClickHandler(questLevel)}
-            onIconClick={createQuestClickHandler(questLevel, availableUnits)}
-            usedSlots={usedSlots}
-          />
-        ))}
-      </FlipBook>
-    </Activity>
+    <FlipBook onClickOutside={handleClose}>
+      {getAllQuests().map((quest, questLevel) => (
+        <FlipBookPage
+          key={quest.id}
+          pageNum={questLevel}
+          lorePage={1417}
+          header={quest.id}
+          iconPath={getQuestImg(quest.id)}
+          description={quest.description}
+          onClose={handleClose}
+          slots={slots}
+          onSlotClick={createSlotClickHandler(questLevel)}
+          onIconClick={createQuestClickHandler(questLevel, availableUnits)}
+          usedSlots={usedSlots}
+        />
+      ))}
+    </FlipBook>
   );
 };
 
