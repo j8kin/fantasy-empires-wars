@@ -1,9 +1,17 @@
 import type { AlignmentType } from '../../types/Alignment';
-import type { HeroUnitType } from '../../types/UnitType';
+import { HeroUnitType } from '../../types/UnitType';
 import type { PlayerColorName } from '../../types/PlayerColors';
 
 export type PlayerType = 'human' | 'computer';
-export type PlayerRace = 'Human' | 'Elf' | 'Dwarf' | 'Orc' | 'Dark-elf' | 'Undead';
+export const RaceName = {
+  HUMAN: 'Human',
+  ELF: 'Elf',
+  DWARF: 'Dwarf',
+  ORC: 'Orc',
+  UNDEAD: 'Undead',
+} as const;
+
+export type PlayerRace = (typeof RaceName)[keyof typeof RaceName];
 
 export interface PlayerProfile {
   id: string;
@@ -11,6 +19,7 @@ export interface PlayerProfile {
   alignment: AlignmentType;
   race: PlayerRace;
   type: HeroUnitType;
+  undead: boolean;
   level: number; // up to MAX_HERO_LEVEL
   description: string;
   color: PlayerColorName; // base player color when game starts continues current color

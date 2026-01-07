@@ -6,11 +6,16 @@ import type { DiplomacyStatusType } from '../../types/Diplomacy';
 import type { Effect } from '../../types/Effect';
 import type { PlayerProfile, PlayerType } from './PlayerProfile';
 
+export interface PlayerTraits {
+  restrictedMagic: ManaType[];
+}
+
 export interface PlayerState {
   id: string; // todo UUUID
   playerType: PlayerType;
   playerProfile: PlayerProfile;
   color: PlayerColorName;
+  traits: PlayerTraits;
 
   mana: Record<ManaType, number>;
   effects: Effect[];
