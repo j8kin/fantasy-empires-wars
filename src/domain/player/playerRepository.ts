@@ -11,7 +11,7 @@ export const NO_PLAYER: PlayerProfile = {
   undead: false,
   level: 1,
   description: 'None',
-  color: 'white'
+  color: 'white',
 };
 
 export const PREDEFINED_PLAYERS: PlayerProfile[] = [
