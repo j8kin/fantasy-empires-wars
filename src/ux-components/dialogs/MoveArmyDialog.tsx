@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './css/MoveArmyDialog.module.css';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
@@ -85,7 +85,7 @@ const MoveArmyDialog: React.FC = () => {
   // Refs for click-and-hold functionality
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!moveArmyPath || !gameState) {
       fromUnitsRef.current = undefined;
       toUnitsRef.current = undefined;
@@ -131,7 +131,7 @@ const MoveArmyDialog: React.FC = () => {
   };
 
   // Clean up interval on unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);

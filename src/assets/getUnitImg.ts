@@ -3,6 +3,7 @@ import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType
 
 import wardHandsImg from './army/ward-hands.png';
 import warriorImg from './army/warrior.png';
+import nullwardenImg from './army/nullwarden.png';
 import dwarfImg from './army/dwarf.png';
 import halflingImg from './army/halflings.png';
 import elfImg from './army/elf.png';
@@ -31,6 +32,7 @@ import necromancerImg from './army/necromancer.png';
 const unitImg: Record<UnitType, string | undefined> = {
   [RegularUnitName.WARD_HANDS]: wardHandsImg,
   [RegularUnitName.WARRIOR]: warriorImg,
+  [RegularUnitName.NULLWARDEN]: nullwardenImg,
   [RegularUnitName.DWARF]: dwarfImg,
   [RegularUnitName.HALFLING]: halflingImg,
   [RegularUnitName.ELF]: elfImg,

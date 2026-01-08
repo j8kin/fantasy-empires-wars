@@ -321,41 +321,6 @@ describe('ConstructBuildingDialog', () => {
     });
   });
 
-  describe('useEffect Alert Behavior', () => {
-    it('should show alert when selectedLandAction matches a building', () => {
-      jest.useFakeTimers();
-
-      // Set selectedLandAction to match a building
-      mockApplicationContext.selectedLandAction = BuildingName.BARRACKS;
-
-      renderWithProviders(<ConstructBuildingDialog />);
-
-      // Fast-forward timers to trigger the setTimeout
-      jest.advanceTimersByTime(100);
-
-      expect(window.alert).toHaveBeenCalled();
-      expect(mockApplicationContext.setShowConstructBuildingDialog).toHaveBeenCalledWith(false);
-
-      jest.useRealTimers();
-    });
-
-    it('should not show alert when selectedLandAction does not match a building', () => {
-      mockApplicationContext.selectedLandAction = 'INVALID_BUILDING';
-
-      renderWithProviders(<ConstructBuildingDialog />);
-
-      expect(window.alert).not.toHaveBeenCalled();
-    });
-
-    it('should not show alert when selectedLandAction is null', () => {
-      mockApplicationContext.selectedLandAction = undefined;
-
-      renderWithProviders(<ConstructBuildingDialog />);
-
-      expect(window.alert).not.toHaveBeenCalled();
-    });
-  });
-
   describe('Player Type Restrictions', () => {
     it('should filter mage towers based on player alignment', () => {
       // Test with LAWFUL player

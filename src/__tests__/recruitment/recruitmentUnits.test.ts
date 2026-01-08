@@ -8,23 +8,23 @@ import { unitsBaseStats } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
+import { getLandById } from '../../domain/land/landRepository';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { LandName } from '../../types/Land';
 import { BuildingName } from '../../types/Building';
 import { TreasureName } from '../../types/Treasures';
-import {
-  HeroUnitName,
-  RegularUnitName,
-  WarMachineName,
-  WarMachineType,
-} from '../../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { SpellName } from '../../types/Spell';
 import { UnitRank } from '../../state/army/RegularsState';
 import type { GameState } from '../../state/GameState';
 import type { LandState } from '../../state/map/land/LandState';
+import type { LandType } from '../../types/Land';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { BuildingType } from '../../types/Building';
 import type { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
+import type { WarMachineType } from '../../types/UnitType';
 
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createGameStateStub } from '../utils/createGameStateStub';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 
 describe('Recruitment', () => {
@@ -41,7 +41,10 @@ describe('Recruitment', () => {
 
     randomSpy = jest.spyOn(Math, 'random');
 
-    gameStateStub = createDefaultGameStateStub();
+    // use NEUTRAL PLAYER to be able to recruit any kind of units
+    gameStateStub = createGameStateStub({
+      gamePlayers: [PREDEFINED_PLAYERS[2], PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[3]],
+    });
 
     testTurnManagement = new TestTurnManagement(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);
@@ -145,20 +148,21 @@ describe('Recruitment', () => {
     });
 
     it.each([
-      [RegularUnitName.WARRIOR, 1],
-      [RegularUnitName.DWARF, 1],
-      [RegularUnitName.ORC, 1],
-      [RegularUnitName.ELF, 2],
-      [RegularUnitName.HALFLING, 2],
-      [RegularUnitName.DARK_ELF, 2],
+      [RegularUnitName.WARRIOR, 1, LandName.PLAINS],
+      [RegularUnitName.DWARF, 1, LandName.MOUNTAINS],
+      [RegularUnitName.ORC, 1, LandName.SWAMP],
+      [RegularUnitName.ELF, 2, LandName.GREEN_FOREST],
+      [RegularUnitName.HALFLING, 2, LandName.HILLS],
+      [RegularUnitName.DARK_ELF, 2, LandName.DARK_FOREST],
 
-      [WarMachineName.CATAPULT, 3],
-      [WarMachineName.BALLISTA, 3],
-      [WarMachineName.SIEGE_TOWER, 2],
-      [WarMachineName.BATTERING_RAM, 1],
+      [WarMachineName.CATAPULT, 3, LandName.PLAINS],
+      [WarMachineName.BALLISTA, 3, LandName.PLAINS],
+      [WarMachineName.SIEGE_TOWER, 2, LandName.PLAINS],
+      [WarMachineName.BATTERING_RAM, 1, LandName.DESERT],
     ])(
       'Regular unit (%s) should be start recruited in (%s) turns in Barracks',
-      (unitType: RegularUnitType | WarMachineType, nTurns: number) => {
+      (unitType: RegularUnitType | WarMachineType, nTurns: number, landType: LandType) => {
+        getLand(gameStateStub, barracksLand.mapPos).land = getLandById(landType);
         startRecruiting(gameStateStub, barracksLand.mapPos, unitType);
 
         expect(getArmiesAtPosition(gameStateStub, barracksLand.mapPos)).toHaveLength(0); // no units are placed on the map yet
@@ -167,16 +171,22 @@ describe('Recruitment', () => {
     );
 
     it.each([
-      [30, RegularUnitName.WARD_HANDS, 1],
-      [20, RegularUnitName.WARRIOR, 1],
-      [20, RegularUnitName.DWARF, 1],
-      [20, RegularUnitName.ORC, 1],
-      [25, RegularUnitName.HALFLING, 2],
-      [20, RegularUnitName.ELF, 2],
-      [20, RegularUnitName.DARK_ELF, 2],
+      [30, RegularUnitName.WARD_HANDS, 1, LandName.PLAINS],
+      [20, RegularUnitName.WARRIOR, 1, LandName.PLAINS],
+      [20, RegularUnitName.DWARF, 1, LandName.MOUNTAINS],
+      [20, RegularUnitName.ORC, 1, LandName.SWAMP],
+      [25, RegularUnitName.HALFLING, 2, LandName.HILLS],
+      [20, RegularUnitName.ELF, 2, LandName.GREEN_FOREST],
+      [20, RegularUnitName.DARK_ELF, 2, LandName.DARK_FOREST],
     ])(
       '%s units (%s) should be start recruited in (%s) turns in Barracks',
-      (nUnits: number, unitType: RegularUnitType | WarMachineType, nTurns: number) => {
+      (
+        nUnits: number,
+        unitType: RegularUnitType | WarMachineType,
+        nTurns: number,
+        landType: LandType
+      ) => {
+        getLand(gameStateStub, barracksLand.mapPos).land = getLandById(landType);
         startRecruiting(gameStateStub, barracksLand.mapPos, unitType);
 
         verifyRecruitSlot(barracksLand.mapPos, 0, 1, unitType, nTurns);
@@ -384,16 +394,17 @@ describe('Recruitment', () => {
     };
     describe('Non-Mage heroes', () => {
       it.each([
-        [HeroUnitName.FIGHTER, 'Adela Ravenfell'],
-        [HeroUnitName.HAMMER_LORD, 'Hilda Goldgrip'],
-        [HeroUnitName.OGR, 'Ozma Foeskull'],
-        [HeroUnitName.RANGER, 'Myrra Gladesong'],
+        [HeroUnitName.FIGHTER, 'Adela Ravenfell', LandName.PLAINS],
+        [HeroUnitName.HAMMER_LORD, 'Hilda Goldgrip', LandName.MOUNTAINS],
+        [HeroUnitName.OGR, 'Ozma Foeskull', LandName.SWAMP],
+        [HeroUnitName.RANGER, 'Myrra Gladesong', LandName.GREEN_FOREST],
       ])(
         "%s named '%s' should be start recruited in 3 turn in Barracks",
-        (unitType: HeroUnitType, name: string) => {
+        (unitType: HeroUnitType, name: string, landType: LandType) => {
           randomSpy.mockReturnValue(0.99); // to have the same name of the hero unit
-
           const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+
+          getLand(gameStateStub, barracksPos).land = getLandById(landType);
           constructBuilding(BuildingName.BARRACKS, barracksPos);
 
           const barracksLand = getLand(gameStateStub, barracksPos);

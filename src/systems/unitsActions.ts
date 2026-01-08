@@ -118,7 +118,8 @@ const baseStatsLevelUpParameters = (unitType: HeroUnitType | RegularUnitType) =>
     case RegularUnitName.WARD_HANDS:
       return { attack: 0.5, defense: 0.4, health: 0.8, rangeDamage: 0, mana: 0 };
     case RegularUnitName.UNDEAD:
-      return { attack: 0, defense: 0, health: 0, rangeDamage: 0, mana: 0 }; // fallback for undead units, they can't be leveled up'
+    case RegularUnitName.NULLWARDEN:
+      return { attack: 0, defense: 0, health: 0, rangeDamage: 0, mana: 0 }; // they can't be leveled up'
   }
 };
 

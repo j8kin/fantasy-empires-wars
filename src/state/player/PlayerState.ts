@@ -1,16 +1,24 @@
+import type { PlayerProfile, PlayerType } from './PlayerProfile';
 import type { PlayerColorName } from '../../types/PlayerColors';
-import type { ManaType } from '../../types/Mana';
 import type { HeroQuest } from '../../types/Quest';
 import type { EmpireTreasure } from '../../types/Treasures';
-import type { DiplomacyStatusType } from '../../types/Diplomacy';
 import type { Effect } from '../../types/Effect';
-import type { PlayerProfile, PlayerType } from './PlayerProfile';
+import type { DiplomacyStatusType } from '../../types/Diplomacy';
+import type { ManaType } from '../../types/Mana';
+import type { LandType } from '../../types/Land';
+import type { UnitType } from '../../types/UnitType';
+
+export interface PlayerTraits {
+  restrictedMagic: Set<ManaType>;
+  recruitedUnitsPerLand: Record<LandType, Set<UnitType>>;
+}
 
 export interface PlayerState {
   id: string; // todo UUUID
   playerType: PlayerType;
   playerProfile: PlayerProfile;
   color: PlayerColorName;
+  traits: PlayerTraits;
 
   mana: Record<ManaType, number>;
   effects: Effect[];

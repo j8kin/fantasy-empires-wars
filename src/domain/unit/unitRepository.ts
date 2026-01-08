@@ -1,5 +1,5 @@
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
-import { Alignment } from '../../types/Alignment';
+import { Alignment, AlignmentType } from '../../types/Alignment';
 import { BuildingName } from '../../types/Building';
 import type { BaseUnitStats } from '../../types/BaseUnit';
 import type { UnitType } from '../../types/UnitType';
@@ -16,6 +16,16 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     recruitedIn: BuildingName.BARRACKS,
   },
   [RegularUnitName.WARRIOR]: {
+    attack: 8,
+    defense: 6,
+    health: 25,
+    speed: 2,
+    alignment: Alignment.NEUTRAL,
+    recruitCost: 500,
+    maintainCost: 4,
+    recruitedIn: BuildingName.BARRACKS,
+  },
+  [RegularUnitName.NULLWARDEN]: {
     attack: 8,
     defense: 6,
     health: 25,
@@ -298,6 +308,8 @@ const descriptions: Record<UnitType, string> = {
     'Local hands risen in necessity, their resolve rough but unbroken against Orrivane’s growing dread.',
   [RegularUnitName.WARRIOR]:
     'Hardened veterans of countless skirmishes, these soldiers fight for gold, glory, or the fragile peace that follows both.',
+  [RegularUnitName.NULLWARDEN]:
+    'Soldiers sworn to law alone, conditioned to endure sorcery through discipline, denial and without yielding.',
   [RegularUnitName.DWARF]:
     'Clad in runed steel and bound by oath, Dwarves hold the line like mountains given form—unyielding, proud, and slow to fall.',
   [RegularUnitName.UNDEAD]:
@@ -357,4 +369,8 @@ export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
     ...stats,
     description: getDescription(unitType),
   } as BaseUnitStats;
+};
+
+export const getAllUnitTypeByAlignment = (alignment: AlignmentType): UnitType[] => {
+  return Object.keys(unitStats).filter((unitType) => unitStats[unitType].alignment === alignment);
 };

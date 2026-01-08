@@ -1,6 +1,7 @@
 export const RegularUnitName = {
   WARD_HANDS: 'Ward-hands',
   WARRIOR: 'Warrior',
+  NULLWARDEN: 'Nullwarden',
   DWARF: 'Dwarf',
   ORC: 'Orc',
   HALFLING: 'Halfling',

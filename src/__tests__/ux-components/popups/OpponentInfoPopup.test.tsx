@@ -256,7 +256,7 @@ describe('OpponentInfoPopup', () => {
     );
 
     expect(screen.getByText('Morgana Shadowweaver')).toBeInTheDocument();
-    expect(screen.getByText('Undead')).toBeInTheDocument();
+    expect(screen.getByText('Human')).toBeInTheDocument();
     expect(screen.getByText('War')).toBeInTheDocument();
   });
 

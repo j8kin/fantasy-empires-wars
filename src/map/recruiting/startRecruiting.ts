@@ -1,5 +1,9 @@
 import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
-import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
+import {
+  getTurnOwner,
+  getUnitsAllowedToRecruit,
+  hasTreasureByPlayer,
+} from '../../selectors/playerSelectors';
 import { hasAvailableSlot } from '../../selectors/buildingSelectors';
 import { startRecruitmentInSlot, updatePlayerVault } from '../../systems/gameStateActions';
 import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
@@ -19,10 +23,11 @@ export const startRecruiting = (
   if (getLandOwner(state, landPos) !== state.turnOwner) {
     return; // fallback: a wrong Land Owner should never happen on real game
   }
-  const baseUnitStats = unitsBaseStats(unitType);
   const land = getLand(state, landPos);
+  const turnOwner = getTurnOwner(state);
   const recruitBuilding = land.buildings.find(
-    (b) => hasAvailableSlot(b) && b.type === baseUnitStats.recruitedIn
+    (b) =>
+      hasAvailableSlot(b) && getUnitsAllowedToRecruit(turnOwner, land, b.type).includes(unitType)
   );
   if (recruitBuilding) {
     const turnOwner = getTurnOwner(state);
