@@ -1,6 +1,7 @@
 import { playerFactory } from '../factories/playerFactory';
 import { unitsBaseStats } from '../domain/unit/unitRepository';
 import { isMageType } from '../domain/unit/unitTypeChecks';
+import { getBuildingInfo } from '../domain/building/buildingRepository';
 import { isItem } from '../domain/treasure/treasureRepository';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { EffectKind } from '../types/Effect';
@@ -17,6 +18,7 @@ import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatusType } from '../types/Diplomacy';
 import type { BuildingType } from '../types/Building';
 import type { UnitType } from '../types/UnitType';
+import type { ManaType } from '../types/Mana';
 
 const NONE = playerFactory(NO_PLAYER, 'computer');
 
@@ -68,10 +70,23 @@ export const getTreasureItemById = (player: PlayerState, itemId: string): Item |
   return isItem(item) ? item : undefined;
 };
 
+const MANA_TO_MAGE_TOWER: Partial<Record<BuildingType, ManaType>> = {
+  [BuildingName.WHITE_MAGE_TOWER]: Mana.WHITE,
+  [BuildingName.GREEN_MAGE_TOWER]: Mana.GREEN,
+  [BuildingName.BLUE_MAGE_TOWER]: Mana.BLUE,
+  [BuildingName.RED_MAGE_TOWER]: Mana.RED,
+  [BuildingName.BLACK_MAGE_TOWER]: Mana.BLACK,
+};
+
 export const getAllowedBuildings = (state: PlayerState): BuildingInfo[] => {
-  return Array.from(state.traits.availableBuildings.values()).filter(
-    (b) => b.buildCost <= state.vault
-  );
+  return Object.values(BuildingName)
+    .filter(
+      (building) =>
+        MANA_TO_MAGE_TOWER[building] == null ||
+        !state.traits.restrictedMagic.has(MANA_TO_MAGE_TOWER[building])
+    )
+    .map(getBuildingInfo)
+    .filter((b) => b.buildCost <= state.vault);
 };
 
 export const getUnitsAllowedToRecruit = (

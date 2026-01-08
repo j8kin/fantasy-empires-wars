@@ -1,17 +1,13 @@
 import { isHeroType, isMageType } from '../domain/unit/unitTypeChecks';
 import { getLandById } from '../domain/land/landRepository';
 import { getAllUnitTypeByAlignment } from '../domain/unit/unitRepository';
-import { getBuildingInfo } from '../domain/building/buildingRepository';
 import { RaceName } from '../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
 import { Alignment } from '../types/Alignment';
-import { BuildingName } from '../types/Building';
 import { LandName } from '../types/Land';
 import { Mana } from '../types/Mana';
 import type { PlayerState, PlayerTraits } from '../state/player/PlayerState';
 import type { PlayerProfile, PlayerType } from '../state/player/PlayerProfile';
-import type { BuildingInfo } from '../domain/building/buildingRepository';
-import type { BuildingType } from '../types/Building';
 import type { ManaType } from '../types/Mana';
 import type { LandType } from '../types/Land';
 import type { UnitType } from '../types/UnitType';
@@ -45,33 +41,12 @@ export const playerFactory = (
 
 const playerTraitsFactory = (playerProfile: PlayerProfile): PlayerTraits => {
   const restrictedMagic = getRestrictedMagic(playerProfile);
-  const availableBuildings = getAvailableBuildings(restrictedMagic);
   const recruitedUnitsPerLand = getUnitsPerLand(playerProfile);
 
   return {
     restrictedMagic: restrictedMagic,
-    availableBuildings: availableBuildings,
     recruitedUnitsPerLand: recruitedUnitsPerLand,
   };
-};
-
-const MANA_TO_MAGE_TOWER: Partial<Record<BuildingType, ManaType>> = {
-  [BuildingName.WHITE_MAGE_TOWER]: Mana.WHITE,
-  [BuildingName.GREEN_MAGE_TOWER]: Mana.GREEN,
-  [BuildingName.BLUE_MAGE_TOWER]: Mana.BLUE,
-  [BuildingName.RED_MAGE_TOWER]: Mana.RED,
-  [BuildingName.BLACK_MAGE_TOWER]: Mana.BLACK,
-};
-
-const getAvailableBuildings = (restrictedMagic: Set<ManaType>): Set<BuildingInfo> => {
-  return new Set(
-    Object.values(BuildingName)
-      .filter(
-        (building) =>
-          MANA_TO_MAGE_TOWER[building] == null || !restrictedMagic.has(MANA_TO_MAGE_TOWER[building])
-      )
-      .map(getBuildingInfo)
-  );
 };
 
 const getRestrictedMagic = (playerProfile: PlayerProfile): Set<ManaType> => {

@@ -6,7 +6,7 @@ import GameButton from '../buttons/GameButton';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getAllowedBuildings, getTurnOwner } from '../../selectors/playerSelectors';
 import { AllSpells } from '../../domain/spell/spellsRepository';
 import { SpellName } from '../../types/Spell';
 import { ButtonName } from '../../types/ButtonName';
@@ -48,11 +48,7 @@ const MapActionsControl: React.FC = () => {
     if (gameState == null) return;
     const selectedPlayer = getTurnOwner(gameState);
     if (!selectedPlayer) return;
-    if (
-      Array.from(selectedPlayer.traits.availableBuildings.values()).some(
-        (building) => building.buildCost <= selectedPlayer.vault!
-      )
-    ) {
+    if (getAllowedBuildings(selectedPlayer).length > 0) {
       setShowConstructBuildingDialog(true);
     } else {
       if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
