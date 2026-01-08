@@ -5,11 +5,14 @@ import type { EmpireTreasure } from '../../types/Treasures';
 import type { Effect } from '../../types/Effect';
 import type { DiplomacyStatusType } from '../../types/Diplomacy';
 import type { ManaType } from '../../types/Mana';
+import type { LandType } from '../../types/Land';
+import type { UnitType } from '../../types/UnitType';
 import type { BuildingInfo } from '../../domain/building/buildingRepository';
 
 export interface PlayerTraits {
   restrictedMagic: Set<ManaType>;
   availableBuildings: Set<BuildingInfo>;
+  recruitedUnitsPerLand: Record<LandType, Set<UnitType>>;
 }
 
 export interface PlayerState {

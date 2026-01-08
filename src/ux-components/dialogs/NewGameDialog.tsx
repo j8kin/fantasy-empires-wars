@@ -1,4 +1,4 @@
-import React, { useCallback, useEffectEvent, useMemo, useState } from 'react';
+import React, { useCallback, useEffectEvent, useEffect, useMemo, useState } from 'react';
 import styles from './css/NewGameDialog.module.css';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
@@ -165,7 +165,7 @@ const NewGameDialog: React.FC = () => {
   );
 
   // Initialize opponents when component mounts or relevant dependencies change
-  React.useEffect(() => {
+  useEffect(() => {
     initializeOpponents();
   }, [initializeOpponents, opponentSelectionMode]);
 

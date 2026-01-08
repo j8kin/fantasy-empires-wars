@@ -1,13 +1,22 @@
-import { isItem } from '../domain/treasure/treasureRepository';
 import { playerFactory } from '../factories/playerFactory';
+import { unitsBaseStats } from '../domain/unit/unitRepository';
+import { isMageType } from '../domain/unit/unitTypeChecks';
+import { isItem } from '../domain/treasure/treasureRepository';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { EffectKind } from '../types/Effect';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
+import { Mana } from '../types/Mana';
+import { LandName } from '../types/Land';
+import { BuildingName } from '../types/Building';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
+import type { LandState } from '../state/map/land/LandState';
 import type { BuildingInfo } from '../domain/building/buildingRepository';
 import type { EffectSourceId } from '../types/Effect';
 import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatusType } from '../types/Diplomacy';
+import type { BuildingType } from '../types/Building';
+import type { UnitType } from '../types/UnitType';
 
 const NONE = playerFactory(NO_PLAYER, 'computer');
 
@@ -62,5 +71,31 @@ export const getTreasureItemById = (player: PlayerState, itemId: string): Item |
 export const getAllowedBuildings = (state: PlayerState): BuildingInfo[] => {
   return Array.from(state.traits.availableBuildings.values()).filter(
     (b) => b.buildCost <= state.vault
+  );
+};
+
+export const getUnitsAllowedToRecruit = (
+  player: PlayerState,
+  land: LandState,
+  buildingType: BuildingType
+): UnitType[] => {
+  if (buildingType === BuildingName.BARRACKS) {
+    // non-magic players ignore corrupted lands
+    if (land.corrupted && player.traits.restrictedMagic.size !== Object.values(Mana).length) {
+      const availableUnits: Set<UnitType> = new Set(Object.values(WarMachineName));
+      if (land.land.id === LandName.GREEN_FOREST) {
+        availableUnits.add(RegularUnitName.DARK_ELF);
+        availableUnits.add(HeroUnitName.SHADOW_BLADE);
+      } else {
+        availableUnits.add(RegularUnitName.ORC);
+        availableUnits.add(HeroUnitName.OGR);
+      }
+      return Array.from(availableUnits);
+    }
+    return Array.from(player.traits.recruitedUnitsPerLand[land.land.id]);
+  }
+  // Mage Tower. Return related hero type
+  return Object.values(HeroUnitName).filter(
+    (hero) => isMageType(hero) && unitsBaseStats(hero).recruitedIn === buildingType
   );
 };

@@ -9,18 +9,23 @@ import { getTurnOwner } from '../../../selectors/playerSelectors';
 import { construct } from '../../../map/building/construct';
 import { startRecruiting } from '../../../map/recruiting/startRecruiting';
 import { playerFactory } from '../../../factories/playerFactory';
+import { getAvailableSlotsCount } from '../../../selectors/buildingSelectors';
+import { getLandById } from '../../../domain/land/landRepository';
 
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { BuildingName } from '../../../types/Building';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
+import { RaceName } from '../../../state/player/PlayerProfile';
+import { Alignment } from '../../../types/Alignment';
+import { LandName } from '../../../types/Land';
 
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 import type { BuildingType } from '../../../types/Building';
 import type { HeroUnitType } from '../../../types/UnitType';
+import type { PlayerProfile } from '../../../state/player/PlayerProfile';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
-import { getAvailableSlotsCount } from '../../../selectors/buildingSelectors';
 
 // Mock context hooks
 const mockApplicationContext = {
@@ -275,8 +280,8 @@ describe('RecruitArmyDialog', () => {
 
   describe('Slot Management', () => {
     it.each([
-      [4, PREDEFINED_PLAYERS[4].id],
-      [5, PREDEFINED_PLAYERS[3].id], // WARTHMITH available only for non-magic player like 'Kaer Dravane'
+      [7, PREDEFINED_PLAYERS[4].id], // 4 war-machines, war-hands, warrior and fighter available
+      [6, PREDEFINED_PLAYERS[3].id], // 4 war-machines, undead and warsmith available
     ])('should display available slots: %s for %s', (nSlots: number, playerId: string) => {
       const lands = gameStateStub.players[0].landsOwned;
       const player = PREDEFINED_PLAYERS.find((p) => p.id === playerId)!;
@@ -313,24 +318,20 @@ describe('RecruitArmyDialog', () => {
     });
 
     it('should track used slots across all pages', async () => {
-      // WARSMITH available only for non-magic player like 'Kaer Dravane'
-      const availableUnits = getLand(gameStateStub, barracksPos).land.unitsToRecruit.filter(
-        (u) => u !== HeroUnitName.WARSMITH
-      );
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
 
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(availableUnits.length);
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(availableUnits.length);
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(availableUnits.length);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(7);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(7);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(7);
 
       // Click slot on first unit page
       await user.click(screen.getAllByTestId('flipbook-slot-buildSlot1')[0]);
 
       // After clicking, slot should disappear
       expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(availableUnits.length);
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(availableUnits.length);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(7);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(7);
     });
 
     it('should prevent multiple clicks on the same slot', async () => {
@@ -343,15 +344,15 @@ describe('RecruitArmyDialog', () => {
       // First click
       await user.click(slot1Button);
       expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(4);
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(4);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(7);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(7);
       expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(2);
 
       // Second click - should not be allowed
       await user.click(slot1Button);
       expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(4);
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(4);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(7);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(7);
       expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(2);
     });
 
@@ -443,33 +444,183 @@ describe('RecruitArmyDialog', () => {
   });
 
   describe('Player Type Restrictions', () => {
-    it('should allow WARSMITH recruitment for WARSMITH players', () => {
+    it('should allow WARSMITH and UNDEAD recruitment for WARSMITH players and Undead only if player is undead', () => {
       const lands = gameStateStub.players[0].landsOwned;
       gameStateStub.players[0] = playerFactory(PREDEFINED_PLAYERS[3], 'human'); // replace player
       gameStateStub.players[0].landsOwned = lands; // copy lands
       gameStateStub.turnOwner = gameStateStub.players[0].id;
       expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.WARSMITH);
+      expect(getTurnOwner(gameStateStub).playerProfile.undead).toBeTruthy();
 
       expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
       expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
 
       renderWithProviders(<RecruitArmyDialog />);
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(6); // only 6 type of units could be recruited in barracks
+      // hero unit
       expect(screen.getByTestId(`flipbook-page-Warsmith`)).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Warrior')).toBeInTheDocument();
+      // regular unit
+      expect(screen.getByTestId(`flipbook-page-Undead`)).toBeInTheDocument();
+      // war-machines
       expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Fighter')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
     });
 
-    it('should not allow WARSMITH recruitment for non-WARSMITH players', () => {
+    it('should allow UNDEAD recruitment for WARSMITH-Undead only players', () => {
+      const lands = gameStateStub.players[0].landsOwned;
+      const liveWarthmith = { ...PREDEFINED_PLAYERS[3] };
+      liveWarthmith.undead = false;
+      gameStateStub.players[0] = playerFactory(liveWarthmith, 'human'); // replace player
+      gameStateStub.players[0].landsOwned = lands; // copy lands
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.WARSMITH);
+      expect(getTurnOwner(gameStateStub).playerProfile.undead).toBeFalsy();
+
+      expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
+
+      renderWithProviders(<RecruitArmyDialog />);
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(7); // only 7 type of units could be recruited in barracks
+      // hero unit
+      expect(screen.getByTestId(`flipbook-page-Warsmith`)).toBeInTheDocument();
+      // regular unit
+      expect(screen.queryByTestId(`flipbook-page-Undead`)).not.toBeInTheDocument(); // undead not available
+      expect(screen.getByTestId('flipbook-page-Warrior')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Ward-hands')).toBeInTheDocument();
+      // war-machines
+      expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+    });
+
+    it('should allow ZEALOT recruitment for ZEALOT players', () => {
+      const lands = gameStateStub.players[0].landsOwned;
+      gameStateStub.players[0] = playerFactory(PREDEFINED_PLAYERS[16], 'human'); // replace player
+      gameStateStub.players[0].landsOwned = lands; // copy lands
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.ZEALOT);
+
+      expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
+
+      renderWithProviders(<RecruitArmyDialog />);
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(6); // only 6 type of units could be recruited in barracks
+      // hero unit
+      expect(screen.getByTestId(`flipbook-page-Zealot`)).toBeInTheDocument();
+      // regular unit
+      expect(screen.getByTestId(`flipbook-page-Nullwarden`)).toBeInTheDocument();
+      // war-machines
+      expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+    });
+
+    it.each([HeroUnitName.RANGER, HeroUnitName.SHADOW_BLADE, HeroUnitName.DRUID])(
+      'should not allow ELF players to recruit ORC(s)/OGR(s)',
+      (playerType) => {
+        const lands = gameStateStub.players[0].landsOwned;
+        const playerProfile = { ...PREDEFINED_PLAYERS[4] }; // ELF
+        playerProfile.type = playerType;
+        playerProfile.alignment =
+          playerType === HeroUnitName.SHADOW_BLADE ? Alignment.CHAOTIC : Alignment.LAWFUL;
+        gameStateStub.players[0] = playerFactory(playerProfile, 'human'); // replace player
+        gameStateStub.players[0].landsOwned = lands; // copy lands
+        gameStateStub.turnOwner = gameStateStub.players[0].id;
+        expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(playerType);
+        expect(getTurnOwner(gameStateStub).playerProfile.race).toBe(RaceName.ELF); // ELF players can't recruit OGR(s)/ORC(s)'
+        // set land where OGR(s)/ORC(s) could be recruited and then verify that they are not available for recruitment
+        getLand(gameStateStub, barracksPos).land = getLandById(LandName.SWAMP);
+
+        expect(
+          hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)
+        ).toBeTruthy();
+        expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
+
+        renderWithProviders(<RecruitArmyDialog />);
+        expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+        // Orc(s)/Ogr unit not present
+        expect(screen.queryByTestId(`flipbook-page-Ogr`)).not.toBeInTheDocument();
+        expect(screen.queryByTestId(`flipbook-page-Orc`)).not.toBeInTheDocument();
+
+        expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(5); // only 5 type of units could be recruited in barracks
+        // regular unit
+        expect(screen.getByTestId(`flipbook-page-Ward-hands`)).toBeInTheDocument();
+        // war-machines
+        expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+        expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
+        expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
+        expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+      }
+    );
+
+    it.each([PREDEFINED_PLAYERS[5], PREDEFINED_PLAYERS[14]])(
+      'should not allow OGR players to recruit ORC(s)/OGR(s)',
+      (playerProfile: PlayerProfile) => {
+        const lands = gameStateStub.players[0].landsOwned;
+        gameStateStub.players[0] = playerFactory(playerProfile, 'human'); // replace player
+        gameStateStub.players[0].landsOwned = lands; // copy lands
+        gameStateStub.turnOwner = gameStateStub.players[0].id;
+        expect(getTurnOwner(gameStateStub).playerProfile.race).toBe(RaceName.ORC);
+
+        // set land where ELFS(s)/RANGER(s) could be recruited and then verify that they are not available for recruitment
+        [LandName.GREEN_FOREST, LandName.DARK_FOREST].forEach((landName) => {
+          getLand(gameStateStub, barracksPos).land = getLandById(landName);
+
+          expect(
+            hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)
+          ).toBeTruthy();
+          expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
+
+          const { unmount } = renderWithProviders(<RecruitArmyDialog />);
+          expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+          // Orc(s)/Ogr unit not present
+          expect(screen.queryByTestId(`flipbook-page-Elf`)).not.toBeInTheDocument();
+          expect(screen.queryByTestId(`flipbook-page-Ranger`)).not.toBeInTheDocument();
+          expect(screen.queryByTestId(`flipbook-page-Dark Elf`)).not.toBeInTheDocument();
+          expect(screen.queryByTestId(`flipbook-page-Shadow Blade`)).not.toBeInTheDocument();
+
+          expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(5); // only 5 type of units could be recruited in barracks
+          // regular unit
+          expect(screen.getByTestId(`flipbook-page-Ward-hands`)).toBeInTheDocument();
+          // war-machines
+          expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+          expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
+          expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
+          expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+
+          unmount();
+        });
+      }
+    );
+
+    it('should not allow non-mage units recruitment for mage supported players players', () => {
       expect(getTurnOwner(gameStateStub).playerProfile.type).not.toBe(HeroUnitName.WARSMITH);
       renderWithProviders(<RecruitArmyDialog />);
 
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(7); // only 7 type of units could be recruited in barracks
+
       expect(screen.queryByTestId('flipbook-page-Warsmith')).not.toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Warrior')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-page-Undead')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-page-Zealot')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-page-Nullwarden')).not.toBeInTheDocument();
+      // hero unit
       expect(screen.getByTestId('flipbook-page-Fighter')).toBeInTheDocument();
+      // regular units
+      expect(screen.getByTestId('flipbook-page-Warrior')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Ward-hands')).toBeInTheDocument();
+      // war-machines
+      expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
+      expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
     });
   });
 
@@ -477,6 +628,7 @@ describe('RecruitArmyDialog', () => {
     it('should handle empty units to recruit', () => {
       const land = getLand(gameStateStub, barracksPos);
       land.land.unitsToRecruit = [];
+      getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.id] = new Set();
 
       renderWithProviders(<RecruitArmyDialog />);
 

@@ -7,13 +7,13 @@ import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getLand } from '../../selectors/landSelectors';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner, getUnitsAllowedToRecruit } from '../../selectors/playerSelectors';
 import { getAvailableSlotsCount, hasAvailableSlot } from '../../selectors/buildingSelectors';
 import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { getUnitImg } from '../../assets/getUnitImg';
-import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
+import { RegularUnitName } from '../../types/UnitType';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { UnitType } from '../../types/UnitType';
 
@@ -22,6 +22,22 @@ interface RecruitUnitProps {
   recruitCost: number;
   description: string;
 }
+
+const sortArmyUnits = (unit: RecruitUnitProps): number => {
+  if (unit.id === RegularUnitName.WARD_HANDS) return 0;
+  if (isWarMachine(unit.id)) return 2;
+  if (isHeroType(unit.id)) return 3;
+  return 1;
+};
+
+const typeToRecruitProps = (unitType: UnitType): RecruitUnitProps => {
+  const baseUnitStats = unitsBaseStats(unitType);
+  return {
+    id: unitType,
+    recruitCost: baseUnitStats.recruitCost,
+    description: baseUnitStats.description,
+  };
+};
 
 const RecruitArmyDialog: React.FC = () => {
   const {
@@ -108,31 +124,13 @@ const RecruitArmyDialog: React.FC = () => {
   // If no recruit building is available (all slots filled), don't render content
   if (!recruitBuilding) return null;
 
-  const sortArmyUnits = (unit: RecruitUnitProps): number => {
-    if (unit.id === RegularUnitName.WARD_HANDS) return 0;
-    if (isWarMachine(unit.id)) return 2;
-    if (isHeroType(unit.id)) return 3;
-    return 1;
-  };
+  const turnOwner = getTurnOwner(gameState);
 
-  const typeToRecruitProps = (unitType: UnitType): RecruitUnitProps => {
-    const baseUnitStats = unitsBaseStats(unitType);
-    return {
-      id: unitType,
-      recruitCost: baseUnitStats.recruitCost,
-      description: baseUnitStats.description,
-    };
-  };
-
-  const availableUnits: RecruitUnitProps[] = land.land.unitsToRecruit
-    .filter(
-      (u) =>
-        unitsBaseStats(u).recruitedIn === recruitBuilding.type &&
-        (u !== HeroUnitName.WARSMITH ||
-          getTurnOwner(gameState).playerProfile.type === HeroUnitName.WARSMITH) &&
-        (u !== HeroUnitName.ZEALOT ||
-          getTurnOwner(gameState).playerProfile.type === HeroUnitName.ZEALOT)
-    )
+  const availableUnits: RecruitUnitProps[] = getUnitsAllowedToRecruit(
+    turnOwner,
+    land,
+    recruitBuilding.type
+  )
     .map((unit) => typeToRecruitProps(unit))
     .sort((a, b) => sortArmyUnits(a) - sortArmyUnits(b));
 
