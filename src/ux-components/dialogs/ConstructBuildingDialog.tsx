@@ -79,7 +79,7 @@ const ConstructBuildingDialog: React.FC = () => {
           costLabel="Build Cost"
           maintainCost={building.maintainCost}
           onClose={handleClose}
-          onIconClick={createBuildingClickHandler(building.type as BuildingType)}
+          onIconClick={createBuildingClickHandler(building.type)}
         />
       ))}
     </FlipBook>

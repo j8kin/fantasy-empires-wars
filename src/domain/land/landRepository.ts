@@ -1,11 +1,7 @@
 import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
-import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
-import type { UnitType } from '../../types/UnitType';
+import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import type { Land, LandType } from '../../types/Land';
-
-// common units which would be able to recruit on any land type
-// some additional restriction could apply based on building and players alignment and type
 
 /**
  * Retrieves complete land data by land type
