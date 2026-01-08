@@ -90,6 +90,8 @@ describe('castRedManaSpell', () => {
             row: homeLand.mapPos.row - 1,
             col: homeLand.mapPos.col,
           };
+          // to be able to recruit ELVES and RANGERS
+          getLand(gameStateStub, landToRecruit).land = getLandById(LandName.GREEN_FOREST);
           construct(gameStateStub, building, landToRecruit);
 
           // change turnOwner and cast EMBER RAID spell
