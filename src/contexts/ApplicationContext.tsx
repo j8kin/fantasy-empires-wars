@@ -54,6 +54,7 @@ interface ApplicationContextType {
   showSendHeroInQuestDialog: boolean;
   showSelectOpponentDialog: boolean;
   showProgressPopup: boolean;
+  showDiplomacyContactDialog: boolean;
 
   // Empire Events (hero quests, recruiting, using items etc) Popup
   showEmpireEventsPopup: boolean;
@@ -63,6 +64,7 @@ interface ApplicationContextType {
 
   // Dialog data
   selectedOpponent: PlayerState | undefined;
+  diplomacyContactOpponent: PlayerState | undefined;
   opponentScreenPosition: ScreenPosition;
   selectOpponentExcludedIds: string[];
   selectOpponentCallback: ((player: PlayerProfile) => void) | null;
@@ -107,7 +109,9 @@ interface ApplicationContextType {
   setShowSendHeroInQuestDialog: (show: boolean) => void;
   setShowSelectOpponentDialog: (show: boolean) => void;
   setShowProgressPopup: (show: boolean) => void;
+  setShowDiplomacyContactDialog: (show: boolean) => void;
   setSelectedOpponent: (opponent: PlayerState | undefined) => void;
+  setDiplomacyContactOpponent: (opponent: PlayerState | undefined) => void;
   setOpponentScreenPosition: (position: ScreenPosition) => void;
   setSelectOpponentExcludedIds: (ids: string[]) => void;
   setSelectOpponentCallback: (callback: ((player: PlayerProfile) => void) | null) => void;
@@ -136,6 +140,8 @@ interface ApplicationContextType {
   // Combined actions
   showOpponentInfo: (opponent: PlayerState, screenPosition: ScreenPosition) => void;
   hideOpponentInfo: () => void;
+  showDiplomacyContact: (opponent: PlayerState) => void;
+  hideDiplomacyContact: () => void;
   showSelectOpponentDialogWithConfig: (
     excludedPlayerIds: string[],
     onSelect: (player: PlayerProfile) => void,
@@ -169,6 +175,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [showSendHeroInQuestDialog, setShowSendHeroInQuestDialog] = useState<boolean>(false);
   const [showSelectOpponentDialog, setShowSelectOpponentDialog] = useState<boolean>(false);
   const [showProgressPopup, setShowProgressPopup] = useState<boolean>(false);
+  const [showDiplomacyContactDialog, setShowDiplomacyContactDialog] = useState<boolean>(false);
 
   // Quest Results Popup states
   const [showEmpireEventsPopup, setShowEmpireEventsPopup] = useState<boolean>(false);
@@ -176,6 +183,9 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   // Dialog data
   const [selectedOpponent, setSelectedOpponent] = useState<PlayerState | undefined>(undefined);
+  const [diplomacyContactOpponent, setDiplomacyContactOpponent] = useState<PlayerState | undefined>(
+    undefined
+  );
   const [opponentScreenPosition, setOpponentScreenPosition] = useState<ScreenPosition>({
     x: 0,
     y: 0,
@@ -239,6 +249,16 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   const hideOpponentInfo = useCallback(() => {
     setSelectedOpponent(undefined);
+  }, []);
+
+  const showDiplomacyContact = useCallback((opponent: PlayerState) => {
+    setDiplomacyContactOpponent(opponent);
+    setShowDiplomacyContactDialog(true);
+  }, []);
+
+  const hideDiplomacyContact = useCallback(() => {
+    setDiplomacyContactOpponent(undefined);
+    setShowDiplomacyContactDialog(false);
   }, []);
 
   const showSelectOpponentDialogWithConfig = useCallback(
@@ -329,6 +349,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         showSendHeroInQuestDialog,
         showSelectOpponentDialog,
         showProgressPopup,
+        showDiplomacyContactDialog,
 
         // Quest Results Popup
         showEmpireEventsPopup,
@@ -338,6 +359,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
         // Dialog data
         selectedOpponent,
+        diplomacyContactOpponent,
         opponentScreenPosition,
         selectOpponentExcludedIds,
         selectOpponentCallback,
@@ -379,7 +401,9 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setShowSendHeroInQuestDialog,
         setShowSelectOpponentDialog,
         setShowProgressPopup,
+        setShowDiplomacyContactDialog,
         setSelectedOpponent,
+        setDiplomacyContactOpponent,
         setOpponentScreenPosition,
         setSelectOpponentExcludedIds,
         setSelectOpponentCallback,
@@ -408,6 +432,8 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         // Combined actions
         showOpponentInfo,
         hideOpponentInfo,
+        showDiplomacyContact,
+        hideDiplomacyContact,
         showSelectOpponentDialogWithConfig,
         hideSelectOpponentDialog,
 

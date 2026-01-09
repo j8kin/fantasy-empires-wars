@@ -4,17 +4,20 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
-import { UnitRank } from '../../../state/army/RegularsState';
 
 import { getArmiesAtPosition } from '../../../selectors/armySelectors';
-import { addHero, addRegulars, startMoving } from '../../../systems/armyActions';
+import { getLandOwner } from '../../../selectors/landSelectors';
+import { addHero, addRegulars, addWarMachines, startMoving } from '../../../systems/armyActions';
 import { levelUpHero, levelUpRegulars } from '../../../systems/unitsActions';
 import { armyFactory } from '../../../factories/armyFactory';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
+import { warMachineFactory } from '../../../factories/warMachineFactory';
 
-import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
 import { Alignment } from '../../../types/Alignment';
+import { DiplomacyStatus } from '../../../types/Diplomacy';
+import { UnitRank } from '../../../state/army/RegularsState';
 
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
@@ -93,6 +96,26 @@ const mockApplicationContext = {
   setQuestResults: jest.fn(),
   showQuestResults: jest.fn(),
   hideQuestResults: jest.fn(),
+  showEmpireEventsPopup: false,
+  setShowEmpireEventsPopup: jest.fn(),
+  empireEvents: [],
+  setEmpireEvents: jest.fn(),
+  showEmpireEvents: jest.fn(),
+  hideEmpireEvents: jest.fn(),
+  showDiplomacyContactDialog: false,
+  setShowDiplomacyContactDialog: jest.fn(),
+  diplomacyContactOpponent: undefined,
+  setDiplomacyContactOpponent: jest.fn(),
+  showDiplomacyContactDialogWithOpponent: jest.fn(),
+  hideDiplomacyContactDialog: jest.fn(),
+  showEmpireTreasureDialog: false,
+  setShowEmpireTreasureDialog: jest.fn(),
+  isArcaneExchangeMode: false,
+  setIsArcaneExchangeMode: jest.fn(),
+  spellAnimation: null,
+  setSpellAnimation: jest.fn(),
+  showSpellAnimation: jest.fn(),
+  hideSpellAnimation: jest.fn(),
 };
 
 const mockGameContext = {
@@ -180,16 +203,14 @@ describe('MoveArmyDialog', () => {
     return items.find((item) => within(item).queryByText(name));
   };
 
-  const getPanelByTitle = (title: string) => {
-    const titleEl = screen.getByText(title);
-    // panelTitle is inside the panel container; return the closest panel div
-    return titleEl.closest('div')?.parentElement as HTMLElement; // panel
+  const getPanelByTestId = (testId: string) => {
+    return screen.getByTestId(testId);
   };
 
   const expectUnitsToMovePanelHasUnits = () => {
-    const panel = getPanelByTitle('Units to Move');
+    const panel = getPanelByTestId('units-to-move-panel');
     expect(panel).toBeTruthy();
-    const { queryByText } = within(panel!);
+    const { queryByText } = within(panel);
     expect(queryByText('No units selected')).toBeNull();
   };
 
@@ -681,6 +702,162 @@ describe('MoveArmyDialog', () => {
     });
   });
 
+  describe('CHAOTIC Player War Declaration', () => {
+    it('should auto-declare WAR when CHAOTIC player moves to opponent territory and show RealmEvent', async () => {
+      const user = userEvent.setup();
+
+      // Setup: Make player 1 (Morgana - CHAOTIC) the turn owner
+      gameStateStub.players[0].playerType = 'computer'; // Make first player computer
+      gameStateStub.players[1].playerType = 'human'; // Make CHAOTIC player human
+      gameStateStub.turnOwner = gameStateStub.players[1].id; // Morgana (CHAOTIC)
+
+      expect(gameStateStub.players[1].playerProfile.name).toBe('Morgana Shadowweaver');
+      expect(gameStateStub.players[1].playerProfile.alignment).toBe(Alignment.CHAOTIC);
+
+      // Clear all armies and setup new positions
+      gameStateStub.armies = [];
+
+      // CHAOTIC player's position (Morgana at row 5, col 7)
+      const chaoticPlayerPosition: LandPosition = { row: 5, col: 7 };
+
+      // Opponent's territory (Alaric at row 3, col 3)
+      const opponentPosition: LandPosition = { row: 3, col: 3 };
+
+      // Verify opponent owns the target land
+      const opponentOwnerId = gameStateStub.players[0].id;
+      expect(getLandOwner(gameStateStub, opponentPosition)).toBe(opponentOwnerId);
+
+      // Create army for CHAOTIC player
+      const { warrior, hero } = createMockUnits();
+      warrior.count = 100; // Enough units to move
+
+      let chaoticArmy = armyFactory(gameStateStub.turnOwner, chaoticPlayerPosition, { hero });
+      chaoticArmy = addRegulars(chaoticArmy, warrior);
+      gameStateStub.armies.push(chaoticArmy);
+
+      // Verify no war status initially
+      const initialDiplomacy = gameStateStub.players[1].diplomacy[opponentOwnerId];
+      expect(!initialDiplomacy || initialDiplomacy.status !== DiplomacyStatus.WAR).toBe(true);
+
+      // Setup move army path from CHAOTIC player position to opponent territory
+      const moveArmyPathForChaotic = {
+        from: chaoticPlayerPosition,
+        to: opponentPosition,
+      };
+
+      // Mock startMovement to return updated game state with WAR declared
+      const newGameStateWithWar = {
+        ...gameStateStub,
+        players: gameStateStub.players.map((p) => {
+          if (p.id === gameStateStub.players[1].id) {
+            return {
+              ...p,
+              diplomacy: {
+                ...p.diplomacy,
+                [opponentOwnerId]: { status: DiplomacyStatus.WAR },
+              },
+            };
+          }
+          return p;
+        }),
+      };
+      (mockStartMovement as jest.Mock).mockReturnValueOnce(newGameStateWithWar);
+
+      renderWithProviders(<MoveArmyDialog />, {
+        gameState: gameStateStub,
+        moveArmyPath: moveArmyPathForChaotic,
+      });
+
+      // Dialog should render
+      expect(screen.getByTestId('MoveArmyDialog')).toBeInTheDocument();
+
+      // Select units to move (move half)
+      await user.click(screen.getByText('Move Half →'));
+
+      // Verify units were selected
+      expectUnitsToMovePanelHasUnits();
+
+      // Click Move button to initiate movement
+      await user.click(screen.getByTestId('game-button-Move army'));
+
+      // Verify startMovement was called
+      expect(mockStartMovement).toHaveBeenCalled();
+
+      // Get the updated game state from the call
+      const moveCall = (mockStartMovement as jest.Mock).mock.calls[0];
+      expect(moveCall).toBeDefined();
+
+      // Verify that showEmpireEvents was called with WAR declaration message
+      expect(mockApplicationContext.showEmpireEvents).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            status: 'negative',
+            message: expect.stringContaining('WAR Declared'),
+          }),
+        ])
+      );
+
+      // Verify the message contains opponent's name
+      const empireEventCall = (mockApplicationContext.showEmpireEvents as jest.Mock).mock.calls[0];
+      expect(empireEventCall[0][0].message).toContain('Alaric the Bold');
+
+      // Verify dialog was closed
+      expect(mockApplicationContext.setMoveArmyPath).toHaveBeenCalledWith(undefined);
+    });
+
+    it('should not show RealmEvent if WAR already exists', async () => {
+      const user = userEvent.setup();
+
+      // Setup: Make player 1 (Morgana - CHAOTIC) the turn owner
+      gameStateStub.players[0].playerType = 'computer';
+      gameStateStub.players[1].playerType = 'human';
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+
+      // Clear all armies and setup new positions
+      gameStateStub.armies = [];
+
+      const chaoticPlayerPosition: LandPosition = { row: 5, col: 7 };
+      const opponentPosition: LandPosition = { row: 3, col: 3 };
+      const opponentOwnerId = gameStateStub.players[0].id;
+
+      // PRE-EXISTING WAR: Set diplomacy to WAR before movement
+      gameStateStub.players[1].diplomacy[opponentOwnerId] = {
+        status: DiplomacyStatus.WAR,
+        lastUpdated: gameStateStub.turn,
+      };
+
+      // Create army for CHAOTIC player
+      const { warrior, hero } = createMockUnits();
+      warrior.count = 100;
+
+      let chaoticArmy = armyFactory(gameStateStub.turnOwner, chaoticPlayerPosition, { hero });
+      chaoticArmy = addRegulars(chaoticArmy, warrior);
+      gameStateStub.armies.push(chaoticArmy);
+
+      const moveArmyPathForChaotic = {
+        from: chaoticPlayerPosition,
+        to: opponentPosition,
+      };
+
+      // Mock startMovement to return game state with WAR already existing (no change)
+      (mockStartMovement as jest.Mock).mockReturnValueOnce(gameStateStub);
+
+      renderWithProviders(<MoveArmyDialog />, {
+        gameState: gameStateStub,
+        moveArmyPath: moveArmyPathForChaotic,
+      });
+
+      await user.click(screen.getByText('Move Half →'));
+      await user.click(screen.getByTestId('game-button-Move army'));
+
+      // Verify startMovement was called
+      expect(mockStartMovement).toHaveBeenCalled();
+
+      // Verify that showEmpireEvents was NOT called since WAR already existed
+      expect(mockApplicationContext.showEmpireEvents).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Component Lifecycle', () => {
     it('should cleanup intervals on unmount', () => {
       const { unmount } = renderWithProviders(<MoveArmyDialog />);
@@ -732,6 +909,660 @@ describe('MoveArmyDialog', () => {
 
       // Should not render
       expect(screen.queryByTestId('MoveArmyDialog')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('War Machine Functionality', () => {
+    describe('War Machine Rendering', () => {
+      it('should display war machines with correct information', () => {
+        // Clear all armies and create army with war machines
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 3;
+
+        const ballista = warMachineFactory(WarMachineName.BALLISTA);
+        ballista.count = 2;
+
+        let armyWithWarMachines = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        armyWithWarMachines = addWarMachines(armyWithWarMachines, catapult);
+        armyWithWarMachines = addWarMachines(armyWithWarMachines, ballista);
+        gameStateStub.armies.push(armyWithWarMachines);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Verify war machines are displayed
+        expect(screen.getByText('Catapult')).toBeInTheDocument();
+        expect(screen.getByText('Count: 3')).toBeInTheDocument();
+        expect(screen.getByText('Durability: 3')).toBeInTheDocument();
+
+        expect(screen.getByText('Ballista')).toBeInTheDocument();
+        expect(screen.getByText('Count: 2')).toBeInTheDocument();
+        expect(screen.getByText('Durability: 5')).toBeInTheDocument();
+      });
+
+      it('should display all war machine types correctly', () => {
+        // Clear all armies and create army with all war machine types
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        const ballista = warMachineFactory(WarMachineName.BALLISTA);
+        const batteringRam = warMachineFactory(WarMachineName.BATTERING_RAM);
+        const siegeTower = warMachineFactory(WarMachineName.SIEGE_TOWER);
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, catapult);
+        army = addWarMachines(army, ballista);
+        army = addWarMachines(army, batteringRam);
+        army = addWarMachines(army, siegeTower);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Verify all war machine types are displayed
+        expect(screen.getByText('Catapult')).toBeInTheDocument();
+        expect(screen.getByText('Ballista')).toBeInTheDocument();
+        expect(screen.getByText('Battering Ram')).toBeInTheDocument();
+        expect(screen.getByText('Siege Tower')).toBeInTheDocument();
+      });
+
+      it('should apply war machine CSS class to war machine units', () => {
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        const unitItems = screen
+          .getAllByRole('generic')
+          .filter((el) => el.className && el.className.includes('unitItem'));
+
+        const warMachineItem = unitItems.find((item) => within(item).queryByText('Catapult'));
+        expect(warMachineItem).toBeInTheDocument();
+        expect(warMachineItem?.className).toContain('warMachineUnit');
+      });
+    });
+
+    describe('War Machine Transfer - Move All', () => {
+      it('should move all war machines from available to selected when clicking "Move All →"', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 3;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 10),
+        });
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Verify war machines are in available panel
+        expect(screen.getByText('Catapult')).toBeInTheDocument();
+
+        const moveAllRightButton = screen.getByText('Move All →');
+        await user.click(moveAllRightButton);
+
+        // War machines should be moved to "Units to Move" panel
+        expectUnitsToMovePanelHasUnits();
+        expect(screen.getByText('Catapult')).toBeInTheDocument();
+      });
+
+      it('should move all war machines back when clicking "← Move All"', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const ballista = warMachineFactory(WarMachineName.BALLISTA);
+        ballista.count = 2;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 10),
+        });
+        army = addWarMachines(army, ballista);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Move all to right
+        await user.click(screen.getByText('Move All →'));
+
+        // Move all back to left
+        await user.click(screen.getByText('← Move All'));
+
+        // War machines should be back in Available Units
+        expect(screen.getByText('Ballista')).toBeInTheDocument();
+        expect(screen.getByText('No units selected')).toBeInTheDocument();
+      });
+
+      it('should move war machines together with heroes and regulars', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const { warrior, hero } = createMockUnits();
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 2;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, { hero });
+        army = addRegulars(army, warrior);
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        await user.click(screen.getByText('Move All →'));
+
+        // All units should be moved including war machines
+        expect(screen.getByText('No units selected')).toBeInTheDocument();
+        expectUnitsToMovePanelHasUnits();
+
+        // Verify all unit types are present
+        expect(screen.getByText('TestHero')).toBeInTheDocument();
+        expect(screen.getByText('Warrior')).toBeInTheDocument();
+        expect(screen.getByText('Catapult')).toBeInTheDocument();
+      });
+    });
+
+    describe('War Machine Transfer - Move Half', () => {
+      it('should move half of war machines when clicking "Move Half →"', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 10;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        const moveHalfRightButton = screen.getByText('Move Half →');
+        await user.click(moveHalfRightButton);
+
+        // Should have moved half (5 out of 10)
+        // Both panels should show Catapult
+        const catapultElements = screen.getAllByText('Catapult');
+        expect(catapultElements.length).toBe(2); // One in each panel
+      });
+
+      it('should move half of war machines back when clicking "← Move Half"', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const ballista = warMachineFactory(WarMachineName.BALLISTA);
+        ballista.count = 8;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, ballista);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Move all to right
+        await user.click(screen.getByText('Move All →'));
+
+        // Move half back
+        await user.click(screen.getByText('← Move Half'));
+
+        // Should have war machines in both panels
+        const ballistaElements = screen.getAllByText('Ballista');
+        expect(ballistaElements.length).toBe(2);
+      });
+
+      it('should handle odd count war machines correctly in half move', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 5;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        await user.click(screen.getByText('Move Half →'));
+
+        // With 5 catapults, should move 3 and leave 2 (Math.ceil(5/2) = 3)
+        const catapultElements = screen.getAllByText('Catapult');
+        expect(catapultElements.length).toBe(2); // One in each panel
+      });
+
+      it('should move war machines with other unit types in half move', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const { warrior, hero } = createMockUnits();
+        const siegeTower = warMachineFactory(WarMachineName.SIEGE_TOWER);
+        siegeTower.count = 4;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, { hero });
+        army = addRegulars(army, warrior);
+        army = addWarMachines(army, siegeTower);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        await user.click(screen.getByText('Move Half →'));
+
+        // Heroes should move entirely, regulars and war machines should split
+        expect(screen.getByText('TestHero')).toBeInTheDocument();
+        // Siege Towers should be in both panels after half move
+        const siegeTowerElements = screen.getAllByText('Siege Tower');
+        expect(siegeTowerElements.length).toBe(2);
+        expect(screen.queryByText('No units selected')).not.toBeInTheDocument();
+      });
+    });
+
+    describe('Individual War Machine Transfer', () => {
+      it('should move individual war machine when clicking on it', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 5;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Initialize destination panel
+        await user.click(screen.getByText('Move Half →'));
+
+        // Find and click on war machine unit
+        const catapultUnit = getUnitItemByName('Catapult');
+        expect(catapultUnit).toBeInTheDocument();
+
+        fireEvent.mouseDown(catapultUnit!);
+        fireEvent.mouseUp(catapultUnit!);
+
+        // Should have moved 1 war machine
+        await waitFor(() => {
+          expectUnitsToMovePanelHasUnits();
+        });
+      });
+
+      it('should handle continuous war machine movement on mouse hold', async () => {
+        gameStateStub.armies = [];
+
+        const ballista = warMachineFactory(WarMachineName.BALLISTA);
+        ballista.count = 10;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, ballista);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        const ballistaUnit = getUnitItemByName('Ballista');
+        expect(ballistaUnit).toBeInTheDocument();
+
+        // Start continuous movement
+        fireEvent.mouseDown(ballistaUnit!);
+
+        // Wait a bit then stop
+        setTimeout(() => {
+          fireEvent.mouseUp(ballistaUnit!);
+        }, 100);
+
+        // Should handle the continuous movement correctly
+        expect(ballistaUnit).toBeInTheDocument();
+      });
+
+      it('should stop continuous war machine movement on mouse leave', async () => {
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 8;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        const catapultUnit = getUnitItemByName('Catapult');
+        expect(catapultUnit).toBeInTheDocument();
+
+        // Start continuous movement
+        fireEvent.mouseDown(catapultUnit!);
+
+        // Mouse leave should stop the interval
+        fireEvent.mouseLeave(catapultUnit!);
+
+        // Should handle the mouse leave correctly
+        expect(catapultUnit).toBeInTheDocument();
+      });
+
+      it('should move war machine from right to left panel', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const siegeTower = warMachineFactory(WarMachineName.SIEGE_TOWER);
+        siegeTower.count = 5;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, siegeTower);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Move all to right first
+        await user.click(screen.getByText('Move All →'));
+
+        // Now find war machine in right panel and move back
+        const siegeTowerUnit = getUnitItemByName('Siege Tower');
+        expect(siegeTowerUnit).toBeInTheDocument();
+
+        fireEvent.mouseDown(siegeTowerUnit!);
+        fireEvent.mouseUp(siegeTowerUnit!);
+
+        // Should have moved 1 war machine back
+        await waitFor(() => {
+          expect(screen.getAllByText('Siege Tower').length).toBeGreaterThan(0);
+        });
+      });
+    });
+
+    describe('War Machine Consolidation', () => {
+      it('should display war machines from multiple armies separately', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult1 = warMachineFactory(WarMachineName.CATAPULT);
+        catapult1.count = 3;
+        const catapult2 = warMachineFactory(WarMachineName.CATAPULT);
+        catapult2.count = 5;
+
+        // Create two armies with catapults at the same position
+        let army1 = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army1 = addWarMachines(army1, catapult1);
+
+        let army2 = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.DWARF, 5),
+        });
+        army2 = addWarMachines(army2, catapult2);
+
+        gameStateStub.armies.push(army1, army2);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // War machines from different armies are displayed separately (not consolidated)
+        const catapultElements = screen.getAllByText('Catapult');
+        expect(catapultElements.length).toBe(2); // Two separate entries
+        expect(screen.getByText('Count: 3')).toBeInTheDocument();
+        expect(screen.getByText('Count: 5')).toBeInTheDocument();
+
+        // Move half
+        await user.click(screen.getByText('Move Half →'));
+
+        // Should still show separate war machines
+        const catapultElementsAfter = screen.getAllByText('Catapult');
+        expect(catapultElementsAfter.length).toBeGreaterThan(0);
+      });
+
+      it('should handle consolidation when moving back and forth', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const ballista = warMachineFactory(WarMachineName.BALLISTA);
+        ballista.count = 10;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, ballista);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Move half right
+        await user.click(screen.getByText('Move Half →'));
+
+        // Move half back left
+        await user.click(screen.getByText('← Move Half'));
+
+        // Should consolidate properly
+        expect(screen.getAllByText('Ballista').length).toBeGreaterThan(0);
+      });
+
+      it('should not consolidate different war machine types', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 3;
+        const ballista = warMachineFactory(WarMachineName.BALLISTA);
+        ballista.count = 4;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, catapult);
+        army = addWarMachines(army, ballista);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Should show both types separately
+        expect(screen.getByText('Catapult')).toBeInTheDocument();
+        expect(screen.getByText('Count: 3')).toBeInTheDocument();
+        expect(screen.getByText('Ballista')).toBeInTheDocument();
+        expect(screen.getByText('Count: 4')).toBeInTheDocument();
+
+        await user.click(screen.getByText('Move All →'));
+
+        // Should maintain separate types
+        expect(screen.getByText('Catapult')).toBeInTheDocument();
+        expect(screen.getByText('Ballista')).toBeInTheDocument();
+      });
+    });
+
+    describe('War Machine Edge Cases', () => {
+      it('should handle army with only war machines', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 5;
+        const ballista = warMachineFactory(WarMachineName.BALLISTA);
+        ballista.count = 3;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 1),
+        });
+        army = addWarMachines(army, catapult);
+        army = addWarMachines(army, ballista);
+
+        // Remove the warrior so only war machines remain
+        army.regulars = [];
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        expect(screen.getByText('Catapult')).toBeInTheDocument();
+        expect(screen.getByText('Ballista')).toBeInTheDocument();
+
+        // Should be able to move war machines
+        await user.click(screen.getByText('Move All →'));
+        expectUnitsToMovePanelHasUnits();
+      });
+
+      it('should handle war machine with count of 1', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const siegeTower = warMachineFactory(WarMachineName.SIEGE_TOWER);
+        siegeTower.count = 1;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, siegeTower);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Initialize destination panel
+        await user.click(screen.getByText('Move Half →'));
+
+        const siegeTowerUnit = getUnitItemByName('Siege Tower');
+        expect(siegeTowerUnit).toBeInTheDocument();
+
+        fireEvent.mouseDown(siegeTowerUnit!);
+        fireEvent.mouseUp(siegeTowerUnit!);
+
+        // War machine with count 1 should be moved entirely
+        await waitFor(() => {
+          expectUnitsToMovePanelHasUnits();
+        });
+      });
+
+      it('should handle half move with single war machine', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const batteringRam = warMachineFactory(WarMachineName.BATTERING_RAM);
+        batteringRam.count = 1;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, batteringRam);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        await user.click(screen.getByText('Move Half →'));
+
+        // Single war machine should be moved entirely (can't be split)
+        expect(screen.getByText('Battering Ram')).toBeInTheDocument();
+        expectUnitsToMovePanelHasUnits();
+      });
+
+      it('should include war machines in startMovement call', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 5;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 10),
+        });
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Select some units including war machines
+        await user.click(screen.getByText('Move Half →'));
+
+        // Click Move
+        await user.click(screen.getByTestId('game-button-Move army'));
+
+        expect(mockStartMovement).toHaveBeenCalledWith(
+          gameStateStub,
+          fromPosition,
+          toPosition,
+          expect.objectContaining({
+            heroes: expect.any(Array),
+            regulars: expect.any(Array),
+            warMachines: expect.any(Array),
+          })
+        );
+
+        const moveCall = (mockStartMovement as jest.Mock).mock.calls[0];
+        const [, , , selectedUnits] = moveCall;
+
+        // Should have war machines in the selected units
+        expect(selectedUnits.warMachines).toBeDefined();
+        expect(selectedUnits.warMachines.length).toBeGreaterThan(0);
+      });
+
+      it('should preserve war machine durability during transfers', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 5;
+        const originalDurability = catapult.durability;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 5),
+        });
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Verify initial durability display
+        expect(screen.getByText(`Durability: ${originalDurability}`)).toBeInTheDocument();
+
+        // Move war machines
+        await user.click(screen.getByText('Move All →'));
+
+        // Durability should remain the same
+        expect(screen.getByText(`Durability: ${originalDurability}`)).toBeInTheDocument();
+      });
+
+      it('should handle empty war machines after all moved', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const ballista = warMachineFactory(WarMachineName.BALLISTA);
+        ballista.count = 3;
+
+        // Create army with only war machines
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 1),
+        });
+        army = addWarMachines(army, ballista);
+        army.regulars = []; // Remove regulars
+        army.heroes = []; // Remove heroes
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Move all war machines
+        await user.click(screen.getByText('Move All →'));
+
+        // Available panel should show empty message
+        expect(screen.getByText('No units selected')).toBeInTheDocument();
+
+        // Move All → should be disabled
+        expect(screen.getByText('Move All →')).toBeDisabled();
+      });
     });
   });
 });

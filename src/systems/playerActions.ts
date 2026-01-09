@@ -2,25 +2,37 @@ import { getLandId } from '../state/map/land/LandId';
 import { playerFactory } from '../factories/playerFactory';
 import { addPlayer, setTurnOwner, incrementTurn } from './gameStateActions';
 import { NO_PLAYER } from '../domain/player/playerRepository';
+import { DiplomacyStatus } from '../types/Diplomacy';
 
 import type { GameState } from '../state/GameState';
-import type { PlayerState } from '../state/player/PlayerState';
-import type { PlayerProfile } from '../state/player/PlayerProfile';
 import type { LandPosition } from '../state/map/land/LandPosition';
+import type { PlayerState } from '../state/player/PlayerState';
+import type { PlayerProfile, PlayerType } from '../state/player/PlayerProfile';
 import type { EmpireTreasure, Item } from '../types/Treasures';
+import type { DiplomacyStatusType, DiplomacyType } from '../types/Diplomacy';
 
 const INITIAL_VAULT = 15000;
 
 export const addPlayerToGameState = (
   gameState: GameState,
   profile: PlayerProfile,
-  type: 'human' | 'computer'
+  type: PlayerType
 ) => {
   const newPlayer = playerFactory(profile, type, INITIAL_VAULT);
-  Object.assign(gameState, addPlayer(gameState, newPlayer));
+
+  // Add the player and potentially update turn owner
+  let updatedState = addPlayer(gameState, newPlayer);
+
   if (gameState.turnOwner === NO_PLAYER.id) {
-    Object.assign(gameState, setTurnOwner(gameState, newPlayer.id));
+    updatedState = setTurnOwner(updatedState, newPlayer.id);
   }
+
+  // Initialize bilateral diplomacy with existing players
+  const finalizedState = gameState.players.reduce((state, existingPlayer) => {
+    return setDiplomacyStatus(state, newPlayer.id, existingPlayer.id, DiplomacyStatus.NO_TREATY);
+  }, updatedState);
+
+  Object.assign(gameState, finalizedState);
 };
 
 export const nextPlayer = (gameState: GameState): void => {
@@ -62,5 +74,36 @@ export const decrementItemCharges = (state: PlayerState, treasure: Item): Player
     empireTreasures: state.empireTreasures.map((t) =>
       t.id === treasure.id ? { ...t, charge: treasure.charge - 1 } : t
     ),
+  };
+};
+
+export const setDiplomacyStatus = (
+  state: GameState,
+  playerId: string,
+  opponentId: string,
+  newStatus: DiplomacyStatusType
+): GameState => {
+  const diplomacyEntry: DiplomacyType = {
+    status: newStatus,
+    lastUpdated: state.turn,
+  };
+
+  return {
+    ...state,
+    players: state.players.map((player) => {
+      if (player.id === playerId) {
+        return {
+          ...player,
+          diplomacy: { ...player.diplomacy, [opponentId]: diplomacyEntry },
+        };
+      }
+      if (player.id === opponentId) {
+        return {
+          ...player,
+          diplomacy: { ...player.diplomacy, [playerId]: diplomacyEntry },
+        };
+      }
+      return player;
+    }),
   };
 };

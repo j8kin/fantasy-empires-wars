@@ -3,7 +3,7 @@ import type { PlayerColorName } from '../../types/PlayerColors';
 import type { HeroQuest } from '../../types/Quest';
 import type { EmpireTreasure } from '../../types/Treasures';
 import type { Effect } from '../../types/Effect';
-import type { DiplomacyStatusType } from '../../types/Diplomacy';
+import type { DiplomacyType } from '../../types/Diplomacy';
 import type { ManaType } from '../../types/Mana';
 import type { LandType } from '../../types/Land';
 import type { UnitType } from '../../types/UnitType';
@@ -25,7 +25,7 @@ export interface PlayerState {
 
   vault: number;
 
-  diplomacy: Record<string, DiplomacyStatusType>;
+  diplomacy: Record<string, DiplomacyType>;
   empireTreasures: EmpireTreasure[];
   quests: HeroQuest[];
 

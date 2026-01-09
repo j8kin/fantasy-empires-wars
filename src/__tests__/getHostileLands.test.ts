@@ -57,8 +57,10 @@ describe('getHostileLands', () => {
   });
 
   it('ally land is not treated as hostile land', () => {
-    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id] = DiplomacyStatus.ALLIANCE;
-    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.ALLIANCE;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id].status =
+      DiplomacyStatus.ALLIANCE;
+    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id].status =
+      DiplomacyStatus.ALLIANCE;
 
     const hostileLand = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
     placeUnitsOnMap(heroFactory(HeroUnitName.FIGHTER, 'Hero 1'), gameStateStub, hostileLand);

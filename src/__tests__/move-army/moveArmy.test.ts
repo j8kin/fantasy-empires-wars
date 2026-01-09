@@ -7,7 +7,7 @@ import {
   hasActiveEffect,
   hasBuilding,
 } from '../../selectors/landSelectors';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getDiplomacyStatus, getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addPlayerLand, updateLandEffect } from '../../systems/gameStateActions';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
@@ -17,12 +17,14 @@ import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
 import { castSpell } from '../../map/magic/castSpell';
+import { setDiplomacyStatus } from '../../systems/playerActions';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { BuildingName } from '../../types/Building';
 import { SpellName } from '../../types/Spell';
 import { UnitRank } from '../../state/army/RegularsState';
+import { DiplomacyStatus } from '../../types/Diplomacy';
 import type { GameState } from '../../state/GameState';
 import type { LandState } from '../../state/map/land/LandState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
@@ -31,6 +33,7 @@ import type { ArmyBriefInfo } from '../../state/army/ArmyState';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { Alignment } from '../../types/Alignment';
 
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -127,6 +130,13 @@ describe('Move Army', () => {
           regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
           warMachines: [],
         };
+        const toOwner = getLandOwner(gameStateStub, to);
+        if (toOwner !== getTurnOwner(gameStateStub).id && toOwner !== NO_PLAYER.id) {
+          Object.assign(
+            gameStateStub,
+            setDiplomacyStatus(gameStateStub, gameStateStub.turnOwner, toOwner, DiplomacyStatus.WAR)
+          );
+        }
 
         Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
 
@@ -148,6 +158,64 @@ describe('Move Army', () => {
         armies[1].movement.path.forEach((pos) => expect(path).toContain(getLandId(pos)));
       }
     );
+
+    it('not possible without war condition', () => {
+      const from = barracksLand.mapPos;
+      const to = { row: 5, col: 7 };
+      expect(getLandOwner(gameStateStub, from)).not.toBe(NO_PLAYER.id);
+      expect(getLandOwner(gameStateStub, to)).not.toBe(NO_PLAYER.id);
+      expect(getLandOwner(gameStateStub, to)).not.toBe(getLandOwner(gameStateStub, from));
+      expect([DiplomacyStatus.WAR, DiplomacyStatus.ALLIANCE]).not.toContain(
+        getDiplomacyStatus(
+          gameStateStub,
+          getLandOwner(gameStateStub, from),
+          getLandOwner(gameStateStub, to)
+        )
+      );
+      expect(getTurnOwner(gameStateStub).playerProfile.alignment).not.toBe(Alignment.CHAOTIC);
+
+      const armyBriefInfo: ArmyBriefInfo = {
+        heroes: [],
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 20 }],
+        warMachines: [],
+      };
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
+      const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+      expect(armies).toHaveLength(1);
+      expect(isMoving(armies[0])).toBeFalsy();
+    });
+
+    it('on opponent territory by chaotic player will declare WAR automatically', () => {
+      gameStateStub.turnOwner = gameStateStub.players[1].id; // set turn owner by Morgana (CHAOTIC)
+      expect(getTurnOwner(gameStateStub).playerProfile.alignment).toBe(Alignment.CHAOTIC);
+
+      const from = { row: 5, col: 7 };
+      const to = barracksLand.mapPos;
+      expect(getLandOwner(gameStateStub, from)).not.toBe(NO_PLAYER.id);
+      expect(getLandOwner(gameStateStub, to)).not.toBe(NO_PLAYER.id);
+      expect(getLandOwner(gameStateStub, to)).not.toBe(getLandOwner(gameStateStub, from));
+
+      placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR, 500), gameStateStub, from);
+
+      const armyBriefInfo: ArmyBriefInfo = {
+        heroes: [],
+        regulars: [{ id: RegularUnitName.WARRIOR, rank: UnitRank.REGULAR, count: 400 }],
+        warMachines: [],
+      };
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, to, armyBriefInfo));
+      const armies = getArmiesAtPosition(gameStateStub, from);
+      expect(armies).toHaveLength(2);
+      expect(isMoving(armies[0])).toBeFalsy();
+      expect(isMoving(armies[1])).toBeTruthy();
+
+      // WAR Declared
+      expect(
+        getDiplomacyStatus(gameStateStub, gameStateStub.players[0].id, gameStateStub.players[1].id)
+      ).toBe(DiplomacyStatus.WAR);
+      expect(
+        getDiplomacyStatus(gameStateStub, gameStateStub.players[1].id, gameStateStub.players[0].id)
+      ).toBe(DiplomacyStatus.WAR);
+    });
 
     it('move all regular units', () => {
       const from = barracksLand.mapPos;
@@ -415,6 +483,12 @@ describe('Move Army', () => {
         warMachines: [],
       };
 
+      /********* Declare war **************/
+      Object.assign(
+        gameStateStub,
+        setDiplomacyStatus(gameStateStub, gameStateStub.turnOwner, opponent, DiplomacyStatus.WAR)
+      );
+
       /******************* Start Movement *********************/
       Object.assign(
         gameStateStub,
@@ -452,6 +526,17 @@ describe('Move Army', () => {
         )
       );
       Object.assign(gameStateStub, addPlayerLand(gameStateStub, gameStateStub.players[1].id, to));
+
+      /********* Declare war **************/
+      Object.assign(
+        gameStateStub,
+        setDiplomacyStatus(
+          gameStateStub,
+          gameStateStub.turnOwner,
+          gameStateStub.players[1].id,
+          DiplomacyStatus.WAR
+        )
+      );
 
       /****************** Start Movement *********************/
       // 20 regular units is not enough to conquer the new territory so it became neutral and DEED OF RECLAMATION effect disappears

@@ -12,7 +12,12 @@ import {
   getRealmLands,
   getTilesInRadius,
 } from '../../selectors/landSelectors';
-import { getPlayer, getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
+import {
+  getDiplomacyStatus,
+  getPlayer,
+  getTreasureItemById,
+  getTurnOwner,
+} from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getBuildingInfo } from '../../domain/building/buildingRepository';
@@ -34,6 +39,9 @@ import type { SpellType } from '../../types/Spell';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { BuildingType } from '../../types/Building';
 import type { TreasureType } from '../../types/Treasures';
+import { Alignment } from '../../types/Alignment';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
+import { DiplomacyStatus } from '../../types/Diplomacy';
 
 export interface HexTileProps {
   mapPosition: LandPosition;
@@ -177,11 +185,22 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
         const armiesAtPosition = getArmiesAtPosition(gameState!, mapPosition);
         const maxMovements = calcMaxMove(armiesAtPosition.flatMap((a) => a.regulars));
         const nHeroes = armiesAtPosition.reduce((acc, army) => acc + army.heroes.length, 0);
+        const turnOwner = getTurnOwner(gameState);
+        const isChaotic = turnOwner.playerProfile.alignment === Alignment.CHAOTIC;
+
         const landsInRadius = getTilesInRadius(
           gameState!.map.dimensions,
           mapPosition,
           nHeroes >= MIN_HERO_PACKS ? MAX_MOVE : maxMovements
-        );
+        ).filter((pos) => {
+          if (isChaotic) return true;
+          const landOwner = getLandOwner(gameState, pos);
+          if (landOwner === turnOwner.id || landOwner === NO_PLAYER.id) return true;
+          const diplomacyStatus = getDiplomacyStatus(gameState, gameState!.turnOwner, landOwner);
+          return (
+            diplomacyStatus === DiplomacyStatus.WAR || diplomacyStatus === DiplomacyStatus.ALLIANCE
+          );
+        });
 
         const moveToLands: LandPosition[] = Array.from(
           new Map<string, LandPosition>(
