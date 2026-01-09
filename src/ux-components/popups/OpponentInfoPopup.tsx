@@ -20,7 +20,7 @@ export interface OpponentInfoProps extends PopupProps {
 }
 
 const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPosition }) => {
-  const { hideOpponentInfo, clearAllGlow } = useApplicationContext();
+  const { hideOpponentInfo, clearAllGlow, showDiplomacyContact } = useApplicationContext();
   const { gameState } = useGameContext();
 
   if (opponent == null || gameState == null) return null;
@@ -31,6 +31,13 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
   const handleClose = () => {
     hideOpponentInfo();
     clearAllGlow(); // Clear glow effect when closing popup
+  };
+
+  const handleContactClick = () => {
+    // Open diplomacy contact dialog and close the popup
+    showDiplomacyContact(opponent);
+    hideOpponentInfo();
+    clearAllGlow();
   };
 
   // Calculate dynamic size based on content (larger than LandCharacteristicsPopup)
@@ -65,6 +72,13 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
               borderColor={getPlayerColorValue(opponent.color)}
               className={styles.opponentAvatar}
             />
+            <button
+              className={styles.contactButton}
+              onClick={handleContactClick}
+              title="Open Diplomatic Contact"
+            >
+              Contact
+            </button>
           </div>
 
           <div className={`${commonStyles.row} ${styles.row}`}>
