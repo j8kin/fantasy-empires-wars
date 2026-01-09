@@ -6,12 +6,14 @@ import GameButton from '../buttons/GameButton';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { getDiplomacyStatus, getPlayer } from '../../selectors/playerSelectors';
+import { getRandomElement } from '../../domain/utils/random';
 import { startMovement } from '../../map/move-army/startMovement';
-
 import { ButtonName } from '../../types/ButtonName';
 import { UnitRank } from '../../state/army/RegularsState';
+import { DiplomacyStatus } from '../../types/Diplomacy';
 import type {
   ArmyBriefInfo,
   HeroBriefInfo,
@@ -20,6 +22,7 @@ import type {
 } from '../../state/army/ArmyState';
 import type { HeroUnitType, RegularUnitType, WarMachineType } from '../../types/UnitType';
 import type { UnitRankType } from '../../state/army/RegularsState';
+import { EmpireEventKind } from '../../types/EmpireEvent';
 
 // Consolidate units of the same type and rank
 const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {
@@ -71,8 +74,23 @@ const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {
   };
 };
 
+const brakeTreatyMessage = (opponentName: string): string => {
+  return `WAR Declared:\n${getRandomElement([
+    `${opponentName} trusted you. That trust now bleeds across their borders.`,
+    `Oaths to ${opponentName} were worth less than ash.`,
+    `You betray ${opponentName} without warning. Chaos approves.`,
+    `The treaty with ${opponentName} shatters beneath marching boots.`,
+    `${opponentName} called you ally—now they call for war.`,
+    `No honor binds you to ${opponentName}. Only conquest.`,
+    `${opponentName} was promised peace. You delivered war.`,
+    `A dagger in ${opponentName}’s back marks the birth of this war.`,
+    `Chaos laughs as you turn on ${opponentName}.`,
+    `Your word to ${opponentName} dies as your armies cross their land.`,
+  ])}`;
+};
+
 const MoveArmyDialog: React.FC = () => {
-  const { setMoveArmyPath, moveArmyPath } = useApplicationContext();
+  const { setMoveArmyPath, moveArmyPath, showEmpireEvents } = useApplicationContext();
   const { gameState, updateGameState } = useGameContext();
 
   const fromUnitsRef = useRef<ArmyBriefInfo | undefined>(undefined);
@@ -149,9 +167,26 @@ const MoveArmyDialog: React.FC = () => {
 
   const handleMove = () => {
     if (!moveArmyPath || !toUnits) return;
+    const toOwner = getLandOwner(gameState, moveArmyPath.to);
+    const isWar =
+      getDiplomacyStatus(gameState, gameState!.turnOwner, toOwner) === DiplomacyStatus.WAR;
 
-    updateGameState(startMovement(gameState, moveArmyPath.from, moveArmyPath.to, toUnits));
+    const newGameState = startMovement(gameState, moveArmyPath.from, moveArmyPath.to, toUnits);
     setMoveArmyPath(undefined);
+
+    if (
+      !isWar &&
+      getDiplomacyStatus(newGameState, newGameState?.turnOwner, toOwner) === DiplomacyStatus.WAR
+    ) {
+      showEmpireEvents([
+        {
+          status: EmpireEventKind.Negative,
+          message: brakeTreatyMessage(getPlayer(newGameState, toOwner).playerProfile.name),
+        },
+      ]);
+    }
+
+    updateGameState(newGameState);
   };
 
   const handleClose = () => {

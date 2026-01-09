@@ -124,6 +124,7 @@ export const getDiplomacyStatus = (
   playerId: string,
   opponent: string
 ): DiplomacyStatusType => {
+  if (playerId === opponent) return DiplomacyStatus.NO_TREATY;
   if (playerId === NO_PLAYER.id || opponent === NO_PLAYER.id) return DiplomacyStatus.NO_TREATY; // fallback to no treaty if player or opponent is not found
   return getPlayer(state, playerId).diplomacy[opponent].status;
 };
