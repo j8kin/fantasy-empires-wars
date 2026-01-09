@@ -340,7 +340,15 @@ describe('Hero Quest', () => {
           (h) => h.name === luckyHero.name
         );
         expect(heroAfterQuest).toBeDefined();
-        expect(heroAfterQuest!.level).toBe((quest.level - 1) * 5); // gain level up to min level of quest - reward for the risk
+        // hero sometimes could get RING_OF_EXPERIENCE and that is why recalculate expected results base on it
+        const expectedLevel =
+          (quest.level - 1) * 5 +
+          (heroAfterQuest!.artifacts.some(
+            (a) => a.treasure.type === TreasureName.RING_OF_EXPERIENCE
+          )
+            ? 1
+            : 0);
+        expect(heroAfterQuest!.level).toBe(expectedLevel); // gain level up to min level of quest - reward for the risk
       }
     );
   });
