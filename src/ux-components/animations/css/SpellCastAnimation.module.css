@@ -1,3 +1,10 @@
+.container {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1000;
+}
+
 .spellCastAnimation {
   position: absolute;
   top: 50%;
@@ -11,6 +18,8 @@
 }
 
 .animationImage {
+  width: var(--spell-animation-size, 200px);
+  height: var(--spell-animation-size, 200px);
   opacity: 0;
   transform: scale(0.1);
   animation: spellCastRise 3s ease-out forwards;

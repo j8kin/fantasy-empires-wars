@@ -34,14 +34,14 @@ const SpellCastAnimation: React.FC<SpellCastAnimationProps> = ({
   return (
     <Activity mode={spellAnimation != null ? 'visible' : 'hidden'}>
       <div
-        style={{
-          position: 'fixed',
-          left: spellAnimation?.screenPosition.x ?? 0,
-          top: spellAnimation?.screenPosition.y ?? 0,
-          transform: 'translate(-50%, -50%)',
-          pointerEvents: 'none',
-          zIndex: 1000,
-        }}
+        className={styles.container}
+        style={
+          {
+            left: spellAnimation?.screenPosition.x ?? 0,
+            top: spellAnimation?.screenPosition.y ?? 0,
+            '--spell-animation-size': `${SPELL_ANIMATION_SIZE}px`,
+          } as React.CSSProperties
+        }
       >
         <div className={styles.spellCastAnimation}>
           <img
@@ -50,10 +50,6 @@ const SpellCastAnimation: React.FC<SpellCastAnimationProps> = ({
             }
             alt={`${spellAnimation?.manaType} spell cast animation`}
             className={styles.animationImage}
-            style={{
-              width: SPELL_ANIMATION_SIZE,
-              height: SPELL_ANIMATION_SIZE,
-            }}
           />
         </div>
       </div>
