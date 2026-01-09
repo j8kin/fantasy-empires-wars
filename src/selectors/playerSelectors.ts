@@ -9,6 +9,7 @@ import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType
 import { Mana } from '../types/Mana';
 import { LandName } from '../types/Land';
 import { BuildingName } from '../types/Building';
+import { DiplomacyStatus } from '../types/Diplomacy';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
 import type { LandState } from '../state/map/land/LandState';
@@ -116,4 +117,13 @@ export const getUnitsAllowedToRecruit = (
   return Object.values(HeroUnitName).filter(
     (hero) => isMageType(hero) && unitsBaseStats(hero).recruitedIn === buildingType
   );
+};
+
+export const getDiplomacyStatus = (
+  state: GameState,
+  playerId: string,
+  opponent: string
+): DiplomacyStatusType => {
+  if (playerId === NO_PLAYER.id || opponent === NO_PLAYER.id) return DiplomacyStatus.NO_TREATY; // fallback to no treaty if player or opponent is not found
+  return getPlayer(state, playerId).diplomacy[opponent].status;
 };
