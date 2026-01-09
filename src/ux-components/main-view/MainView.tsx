@@ -51,7 +51,6 @@ const MainViewContent: React.FC = () => {
     setErrorMessagePopupMessage,
     setShowErrorMessagePopup,
     showEmpireEvents,
-    spellAnimation,
     hideSpellAnimation,
   } = useApplicationContext();
 
@@ -202,23 +201,7 @@ const MainViewContent: React.FC = () => {
       </Activity>
 
       {/* Spell Cast Animation - positioned absolutely over the battlefield */}
-      {spellAnimation && (
-        <div
-          style={{
-            position: 'fixed',
-            left: spellAnimation.screenPosition.x,
-            top: spellAnimation.screenPosition.y,
-            transform: 'translate(-50%, -50%)',
-            pointerEvents: 'none',
-            zIndex: 1000,
-          }}
-        >
-          <SpellCastAnimation
-            manaType={spellAnimation.manaType}
-            onAnimationComplete={hideSpellAnimation}
-          />
-        </div>
-      )}
+      <SpellCastAnimation onAnimationComplete={hideSpellAnimation} />
     </main>
   );
 };

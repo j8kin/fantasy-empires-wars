@@ -1,50 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, { Activity, useEffect } from 'react';
 import styles from './css/SpellCastAnimation.module.css';
 import { getSpellEndAnimationImg } from '../../assets/getSpellImg';
 
-import type { ManaType } from '../../types/Mana';
+import { useApplicationContext } from '../../contexts/ApplicationContext';
 
 // Animation size constant - easy to adjust
 const SPELL_ANIMATION_SIZE = 200;
 
 interface SpellCastAnimationProps {
-  manaType: ManaType;
   onAnimationComplete?: () => void;
   duration?: number; // Duration in milliseconds
 }
 
 const SpellCastAnimation: React.FC<SpellCastAnimationProps> = ({
-  manaType,
   onAnimationComplete,
   duration = 2000, // 2 seconds
 }) => {
-  const [isVisible, setIsVisible] = useState(true);
+  const { spellAnimation, setSpellAnimation } = useApplicationContext();
 
   useEffect(() => {
+    if (spellAnimation == null) {
+      return;
+    }
+
     const timer = setTimeout(() => {
-      setIsVisible(false);
+      setSpellAnimation(null);
       onAnimationComplete?.();
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration, onAnimationComplete]);
-
-  if (!isVisible) {
-    return null;
-  }
+  }, [spellAnimation, duration, onAnimationComplete, setSpellAnimation]);
 
   return (
-    <div className={styles.spellCastAnimation}>
-      <img
-        src={getSpellEndAnimationImg(manaType)}
-        alt={`${manaType} spell cast animation`}
-        className={styles.animationImage}
+    <Activity mode={spellAnimation != null ? 'visible' : 'hidden'}>
+      <div
         style={{
-          width: SPELL_ANIMATION_SIZE,
-          height: SPELL_ANIMATION_SIZE,
+          position: 'fixed',
+          left: spellAnimation?.screenPosition.x ?? 0,
+          top: spellAnimation?.screenPosition.y ?? 0,
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          zIndex: 1000,
         }}
-      />
-    </div>
+      >
+        <div className={styles.spellCastAnimation}>
+          <img
+            src={
+              spellAnimation != null ? getSpellEndAnimationImg(spellAnimation.manaType) : undefined
+            }
+            alt={`${spellAnimation?.manaType} spell cast animation`}
+            className={styles.animationImage}
+            style={{
+              width: SPELL_ANIMATION_SIZE,
+              height: SPELL_ANIMATION_SIZE,
+            }}
+          />
+        </div>
+      </div>
+    </Activity>
   );
 };
 
