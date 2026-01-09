@@ -74,10 +74,14 @@ describe('OpponentInfoPopup', () => {
       getPlayerTiles: jest.fn(),
     });
 
-    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.NO_TREATY;
-    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id] = DiplomacyStatus.NO_TREATY;
-    gameStateStub.players[2].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.NO_TREATY;
-    gameStateStub.players[0].diplomacy[gameStateStub.players[2].id] = DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id].status =
+      DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id].status =
+      DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[2].diplomacy[gameStateStub.players[0].id].status =
+      DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[2].id].status =
+      DiplomacyStatus.NO_TREATY;
   });
 
   it('returns null when opponent is null or undefined', () => {
@@ -165,8 +169,10 @@ describe('OpponentInfoPopup', () => {
     });
 
     it('displays "Peace" status correctly', () => {
-      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.PEACE;
-      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id] = DiplomacyStatus.PEACE;
+      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id].status =
+        DiplomacyStatus.PEACE;
+      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id].status =
+        DiplomacyStatus.PEACE;
 
       render(
         <ApplicationContextProvider>
@@ -179,8 +185,8 @@ describe('OpponentInfoPopup', () => {
     });
 
     it('displays "War" status correctly', () => {
-      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.WAR;
-      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id] = DiplomacyStatus.WAR;
+      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id].status = DiplomacyStatus.WAR;
+      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id].status = DiplomacyStatus.WAR;
 
       render(
         <ApplicationContextProvider>
@@ -246,8 +252,8 @@ describe('OpponentInfoPopup', () => {
   });
 
   it('works with different predefined players', () => {
-    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id] = DiplomacyStatus.WAR;
-    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id] = DiplomacyStatus.WAR;
+    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id].status = DiplomacyStatus.WAR;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id].status = DiplomacyStatus.WAR;
 
     render(
       <ApplicationContextProvider>

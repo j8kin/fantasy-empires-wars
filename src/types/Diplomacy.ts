@@ -6,3 +6,8 @@ export const DiplomacyStatus = {
 } as const;
 
 export type DiplomacyStatusType = (typeof DiplomacyStatus)[keyof typeof DiplomacyStatus];
+export interface DiplomacyType {
+  status: DiplomacyStatusType;
+  /** Last Updated Turn **/
+  lastUpdated: number;
+}

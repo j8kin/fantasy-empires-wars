@@ -39,7 +39,10 @@ export const getPlayersByDiplomacy = (
 ): PlayerState[] => {
   const { turnOwner } = gameState;
   return gameState.players.filter(
-    (p) => p.id !== turnOwner && statuses.includes(p.diplomacy[turnOwner])
+    (p) =>
+      p.id !== turnOwner &&
+      p.diplomacy[turnOwner] != null &&
+      statuses.includes(p.diplomacy[turnOwner].status)
   );
 };
 

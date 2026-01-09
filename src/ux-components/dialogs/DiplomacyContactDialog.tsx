@@ -22,7 +22,8 @@ const DiplomacyContactDialog: React.FC = () => {
 
   const turnOwner = getTurnOwner(gameState);
   const diplomacyStatus =
-    turnOwner.diplomacy[diplomacyContactOpponent?.id ?? NO_PLAYER.id] || DiplomacyStatus.NO_TREATY;
+    turnOwner.diplomacy[diplomacyContactOpponent?.id ?? NO_PLAYER.id]?.status ??
+    DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {
     hideDiplomacyContact();
