@@ -573,7 +573,7 @@ const MoveArmyDialog: React.FC = () => {
           {/* Main content area */}
           <div className={styles.mainContent}>
             {/* From panel */}
-            <div className={styles.panel}>
+            <div className={styles.panel} data-testid="available-units-panel">
               <div className={styles.panelTitle}>Available Units</div>
               <div className={styles.panelContent}>
                 {fromUnits == null ? (
@@ -630,7 +630,7 @@ const MoveArmyDialog: React.FC = () => {
             </div>
 
             {/* To panel */}
-            <div className={styles.panel}>
+            <div className={styles.panel} data-testid="units-to-move-panel">
               <div className={styles.panelTitle}>Units to Move</div>
               <div className={styles.panelContent}>
                 {toUnits == null ? (

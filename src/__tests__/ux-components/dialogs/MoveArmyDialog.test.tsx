@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
-import { UnitRank } from '../../../state/army/RegularsState';
 
 import { getArmiesAtPosition } from '../../../selectors/armySelectors';
 import { getLandOwner } from '../../../selectors/landSelectors';
@@ -17,6 +16,7 @@ import { regularsFactory } from '../../../factories/regularsFactory';
 import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
 import { Alignment } from '../../../types/Alignment';
 import { DiplomacyStatus } from '../../../types/Diplomacy';
+import { UnitRank } from '../../../state/army/RegularsState';
 
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
@@ -202,16 +202,14 @@ describe('MoveArmyDialog', () => {
     return items.find((item) => within(item).queryByText(name));
   };
 
-  const getPanelByTitle = (title: string) => {
-    const titleEl = screen.getByText(title);
-    // panelTitle is inside the panel container; return the closest panel div
-    return titleEl.closest('div')?.parentElement as HTMLElement; // panel
+  const getPanelByTestId = (testId: string) => {
+    return screen.getByTestId(testId);
   };
 
   const expectUnitsToMovePanelHasUnits = () => {
-    const panel = getPanelByTitle('Units to Move');
+    const panel = getPanelByTestId('units-to-move-panel');
     expect(panel).toBeTruthy();
-    const { queryByText } = within(panel!);
+    const { queryByText } = within(panel);
     expect(queryByText('No units selected')).toBeNull();
   };
 
