@@ -7,6 +7,7 @@ import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
 import { UnitRank } from '../../../state/army/RegularsState';
 
 import { getArmiesAtPosition } from '../../../selectors/armySelectors';
+import { getLandOwner } from '../../../selectors/landSelectors';
 import { addHero, addRegulars, startMoving } from '../../../systems/armyActions';
 import { levelUpHero, levelUpRegulars } from '../../../systems/unitsActions';
 import { armyFactory } from '../../../factories/armyFactory';
@@ -15,6 +16,7 @@ import { regularsFactory } from '../../../factories/regularsFactory';
 
 import { HeroUnitName, RegularUnitName } from '../../../types/UnitType';
 import { Alignment } from '../../../types/Alignment';
+import { DiplomacyStatus } from '../../../types/Diplomacy';
 
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
@@ -93,6 +95,26 @@ const mockApplicationContext = {
   setQuestResults: jest.fn(),
   showQuestResults: jest.fn(),
   hideQuestResults: jest.fn(),
+  showEmpireEventsPopup: false,
+  setShowEmpireEventsPopup: jest.fn(),
+  empireEvents: [],
+  setEmpireEvents: jest.fn(),
+  showEmpireEvents: jest.fn(),
+  hideEmpireEvents: jest.fn(),
+  showDiplomacyContactDialog: false,
+  setShowDiplomacyContactDialog: jest.fn(),
+  diplomacyContactOpponent: undefined,
+  setDiplomacyContactOpponent: jest.fn(),
+  showDiplomacyContactDialogWithOpponent: jest.fn(),
+  hideDiplomacyContactDialog: jest.fn(),
+  showEmpireTreasureDialog: false,
+  setShowEmpireTreasureDialog: jest.fn(),
+  isArcaneExchangeMode: false,
+  setIsArcaneExchangeMode: jest.fn(),
+  spellAnimation: null,
+  setSpellAnimation: jest.fn(),
+  showSpellAnimation: jest.fn(),
+  hideSpellAnimation: jest.fn(),
 };
 
 const mockGameContext = {
@@ -678,6 +700,162 @@ describe('MoveArmyDialog', () => {
 
       expect(screen.getByText('Count: 8 (veteran)')).toBeInTheDocument();
       expect(screen.getByText('Count: 3 (elite)')).toBeInTheDocument();
+    });
+  });
+
+  describe('CHAOTIC Player War Declaration', () => {
+    it('should auto-declare WAR when CHAOTIC player moves to opponent territory and show RealmEvent', async () => {
+      const user = userEvent.setup();
+
+      // Setup: Make player 1 (Morgana - CHAOTIC) the turn owner
+      gameStateStub.players[0].playerType = 'computer'; // Make first player computer
+      gameStateStub.players[1].playerType = 'human'; // Make CHAOTIC player human
+      gameStateStub.turnOwner = gameStateStub.players[1].id; // Morgana (CHAOTIC)
+
+      expect(gameStateStub.players[1].playerProfile.name).toBe('Morgana Shadowweaver');
+      expect(gameStateStub.players[1].playerProfile.alignment).toBe(Alignment.CHAOTIC);
+
+      // Clear all armies and setup new positions
+      gameStateStub.armies = [];
+
+      // CHAOTIC player's position (Morgana at row 5, col 7)
+      const chaoticPlayerPosition: LandPosition = { row: 5, col: 7 };
+
+      // Opponent's territory (Alaric at row 3, col 3)
+      const opponentPosition: LandPosition = { row: 3, col: 3 };
+
+      // Verify opponent owns the target land
+      const opponentOwnerId = gameStateStub.players[0].id;
+      expect(getLandOwner(gameStateStub, opponentPosition)).toBe(opponentOwnerId);
+
+      // Create army for CHAOTIC player
+      const { warrior, hero } = createMockUnits();
+      warrior.count = 100; // Enough units to move
+
+      let chaoticArmy = armyFactory(gameStateStub.turnOwner, chaoticPlayerPosition, { hero });
+      chaoticArmy = addRegulars(chaoticArmy, warrior);
+      gameStateStub.armies.push(chaoticArmy);
+
+      // Verify no war status initially
+      const initialDiplomacy = gameStateStub.players[1].diplomacy[opponentOwnerId];
+      expect(!initialDiplomacy || initialDiplomacy.status !== DiplomacyStatus.WAR).toBe(true);
+
+      // Setup move army path from CHAOTIC player position to opponent territory
+      const moveArmyPathForChaotic = {
+        from: chaoticPlayerPosition,
+        to: opponentPosition,
+      };
+
+      // Mock startMovement to return updated game state with WAR declared
+      const newGameStateWithWar = {
+        ...gameStateStub,
+        players: gameStateStub.players.map((p) => {
+          if (p.id === gameStateStub.players[1].id) {
+            return {
+              ...p,
+              diplomacy: {
+                ...p.diplomacy,
+                [opponentOwnerId]: { status: DiplomacyStatus.WAR },
+              },
+            };
+          }
+          return p;
+        }),
+      };
+      (mockStartMovement as jest.Mock).mockReturnValueOnce(newGameStateWithWar);
+
+      renderWithProviders(<MoveArmyDialog />, {
+        gameState: gameStateStub,
+        moveArmyPath: moveArmyPathForChaotic,
+      });
+
+      // Dialog should render
+      expect(screen.getByTestId('MoveArmyDialog')).toBeInTheDocument();
+
+      // Select units to move (move half)
+      await user.click(screen.getByText('Move Half →'));
+
+      // Verify units were selected
+      expectUnitsToMovePanelHasUnits();
+
+      // Click Move button to initiate movement
+      await user.click(screen.getByTestId('game-button-Move army'));
+
+      // Verify startMovement was called
+      expect(mockStartMovement).toHaveBeenCalled();
+
+      // Get the updated game state from the call
+      const moveCall = (mockStartMovement as jest.Mock).mock.calls[0];
+      expect(moveCall).toBeDefined();
+
+      // Verify that showEmpireEvents was called with WAR declaration message
+      expect(mockApplicationContext.showEmpireEvents).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            status: 'negative',
+            message: expect.stringContaining('WAR Declared'),
+          }),
+        ])
+      );
+
+      // Verify the message contains opponent's name
+      const empireEventCall = (mockApplicationContext.showEmpireEvents as jest.Mock).mock.calls[0];
+      expect(empireEventCall[0][0].message).toContain('Alaric the Bold');
+
+      // Verify dialog was closed
+      expect(mockApplicationContext.setMoveArmyPath).toHaveBeenCalledWith(undefined);
+    });
+
+    it('should not show RealmEvent if WAR already exists', async () => {
+      const user = userEvent.setup();
+
+      // Setup: Make player 1 (Morgana - CHAOTIC) the turn owner
+      gameStateStub.players[0].playerType = 'computer';
+      gameStateStub.players[1].playerType = 'human';
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+
+      // Clear all armies and setup new positions
+      gameStateStub.armies = [];
+
+      const chaoticPlayerPosition: LandPosition = { row: 5, col: 7 };
+      const opponentPosition: LandPosition = { row: 3, col: 3 };
+      const opponentOwnerId = gameStateStub.players[0].id;
+
+      // PRE-EXISTING WAR: Set diplomacy to WAR before movement
+      gameStateStub.players[1].diplomacy[opponentOwnerId] = {
+        status: DiplomacyStatus.WAR,
+        lastUpdated: gameStateStub.turn,
+      };
+
+      // Create army for CHAOTIC player
+      const { warrior, hero } = createMockUnits();
+      warrior.count = 100;
+
+      let chaoticArmy = armyFactory(gameStateStub.turnOwner, chaoticPlayerPosition, { hero });
+      chaoticArmy = addRegulars(chaoticArmy, warrior);
+      gameStateStub.armies.push(chaoticArmy);
+
+      const moveArmyPathForChaotic = {
+        from: chaoticPlayerPosition,
+        to: opponentPosition,
+      };
+
+      // Mock startMovement to return game state with WAR already existing (no change)
+      (mockStartMovement as jest.Mock).mockReturnValueOnce(gameStateStub);
+
+      renderWithProviders(<MoveArmyDialog />, {
+        gameState: gameStateStub,
+        moveArmyPath: moveArmyPathForChaotic,
+      });
+
+      await user.click(screen.getByText('Move Half →'));
+      await user.click(screen.getByTestId('game-button-Move army'));
+
+      // Verify startMovement was called
+      expect(mockStartMovement).toHaveBeenCalled();
+
+      // Verify that showEmpireEvents was NOT called since WAR already existed
+      expect(mockApplicationContext.showEmpireEvents).not.toHaveBeenCalled();
     });
   });
 
