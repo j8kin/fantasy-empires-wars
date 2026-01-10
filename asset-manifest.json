@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.ad804627.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.dc5b9214.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.00500c24.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/CelticPatternVertical.png": "/fantasy-empires-wars/static/media/CelticPatternVertical.8f1fe8a5abcd3ac8d2e6.png",
     "static/media/kael.png": "/fantasy-empires-wars/static/media/kael.020c79f3591fb99ef9d7.png",
@@ -24,8 +24,6 @@
     "static/media/warrior.png": "/fantasy-empires-wars/static/media/warrior.9eb22cecb24f2c90be9a.png",
     "static/media/teleport.png": "/fantasy-empires-wars/static/media/teleport.9d43cc2aa2bcbfb28c35.png",
     "static/media/undead.png": "/fantasy-empires-wars/static/media/undead.a99de6154e015235f72a.png",
-    "static/media/magic-tower-green.png": "/fantasy-empires-wars/static/media/magic-tower-green.75d99b635c3f40e21b7d.png",
-    "static/media/magic-tower-red.png": "/fantasy-empires-wars/static/media/magic-tower-red.e99c00ebf941c9bac361.png",
     "static/media/dwarf.png": "/fantasy-empires-wars/static/media/dwarf.202e7d30d4e7f6ec1157.png",
     "static/media/tornado.png": "/fantasy-empires-wars/static/media/tornado.c520175ae5d4f8a5d548.png",
     "static/media/hummerlord.png": "/fantasy-empires-wars/static/media/hummerlord.e4a2f875f35c50c27acb.png",
@@ -53,7 +51,6 @@
     "static/media/fertile-lands.png": "/fantasy-empires-wars/static/media/fertile-lands.6f44c207024df0e10489.png",
     "static/media/enchanter.png": "/fantasy-empires-wars/static/media/enchanter.371e47bd348b9fd0b04f.png",
     "static/media/ember-raid.png": "/fantasy-empires-wars/static/media/ember-raid.abeeb7bb7413d8679031.png",
-    "static/media/magic-tower-white.png": "/fantasy-empires-wars/static/media/magic-tower-white.40bb3ff7e2e70d07f862.png",
     "static/media/the-shattered-sky.png": "/fantasy-empires-wars/static/media/the-shattered-sky.5380e3609a0e4a812ba0.png",
     "static/media/summon-undead.png": "/fantasy-empires-wars/static/media/summon-undead.3f911b70642e8b005e89.png",
     "static/media/blessing.png": "/fantasy-empires-wars/static/media/blessing.fa33dd9719ac65d20285.png",
@@ -62,7 +59,6 @@
     "static/media/ogr.png": "/fantasy-empires-wars/static/media/ogr.e169617b5e8c19569f8a.png",
     "static/media/opened-book.png": "/fantasy-empires-wars/static/media/opened-book.69a30a1acdfb7f12eed7.png",
     "static/media/corruption.png": "/fantasy-empires-wars/static/media/corruption.1079c0ca9541fc57f577.png",
-    "static/media/magic-tower-black.png": "/fantasy-empires-wars/static/media/magic-tower-black.562dabbe616fa5aaa86a.png",
     "static/media/heal.png": "/fantasy-empires-wars/static/media/heal.98c05b2155127ce2dda7.png",
     "static/media/stronghold.png": "/fantasy-empires-wars/static/media/stronghold.8cb171bb15d7feea8144.png",
     "static/media/orc.png": "/fantasy-empires-wars/static/media/orc.7f76999ad74f2605f6ac.png",
@@ -72,7 +68,6 @@
     "static/media/golden-plains.png": "/fantasy-empires-wars/static/media/golden-plains.2ff096b5b96f9b7ebe57.png",
     "static/media/mountains-corrupted.png": "/fantasy-empires-wars/static/media/mountains-corrupted.81b952f432d619f3f803.png",
     "static/media/watchtower.png": "/fantasy-empires-wars/static/media/watchtower.01657d8069800b12ece9.png",
-    "static/media/magic-tower-blue.png": "/fantasy-empires-wars/static/media/magic-tower-blue.86682f941d28a16712a7.png",
     "static/media/hills-corrupted.png": "/fantasy-empires-wars/static/media/hills-corrupted.65515f253d84c30e4b46.png",
     "static/media/crystal-basin.png": "/fantasy-empires-wars/static/media/crystal-basin.6509eba19ee409a617df.png",
     "static/media/sunspire-peaks.png": "/fantasy-empires-wars/static/media/sunspire-peaks.69c07769d5731c35d40f.png",
@@ -130,14 +125,15 @@
     "static/media/zealot.png": "/fantasy-empires-wars/static/media/zealot.3d8ca2b38ed4b42ffbba.png",
     "static/media/phoenix-feather.png": "/fantasy-empires-wars/static/media/phoenix-feather.0a9c7b06ec61f4f10648.png",
     "static/media/nullwarden.png": "/fantasy-empires-wars/static/media/nullwarden.df484acaf8a5374c7c98.png",
+    "static/media/magic-tower.png": "/fantasy-empires-wars/static/media/magic-tower.9b3c29d498f374b38c0f.png",
     "static/media/mana-vial.png": "/fantasy-empires-wars/static/media/mana-vial.acdc30884558a3ecf7c0.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.ad804627.css.map": "/fantasy-empires-wars/static/css/main.ad804627.css.map",
-    "main.dc5b9214.js.map": "/fantasy-empires-wars/static/js/main.dc5b9214.js.map",
+    "main.00500c24.js.map": "/fantasy-empires-wars/static/js/main.00500c24.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ad804627.css",
-    "static/js/main.dc5b9214.js"
+    "static/js/main.00500c24.js"
   ]
 }
