@@ -1,5 +1,4 @@
 import { playerFactory } from '../factories/playerFactory';
-import { unitsBaseStats } from '../domain/unit/unitRepository';
 import { isMageType } from '../domain/unit/unitTypeChecks';
 import { getBuildingInfo } from '../domain/building/buildingRepository';
 import { isItem } from '../domain/treasure/treasureRepository';
@@ -11,7 +10,7 @@ import { LandName } from '../types/Land';
 import { BuildingName } from '../types/Building';
 import { DiplomacyStatus } from '../types/Diplomacy';
 import type { GameState } from '../state/GameState';
-import type { PlayerState } from '../state/player/PlayerState';
+import type { PlayerState, PlayerTraits } from '../state/player/PlayerState';
 import type { LandState } from '../state/map/land/LandState';
 import type { BuildingInfo } from '../domain/building/buildingRepository';
 import type { EffectSourceId } from '../types/Effect';
@@ -19,7 +18,6 @@ import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatusType } from '../types/Diplomacy';
 import type { BuildingType } from '../types/Building';
 import type { UnitType } from '../types/UnitType';
-import type { ManaType } from '../types/Mana';
 
 const NONE = playerFactory(NO_PLAYER, 'computer');
 
@@ -74,21 +72,17 @@ export const getTreasureItemById = (player: PlayerState, itemId: string): Item |
   return isItem(item) ? item : undefined;
 };
 
-const MANA_TO_MAGE_TOWER: Partial<Record<BuildingType, ManaType>> = {
-  [BuildingName.WHITE_MAGE_TOWER]: Mana.WHITE,
-  [BuildingName.GREEN_MAGE_TOWER]: Mana.GREEN,
-  [BuildingName.BLUE_MAGE_TOWER]: Mana.BLUE,
-  [BuildingName.RED_MAGE_TOWER]: Mana.RED,
-  [BuildingName.BLACK_MAGE_TOWER]: Mana.BLACK,
+const hasAvailableMageUnits = (traits: PlayerTraits): boolean => {
+  return Object.values(traits.recruitedUnitsPerLand).some((units) =>
+    Array.from(units).some((unit) => isMageType(unit))
+  );
 };
 
 export const getAllowedBuildings = (state: PlayerState): BuildingInfo[] => {
+  const canRecruitMages = hasAvailableMageUnits(state.traits);
+
   return Object.values(BuildingName)
-    .filter(
-      (building) =>
-        MANA_TO_MAGE_TOWER[building] == null ||
-        !state.traits.restrictedMagic.has(MANA_TO_MAGE_TOWER[building])
-    )
+    .filter((building) => building !== BuildingName.MAGE_TOWER || canRecruitMages)
     .map(getBuildingInfo)
     .filter((b) => b.buildCost <= state.vault);
 };
@@ -98,6 +92,8 @@ export const getUnitsAllowedToRecruit = (
   land: LandState,
   buildingType: BuildingType
 ): UnitType[] => {
+  const landUnits = player.traits.recruitedUnitsPerLand[land.land.id] ?? new Set<UnitType>();
+
   if (buildingType === BuildingName.BARRACKS) {
     // non-magic players ignore corrupted lands
     if (land.corrupted && player.traits.restrictedMagic.size !== Object.values(Mana).length) {
@@ -109,14 +105,14 @@ export const getUnitsAllowedToRecruit = (
         availableUnits.add(RegularUnitName.ORC);
         availableUnits.add(HeroUnitName.OGR);
       }
-      return Array.from(availableUnits);
+      return Array.from(availableUnits).filter((unit) => !isMageType(unit));
     }
-    return Array.from(player.traits.recruitedUnitsPerLand[land.land.id]);
+    return Array.from(landUnits).filter((unit) => !isMageType(unit));
   }
-  // Mage Tower. Return related hero type
-  return Object.values(HeroUnitName).filter(
-    (hero) => isMageType(hero) && unitsBaseStats(hero).recruitedIn === buildingType
-  );
+  if (buildingType === BuildingName.MAGE_TOWER) {
+    return Array.from(landUnits).filter((unit) => isMageType(unit));
+  }
+  return [];
 };
 
 export const getDiplomacyStatus = (

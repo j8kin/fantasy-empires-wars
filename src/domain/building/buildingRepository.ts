@@ -31,11 +31,7 @@ export const getBuildingInfo = (buildingType: BuildingType): BuildingInfo => {
         maintainCost: 1000,
         description: 'Allows recruitment of military units',
       };
-    case BuildingName.WHITE_MAGE_TOWER:
-    case BuildingName.BLACK_MAGE_TOWER:
-    case BuildingName.GREEN_MAGE_TOWER:
-    case BuildingName.BLUE_MAGE_TOWER:
-    case BuildingName.RED_MAGE_TOWER:
+    case BuildingName.MAGE_TOWER:
       return {
         type: buildingType,
         buildCost: 15000,

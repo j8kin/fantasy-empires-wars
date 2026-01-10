@@ -10,6 +10,7 @@ import { castSpell } from '../../map/magic/castSpell';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { isMageType } from '../../domain/unit/unitTypeChecks';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { UnitRank } from '../../state/army/RegularsState';
 import { LandName } from '../../types/Land';
@@ -42,7 +43,7 @@ describe('castRedManaSpell', () => {
   describe('Cast EMBER RAID spell', () => {
     describe('EMBER RAID effects current recruiting', () => {
       it.each([
-        [HeroUnitName.NECROMANCER, BuildingName.BLACK_MAGE_TOWER, 4],
+        [HeroUnitName.NECROMANCER, BuildingName.MAGE_TOWER, 4],
         [HeroUnitName.FIGHTER, BuildingName.BARRACKS, 4],
         [RegularUnitName.WARRIOR, BuildingName.BARRACKS, 2],
         [WarMachineName.CATAPULT, BuildingName.BARRACKS, 4],
@@ -54,6 +55,10 @@ describe('castRedManaSpell', () => {
             row: homeLand.mapPos.row - 1,
             col: homeLand.mapPos.col,
           };
+          const targetLand = getLand(gameStateStub, landToRecruit);
+          if (isMageType(unit)) {
+            getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
+          }
           construct(gameStateStub, building, landToRecruit);
 
           startRecruiting(gameStateStub, landToRecruit, unit);
@@ -78,7 +83,7 @@ describe('castRedManaSpell', () => {
     });
     describe('EMBER RAID effects new recruiting if effect active', () => {
       it.each([
-        [HeroUnitName.CLERIC, BuildingName.WHITE_MAGE_TOWER, 4],
+        [HeroUnitName.CLERIC, BuildingName.MAGE_TOWER, 4],
         [HeroUnitName.RANGER, BuildingName.BARRACKS, 4],
         [RegularUnitName.ELF, BuildingName.BARRACKS, 3],
         [WarMachineName.BALLISTA, BuildingName.BARRACKS, 4],
@@ -92,6 +97,10 @@ describe('castRedManaSpell', () => {
           };
           // to be able to recruit ELVES and RANGERS
           getLand(gameStateStub, landToRecruit).land = getLandById(LandName.GREEN_FOREST);
+          const targetLand = getLand(gameStateStub, landToRecruit);
+          if (isMageType(unit)) {
+            getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
+          }
           construct(gameStateStub, building, landToRecruit);
 
           // change turnOwner and cast EMBER RAID spell

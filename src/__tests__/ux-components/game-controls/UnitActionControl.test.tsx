@@ -104,8 +104,8 @@ describe('UnitActionControl', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
       const towerPosition: LandPosition = { row: 3, col: 3 };
 
-      // Add white mage tower to a land owned by the turn owner
-      construct(gameState, BuildingName.WHITE_MAGE_TOWER, towerPosition);
+      // Add mage tower to a land owned by the turn owner
+      construct(gameState, BuildingName.MAGE_TOWER, towerPosition);
 
       renderWithProviders(<UnitActionControl />, gameState);
 
@@ -416,50 +416,10 @@ describe('UnitActionControl', () => {
     });
   });
 
-  describe('All Mage Tower Types', () => {
-    it('highlights lands with white mage tower', () => {
+  describe('Mage Tower', () => {
+    it('highlights lands with mage tower', () => {
       const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingName.WHITE_MAGE_TOWER, { row: 3, col: 3 });
-
-      renderWithProviders(<UnitActionControl />, gameState);
-
-      fireEvent.click(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`));
-      expect(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`)).toBeInTheDocument();
-    });
-
-    it('highlights lands with black mage tower', () => {
-      const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingName.BLACK_MAGE_TOWER, { row: 3, col: 3 });
-
-      renderWithProviders(<UnitActionControl />, gameState);
-
-      fireEvent.click(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`));
-      expect(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`)).toBeInTheDocument();
-    });
-
-    it('highlights lands with blue mage tower', () => {
-      const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingName.BLUE_MAGE_TOWER, { row: 3, col: 3 });
-
-      renderWithProviders(<UnitActionControl />, gameState);
-
-      fireEvent.click(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`));
-      expect(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`)).toBeInTheDocument();
-    });
-
-    it('highlights lands with green mage tower', () => {
-      const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingName.GREEN_MAGE_TOWER, { row: 3, col: 3 });
-
-      renderWithProviders(<UnitActionControl />, gameState);
-
-      fireEvent.click(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`));
-      expect(screen.getByTestId(`game-button-${ButtonName.RECRUIT}`)).toBeInTheDocument();
-    });
-
-    it('highlights lands with red mage tower', () => {
-      const gameState = createGameStateStub({ nPlayers: 2, addPlayersHomeland: false });
-      construct(gameState, BuildingName.RED_MAGE_TOWER, { row: 3, col: 3 });
+      construct(gameState, BuildingName.MAGE_TOWER, { row: 3, col: 3 });
 
       renderWithProviders(<UnitActionControl />, gameState);
 
