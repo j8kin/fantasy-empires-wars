@@ -75,7 +75,6 @@ const mockApplicationContext = {
   setGameStarted: jest.fn(),
   setGlowingTiles: jest.fn(),
   addGlowingTile: jest.fn(),
-  removeGlowingTile: jest.fn(),
   clearAllGlow: jest.fn(),
   showLandPopup: jest.fn(),
   hideLandPopup: jest.fn(),

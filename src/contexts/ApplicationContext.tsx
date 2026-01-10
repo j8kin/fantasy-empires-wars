@@ -134,7 +134,6 @@ interface ApplicationContextType {
   setGameStarted: (started: boolean) => void;
   setGlowingTiles: (tiles: Set<string>) => void;
   addGlowingTile: (tileId: string) => void;
-  removeGlowingTile: (tileId: string) => void;
   clearAllGlow: () => void;
 
   // Combined actions
@@ -285,14 +284,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
     setGlowingTiles((prev) => new Set(prev).add(tileId));
   }, []);
 
-  const removeGlowingTile = useCallback((tileId: string) => {
-    setGlowingTiles((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(tileId);
-      return newSet;
-    });
-  }, []);
-
   const clearAllGlow = useCallback(() => {
     setGlowingTiles(new Set());
   }, []);
@@ -426,7 +417,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
         setGameStarted,
         setGlowingTiles,
         addGlowingTile,
-        removeGlowingTile,
         clearAllGlow,
 
         // Combined actions

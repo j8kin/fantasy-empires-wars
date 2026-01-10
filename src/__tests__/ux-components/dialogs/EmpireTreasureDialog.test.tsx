@@ -23,7 +23,6 @@ const mockApplicationContext = {
   setSelectedLandAction: jest.fn(),
   glowingTiles: new Set<string>(),
   addGlowingTile: jest.fn(),
-  removeGlowingTile: jest.fn(),
   clearAllGlow: jest.fn(),
   showStartWindow: false,
   showSaveDialog: false,
