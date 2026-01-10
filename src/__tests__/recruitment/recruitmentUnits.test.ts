@@ -343,7 +343,7 @@ describe('Recruitment', () => {
     describe('Corner cases', () => {
       it('regular units could not be recruited in mage towers', () => {
         const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col - 1 };
-        construct(gameStateStub, BuildingName.WHITE_MAGE_TOWER, mageTowerPos);
+        construct(gameStateStub, BuildingName.MAGE_TOWER, mageTowerPos);
 
         startRecruiting(gameStateStub, mageTowerPos, RegularUnitName.WARRIOR);
         expect(barracksLand.buildings[0].slots).toBeDefined(); // regular units not recruited
@@ -431,21 +431,24 @@ describe('Recruitment', () => {
       );
 
       it.each([
-        [HeroUnitName.CLERIC, 'Rowena Ironhall', BuildingName.WHITE_MAGE_TOWER],
-        [HeroUnitName.DRUID, 'Olyssia Riverlight', BuildingName.GREEN_MAGE_TOWER],
-        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard', BuildingName.BLUE_MAGE_TOWER],
-        [HeroUnitName.PYROMANCER, 'Branna Ashfang', BuildingName.RED_MAGE_TOWER],
-        [HeroUnitName.NECROMANCER, 'Eldra Stonebeard', BuildingName.BLACK_MAGE_TOWER],
+        [HeroUnitName.CLERIC, 'Rowena Ironhall'],
+        [HeroUnitName.DRUID, 'Olyssia Riverlight'],
+        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard'],
+        [HeroUnitName.PYROMANCER, 'Branna Ashfang'],
+        [HeroUnitName.NECROMANCER, 'Eldra Stonebeard'],
       ])(
-        '"%s named \'%s\' should be start recruited in 3 turn in %s"',
-        (unitType: HeroUnitType, name: string, magicTower: BuildingType) => {
+        '"%s named \'%s\' should be start recruited in 3 turn in Mage Tower"',
+        (unitType: HeroUnitType, name: string) => {
           randomSpy.mockReturnValue(0.6); // to have the same name of the hero unit
 
           const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-          constructBuilding(magicTower, mageTowerPos);
+          constructBuilding(BuildingName.MAGE_TOWER, mageTowerPos);
           // Mage towers cost 15000, which exhausts the initial 15000 vault, so add more gold for recruitment
           getTurnOwner(gameStateStub).vault += 5000;
           const mageTowerLand = getLand(gameStateStub, mageTowerPos);
+          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[mageTowerLand.land.id].add(
+            unitType
+          );
 
           // Recruiting heroes in mage tower
           startRecruiting(gameStateStub, mageTowerLand.mapPos, unitType);
@@ -509,15 +512,9 @@ describe('Recruitment', () => {
         verifyOccupiedSlotsCount(barracksLand.mapPos, 1); // CLERIC is not allowed in Barracks
       });
 
-      it.each([
-        [BuildingName.WHITE_MAGE_TOWER],
-        [BuildingName.GREEN_MAGE_TOWER],
-        [BuildingName.BLUE_MAGE_TOWER],
-        [BuildingName.RED_MAGE_TOWER],
-        [BuildingName.BLACK_MAGE_TOWER],
-      ])('non-mage heroes should not recruit in mage towers', (mageTower: BuildingType) => {
+      it('non-mage heroes should not recruit in mage towers', () => {
         const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-        constructBuilding(mageTower, mageTowerPos);
+        constructBuilding(BuildingName.MAGE_TOWER, mageTowerPos);
         const barracksLand = getLand(gameStateStub, mageTowerPos);
 
         startRecruiting(gameStateStub, mageTowerPos, HeroUnitName.FIGHTER);

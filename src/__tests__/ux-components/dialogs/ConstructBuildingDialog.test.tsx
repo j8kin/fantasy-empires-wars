@@ -333,9 +333,7 @@ describe('ConstructBuildingDialog', () => {
 
       renderWithProviders(<ConstructBuildingDialog />);
 
-      // LAWFUL players should see WHITE and GREEN mage towers
-      // But not RED mage tower
-      // These assertions depend on the building list actually containing these
+      // LAWFUL players should see Mage Tower when they can recruit mage units
       expect(screen.getByTestId('flip-book')).toBeInTheDocument();
     });
 

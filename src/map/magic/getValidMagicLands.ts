@@ -40,10 +40,7 @@ export const getValidMagicLands = (
 
     getPlayerLands(gameState)
       .filter(
-        (l) =>
-          hasBuilding(l, BuildingName.BLACK_MAGE_TOWER) ||
-          hasBuilding(l, BuildingName.OUTPOST) ||
-          hasBuilding(l, BuildingName.STRONGHOLD)
+        (l) => hasBuilding(l, BuildingName.OUTPOST) || hasBuilding(l, BuildingName.STRONGHOLD)
       )
       .forEach((land) => {
         const isStronghold = hasBuilding(land, BuildingName.STRONGHOLD);

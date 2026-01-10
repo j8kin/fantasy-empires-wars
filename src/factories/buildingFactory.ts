@@ -28,7 +28,7 @@ const recruitmentSlotFactory = (): RecruitmentSlot => ({
   turnsRemaining: 0, // Dummy value, ignored when isOccupied = false
 });
 
-const isMageTower = (building: BuildingType): boolean => building.toString().includes('Mage Tower');
+const isMageTower = (building: BuildingType): boolean => building === BuildingName.MAGE_TOWER;
 
 const slotsFactory = (buildingType: BuildingType): RecruitmentSlot[] => {
   if (buildingType === BuildingName.BARRACKS) {

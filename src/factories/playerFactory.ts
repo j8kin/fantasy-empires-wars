@@ -10,7 +10,7 @@ import type { PlayerState, PlayerTraits } from '../state/player/PlayerState';
 import type { PlayerProfile, PlayerType } from '../state/player/PlayerProfile';
 import type { ManaType } from '../types/Mana';
 import type { LandType } from '../types/Land';
-import type { UnitType } from '../types/UnitType';
+import type { UnitType, HeroUnitType } from '../types/UnitType';
 
 export const playerFactory = (
   profile: PlayerProfile,
@@ -41,7 +41,7 @@ export const playerFactory = (
 
 const playerTraitsFactory = (playerProfile: PlayerProfile): PlayerTraits => {
   const restrictedMagic = getRestrictedMagic(playerProfile);
-  const recruitedUnitsPerLand = getUnitsPerLand(playerProfile);
+  const recruitedUnitsPerLand = getUnitsPerLand(playerProfile, restrictedMagic);
 
   return {
     restrictedMagic: restrictedMagic,
@@ -104,7 +104,18 @@ const getRestrictedMagic = (playerProfile: PlayerProfile): Set<ManaType> => {
   return restricted;
 };
 
-const getUnitsPerLand = (playerProfile: PlayerProfile): Record<LandType, Set<UnitType>> => {
+const MANA_TO_MAGE: Record<ManaType, HeroUnitType> = {
+  [Mana.WHITE]: HeroUnitName.CLERIC,
+  [Mana.GREEN]: HeroUnitName.DRUID,
+  [Mana.BLUE]: HeroUnitName.ENCHANTER,
+  [Mana.RED]: HeroUnitName.PYROMANCER,
+  [Mana.BLACK]: HeroUnitName.NECROMANCER,
+};
+
+const getUnitsPerLand = (
+  playerProfile: PlayerProfile,
+  restrictedMagic: Set<ManaType>
+): Record<LandType, Set<UnitType>> => {
   const unitsPerLand: Record<LandType, Set<UnitType>> = Object.fromEntries(
     Object.values(LandName).map((land) => [land, new Set<UnitType>()])
   ) as Record<LandType, Set<UnitType>>;
@@ -192,5 +203,16 @@ const getUnitsPerLand = (playerProfile: PlayerProfile): Record<LandType, Set<Uni
           break;
       }
     });
+
+  const allowedMages = Object.entries(MANA_TO_MAGE)
+    .filter(([mana]) => !restrictedMagic.has(mana as ManaType))
+    .map(([, mage]) => mage);
+
+  Object.values(LandName)
+    .filter((landType) => landType !== LandName.NONE)
+    .forEach((landType) => {
+      allowedMages.forEach((mage) => unitsPerLand[landType].add(mage));
+    });
+
   return unitsPerLand;
 };

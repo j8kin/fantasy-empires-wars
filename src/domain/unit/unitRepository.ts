@@ -246,7 +246,7 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     alignment: Alignment.CHAOTIC,
     recruitCost: 2500,
     maintainCost: 100,
-    recruitedIn: BuildingName.RED_MAGE_TOWER,
+    recruitedIn: BuildingName.MAGE_TOWER,
   },
   // Cleric - produce white mana
   [HeroUnitName.CLERIC]: {
@@ -259,7 +259,7 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     alignment: Alignment.LAWFUL,
     recruitCost: 2500,
     maintainCost: 100,
-    recruitedIn: BuildingName.WHITE_MAGE_TOWER,
+    recruitedIn: BuildingName.MAGE_TOWER,
   },
   // Druid - produce green mana
   [HeroUnitName.DRUID]: {
@@ -272,7 +272,7 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     alignment: Alignment.LAWFUL,
     recruitCost: 2500,
     maintainCost: 100,
-    recruitedIn: BuildingName.GREEN_MAGE_TOWER,
+    recruitedIn: BuildingName.MAGE_TOWER,
   },
   // Enchanter - produce blue mana
   [HeroUnitName.ENCHANTER]: {
@@ -285,7 +285,7 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     alignment: Alignment.NEUTRAL,
     recruitCost: 2500,
     maintainCost: 100,
-    recruitedIn: BuildingName.BLUE_MAGE_TOWER,
+    recruitedIn: BuildingName.MAGE_TOWER,
   },
   // Necromancer - produce black mana
   [HeroUnitName.NECROMANCER]: {
@@ -298,7 +298,7 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     alignment: Alignment.CHAOTIC,
     recruitCost: 2500,
     maintainCost: 100,
-    recruitedIn: BuildingName.BLACK_MAGE_TOWER,
+    recruitedIn: BuildingName.MAGE_TOWER,
   },
 };
 

@@ -21,7 +21,6 @@ import { LandName } from '../../../types/Land';
 
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
-import type { BuildingType } from '../../../types/Building';
 import type { HeroUnitType } from '../../../types/UnitType';
 import type { PlayerProfile } from '../../../state/player/PlayerProfile';
 
@@ -414,33 +413,53 @@ describe('RecruitArmyDialog', () => {
 
   describe('Mage Tower Units', () => {
     it.each([
-      [HeroUnitName.CLERIC, BuildingName.WHITE_MAGE_TOWER],
-      [HeroUnitName.DRUID, BuildingName.GREEN_MAGE_TOWER],
-      [HeroUnitName.ENCHANTER, BuildingName.BLUE_MAGE_TOWER],
-      [HeroUnitName.PYROMANCER, BuildingName.RED_MAGE_TOWER],
-      [HeroUnitName.NECROMANCER, BuildingName.BLACK_MAGE_TOWER],
-    ])(
-      'should show mage units (%s) in appropriate mage tower (%s)',
-      (mageType: HeroUnitType, mageTower: BuildingType) => {
-        // Replace barracks with white mage tower
-        const landPos: LandPosition = { row: 4, col: 3 };
-        const land = getLand(gameStateStub, landPos);
-        expect(land.buildings).toHaveLength(0);
-        expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
+      [HeroUnitName.CLERIC],
+      [HeroUnitName.DRUID],
+      [HeroUnitName.ENCHANTER],
+      [HeroUnitName.PYROMANCER],
+      [HeroUnitName.NECROMANCER],
+    ])('should show mage units (%s) in mage tower', (mageType: HeroUnitType) => {
+      // Replace barracks with mage tower
+      const landPos: LandPosition = { row: 4, col: 3 };
+      const land = getLand(gameStateStub, landPos);
+      expect(land.buildings).toHaveLength(0);
+      expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
 
-        // Give the player enough money to build the mage tower (costs 15000)
-        getTurnOwner(gameStateStub).vault = 20000;
+      // Give the player enough money to build the mage tower (costs 15000)
+      getTurnOwner(gameStateStub).vault = 20000;
 
-        construct(gameStateStub, mageTower, landPos); // automatically allow to build clerics
+      construct(gameStateStub, BuildingName.MAGE_TOWER, landPos);
+      getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.id].add(mageType);
 
-        mockApplicationContext.actionLandPosition = landPos;
-        renderWithProviders(<RecruitArmyDialog />);
+      mockApplicationContext.actionLandPosition = landPos;
+      renderWithProviders(<RecruitArmyDialog />);
 
-        // The dialog should render showing the cleric which can be recruited in white mage tower
-        expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-        expect(screen.getByTestId(`flipbook-page-${mageType}`)).toBeInTheDocument();
-      }
-    );
+      // The dialog should render showing the mage which can be recruited in mage tower
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId(`flipbook-page-${mageType}`)).toBeInTheDocument();
+    });
+
+    it('All available mage units should be shown in mage tower', () => {
+      const landPos: LandPosition = { row: 4, col: 3 };
+      const land = getLand(gameStateStub, landPos);
+      expect(land.buildings).toHaveLength(0);
+      expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
+
+      // Give the player enough money to build the mage tower (costs 15000)
+      getTurnOwner(gameStateStub).vault = 20000;
+
+      construct(gameStateStub, BuildingName.MAGE_TOWER, landPos);
+
+      mockApplicationContext.actionLandPosition = landPos;
+      renderWithProviders(<RecruitArmyDialog />);
+
+      // The dialog should render showing the mage which can be recruited in mage tower
+      // Lawful player on PLAN(s) are able to recruit Cleric, Druid and Enchanter
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+      expect(screen.getByTestId(`flipbook-page-Cleric`)).toBeInTheDocument();
+      expect(screen.getByTestId(`flipbook-page-Druid`)).toBeInTheDocument();
+      expect(screen.getByTestId(`flipbook-page-Enchanter`)).toBeInTheDocument();
+    });
   });
 
   describe('Player Type Restrictions', () => {
