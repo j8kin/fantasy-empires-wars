@@ -4,7 +4,7 @@ import {
   getUnitsAllowedToRecruit,
   hasTreasureByPlayer,
 } from '../../selectors/playerSelectors';
-import { hasAvailableSlot } from '../../selectors/buildingSelectors';
+import { hasAvailableSlotForUnit } from '../../selectors/buildingSelectors';
 import { startRecruitmentInSlot, updatePlayerVault } from '../../systems/gameStateActions';
 import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
 import { unitsBaseStats } from '../../domain/unit/unitRepository';
@@ -27,7 +27,8 @@ export const startRecruiting = (
   const turnOwner = getTurnOwner(state);
   const recruitBuilding = land.buildings.find(
     (b) =>
-      hasAvailableSlot(b) && getUnitsAllowedToRecruit(turnOwner, land, b.type).includes(unitType)
+      hasAvailableSlotForUnit(b, unitType, turnOwner.traits.recruitmentSlots[b.type]!) &&
+      getUnitsAllowedToRecruit(turnOwner, land, b).includes(unitType)
   );
   if (recruitBuilding) {
     const turnOwner = getTurnOwner(state);

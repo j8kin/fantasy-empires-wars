@@ -43,7 +43,7 @@ describe('castRedManaSpell', () => {
   describe('Cast EMBER RAID spell', () => {
     describe('EMBER RAID effects current recruiting', () => {
       it.each([
-        [HeroUnitName.NECROMANCER, BuildingName.MAGE_TOWER, 4],
+        [HeroUnitName.CLERIC, BuildingName.MAGE_TOWER, 4],
         [HeroUnitName.FIGHTER, BuildingName.BARRACKS, 4],
         [RegularUnitName.WARRIOR, BuildingName.BARRACKS, 2],
         [WarMachineName.CATAPULT, BuildingName.BARRACKS, 4],
@@ -77,6 +77,7 @@ describe('castRedManaSpell', () => {
 
           expect(reqLand.buildings).toHaveLength(1);
           expect(reqLand.buildings[0].slots![0].unit).toBe(unit);
+          expect(reqLand.buildings[0].slots![0].isOccupied).toBeTruthy();
           expect(reqLand.buildings[0].slots![0].turnsRemaining).toBe(newNTurn);
         }
       );
@@ -170,13 +171,15 @@ describe('castRedManaSpell', () => {
       const opponentLandPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id).find(
         (l) => l.buildings.length === 0
       )!.mapPos;
+      // Morgana is Chaotic so we need to change land type to swamp to be able to recruit regular units (for example orcs)
+      getLand(gameStateStub, opponentLandPos).land = getLandById(LandName.SWAMP);
 
       castSpell(gameStateStub, SpellName.EMBER_RAID, opponentLandPos);
 
       // change turnOwner construct building and start recruiting
       gameStateStub.turnOwner = gameStateStub.players[1].id;
       construct(gameStateStub, BuildingName.BARRACKS, opponentLandPos);
-      startRecruiting(gameStateStub, opponentLandPos, RegularUnitName.WARRIOR);
+      startRecruiting(gameStateStub, opponentLandPos, RegularUnitName.ORC);
 
       const opponentLand = getLand(gameStateStub, opponentLandPos);
       expect(opponentLand.effects).toHaveLength(1); // effect not disappear due to construction
@@ -186,7 +189,8 @@ describe('castRedManaSpell', () => {
       expect(opponentLand.effects[0].rules.duration).toBe(3);
 
       expect(opponentLand.buildings).toHaveLength(1);
-      expect(opponentLand.buildings[0].slots![0].unit).toBe(RegularUnitName.WARRIOR);
+      expect(opponentLand.buildings[0].slots![0].unit).toBe(RegularUnitName.ORC);
+      expect(opponentLand.buildings[0].slots![0].isOccupied).toBeTruthy();
       expect(opponentLand.buildings[0].slots![0].turnsRemaining).toBe(2); // EMBER RAID effect
     });
   });

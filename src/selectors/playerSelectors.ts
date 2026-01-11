@@ -12,12 +12,13 @@ import { DiplomacyStatus } from '../types/Diplomacy';
 import type { GameState } from '../state/GameState';
 import type { PlayerState, PlayerTraits } from '../state/player/PlayerState';
 import type { LandState } from '../state/map/land/LandState';
+import type { BuildingState } from '../state/map/building/BuildingState';
 import type { BuildingInfo } from '../domain/building/buildingRepository';
 import type { EffectSourceId } from '../types/Effect';
 import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatusType } from '../types/Diplomacy';
-import type { BuildingType } from '../types/Building';
 import type { UnitType } from '../types/UnitType';
+import { hasAvailableSlotForUnit } from './buildingSelectors';
 
 const NONE = playerFactory(NO_PLAYER, 'computer');
 
@@ -90,11 +91,12 @@ export const getAllowedBuildings = (state: PlayerState): BuildingInfo[] => {
 export const getUnitsAllowedToRecruit = (
   player: PlayerState,
   land: LandState,
-  buildingType: BuildingType
+  building: BuildingState
 ): UnitType[] => {
   const landUnits = player.traits.recruitedUnitsPerLand[land.land.id] ?? new Set<UnitType>();
+  const slotTraits = player.traits.recruitmentSlots[building.type]!;
 
-  if (buildingType === BuildingName.BARRACKS) {
+  if (building.type === BuildingName.BARRACKS) {
     // non-magic players ignore corrupted lands
     if (land.corrupted && player.traits.restrictedMagic.size !== Object.values(Mana).length) {
       const availableUnits: Set<UnitType> = new Set(Object.values(WarMachineName));
@@ -105,12 +107,18 @@ export const getUnitsAllowedToRecruit = (
         availableUnits.add(RegularUnitName.ORC);
         availableUnits.add(HeroUnitName.OGR);
       }
-      return Array.from(availableUnits).filter((unit) => !isMageType(unit));
+      return Array.from(availableUnits).filter(
+        (unit) => !isMageType(unit) && hasAvailableSlotForUnit(building, unit, slotTraits)
+      );
     }
-    return Array.from(landUnits).filter((unit) => !isMageType(unit));
+    return Array.from(landUnits).filter(
+      (unit) => !isMageType(unit) && hasAvailableSlotForUnit(building, unit, slotTraits)
+    );
   }
-  if (buildingType === BuildingName.MAGE_TOWER) {
-    return Array.from(landUnits).filter((unit) => isMageType(unit));
+  if (building.type === BuildingName.MAGE_TOWER) {
+    return Array.from(landUnits).filter(
+      (unit) => isMageType(unit) && hasAvailableSlotForUnit(building, unit, slotTraits)
+    );
   }
   return [];
 };

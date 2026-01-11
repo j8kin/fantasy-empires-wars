@@ -14,7 +14,7 @@ import {
   getPosition,
   isMoving,
 } from '../../selectors/armySelectors';
-import { hasAvailableSlot } from '../../selectors/buildingSelectors';
+import { getAvailableSlotsCount } from '../../selectors/buildingSelectors';
 import { getPlayerLands } from '../../selectors/landSelectors';
 import { ButtonName } from '../../types/ButtonName';
 
@@ -39,7 +39,7 @@ const UnitActionControl: React.FC = () => {
 
       // Get all lands owned by current player with BARRACKS or Mage Towers that have available slots
       const recruitmentLands = getPlayerLands(gameState).filter((l) =>
-        l.buildings.some((b) => hasAvailableSlot(b))
+        l.buildings.some((b) => getAvailableSlotsCount(b) > 0)
       );
       if (recruitmentLands.length === 0) {
         if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {

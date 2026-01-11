@@ -4,7 +4,12 @@ import userEvent from '@testing-library/user-event';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
 
-import { getLand, getLandOwner, hasBuilding } from '../../../selectors/landSelectors';
+import {
+  getLand,
+  getLandOwner,
+  getPlayerLands,
+  hasBuilding,
+} from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
 import { construct } from '../../../map/building/construct';
 import { startRecruiting } from '../../../map/recruiting/startRecruiting';
@@ -16,7 +21,7 @@ import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { BuildingName } from '../../../types/Building';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
 import { RaceName } from '../../../state/player/PlayerProfile';
-import { Alignment } from '../../../types/Alignment';
+import { Alignment, AlignmentType } from '../../../types/Alignment';
 import { LandName } from '../../../types/Land';
 
 import type { GameState } from '../../../state/GameState';
@@ -25,6 +30,8 @@ import type { HeroUnitType } from '../../../types/UnitType';
 import type { PlayerProfile } from '../../../state/player/PlayerProfile';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
+import { addPlayer } from '../../../systems/gameStateActions';
+import { placeHomeland } from '../../../map/generation/placeHomeland';
 
 // Mock context hooks
 const mockApplicationContext = {
@@ -412,31 +419,49 @@ describe('RecruitArmyDialog', () => {
 
   describe('Mage Tower Units', () => {
     it.each([
-      [HeroUnitName.CLERIC],
-      [HeroUnitName.DRUID],
-      [HeroUnitName.ENCHANTER],
-      [HeroUnitName.PYROMANCER],
-      [HeroUnitName.NECROMANCER],
-    ])('should show mage units (%s) in mage tower', (mageType: HeroUnitType) => {
-      // Replace barracks with mage tower
-      const landPos: LandPosition = { row: 4, col: 3 };
-      const land = getLand(gameStateStub, landPos);
-      expect(land.buildings).toHaveLength(0);
-      expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
+      [HeroUnitName.CLERIC, Alignment.LAWFUL],
+      [HeroUnitName.DRUID, Alignment.LAWFUL],
+      [HeroUnitName.ENCHANTER, Alignment.LAWFUL],
+      [HeroUnitName.DRUID, Alignment.NEUTRAL],
+      [HeroUnitName.ENCHANTER, Alignment.NEUTRAL],
+      [HeroUnitName.PYROMANCER, Alignment.NEUTRAL],
+      [HeroUnitName.ENCHANTER, Alignment.CHAOTIC],
+      [HeroUnitName.PYROMANCER, Alignment.CHAOTIC],
+      [HeroUnitName.NECROMANCER, Alignment.CHAOTIC],
+    ])(
+      'should show mage units (%s) in mage tower for %s player',
+      (mageType: HeroUnitType, alignment: AlignmentType) => {
+        const newPlayer = PREDEFINED_PLAYERS.find(
+          (p) => p.alignment === alignment && p.id !== gameStateStub.turnOwner
+        )!;
+        Object.assign(gameStateStub, addPlayer(gameStateStub, playerFactory(newPlayer, 'human')));
+        gameStateStub.turnOwner = newPlayer.id;
+        getTurnOwner(gameStateStub).vault = 100000; // to be able to construct and recruit
+        placeHomeland(gameStateStub);
+        const landPos: LandPosition = getPlayerLands(gameStateStub, gameStateStub.turnOwner).find(
+          (l) => l.buildings.length === 0
+        )!.mapPos;
 
-      // Give the player enough money to build the mage tower (costs 15000)
-      getTurnOwner(gameStateStub).vault = 20000;
+        const land = getLand(gameStateStub, landPos);
+        expect(land.buildings).toHaveLength(0);
+        expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
 
-      construct(gameStateStub, BuildingName.MAGE_TOWER, landPos);
-      getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.id].add(mageType);
+        // Give the player enough money to build the mage tower (costs 15000)
+        getTurnOwner(gameStateStub).vault = 20000;
 
-      mockApplicationContext.actionLandPosition = landPos;
-      renderWithProviders(<RecruitArmyDialog />);
+        construct(gameStateStub, BuildingName.MAGE_TOWER, landPos);
+        getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.id].add(mageType);
 
-      // The dialog should render showing the mage which can be recruited in mage tower
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId(`flipbook-page-${mageType}`)).toBeInTheDocument();
-    });
+        mockApplicationContext.actionLandPosition = landPos;
+
+        /********************** RENDER DIALOG ***********************/
+        renderWithProviders(<RecruitArmyDialog />);
+
+        // The dialog should render showing the mage which can be recruited in mage tower
+        expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+        expect(screen.getByTestId(`flipbook-page-${mageType}`)).toBeInTheDocument();
+      }
+    );
 
     it('All available mage units should be shown in mage tower', () => {
       const landPos: LandPosition = { row: 4, col: 3 };

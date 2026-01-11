@@ -1,8 +1,8 @@
 import { v4 as uuid } from 'uuid';
+import type { BuildingState, RecruitmentSlot } from '../state/map/building/BuildingState';
 import { BuildingName } from '../types/Building';
 import { RegularUnitName } from '../types/UnitType';
-import type { BuildingType, RecruitmentSlot } from '../types/Building';
-import type { BuildingState } from '../state/map/building/BuildingState';
+import type { BuildingType } from '../types/Building';
 
 // Building slot constants
 const BARRACKS_SLOTS = 3;
