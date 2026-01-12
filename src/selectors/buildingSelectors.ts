@@ -9,24 +9,14 @@ export const hasAvailableSlotForUnit = (
   unitType: UnitType,
   slotTraits: Record<number, Set<UnitType>>
 ): boolean => {
-  if (building.slots.every((slot) => slot.isOccupied)) return false;
-
-  const maxSlotsForUnit = Object.values(slotTraits).reduce((acc, unitSet) => {
-    return unitSet?.has(unitType) ? acc + 1 : acc;
-  }, 0);
-
-  const slotsOccupiedByUnit = building.slots.filter(
-    (slot) => slot.isOccupied && slot.unit === unitType
-  ).length;
-
-  return slotsOccupiedByUnit < maxSlotsForUnit;
+  return building.slots.some((slot, index) => !slot.isOccupied && slotTraits[index]?.has(unitType));
 };
 
 /**
  * Get count of available slots
  */
-export const getAvailableSlotsCount = (building: BuildingState): number => {
-  return building.slots.filter((slot) => !slot.isOccupied).length;
+export const getAvailableSlotsCount = (building?: BuildingState): number => {
+  return building?.slots.filter((slot) => !slot.isOccupied).length ?? 0;
 };
 /**
  * Get count of occupied slots

@@ -14,6 +14,7 @@ import type { GameState } from '../state/GameState';
 import type { MapDimensions } from '../state/map/MapDimensions';
 import type { LandPosition } from '../state/map/land/LandPosition';
 import type { LandState } from '../state/map/land/LandState';
+import type { BuildingState } from '../state/map/building/BuildingState';
 import type { LandType } from '../types/Land';
 import type { BuildingType } from '../types/Building';
 import type { Effect, EffectSourceId } from '../types/Effect';
@@ -25,6 +26,10 @@ export const getLand = (state: GameState, landPos: LandPosition) =>
 
 export const getLandOwner = (state: GameState, landPos: LandPosition): string =>
   state.players.find((p) => p.landsOwned.has(getLandId(landPos)))?.id ?? NO_PLAYER.id;
+
+export const getBuilding = (state: LandState, id: string): BuildingState | undefined => {
+  return state.buildings.find((b) => b.id === id);
+};
 
 interface LandInfo {
   owner: string;

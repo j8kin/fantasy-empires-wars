@@ -381,9 +381,11 @@ export const startRecruitmentInSlot = (
     if (b.id !== building.id) {
       return b;
     }
-
-    // Find first available slot
-    const slotIndex = b.slots.findIndex((s) => !s.isOccupied);
+    const slotTraits = getTurnOwner(gameState).traits.recruitmentSlots[building.type];
+    // Find first available slot that supports this unit
+    const slotIndex = b.slots.findIndex(
+      (s, i) => !s.isOccupied && slotTraits && slotTraits[i]?.has(unit)
+    );
     if (slotIndex === -1) {
       return b; // No available slots
     }

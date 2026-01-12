@@ -6,7 +6,7 @@ import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-import { getLand } from '../../selectors/landSelectors';
+import { getBuilding, getLand } from '../../selectors/landSelectors';
 import { getTurnOwner, getUnitsAllowedToRecruit } from '../../selectors/playerSelectors';
 import { getAvailableSlotsCount } from '../../selectors/buildingSelectors';
 import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
@@ -97,31 +97,34 @@ const RecruitArmyDialog: React.FC = () => {
   const createRecruitClickHandler = useCallback(
     (unitType: UnitType, landPos: LandPosition): ((availableSlots: Slot[]) => void) => {
       return (availableSlots: Slot[]) => {
-        const building = getLand(gameState!, landPos).buildings.find(
+        const buildingId = getLand(gameState!, landPos).buildings.find(
           (b) => getAvailableSlotsCount(b) > 0
-        )!;
-        const availableSlotsCount = getAvailableSlotsCount(building);
+        )!.id;
+
+        const building = getBuilding(getLand(gameState!, landPos), buildingId);
+
+        const initialAvailable = getAvailableSlotsCount(building);
+
         // recruit the same unit for all available slots
-        for (let i = 0; i < availableSlotsCount; i++) {
+        for (let i = 0; i < initialAvailable; i++) {
           startRecruiting(gameState!, landPos, unitType);
         }
 
-        // Mark all available slots as used
+        const updatedBuilding = getBuilding(getLand(gameState!, landPos), buildingId);
+
+        const recruitedInThisClick = initialAvailable - getAvailableSlotsCount(updatedBuilding);
+
+        // Mark only actually recruited slots as used
         setUsedSlots((prev) => {
           const newUsedSlots = new Set(prev);
-          availableSlots.forEach((slot) => newUsedSlots.add(slot.id));
+          for (let i = 0; i < recruitedInThisClick; i++) {
+            if (availableSlots && availableSlots[i] != null) newUsedSlots.add(availableSlots[i].id);
+          }
           return newUsedSlots;
         });
-
-        const updatedBuilding = getLand(gameState!, landPos).buildings.find(
-          (b) => getAvailableSlotsCount(b) > 0
-        );
-        if (!updatedBuilding) {
-          handleClose();
-        }
       };
     },
-    [gameState, handleClose]
+    [gameState]
   );
 
   if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return null;

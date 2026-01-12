@@ -68,13 +68,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     // Effect to check if all slots are used and trigger callback
     // Only auto-close if there's no onIconClick handler (parent handles closing logic)
     useEffect(() => {
-      if (
-        slots &&
-        slots.length > 0 &&
-        effectiveUsedSlots.size === slots.length &&
-        onClose &&
-        !onIconClick
-      ) {
+      if (slots && slots.length > 0 && effectiveUsedSlots.size === slots.length && onClose) {
         onClose();
       }
     }, [slots, effectiveUsedSlots.size, onClose, onIconClick]);

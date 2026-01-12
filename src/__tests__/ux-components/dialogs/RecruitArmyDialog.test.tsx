@@ -392,16 +392,113 @@ describe('RecruitArmyDialog', () => {
   });
 
   describe('Icon Click Recruitment', () => {
-    it('should handle icon click to recruit and close dialog', async () => {
+    it('should handle icon click to recruit and close dialog if unit could be recruited in all slots', async () => {
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
 
       // click on icon to recruit all posible units the same type
       await user.click(screen.getAllByTestId('flipbook-icon')[0]);
 
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument(); // dialog closed
       expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(0);
 
-      expect(mockApplicationContext.setShowRecruitArmyDialog).toHaveBeenCalledWith(false); // dialog closed
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument(); // dialog closed
+    });
+
+    it("handles icon click to recruit, keeps dialog open if unit isn't in all slots, and shows remaining slots", async () => {
+      gameStateStub = createGameStateStub({
+        gamePlayers: PREDEFINED_PLAYERS.slice(3, 4), // player 3 is Kaer and he is not able to recruit Undead in 3 slots
+      });
+      construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+
+      const user = userEvent.setup();
+      renderWithProviders(<RecruitArmyDialog />);
+
+      // click on icon to recruit all posible units the same type
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(1);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(5); // 4 war-machines + Warthmith-hero
+
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
+
+      // click on Icon one more time to use the rest of the slots
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument(); // dialog closed
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(0);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot3')).not.toBeInTheDocument();
+    });
+
+    it("handles icon click to recruit, keeps dialog open if unit isn't in all slots, and shows remaining slots for Nullwarden", async () => {
+      gameStateStub = createGameStateStub({
+        // player 16 is Nullwarden and his recruit restrictions are:
+        // one slot for regular units only
+        // one slot for war-machines only
+        // one slot for hero units only
+        gamePlayers: [PREDEFINED_PLAYERS[16], PREDEFINED_PLAYERS[0]],
+      });
+      construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+
+      const user = userEvent.setup();
+      renderWithProviders(<RecruitArmyDialog />);
+
+      // click on icon to recruit all posible units the same type
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(2);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(5); // 4 war-machines + Zealot-hero
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(5); // 4 war-machines + Zealot-hero
+
+      // click on Icon one more time to use the rest of the slots
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(1);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(1); // Zealot-hero
+    });
+
+    it('handles icon click to recruit, when click 3 times on Icon for Nullwarden', async () => {
+      gameStateStub = createGameStateStub({
+        // player 16 is Nullwarden and his recruit restrictions are:
+        // one slot for regular units only
+        // one slot for war-machines only
+        // one slot for hero units only
+        gamePlayers: [PREDEFINED_PLAYERS[16], PREDEFINED_PLAYERS[0]],
+      });
+      construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+
+      const user = userEvent.setup();
+      renderWithProviders(<RecruitArmyDialog />);
+
+      /******************* click on icon to recruit all posible units the same type *******************/
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(2);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(5); // 4 war-machines + Zealot-hero
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(5); // 4 war-machines + Zealot-hero
+
+      /****************** click on Icon one more time to use the rest of the slots *******************/
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(1);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(1); // Zealot-hero
+
+      /****************** click on Icon one more time to use the rest of the slots *******************/
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument(); // dialog closed
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(0);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot3')).not.toBeInTheDocument();
     });
   });
 
