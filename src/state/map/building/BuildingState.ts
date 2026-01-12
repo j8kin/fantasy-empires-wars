@@ -1,4 +1,11 @@
-import type { BuildingType, RecruitmentSlot } from '../../../types/Building';
+import type { BuildingType } from '../../../types/Building';
+import type { UnitType } from '../../../types/UnitType';
+
+export interface RecruitmentSlot {
+  isOccupied: boolean;
+  unit: UnitType;
+  turnsRemaining: number;
+}
 
 export interface BuildingState {
   /** UUID **/

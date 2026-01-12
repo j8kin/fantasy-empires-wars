@@ -327,12 +327,17 @@ describe('FlipBookPage Component', () => {
   describe('Icon Click Handler', () => {
     it('should call onIconClick when icon is clicked', () => {
       const onIconClick = jest.fn();
-      render(<FlipBookPage {...defaultProps} onIconClick={onIconClick} />);
+      const slots: Slot[] = [
+        { id: 'slot1', name: 'Slot 1' },
+        { id: 'slot2', name: 'Slot 2' },
+      ];
+      render(<FlipBookPage {...defaultProps} onIconClick={onIconClick} slots={slots} />);
 
       const icon = screen.getByAltText('Test Header');
       fireEvent.click(icon);
 
       expect(onIconClick).toHaveBeenCalledTimes(1);
+      expect(onIconClick).toHaveBeenCalledWith(slots);
     });
 
     it('should not throw error when icon is clicked without onIconClick', () => {

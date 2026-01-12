@@ -1,5 +1,3 @@
-import type { UnitType } from './UnitType';
-
 export const BuildingName = {
   STRONGHOLD: 'Stronghold',
   BARRACKS: 'Barracks',
@@ -11,9 +9,3 @@ export const BuildingName = {
 } as const;
 
 export type BuildingType = (typeof BuildingName)[keyof typeof BuildingName];
-
-export interface RecruitmentSlot {
-  isOccupied: boolean;
-  unit: UnitType;
-  turnsRemaining: number;
-}

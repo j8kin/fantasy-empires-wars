@@ -2,7 +2,13 @@ import { isHeroType, isMageType } from '../domain/unit/unitTypeChecks';
 import { getLandById } from '../domain/land/landRepository';
 import { getAllUnitTypeByAlignment } from '../domain/unit/unitRepository';
 import { RaceName } from '../state/player/PlayerProfile';
-import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
+import {
+  HeroUnitName,
+  RegularUnitName,
+  RegularUnitType,
+  WarMachineName,
+  WarMachineType,
+} from '../types/UnitType';
 import { Alignment } from '../types/Alignment';
 import { LandName } from '../types/Land';
 import { Mana } from '../types/Mana';
@@ -10,6 +16,7 @@ import type { PlayerState, PlayerTraits } from '../state/player/PlayerState';
 import type { PlayerProfile, PlayerType } from '../state/player/PlayerProfile';
 import type { ManaType } from '../types/Mana';
 import type { LandType } from '../types/Land';
+import { BuildingName, BuildingType } from '../types/Building';
 import type { UnitType, HeroUnitType } from '../types/UnitType';
 
 export const playerFactory = (
@@ -42,10 +49,12 @@ export const playerFactory = (
 const playerTraitsFactory = (playerProfile: PlayerProfile): PlayerTraits => {
   const restrictedMagic = getRestrictedMagic(playerProfile);
   const recruitedUnitsPerLand = getUnitsPerLand(playerProfile, restrictedMagic);
+  const recruitmentSlots = getRecruitmentSlots(playerProfile, restrictedMagic);
 
   return {
     restrictedMagic: restrictedMagic,
     recruitedUnitsPerLand: recruitedUnitsPerLand,
+    recruitmentSlots: recruitmentSlots,
   };
 };
 
@@ -215,4 +224,54 @@ const getUnitsPerLand = (
     });
 
   return unitsPerLand;
+};
+
+const getRecruitmentSlots = (
+  playerProfile: PlayerProfile,
+  restrictedMagic: Set<ManaType>
+): Partial<Record<BuildingType, Record<number, Set<UnitType>>>> => {
+  const buildingTraits: Partial<Record<BuildingType, Record<number, Set<UnitType>>>> = {};
+  const allowedMages = Object.values(Mana)
+    .filter((m) => !restrictedMagic.has(m))
+    .map((mana) => MANA_TO_MAGE[mana]);
+  if (allowedMages.length > 0) {
+    buildingTraits[BuildingName.MAGE_TOWER] = { 0: new Set(allowedMages) };
+  }
+
+  const allRegularUnits: RegularUnitType[] = Object.values(RegularUnitName);
+  const allWarMachinesUnits: WarMachineType[] = Object.values(WarMachineName);
+  const allHeroesUnits: HeroUnitType[] = Object.values(HeroUnitName);
+
+  switch (playerProfile.type) {
+    case HeroUnitName.WARSMITH:
+      if (playerProfile.undead) {
+        buildingTraits[BuildingName.BARRACKS] = {
+          0: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+          1: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+          2: new Set([...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+        };
+      } else {
+        buildingTraits[BuildingName.BARRACKS] = {
+          0: new Set([...allRegularUnits, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+          1: new Set([...allRegularUnits, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+          2: new Set([...allRegularUnits, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+        };
+      }
+      break;
+    case HeroUnitName.ZEALOT:
+      buildingTraits[BuildingName.BARRACKS] = {
+        0: new Set([RegularUnitName.NULLWARDEN]),
+        1: new Set([...allWarMachinesUnits]),
+        2: new Set([HeroUnitName.ZEALOT]),
+      };
+      break;
+    default:
+      buildingTraits[BuildingName.BARRACKS] = {
+        0: new Set([...allRegularUnits, ...allWarMachinesUnits, ...allHeroesUnits]),
+        1: new Set([...allRegularUnits, ...allWarMachinesUnits, ...allHeroesUnits]),
+        2: new Set([...allRegularUnits, ...allWarMachinesUnits, ...allHeroesUnits]),
+      };
+      break;
+  }
+  return buildingTraits;
 };

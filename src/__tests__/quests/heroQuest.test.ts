@@ -6,7 +6,7 @@ import {
   getArmiesAtPosition,
   isMoving,
 } from '../../selectors/armySelectors';
-import { getAvailableSlotsCount, hasAvailableSlot } from '../../selectors/buildingSelectors';
+import { getAvailableSlotsCount } from '../../selectors/buildingSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { startQuest } from '../../map/quest/startQuest';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
@@ -187,7 +187,7 @@ describe('Hero Quest', () => {
       expect(barracksLand).toBeDefined();
       const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies).toHaveLength(0);
-      expect(hasAvailableSlot(barracksLand.buildings[0])).toBeTruthy();
+      expect(getAvailableSlotsCount(barracksLand.buildings[0])).toBeGreaterThan(0);
     };
 
     it('Couple heroes returned from quest at the same time should be placed on the same land', () => {

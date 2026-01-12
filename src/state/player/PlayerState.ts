@@ -6,11 +6,13 @@ import type { Effect } from '../../types/Effect';
 import type { DiplomacyType } from '../../types/Diplomacy';
 import type { ManaType } from '../../types/Mana';
 import type { LandType } from '../../types/Land';
+import type { BuildingType } from '../../types/Building';
 import type { UnitType } from '../../types/UnitType';
 
 export interface PlayerTraits {
   restrictedMagic: Set<ManaType>;
   recruitedUnitsPerLand: Record<LandType, Set<UnitType>>;
+  recruitmentSlots: Partial<Record<BuildingType, Record<number, Set<UnitType>>>>;
 }
 
 export interface PlayerState {

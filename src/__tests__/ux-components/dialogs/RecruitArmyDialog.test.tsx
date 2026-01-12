@@ -4,8 +4,15 @@ import userEvent from '@testing-library/user-event';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
 
-import { getLand, getLandOwner, hasBuilding } from '../../../selectors/landSelectors';
+import {
+  getLand,
+  getLandOwner,
+  getPlayerLands,
+  hasBuilding,
+} from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
+import { addPlayer } from '../../../systems/gameStateActions';
+import { placeHomeland } from '../../../map/generation/placeHomeland';
 import { construct } from '../../../map/building/construct';
 import { startRecruiting } from '../../../map/recruiting/startRecruiting';
 import { playerFactory } from '../../../factories/playerFactory';
@@ -16,7 +23,7 @@ import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { BuildingName } from '../../../types/Building';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
 import { RaceName } from '../../../state/player/PlayerProfile';
-import { Alignment } from '../../../types/Alignment';
+import { Alignment, AlignmentType } from '../../../types/Alignment';
 import { LandName } from '../../../types/Land';
 
 import type { GameState } from '../../../state/GameState';
@@ -385,16 +392,113 @@ describe('RecruitArmyDialog', () => {
   });
 
   describe('Icon Click Recruitment', () => {
-    it('should handle icon click to recruit and close dialog', async () => {
+    it('should handle icon click to recruit and close dialog if unit could be recruited in all slots', async () => {
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
 
       // click on icon to recruit all posible units the same type
       await user.click(screen.getAllByTestId('flipbook-icon')[0]);
 
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument(); // dialog closed
       expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(0);
 
-      expect(mockApplicationContext.setShowRecruitArmyDialog).toHaveBeenCalledWith(false); // dialog closed
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument(); // dialog closed
+    });
+
+    it("handles icon click to recruit, keeps dialog open if unit isn't in all slots, and shows remaining slots", async () => {
+      gameStateStub = createGameStateStub({
+        gamePlayers: PREDEFINED_PLAYERS.slice(3, 4), // player 3 is Kaer and he is not able to recruit Undead in 3 slots
+      });
+      construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+
+      const user = userEvent.setup();
+      renderWithProviders(<RecruitArmyDialog />);
+
+      // click on icon to recruit all posible units the same type
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(1);
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(5); // 4 war-machines + Warthmith-hero
+
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
+
+      // click on Icon one more time to use the rest of the slots
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument(); // dialog closed
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(0);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot3')).not.toBeInTheDocument();
+    });
+
+    it("handles icon click to recruit, keeps dialog open if unit isn't in all slots, and shows remaining slots for Nullwarden", async () => {
+      gameStateStub = createGameStateStub({
+        // player 16 is Nullwarden and his recruit restrictions are:
+        // one slot for regular units only
+        // one slot for war-machines only
+        // one slot for hero units only
+        gamePlayers: [PREDEFINED_PLAYERS[16], PREDEFINED_PLAYERS[0]],
+      });
+      construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+
+      const user = userEvent.setup();
+      renderWithProviders(<RecruitArmyDialog />);
+
+      // click on icon to recruit all posible units the same type
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(2);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(5); // 4 war-machines + Zealot-hero
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(5); // 4 war-machines + Zealot-hero
+
+      // click on Icon one more time to use the rest of the slots
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(1);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(1); // Zealot-hero
+    });
+
+    it('handles icon click to recruit, when click 3 times on Icon for Nullwarden', async () => {
+      gameStateStub = createGameStateStub({
+        // player 16 is Nullwarden and his recruit restrictions are:
+        // one slot for regular units only
+        // one slot for war-machines only
+        // one slot for hero units only
+        gamePlayers: [PREDEFINED_PLAYERS[16], PREDEFINED_PLAYERS[0]],
+      });
+      construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+
+      const user = userEvent.setup();
+      renderWithProviders(<RecruitArmyDialog />);
+
+      /******************* click on icon to recruit all posible units the same type *******************/
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(2);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(5); // 4 war-machines + Zealot-hero
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(5); // 4 war-machines + Zealot-hero
+
+      /****************** click on Icon one more time to use the rest of the slots *******************/
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(1);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(1); // Zealot-hero
+
+      /****************** click on Icon one more time to use the rest of the slots *******************/
+      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+
+      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument(); // dialog closed
+
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(0);
+      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flipbook-slot-buildSlot3')).not.toBeInTheDocument();
     });
   });
 
@@ -412,31 +516,49 @@ describe('RecruitArmyDialog', () => {
 
   describe('Mage Tower Units', () => {
     it.each([
-      [HeroUnitName.CLERIC],
-      [HeroUnitName.DRUID],
-      [HeroUnitName.ENCHANTER],
-      [HeroUnitName.PYROMANCER],
-      [HeroUnitName.NECROMANCER],
-    ])('should show mage units (%s) in mage tower', (mageType: HeroUnitType) => {
-      // Replace barracks with mage tower
-      const landPos: LandPosition = { row: 4, col: 3 };
-      const land = getLand(gameStateStub, landPos);
-      expect(land.buildings).toHaveLength(0);
-      expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
+      [HeroUnitName.CLERIC, Alignment.LAWFUL],
+      [HeroUnitName.DRUID, Alignment.LAWFUL],
+      [HeroUnitName.ENCHANTER, Alignment.LAWFUL],
+      [HeroUnitName.DRUID, Alignment.NEUTRAL],
+      [HeroUnitName.ENCHANTER, Alignment.NEUTRAL],
+      [HeroUnitName.PYROMANCER, Alignment.NEUTRAL],
+      [HeroUnitName.ENCHANTER, Alignment.CHAOTIC],
+      [HeroUnitName.PYROMANCER, Alignment.CHAOTIC],
+      [HeroUnitName.NECROMANCER, Alignment.CHAOTIC],
+    ])(
+      'should show mage units (%s) in mage tower for %s player',
+      (mageType: HeroUnitType, alignment: AlignmentType) => {
+        const newPlayer = PREDEFINED_PLAYERS.find(
+          (p) => p.alignment === alignment && p.id !== gameStateStub.turnOwner
+        )!;
+        Object.assign(gameStateStub, addPlayer(gameStateStub, playerFactory(newPlayer, 'human')));
+        gameStateStub.turnOwner = newPlayer.id;
+        getTurnOwner(gameStateStub).vault = 100000; // to be able to construct and recruit
+        placeHomeland(gameStateStub);
+        const landPos: LandPosition = getPlayerLands(gameStateStub, gameStateStub.turnOwner).find(
+          (l) => l.buildings.length === 0
+        )!.mapPos;
 
-      // Give the player enough money to build the mage tower (costs 15000)
-      getTurnOwner(gameStateStub).vault = 20000;
+        const land = getLand(gameStateStub, landPos);
+        expect(land.buildings).toHaveLength(0);
+        expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
 
-      construct(gameStateStub, BuildingName.MAGE_TOWER, landPos);
-      getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.id].add(mageType);
+        // Give the player enough money to build the mage tower (costs 15000)
+        getTurnOwner(gameStateStub).vault = 20000;
 
-      mockApplicationContext.actionLandPosition = landPos;
-      renderWithProviders(<RecruitArmyDialog />);
+        construct(gameStateStub, BuildingName.MAGE_TOWER, landPos);
+        getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.id].add(mageType);
 
-      // The dialog should render showing the mage which can be recruited in mage tower
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId(`flipbook-page-${mageType}`)).toBeInTheDocument();
-    });
+        mockApplicationContext.actionLandPosition = landPos;
+
+        /********************** RENDER DIALOG ***********************/
+        renderWithProviders(<RecruitArmyDialog />);
+
+        // The dialog should render showing the mage which can be recruited in mage tower
+        expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+        expect(screen.getByTestId(`flipbook-page-${mageType}`)).toBeInTheDocument();
+      }
+    );
 
     it('All available mage units should be shown in mage tower', () => {
       const landPos: LandPosition = { row: 4, col: 3 };

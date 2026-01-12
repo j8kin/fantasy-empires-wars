@@ -1,4 +1,5 @@
 import { BuildingState } from '../state/map/building/BuildingState';
+import { UnitType } from '../types/UnitType';
 
 /**
  * Check if a building has any available (unoccupied) recruitment slots
@@ -6,17 +7,23 @@ import { BuildingState } from '../state/map/building/BuildingState';
 export const hasAvailableSlot = (building: BuildingState): boolean => {
   return building.slots.some((slot) => !slot.isOccupied);
 };
+
 /**
- * Find the index of the first available slot, or -1 if none available
+ * Check if a building has an available slot for a specific unit type
  */
-export const findAvailableSlotIndex = (building: BuildingState): number => {
-  return building.slots.findIndex((slot) => !slot.isOccupied);
+export const hasAvailableSlotForUnit = (
+  building: BuildingState,
+  unitType: UnitType,
+  slotTraits: Record<number, Set<UnitType>>
+): boolean => {
+  return building.slots.some((slot, index) => !slot.isOccupied && slotTraits[index]?.has(unitType));
 };
+
 /**
  * Get count of available slots
  */
-export const getAvailableSlotsCount = (building: BuildingState): number => {
-  return building.slots.filter((slot) => !slot.isOccupied).length;
+export const getAvailableSlotsCount = (building?: BuildingState): number => {
+  return building?.slots.filter((slot) => !slot.isOccupied).length ?? 0;
 };
 /**
  * Get count of occupied slots

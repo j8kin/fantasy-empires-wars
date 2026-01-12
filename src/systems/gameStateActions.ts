@@ -6,8 +6,7 @@ import { MAX_MANA } from '../types/Mana';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
 import type { LandPosition } from '../state/map/land/LandPosition';
-import type { BuildingState } from '../state/map/building/BuildingState';
-import type { RecruitmentSlot } from '../types/Building';
+import type { BuildingState, RecruitmentSlot } from '../state/map/building/BuildingState';
 import type { HeroQuest } from '../types/Quest';
 import type { ManaType } from '../types/Mana';
 import type { Effect } from '../types/Effect';
@@ -382,9 +381,11 @@ export const startRecruitmentInSlot = (
     if (b.id !== building.id) {
       return b;
     }
-
-    // Find first available slot
-    const slotIndex = b.slots.findIndex((s) => !s.isOccupied);
+    const slotTraits = getTurnOwner(gameState).traits.recruitmentSlots[building.type];
+    // Find first available slot that supports this unit
+    const slotIndex = b.slots.findIndex(
+      (s, i) => !s.isOccupied && slotTraits && slotTraits[i]?.has(unit)
+    );
     if (slotIndex === -1) {
       return b; // No available slots
     }

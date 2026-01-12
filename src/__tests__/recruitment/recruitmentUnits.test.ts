@@ -41,9 +41,17 @@ describe('Recruitment', () => {
 
     randomSpy = jest.spyOn(Math, 'random');
 
-    // use NEUTRAL PLAYER to be able to recruit any kind of units
+    // PREDEFINED_PLAYERS[2] - Neutral player able to recruit Druids/Enchanter/Pyromancer
+    // PREDEFINED_PLAYERS[1] - CHAOTIC player able to recruit Enchanter/Pyromancer/Necromancer
+    // PREDEFINED_PLAYERS[3] - Anti-magic undead - able to recruit UNDEAD
+    // PREDEFINED_PLAYERS[0] - LAWFUL player able to recruit Cleric/Druid/Enchanter
     gameStateStub = createGameStateStub({
-      gamePlayers: [PREDEFINED_PLAYERS[2], PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[3]],
+      gamePlayers: [
+        PREDEFINED_PLAYERS[2],
+        PREDEFINED_PLAYERS[1],
+        PREDEFINED_PLAYERS[3],
+        PREDEFINED_PLAYERS[0],
+      ],
     });
 
     testTurnManagement = new TestTurnManagement(gameStateStub);
@@ -430,16 +438,68 @@ describe('Recruitment', () => {
         }
       );
 
+      it('Recruiting heroes 3 heroes in parallel', () => {
+        const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+        constructBuilding(BuildingName.BARRACKS, barracksPos);
+
+        let armies = getArmiesAtPosition(gameStateStub, barracksPos);
+        expect(armies).toHaveLength(0);
+
+        // Recruiting 3 heroes of the same type in barracks
+        startRecruiting(gameStateStub, barracksPos, HeroUnitName.FIGHTER);
+        startRecruiting(gameStateStub, barracksPos, HeroUnitName.FIGHTER);
+        startRecruiting(gameStateStub, barracksPos, HeroUnitName.FIGHTER);
+        verifyRecruitSlot(barracksPos, 0, 3, HeroUnitName.FIGHTER, 3);
+        verifyRecruitSlot(barracksPos, 1, 3, HeroUnitName.FIGHTER, 3);
+        verifyRecruitSlot(barracksPos, 2, 3, HeroUnitName.FIGHTER, 3);
+
+        testTurnManagement.makeNTurns(3);
+
+        verifyOccupiedSlotsCount(barracksPos, 0); // hero recruited
+
+        armies = getArmiesAtPosition(gameStateStub, barracksPos);
+        expect(armies).toHaveLength(1);
+        expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+        expect(isMoving(armies[0])).toBeFalsy();
+        expect(armies[0].heroes).toHaveLength(3);
+      });
+    });
+
+    describe('Mage heroes', () => {
       it.each([
-        [HeroUnitName.CLERIC, 'Rowena Ironhall'],
-        [HeroUnitName.DRUID, 'Olyssia Riverlight'],
-        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard'],
-        [HeroUnitName.PYROMANCER, 'Branna Ashfang'],
-        [HeroUnitName.NECROMANCER, 'Eldra Stonebeard'],
+        [HeroUnitName.CLERIC, 'Rowena Ironhall', PREDEFINED_PLAYERS[0].id],
+        [HeroUnitName.DRUID, 'Olyssia Riverlight', PREDEFINED_PLAYERS[0].id],
+        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard', PREDEFINED_PLAYERS[0].id],
+        [HeroUnitName.DRUID, 'Olyssia Riverlight', PREDEFINED_PLAYERS[2].id],
+        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard', PREDEFINED_PLAYERS[2].id],
+        [HeroUnitName.PYROMANCER, 'Branna Ashfang', PREDEFINED_PLAYERS[2].id],
+        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard', PREDEFINED_PLAYERS[1].id],
+        [HeroUnitName.PYROMANCER, 'Branna Ashfang', PREDEFINED_PLAYERS[1].id],
+        [HeroUnitName.NECROMANCER, 'Eldra Stonebeard', PREDEFINED_PLAYERS[1].id],
       ])(
-        '"%s named \'%s\' should be start recruited in 3 turn in Mage Tower"',
-        (unitType: HeroUnitType, name: string) => {
+        '"%s named \'%s\' should be start recruited in 3 turn in Mage Tower for %s player"',
+        (unitType: HeroUnitType, name: string, turnOwnerId: string) => {
+          gameStateStub = createGameStateStub({
+            gamePlayers: [
+              PREDEFINED_PLAYERS.find((p) => p.id === turnOwnerId)!,
+              PREDEFINED_PLAYERS[3],
+              PREDEFINED_PLAYERS[4],
+              PREDEFINED_PLAYERS[5],
+            ],
+          });
+
+          testTurnManagement = new TestTurnManagement(gameStateStub);
+          testTurnManagement.startNewTurn(gameStateStub);
+          testTurnManagement.waitStartPhaseComplete();
+
           randomSpy.mockReturnValue(0.6); // to have the same name of the hero unit
+          getTurnOwner(gameStateStub).playerType = 'computer';
+
+          gameStateStub.turnOwner = turnOwnerId;
+          getTurnOwner(gameStateStub).playerType = 'human';
+          homeLand = getPlayerLands(gameStateStub).find((l) =>
+            hasBuilding(l, BuildingName.STRONGHOLD)
+          )!;
 
           const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
           constructBuilding(BuildingName.MAGE_TOWER, mageTowerPos);
@@ -471,32 +531,6 @@ describe('Recruitment', () => {
           expect(recruitedUnit.artifacts).toHaveLength(0);
         }
       );
-
-      it('Recruiting heroes 3 heroes in parallel', () => {
-        const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-        constructBuilding(BuildingName.BARRACKS, barracksPos);
-
-        let armies = getArmiesAtPosition(gameStateStub, barracksPos);
-        expect(armies).toHaveLength(0);
-
-        // Recruiting 3 heroes of the same type in barracks
-        startRecruiting(gameStateStub, barracksPos, HeroUnitName.FIGHTER);
-        startRecruiting(gameStateStub, barracksPos, HeroUnitName.FIGHTER);
-        startRecruiting(gameStateStub, barracksPos, HeroUnitName.FIGHTER);
-        verifyRecruitSlot(barracksPos, 0, 3, HeroUnitName.FIGHTER, 3);
-        verifyRecruitSlot(barracksPos, 1, 3, HeroUnitName.FIGHTER, 3);
-        verifyRecruitSlot(barracksPos, 2, 3, HeroUnitName.FIGHTER, 3);
-
-        testTurnManagement.makeNTurns(3);
-
-        verifyOccupiedSlotsCount(barracksPos, 0); // hero recruited
-
-        armies = getArmiesAtPosition(gameStateStub, barracksPos);
-        expect(armies).toHaveLength(1);
-        expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
-        expect(isMoving(armies[0])).toBeFalsy();
-        expect(armies[0].heroes).toHaveLength(3);
-      });
     });
 
     describe('Corner cases', () => {
