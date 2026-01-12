@@ -95,17 +95,30 @@ const RecruitArmyDialog: React.FC = () => {
   );
 
   const createRecruitClickHandler = useCallback(
-    (unitType: UnitType, landPos: LandPosition) => {
-      return () => {
+    (unitType: UnitType, landPos: LandPosition): ((availableSlots: Slot[]) => void) => {
+      return (availableSlots: Slot[]) => {
         const building = getLand(gameState!, landPos).buildings.find(
           (b) => getAvailableSlotsCount(b) > 0
         )!;
-        const availableSlots = getAvailableSlotsCount(building);
+        const availableSlotsCount = getAvailableSlotsCount(building);
         // recruit the same unit for all available slots
-        for (let i = 0; i < availableSlots; i++) {
+        for (let i = 0; i < availableSlotsCount; i++) {
           startRecruiting(gameState!, landPos, unitType);
         }
-        handleClose();
+
+        // Mark all available slots as used
+        setUsedSlots((prev) => {
+          const newUsedSlots = new Set(prev);
+          availableSlots.forEach((slot) => newUsedSlots.add(slot.id));
+          return newUsedSlots;
+        });
+
+        const updatedBuilding = getLand(gameState!, landPos).buildings.find(
+          (b) => getAvailableSlotsCount(b) > 0
+        );
+        if (!updatedBuilding) {
+          handleClose();
+        }
       };
     },
     [gameState, handleClose]

@@ -33,7 +33,7 @@ export interface FlipBookPageProps {
   onClose?: () => void;
   slots?: Slot[];
   onSlotClick?: (slot: Slot) => void;
-  onIconClick?: () => void;
+  onIconClick?: (availableSlots: Slot[]) => void;
   usedSlots?: Set<string>;
 }
 
@@ -66,11 +66,18 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     const availableSlots = slots?.filter((slot) => !effectiveUsedSlots.has(slot.id)) || [];
 
     // Effect to check if all slots are used and trigger callback
+    // Only auto-close if there's no onIconClick handler (parent handles closing logic)
     useEffect(() => {
-      if (slots && slots.length > 0 && effectiveUsedSlots.size === slots.length && onClose) {
+      if (
+        slots &&
+        slots.length > 0 &&
+        effectiveUsedSlots.size === slots.length &&
+        onClose &&
+        !onIconClick
+      ) {
         onClose();
       }
-    }, [slots, effectiveUsedSlots.size, onClose]);
+    }, [slots, effectiveUsedSlots.size, onClose, onIconClick]);
 
     // Slot click handler - slot marking as used is now handled by parent
     const handleSlotClick = useCallback(
@@ -89,7 +96,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
     const handleIconClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       if (onIconClick) {
-        onIconClick();
+        onIconClick(availableSlots);
       }
     };
 
