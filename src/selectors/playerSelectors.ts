@@ -2,6 +2,7 @@ import { playerFactory } from '../factories/playerFactory';
 import { isMageType } from '../domain/unit/unitTypeChecks';
 import { getBuildingInfo } from '../domain/building/buildingRepository';
 import { isItem } from '../domain/treasure/treasureRepository';
+import { hasAvailableSlotForUnit } from './buildingSelectors';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { EffectKind } from '../types/Effect';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
@@ -18,7 +19,6 @@ import type { EffectSourceId } from '../types/Effect';
 import type { Item, TreasureType } from '../types/Treasures';
 import type { DiplomacyStatusType } from '../types/Diplomacy';
 import type { UnitType } from '../types/UnitType';
-import { hasAvailableSlotForUnit } from './buildingSelectors';
 
 const NONE = playerFactory(NO_PLAYER, 'computer');
 

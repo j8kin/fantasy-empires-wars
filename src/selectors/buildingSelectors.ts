@@ -4,6 +4,13 @@ import { UnitType } from '../types/UnitType';
 /**
  * Check if a building has any available (unoccupied) recruitment slots
  */
+export const hasAvailableSlot = (building: BuildingState): boolean => {
+  return building.slots.some((slot) => !slot.isOccupied);
+};
+
+/**
+ * Check if a building has an available slot for a specific unit type
+ */
 export const hasAvailableSlotForUnit = (
   building: BuildingState,
   unitType: UnitType,
