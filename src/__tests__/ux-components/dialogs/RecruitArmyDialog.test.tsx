@@ -11,6 +11,8 @@ import {
   hasBuilding,
 } from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
+import { addPlayer } from '../../../systems/gameStateActions';
+import { placeHomeland } from '../../../map/generation/placeHomeland';
 import { construct } from '../../../map/building/construct';
 import { startRecruiting } from '../../../map/recruiting/startRecruiting';
 import { playerFactory } from '../../../factories/playerFactory';
@@ -30,8 +32,6 @@ import type { HeroUnitType } from '../../../types/UnitType';
 import type { PlayerProfile } from '../../../state/player/PlayerProfile';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
-import { addPlayer } from '../../../systems/gameStateActions';
-import { placeHomeland } from '../../../map/generation/placeHomeland';
 
 // Mock context hooks
 const mockApplicationContext = {
