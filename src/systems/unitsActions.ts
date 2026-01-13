@@ -4,10 +4,12 @@ import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName } from '../types/UnitType
 import { UnitRank } from '../state/army/RegularsState';
 import { Alignment } from '../types/Alignment';
 import { TreasureName } from '../types/Treasures';
+import { Doctrine } from '../state/player/PlayerProfile';
 import type { HeroState } from '../state/army/HeroState';
 import type { RegularsState } from '../state/army/RegularsState';
 import type { HeroUnitType, RegularUnitType } from '../types/UnitType';
 import type { AlignmentType } from '../types/Alignment';
+import type { PlayerState } from '../state/player/PlayerState';
 
 export const levelUpHero = (hero: HeroState, playerAlignment: AlignmentType): void => {
   if (hero.level === MAX_HERO_LEVEL) return; // hero reached max level
@@ -47,9 +49,12 @@ export const levelUpHero = (hero: HeroState, playerAlignment: AlignmentType): vo
   hero.cost = getRecruitInfo(hero.type).maintainCost * (Math.floor(hero.level / 4) + 1);
 };
 
-export const levelUpRegulars = (regular: RegularsState, playerAlignment: AlignmentType): void => {
+export const levelUpRegulars = (regular: RegularsState, player: PlayerState): void => {
   // Undead units can't be leveled up'
   if (regular.type === RegularUnitName.UNDEAD) return;
+  // Nullwarden units recruited as veteran and never promoted
+  if (regular.rank === UnitRank.VETERAN && player.playerProfile.doctrine === Doctrine.NULLWARDEN)
+    return;
 
   if (regular.rank === UnitRank.REGULAR) {
     regular.rank = UnitRank.VETERAN;
@@ -58,7 +63,7 @@ export const levelUpRegulars = (regular: RegularsState, playerAlignment: Alignme
   }
   const baseRegularStats = unitsBaseCombatStats(regular.type);
   const baseLevelUpParams = baseStatsLevelUpParameters(regular.type);
-  const alignmentModifier = alignmentModifiers(playerAlignment);
+  const alignmentModifier = alignmentModifiers(player.playerProfile.alignment);
   const levelModifier = regular.rank === UnitRank.ELITE ? 7 : 3;
   regular.combatStats.attack = Math.floor(
     baseRegularStats.attack + baseLevelUpParams.attack * alignmentModifier.attack * levelModifier
@@ -115,7 +120,6 @@ const baseStatsLevelUpParameters = (unitType: HeroUnitType | RegularUnitType) =>
     case RegularUnitName.WARD_HANDS:
       return { attack: 0.5, defense: 0.4, health: 0.8, rangeDamage: 0, mana: 0 };
     case RegularUnitName.UNDEAD:
-    case RegularUnitName.NULLWARDEN:
       return { attack: 0, defense: 0, health: 0, rangeDamage: 0, mana: 0 }; // they can't be leveled up'
   }
 };

@@ -11,12 +11,15 @@ import { regularsFactory } from '../../factories/regularsFactory';
 import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
+import { warMachineFactory } from '../../factories/warMachineFactory';
+import { getTurnOwner } from '../../selectors/playerSelectors';
+import { levelUpRegulars } from '../../systems/unitsActions';
 
 import { EmpireEventKind } from '../../types/EmpireEvent';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import type { EmpireEvent } from '../../types/EmpireEvent';
 import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
-import { warMachineFactory } from '../../factories/warMachineFactory';
 
 export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
   const recruitEvents: EmpireEvent[] = [];
@@ -75,6 +78,10 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
               }
             } else {
               const regular = regularsFactory(s.unit);
+              if (getTurnOwner(gameState).playerProfile.doctrine === Doctrine.NULLWARDEN) {
+                // all nullwarden units are recruited as veteran units
+                levelUpRegulars(regular, getTurnOwner(gameState));
+              }
 
               if (stationedArmy) {
                 // Get the latest version of this army (might have been updated already)

@@ -5,6 +5,7 @@ import '@testing-library/jest-dom';
 
 import MoveArmyDialog from '../../../ux-components/dialogs/MoveArmyDialog';
 
+import { getTurnOwner } from '../../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../../selectors/armySelectors';
 import { getLandOwner } from '../../../selectors/landSelectors';
 import { addHero, addRegulars, addWarMachines, startMoving } from '../../../systems/armyActions';
@@ -680,12 +681,12 @@ describe('MoveArmyDialog', () => {
       gameStateStub.armies = [];
 
       const veteranWarrior = regularsFactory(RegularUnitName.WARRIOR, 8);
-      levelUpRegulars(veteranWarrior, Alignment.LAWFUL);
+      levelUpRegulars(veteranWarrior, getTurnOwner(gameStateStub));
       expect(veteranWarrior.rank).toBe(UnitRank.VETERAN);
 
       const eliteWarrior = regularsFactory(RegularUnitName.WARRIOR, 3);
-      levelUpRegulars(eliteWarrior, Alignment.LAWFUL);
-      levelUpRegulars(eliteWarrior, Alignment.LAWFUL);
+      levelUpRegulars(eliteWarrior, getTurnOwner(gameStateStub));
+      levelUpRegulars(eliteWarrior, getTurnOwner(gameStateStub));
       expect(eliteWarrior.rank).toBe(UnitRank.ELITE);
 
       const rankedUnitsArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {

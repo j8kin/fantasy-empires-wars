@@ -14,6 +14,7 @@ import { getRecruitInfo } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { getUnitImg } from '../../assets/getUnitImg';
 import { RegularUnitName } from '../../types/UnitType';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { UnitType } from '../../types/UnitType';
 
@@ -127,6 +128,14 @@ const RecruitArmyDialog: React.FC = () => {
     [gameState]
   );
 
+  const isRegularNullwarden = (unitType: UnitType) => {
+    return (
+      !isHeroType(unitType) &&
+      !isWarMachine(unitType) &&
+      turnOwner.playerProfile.doctrine === Doctrine.NULLWARDEN
+    );
+  };
+
   if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return null;
 
   // Use the fixed initial slot count instead of recalculating
@@ -164,8 +173,8 @@ const RecruitArmyDialog: React.FC = () => {
           key={unit.type}
           pageNum={index}
           lorePage={617}
-          header={unit.type}
-          iconPath={getUnitImg(unit.type)}
+          header={`${unit.type}${isRegularNullwarden(unit.type) ? ' Nullwarden' : ''}`}
+          iconPath={getUnitImg(unit.type, turnOwner.playerProfile.doctrine)}
           description={unit.description}
           cost={unit.recruitCost}
           onClose={handleClose}

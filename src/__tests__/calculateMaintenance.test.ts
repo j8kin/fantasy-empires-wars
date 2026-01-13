@@ -82,7 +82,7 @@ describe('Calculate Maintenance', () => {
         );
         const regular = regularsFactory(regularType);
         while (regular.rank !== level) {
-          levelUpRegulars(regular, Alignment.LAWFUL);
+          levelUpRegulars(regular, getTurnOwner(gameStateStub));
         }
         regular.count = quantity;
 
@@ -116,8 +116,8 @@ describe('Calculate Maintenance', () => {
 
     it('Multiple units in one army', () => {
       const elitDwarf = regularsFactory(RegularUnitName.DWARF);
-      levelUpRegulars(elitDwarf, Alignment.LAWFUL);
-      levelUpRegulars(elitDwarf, Alignment.LAWFUL);
+      levelUpRegulars(elitDwarf, getTurnOwner(gameStateStub));
+      levelUpRegulars(elitDwarf, getTurnOwner(gameStateStub));
       expect(elitDwarf.rank).toBe(UnitRank.ELITE);
       elitDwarf.count = 17;
 

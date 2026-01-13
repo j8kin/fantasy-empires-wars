@@ -10,7 +10,6 @@ import { levelUpRegulars } from '../../systems/unitsActions';
 import { UnitRank } from '../../state/army/RegularsState';
 import { WarMachineName } from '../../types/UnitType';
 import { RegularUnitName } from '../../types/UnitType';
-import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
 import type { UnitRankType } from '../../state/army/RegularsState';
@@ -97,10 +96,10 @@ describe('Calculate Attrition Penalty', () => {
       expect(getLandOwner(gameStateStub, armyLand.mapPos)).not.toBe(getTurnOwner(gameStateStub).id);
 
       const regularUnit1 = regularsFactory(RegularUnitName.WARRIOR, army1Initial);
-      while (regularUnit1.rank !== rank) levelUpRegulars(regularUnit1, Alignment.LAWFUL);
+      while (regularUnit1.rank !== rank) levelUpRegulars(regularUnit1, getTurnOwner(gameStateStub));
 
       const regularUnit2 = regularsFactory(RegularUnitName.WARRIOR, army2Initial);
-      while (regularUnit2.rank !== rank) levelUpRegulars(regularUnit2, Alignment.LAWFUL);
+      while (regularUnit2.rank !== rank) levelUpRegulars(regularUnit2, getTurnOwner(gameStateStub));
 
       // place armies using centralized system
       Object.assign(

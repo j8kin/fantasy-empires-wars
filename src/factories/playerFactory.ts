@@ -1,7 +1,7 @@
 import { isHeroType, isMageType } from '../domain/unit/unitTypeChecks';
 import { getLandById } from '../domain/land/landRepository';
 import { getAllUnitTypeByAlignment } from '../domain/unit/unitRepository';
-import { RaceName } from '../state/player/PlayerProfile';
+import { Doctrine, RaceName } from '../state/player/PlayerProfile';
 import {
   HeroUnitName,
   RegularUnitName,
@@ -154,7 +154,7 @@ const getUnitsPerLand = (
       // add other units depending on player type and alignment and land type
       switch (playerProfile.type) {
         case HeroUnitName.WARSMITH:
-          if (playerProfile.undead) {
+          if (playerProfile.doctrine === Doctrine.UNDEAD) {
             unitsPerLand[landType].add(HeroUnitName.WARSMITH);
             unitsPerLand[landType].add(RegularUnitName.UNDEAD);
           } else {
@@ -168,7 +168,15 @@ const getUnitsPerLand = (
           break;
         case HeroUnitName.ZEALOT:
           unitsPerLand[landType].add(HeroUnitName.ZEALOT);
-          unitsPerLand[landType].add(RegularUnitName.NULLWARDEN);
+          land.unitsToRecruit.forEach((unit) => {
+            if (
+              !isHeroType(unit) &&
+              unit !== RegularUnitName.HALFLING &&
+              unit !== RegularUnitName.WARD_HANDS
+            ) {
+              unitsPerLand[landType].add(unit);
+            }
+          });
           break;
         default:
           land.unitsToRecruit.forEach((unit) => unitsPerLand[landType].add(unit));
@@ -242,25 +250,17 @@ const getRecruitmentSlots = (
   const allWarMachinesUnits: WarMachineType[] = Object.values(WarMachineName);
   const allHeroesUnits: HeroUnitType[] = Object.values(HeroUnitName);
 
-  switch (playerProfile.type) {
-    case HeroUnitName.WARSMITH:
-      if (playerProfile.undead) {
-        buildingTraits[BuildingName.BARRACKS] = {
-          0: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-          1: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-          2: new Set([...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-        };
-      } else {
-        buildingTraits[BuildingName.BARRACKS] = {
-          0: new Set([...allRegularUnits, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-          1: new Set([...allRegularUnits, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-          2: new Set([...allRegularUnits, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-        };
-      }
-      break;
-    case HeroUnitName.ZEALOT:
+  switch (playerProfile.doctrine) {
+    case Doctrine.UNDEAD:
       buildingTraits[BuildingName.BARRACKS] = {
-        0: new Set([RegularUnitName.NULLWARDEN]),
+        0: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+        1: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+        2: new Set([...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+      };
+      break;
+    case Doctrine.NULLWARDEN:
+      buildingTraits[BuildingName.BARRACKS] = {
+        0: new Set([...allRegularUnits]), // all nullwarden units
         1: new Set([...allWarMachinesUnits]),
         2: new Set([HeroUnitName.ZEALOT]),
       };

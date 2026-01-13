@@ -37,12 +37,6 @@ const unitCombatStats: Record<RegularUnitType | HeroUnitType, CombatStats> = {
     health: 25,
     speed: 2,
   },
-  [RegularUnitName.NULLWARDEN]: {
-    attack: 8,
-    defense: 6,
-    health: 25,
-    speed: 2,
-  },
   [RegularUnitName.DWARF]: {
     attack: 12,
     defense: 20,
@@ -197,7 +191,6 @@ const unitCombatStats: Record<RegularUnitType | HeroUnitType, CombatStats> = {
 const unitsAlignment: Record<UnitType, AlignmentType> = {
   [RegularUnitName.DWARF]: Alignment.LAWFUL,
   [RegularUnitName.ELF]: Alignment.LAWFUL,
-  [RegularUnitName.NULLWARDEN]: Alignment.LAWFUL,
   [HeroUnitName.ZEALOT]: Alignment.LAWFUL,
   [HeroUnitName.HAMMER_LORD]: Alignment.LAWFUL,
   [HeroUnitName.RANGER]: Alignment.LAWFUL,
@@ -230,8 +223,6 @@ const descriptions: Record<UnitType, string> = {
     'Local hands risen in necessity, their resolve rough but unbroken against Orrivane’s growing dread.',
   [RegularUnitName.WARRIOR]:
     'Hardened veterans of countless skirmishes, these soldiers fight for gold, glory, or the fragile peace that follows both.',
-  [RegularUnitName.NULLWARDEN]:
-    'Soldiers sworn to law alone, conditioned to endure sorcery through discipline, denial and without yielding.',
   [RegularUnitName.DWARF]:
     'Clad in runed steel and bound by oath, Dwarves hold the line like mountains given form—unyielding, proud, and slow to fall.',
   [RegularUnitName.UNDEAD]:
@@ -302,7 +293,6 @@ export const getRecruitInfo = (unitType: UnitType): RecruitmentInfo => {
         recruitedUnits: 30,
         description: descriptions[unitType],
       };
-    case RegularUnitName.NULLWARDEN:
     case RegularUnitName.WARRIOR:
       return {
         maintainCost: 4,
