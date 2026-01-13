@@ -1,10 +1,28 @@
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
 import { BuildingName } from '../../types/Building';
-import type { CombatStats, RecruitmentInfo } from '../../types/BaseUnit';
+import type { CombatStats } from '../../types/CombatStats';
 import type { UnitType } from '../../types/UnitType';
 import type { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import type { AlignmentType } from '../../types/Alignment';
+import type { BuildingType } from '../../types/Building';
+
+interface RecruitmentInfo {
+  /** The cost to recruit unit pack **/
+  recruitCost: number;
+  /** The number of units recruited in pack (all heroes units: 1, regulars: 20-30 based on unit type) **/
+  recruitedUnits: number;
+  /** Number of turns it takes to recruit a unit **/
+  recruitTime: number;
+  /** The building where the unit was recruited **/
+  recruitedIn: BuildingType;
+  /** The cost to maintain one unit per turn **/
+  maintainCost: number;
+  /** Short Lore description of the unit **/
+  description: string;
+  /** The durability of war-machines **/
+  durability?: number;
+}
 
 const unitCombatStats: Record<RegularUnitType | HeroUnitType, CombatStats> = {
   [RegularUnitName.WARD_HANDS]: {
@@ -350,6 +368,7 @@ export const getRecruitInfo = (unitType: UnitType): RecruitmentInfo => {
         recruitedIn: BuildingName.BARRACKS,
         recruitedUnits: 1,
         description: descriptions[unitType],
+        durability: 5,
       };
     case WarMachineName.CATAPULT:
       return {
@@ -359,6 +378,7 @@ export const getRecruitInfo = (unitType: UnitType): RecruitmentInfo => {
         recruitedIn: BuildingName.BARRACKS,
         recruitedUnits: 1,
         description: descriptions[unitType],
+        durability: 3,
       };
     case WarMachineName.BATTERING_RAM:
       return {
@@ -368,6 +388,7 @@ export const getRecruitInfo = (unitType: UnitType): RecruitmentInfo => {
         recruitedIn: BuildingName.BARRACKS,
         recruitedUnits: 1,
         description: descriptions[unitType],
+        durability: 7,
       };
     case WarMachineName.SIEGE_TOWER:
       return {
@@ -377,6 +398,7 @@ export const getRecruitInfo = (unitType: UnitType): RecruitmentInfo => {
         recruitedIn: BuildingName.BARRACKS,
         recruitedUnits: 1,
         description: descriptions[unitType],
+        durability: 2,
       };
     // heroes
     // non-mages

@@ -1,6 +1,6 @@
 import type { HeroUnitType } from '../../types/UnitType';
 import type { Artifact } from '../../types/Treasures';
-import type { CombatStats } from '../../types/BaseUnit';
+import type { CombatStats } from '../../types/CombatStats';
 
 export interface HeroState {
   id: string; // uuid

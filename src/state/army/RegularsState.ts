@@ -1,5 +1,5 @@
 import type { RegularUnitType } from '../../types/UnitType';
-import type { CombatStats } from '../../types/BaseUnit';
+import type { CombatStats } from '../../types/CombatStats';
 
 export const UnitRank = {
   REGULAR: 'regular',

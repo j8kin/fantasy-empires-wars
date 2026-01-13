@@ -4,7 +4,6 @@ import { addArmyToGameState } from '../../systems/armyActions';
 
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
-import type { Unit } from '../../types/BaseUnit';
 import type { HeroState } from '../../state/army/HeroState';
 import type { RegularsState } from '../../state/army/RegularsState';
 import type { WarMachineState } from '../../state/army/WarMachineState';
@@ -15,7 +14,11 @@ import type { WarMachineState } from '../../state/army/WarMachineState';
  * @param gameState
  * @param landPos
  */
-export const placeUnitsOnMap = (unit: Unit, gameState: GameState, landPos: LandPosition): void => {
+export const placeUnitsOnMap = (
+  unit: HeroState | RegularsState | WarMachineState,
+  gameState: GameState,
+  landPos: LandPosition
+): void => {
   let newArmy;
   if (isHeroType(unit.type)) {
     newArmy = armyFactory(gameState.turnOwner, landPos, { hero: unit as HeroState });
