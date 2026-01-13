@@ -1,69 +1,47 @@
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
-import { Alignment, AlignmentType } from '../../types/Alignment';
+import { Alignment } from '../../types/Alignment';
 import { BuildingName } from '../../types/Building';
-import type { BaseUnitStats } from '../../types/BaseUnit';
+import type { CombatStats, RecruitmentInfo } from '../../types/BaseUnit';
 import type { UnitType } from '../../types/UnitType';
+import type { HeroUnitType, RegularUnitType } from '../../types/UnitType';
+import type { AlignmentType } from '../../types/Alignment';
 
-const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
+const unitCombatStats: Record<RegularUnitType | HeroUnitType, CombatStats> = {
   [RegularUnitName.WARD_HANDS]: {
     attack: 5,
     defense: 3,
     health: 20,
     speed: 2,
-    alignment: Alignment.NEUTRAL,
-    recruitCost: 300,
-    maintainCost: 2,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [RegularUnitName.WARRIOR]: {
     attack: 8,
     defense: 6,
     health: 25,
     speed: 2,
-    alignment: Alignment.NEUTRAL,
-    recruitCost: 500,
-    maintainCost: 4,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [RegularUnitName.NULLWARDEN]: {
     attack: 8,
     defense: 6,
     health: 25,
     speed: 2,
-    alignment: Alignment.NEUTRAL,
-    recruitCost: 500,
-    maintainCost: 4,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [RegularUnitName.DWARF]: {
     attack: 12,
     defense: 20,
     health: 40,
     speed: 1,
-    alignment: Alignment.LAWFUL,
-    recruitCost: 800,
-    maintainCost: 5,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [RegularUnitName.UNDEAD]: {
     attack: 25,
     defense: 50,
     health: 10,
     speed: 5,
-    alignment: Alignment.CHAOTIC,
-    recruitCost: 800,
-    maintainCost: 7,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [RegularUnitName.ORC]: {
     attack: 10,
     defense: 15,
     health: 30,
     speed: 2,
-    alignment: Alignment.CHAOTIC,
-    recruitCost: 600,
-    maintainCost: 4.5,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [RegularUnitName.HALFLING]: {
     attack: 6,
@@ -72,10 +50,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 8,
     health: 15,
     speed: 4,
-    alignment: Alignment.NEUTRAL,
-    recruitCost: 700,
-    maintainCost: 3,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [RegularUnitName.ELF]: {
     attack: 15,
@@ -84,10 +58,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 15,
     health: 20,
     speed: 3,
-    alignment: Alignment.LAWFUL,
-    recruitCost: 2500,
-    maintainCost: 5,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [RegularUnitName.DARK_ELF]: {
     attack: 15,
@@ -96,54 +66,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 15,
     health: 20,
     speed: 3,
-    alignment: Alignment.CHAOTIC,
-    recruitCost: 2500,
-    maintainCost: 5,
-    recruitedIn: BuildingName.BARRACKS,
-  },
-  // War Machines
-  // Catapult do not damage anything only destroy buildings/walls
-  [WarMachineName.BALLISTA]: {
-    attack: 0,
-    defense: 0,
-    range: 35,
-    rangeDamage: 25,
-    health: 150,
-    speed: 0,
-    alignment: Alignment.NEUTRAL,
-    recruitCost: 1500,
-    maintainCost: 150,
-    recruitedIn: BuildingName.BARRACKS,
-  },
-  [WarMachineName.CATAPULT]: {
-    attack: 0,
-    defense: 0,
-    health: 200,
-    speed: 0,
-    alignment: Alignment.NEUTRAL,
-    recruitCost: 1000,
-    maintainCost: 250,
-    recruitedIn: BuildingName.BARRACKS,
-  },
-  [WarMachineName.BATTERING_RAM]: {
-    attack: 0,
-    defense: 0,
-    health: 20,
-    speed: 0,
-    alignment: Alignment.NEUTRAL,
-    recruitCost: 700,
-    maintainCost: 50,
-    recruitedIn: BuildingName.BARRACKS,
-  },
-  [WarMachineName.SIEGE_TOWER]: {
-    attack: 0,
-    defense: 0,
-    health: 30,
-    speed: 0,
-    alignment: Alignment.NEUTRAL,
-    recruitCost: 1000,
-    maintainCost: 250,
-    recruitedIn: BuildingName.BARRACKS,
   },
   // HEROES
   // Human warrior hero
@@ -154,10 +76,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 30,
     health: 18,
     speed: 4,
-    alignment: Alignment.CHAOTIC,
-    recruitCost: 1500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [HeroUnitName.FIGHTER]: {
     attack: 30,
@@ -166,10 +84,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 30,
     health: 18,
     speed: 4,
-    alignment: Alignment.LAWFUL,
-    recruitCost: 1500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [HeroUnitName.ZEALOT]: {
     attack: 30,
@@ -178,10 +92,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 30,
     health: 18,
     speed: 4,
-    alignment: Alignment.LAWFUL,
-    recruitCost: 1500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.BARRACKS,
   },
   // Dwarf hero
   [HeroUnitName.HAMMER_LORD]: {
@@ -191,10 +101,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 40,
     health: 25,
     speed: 4,
-    alignment: Alignment.LAWFUL,
-    recruitCost: 1500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.BARRACKS,
   },
   // Orc hero
   [HeroUnitName.OGR]: {
@@ -204,10 +110,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 45,
     health: 30,
     speed: 3,
-    alignment: Alignment.CHAOTIC,
-    recruitCost: 1500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.BARRACKS,
   },
   // Elf hero
   [HeroUnitName.SHADOW_BLADE]: {
@@ -217,10 +119,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 30,
     health: 18,
     speed: 5,
-    alignment: Alignment.CHAOTIC,
-    recruitCost: 1500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.BARRACKS,
   },
   [HeroUnitName.RANGER]: {
     attack: 30,
@@ -229,10 +127,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 30,
     health: 18,
     speed: 5,
-    alignment: Alignment.LAWFUL,
-    recruitCost: 1500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.BARRACKS,
   },
   // Mage Heroes
   // Pyromancer - produce red mana
@@ -243,10 +137,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 30,
     health: 18,
     speed: 2,
-    alignment: Alignment.CHAOTIC,
-    recruitCost: 2500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.MAGE_TOWER,
   },
   // Cleric - produce white mana
   [HeroUnitName.CLERIC]: {
@@ -256,10 +146,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 25,
     health: 20,
     speed: 2,
-    alignment: Alignment.LAWFUL,
-    recruitCost: 2500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.MAGE_TOWER,
   },
   // Druid - produce green mana
   [HeroUnitName.DRUID]: {
@@ -269,10 +155,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 20,
     health: 22,
     speed: 3,
-    alignment: Alignment.LAWFUL,
-    recruitCost: 2500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.MAGE_TOWER,
   },
   // Enchanter - produce blue mana
   [HeroUnitName.ENCHANTER]: {
@@ -282,10 +164,6 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 15,
     health: 16,
     speed: 2,
-    alignment: Alignment.NEUTRAL,
-    recruitCost: 2500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.MAGE_TOWER,
   },
   // Necromancer - produce black mana
   [HeroUnitName.NECROMANCER]: {
@@ -295,11 +173,37 @@ const unitStats: Record<UnitType, Partial<BaseUnitStats>> = {
     rangeDamage: 35,
     health: 15,
     speed: 2,
-    alignment: Alignment.CHAOTIC,
-    recruitCost: 2500,
-    maintainCost: 100,
-    recruitedIn: BuildingName.MAGE_TOWER,
   },
+};
+
+const unitsAlignment: Record<UnitType, AlignmentType> = {
+  [RegularUnitName.DWARF]: Alignment.LAWFUL,
+  [RegularUnitName.ELF]: Alignment.LAWFUL,
+  [RegularUnitName.NULLWARDEN]: Alignment.LAWFUL,
+  [HeroUnitName.ZEALOT]: Alignment.LAWFUL,
+  [HeroUnitName.HAMMER_LORD]: Alignment.LAWFUL,
+  [HeroUnitName.RANGER]: Alignment.LAWFUL,
+  [HeroUnitName.CLERIC]: Alignment.LAWFUL,
+  [HeroUnitName.DRUID]: Alignment.LAWFUL,
+
+  [RegularUnitName.WARD_HANDS]: Alignment.NEUTRAL,
+  [RegularUnitName.HALFLING]: Alignment.NEUTRAL,
+  [RegularUnitName.WARRIOR]: Alignment.NEUTRAL,
+  [WarMachineName.BALLISTA]: Alignment.NEUTRAL,
+  [WarMachineName.CATAPULT]: Alignment.NEUTRAL,
+  [WarMachineName.BATTERING_RAM]: Alignment.NEUTRAL,
+  [WarMachineName.SIEGE_TOWER]: Alignment.NEUTRAL,
+  [HeroUnitName.FIGHTER]: Alignment.NEUTRAL,
+  [HeroUnitName.ENCHANTER]: Alignment.NEUTRAL,
+
+  [RegularUnitName.ORC]: Alignment.CHAOTIC,
+  [RegularUnitName.DARK_ELF]: Alignment.CHAOTIC,
+  [RegularUnitName.UNDEAD]: Alignment.CHAOTIC,
+  [HeroUnitName.WARSMITH]: Alignment.CHAOTIC,
+  [HeroUnitName.OGR]: Alignment.CHAOTIC,
+  [HeroUnitName.SHADOW_BLADE]: Alignment.CHAOTIC,
+  [HeroUnitName.PYROMANCER]: Alignment.CHAOTIC,
+  [HeroUnitName.NECROMANCER]: Alignment.CHAOTIC,
 };
 
 const descriptions: Record<UnitType, string> = {
@@ -358,19 +262,154 @@ const descriptions: Record<UnitType, string> = {
     'Whisperers of death’s secrets, Necromancers blur the line between decay and command, binding restless souls to their grim will.',
 };
 
-const getDescription = (unitType: UnitType): string => {
-  return descriptions[unitType];
-};
-
-export const unitsBaseStats = (unitType: UnitType): BaseUnitStats => {
-  const stats = unitStats[unitType];
-
-  return {
-    ...stats,
-    description: getDescription(unitType),
-  } as BaseUnitStats;
+export const unitsBaseCombatStats = (unitType: RegularUnitType | HeroUnitType): CombatStats => {
+  return { ...unitCombatStats[unitType] };
 };
 
 export const getAllUnitTypeByAlignment = (alignment: AlignmentType): UnitType[] => {
-  return Object.keys(unitStats).filter((unitType) => unitStats[unitType].alignment === alignment);
+  return Object.entries(unitsAlignment)
+    .filter(([_, unitAlignment]) => unitAlignment === alignment)
+    .map(([unitType]) => unitType);
+};
+
+export const getRecruitInfo = (unitType: UnitType): RecruitmentInfo => {
+  switch (unitType) {
+    // Melee units
+    case RegularUnitName.WARD_HANDS:
+      return {
+        maintainCost: 2,
+        recruitCost: 300,
+        recruitTime: 1,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 30,
+        description: descriptions[unitType],
+      };
+    case RegularUnitName.NULLWARDEN:
+    case RegularUnitName.WARRIOR:
+      return {
+        maintainCost: 4,
+        recruitCost: 500,
+        recruitTime: 1,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 20,
+        description: descriptions[unitType],
+      };
+    case RegularUnitName.DWARF:
+      return {
+        maintainCost: 5,
+        recruitCost: 800,
+        recruitTime: 1,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 20,
+        description: descriptions[unitType],
+      };
+    case RegularUnitName.UNDEAD:
+      return {
+        maintainCost: 7,
+        recruitCost: 800,
+        recruitTime: 1,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 20,
+        description: descriptions[unitType],
+      };
+    case RegularUnitName.ORC:
+      return {
+        maintainCost: 4.5,
+        recruitCost: 600,
+        recruitTime: 1,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 20,
+        description: descriptions[unitType],
+      };
+    // range units
+    case RegularUnitName.HALFLING:
+      return {
+        maintainCost: 3,
+        recruitCost: 700,
+        recruitTime: 2,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 25,
+        description: descriptions[unitType],
+      };
+    case RegularUnitName.ELF:
+    case RegularUnitName.DARK_ELF:
+      return {
+        maintainCost: 5,
+        recruitCost: 2500,
+        recruitTime: 2,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 20,
+        description: descriptions[unitType],
+      };
+    // war-machines
+    case WarMachineName.BALLISTA:
+      return {
+        maintainCost: 150,
+        recruitCost: 1500,
+        recruitTime: 3,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 1,
+        description: descriptions[unitType],
+      };
+    case WarMachineName.CATAPULT:
+      return {
+        maintainCost: 250,
+        recruitCost: 1000,
+        recruitTime: 3,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 1,
+        description: descriptions[unitType],
+      };
+    case WarMachineName.BATTERING_RAM:
+      return {
+        maintainCost: 50,
+        recruitCost: 700,
+        recruitTime: 1,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 1,
+        description: descriptions[unitType],
+      };
+    case WarMachineName.SIEGE_TOWER:
+      return {
+        maintainCost: 250,
+        recruitCost: 1000,
+        recruitTime: 2,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 1,
+        description: descriptions[unitType],
+      };
+    // heroes
+    // non-mages
+    case HeroUnitName.FIGHTER:
+    case HeroUnitName.WARSMITH:
+    case HeroUnitName.ZEALOT:
+    case HeroUnitName.HAMMER_LORD:
+    case HeroUnitName.OGR:
+    case HeroUnitName.SHADOW_BLADE:
+    case HeroUnitName.RANGER:
+      return {
+        maintainCost: 100,
+        recruitCost: 1500,
+        recruitTime: 3,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 1,
+        description: descriptions[unitType],
+      };
+    // mages
+    case HeroUnitName.CLERIC:
+    case HeroUnitName.DRUID:
+    case HeroUnitName.ENCHANTER:
+    case HeroUnitName.PYROMANCER:
+    case HeroUnitName.NECROMANCER:
+      return {
+        maintainCost: 100,
+        recruitCost: 2500,
+        recruitTime: 3,
+        recruitedIn: BuildingName.MAGE_TOWER,
+        recruitedUnits: 1,
+        description: descriptions[unitType],
+      };
+    default:
+      throw new Error(`Unknown unit type ${unitType}`);
+  }
 };

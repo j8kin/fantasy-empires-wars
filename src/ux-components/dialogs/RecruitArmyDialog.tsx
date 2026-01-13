@@ -10,7 +10,7 @@ import { getBuilding, getLand } from '../../selectors/landSelectors';
 import { getTurnOwner, getUnitsAllowedToRecruit } from '../../selectors/playerSelectors';
 import { getAvailableSlotsCount, hasAvailableSlot } from '../../selectors/buildingSelectors';
 import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
-import { unitsBaseStats } from '../../domain/unit/unitRepository';
+import { getRecruitInfo } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { getUnitImg } from '../../assets/getUnitImg';
 import { RegularUnitName } from '../../types/UnitType';
@@ -18,24 +18,24 @@ import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { UnitType } from '../../types/UnitType';
 
 interface RecruitUnitProps {
-  id: UnitType;
+  type: UnitType;
   recruitCost: number;
   description: string;
 }
 
 const sortArmyUnits = (unit: RecruitUnitProps): number => {
-  if (unit.id === RegularUnitName.WARD_HANDS) return 0;
-  if (isWarMachine(unit.id)) return 2;
-  if (isHeroType(unit.id)) return 3;
+  if (unit.type === RegularUnitName.WARD_HANDS) return 0;
+  if (isWarMachine(unit.type)) return 2;
+  if (isHeroType(unit.type)) return 3;
   return 1;
 };
 
 const typeToRecruitProps = (unitType: UnitType): RecruitUnitProps => {
-  const baseUnitStats = unitsBaseStats(unitType);
+  const recruitInfo = getRecruitInfo(unitType);
   return {
-    id: unitType,
-    recruitCost: baseUnitStats.recruitCost,
-    description: baseUnitStats.description,
+    type: unitType,
+    recruitCost: recruitInfo.recruitCost,
+    description: recruitInfo.description,
   };
 };
 
@@ -161,17 +161,17 @@ const RecruitArmyDialog: React.FC = () => {
     <FlipBook onClickOutside={handleClose}>
       {availableUnits.map((unit, index) => (
         <FlipBookPage
-          key={unit.id}
+          key={unit.type}
           pageNum={index}
           lorePage={617}
-          header={unit.id}
-          iconPath={getUnitImg(unit.id)}
+          header={unit.type}
+          iconPath={getUnitImg(unit.type)}
           description={unit.description}
           cost={unit.recruitCost}
           onClose={handleClose}
           slots={slots}
-          onSlotClick={createSlotClickHandler(unit.id, actionLandPosition)}
-          onIconClick={createRecruitClickHandler(unit.id, actionLandPosition)}
+          onSlotClick={createSlotClickHandler(unit.type, actionLandPosition)}
+          onIconClick={createRecruitClickHandler(unit.type, actionLandPosition)}
           usedSlots={usedSlots}
         />
       ))}

@@ -6,8 +6,7 @@ import {
 } from '../../selectors/playerSelectors';
 import { hasAvailableSlotForUnit } from '../../selectors/buildingSelectors';
 import { startRecruitmentInSlot, updatePlayerVault } from '../../systems/gameStateActions';
-import { getRecruitDuration } from '../../domain/unit/recruitmentRules';
-import { unitsBaseStats } from '../../domain/unit/unitRepository';
+import { getRecruitInfo } from '../../domain/unit/unitRepository';
 
 import { TreasureName } from '../../types/Treasures';
 import { SpellName } from '../../types/Spell';
@@ -33,13 +32,14 @@ export const startRecruiting = (
   if (recruitBuilding) {
     const turnOwner = getTurnOwner(state);
     const availableGold = turnOwner.vault;
-    if (availableGold != null && availableGold >= unitsBaseStats(unitType).recruitCost) {
+    const recruitRules = getRecruitInfo(unitType);
+    if (availableGold >= recruitRules.recruitCost) {
       let newState: GameState = state;
       const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureName.CROWN_OF_DOMINION);
 
       const costReduction = hasCrownOfDominion
-        ? Math.ceil(unitsBaseStats(unitType).recruitCost * 0.85)
-        : unitsBaseStats(unitType).recruitCost;
+        ? Math.ceil(recruitRules.recruitCost * 0.85)
+        : recruitRules.recruitCost;
 
       // Ember raid increases recruitment duration by 1 turn
       const hasEmberRaidEffect = hasActiveEffect(land, SpellName.EMBER_RAID);
@@ -52,7 +52,7 @@ export const startRecruiting = (
         landPos,
         recruitBuilding,
         unitType,
-        getRecruitDuration(unitType) + (hasEmberRaidEffect ? 1 : 0) + (land.corrupted ? 1 : 0) // corrupted lands add one additional turn to recruitment
+        recruitRules.recruitTime + (hasEmberRaidEffect ? 1 : 0) + (land.corrupted ? 1 : 0) // corrupted lands add one additional turn to recruitment
       );
 
       Object.assign(state, newState);

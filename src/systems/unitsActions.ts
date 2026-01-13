@@ -1,5 +1,5 @@
 import { hasArtifact } from '../selectors/armySelectors';
-import { unitsBaseStats } from '../domain/unit/unitRepository';
+import { getRecruitInfo, unitsBaseCombatStats } from '../domain/unit/unitRepository';
 import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName } from '../types/UnitType';
 import { UnitRank } from '../state/army/RegularsState';
 import { Alignment } from '../types/Alignment';
@@ -20,23 +20,23 @@ export const levelUpHero = (hero: HeroState, playerAlignment: AlignmentType): vo
 
   // stat_gain = base_gain * class_factor * race_factor * alignment_factor
   // increase characteristics
-  const baseHeroClass = unitsBaseStats(hero.type);
+  const baseHeroClass = unitsBaseCombatStats(hero.type);
   const baseLevelUpParams = baseStatsLevelUpParameters(hero.type);
   const alignmentModifier = alignmentModifiers(playerAlignment);
-  hero.baseStats.attack = Math.floor(
+  hero.combatStats.attack = Math.floor(
     baseHeroClass.attack + baseLevelUpParams.attack * alignmentModifier.attack * (hero.level - 1)
   );
-  hero.baseStats.defense = Math.floor(
+  hero.combatStats.defense = Math.floor(
     baseHeroClass.defense + baseLevelUpParams.defense * alignmentModifier.defense * (hero.level - 1)
   );
-  hero.baseStats.rangeDamage =
-    hero.baseStats.rangeDamage && baseHeroClass.rangeDamage
+  hero.combatStats.rangeDamage =
+    hero.combatStats.rangeDamage && baseHeroClass.rangeDamage
       ? Math.floor(
           baseHeroClass.rangeDamage +
             baseLevelUpParams.rangeDamage * alignmentModifier.attack * (hero.level - 1)
         )
       : undefined;
-  hero.baseStats.health = Math.floor(
+  hero.combatStats.health = Math.floor(
     baseHeroClass.health + baseLevelUpParams.health * alignmentModifier.health * (hero.level - 1)
   );
   hero.mana =
@@ -44,7 +44,7 @@ export const levelUpHero = (hero: HeroState, playerAlignment: AlignmentType): vo
       ? Math.floor(1 + baseLevelUpParams.mana * alignmentModifier.mana * (hero.level - 1))
       : undefined;
 
-  hero.baseStats.maintainCost = baseHeroClass.maintainCost * (Math.floor(hero.level / 4) + 1);
+  hero.cost = getRecruitInfo(hero.type).maintainCost * (Math.floor(hero.level / 4) + 1);
 };
 
 export const levelUpRegulars = (regular: RegularsState, playerAlignment: AlignmentType): void => {
@@ -56,39 +56,36 @@ export const levelUpRegulars = (regular: RegularsState, playerAlignment: Alignme
   } else {
     regular.rank = UnitRank.ELITE;
   }
-  const baseRegularStats = unitsBaseStats(regular.type);
+  const baseRegularStats = unitsBaseCombatStats(regular.type);
   const baseLevelUpParams = baseStatsLevelUpParameters(regular.type);
   const alignmentModifier = alignmentModifiers(playerAlignment);
   const levelModifier = regular.rank === UnitRank.ELITE ? 7 : 3;
-  regular.baseStats.attack = Math.floor(
+  regular.combatStats.attack = Math.floor(
     baseRegularStats.attack + baseLevelUpParams.attack * alignmentModifier.attack * levelModifier
   );
 
-  regular.baseStats.defense = Math.floor(
+  regular.combatStats.defense = Math.floor(
     baseRegularStats.defense + baseLevelUpParams.defense * alignmentModifier.defense * levelModifier
   );
 
-  regular.baseStats.rangeDamage =
-    regular.baseStats.rangeDamage && baseRegularStats.rangeDamage
+  regular.combatStats.rangeDamage =
+    regular.combatStats.rangeDamage && baseRegularStats.rangeDamage
       ? Math.floor(
           baseRegularStats.rangeDamage +
             baseLevelUpParams.rangeDamage * alignmentModifier.attack * levelModifier
         )
       : undefined;
 
-  regular.baseStats.health = Math.floor(
+  regular.combatStats.health = Math.floor(
     baseRegularStats.health + baseLevelUpParams.health * alignmentModifier.health * levelModifier
   );
 
   if (regular.rank === UnitRank.ELITE && regular.type !== RegularUnitName.WARD_HANDS) {
-    regular.baseStats.speed *= 1.5;
+    regular.combatStats.speed *= 1.5;
   }
 
-  if (regular.rank === UnitRank.VETERAN) {
-    regular.baseStats.maintainCost = baseRegularStats.maintainCost * 1.5;
-  } else {
-    regular.baseStats.maintainCost = baseRegularStats.maintainCost * 2;
-  }
+  regular.cost =
+    getRecruitInfo(regular.type).maintainCost * (regular.rank === UnitRank.VETERAN ? 1.5 : 2);
 };
 
 const baseStatsLevelUpParameters = (unitType: HeroUnitType | RegularUnitType) => {

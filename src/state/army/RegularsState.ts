@@ -1,5 +1,5 @@
 import type { RegularUnitType } from '../../types/UnitType';
-import type { BaseUnitStats } from '../../types/BaseUnit';
+import type { CombatStats } from '../../types/BaseUnit';
 
 export const UnitRank = {
   REGULAR: 'regular',
@@ -13,5 +13,6 @@ export interface RegularsState {
   type: RegularUnitType;
   rank: UnitRankType;
   count: number;
-  baseStats: BaseUnitStats;
+  combatStats: CombatStats;
+  cost: number; // maintenance cost per turn per unit
 }

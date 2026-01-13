@@ -142,7 +142,7 @@ describe('Hero Quest', () => {
     it(`When hero Quest is complete and hero survive if his level is related to quest level`, () => {
       randomSpy.mockReturnValue(0.01); // always survive
       const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-      const heroBaseStatsBefore = { ...hero.baseStats };
+      const heroBaseStatsBefore = { ...hero.combatStats };
 
       const heroLevel = hero.level;
       expect(gameStateStub.turn).toBe(2);
@@ -168,13 +168,13 @@ describe('Hero Quest', () => {
       ); // quest reward
 
       // verify that hero stats are incremented exact new stats calculation verified separately
-      expect(hero.baseStats.attack).toBeGreaterThan(heroBaseStatsBefore.attack);
-      expect(hero.baseStats.defense).toBe(heroBaseStatsBefore.defense); // in levelUpHero used Math.floor and 6.52 for level 9 is 6 (the same as previous level)
-      expect(hero.baseStats.health).toBeGreaterThan(heroBaseStatsBefore.health);
-      expect(hero.baseStats.rangeDamage).toBeGreaterThan(heroBaseStatsBefore.rangeDamage!);
+      expect(hero.combatStats.attack).toBeGreaterThan(heroBaseStatsBefore.attack);
+      expect(hero.combatStats.defense).toBe(heroBaseStatsBefore.defense); // in levelUpHero used Math.floor and 6.52 for level 9 is 6 (the same as previous level)
+      expect(hero.combatStats.health).toBeGreaterThan(heroBaseStatsBefore.health);
+      expect(hero.combatStats.rangeDamage).toBeGreaterThan(heroBaseStatsBefore.rangeDamage!);
       // not changed parameters
-      expect(hero.baseStats.speed).toBe(heroBaseStatsBefore.speed);
-      expect(hero.baseStats.range).toBe(heroBaseStatsBefore.range);
+      expect(hero.combatStats.speed).toBe(heroBaseStatsBefore.speed);
+      expect(hero.combatStats.range).toBe(heroBaseStatsBefore.range);
       expect(hero.mana).not.toBeDefined();
     });
 

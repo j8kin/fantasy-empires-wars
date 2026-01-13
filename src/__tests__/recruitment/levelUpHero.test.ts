@@ -82,11 +82,11 @@ describe('level up hero', () => {
       levelUpHero(hero, player.alignment); // increase level
 
       expect(hero.level).toBe(initLevel + 1);
-      expect(hero.baseStats.attack).toBe(expected.attack);
-      expect(hero.baseStats.defense).toBe(expected.defense);
-      expect(hero.baseStats.range).toBe(expected.range);
-      expect(hero.baseStats.rangeDamage).toBe(expected.rangeDamage);
-      expect(hero.baseStats.speed).toBe(expected.speed);
+      expect(hero.combatStats.attack).toBe(expected.attack);
+      expect(hero.combatStats.defense).toBe(expected.defense);
+      expect(hero.combatStats.range).toBe(expected.range);
+      expect(hero.combatStats.rangeDamage).toBe(expected.rangeDamage);
+      expect(hero.combatStats.speed).toBe(expected.speed);
       expect(hero.mana).toBe(expected.mana);
     }
   );
