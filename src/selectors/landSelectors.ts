@@ -21,8 +21,7 @@ import type { Effect, EffectSourceId } from '../types/Effect';
 import type { AlignmentType } from '../types/Alignment';
 import type { WarMachineType } from '../types/UnitType';
 
-export const getLand = (state: GameState, landPos: LandPosition) =>
-  state.map.lands[getLandId(landPos)];
+export const getLand = (state: GameState, landPos: LandPosition) => state.map.lands[getLandId(landPos)];
 
 export const getLandOwner = (state: GameState, landPos: LandPosition): string =>
   state.players.find((p) => p.landsOwned.has(getLandId(landPos)))?.id ?? NO_PLAYER.id;
@@ -53,8 +52,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
   const landOwnerColor = getPlayerColorValue(landOwner.color);
 
   const isIllusion =
-    hasTreasureByPlayer(landOwner, TreasureName.MIRROR_OF_ILLUSION) ||
-    hasActiveEffect(land, SpellName.ILLUSION);
+    hasTreasureByPlayer(landOwner, TreasureName.MIRROR_OF_ILLUSION) || hasActiveEffect(land, SpellName.ILLUSION);
 
   const affectedByViewLand =
     hasActiveEffect(land, SpellName.VIEW_TERRITORY, state.turnOwner) ||
@@ -135,11 +133,7 @@ const ILLUSION_MESSAGES: string[] = [
   'Here, sight is a question, not an answer',
 ];
 
-export const hasActiveEffect = (
-  state: LandState,
-  effectSourceId: EffectSourceId,
-  appliedBy?: string
-): boolean => {
+export const hasActiveEffect = (state: LandState, effectSourceId: EffectSourceId, appliedBy?: string): boolean => {
   return state.effects.some(
     (e) =>
       e.sourceId === effectSourceId &&
@@ -181,9 +175,7 @@ export const getRealmLands = (state: GameState): LandState[] => {
   const playerStrongholds = lands.filter((l) => hasBuilding(l, BuildingName.STRONGHOLD));
 
   playerStrongholds.forEach((s) =>
-    getTilesInRadius(state.map.dimensions, s.mapPos, 1).forEach((pos) =>
-      realm.add(getLand(state, pos))
-    )
+    getTilesInRadius(state.map.dimensions, s.mapPos, 1).forEach((pos) => realm.add(getLand(state, pos)))
   );
   return realm.values().toArray();
 };
@@ -319,9 +311,7 @@ export const getTilesInRadius = (
 
     for (let neighbour of neighbours) {
       if (
-        !Array.from(tilesInRadius).some(
-          (n) => n.row === neighbour.row && n.col === neighbour.col
-        ) &&
+        !Array.from(tilesInRadius).some((n) => n.row === neighbour.row && n.col === neighbour.col) &&
         current.dist + 1 <= radius
       ) {
         queue.push({ pos: neighbour, dist: current.dist + 1 });

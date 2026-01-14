@@ -1,9 +1,5 @@
 import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
-import {
-  getTurnOwner,
-  getUnitsAllowedToRecruit,
-  hasTreasureByPlayer,
-} from '../../selectors/playerSelectors';
+import { getTurnOwner, getUnitsAllowedToRecruit, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { hasAvailableSlotForUnit } from '../../selectors/buildingSelectors';
 import { startRecruitmentInSlot, updatePlayerVault } from '../../systems/gameStateActions';
 import { getRecruitInfo } from '../../domain/unit/unitRepository';
@@ -14,11 +10,7 @@ import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { UnitType } from '../../types/UnitType';
 
-export const startRecruiting = (
-  state: GameState,
-  landPos: LandPosition,
-  unitType: UnitType
-): void => {
+export const startRecruiting = (state: GameState, landPos: LandPosition, unitType: UnitType): void => {
   if (getLandOwner(state, landPos) !== state.turnOwner) {
     return; // fallback: a wrong Land Owner should never happen on real game
   }
@@ -37,9 +29,7 @@ export const startRecruiting = (
       let newState: GameState = state;
       const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureName.CROWN_OF_DOMINION);
 
-      const costReduction = hasCrownOfDominion
-        ? Math.ceil(recruitRules.recruitCost * 0.85)
-        : recruitRules.recruitCost;
+      const costReduction = hasCrownOfDominion ? Math.ceil(recruitRules.recruitCost * 0.85) : recruitRules.recruitCost;
 
       // Ember raid increases recruitment duration by 1 turn
       const hasEmberRaidEffect = hasActiveEffect(land, SpellName.EMBER_RAID);

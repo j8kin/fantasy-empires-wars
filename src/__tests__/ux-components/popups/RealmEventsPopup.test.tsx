@@ -28,9 +28,7 @@ const renderWithEmpireEvents = (empireEvents: EmpireEvent[] | null) => {
       <ApplicationContextProvider>
         <div data-testid="context-wrapper">
           {React.Children.map(children, (child) =>
-            React.isValidElement(child)
-              ? React.cloneElement(child as React.ReactElement<any>, {})
-              : child
+            React.isValidElement(child) ? React.cloneElement(child as React.ReactElement<any>, {}) : child
           )}
         </div>
       </ApplicationContextProvider>
@@ -91,9 +89,7 @@ describe('RealmEventsPopup', () => {
     });
 
     it('renders popup when empireEvents has at least one event', () => {
-      const events: EmpireEvent[] = [
-        { status: EmpireEventKind.Success, message: 'Your quest was successful!' },
-      ];
+      const events: EmpireEvent[] = [{ status: EmpireEventKind.Success, message: 'Your quest was successful!' }];
       renderWithEmpireEvents(events);
       expect(screen.getByText('Echoes of the Realm')).toBeInTheDocument();
     });
@@ -101,9 +97,7 @@ describe('RealmEventsPopup', () => {
 
   describe('Event status colors', () => {
     it('displays negative event with red border color', () => {
-      const events: EmpireEvent[] = [
-        { status: EmpireEventKind.Negative, message: 'Your hero has fallen in battle!' },
-      ];
+      const events: EmpireEvent[] = [{ status: EmpireEventKind.Negative, message: 'Your hero has fallen in battle!' }];
       renderWithEmpireEvents(events);
 
       const messageElement = screen.getByText('Your hero has fallen in battle!');
@@ -111,9 +105,7 @@ describe('RealmEventsPopup', () => {
     });
 
     it('displays success event with green border color', () => {
-      const events: EmpireEvent[] = [
-        { status: EmpireEventKind.Success, message: 'Quest completed successfully!' },
-      ];
+      const events: EmpireEvent[] = [{ status: EmpireEventKind.Success, message: 'Quest completed successfully!' }];
       renderWithEmpireEvents(events);
 
       const messageElement = screen.getByText('Quest completed successfully!');
@@ -121,9 +113,7 @@ describe('RealmEventsPopup', () => {
     });
 
     it('displays neutral event with gray border color', () => {
-      const events: EmpireEvent[] = [
-        { status: EmpireEventKind.Neutral, message: 'Nothing of interest happened.' },
-      ];
+      const events: EmpireEvent[] = [{ status: EmpireEventKind.Neutral, message: 'Nothing of interest happened.' }];
       renderWithEmpireEvents(events);
 
       const messageElement = screen.getByText('Nothing of interest happened.');
@@ -131,9 +121,7 @@ describe('RealmEventsPopup', () => {
     });
 
     it('displays minor event with orange border color', () => {
-      const events: EmpireEvent[] = [
-        { status: EmpireEventKind.Minor, message: 'Found a small amount of gold.' },
-      ];
+      const events: EmpireEvent[] = [{ status: EmpireEventKind.Minor, message: 'Found a small amount of gold.' }];
       renderWithEmpireEvents(events);
 
       const messageElement = screen.getByText('Found a small amount of gold.');
@@ -141,9 +129,7 @@ describe('RealmEventsPopup', () => {
     });
 
     it('displays positive event with blue border color', () => {
-      const events: EmpireEvent[] = [
-        { status: EmpireEventKind.Positive, message: 'Discovered a valuable artifact!' },
-      ];
+      const events: EmpireEvent[] = [{ status: EmpireEventKind.Positive, message: 'Discovered a valuable artifact!' }];
       renderWithEmpireEvents(events);
 
       const messageElement = screen.getByText('Discovered a valuable artifact!');
@@ -231,12 +217,9 @@ describe('RealmEventsPopup', () => {
     });
 
     it('handles multiple long messages and calculates correct total height', () => {
-      const longMessage1 =
-        'First long message: ' + 'A'.repeat(200) + ' - This should contribute to the total height.';
-      const longMessage2 =
-        'Second long message: ' + 'B'.repeat(200) + ' - This also contributes to the total height.';
-      const longMessage3 =
-        'Third long message: ' + 'C'.repeat(200) + ' - And this one as well for testing.';
+      const longMessage1 = 'First long message: ' + 'A'.repeat(200) + ' - This should contribute to the total height.';
+      const longMessage2 = 'Second long message: ' + 'B'.repeat(200) + ' - This also contributes to the total height.';
+      const longMessage3 = 'Third long message: ' + 'C'.repeat(200) + ' - And this one as well for testing.';
 
       const events: EmpireEvent[] = [
         { status: EmpireEventKind.Success, message: longMessage1 },
@@ -272,9 +255,7 @@ describe('RealmEventsPopup', () => {
     });
 
     it('handles events with newline characters in messages', () => {
-      const events: EmpireEvent[] = [
-        { status: EmpireEventKind.Success, message: 'Line 1\nLine 2\nLine 3' },
-      ];
+      const events: EmpireEvent[] = [{ status: EmpireEventKind.Success, message: 'Line 1\nLine 2\nLine 3' }];
       renderWithEmpireEvents(events);
 
       // Newlines are rendered as actual line breaks in HTML, so use a regex matcher

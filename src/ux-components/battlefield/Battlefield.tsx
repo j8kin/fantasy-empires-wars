@@ -16,10 +16,7 @@ export interface BattlefieldProps {
   tileSize: FrameSize;
 }
 
-const getHexTileSize = (
-  battlefieldDimensions: MapDimensions,
-  availableArea: FrameSize
-): FrameSize => {
+const getHexTileSize = (battlefieldDimensions: MapDimensions, availableArea: FrameSize): FrameSize => {
   const defaultWidth = 100;
   const hexRatio = 1.1547; // sqrt(3) for pointy-topped hexagon
 

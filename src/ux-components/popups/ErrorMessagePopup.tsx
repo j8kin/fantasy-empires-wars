@@ -10,11 +10,7 @@ import type { PopupProps } from './PopupWrapper';
 const ErrorMessagePopup: React.FC<PopupProps> = ({ screenPosition }) => {
   const { errorMessagePopupMessage } = useApplicationContext();
   return (
-    <PopupWrapper
-      screenPosition={screenPosition}
-      dimensions={{ width: 400, height: 100 }}
-      accessible={true}
-    >
+    <PopupWrapper screenPosition={screenPosition} dimensions={{ width: 400, height: 100 }} accessible={true}>
       <div
         className={styles.popupContent}
         style={{ height: '60px', justifyContent: 'center' }}

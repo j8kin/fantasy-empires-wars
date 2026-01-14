@@ -7,8 +7,7 @@ import type { FantasyBorderFrameProps } from '../../../ux-components/fantasy-bor
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 
-const renderWithProvider = (ui: React.ReactElement) =>
-  render(ui, { wrapper: ApplicationContextProvider });
+const renderWithProvider = (ui: React.ReactElement) => render(ui, { wrapper: ApplicationContextProvider });
 
 // Mock FantasyBorderFrame to avoid complex rendering issues
 jest.mock('../../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
@@ -44,11 +43,7 @@ describe('SelectOpponentDialog', () => {
 
   it('renders with correct title', () => {
     renderWithProvider(
-      <SelectOpponentDialog
-        excludedPlayerIds={excludedPlayerIds}
-        onSelect={mockOnSelect}
-        onCancel={mockOnCancel}
-      />
+      <SelectOpponentDialog excludedPlayerIds={excludedPlayerIds} onSelect={mockOnSelect} onCancel={mockOnCancel} />
     );
 
     expect(screen.getByText('Select Opponent')).toBeInTheDocument();
@@ -86,11 +81,7 @@ describe('SelectOpponentDialog', () => {
     const excludedIds = [excludedPlayer.id];
 
     renderWithProvider(
-      <SelectOpponentDialog
-        excludedPlayerIds={excludedIds}
-        onSelect={mockOnSelect}
-        onCancel={mockOnCancel}
-      />
+      <SelectOpponentDialog excludedPlayerIds={excludedIds} onSelect={mockOnSelect} onCancel={mockOnCancel} />
     );
 
     // Should not show excluded player
@@ -106,11 +97,7 @@ describe('SelectOpponentDialog', () => {
   it('calls onSelect when a player is selected', async () => {
     const user = userEvent.setup();
     renderWithProvider(
-      <SelectOpponentDialog
-        excludedPlayerIds={excludedPlayerIds}
-        onSelect={mockOnSelect}
-        onCancel={mockOnCancel}
-      />
+      <SelectOpponentDialog excludedPlayerIds={excludedPlayerIds} onSelect={mockOnSelect} onCancel={mockOnCancel} />
     );
 
     const availablePlayer = PREDEFINED_PLAYERS.find((p) => !excludedPlayerIds.includes(p.id));
@@ -139,11 +126,7 @@ describe('SelectOpponentDialog', () => {
   it('renders cancel button and calls onCancel when clicked', async () => {
     const user = userEvent.setup();
     renderWithProvider(
-      <SelectOpponentDialog
-        excludedPlayerIds={excludedPlayerIds}
-        onSelect={mockOnSelect}
-        onCancel={mockOnCancel}
-      />
+      <SelectOpponentDialog excludedPlayerIds={excludedPlayerIds} onSelect={mockOnSelect} onCancel={mockOnCancel} />
     );
 
     const cancelButton = screen.getByAltText('Cancel');
@@ -169,11 +152,7 @@ describe('SelectOpponentDialog', () => {
 
   it('calculates dialog dimensions based on window size', () => {
     renderWithProvider(
-      <SelectOpponentDialog
-        excludedPlayerIds={excludedPlayerIds}
-        onSelect={mockOnSelect}
-        onCancel={mockOnCancel}
-      />
+      <SelectOpponentDialog excludedPlayerIds={excludedPlayerIds} onSelect={mockOnSelect} onCancel={mockOnCancel} />
     );
 
     const frame = screen.getByTestId('fantasy-border-frame');
@@ -181,13 +160,7 @@ describe('SelectOpponentDialog', () => {
   });
 
   it('handles empty excluded players list', () => {
-    renderWithProvider(
-      <SelectOpponentDialog
-        excludedPlayerIds={[]}
-        onSelect={mockOnSelect}
-        onCancel={mockOnCancel}
-      />
-    );
+    renderWithProvider(<SelectOpponentDialog excludedPlayerIds={[]} onSelect={mockOnSelect} onCancel={mockOnCancel} />);
 
     // Should show all predefined players plus EmptyPlayer
     const emptyPlayerElements = screen.getAllByText(NO_PLAYER.name);
@@ -200,11 +173,7 @@ describe('SelectOpponentDialog', () => {
   it('updates selected player when a different player is clicked', async () => {
     const user = userEvent.setup();
     renderWithProvider(
-      <SelectOpponentDialog
-        excludedPlayerIds={excludedPlayerIds}
-        onSelect={mockOnSelect}
-        onCancel={mockOnCancel}
-      />
+      <SelectOpponentDialog excludedPlayerIds={excludedPlayerIds} onSelect={mockOnSelect} onCancel={mockOnCancel} />
     );
 
     const availablePlayers = PREDEFINED_PLAYERS.filter((p) => !excludedPlayerIds.includes(p.id));
@@ -235,11 +204,7 @@ describe('SelectOpponentDialog', () => {
     });
 
     renderWithProvider(
-      <SelectOpponentDialog
-        excludedPlayerIds={excludedPlayerIds}
-        onSelect={mockOnSelect}
-        onCancel={mockOnCancel}
-      />
+      <SelectOpponentDialog excludedPlayerIds={excludedPlayerIds} onSelect={mockOnSelect} onCancel={mockOnCancel} />
     );
 
     expect(screen.getByText('Select Opponent')).toBeInTheDocument();

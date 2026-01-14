@@ -3,10 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import {
-  ApplicationContextProvider,
-  useApplicationContext,
-} from '../../contexts/ApplicationContext';
+import { ApplicationContextProvider, useApplicationContext } from '../../contexts/ApplicationContext';
 
 import ExchangeManaVialPanel from '../../ux-components/vial-panel/ExchangeManaVialPanel';
 
@@ -62,10 +59,7 @@ const TestExchangeVialPanelWrapper: React.FC<{
   return <ExchangeManaVialPanel />;
 };
 
-const renderExchangeVialPanelWithGameState = (
-  gameState: GameState,
-  isExchangeMode: boolean = true
-) => {
+const renderExchangeVialPanelWithGameState = (gameState: GameState, isExchangeMode: boolean = true) => {
   return render(
     <ApplicationContextProvider>
       <GameProvider>
@@ -161,22 +155,10 @@ describe('ExchangeManaVialPanel', () => {
       renderExchangeVialPanelWithGameState(lawfulGameState);
 
       // Check tooltips display correct conversion amounts for Lawful alignment
-      expect(screen.getByTestId('exchange-vial-white')).toHaveAttribute(
-        'title',
-        'Exchange to 90 white mana'
-      );
-      expect(screen.getByTestId('exchange-vial-green')).toHaveAttribute(
-        'title',
-        'Exchange to 90 green mana'
-      );
-      expect(screen.getByTestId('exchange-vial-red')).toHaveAttribute(
-        'title',
-        'Exchange to 75 red mana'
-      );
-      expect(screen.getByTestId('exchange-vial-black')).toHaveAttribute(
-        'title',
-        'Exchange to 50 black mana'
-      );
+      expect(screen.getByTestId('exchange-vial-white')).toHaveAttribute('title', 'Exchange to 90 white mana');
+      expect(screen.getByTestId('exchange-vial-green')).toHaveAttribute('title', 'Exchange to 90 green mana');
+      expect(screen.getByTestId('exchange-vial-red')).toHaveAttribute('title', 'Exchange to 75 red mana');
+      expect(screen.getByTestId('exchange-vial-black')).toHaveAttribute('title', 'Exchange to 50 black mana');
     });
 
     it('should render vials with correct conversion amounts for Chaotic alignment', () => {
@@ -190,22 +172,10 @@ describe('ExchangeManaVialPanel', () => {
       renderExchangeVialPanelWithGameState(chaoticGameState);
 
       // Check tooltips display correct conversion amounts for Chaotic alignment
-      expect(screen.getByTestId('exchange-vial-white')).toHaveAttribute(
-        'title',
-        'Exchange to 50 white mana'
-      );
-      expect(screen.getByTestId('exchange-vial-green')).toHaveAttribute(
-        'title',
-        'Exchange to 75 green mana'
-      );
-      expect(screen.getByTestId('exchange-vial-red')).toHaveAttribute(
-        'title',
-        'Exchange to 90 red mana'
-      );
-      expect(screen.getByTestId('exchange-vial-black')).toHaveAttribute(
-        'title',
-        'Exchange to 90 black mana'
-      );
+      expect(screen.getByTestId('exchange-vial-white')).toHaveAttribute('title', 'Exchange to 50 white mana');
+      expect(screen.getByTestId('exchange-vial-green')).toHaveAttribute('title', 'Exchange to 75 green mana');
+      expect(screen.getByTestId('exchange-vial-red')).toHaveAttribute('title', 'Exchange to 90 red mana');
+      expect(screen.getByTestId('exchange-vial-black')).toHaveAttribute('title', 'Exchange to 90 black mana');
     });
 
     it('should render vials with correct conversion amounts for Neutral alignment', () => {
@@ -219,22 +189,10 @@ describe('ExchangeManaVialPanel', () => {
       renderExchangeVialPanelWithGameState(neutralGameState);
 
       // Check tooltips display correct conversion amounts for Neutral alignment (95 for all)
-      expect(screen.getByTestId('exchange-vial-white')).toHaveAttribute(
-        'title',
-        'Exchange to 95 white mana'
-      );
-      expect(screen.getByTestId('exchange-vial-green')).toHaveAttribute(
-        'title',
-        'Exchange to 95 green mana'
-      );
-      expect(screen.getByTestId('exchange-vial-red')).toHaveAttribute(
-        'title',
-        'Exchange to 95 red mana'
-      );
-      expect(screen.getByTestId('exchange-vial-black')).toHaveAttribute(
-        'title',
-        'Exchange to 95 black mana'
-      );
+      expect(screen.getByTestId('exchange-vial-white')).toHaveAttribute('title', 'Exchange to 95 white mana');
+      expect(screen.getByTestId('exchange-vial-green')).toHaveAttribute('title', 'Exchange to 95 green mana');
+      expect(screen.getByTestId('exchange-vial-red')).toHaveAttribute('title', 'Exchange to 95 red mana');
+      expect(screen.getByTestId('exchange-vial-black')).toHaveAttribute('title', 'Exchange to 95 black mana');
     });
   });
 
@@ -245,13 +203,7 @@ describe('ExchangeManaVialPanel', () => {
       fireEvent.click(screen.getByTestId('exchange-vial-white'));
 
       // Verify castSpell was called with correct parameters
-      expect(mockCastSpell).toHaveBeenCalledWith(
-        gameState,
-        SpellName.EXCHANGE,
-        undefined,
-        undefined,
-        Mana.WHITE
-      );
+      expect(mockCastSpell).toHaveBeenCalledWith(gameState, SpellName.EXCHANGE, undefined, undefined, Mana.WHITE);
     });
 
     it('should update game state after exchange', () => {
@@ -260,13 +212,7 @@ describe('ExchangeManaVialPanel', () => {
       fireEvent.click(screen.getByTestId('exchange-vial-green'));
 
       // Verify castSpell was called
-      expect(mockCastSpell).toHaveBeenCalledWith(
-        gameState,
-        SpellName.EXCHANGE,
-        undefined,
-        undefined,
-        Mana.GREEN
-      );
+      expect(mockCastSpell).toHaveBeenCalledWith(gameState, SpellName.EXCHANGE, undefined, undefined, Mana.GREEN);
 
       // The component should trigger updateGameState
       // We can verify this by re-rendering with updated state
@@ -294,13 +240,7 @@ describe('ExchangeManaVialPanel', () => {
 
         fireEvent.click(screen.getByTestId(testId));
 
-        expect(mockCastSpell).toHaveBeenCalledWith(
-          gameState,
-          SpellName.EXCHANGE,
-          undefined,
-          undefined,
-          type
-        );
+        expect(mockCastSpell).toHaveBeenCalledWith(gameState, SpellName.EXCHANGE, undefined, undefined, type);
       });
     });
   });
@@ -406,9 +346,7 @@ describe('ExchangeManaVialPanel', () => {
         const playerWithAlignment = PREDEFINED_PLAYERS.find((p) => p.alignment === alignment);
         const testGameState = createGameStateStub({
           nPlayers: 2,
-          gamePlayers: playerWithAlignment
-            ? [playerWithAlignment, PREDEFINED_PLAYERS[1]]
-            : undefined,
+          gamePlayers: playerWithAlignment ? [playerWithAlignment, PREDEFINED_PLAYERS[1]] : undefined,
         });
 
         const { unmount } = renderExchangeVialPanelWithGameState(testGameState);
@@ -472,22 +410,8 @@ describe('ExchangeManaVialPanel', () => {
       fireEvent.click(greenVial);
 
       expect(mockCastSpell).toHaveBeenCalledTimes(2);
-      expect(mockCastSpell).toHaveBeenNthCalledWith(
-        1,
-        gameState,
-        SpellName.EXCHANGE,
-        undefined,
-        undefined,
-        Mana.WHITE
-      );
-      expect(mockCastSpell).toHaveBeenNthCalledWith(
-        2,
-        gameState,
-        SpellName.EXCHANGE,
-        undefined,
-        undefined,
-        Mana.GREEN
-      );
+      expect(mockCastSpell).toHaveBeenNthCalledWith(1, gameState, SpellName.EXCHANGE, undefined, undefined, Mana.WHITE);
+      expect(mockCastSpell).toHaveBeenNthCalledWith(2, gameState, SpellName.EXCHANGE, undefined, undefined, Mana.GREEN);
     });
 
     it('should handle hover and click interactions together', () => {
@@ -510,13 +434,7 @@ describe('ExchangeManaVialPanel', () => {
       fireEvent.click(redVial);
 
       // Verify castSpell was called
-      expect(mockCastSpell).toHaveBeenCalledWith(
-        neutralGameState,
-        SpellName.EXCHANGE,
-        undefined,
-        undefined,
-        Mana.RED
-      );
+      expect(mockCastSpell).toHaveBeenCalledWith(neutralGameState, SpellName.EXCHANGE, undefined, undefined, Mana.RED);
     });
   });
 

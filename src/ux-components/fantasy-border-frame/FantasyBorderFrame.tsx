@@ -24,8 +24,7 @@ export const defaultTileDimensions: FrameSize = {
   width: 50,
   height: 180,
 };
-const cornerSize = (tileDimensions: FrameSize): number =>
-  Math.min(tileDimensions.width, tileDimensions.height);
+const cornerSize = (tileDimensions: FrameSize): number => Math.min(tileDimensions.width, tileDimensions.height);
 
 const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
   screenPosition,
@@ -65,54 +64,22 @@ const FantasyBorderFrame: React.FC<FantasyBorderFrameProps> = ({
         {/* Corner ornaments */}
         <CornerBorder position="top-left" size={cornerSize(tileDimensions)} zIndex={zIndex + 1} />
         <CornerBorder position="top-right" size={cornerSize(tileDimensions)} zIndex={zIndex + 1} />
-        <CornerBorder
-          position="bottom-left"
-          size={cornerSize(tileDimensions)}
-          zIndex={zIndex + 1}
-        />
-        <CornerBorder
-          position="bottom-right"
-          size={cornerSize(tileDimensions)}
-          zIndex={zIndex + 1}
-        />
+        <CornerBorder position="bottom-left" size={cornerSize(tileDimensions)} zIndex={zIndex + 1} />
+        <CornerBorder position="bottom-right" size={cornerSize(tileDimensions)} zIndex={zIndex + 1} />
 
         {/* Horizontal border */}
-        <HorizontalBorder
-          side="top"
-          tileDimensions={tileDimensions}
-          length={width}
-          zIndex={zIndex}
-        />
-        <HorizontalBorder
-          side="bottom"
-          tileDimensions={tileDimensions}
-          length={width}
-          zIndex={zIndex}
-        />
+        <HorizontalBorder side="top" tileDimensions={tileDimensions} length={width} zIndex={zIndex} />
+        <HorizontalBorder side="bottom" tileDimensions={tileDimensions} length={width} zIndex={zIndex} />
 
         {/* Vertical border */}
-        <VerticalBorder
-          side="left"
-          tileDimensions={tileDimensions}
-          length={height}
-          zIndex={zIndex}
-        />
-        <VerticalBorder
-          side="right"
-          tileDimensions={tileDimensions}
-          length={height}
-          zIndex={zIndex}
-        />
+        <VerticalBorder side="left" tileDimensions={tileDimensions} length={height} zIndex={zIndex} />
+        <VerticalBorder side="right" tileDimensions={tileDimensions} length={height} zIndex={zIndex} />
 
         {/* Dialog content area */}
         <div
           className={`fantasy-border-frame__content ${
             !accessible ? 'fantasy-border-frame__content--not-accessible' : ''
-          } ${
-            flexibleSizing
-              ? 'fantasy-border-frame__content--flexible'
-              : 'fantasy-border-frame__content--fixed'
-          }`}
+          } ${flexibleSizing ? 'fantasy-border-frame__content--flexible' : 'fantasy-border-frame__content--fixed'}`}
           style={{
             left: cornerSize(tileDimensions),
             top: cornerSize(tileDimensions),

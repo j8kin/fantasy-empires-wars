@@ -243,9 +243,7 @@ describe('ConstructBuildingDialog', () => {
       const remoteLand: LandPosition = { row: 6, col: 6 };
 
       // Ensure there's a stronghold at homeland
-      expect(getLand(gameStateStub, player0Homeland).buildings[0]?.type).toBe(
-        BuildingName.STRONGHOLD
-      );
+      expect(getLand(gameStateStub, player0Homeland).buildings[0]?.type).toBe(BuildingName.STRONGHOLD);
       expect(getLand(gameStateStub, remoteLand).buildings).toHaveLength(0);
 
       // Make sure the player owns the remote land

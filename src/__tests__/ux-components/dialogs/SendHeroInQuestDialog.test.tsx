@@ -186,9 +186,7 @@ describe('SendHeroInQuestDialog', () => {
       // Remove armies from lands owned by current player but keep armies on other lands
       const currentPlayerId = getTurnOwner(gameStateStub).id;
       // Filter out armies belonging to current player
-      gameStateStub.armies = gameStateStub.armies.filter(
-        (army) => army.controlledBy !== currentPlayerId
-      );
+      gameStateStub.armies = gameStateStub.armies.filter((army) => army.controlledBy !== currentPlayerId);
 
       renderWithProviders(<SendHeroInQuestDialog />);
       expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument();
@@ -356,11 +354,7 @@ describe('SendHeroInQuestDialog', () => {
 
       // Verify each hero was sent to the correct quest
       heroesOnMap.forEach((heroOnMap) => {
-        expect(mockStartQuest).toHaveBeenCalledWith(
-          gameStateStub,
-          heroOnMap.hero.name,
-          'The Echoing Ruins'
-        );
+        expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, heroOnMap.hero.name, 'The Echoing Ruins');
       });
 
       // Should close dialog after sending all heroes
@@ -372,25 +366,22 @@ describe('SendHeroInQuestDialog', () => {
       [1, 'The Whispering Grove'],
       [2, 'The Abyssal Crypt'],
       [3, 'The Shattered Sky'],
-    ])(
-      'should handle different quest level %s correctly',
-      async (questLevel: number, questName: string) => {
-        renderWithProviders(<SendHeroInQuestDialog />);
+    ])('should handle different quest level %s correctly', async (questLevel: number, questName: string) => {
+      renderWithProviders(<SendHeroInQuestDialog />);
 
-        // Get the first hero
-        const hero = findAllHeroesOnMap(gameStateStub)[0];
+      // Get the first hero
+      const hero = findAllHeroesOnMap(gameStateStub)[0];
 
-        // Click hero slot on different quest pages
-        const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.hero.name}`);
+      // Click hero slot on different quest pages
+      const heroSlots = screen.getAllByTestId(`flipbook-slot-${hero.hero.name}`);
 
-        // Click on second quest (The Whispering Grove)
-        await userEvent.click(heroSlots[questLevel]);
+      // Click on second quest (The Whispering Grove)
+      await userEvent.click(heroSlots[questLevel]);
 
-        expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.hero.name, questName);
+      expect(mockStartQuest).toHaveBeenCalledWith(gameStateStub, hero.hero.name, questName);
 
-        expect(mockStartQuest).toHaveBeenCalledTimes(1);
-      }
-    );
+      expect(mockStartQuest).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('Dialog Closing', () => {
@@ -515,10 +506,7 @@ describe('SendHeroInQuestDialog', () => {
       expect(lands.length).toBeGreaterThan(0);
       const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
       expect(armies[0].heroes.length).toBeGreaterThan(0);
-      Object.assign(
-        armies[0],
-        addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, ''))
-      );
+      Object.assign(armies[0], addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, '')));
       expect(armies[0].heroes.length).toBeGreaterThan(1);
 
       renderWithProviders(<SendHeroInQuestDialog />);
@@ -560,14 +548,9 @@ describe('SendHeroInQuestDialog', () => {
       const armies = getArmiesAtPosition(gameStateStub, lands[0].mapPos);
       Object.assign(
         armies[0],
-        addHero(
-          armies[0],
-          heroFactory(getTurnOwner(gameStateStub).playerProfile.type, 'SingleName')
-        )
+        addHero(armies[0], heroFactory(getTurnOwner(gameStateStub).playerProfile.type, 'SingleName'))
       );
-      const heroArmy = armies.find((army) =>
-        army.heroes.some((unit) => unit.name === 'SingleName')
-      );
+      const heroArmy = armies.find((army) => army.heroes.some((unit) => unit.name === 'SingleName'));
 
       expect(heroArmy).toBeDefined();
 
@@ -618,11 +601,7 @@ describe('SendHeroInQuestDialog', () => {
       const land = testGameState.map.lands[landId];
 
       // Add a second hero directly to the army array
-      placeUnitsOnMap(
-        heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
-        testGameState,
-        land.mapPos
-      );
+      placeUnitsOnMap(heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER), testGameState, land.mapPos);
 
       const user = userEvent.setup();
       renderWithProviders(<SendHeroInQuestDialog />, { gameState: testGameState });

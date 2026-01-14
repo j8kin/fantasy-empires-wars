@@ -45,9 +45,7 @@ const SpellCastAnimation: React.FC<SpellCastAnimationProps> = ({
       >
         <div className={styles.spellCastAnimation}>
           <img
-            src={
-              spellAnimation != null ? getSpellEndAnimationImg(spellAnimation.manaType) : undefined
-            }
+            src={spellAnimation != null ? getSpellEndAnimationImg(spellAnimation.manaType) : undefined}
             alt={`${spellAnimation?.manaType} spell cast animation`}
             className={styles.animationImage}
           />

@@ -129,9 +129,7 @@ describe('NewGameWindow', () => {
     expect(randomOpponentsCheckbox).not.toBeChecked();
 
     // Click on an opponent slot to open selection dialog (this will trigger NO_PLAYER selection)
-    const opponentSlots = screen
-      .getAllByRole('generic')
-      .filter((el) => el.style.cursor === 'pointer' || el.onclick);
+    const opponentSlots = screen.getAllByRole('generic').filter((el) => el.style.cursor === 'pointer' || el.onclick);
     if (opponentSlots.length > 0) {
       fireEvent.click(opponentSlots[0]);
     }

@@ -95,9 +95,7 @@ const placeSpecialLand = (battlefield: MapState, landKind: LandType) => {
   );
 
   for (let i = 0; i < nSupplementedLands && i < shuffledCandidates.length; i++) {
-    battlefield.lands[getLandId(shuffledCandidates[i])].land = getLandById(
-      getNearSpecialLandKinds(landKind)
-    );
+    battlefield.lands[getLandId(shuffledCandidates[i])].land = getLandById(getNearSpecialLandKinds(landKind));
   }
 
   const specialLandNeighbors = Object.values(battlefield.lands)
@@ -118,22 +116,15 @@ export const generateMap = (dimensions: MapDimensions): MapState => {
     lands: createEmptyBattlefield(dimensions),
   };
 
-  getMainSpecialLandKinds().forEach((specialLandKind) =>
-    placeSpecialLand(battlefield, specialLandKind)
-  );
+  getMainSpecialLandKinds().forEach((specialLandKind) => placeSpecialLand(battlefield, specialLandKind));
 
   // 4. Get remaining land types (excluding volcano and lava)
   const remainingLandKinds = getRegularLandKinds();
 
-  const maxTilesPerType = Math.floor(
-    Object.keys(battlefield.lands).length / remainingLandKinds.length
-  );
+  const maxTilesPerType = Math.floor(Object.keys(battlefield.lands).length / remainingLandKinds.length);
 
   remainingLandKinds.forEach((LandKind) => {
-    while (
-      Object.values(battlefield.lands).filter((l) => l.land.id === LandKind).length <
-      maxTilesPerType
-    ) {
+    while (Object.values(battlefield.lands).filter((l) => l.land.id === LandKind).length < maxTilesPerType) {
       let startLand = getRandomEmptyLand(battlefield.lands);
       if (startLand == null) break;
       battlefield.lands[getLandId(startLand.mapPos)].land = getLandById(LandKind);
@@ -141,9 +132,7 @@ export const generateMap = (dimensions: MapDimensions): MapState => {
       // place 6 land of the same time nearby
       for (
         let i = 0;
-        i < 5 &&
-        Object.values(battlefield.lands).filter((l) => l.land.id === LandKind).length <
-          maxTilesPerType;
+        i < 5 && Object.values(battlefield.lands).filter((l) => l.land.id === LandKind).length < maxTilesPerType;
         i++
       ) {
         const emptyNeighbor = getRandomNoneNeighbor(battlefield, startLand.mapPos);

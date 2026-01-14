@@ -5,14 +5,7 @@ import { ApplicationContextProvider } from '../../../contexts/ApplicationContext
 
 // Mock FantasyBorderFrame component
 jest.mock('../../../ux-components/fantasy-border-frame/FantasyBorderFrame', () => {
-  return ({
-    screenPosition,
-    frameSize,
-    children,
-    tileDimensions,
-    accessible,
-    flexibleSizing,
-  }: any) => (
+  return ({ screenPosition, frameSize, children, tileDimensions, accessible, flexibleSizing }: any) => (
     <div
       data-testid="fantasy-border-frame"
       data-x={screenPosition.x}
@@ -76,11 +69,7 @@ describe('PopupWrapper', () => {
     it('renders with accessible set to false when provided', () => {
       render(
         <ApplicationContextProvider>
-          <PopupWrapper
-            screenPosition={mockScreenPosition}
-            dimensions={mockDimensions}
-            accessible={false}
-          >
+          <PopupWrapper screenPosition={mockScreenPosition} dimensions={mockDimensions} accessible={false}>
             <div>Content</div>
           </PopupWrapper>
         </ApplicationContextProvider>
@@ -108,11 +97,7 @@ describe('PopupWrapper', () => {
     it('calls onClose when clicking outside popup with custom onClose handler', () => {
       render(
         <ApplicationContextProvider>
-          <PopupWrapper
-            screenPosition={mockScreenPosition}
-            dimensions={mockDimensions}
-            onClose={mockOnClose}
-          >
+          <PopupWrapper screenPosition={mockScreenPosition} dimensions={mockDimensions} onClose={mockOnClose}>
             <div data-testid="popup-content">Popup Content</div>
           </PopupWrapper>
         </ApplicationContextProvider>
@@ -127,11 +112,7 @@ describe('PopupWrapper', () => {
     it('does not call onClose when clicking inside popup', () => {
       render(
         <ApplicationContextProvider>
-          <PopupWrapper
-            screenPosition={mockScreenPosition}
-            dimensions={mockDimensions}
-            onClose={mockOnClose}
-          >
+          <PopupWrapper screenPosition={mockScreenPosition} dimensions={mockDimensions} onClose={mockOnClose}>
             <div data-testid="popup-content">Popup Content</div>
           </PopupWrapper>
         </ApplicationContextProvider>
@@ -164,11 +145,7 @@ describe('PopupWrapper', () => {
     it('calls onClose when Escape key is pressed with custom onClose handler', () => {
       render(
         <ApplicationContextProvider>
-          <PopupWrapper
-            screenPosition={mockScreenPosition}
-            dimensions={mockDimensions}
-            onClose={mockOnClose}
-          >
+          <PopupWrapper screenPosition={mockScreenPosition} dimensions={mockDimensions} onClose={mockOnClose}>
             <div>Popup Content</div>
           </PopupWrapper>
         </ApplicationContextProvider>
@@ -182,11 +159,7 @@ describe('PopupWrapper', () => {
     it('does not call onClose when other keys are pressed', () => {
       render(
         <ApplicationContextProvider>
-          <PopupWrapper
-            screenPosition={mockScreenPosition}
-            dimensions={mockDimensions}
-            onClose={mockOnClose}
-          >
+          <PopupWrapper screenPosition={mockScreenPosition} dimensions={mockDimensions} onClose={mockOnClose}>
             <div>Popup Content</div>
           </PopupWrapper>
         </ApplicationContextProvider>
@@ -222,11 +195,7 @@ describe('PopupWrapper', () => {
 
       const { unmount } = render(
         <ApplicationContextProvider>
-          <PopupWrapper
-            screenPosition={mockScreenPosition}
-            dimensions={mockDimensions}
-            onClose={mockOnClose}
-          >
+          <PopupWrapper screenPosition={mockScreenPosition} dimensions={mockDimensions} onClose={mockOnClose}>
             <div>Popup Content</div>
           </PopupWrapper>
         </ApplicationContextProvider>
@@ -340,11 +309,7 @@ describe('PopupWrapper', () => {
     it('handles rapid click outside events', () => {
       render(
         <ApplicationContextProvider>
-          <PopupWrapper
-            screenPosition={mockScreenPosition}
-            dimensions={mockDimensions}
-            onClose={mockOnClose}
-          >
+          <PopupWrapper screenPosition={mockScreenPosition} dimensions={mockDimensions} onClose={mockOnClose}>
             <div>Content</div>
           </PopupWrapper>
         </ApplicationContextProvider>
@@ -362,11 +327,7 @@ describe('PopupWrapper', () => {
     it('handles rapid Escape key presses', () => {
       render(
         <ApplicationContextProvider>
-          <PopupWrapper
-            screenPosition={mockScreenPosition}
-            dimensions={mockDimensions}
-            onClose={mockOnClose}
-          >
+          <PopupWrapper screenPosition={mockScreenPosition} dimensions={mockDimensions} onClose={mockOnClose}>
             <div>Content</div>
           </PopupWrapper>
         </ApplicationContextProvider>
@@ -384,11 +345,7 @@ describe('PopupWrapper', () => {
     it('handles both click outside and Escape in sequence', () => {
       render(
         <ApplicationContextProvider>
-          <PopupWrapper
-            screenPosition={mockScreenPosition}
-            dimensions={mockDimensions}
-            onClose={mockOnClose}
-          >
+          <PopupWrapper screenPosition={mockScreenPosition} dimensions={mockDimensions} onClose={mockOnClose}>
             <div>Content</div>
           </PopupWrapper>
         </ApplicationContextProvider>

@@ -61,9 +61,7 @@ const SaveGameDialog: React.FC = () => {
               autoFocus
             />
           </div>
-          <div className={styles.helperText}>
-            Your game progress will be saved and can be loaded later.
-          </div>
+          <div className={styles.helperText}>Your game progress will be saved and can be loaded later.</div>
         </div>
       </FantasyBorderFrame>
     </div>

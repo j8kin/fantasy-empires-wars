@@ -58,9 +58,7 @@ describe('castBlueManaSpell', () => {
 
         const blueMana = getTurnOwner(gameStateStub).mana.blue;
         castSpell(gameStateStub, SpellName.ILLUSION, homeLandPos);
-        expect(getTurnOwner(gameStateStub).mana.blue).toBe(
-          blueMana - getSpellById(SpellName.ILLUSION).manaCost
-        );
+        expect(getTurnOwner(gameStateStub).mana.blue).toBe(blueMana - getSpellById(SpellName.ILLUSION).manaCost);
 
         const affectedLands = getPlayerLands(gameStateStub).filter((l) => l.effects.length > 0);
         expect(affectedLands).toHaveLength(nLands);
@@ -85,9 +83,7 @@ describe('castBlueManaSpell', () => {
 
       const blueMana = getTurnOwner(gameStateStub).mana.blue;
       castSpell(gameStateStub, SpellName.TELEPORT, fromPos, toPos);
-      expect(getTurnOwner(gameStateStub).mana.blue).toBe(
-        blueMana - getSpellById(SpellName.TELEPORT).manaCost
-      );
+      expect(getTurnOwner(gameStateStub).mana.blue).toBe(blueMana - getSpellById(SpellName.TELEPORT).manaCost);
 
       expect(getArmiesAtPosition(gameStateStub, fromPos)).toHaveLength(0);
       const teleportedArmy = getArmiesAtPosition(gameStateStub, toPos);
@@ -160,42 +156,37 @@ describe('castBlueManaSpell', () => {
   });
 
   describe('Cast TORNADO spell', () => {
-    it.each([0, 1, 32])(
-      'number of killed is not related on max Enchanter level: %s',
-      (maxEnchanterLevel: number) => {
-        if (maxEnchanterLevel > 0) {
-          // add ENCHANTER on Map
-          const hero = heroFactory(HeroUnitName.ENCHANTER, `Enchanter Level ${maxEnchanterLevel}`);
-          while (hero.level < maxEnchanterLevel) levelUpHero(hero, Doctrine.MELEE);
-          placeUnitsOnMap(hero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
-        }
-
-        gameStateStub.turnOwner = gameStateStub.players[1].id;
-        const opponentLandPos = getPlayerLands(gameStateStub)[1].mapPos;
-        placeUnitsOnMap(regularsFactory(RegularUnitName.ORC, 120), gameStateStub, opponentLandPos);
-        expect(getArmiesAtPosition(gameStateStub, opponentLandPos)).toHaveLength(1);
-
-        gameStateStub.turnOwner = gameStateStub.players[0].id; // cast Tornado from player 0 on Player 1's land'
-
-        const randomSpy: jest.SpyInstance<number, []> = jest.spyOn(Math, 'random');
-        randomSpy.mockReturnValue(0.99); // maximize damage from spell
-
-        const blueMana = getTurnOwner(gameStateStub).mana.blue;
-        castSpell(gameStateStub, SpellName.TORNADO, opponentLandPos);
-        expect(getTurnOwner(gameStateStub).mana.blue).toBe(
-          blueMana - getSpellById(SpellName.TORNADO).manaCost
-        );
-
-        const opponentArmy = getArmiesAtPosition(gameStateStub, opponentLandPos);
-        expect(opponentArmy).toHaveLength(1);
-        expect(opponentArmy[0].regulars).toHaveLength(1);
-        expect(opponentArmy[0].regulars[0].type).toBe(RegularUnitName.ORC);
-        expect(opponentArmy[0].regulars[0].rank).toBe(UnitRank.REGULAR);
-        expect(opponentArmy[0].regulars[0].count).toBe(78);
-
-        randomSpy.mockRestore();
+    it.each([0, 1, 32])('number of killed is not related on max Enchanter level: %s', (maxEnchanterLevel: number) => {
+      if (maxEnchanterLevel > 0) {
+        // add ENCHANTER on Map
+        const hero = heroFactory(HeroUnitName.ENCHANTER, `Enchanter Level ${maxEnchanterLevel}`);
+        while (hero.level < maxEnchanterLevel) levelUpHero(hero, Doctrine.MELEE);
+        placeUnitsOnMap(hero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
       }
-    );
+
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      const opponentLandPos = getPlayerLands(gameStateStub)[1].mapPos;
+      placeUnitsOnMap(regularsFactory(RegularUnitName.ORC, 120), gameStateStub, opponentLandPos);
+      expect(getArmiesAtPosition(gameStateStub, opponentLandPos)).toHaveLength(1);
+
+      gameStateStub.turnOwner = gameStateStub.players[0].id; // cast Tornado from player 0 on Player 1's land'
+
+      const randomSpy: jest.SpyInstance<number, []> = jest.spyOn(Math, 'random');
+      randomSpy.mockReturnValue(0.99); // maximize damage from spell
+
+      const blueMana = getTurnOwner(gameStateStub).mana.blue;
+      castSpell(gameStateStub, SpellName.TORNADO, opponentLandPos);
+      expect(getTurnOwner(gameStateStub).mana.blue).toBe(blueMana - getSpellById(SpellName.TORNADO).manaCost);
+
+      const opponentArmy = getArmiesAtPosition(gameStateStub, opponentLandPos);
+      expect(opponentArmy).toHaveLength(1);
+      expect(opponentArmy[0].regulars).toHaveLength(1);
+      expect(opponentArmy[0].regulars[0].type).toBe(RegularUnitName.ORC);
+      expect(opponentArmy[0].regulars[0].rank).toBe(UnitRank.REGULAR);
+      expect(opponentArmy[0].regulars[0].count).toBe(78);
+
+      randomSpy.mockRestore();
+    });
 
     it('Corner case: Tornado kill at least 5 units and destroy army', () => {
       const opponentLandPos = getPlayerLands(gameStateStub)[1].mapPos;

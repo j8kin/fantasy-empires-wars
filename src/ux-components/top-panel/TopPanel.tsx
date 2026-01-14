@@ -38,11 +38,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
       accessible={true}
       zIndex={100}
     >
-      <div
-        id="TopPanel"
-        data-testid="TopPanel"
-        className={`${styles.frameContainer} ${styles.fullSize} top-bar-panel`}
-      >
+      <div id="TopPanel" data-testid="TopPanel" className={`${styles.frameContainer} ${styles.fullSize} top-bar-panel`}>
         <div className={styles.panelContainer}>
           {/* Left Side - Action Controls only if the game is started*/}
           <MapActionsControl />

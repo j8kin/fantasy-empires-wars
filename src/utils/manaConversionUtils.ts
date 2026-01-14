@@ -11,10 +11,7 @@ import type { AlignmentType } from '../types/Alignment';
  * @param targetManaType - The mana type to convert to
  * @returns The amount of mana that will be gained from the conversion
  */
-export const calculateManaConversionAmount = (
-  alignment: AlignmentType,
-  targetManaType: ManaType
-): number => {
+export const calculateManaConversionAmount = (alignment: AlignmentType, targetManaType: ManaType): number => {
   switch (alignment) {
     case Alignment.CHAOTIC:
       switch (targetManaType) {

@@ -26,8 +26,7 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
   if (opponent == null || gameState == null) return null;
 
   const selectedPlayer = getTurnOwner(gameState);
-  const diplomacyStatus =
-    selectedPlayer?.diplomacy[opponent.id]?.status ?? DiplomacyStatus.NO_TREATY;
+  const diplomacyStatus = selectedPlayer?.diplomacy[opponent.id]?.status ?? DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {
     hideOpponentInfo();
@@ -73,20 +72,14 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
               borderColor={getPlayerColorValue(opponent.color)}
               className={styles.opponentAvatar}
             />
-            <button
-              className={styles.contactButton}
-              onClick={handleContactClick}
-              title="Open Diplomatic Contact"
-            >
+            <button className={styles.contactButton} onClick={handleContactClick} title="Open Diplomatic Contact">
               Contact
             </button>
           </div>
 
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Race:</span>
-            <span className={`${commonStyles.value} ${styles.value}`}>
-              {opponent.playerProfile.race}
-            </span>
+            <span className={`${commonStyles.value} ${styles.value}`}>{opponent.playerProfile.race}</span>
           </div>
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Alignment:</span>
@@ -99,9 +92,7 @@ const OpponentInfoPopup: React.FC<OpponentInfoProps> = ({ opponent, screenPositi
           </div>
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Level:</span>
-            <span className={`${commonStyles.value} ${styles.value}`}>
-              {opponent.playerProfile.level}
-            </span>
+            <span className={`${commonStyles.value} ${styles.value}`}>{opponent.playerProfile.level}</span>
           </div>
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Diplomatic Relations:</span>

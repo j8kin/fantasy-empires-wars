@@ -5,12 +5,7 @@ import { EffectKind, EffectTarget } from '../../types/Effect';
 import type { PenaltyConfig } from '../army/armyPenaltyCalculator';
 import type { Spell } from '../../types/Spell';
 
-const generatePenaltyConfig = (
-  minPct: number,
-  maxPct: number,
-  minAbs: number,
-  maxAbs: number
-): PenaltyConfig => ({
+const generatePenaltyConfig = (minPct: number, maxPct: number, minAbs: number, maxAbs: number): PenaltyConfig => ({
   regular: { minPct: minPct, maxPct: maxPct, minAbs: minAbs, maxAbs: maxAbs },
   veteran: { minPct: minPct / 2, maxPct: maxPct / 2, minAbs: minAbs / 2, maxAbs: maxAbs / 2 },
   elite: { minPct: minPct / 4, maxPct: maxPct / 4, minAbs: minAbs / 4, maxAbs: minAbs / 4 },
@@ -153,8 +148,7 @@ const GreenMagicSpells: Spell[] = [
   },
   {
     type: SpellName.EARTHQUAKE,
-    description:
-      'Kills 10–20% of all troops, 40% chance to destroy a building (heroes may be killed based on level)',
+    description: 'Kills 10–20% of all troops, 40% chance to destroy a building (heroes may be killed based on level)',
     manaCost: 100,
     target: MagicTarget.OPPONENT,
     manaType: Mana.GREEN,
@@ -203,8 +197,7 @@ const RedMagicSpells: Spell[] = [
   },
   {
     type: SpellName.METEOR_SHOWER,
-    description:
-      'Kills 35–45% of all troops, 50% chance to destroy a building (heroes may be killed based on level)',
+    description: 'Kills 35–45% of all troops, 50% chance to destroy a building (heroes may be killed based on level)',
     manaCost: 150,
     target: MagicTarget.OPPONENT,
     manaType: Mana.RED,
@@ -240,16 +233,14 @@ const BlackMagicSpells: Spell[] = [
   },
   {
     type: SpellName.RAISE_DEAD_HERO,
-    description:
-      'Revives fallen in battle or by magic Heroes as an Undead Hero (loses original alignment)',
+    description: 'Revives fallen in battle or by magic Heroes as an Undead Hero (loses original alignment)',
     manaCost: 100,
     target: MagicTarget.PLAYER,
     manaType: Mana.BLACK,
   },
   {
     type: SpellName.CORRUPTION,
-    description:
-      'Converts neutral land into chaotic land (if no stronghold present, only 6 lands per game)',
+    description: 'Converts neutral land into chaotic land (if no stronghold present, only 6 lands per game)',
     manaCost: 150,
     target: MagicTarget.ALL,
     manaType: Mana.BLACK,

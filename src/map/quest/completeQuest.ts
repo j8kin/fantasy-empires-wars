@@ -1,10 +1,6 @@
 import { armyFactory } from '../../factories/armyFactory';
 import { getLandOwner } from '../../selectors/landSelectors';
-import {
-  getTreasureItem,
-  getTurnOwner,
-  hasTreasureByPlayer,
-} from '../../selectors/playerSelectors';
+import { getTreasureItem, getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addArmyToGameState, addHero, updateArmyInGameState } from '../../systems/armyActions';
 import { levelUpHero } from '../../systems/unitsActions';
@@ -15,22 +11,11 @@ import {
   removeCompletedQuests,
   updatePlayer,
 } from '../../systems/gameStateActions';
-import {
-  artifactFactory,
-  getRelicAlignment,
-  itemFactory,
-  relictFactory,
-} from '../../factories/treasureFactory';
+import { artifactFactory, getRelicAlignment, itemFactory, relictFactory } from '../../factories/treasureFactory';
 import { artifacts, items, relicts } from '../../domain/treasure/treasureRepository';
 import { getQuest } from '../../domain/quest/questRepository';
 import { getRandomElement, getRandomInt } from '../../domain/utils/random';
-import {
-  emptyHanded,
-  heroDieMessage,
-  heroGainArtifact,
-  heroGainItem,
-  heroGainRelic,
-} from './questCompleteMessages';
+import { emptyHanded, heroDieMessage, heroGainArtifact, heroGainItem, heroGainRelic } from './questCompleteMessages';
 
 import type { EmpireEvent } from '../../types/EmpireEvent';
 import { EmpireEventKind } from '../../types/EmpireEvent';
@@ -46,10 +31,7 @@ const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;
 };
 
-const calculateReward = (
-  state: GameState,
-  quest: HeroQuest
-): { outcome: EmpireEvent; updatedHero: HeroState } => {
+const calculateReward = (state: GameState, quest: HeroQuest): { outcome: EmpireEvent; updatedHero: HeroState } => {
   if (Math.random() > 0.55 - 0.05 * (quest.quest.level - 1)) {
     return {
       outcome: {
@@ -89,10 +71,7 @@ const calculateReward = (
   }
 };
 
-const gainArtifact = (
-  hero: HeroState,
-  questType: QuestType
-): { outcome: EmpireEvent; updatedHero: HeroState } => {
+const gainArtifact = (hero: HeroState, questType: QuestType): { outcome: EmpireEvent; updatedHero: HeroState } => {
   const artifact = getRandomElement(artifacts);
   const baseArtifactLevel = getQuest(questType).level;
   const heroArtifact: Artifact = artifactFactory(
@@ -133,8 +112,7 @@ const gainRelic = (state: GameState, hero: HeroState): EmpireEvent => {
   const availableRelics = relicts
     .filter(
       (a) =>
-        getRelicAlignment(a.type) === Alignment.NONE ||
-        getRelicAlignment(a.type) === turnOwner.playerProfile.alignment
+        getRelicAlignment(a.type) === Alignment.NONE || getRelicAlignment(a.type) === turnOwner.playerProfile.alignment
     )
     .filter((a) => !relicInPlay.some((r) => r.treasure.type === a.type));
 
@@ -206,9 +184,7 @@ const questResults = (state: GameState, quest: HeroQuest): EmpireEvent => {
 
 const returnHeroOnMap = (state: GameState, hero: HeroState, landPosition: LandPosition) => {
   const armiesAtPosition = getArmiesAtPosition(state, landPosition);
-  const stationedArmy = armiesAtPosition.find(
-    (a) => !isMoving(a) && a.controlledBy === state.turnOwner
-  );
+  const stationedArmy = armiesAtPosition.find((a) => !isMoving(a) && a.controlledBy === state.turnOwner);
   if (stationedArmy) {
     // add into the existing stationed Army
     const updatedArmy = addHero(stationedArmy, hero);
@@ -229,9 +205,7 @@ export const completeQuest = (state: GameState): EmpireEvent[] => {
 
   // Get quests that are ready to complete (after decrementing)
   const updatedTurnOwner = getTurnOwner(state); // Get fresh reference after state update
-  const questsToComplete = updatedTurnOwner.quests.filter(
-    (quest) => quest.remainTurnsInQuest === 0
-  );
+  const questsToComplete = updatedTurnOwner.quests.filter((quest) => quest.remainTurnsInQuest === 0);
 
   // Complete quests and collect outcomes
   const status = questsToComplete.map((q) => questResults(state, q));

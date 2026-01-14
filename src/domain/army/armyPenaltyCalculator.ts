@@ -28,10 +28,7 @@ export interface PenaltyLoss {
  * @param unitTypesFilter Optional array of unit types to include in the calculation
  * @returns Normalized unit counts by rank
  */
-export const normalizeArmyUnits = (
-  units: RegularsState[],
-  unitTypesFilter?: RegularUnitType[]
-): NormalizedUnits => {
+export const normalizeArmyUnits = (units: RegularsState[], unitTypesFilter?: RegularUnitType[]): NormalizedUnits => {
   const packs: NormalizedUnits = {
     [UnitRank.REGULAR]: 0,
     [UnitRank.VETERAN]: 0,
@@ -57,22 +54,13 @@ export const normalizeArmyUnits = (
  * @param config Penalty configuration with min/max percentages and absolute values
  * @returns Calculated losses by unit rank
  */
-const calculatePenaltyLoss = (
-  normalizedUnits: NormalizedUnits[],
-  config: PenaltyConfig
-): PenaltyLoss => {
+const calculatePenaltyLoss = (normalizedUnits: NormalizedUnits[], config: PenaltyConfig): PenaltyLoss => {
   // Calculate total units across all armies by rank
   const regularUnits = normalizedUnits.reduce((acc, u) => acc + u.regular, 0);
   const veteranUnits = normalizedUnits.reduce((acc, u) => acc + u.veteran, 0);
   const eliteUnits = normalizedUnits.reduce((acc, u) => acc + u.elite, 0);
 
-  const rollLoss = (
-    minPct: number,
-    maxPct: number,
-    minAbs: number,
-    maxAbs: number,
-    count: number
-  ): number =>
+  const rollLoss = (minPct: number, maxPct: number, minAbs: number, maxAbs: number, count: number): number =>
     Math.max(
       Math.ceil(count * (Math.random() * (maxPct - minPct) + minPct)),
       Math.ceil(Math.random() * (maxAbs - minAbs) + minAbs)
@@ -135,12 +123,7 @@ export const applyArmyPenalty = (
       for (let i = 0; i < regUnitsWithRank.length && rest > 0; i++) {
         if (rest > 0) {
           const toDelete = Math.min(regUnitsWithRank[i].count, rest);
-          const result = getRegulars(
-            updatedArmy,
-            regUnitsWithRank[i].type,
-            regUnitsWithRank[i].rank,
-            toDelete
-          );
+          const result = getRegulars(updatedArmy, regUnitsWithRank[i].type, regUnitsWithRank[i].rank, toDelete);
           if (result) {
             updatedArmy = result.updatedArmy;
           }
@@ -161,9 +144,7 @@ const calcLoss = (
   },
   hasShardOfTheSilentAnvil: boolean
 ) => {
-  return Math.ceil(
-    ((hasShardOfTheSilentAnvil ? 0.65 : 1) * (normUnits * lossAbs.loss)) / lossAbs.total
-  );
+  return Math.ceil(((hasShardOfTheSilentAnvil ? 0.65 : 1) * (normUnits * lossAbs.loss)) / lossAbs.total);
 };
 
 /**
@@ -180,26 +161,17 @@ export const calculateAndApplyArmyPenalties = (
   hasShardOfTheSilentAnvil: boolean = false,
   unitTypesInvolved?: RegularUnitType[]
 ): ArmyState[] => {
-  const normalizedUnits = armies.map((army) =>
-    normalizeArmyUnits(army.regulars, unitTypesInvolved)
-  );
+  const normalizedUnits = armies.map((army) => normalizeArmyUnits(army.regulars, unitTypesInvolved));
   const loss = calculatePenaltyLoss(normalizedUnits, config);
 
   return armies.map((army) => {
     const normUnits = normalizeArmyUnits(army.regulars, unitTypesInvolved);
     const unitsToLoss: Record<UnitRankType, number> = {
       [UnitRank.REGULAR]:
-        loss.regular.total !== 0
-          ? calcLoss(normUnits.regular, loss.regular, hasShardOfTheSilentAnvil)
-          : 0,
+        loss.regular.total !== 0 ? calcLoss(normUnits.regular, loss.regular, hasShardOfTheSilentAnvil) : 0,
       [UnitRank.VETERAN]:
-        loss.veteran.total !== 0
-          ? calcLoss(normUnits.veteran, loss.veteran, hasShardOfTheSilentAnvil)
-          : 0,
-      [UnitRank.ELITE]:
-        loss.elite.total !== 0
-          ? calcLoss(normUnits.elite, loss.elite, hasShardOfTheSilentAnvil)
-          : 0,
+        loss.veteran.total !== 0 ? calcLoss(normUnits.veteran, loss.veteran, hasShardOfTheSilentAnvil) : 0,
+      [UnitRank.ELITE]: loss.elite.total !== 0 ? calcLoss(normUnits.elite, loss.elite, hasShardOfTheSilentAnvil) : 0,
     };
 
     return applyArmyPenalty(army, unitsToLoss, unitTypesInvolved);

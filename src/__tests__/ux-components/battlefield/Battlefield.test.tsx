@@ -247,9 +247,7 @@ describe('Battlefield Component', () => {
       const hexTiles = screen.getAllByTestId('hex-tile');
 
       // Verify that at least some tiles have the expected properties
-      expect(
-        hexTiles.filter((tile) => tile.getAttribute('data-controlled-by')).length
-      ).toBeGreaterThan(0);
+      expect(hexTiles.filter((tile) => tile.getAttribute('data-controlled-by')).length).toBeGreaterThan(0);
       expect(hexTiles.filter((tile) => tile.getAttribute('data-row'))).toHaveLength(158); // see createGameStateStubNew for map size
       expect(hexTiles.filter((tile) => tile.getAttribute('data-col'))).toHaveLength(158); // see createGameStateStubNew for map size
     });
@@ -335,9 +333,7 @@ describe('Battlefield Component', () => {
       expect(hexTiles.length).toBeGreaterThan(0);
 
       // Verify that at least one Volcano HexTile exists on the battlefield
-      const volcanoTiles = hexTiles.filter(
-        (tile) => tile.getAttribute('data-land-type') === 'Volcano'
-      );
+      const volcanoTiles = hexTiles.filter((tile) => tile.getAttribute('data-land-type') === 'Volcano');
       expect(volcanoTiles).toHaveLength(1);
     });
   });

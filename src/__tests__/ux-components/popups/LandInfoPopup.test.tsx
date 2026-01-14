@@ -4,12 +4,7 @@ import LandInfoPopup from '../../../ux-components/popups/LandInfoPopup';
 
 import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
 import { getLandId } from '../../../state/map/land/LandId';
-import {
-  getLand,
-  getLandOwner,
-  getPlayerLands,
-  hasBuilding,
-} from '../../../selectors/landSelectors';
+import { getLand, getLandOwner, getPlayerLands, hasBuilding } from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
 import { getSpellById } from '../../../selectors/spellSelectors';
 import { startMoving } from '../../../systems/armyActions';
@@ -104,17 +99,12 @@ describe('LandInfoPopup', () => {
   });
 
   it('displays controlled by information with player name', () => {
-    renderWithProviders(
-      <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
-      gameStateStub
-    );
+    renderWithProviders(<LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />, gameStateStub);
 
     // Check if control information is displayed with player name
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
     expect(getLandOwner(gameStateStub, mockTileState.mapPos)).toBe(gameStateStub.players[1].id);
-    expect(screen.getByTestId('owner')).toHaveTextContent(
-      gameStateStub.players[1].playerProfile.name
-    );
+    expect(screen.getByTestId('owner')).toHaveTextContent(gameStateStub.players[1].playerProfile.name);
   });
 
   it('displays both building and control information simultaneously', () => {
@@ -133,16 +123,11 @@ describe('LandInfoPopup', () => {
     expect(screen.getByText('Buildings:')).toBeInTheDocument();
     expect(screen.getByText('Stronghold')).toBeInTheDocument();
     expect(screen.getByText('Controlled By:')).toBeInTheDocument();
-    expect(screen.getByTestId('owner')).toHaveTextContent(
-      gameStateStub.players[1].playerProfile.name
-    );
+    expect(screen.getByTestId('owner')).toHaveTextContent(gameStateStub.players[1].playerProfile.name);
   });
 
   it('displays land type information', () => {
-    renderWithProviders(
-      <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
-      gameStateStub
-    );
+    renderWithProviders(<LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />, gameStateStub);
 
     // Check land type information - should display the actual land type name
     expect(screen.getByText(mockTileState.land.id)).toBeInTheDocument();
@@ -150,16 +135,11 @@ describe('LandInfoPopup', () => {
   });
 
   it('displays position and gold information', () => {
-    renderWithProviders(
-      <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
-      gameStateStub
-    );
+    renderWithProviders(<LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />, gameStateStub);
 
     // Check position and gold information
     expect(screen.getByText('Position:')).toBeInTheDocument();
-    expect(
-      screen.getByText(mockTileState.mapPos.row + ', ' + mockTileState.mapPos.col)
-    ).toBeInTheDocument();
+    expect(screen.getByText(mockTileState.mapPos.row + ', ' + mockTileState.mapPos.col)).toBeInTheDocument();
     expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();
     expect(screen.getByText(mockTileState.goldPerTurn.toString())).toBeInTheDocument();
   });
@@ -170,10 +150,7 @@ describe('LandInfoPopup', () => {
       const land = getLand(gameStateStub, landPos);
       expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
 
-      renderWithProviders(
-        <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
-        gameStateStub
-      );
+      renderWithProviders(<LandInfoPopup landPos={landPos} screenPosition={mockPosition} />, gameStateStub);
 
       expect(screen.getByText(land.land.id)).toBeInTheDocument();
       expect(screen.getByText(land.land.alignment)).toBeInTheDocument();
@@ -196,10 +173,7 @@ describe('LandInfoPopup', () => {
       const land = getLand(gameStateStub, landPos);
       expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
 
-      renderWithProviders(
-        <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
-        gameStateStub
-      );
+      renderWithProviders(<LandInfoPopup landPos={landPos} screenPosition={mockPosition} />, gameStateStub);
 
       expect(screen.getByText(land.land.id)).toBeInTheDocument();
       expect(screen.getByText(land.land.alignment)).toBeInTheDocument();
@@ -364,10 +338,7 @@ describe('LandInfoPopup', () => {
         ...gameStateStub,
         armies: gameStateStub.armies.filter((army) => {
           const armyPosition = army.movement.path[0];
-          return !(
-            armyPosition.row === mockTileState.mapPos.row &&
-            armyPosition.col === mockTileState.mapPos.col
-          );
+          return !(armyPosition.row === mockTileState.mapPos.row && armyPosition.col === mockTileState.mapPos.col);
         }),
       };
 
@@ -431,10 +402,7 @@ describe('LandInfoPopup', () => {
       catapult2.count = 1;
       placeUnitsOnMap(catapult2, gameStateStub, landPos);
 
-      renderWithProviders(
-        <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
-        gameStateStub
-      );
+      renderWithProviders(<LandInfoPopup landPos={landPos} screenPosition={mockPosition} />, gameStateStub);
 
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
       expect(screen.queryByText('Units:')).not.toBeInTheDocument();
@@ -456,10 +424,7 @@ describe('LandInfoPopup', () => {
       placeUnitsOnMap(regularsFactory(RegularUnitName.ORC), gameStateStub, landPos);
       placeUnitsOnMap(warMachineFactory(WarMachineName.BALLISTA), gameStateStub, landPos);
 
-      renderWithProviders(
-        <LandInfoPopup landPos={landPos} screenPosition={mockPosition} />,
-        gameStateStub
-      );
+      renderWithProviders(<LandInfoPopup landPos={landPos} screenPosition={mockPosition} />, gameStateStub);
 
       expect(screen.getByText('Units:')).toBeInTheDocument();
       expect(screen.getByText('Orc (20)')).toBeInTheDocument();
@@ -484,9 +449,7 @@ describe('LandInfoPopup', () => {
       // Check if effects section is displayed
       expect(screen.getByText('Effects:')).toBeInTheDocument();
       expect(
-        screen.getByText(
-          `${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).rules!.duration})`
-        )
+        screen.getByText(`${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).rules!.duration})`)
       ).toBeInTheDocument();
 
       // Check if the effect has green color for positive effect
@@ -509,9 +472,7 @@ describe('LandInfoPopup', () => {
       // Check if effects section is displayed
       expect(screen.getByText('Effects:')).toBeInTheDocument();
       expect(
-        screen.getByText(
-          `${SpellName.EMBER_RAID} (${getSpellById(SpellName.EMBER_RAID).rules!.duration})`
-        )
+        screen.getByText(`${SpellName.EMBER_RAID} (${getSpellById(SpellName.EMBER_RAID).rules!.duration})`)
       ).toBeInTheDocument();
 
       // Check if the effect has red color for negative effect
@@ -526,21 +487,14 @@ describe('LandInfoPopup', () => {
       const effect = effectFactory(TreasureName.AEGIS_SHARD, gameStateStub.turnOwner);
       Object.assign(gameStateStub, updateLandEffect(gameStateStub, land.mapPos, effect));
 
-      renderWithProviders(
-        <LandInfoPopup landPos={land.mapPos} screenPosition={mockPosition} />,
-        gameStateStub
-      );
+      renderWithProviders(<LandInfoPopup landPos={land.mapPos} screenPosition={mockPosition} />, gameStateStub);
 
       // Check if effects section is displayed
       expect(screen.getByText('Effects:')).toBeInTheDocument();
-      expect(
-        screen.getByText(`${TreasureName.AEGIS_SHARD} (${effect.rules!.duration})`)
-      ).toBeInTheDocument();
+      expect(screen.getByText(`${TreasureName.AEGIS_SHARD} (${effect.rules!.duration})`)).toBeInTheDocument();
 
       // Check if the effect has red color for negative effect
-      const effectElement = screen.getByText(
-        `${TreasureName.AEGIS_SHARD} (${effect.rules!.duration})`
-      );
+      const effectElement = screen.getByText(`${TreasureName.AEGIS_SHARD} (${effect.rules!.duration})`);
       expect(effectElement).toHaveStyle({ color: '#344CEB' });
     });
 
@@ -562,19 +516,13 @@ describe('LandInfoPopup', () => {
 
       // Check all effects are displayed with correct durations
       expect(
-        screen.getByText(
-          `${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).rules!.duration})`
-        )
+        screen.getByText(`${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).rules!.duration})`)
       ).toBeInTheDocument();
       expect(
-        screen.getByText(
-          `${SpellName.EMBER_RAID} (${getSpellById(SpellName.EMBER_RAID).rules!.duration})`
-        )
+        screen.getByText(`${SpellName.EMBER_RAID} (${getSpellById(SpellName.EMBER_RAID).rules!.duration})`)
       ).toBeInTheDocument();
       expect(
-        screen.getByText(
-          `${SpellName.FERTILE_LAND} (${getSpellById(SpellName.FERTILE_LAND).rules!.duration})`
-        )
+        screen.getByText(`${SpellName.FERTILE_LAND} (${getSpellById(SpellName.FERTILE_LAND).rules!.duration})`)
       ).toBeInTheDocument();
 
       // Check colors
@@ -609,16 +557,8 @@ describe('LandInfoPopup', () => {
       // Create an effect, add armies and building
       mockTileState.effects.push(effectFactory(SpellName.BLESSING, gameStateStub.turnOwner));
       mockTileState.effects.push(effectFactory(SpellName.VIEW_TERRITORY, gameStateStub.turnOwner));
-      placeUnitsOnMap(
-        heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER),
-        gameStateStub,
-        mockTileState.mapPos
-      );
-      placeUnitsOnMap(
-        regularsFactory(RegularUnitName.WARRIOR),
-        gameStateStub,
-        mockTileState.mapPos
-      );
+      placeUnitsOnMap(heroFactory(HeroUnitName.FIGHTER, HeroUnitName.FIGHTER), gameStateStub, mockTileState.mapPos);
+      placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR), gameStateStub, mockTileState.mapPos);
 
       renderWithProviders(
         <LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />,
@@ -630,9 +570,7 @@ describe('LandInfoPopup', () => {
       expect(screen.getByText('Stronghold')).toBeInTheDocument();
       expect(screen.getByText('Effects:')).toBeInTheDocument();
       expect(
-        screen.getByText(
-          `${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).rules!.duration})`
-        )
+        screen.getByText(`${SpellName.BLESSING} (${getSpellById(SpellName.BLESSING).rules!.duration})`)
       ).toBeInTheDocument();
       expect(screen.getByText('Heroes:')).toBeInTheDocument();
       expect(screen.getByText('Fighter lvl: 1')).toBeInTheDocument();
@@ -717,9 +655,7 @@ describe('LandInfoPopup', () => {
 
       expect(screen.getByText('Corrupted ' + mockTileState.land.id)).toBeInTheDocument();
       expect(screen.getByText('Position:')).toBeInTheDocument();
-      expect(
-        screen.getByText(mockTileState.mapPos.row + ', ' + mockTileState.mapPos.col)
-      ).toBeInTheDocument();
+      expect(screen.getByText(mockTileState.mapPos.row + ', ' + mockTileState.mapPos.col)).toBeInTheDocument();
       expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();
       expect(screen.getByText(mockTileState.goldPerTurn.toString())).toBeInTheDocument();
     });

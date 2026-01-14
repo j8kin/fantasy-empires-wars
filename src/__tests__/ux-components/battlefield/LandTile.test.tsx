@@ -68,11 +68,7 @@ jest.mock('../../../map/building/construct', () => ({
   construct: jest.fn(),
 }));
 
-const renderWithProviders = (
-  ui: React.ReactElement,
-  gameState: GameState,
-  contextValues?: Partial<any>
-) => {
+const renderWithProviders = (ui: React.ReactElement, gameState: GameState, contextValues?: Partial<any>) => {
   mockUseGameContext.mockReturnValue({ gameState, updateGameState: jest.fn() });
 
   // Create mock context values
@@ -155,11 +151,7 @@ describe('LandTile Component', () => {
         landPopupScreenPosition: { x: 100, y: 200 },
       };
 
-      renderWithProviders(
-        <LandTile mapPosition={testLandPosition} />,
-        gameStateStub,
-        contextValues
-      );
+      renderWithProviders(<LandTile mapPosition={testLandPosition} />, gameStateStub, contextValues);
 
       const popup = screen.getByTestId('land-info-popup');
       expect(popup).toBeInTheDocument();
@@ -173,11 +165,7 @@ describe('LandTile Component', () => {
         landPopupScreenPosition: { x: 100, y: 200 },
       };
 
-      renderWithProviders(
-        <LandTile mapPosition={testLandPosition} />,
-        gameStateStub,
-        contextValues
-      );
+      renderWithProviders(<LandTile mapPosition={testLandPosition} />, gameStateStub, contextValues);
 
       expect(screen.queryByTestId('land-info-popup')).not.toBeInTheDocument();
     });
@@ -188,11 +176,7 @@ describe('LandTile Component', () => {
         showLandPopup: mockShowLandPopup,
       };
 
-      renderWithProviders(
-        <LandTile mapPosition={testLandPosition} />,
-        gameStateStub,
-        contextValues
-      );
+      renderWithProviders(<LandTile mapPosition={testLandPosition} />, gameStateStub, contextValues);
 
       const tile = screen.getByTestId('land-tile');
       fireEvent.contextMenu(tile, { clientX: 150, clientY: 250 });
@@ -208,11 +192,7 @@ describe('LandTile Component', () => {
         glowingTiles: new Set([tileId]),
       };
 
-      renderWithProviders(
-        <LandTile mapPosition={testLandPosition} />,
-        gameStateStub,
-        contextValues
-      );
+      renderWithProviders(<LandTile mapPosition={testLandPosition} />, gameStateStub, contextValues);
 
       const tile = screen.getByTestId('land-tile');
       expect(tile).toHaveClass('mocked-hex-tile--glowing');
@@ -223,11 +203,7 @@ describe('LandTile Component', () => {
         glowingTiles: new Set<string>(),
       };
 
-      renderWithProviders(
-        <LandTile mapPosition={testLandPosition} />,
-        gameStateStub,
-        contextValues
-      );
+      renderWithProviders(<LandTile mapPosition={testLandPosition} />, gameStateStub, contextValues);
 
       const tile = screen.getByTestId('land-tile');
       expect(tile).toHaveClass('mocked-hex-tile--normal');
@@ -321,12 +297,7 @@ describe('LandTile Component', () => {
       fireEvent.click(tile);
 
       expect(mockShowSpellAnimation).toHaveBeenCalled();
-      expect(castSpell).toHaveBeenCalledWith(
-        gameStateStub,
-        SpellName.TELEPORT,
-        sourceLand,
-        destLand
-      );
+      expect(castSpell).toHaveBeenCalledWith(gameStateStub, SpellName.TELEPORT, sourceLand, destLand);
       expect(mockClearAllGlow).toHaveBeenCalled();
       expect(mockSetSelectedLandAction).toHaveBeenCalledWith(null);
     });

@@ -22,13 +22,7 @@ interface ExchangeVialProps {
   onHover: (manaType: ManaType | null) => void;
 }
 
-const ExchangeVial: React.FC<ExchangeVialProps> = ({
-  color,
-  conversionAmount,
-  onExchange,
-  isHovered,
-  onHover,
-}) => {
+const ExchangeVial: React.FC<ExchangeVialProps> = ({ color, conversionAmount, onExchange, isHovered, onHover }) => {
   const handleClick = useCallback(() => {
     onExchange(color);
   }, [color, onExchange]);
@@ -89,18 +83,12 @@ const ExchangeManaVialPanel: React.FC = () => {
   const exchangeableManaTypes = Object.values(Mana).filter((m) => m !== Mana.BLUE);
 
   return (
-    <div
-      className={cn(vialPanelStyles.vialPanel, styles.vialPanel)}
-      data-testid="exchange-vial-panel"
-    >
+    <div className={cn(vialPanelStyles.vialPanel, styles.vialPanel)} data-testid="exchange-vial-panel">
       {exchangeableManaTypes.map((manaType) => (
         <ExchangeVial
           key={manaType}
           color={manaType}
-          conversionAmount={calculateManaConversionAmount(
-            turnOwner.playerProfile.alignment,
-            manaType
-          )}
+          conversionAmount={calculateManaConversionAmount(turnOwner.playerProfile.alignment, manaType)}
           onExchange={handleExchange}
           isHovered={hoveredMana === manaType}
           onHover={setHoveredMana}

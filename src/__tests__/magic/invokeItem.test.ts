@@ -1,9 +1,5 @@
 import { findArmyById, getArmiesAtPosition } from '../../selectors/armySelectors';
-import {
-  getTreasureItem,
-  getTreasureItemById,
-  getTurnOwner,
-} from '../../selectors/playerSelectors';
+import { getTreasureItem, getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
 import {
   calculateHexDistance,
   getLand,
@@ -331,18 +327,11 @@ describe('invokeItems', () => {
       'Corner Case: Enchanter level (%s) is not related to damage from ORB_OF_STORM',
       (clericLevel) => {
         if (clericLevel > 0) {
-          const enchanterHero = heroFactory(
-            HeroUnitName.ENCHANTER,
-            `Enchanter Level ${clericLevel}`
-          );
+          const enchanterHero = heroFactory(HeroUnitName.ENCHANTER, `Enchanter Level ${clericLevel}`);
           while (enchanterHero.level < clericLevel) levelUpHero(enchanterHero, Doctrine.MELEE);
           placeUnitsOnMap(enchanterHero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
         }
-        placeUnitsOnMap(
-          regularsFactory(RegularUnitName.DARK_ELF, 120),
-          gameStateStub,
-          opponentLand
-        );
+        placeUnitsOnMap(regularsFactory(RegularUnitName.DARK_ELF, 120), gameStateStub, opponentLand);
 
         randomSpy.mockReturnValue(0.5); // some value to make test stable
 
@@ -370,9 +359,7 @@ describe('invokeItems', () => {
     });
 
     it('effect should be added only to one land', () => {
-      expect(
-        hasActiveEffect(getLand(gameStateStub, playerLand), TreasureName.AEGIS_SHARD)
-      ).toBeFalsy();
+      expect(hasActiveEffect(getLand(gameStateStub, playerLand), TreasureName.AEGIS_SHARD)).toBeFalsy();
       /************** USE AEGIS_SHARD *********************/
       invokeItem(gameStateStub, treasureItem.id, playerLand);
       /************************************************************/
@@ -414,9 +401,7 @@ describe('invokeItems', () => {
       expect(regularArmy?.regulars[0].count).toBe(120);
 
       // effect should be removed from land
-      expect(
-        hasActiveEffect(getLand(gameStateStub, playerLand), TreasureName.AEGIS_SHARD)
-      ).toBeFalsy();
+      expect(hasActiveEffect(getLand(gameStateStub, playerLand), TreasureName.AEGIS_SHARD)).toBeFalsy();
 
       randomSpy.mockReturnValue(0.5); // some value to make test stable
       /************** cast TORNADO Spell Second time *********************/
@@ -504,9 +489,7 @@ describe('invokeItems', () => {
       /************** USE GLYPH_OF_SEVERANCE *********************/
       invokeItem(gameStateStub, treasureItem.id, playerLand);
       /************************************************************/
-      expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge).toBe(
-        charges! - 1
-      );
+      expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge).toBe(charges! - 1);
       const land = getLand(gameStateStub, playerLand);
       expect(land.effects).toHaveLength(1);
       expect(land.effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
@@ -515,9 +498,7 @@ describe('invokeItems', () => {
       /************** USE GLYPH_OF_SEVERANCE the second time *********************/
       invokeItem(gameStateStub, treasureItem.id, playerLand);
       /************************************************************/
-      expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge).toBe(
-        charges! - 2
-      );
+      expect(getTreasureItemById(getTurnOwner(gameStateStub), treasureItem.id)?.charge).toBe(charges! - 2);
       expect(getLand(gameStateStub, playerLand).effects).toHaveLength(1);
     });
   });
@@ -591,9 +572,7 @@ describe('invokeItems', () => {
       const landPos: LandPosition = { row: 0, col: 3 };
       expect(getLandOwner(gameStateStub, landPos)).toBe(NO_PLAYER.id);
       const homeland = getPlayerLands(gameStateStub)[0];
-      expect(calculateHexDistance(getMapDimensions(gameStateStub), homeland.mapPos, landPos)).toBe(
-        3
-      );
+      expect(calculateHexDistance(getMapDimensions(gameStateStub), homeland.mapPos, landPos)).toBe(3);
       /***** PLACE PLAYER's army ********/
       placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR, 120), gameStateStub, landPos);
 
@@ -624,9 +603,7 @@ describe('invokeItems', () => {
       /************** USE DEED_OF_RECLAMATION *********************/
       invokeItem(gameStateStub, treasureItem.id, homelandPos);
       /************************************************************/
-      expect(
-        hasActiveEffect(getLand(gameStateStub, homelandPos), TreasureName.DEED_OF_RECLAMATION)
-      ).toBeFalsy();
+      expect(hasActiveEffect(getLand(gameStateStub, homelandPos), TreasureName.DEED_OF_RECLAMATION)).toBeFalsy();
     });
 
     it('should have no affect on opponent land', () => {
@@ -634,9 +611,7 @@ describe('invokeItems', () => {
       /************** USE DEED_OF_RECLAMATION *********************/
       invokeItem(gameStateStub, treasureItem.id, opponentLand);
       /************************************************************/
-      expect(
-        hasActiveEffect(getLand(gameStateStub, opponentLand), TreasureName.DEED_OF_RECLAMATION)
-      ).toBeFalsy();
+      expect(hasActiveEffect(getLand(gameStateStub, opponentLand), TreasureName.DEED_OF_RECLAMATION)).toBeFalsy();
     });
   });
 

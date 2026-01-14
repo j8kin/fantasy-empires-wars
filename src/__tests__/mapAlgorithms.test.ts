@@ -423,125 +423,63 @@ describe('Map Algorithms', () => {
 
   describe('Calculate Hex Distance', () => {
     it('should calculate distance between two hexagonal coordinates. Left Upper Corner', () => {
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 0, col: 0 })
-      ).toBe(0);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 0, col: 0 })).toBe(0);
 
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 0, col: 1 })
-      ).toBe(1);
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 1, col: 0 })
-      ).toBe(1);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 0, col: 1 })).toBe(1);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 1, col: 0 })).toBe(1);
 
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 1, col: 1 })
-      ).toBe(2);
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 0, col: 2 })
-      ).toBe(2);
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 2, col: 0 })
-      ).toBe(2);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 1, col: 1 })).toBe(2);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 0, col: 2 })).toBe(2);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 0 }, { row: 2, col: 0 })).toBe(2);
     });
 
     it('should calculate distance between two hexagonal coordinates. Left Bottom Corner', () => {
-      expect(
-        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 5, col: 0 })
-      ).toBe(0);
+      expect(calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 5, col: 0 })).toBe(0);
 
-      expect(
-        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 5, col: 1 })
-      ).toBe(1);
-      expect(
-        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 4, col: 0 })
-      ).toBe(1);
-      expect(
-        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 4, col: 1 })
-      ).toBe(1);
+      expect(calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 5, col: 1 })).toBe(1);
+      expect(calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 4, col: 0 })).toBe(1);
+      expect(calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 4, col: 1 })).toBe(1);
 
-      expect(
-        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 3, col: 0 })
-      ).toBe(2);
-      expect(
-        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 3, col: 1 })
-      ).toBe(2);
-      expect(
-        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 4, col: 2 })
-      ).toBe(2);
-      expect(
-        calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 5, col: 2 })
-      ).toBe(2);
+      expect(calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 3, col: 0 })).toBe(2);
+      expect(calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 3, col: 1 })).toBe(2);
+      expect(calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 4, col: 2 })).toBe(2);
+      expect(calculateHexDistance({ rows: 6, cols: 18 }, { row: 5, col: 0 }, { row: 5, col: 2 })).toBe(2);
     });
 
     it('should calculate distance between two hexagonal coordinates. Right Upper Corner', () => {
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 0, col: 17 })
-      ).toBe(0);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 0, col: 17 })).toBe(0);
 
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 0, col: 16 })
-      ).toBe(1);
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 1, col: 16 })
-      ).toBe(1); // even rows has 1 less column
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 0, col: 16 })).toBe(1);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 1, col: 16 })).toBe(1); // even rows has 1 less column
 
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 1, col: 15 })
-      ).toBe(2); // even rows has 1 less column
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 0, col: 15 })
-      ).toBe(2);
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 2, col: 17 })
-      ).toBe(2);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 1, col: 15 })).toBe(2); // even rows has 1 less column
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 0, col: 15 })).toBe(2);
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 2, col: 17 })).toBe(2);
 
-      expect(
-        calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 1, col: 17 })
-      ).toBe(-1); // the second position is not exists since on even rows there is 1 less column
+      expect(calculateHexDistance({ rows: 9, cols: 18 }, { row: 0, col: 17 }, { row: 1, col: 17 })).toBe(-1); // the second position is not exists since on even rows there is 1 less column
     });
 
     it('should calculate distance between two hexagonal coordinates. Right Bottom Corner', () => {
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 14, col: 30 })
-      ).toBe(0);
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 14, col: 30 })).toBe(0);
 
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 14, col: 29 })
-      ).toBe(1);
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 13, col: 29 })
-      ).toBe(1); // even rows has 1 less column
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 14, col: 29 })).toBe(1);
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 13, col: 29 })).toBe(1); // even rows has 1 less column
 
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 13, col: 28 })
-      ).toBe(2); // even rows has 1 less column
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 14, col: 28 })
-      ).toBe(2);
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 12, col: 30 })
-      ).toBe(2);
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 13, col: 28 })).toBe(2); // even rows has 1 less column
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 14, col: 28 })).toBe(2);
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 12, col: 30 })).toBe(2);
 
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 13, col: 30 })
-      ).toBe(-1); // the second position is not exists since on even rows there is 1 less column
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 13, col: 30 })).toBe(-1); // the second position is not exists since on even rows there is 1 less column
     });
 
     it('should calculate distance between two hexagonal coordinates. Middle', () => {
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 0, col: 0 }, { row: 14, col: 30 })
-      ).toBe(37);
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 0, col: 0 }, { row: 14, col: 30 })).toBe(37);
 
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 3, col: 6 }, { row: 5, col: 11 })
-      ).toBe(6);
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 3, col: 6 }, { row: 5, col: 11 })).toBe(6);
     });
 
     it('should calculate distance between two hexagonal coordinates. Not-Exists', () => {
-      expect(
-        calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 15, col: 31 })
-      ).toBe(-1);
+      expect(calculateHexDistance({ rows: 15, cols: 31 }, { row: 14, col: 30 }, { row: 15, col: 31 })).toBe(-1);
     });
   });
 });

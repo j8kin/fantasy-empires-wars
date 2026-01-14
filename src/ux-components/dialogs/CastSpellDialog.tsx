@@ -64,9 +64,7 @@ const CastSpellDialog: React.FC = () => {
 
   const turnUndeadSpellCastAvailable =
     turnOwner.mana.white > 0 &&
-    gameState.players.some(
-      (p) => p.id !== gameState.turnOwner && !hasActiveEffectByPlayer(p, SpellName.TURN_UNDEAD)
-    );
+    gameState.players.some((p) => p.id !== gameState.turnOwner && !hasActiveEffectByPlayer(p, SpellName.TURN_UNDEAD));
 
   const availableSpells = playerMana
     ? AllSpells.filter(

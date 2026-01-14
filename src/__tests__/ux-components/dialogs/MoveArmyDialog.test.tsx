@@ -138,11 +138,7 @@ jest.mock('../../../ux-components/fantasy-border-frame/FantasyBorderFrame', () =
   return ({ children, primaryButton, secondaryButton, screenPosition, frameSize }: any) => (
     <div data-testid="fantasy-border-frame">
       <div data-testid="frame-position" data-x={screenPosition?.x} data-y={screenPosition?.y}></div>
-      <div
-        data-testid="frame-size"
-        data-width={frameSize?.width}
-        data-height={frameSize?.height}
-      ></div>
+      <div data-testid="frame-size" data-width={frameSize?.width} data-height={frameSize?.height}></div>
       {children}
       <div data-testid="primary-button-container">{primaryButton}</div>
       <div data-testid="secondary-button-container">{secondaryButton}</div>
@@ -196,9 +192,7 @@ describe('MoveArmyDialog', () => {
 
   const getUnitItemByName = (name: string) => {
     // Find unit items by CSS class instead of data-testid since component uses dynamic testids
-    const items = screen
-      .getAllByRole('generic')
-      .filter((el) => el.className && el.className.includes('unitItem'));
+    const items = screen.getAllByRole('generic').filter((el) => el.className && el.className.includes('unitItem'));
     return items.find((item) => within(item).queryByText(name));
   };
 
@@ -557,8 +551,7 @@ describe('MoveArmyDialog', () => {
       expect(selectedUnits).toEqual(
         expect.objectContaining({ heroes: expect.any(Array), regulars: expect.any(Array) })
       );
-      const totalSelected =
-        (selectedUnits.heroes?.length ?? 0) + (selectedUnits.regulars?.length ?? 0);
+      const totalSelected = (selectedUnits.heroes?.length ?? 0) + (selectedUnits.regulars?.length ?? 0);
       expect(totalSelected).toBeGreaterThan(0);
     });
 

@@ -41,12 +41,8 @@ const typeToRecruitProps = (unitType: UnitType): RecruitUnitProps => {
 };
 
 const RecruitArmyDialog: React.FC = () => {
-  const {
-    showRecruitArmyDialog,
-    setShowRecruitArmyDialog,
-    actionLandPosition,
-    setActionLandPosition,
-  } = useApplicationContext();
+  const { showRecruitArmyDialog, setShowRecruitArmyDialog, actionLandPosition, setActionLandPosition } =
+    useApplicationContext();
   const { gameState } = useGameContext();
 
   // Shared state to track used slots across all pages
@@ -56,9 +52,7 @@ const RecruitArmyDialog: React.FC = () => {
   const initialSlotCount = useMemo(() => {
     if (!gameState || !actionLandPosition) return 0;
 
-    const recruitBuilding = getLand(gameState, actionLandPosition).buildings.find((b) =>
-      hasAvailableSlot(b)
-    );
+    const recruitBuilding = getLand(gameState, actionLandPosition).buildings.find((b) => hasAvailableSlot(b));
 
     return getAvailableSlotsCount(recruitBuilding);
   }, [gameState, actionLandPosition]); // Only recalculate when dialog opens or land changes
@@ -98,9 +92,7 @@ const RecruitArmyDialog: React.FC = () => {
   const createRecruitClickHandler = useCallback(
     (unitType: UnitType, landPos: LandPosition): ((availableSlots: Slot[]) => void) => {
       return (availableSlots: Slot[]) => {
-        const buildingId = getLand(gameState!, landPos).buildings.find((b) =>
-          hasAvailableSlot(b)
-        )!.id;
+        const buildingId = getLand(gameState!, landPos).buildings.find((b) => hasAvailableSlot(b))!.id;
 
         const building = getBuilding(getLand(gameState!, landPos), buildingId);
 
@@ -149,11 +141,7 @@ const RecruitArmyDialog: React.FC = () => {
 
   const turnOwner = getTurnOwner(gameState);
 
-  const availableUnits: RecruitUnitProps[] = getUnitsAllowedToRecruit(
-    turnOwner,
-    land,
-    recruitBuilding
-  )
+  const availableUnits: RecruitUnitProps[] = getUnitsAllowedToRecruit(turnOwner, land, recruitBuilding)
     .map((unit) => typeToRecruitProps(unit))
     .sort((a, b) => sortArmyUnits(a) - sortArmyUnits(b));
 

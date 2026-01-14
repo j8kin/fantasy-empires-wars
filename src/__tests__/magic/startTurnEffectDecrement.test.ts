@@ -134,12 +134,8 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       const otherPlayer = gameState.players[1];
 
       // Set up effects for both players
-      turnOwner.effects = [
-        createEffect('to1', EffectKind.POSITIVE, SpellName.BLESSING, 3, turnOwner.id),
-      ];
-      otherPlayer.effects = [
-        createEffect('op1', EffectKind.POSITIVE, SpellName.HEAL, 3, otherPlayer.id),
-      ];
+      turnOwner.effects = [createEffect('to1', EffectKind.POSITIVE, SpellName.BLESSING, 3, turnOwner.id)];
+      otherPlayer.effects = [createEffect('op1', EffectKind.POSITIVE, SpellName.HEAL, 3, otherPlayer.id)];
 
       // Set up armies for both players
       const turnOwnerArmy = armyFactory(
@@ -147,9 +143,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
         { row: 1, col: 1 },
         { hero: heroFactory(HeroUnitName.FIGHTER, 'Hero1') }
       );
-      turnOwnerArmy.effects = [
-        createEffect('toa1', EffectKind.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id),
-      ];
+      turnOwnerArmy.effects = [createEffect('toa1', EffectKind.NEGATIVE, SpellName.TORNADO, 2, turnOwner.id)];
 
       const otherPlayerArmy = armyFactory(
         otherPlayer.id,
@@ -196,9 +190,7 @@ describe('StartTurn Effect Duration Decrement Integration', () => {
       // Only effects with duration > 1 should remain
       expect(updatedTurnOwner.effects).toHaveLength(2);
 
-      const remainingEffects = updatedTurnOwner.effects.sort(
-        (a, b) => a.rules.duration - b.rules.duration
-      );
+      const remainingEffects = updatedTurnOwner.effects.sort((a, b) => a.rules.duration - b.rules.duration);
 
       expect(remainingEffects[0].sourceId).toBe(SpellName.TORNADO);
       expect(remainingEffects[0].rules.duration).toBe(1); // was 2

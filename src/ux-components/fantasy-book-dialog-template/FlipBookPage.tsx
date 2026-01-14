@@ -114,8 +114,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
                 onMouseEnter={
                   onIconClick
                     ? (e) => {
-                        e.currentTarget.style.filter =
-                          'brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
+                        e.currentTarget.style.filter = 'brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
                         e.currentTarget.style.transform = 'scale(1.05)';
                       }
                     : undefined
@@ -157,9 +156,7 @@ const FlipBookPage = React.forwardRef<HTMLDivElement, FlipBookPageProps>(
               <h4 className={styles.descriptionTitle}>Description:</h4>
               <p
                 data-testid="flipbook-description-text"
-                className={
-                  maintainCost == null ? styles.descriptionTextExpanded : styles.descriptionText
-                }
+                className={maintainCost == null ? styles.descriptionTextExpanded : styles.descriptionText}
               >
                 {description}
               </p>

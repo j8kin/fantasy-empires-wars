@@ -12,13 +12,7 @@ export const calculateMaintenance = (gameState: GameState): number => {
   const buildingMaintenance = getPlayerLands(gameState)
     .filter((l) => l.buildings.length > 0)
     .reduce((acc, land) => {
-      return (
-        acc +
-        land.buildings.reduce(
-          (acc, building) => acc + getBuildingInfo(building.type).maintainCost,
-          0
-        )
-      );
+      return acc + land.buildings.reduce((acc, building) => acc + getBuildingInfo(building.type).maintainCost, 0);
     }, 0);
 
   // army maintenance
@@ -27,10 +21,7 @@ export const calculateMaintenance = (gameState: GameState): number => {
       acc +
       army.heroes.reduce((acc, unit) => acc + unit.cost, 0) +
       army.regulars.reduce((acc, unit) => acc + unit.cost * unit.count, 0) +
-      army.warMachines.reduce(
-        (acc, unit) => acc + getRecruitInfo(unit.type).maintainCost * unit.count,
-        0
-      )
+      army.warMachines.reduce((acc, unit) => acc + getRecruitInfo(unit.type).maintainCost * unit.count, 0)
     );
   }, 0);
 

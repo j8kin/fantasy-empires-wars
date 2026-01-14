@@ -75,27 +75,17 @@ export const removePlayer = (gameState: GameState, playerId: string): GameState 
 /**
  * Update a specific player's properties
  */
-export const updatePlayer = (
-  gameState: GameState,
-  playerId: string,
-  updates: Partial<PlayerState>
-): GameState => {
+export const updatePlayer = (gameState: GameState, playerId: string, updates: Partial<PlayerState>): GameState => {
   return {
     ...gameState,
-    players: gameState.players.map((player) =>
-      player.id === playerId ? { ...player, ...updates } : player
-    ),
+    players: gameState.players.map((player) => (player.id === playerId ? { ...player, ...updates } : player)),
   };
 };
 
 /**
  * Update a player's vault (add or subtract gold)
  */
-export const updatePlayerVault = (
-  gameState: GameState,
-  playerId: string,
-  deltaVault: number
-): GameState => {
+export const updatePlayerVault = (gameState: GameState, playerId: string, deltaVault: number): GameState => {
   return updatePlayer(gameState, playerId, {
     vault: getPlayer(gameState, playerId).vault + deltaVault,
   });
@@ -119,11 +109,7 @@ export const updatePlayerMana = (
   return updatePlayer(gameState, playerId, { mana: updatedMana });
 };
 
-export const updatePlayerEffect = (
-  gameState: GameState,
-  playerId: string,
-  effect: Effect
-): GameState => {
+export const updatePlayerEffect = (gameState: GameState, playerId: string, effect: Effect): GameState => {
   const player = getPlayer(gameState, playerId);
   const updatedEffects = [...player.effects, effect];
   return updatePlayer(gameState, playerId, { effects: updatedEffects });
@@ -135,11 +121,7 @@ export const updatePlayerEffect = (
 /**
  * Add a land to a player's owned lands
  */
-export const addPlayerLand = (
-  gameState: GameState,
-  playerId: string,
-  landPos: LandPosition
-): GameState => {
+export const addPlayerLand = (gameState: GameState, playerId: string, landPos: LandPosition): GameState => {
   const player = getPlayer(gameState, playerId);
   const newLandsOwned = new Set(player.landsOwned);
   newLandsOwned.add(getLandId(landPos));
@@ -150,11 +132,7 @@ export const addPlayerLand = (
 /**
  * Remove a land from a player's owned lands
  */
-export const removePlayerLand = (
-  gameState: GameState,
-  playerId: string,
-  landPos: LandPosition
-): GameState => {
+export const removePlayerLand = (gameState: GameState, playerId: string, landPos: LandPosition): GameState => {
   const player = getPlayer(gameState, playerId);
   const newLandsOwned = new Set(player.landsOwned);
   newLandsOwned.delete(getLandId(landPos));
@@ -207,11 +185,7 @@ export const addPlayerEmpireTreasure = (
   playerId: string,
   treasure: EmpireTreasure
 ): GameState => {
-  return updatePlayer(
-    gameState,
-    playerId,
-    addEmpireTreasure(getPlayer(gameState, playerId), treasure)
-  );
+  return updatePlayer(gameState, playerId, addEmpireTreasure(getPlayer(gameState, playerId), treasure));
 };
 
 // ============================================================================
@@ -248,22 +222,14 @@ const updateLandState = (
 /**
  * Add an effect to a specific land
  */
-export const updateLandEffect = (
-  gameState: GameState,
-  landPos: LandPosition,
-  effect: Effect
-): GameState => {
+export const updateLandEffect = (gameState: GameState, landPos: LandPosition, effect: Effect): GameState => {
   return updateLandState(gameState, landPos, (land) => ({
     ...land,
     effects: [...land.effects, effect],
   }));
 };
 
-export const removeLandEffect = (
-  state: GameState,
-  landPos: LandPosition,
-  effectId: string
-): GameState => {
+export const removeLandEffect = (state: GameState, landPos: LandPosition, effectId: string): GameState => {
   return updateLandState(state, landPos, (land) => ({
     ...land,
     effects: land.effects.filter((effect) => effect.id !== effectId),
@@ -345,11 +311,7 @@ export const updateLandBuildingSlots = (
 /**
  * Add a building to a specific land
  */
-export const addBuildingToLand = (
-  gameState: GameState,
-  landPos: LandPosition,
-  building: BuildingState
-): GameState => {
+export const addBuildingToLand = (gameState: GameState, landPos: LandPosition, building: BuildingState): GameState => {
   return updateLandState(gameState, landPos, (land) => ({
     ...land,
     buildings: [...land.buildings, building],
@@ -383,9 +345,7 @@ export const startRecruitmentInSlot = (
     }
     const slotTraits = getTurnOwner(gameState).traits.recruitmentSlots[building.type];
     // Find first available slot that supports this unit
-    const slotIndex = b.slots.findIndex(
-      (s, i) => !s.isOccupied && slotTraits && slotTraits[i]?.has(unit)
-    );
+    const slotIndex = b.slots.findIndex((s, i) => !s.isOccupied && slotTraits && slotTraits[i]?.has(unit));
     if (slotIndex === -1) {
       return b; // No available slots
     }
@@ -410,10 +370,7 @@ export const startRecruitmentInSlot = (
 /**
  * Decrement recruitment slots turns remaining for a specific player's lands
  */
-export const decrementPlayerRecruitmentSlots = (
-  gameState: GameState,
-  playerId: string
-): GameState => {
+export const decrementPlayerRecruitmentSlots = (gameState: GameState, playerId: string): GameState => {
   const player = getPlayer(gameState, playerId);
   let updatedState = gameState;
 
@@ -441,10 +398,7 @@ export const decrementPlayerRecruitmentSlots = (
  * Free all completed recruitment slots (turns remaining === 0) from a specific player's buildings
  * Sets isOccupied to false for completed slots
  */
-export const freePlayerCompletedRecruitmentSlots = (
-  gameState: GameState,
-  playerId: string
-): GameState => {
+export const freePlayerCompletedRecruitmentSlots = (gameState: GameState, playerId: string): GameState => {
   const player = getPlayer(gameState, playerId);
   let updatedState = gameState;
 

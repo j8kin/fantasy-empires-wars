@@ -37,10 +37,7 @@ const RealmEventsPopup: React.FC<PopupProps> = ({ screenPosition }) => {
   }
 
   const headerHeight = 82;
-  const popupHeight = empireEvents.reduce(
-    (acc, heroOutcome) => acc + getMessageHeight(heroOutcome.message),
-    0
-  );
+  const popupHeight = empireEvents.reduce((acc, heroOutcome) => acc + getMessageHeight(heroOutcome.message), 0);
   const heights = Math.max(150, headerHeight + Math.floor(popupHeight));
 
   return (

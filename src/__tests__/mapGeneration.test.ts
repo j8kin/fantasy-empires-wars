@@ -26,23 +26,15 @@ describe('Map Generation', () => {
     // Special lands should be generated
     getMainSpecialLandKinds().forEach((LandKind) => {
       expect(Object.values(lands.lands).some((land) => land.land.id === LandKind)).toBeTruthy();
-      expect(Object.values(lands.lands).filter((land) => land.land.id === LandKind)).toHaveLength(
-        1
-      );
+      expect(Object.values(lands.lands).filter((land) => land.land.id === LandKind)).toHaveLength(1);
       expect(
-        Object.values(lands.lands).some(
-          (land) => land.land.id === getNearSpecialLandKinds(LandKind)
-        )
+        Object.values(lands.lands).some((land) => land.land.id === getNearSpecialLandKinds(LandKind))
       ).toBeTruthy();
       expect(
-        Object.values(lands.lands).filter(
-          (land) => land.land.id === getNearSpecialLandKinds(LandKind)
-        ).length
+        Object.values(lands.lands).filter((land) => land.land.id === getNearSpecialLandKinds(LandKind)).length
       ).toBeGreaterThan(1);
       expect(
-        Object.values(lands.lands).filter(
-          (land) => land.land.id === getNearSpecialLandKinds(LandKind)
-        ).length
+        Object.values(lands.lands).filter((land) => land.land.id === getNearSpecialLandKinds(LandKind)).length
       ).toBeLessThan(6);
     });
   });

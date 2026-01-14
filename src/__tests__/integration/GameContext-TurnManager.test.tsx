@@ -21,9 +21,7 @@ jest.mock('../../map/vault/calculateIncome');
 jest.mock('../../map/vault/calculateMaintenance');
 
 const mockCalculateIncome = calculateIncome as jest.MockedFunction<typeof calculateIncome>;
-const mockCalculateMaintenance = calculateMaintenance as jest.MockedFunction<
-  typeof calculateMaintenance
->;
+const mockCalculateMaintenance = calculateMaintenance as jest.MockedFunction<typeof calculateMaintenance>;
 
 const mockTurnManager = {
   startNewTurn: jest.fn(),
@@ -39,8 +37,7 @@ jest.useFakeTimers();
 describe('GameContext-TurnManager Integration', () => {
   const createGameStateStub = (turnOwner: number = 0): GameState => {
     const gameStateStub = createDefaultGameStateStub();
-    while (gameStateStub.turnOwner !== gameStateStub.players[turnOwner].id)
-      nextPlayer(gameStateStub);
+    while (gameStateStub.turnOwner !== gameStateStub.players[turnOwner].id) nextPlayer(gameStateStub);
 
     return gameStateStub;
   };

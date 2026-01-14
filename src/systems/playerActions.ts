@@ -13,11 +13,7 @@ import type { DiplomacyStatusType, DiplomacyType } from '../types/Diplomacy';
 
 const INITIAL_VAULT = 15000;
 
-export const addPlayerToGameState = (
-  gameState: GameState,
-  profile: PlayerProfile,
-  type: PlayerType
-) => {
+export const addPlayerToGameState = (gameState: GameState, profile: PlayerProfile, type: PlayerType) => {
   const newPlayer = playerFactory(profile, type, INITIAL_VAULT);
 
   // Add the player and potentially update turn owner

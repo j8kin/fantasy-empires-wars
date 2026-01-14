@@ -39,16 +39,13 @@ const calculateUpdatedStats = (
       currentStats[key] !== undefined
     ) {
       (updatedCombatStats[key] as number) = Math.floor(
-        baseStat +
-          (key !== 'speed' ? levelCurveMultiplier : 1.0) * unitTypeMultiplier * doctrineMultiplier
+        baseStat + (key !== 'speed' ? levelCurveMultiplier : 1.0) * unitTypeMultiplier * doctrineMultiplier
       );
     }
   });
 
   const updatedMana =
-    currentMana !== undefined
-      ? Math.floor(1 + levelCurveMultiplier * multipliers.mana! * doctrine.mana!)
-      : undefined;
+    currentMana !== undefined ? Math.floor(1 + levelCurveMultiplier * multipliers.mana! * doctrine.mana!) : undefined;
 
   return { ...updatedCombatStats, mana: updatedMana };
 };
@@ -98,8 +95,7 @@ export const levelUpRegulars = (regular: RegularsState, doctrine: DoctrineType):
 
   regular.combatStats = { ...updatedStats };
 
-  regular.cost =
-    getRecruitInfo(regular.type).maintainCost * (regular.rank === UnitRank.VETERAN ? 1.5 : 2);
+  regular.cost = getRecruitInfo(regular.type).maintainCost * (regular.rank === UnitRank.VETERAN ? 1.5 : 2);
 };
 
 const UnitTypeMultiplier = (unitType: HeroUnitType | RegularUnitType): LevelUpParams => {

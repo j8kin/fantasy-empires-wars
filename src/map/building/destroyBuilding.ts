@@ -1,18 +1,9 @@
 import { getLandId } from '../../state/map/land/LandId';
-import {
-  getLand,
-  getLandOwner,
-  getTilesInRadius,
-  hasBuilding,
-} from '../../selectors/landSelectors';
+import { getLand, getLandOwner, getTilesInRadius, hasBuilding } from '../../selectors/landSelectors';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { hasLand } from '../../systems/playerActions';
-import {
-  clearLandBuildings,
-  addPlayerLand,
-  removePlayerLand,
-} from '../../systems/gameStateActions';
+import { clearLandBuildings, addPlayerLand, removePlayerLand } from '../../systems/gameStateActions';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
 import { BuildingName } from '../../types/Building';
@@ -56,8 +47,8 @@ export const destroyBuilding = (gameState: GameState, landPos: LandPosition): Ga
         }
       } else {
         // no army look for nearest stronghold
-        const nearestStrongholds = getTilesInRadius(getMapDimensions(updatedState), l, 1).filter(
-          (l) => hasBuilding(getLand(updatedState, l), BuildingName.STRONGHOLD)
+        const nearestStrongholds = getTilesInRadius(getMapDimensions(updatedState), l, 1).filter((l) =>
+          hasBuilding(getLand(updatedState, l), BuildingName.STRONGHOLD)
         );
         if (nearestStrongholds && nearestStrongholds.length > 0) {
           if (!nearestStrongholds.some((s) => hasLand(owner, s))) {

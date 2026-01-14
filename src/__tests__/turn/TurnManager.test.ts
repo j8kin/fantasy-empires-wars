@@ -17,13 +17,9 @@ jest.mock('../../turn/mainAiTurn');
 // Mock timers
 jest.useFakeTimers();
 
-const mockStartTurn = startTurnModule.startTurn as jest.MockedFunction<
-  typeof startTurnModule.startTurn
->;
+const mockStartTurn = startTurnModule.startTurn as jest.MockedFunction<typeof startTurnModule.startTurn>;
 const mockEndTurn = endTurnModule.endTurn as jest.MockedFunction<typeof endTurnModule.endTurn>;
-const mockMainAiTurn = mainAiTurnModule.mainAiTurn as jest.MockedFunction<
-  typeof mainAiTurnModule.mainAiTurn
->;
+const mockMainAiTurn = mainAiTurnModule.mainAiTurn as jest.MockedFunction<typeof mainAiTurnModule.mainAiTurn>;
 
 describe('TurnManager', () => {
   let turnManager: TurnManager;
@@ -34,9 +30,7 @@ describe('TurnManager', () => {
     // For turn 1, we don't want to place homelands as that increments turn counter
     // For turn > 1, we use the default stub which places homelands
     const gameStateStub =
-      turn === 1
-        ? createGameStateStub({ addPlayersHomeland: false })
-        : createDefaultGameStateStub();
+      turn === 1 ? createGameStateStub({ addPlayersHomeland: false }) : createDefaultGameStateStub();
 
     // Advance to desired turn if needed (for turn > 1)
     while (gameStateStub.turn < turn) {
@@ -230,9 +224,7 @@ describe('TurnManager', () => {
 
       turnManager.endCurrentTurn(gameStateNoHumans);
 
-      expect(mockCallbacks.onGameOver).toHaveBeenCalledWith(
-        'Game Over: No human players remaining'
-      );
+      expect(mockCallbacks.onGameOver).toHaveBeenCalledWith('Game Over: No human players remaining');
     });
 
     it('should NOT check for game over when no computer players remain on Turn 1', () => {
@@ -256,9 +248,7 @@ describe('TurnManager', () => {
 
       turnManager.endCurrentTurn(gameStateNoComputers);
 
-      expect(mockCallbacks.onGameOver).toHaveBeenCalledWith(
-        'Game Over: No computer players remaining'
-      );
+      expect(mockCallbacks.onGameOver).toHaveBeenCalledWith('Game Over: No computer players remaining');
     });
 
     it('should start next turn after delay when game continues', () => {
@@ -291,8 +281,7 @@ describe('TurnManager', () => {
 
   describe('canEndTurn', () => {
     it('should return true for human player in main phase', () => {
-      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[0].id)
-        nextPlayer(gameStateStub);
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[0].id) nextPlayer(gameStateStub);
       while (gameStateStub.turnPhase !== TurnPhase.MAIN) nextTurnPhase(gameStateStub);
 
       const result = turnManager.canEndTurn(gameStateStub);
@@ -301,8 +290,7 @@ describe('TurnManager', () => {
     });
 
     it('should return false for computer player in main phase', () => {
-      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id)
-        nextPlayer(gameStateStub);
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id) nextPlayer(gameStateStub);
 
       const result = turnManager.canEndTurn(gameStateStub);
 
@@ -311,8 +299,7 @@ describe('TurnManager', () => {
 
     it('should return false when not in main phase', () => {
       // human player in START phase
-      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id)
-        nextPlayer(gameStateStub);
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id) nextPlayer(gameStateStub);
 
       const result = turnManager.canEndTurn(gameStateStub);
 
@@ -321,8 +308,7 @@ describe('TurnManager', () => {
 
     it('should return false in END phase', () => {
       // human player in END phase
-      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id)
-        nextPlayer(gameStateStub);
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id) nextPlayer(gameStateStub);
 
       const result = turnManager.canEndTurn(gameStateStub);
 
@@ -417,16 +403,14 @@ describe('TurnManager', () => {
     });
 
     it('should handle mixed human and computer players correctly', () => {
-      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[0].id)
-        nextPlayer(gameStateStub);
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[0].id) nextPlayer(gameStateStub);
       while (gameStateStub.turnPhase !== TurnPhase.MAIN) nextTurnPhase(gameStateStub);
 
       // Test human turn first
       expect(turnManager.canEndTurn(gameStateStub)).toBe(true);
 
       // Switch to computer player
-      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id)
-        nextPlayer(gameStateStub);
+      while (getTurnOwner(gameStateStub).id !== gameStateStub.players[1].id) nextPlayer(gameStateStub);
 
       expect(turnManager.canEndTurn(gameStateStub)).toBe(false);
     });

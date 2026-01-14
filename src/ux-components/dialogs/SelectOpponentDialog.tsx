@@ -76,9 +76,7 @@ const SelectOpponentDialog: React.FC<SelectOpponentDialogProps> = ({
     <FantasyBorderFrame
       screenPosition={{ x: dialogX, y: dialogY }}
       frameSize={{ width: dialogWidth, height: dialogHeight }}
-      secondaryButton={
-        <GameButton buttonName={ButtonName.CANCEL} onClick={handleOpponentDialogCancel} />
-      }
+      secondaryButton={<GameButton buttonName={ButtonName.CANCEL} onClick={handleOpponentDialogCancel} />}
       zIndex={1010}
     >
       <PlayerSelection

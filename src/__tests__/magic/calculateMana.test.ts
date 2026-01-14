@@ -54,32 +54,27 @@ describe('Calculate Mana', () => {
       [HeroUnitName.ENCHANTER, Mana.BLUE, PREDEFINED_PLAYERS[7], 7],
       [HeroUnitName.DRUID, Mana.GREEN, PREDEFINED_PLAYERS[12], 7],
       [HeroUnitName.PYROMANCER, Mana.RED, PREDEFINED_PLAYERS[14], 6],
-    ])(
-      '%s produce only %s mana',
-      (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
-        expect(player.type).toBe(heroType);
+    ])('%s produce only %s mana', (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
+      expect(player.type).toBe(heroType);
 
-        const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
-        gameStateStub = createGameStateStub({ gamePlayers: players });
+      const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
+      gameStateStub = createGameStateStub({ gamePlayers: players });
 
-        testTurnManagement.setGameState(gameStateStub);
-        testTurnManagement.startNewTurn(gameStateStub);
-        testTurnManagement.waitStartPhaseComplete();
+      testTurnManagement.setGameState(gameStateStub);
+      testTurnManagement.startNewTurn(gameStateStub);
+      testTurnManagement.waitStartPhaseComplete();
 
-        expect(gameStateStub.turn).toBe(2);
-        gameStateStub.players.forEach((p) =>
-          Object.values(p.mana).forEach((m) => expect(m).toBe(0))
-        );
+      expect(gameStateStub.turn).toBe(2);
+      gameStateStub.players.forEach((p) => Object.values(p.mana).forEach((m) => expect(m).toBe(0)));
 
-        testTurnManagement.makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
-        expectedMana(manaType, inc);
+      expectedMana(manaType, inc);
 
-        testTurnManagement.makeNTurns(1);
+      testTurnManagement.makeNTurns(1);
 
-        expectedMana(manaType, (gameStateStub.turn - 2) * inc);
-      }
-    );
+      expectedMana(manaType, (gameStateStub.turn - 2) * inc);
+    });
 
     describe.each([
       [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 6],
@@ -95,9 +90,7 @@ describe('Calculate Mana', () => {
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
-          const homeLand = getPlayerLands(gameStateStub).find((l) =>
-            hasBuilding(l, BuildingName.STRONGHOLD)
-          )!;
+          const homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 2 }; // outside player land
           getLand(gameStateStub, specialLand).land = getLandById(LandKind);
 
@@ -106,9 +99,7 @@ describe('Calculate Mana', () => {
           testTurnManagement.waitStartPhaseComplete();
 
           expect(gameStateStub.turn).toBe(2);
-          gameStateStub.players.forEach((p) =>
-            Object.values(p.mana).forEach((m) => expect(m).toBe(0))
-          );
+          gameStateStub.players.forEach((p) => Object.values(p.mana).forEach((m) => expect(m).toBe(0)));
 
           testTurnManagement.makeNTurns(1);
 
@@ -135,8 +126,8 @@ describe('Calculate Mana', () => {
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
-          const homeLandPlayer2 = getPlayerLands(gameStateStub, PREDEFINED_PLAYERS[13].id).find(
-            (l) => hasBuilding(l, BuildingName.STRONGHOLD)
+          const homeLandPlayer2 = getPlayerLands(gameStateStub, PREDEFINED_PLAYERS[13].id).find((l) =>
+            hasBuilding(l, BuildingName.STRONGHOLD)
           )!;
           const specialLand = {
             row: homeLandPlayer2.mapPos.row,
@@ -151,9 +142,7 @@ describe('Calculate Mana', () => {
           testTurnManagement.waitStartPhaseComplete();
 
           expect(gameStateStub.turn).toBe(2);
-          gameStateStub.players.forEach((p) =>
-            Object.values(p.mana).forEach((m) => expect(m).toBe(0))
-          );
+          gameStateStub.players.forEach((p) => Object.values(p.mana).forEach((m) => expect(m).toBe(0)));
 
           testTurnManagement.makeNTurns(1);
 
@@ -183,9 +172,7 @@ describe('Calculate Mana', () => {
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
 
-          const homeLand = getPlayerLands(gameStateStub).find((l) =>
-            hasBuilding(l, BuildingName.STRONGHOLD)
-          )!;
+          const homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
 
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
           getLand(gameStateStub, specialLand).land = getLandById(LandKind);
@@ -197,9 +184,7 @@ describe('Calculate Mana', () => {
           testTurnManagement.waitStartPhaseComplete();
 
           expect(gameStateStub.turn).toBe(2);
-          gameStateStub.players.forEach((p) =>
-            Object.values(p.mana).forEach((m) => expect(m).toBe(0))
-          );
+          gameStateStub.players.forEach((p) => Object.values(p.mana).forEach((m) => expect(m).toBe(0)));
 
           testTurnManagement.makeNTurns(1);
 
@@ -276,13 +261,9 @@ describe('Calculate Mana', () => {
   it('mana increased by 1 per each specific land even if no such hero type when player have TreasureItem.HEARTSTONE_OF_ORRIVANE', () => {
     const players = [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[2]];
     gameStateStub = createGameStateStub({ gamePlayers: players });
-    gameStateStub.players[0].empireTreasures.push(
-      relictFactory(TreasureName.HEARTSTONE_OF_ORRIVANE)
-    );
+    gameStateStub.players[0].empireTreasures.push(relictFactory(TreasureName.HEARTSTONE_OF_ORRIVANE));
 
-    const homeLand = getPlayerLands(gameStateStub).find((l) =>
-      hasBuilding(l, BuildingName.STRONGHOLD)
-    )!;
+    const homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
 
     getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandName.VOLCANO); // this should add red mana to player 0
 

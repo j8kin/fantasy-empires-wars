@@ -92,11 +92,7 @@ interface ApplicationContextType {
   // Spell animation state
   spellAnimation: SpellAnimationState | null;
   setSpellAnimation: (animation: SpellAnimationState | null) => void;
-  showSpellAnimation: (
-    manaType: ManaType,
-    battlefieldPosition: LandPosition,
-    screenPosition: ScreenPosition
-  ) => void;
+  showSpellAnimation: (manaType: ManaType, battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => void;
   hideSpellAnimation: () => void;
 
   // Dialog actions
@@ -182,17 +178,13 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
 
   // Dialog data
   const [selectedOpponent, setSelectedOpponent] = useState<PlayerState | undefined>(undefined);
-  const [diplomacyContactOpponent, setDiplomacyContactOpponent] = useState<PlayerState | undefined>(
-    undefined
-  );
+  const [diplomacyContactOpponent, setDiplomacyContactOpponent] = useState<PlayerState | undefined>(undefined);
   const [opponentScreenPosition, setOpponentScreenPosition] = useState<ScreenPosition>({
     x: 0,
     y: 0,
   });
   const [selectOpponentExcludedIds, setSelectOpponentExcludedIds] = useState<string[]>([]);
-  const [selectOpponentCallback, setSelectOpponentCallback] = useState<
-    ((player: PlayerProfile) => void) | null
-  >(null);
+  const [selectOpponentCallback, setSelectOpponentCallback] = useState<((player: PlayerProfile) => void) | null>(null);
   const [allowEmptyPlayer, setAllowEmptyPlayer] = useState<boolean>(true);
   const [progressMessage, setProgressMessage] = useState<string>('');
 
@@ -220,13 +212,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const [spellAnimation, setSpellAnimation] = useState<SpellAnimationState | null>(null);
 
   // HexTile popup actions
-  const showLandPopup = useCallback(
-    (battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => {
-      setLandPopupPosition(battlefieldPosition);
-      setLandPopupScreenPosition(screenPosition);
-    },
-    []
-  );
+  const showLandPopup = useCallback((battlefieldPosition: LandPosition, screenPosition: ScreenPosition) => {
+    setLandPopupPosition(battlefieldPosition);
+    setLandPopupScreenPosition(screenPosition);
+  }, []);
 
   const hideLandPopup = useCallback(() => {
     setLandPopupPosition(undefined);
@@ -238,13 +227,10 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   }, []);
 
   // Combined actions
-  const showOpponentInfo = useCallback(
-    (opponent: PlayerState | undefined, screenPosition: ScreenPosition) => {
-      setSelectedOpponent(opponent);
-      setOpponentScreenPosition(screenPosition);
-    },
-    []
-  );
+  const showOpponentInfo = useCallback((opponent: PlayerState | undefined, screenPosition: ScreenPosition) => {
+    setSelectedOpponent(opponent);
+    setOpponentScreenPosition(screenPosition);
+  }, []);
 
   const hideOpponentInfo = useCallback(() => {
     setSelectedOpponent(undefined);
@@ -261,11 +247,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   }, []);
 
   const showSelectOpponentDialogWithConfig = useCallback(
-    (
-      excludedPlayerIds: string[],
-      onSelect: (player: PlayerProfile) => void,
-      allowEmptyPlayer: boolean = true
-    ) => {
+    (excludedPlayerIds: string[], onSelect: (player: PlayerProfile) => void, allowEmptyPlayer: boolean = true) => {
       setSelectOpponentExcludedIds(excludedPlayerIds);
       setSelectOpponentCallback(() => onSelect);
       setAllowEmptyPlayer(allowEmptyPlayer);

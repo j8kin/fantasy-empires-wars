@@ -36,9 +36,7 @@ export const createGameStateStub = ({
 
   const map = realBattlefield ? generateMap(battlefieldSize) : generateMockMap(battlefieldSize);
   const stubGameState: GameState = gameStateFactory(map);
-  playersProfile.forEach((p, idx) =>
-    addPlayerToGameState(stubGameState, p, idx === 0 ? 'human' : 'computer')
-  );
+  playersProfile.forEach((p, idx) => addPlayerToGameState(stubGameState, p, idx === 0 ? 'human' : 'computer'));
 
   if (addPlayersHomeland) {
     for (let i = 0; i < playersProfile.length; i++) {

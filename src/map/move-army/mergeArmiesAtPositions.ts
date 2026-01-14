@@ -1,9 +1,4 @@
-import {
-  getPosition,
-  isMoving,
-  getArmiesAtPosition,
-  getArmiesByPlayer,
-} from '../../selectors/armySelectors';
+import { getPosition, isMoving, getArmiesAtPosition, getArmiesByPlayer } from '../../selectors/armySelectors';
 import { mergeArmies } from '../../systems/armyActions';
 import { removeArmyFromGameState, updateArmyInGameState } from '../../systems/armyActions';
 
@@ -17,9 +12,7 @@ export const mergeArmiesAtPositions = (gameState: GameState): void => {
   const uniqLands = new Set<LandPosition>();
   getArmiesByPlayer(gameState, turnOwner).forEach((a) => uniqLands.add(getPosition(a)));
   uniqLands.forEach((l) => {
-    const armiesAtLand = getArmiesAtPosition(gameState, l).filter(
-      (a) => !isMoving(a) && a.controlledBy === turnOwner
-    );
+    const armiesAtLand = getArmiesAtPosition(gameState, l).filter((a) => !isMoving(a) && a.controlledBy === turnOwner);
     if (armiesAtLand.length < 2) return;
     let mainArmy = armiesAtLand.pop()!;
     armiesAtLand.forEach((armyToMerge) => {

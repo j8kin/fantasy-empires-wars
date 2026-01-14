@@ -201,12 +201,7 @@ describe('OpponentsPanel', () => {
         },
         {
           description: 'mostly valid with few EmptyPlayer',
-          opponents: [
-            PREDEFINED_PLAYERS[1],
-            PREDEFINED_PLAYERS[2],
-            PREDEFINED_PLAYERS[3],
-            NO_PLAYER,
-          ],
+          opponents: [PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[2], PREDEFINED_PLAYERS[3], NO_PLAYER],
           expectedTotalOpponents: 4,
         },
       ];

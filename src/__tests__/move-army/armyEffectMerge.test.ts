@@ -8,12 +8,7 @@ import type { Effect, EffectType } from '../../types/Effect';
 
 describe('Army Effect Merge Logic', () => {
   // Helper function to create an effect
-  const createEffect = (
-    id: string,
-    type: EffectType,
-    spell: SpellType,
-    duration: number
-  ): Effect => ({
+  const createEffect = (id: string, type: EffectType, spell: SpellType, duration: number): Effect => ({
     id,
     sourceId: spell,
     appliedBy: 'player1',
@@ -47,9 +42,7 @@ describe('Army Effect Merge Logic', () => {
 
       // Should only have negative effects
       expect(mergedArmy.effects).toHaveLength(3);
-      expect(mergedArmy.effects.every((effect) => effect.rules.type === EffectKind.NEGATIVE)).toBe(
-        true
-      );
+      expect(mergedArmy.effects.every((effect) => effect.rules.type === EffectKind.NEGATIVE)).toBe(true);
 
       // Check-specific effects are preserved
       const effectIds = mergedArmy.effects.map((e) => e.id);
@@ -61,9 +54,7 @@ describe('Army Effect Merge Logic', () => {
     });
 
     it('should handle merging when one army has no effects', () => {
-      const targetArmy = createTestArmy([
-        createEffect('effect1', EffectKind.NEGATIVE, SpellName.TORNADO, 3),
-      ]);
+      const targetArmy = createTestArmy([createEffect('effect1', EffectKind.NEGATIVE, SpellName.TORNADO, 3)]);
 
       const sourceArmy = createTestArmy([]);
 
@@ -84,13 +75,9 @@ describe('Army Effect Merge Logic', () => {
     });
 
     it('should handle merging when armies only have positive effects', () => {
-      const targetArmy = createTestArmy([
-        createEffect('effect1', EffectKind.POSITIVE, SpellName.BLESSING, 5),
-      ]);
+      const targetArmy = createTestArmy([createEffect('effect1', EffectKind.POSITIVE, SpellName.BLESSING, 5)]);
 
-      const sourceArmy = createTestArmy([
-        createEffect('effect2', EffectKind.POSITIVE, SpellName.HEAL, 4),
-      ]);
+      const sourceArmy = createTestArmy([createEffect('effect2', EffectKind.POSITIVE, SpellName.HEAL, 4)]);
 
       const mergedArmy = mergeArmies(targetArmy, sourceArmy);
 
@@ -99,13 +86,9 @@ describe('Army Effect Merge Logic', () => {
     });
 
     it('should preserve effect properties correctly', () => {
-      const targetArmy = createTestArmy([
-        createEffect('effect1', EffectKind.NEGATIVE, SpellName.TORNADO, 10),
-      ]);
+      const targetArmy = createTestArmy([createEffect('effect1', EffectKind.NEGATIVE, SpellName.TORNADO, 10)]);
 
-      const sourceArmy = createTestArmy([
-        createEffect('effect2', EffectKind.NEGATIVE, SpellName.EARTHQUAKE, 5),
-      ]);
+      const sourceArmy = createTestArmy([createEffect('effect2', EffectKind.NEGATIVE, SpellName.EARTHQUAKE, 5)]);
 
       const mergedArmy = mergeArmies(targetArmy, sourceArmy);
 
@@ -124,12 +107,8 @@ describe('Army Effect Merge Logic', () => {
     });
 
     it('should not modify original army effect arrays', () => {
-      const originalTargetEffects = [
-        createEffect('effect1', EffectKind.NEGATIVE, SpellName.TORNADO, 3),
-      ];
-      const originalSourceEffects = [
-        createEffect('effect2', EffectKind.NEGATIVE, SpellName.EARTHQUAKE, 5),
-      ];
+      const originalTargetEffects = [createEffect('effect1', EffectKind.NEGATIVE, SpellName.TORNADO, 3)];
+      const originalSourceEffects = [createEffect('effect2', EffectKind.NEGATIVE, SpellName.EARTHQUAKE, 5)];
 
       const targetArmy = createTestArmy(originalTargetEffects);
       const sourceArmy = createTestArmy(originalSourceEffects);

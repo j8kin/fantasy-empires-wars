@@ -3,10 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import CastSpellDialog from '../../../ux-components/dialogs/CastSpellDialog';
 
 import { GameProvider } from '../../../contexts/GameContext';
-import {
-  ApplicationContextProvider,
-  useApplicationContext,
-} from '../../../contexts/ApplicationContext';
+import { ApplicationContextProvider, useApplicationContext } from '../../../contexts/ApplicationContext';
 import { AllSpells } from '../../../domain/spell/spellsRepository';
 import { SpellName } from '../../../types/Spell';
 import type { GameState } from '../../../state/GameState';
@@ -14,10 +11,7 @@ import type { GameState } from '../../../state/GameState';
 import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
 
 // Mock CSS modules
-jest.mock(
-  '../../../ux-components/fantasy-book-dialog-template/css/FlipBook.module.css',
-  () => ({})
-);
+jest.mock('../../../ux-components/fantasy-book-dialog-template/css/FlipBook.module.css', () => ({}));
 
 // Mock child components
 jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBook', () => {
@@ -113,9 +107,7 @@ const renderWithApplicationContext = () => {
   };
 
   // Mock useGameContext before rendering
-  jest
-    .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-    .mockReturnValue(mockGameContext);
+  jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
   return render(
     <ApplicationContextProvider>
@@ -160,9 +152,7 @@ describe('CastSpellDialog Component', () => {
         expect(screen.getByTestId(`FlipBookPage-${spell.type}`)).toBeInTheDocument();
         expect(screen.getByText(spell.type)).toBeInTheDocument();
         expect(screen.getByText(spell.description)).toBeInTheDocument();
-        expect(screen.getByTestId(`cost-${spell.type}`)).toHaveTextContent(
-          `Mana Cost: ${spell.manaCost}`
-        );
+        expect(screen.getByTestId(`cost-${spell.type}`)).toHaveTextContent(`Mana Cost: ${spell.manaCost}`);
       });
     });
   });
@@ -175,9 +165,7 @@ describe('CastSpellDialog Component', () => {
       const testSpell = AllSpells[0]; // Test with first spell
       expect(screen.getByText(testSpell.type)).toBeInTheDocument();
       expect(screen.getByText(testSpell.description)).toBeInTheDocument();
-      expect(screen.getByTestId(`cost-${testSpell.type}`)).toHaveTextContent(
-        `Mana Cost: ${testSpell.manaCost}`
-      );
+      expect(screen.getByTestId(`cost-${testSpell.type}`)).toHaveTextContent(`Mana Cost: ${testSpell.manaCost}`);
     });
 
     it('displays mana costs correctly for different spells', () => {
@@ -334,9 +322,7 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       render(
         <ApplicationContextProvider>
@@ -373,9 +359,7 @@ describe('CastSpellDialog Component', () => {
       const gameStateWithOnlyWhiteMana = (): GameState => {
         const gameStateStub = createDefaultGameStateStub();
         // Only white mana available
-        gameStateStub.players.forEach(
-          (player) => (player.mana = { white: 100, green: 0, red: 0, black: 0, blue: 0 })
-        );
+        gameStateStub.players.forEach((player) => (player.mana = { white: 100, green: 0, red: 0, black: 0, blue: 0 }));
         return gameStateStub;
       };
 
@@ -388,9 +372,7 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       render(
         <ApplicationContextProvider>
@@ -418,9 +400,7 @@ describe('CastSpellDialog Component', () => {
     it('shows Turn Undead when player has white mana and valid opponents exist', () => {
       const gameStateWithWhiteMana = (): GameState => {
         const gameStateStub = createDefaultGameStateStub();
-        gameStateStub.players.forEach(
-          (player) => (player.mana = { white: 100, green: 0, red: 0, black: 0, blue: 0 })
-        );
+        gameStateStub.players.forEach((player) => (player.mana = { white: 100, green: 0, red: 0, black: 0, blue: 0 }));
         return gameStateStub;
       };
 
@@ -433,9 +413,7 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       render(
         <ApplicationContextProvider>
@@ -467,9 +445,7 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       render(
         <ApplicationContextProvider>
@@ -502,9 +478,7 @@ describe('CastSpellDialog Component', () => {
 
       const gameStateWithBlueMana = (): GameState => {
         const gameStateStub = createDefaultGameStateStub();
-        gameStateStub.players.forEach(
-          (player) => (player.mana = { white: 0, green: 0, red: 0, black: 0, blue: 200 })
-        );
+        gameStateStub.players.forEach((player) => (player.mana = { white: 0, green: 0, red: 0, black: 0, blue: 200 }));
         return gameStateStub;
       };
 
@@ -517,9 +491,7 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       render(
         <ApplicationContextProvider>
@@ -554,9 +526,7 @@ describe('CastSpellDialog Component', () => {
 
       const gameStateWithBlueMana = (): GameState => {
         const gameStateStub = createDefaultGameStateStub();
-        gameStateStub.players.forEach(
-          (player) => (player.mana = { white: 0, green: 0, red: 0, black: 0, blue: 200 })
-        );
+        gameStateStub.players.forEach((player) => (player.mana = { white: 0, green: 0, red: 0, black: 0, blue: 200 }));
         return gameStateStub;
       };
 
@@ -569,9 +539,7 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       render(
         <ApplicationContextProvider>
@@ -613,20 +581,14 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       const TestComponent = () => {
-        const { showCastSpellDialog } =
-          require('../../../contexts/ApplicationContext').useApplicationContext();
+        const { showCastSpellDialog } = require('../../../contexts/ApplicationContext').useApplicationContext();
         return (
           <div>
             {showCastSpellDialog && (
-              <div
-                data-testid="mock-flipbook"
-                onClick={() => mockAppContext.setShowCastSpellDialog(false)}
-              >
+              <div data-testid="mock-flipbook" onClick={() => mockAppContext.setShowCastSpellDialog(false)}>
                 Close
               </div>
             )}
@@ -679,9 +641,7 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       render(
         <ApplicationContextProvider>
@@ -698,9 +658,7 @@ describe('CastSpellDialog Component', () => {
     it('handles player with zero mana of all types', () => {
       const gameStateWithZeroMana = (): GameState => {
         const gameStateStub = createDefaultGameStateStub();
-        gameStateStub.players.forEach(
-          (player) => (player.mana = { white: 0, green: 0, red: 0, black: 0, blue: 0 })
-        );
+        gameStateStub.players.forEach((player) => (player.mana = { white: 0, green: 0, red: 0, black: 0, blue: 0 }));
         return gameStateStub;
       };
 
@@ -713,9 +671,7 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       render(
         <ApplicationContextProvider>
@@ -736,9 +692,7 @@ describe('CastSpellDialog Component', () => {
     it('renders nothing when no spells are affordable', () => {
       const gameStateWithZeroMana = (): GameState => {
         const gameStateStub = createDefaultGameStateStub();
-        gameStateStub.players.forEach(
-          (player) => (player.mana = { white: 0, green: 0, red: 0, black: 0, blue: 0 })
-        );
+        gameStateStub.players.forEach((player) => (player.mana = { white: 0, green: 0, red: 0, black: 0, blue: 0 }));
         return gameStateStub;
       };
 
@@ -751,9 +705,7 @@ describe('CastSpellDialog Component', () => {
         setTurnManagerCallbacks: jest.fn(),
       };
 
-      jest
-        .spyOn(require('../../../contexts/GameContext'), 'useGameContext')
-        .mockReturnValue(mockGameContext);
+      jest.spyOn(require('../../../contexts/GameContext'), 'useGameContext').mockReturnValue(mockGameContext);
 
       render(
         <ApplicationContextProvider>

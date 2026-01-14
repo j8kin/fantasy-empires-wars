@@ -27,10 +27,7 @@ import type { LandState } from '../../state/map/land/LandState';
 import type { Spell, SpellType } from '../../types/Spell';
 import type { Treasure, TreasureType } from '../../types/Treasures';
 
-export const getValidMagicLands = (
-  gameState: GameState,
-  magicSource: SpellType | TreasureType
-): string[] => {
+export const getValidMagicLands = (gameState: GameState, magicSource: SpellType | TreasureType): string[] => {
   const magic: Spell | Treasure = Object.values(SpellName).includes(magicSource as SpellType)
     ? getSpellById(magicSource as SpellType)
     : getItem(magicSource as TreasureType);
@@ -39,17 +36,10 @@ export const getValidMagicLands = (
     const affectedLands = new Set<string>();
 
     getPlayerLands(gameState)
-      .filter(
-        (l) => hasBuilding(l, BuildingName.OUTPOST) || hasBuilding(l, BuildingName.STRONGHOLD)
-      )
+      .filter((l) => hasBuilding(l, BuildingName.OUTPOST) || hasBuilding(l, BuildingName.STRONGHOLD))
       .forEach((land) => {
         const isStronghold = hasBuilding(land, BuildingName.STRONGHOLD);
-        getTilesInRadius(
-          getMapDimensions(gameState),
-          land.mapPos,
-          isStronghold ? 2 : 3,
-          false
-        ).forEach((l) => {
+        getTilesInRadius(getMapDimensions(gameState), land.mapPos, isStronghold ? 2 : 3, false).forEach((l) => {
           if (canBeCorrupted(getLand(gameState, l))) {
             affectedLands.add(getLandId(l));
           }
@@ -62,9 +52,7 @@ export const getValidMagicLands = (
   if (magic.type === TreasureName.DEED_OF_RECLAMATION) {
     const affectedLands = new Set<string>();
     getPlayerLands(gameState)
-      .filter(
-        (l) => hasBuilding(l, BuildingName.OUTPOST) || hasBuilding(l, BuildingName.STRONGHOLD)
-      )
+      .filter((l) => hasBuilding(l, BuildingName.OUTPOST) || hasBuilding(l, BuildingName.STRONGHOLD))
       .forEach((land) => {
         getTilesInRadius(getMapDimensions(gameState), land.mapPos, 3).forEach((l) => {
           if (getLandOwner(gameState, l) === NO_PLAYER.id) {

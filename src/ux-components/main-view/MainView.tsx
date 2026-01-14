@@ -22,10 +22,7 @@ import RealmEventsPopup from '../popups/RealmEventsPopup';
 
 import SpellCastAnimation from '../animations/SpellCastAnimation';
 
-import {
-  ApplicationContextProvider,
-  useApplicationContext,
-} from '../../contexts/ApplicationContext';
+import { ApplicationContextProvider, useApplicationContext } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 
@@ -140,10 +137,7 @@ const MainViewContent: React.FC = () => {
       {showStartWindow && <NewGameDialog />}
       {/* Select Opponent Dialog is a part of New Game Dialog - shown as overlay */}
       {showSelectOpponentDialog && (
-        <SelectOpponentDialog
-          excludedPlayerIds={selectOpponentExcludedIds}
-          allowEmptyPlayer={allowEmptyPlayer}
-        />
+        <SelectOpponentDialog excludedPlayerIds={selectOpponentExcludedIds} allowEmptyPlayer={allowEmptyPlayer} />
       )}
 
       {/* Save Game Dialog - shown as overlay */}

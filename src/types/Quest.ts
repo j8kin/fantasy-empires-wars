@@ -1,11 +1,7 @@
 import type { HeroState } from '../state/army/HeroState';
 import type { LandPosition } from '../state/map/land/LandPosition';
 
-export type QuestType =
-  | 'The Echoing Ruins'
-  | 'The Whispering Grove'
-  | 'The Abyssal Crypt'
-  | 'The Shattered Sky';
+export type QuestType = 'The Echoing Ruins' | 'The Whispering Grove' | 'The Abyssal Crypt' | 'The Shattered Sky';
 
 export interface Quest {
   id: QuestType;

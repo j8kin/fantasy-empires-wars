@@ -1,11 +1,6 @@
 import { getLand, getLandOwner, getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
-import {
-  findArmyByHero,
-  findLandByHeroName,
-  getArmiesAtPosition,
-  isMoving,
-} from '../../selectors/armySelectors';
+import { findArmyByHero, findLandByHeroName, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { getAvailableSlotsCount } from '../../selectors/buildingSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { startQuest } from '../../map/quest/startQuest';
@@ -164,17 +159,13 @@ describe('Hero Quest', () => {
       expect(heroAfterQuest.level).toBe(heroLevel + 1); // level incremented
       expect(heroAfterQuest.artifacts).toHaveLength(0);
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
-      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-        TreasureName.WAND_OF_TURN_UNDEAD
-      ); // quest reward
+      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(TreasureName.WAND_OF_TURN_UNDEAD); // quest reward
 
       // verify that hero stats are incremented exact new stats calculation verified separately
       expect(heroAfterQuest.combatStats.attack).toBeGreaterThan(heroBaseStatsBefore.attack);
       expect(heroAfterQuest.combatStats.defense).toBeGreaterThan(heroBaseStatsBefore.defense);
       expect(heroAfterQuest.combatStats.health).toBeGreaterThan(heroBaseStatsBefore.health);
-      expect(heroAfterQuest.combatStats.rangeDamage).toBeGreaterThan(
-        heroBaseStatsBefore.rangeDamage!
-      );
+      expect(heroAfterQuest.combatStats.rangeDamage).toBeGreaterThan(heroBaseStatsBefore.rangeDamage!);
       // not changed parameters
       expect(heroAfterQuest.combatStats.speed).toBe(heroBaseStatsBefore.speed);
       expect(heroAfterQuest.combatStats.range).toBe(heroBaseStatsBefore.range);
@@ -196,9 +187,7 @@ describe('Hero Quest', () => {
     it('Couple heroes returned from quest at the same time should be placed on the same land', () => {
       testTurnManagement.waitStartPhaseComplete();
       // Initial condition: Recruiting 3 heroes of the same type in barracks
-      const homeLand = getPlayerLands(gameStateStub).find((l) =>
-        hasBuilding(l, BuildingName.STRONGHOLD)
-      )!;
+      const homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
 
       const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
       constructBuilding(BuildingName.BARRACKS, barracksPos);
@@ -219,9 +208,7 @@ describe('Hero Quest', () => {
       testTurnManagement.makeNTurns(3);
 
       // heroes are recruited and available for quests
-      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(
-        3
-      );
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(3);
 
       // heroes recruited and available for quests
       const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -264,9 +251,7 @@ describe('Hero Quest', () => {
     it('hero returned from quest correctly merge into existing stationed Army', () => {
       testTurnManagement.waitStartPhaseComplete();
       // Initial condition: Recruiting a hero in barracks
-      const homeLand = getPlayerLands(gameStateStub).find((l) =>
-        hasBuilding(l, BuildingName.STRONGHOLD)
-      )!;
+      const homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
 
       const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
       constructBuilding(BuildingName.BARRACKS, barracksPos);
@@ -281,9 +266,7 @@ describe('Hero Quest', () => {
 
       testTurnManagement.makeNTurns(3);
 
-      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(
-        3
-      );
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksLand.mapPos).buildings[0])).toBe(3);
 
       const armiesRecruited = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armiesRecruited).toHaveLength(1);
@@ -316,44 +299,35 @@ describe('Hero Quest', () => {
       expect(armiesQuestComplete[0].heroes[0].type).toBe(HeroUnitName.FIGHTER);
       expect(armiesQuestComplete[0].heroes[0].level).toBe(2);
       expect(armiesQuestComplete[0].heroes[0].artifacts).toHaveLength(1);
-      expect(armiesQuestComplete[0].heroes[0].artifacts[0].treasure.type).toBe(
-        TreasureName.BOOTS_OF_SPEED
-      );
+      expect(armiesQuestComplete[0].heroes[0].artifacts[0].treasure.type).toBe(TreasureName.BOOTS_OF_SPEED);
     });
 
     it.each([
       [mediumQuest, 0.55],
       [hardQuest, 0.3],
       [impossibleQuest, 0.05],
-    ])(
-      'Hi risk awarded with gain high level of hero',
-      (questType: QuestType, chanceToSurvive: number) => {
-        // create new 1 level hero
-        const luckyHero = heroFactory(HeroUnitName.FIGHTER, 'Lucky Hero');
-        placeUnitsOnMap(luckyHero, gameStateStub, heroLandPos);
-        const quest = getQuest(questType);
-        randomSpy.mockReturnValueOnce(chanceToSurvive); // survive in Quest
+    ])('Hi risk awarded with gain high level of hero', (questType: QuestType, chanceToSurvive: number) => {
+      // create new 1 level hero
+      const luckyHero = heroFactory(HeroUnitName.FIGHTER, 'Lucky Hero');
+      placeUnitsOnMap(luckyHero, gameStateStub, heroLandPos);
+      const quest = getQuest(questType);
+      randomSpy.mockReturnValueOnce(chanceToSurvive); // survive in Quest
 
-        /********************** SEND TO QUEST ********************/
-        testTurnManagement.waitStartPhaseComplete();
-        startQuest(gameStateStub, luckyHero.name, questType);
-        testTurnManagement.makeNTurns(quest.length + 1);
-        /*********************************************************/
-        const heroAfterQuest = findArmyByHero(gameStateStub, luckyHero.name)?.heroes?.find(
-          (h) => h.name === luckyHero.name
-        );
-        expect(heroAfterQuest).toBeDefined();
-        // hero sometimes could get RING_OF_EXPERIENCE and that is why recalculate expected results base on it
-        const expectedLevel =
-          (quest.level - 1) * 5 +
-          (heroAfterQuest!.artifacts.some(
-            (a) => a.treasure.type === TreasureName.RING_OF_EXPERIENCE
-          )
-            ? 1
-            : 0);
-        expect(heroAfterQuest!.level).toBe(expectedLevel); // gain level up to min level of quest - reward for the risk
-      }
-    );
+      /********************** SEND TO QUEST ********************/
+      testTurnManagement.waitStartPhaseComplete();
+      startQuest(gameStateStub, luckyHero.name, questType);
+      testTurnManagement.makeNTurns(quest.length + 1);
+      /*********************************************************/
+      const heroAfterQuest = findArmyByHero(gameStateStub, luckyHero.name)?.heroes?.find(
+        (h) => h.name === luckyHero.name
+      );
+      expect(heroAfterQuest).toBeDefined();
+      // hero sometimes could get RING_OF_EXPERIENCE and that is why recalculate expected results base on it
+      const expectedLevel =
+        (quest.level - 1) * 5 +
+        (heroAfterQuest!.artifacts.some((a) => a.treasure.type === TreasureName.RING_OF_EXPERIENCE) ? 1 : 0);
+      expect(heroAfterQuest!.level).toBe(expectedLevel); // gain level up to min level of quest - reward for the risk
+    });
   });
 
   describe('Return Empty-Handed', () => {
@@ -398,39 +372,36 @@ describe('Hero Quest', () => {
       [TreasureName.BOOTS_OF_SPEED, easyQuest],
       [TreasureName.GAUNTLETS_OF_POWER, mediumQuest],
       [TreasureName.HELMET_OF_VISION, hardQuest],
-    ])(
-      'Artifact %s could be obtained in quest %s',
-      (itemObtained: TreasureType, questType: QuestType) => {
-        const questLen = getQuest(questType).length;
-        switch (questType) {
-          case easyQuest:
-            randomSpy.mockReturnValue(0.1); // to get Hero Artifact
-            break;
-          case mediumQuest:
-            randomSpy.mockReturnValue(0.31); // to get Hero Artifact
-            break;
-          case hardQuest:
-            randomSpy.mockReturnValueOnce(0.1); // survive in Quest
-            randomSpy.mockReturnValueOnce(0.2); // do not return empty-handed
-            randomSpy.mockReturnValue(0.56); // to get Hero Artifact
-            break;
-        }
-        // no artifacts before quest
-        expect(hero.artifacts).toHaveLength(0);
-        /********************** SEND TO QUEST ********************/
-        testTurnManagement.waitStartPhaseComplete();
-        startQuest(gameStateStub, hero.name, questType);
-        testTurnManagement.makeNTurns(questLen + 1);
-        /*********************************************************/
-        expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
-        const heroAfterQuest = findArmyByHero(gameStateStub, hero.name)!.heroes[0];
-        expect(heroAfterQuest.artifacts).toHaveLength(1); // gain artifact
-        expect(heroAfterQuest.artifacts[0].treasure.type).toBe(itemObtained);
-
-        // Empire treasure is empty no items/relicts obtained
-        expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(0);
+    ])('Artifact %s could be obtained in quest %s', (itemObtained: TreasureType, questType: QuestType) => {
+      const questLen = getQuest(questType).length;
+      switch (questType) {
+        case easyQuest:
+          randomSpy.mockReturnValue(0.1); // to get Hero Artifact
+          break;
+        case mediumQuest:
+          randomSpy.mockReturnValue(0.31); // to get Hero Artifact
+          break;
+        case hardQuest:
+          randomSpy.mockReturnValueOnce(0.1); // survive in Quest
+          randomSpy.mockReturnValueOnce(0.2); // do not return empty-handed
+          randomSpy.mockReturnValue(0.56); // to get Hero Artifact
+          break;
       }
-    );
+      // no artifacts before quest
+      expect(hero.artifacts).toHaveLength(0);
+      /********************** SEND TO QUEST ********************/
+      testTurnManagement.waitStartPhaseComplete();
+      startQuest(gameStateStub, hero.name, questType);
+      testTurnManagement.makeNTurns(questLen + 1);
+      /*********************************************************/
+      expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
+      const heroAfterQuest = findArmyByHero(gameStateStub, hero.name)!.heroes[0];
+      expect(heroAfterQuest.artifacts).toHaveLength(1); // gain artifact
+      expect(heroAfterQuest.artifacts[0].treasure.type).toBe(itemObtained);
+
+      // Empire treasure is empty no items/relicts obtained
+      expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(0);
+    });
 
     // todo update when hero would be able to contain only one artifact
     it('Hero could obtain more then one artifact', () => {
@@ -479,38 +450,35 @@ describe('Hero Quest', () => {
       [TreasureName.AEGIS_SHARD, mediumQuest],
       [TreasureName.SEED_OF_RENEWAL, hardQuest],
       [TreasureName.RESURRECTION, impossibleQuest],
-    ])(
-      'Item %s could be obtained in quest %s',
-      (itemObtained: TreasureType, questType: QuestType) => {
-        const questLen = getQuest(questType).length;
-        switch (questType) {
-          case mediumQuest:
-            randomSpy.mockReturnValue(0.3); // to get Item
-            break;
-          case hardQuest:
-            randomSpy.mockReturnValue(0.21); // to get Item
-            break;
-          case impossibleQuest:
-            randomSpy.mockReturnValueOnce(0.1); // survive in Quest
-            randomSpy.mockReturnValueOnce(0.2); // do not return empty-handed
-            randomSpy.mockReturnValue(0.41); // gets Item
-            break;
-        }
-
-        /********************** SEND TO QUEST ********************/
-        testTurnManagement.waitStartPhaseComplete();
-        startQuest(gameStateStub, hero.name, questType);
-        testTurnManagement.makeNTurns(questLen + 1);
-        /*********************************************************/
-        expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
-        const heroAfterQuest = findArmyByHero(gameStateStub, hero.name)!.heroes[0];
-        expect(heroAfterQuest.level).toBe(32);
-        expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
-        const item = getTurnOwner(gameStateStub).empireTreasures[0];
-        expect(item.treasure.type).toBe(itemObtained);
-        expect(items.some((i) => i.type === itemObtained)).toBeTruthy(); // verify that get Item not other rewards type
+    ])('Item %s could be obtained in quest %s', (itemObtained: TreasureType, questType: QuestType) => {
+      const questLen = getQuest(questType).length;
+      switch (questType) {
+        case mediumQuest:
+          randomSpy.mockReturnValue(0.3); // to get Item
+          break;
+        case hardQuest:
+          randomSpy.mockReturnValue(0.21); // to get Item
+          break;
+        case impossibleQuest:
+          randomSpy.mockReturnValueOnce(0.1); // survive in Quest
+          randomSpy.mockReturnValueOnce(0.2); // do not return empty-handed
+          randomSpy.mockReturnValue(0.41); // gets Item
+          break;
       }
-    );
+
+      /********************** SEND TO QUEST ********************/
+      testTurnManagement.waitStartPhaseComplete();
+      startQuest(gameStateStub, hero.name, questType);
+      testTurnManagement.makeNTurns(questLen + 1);
+      /*********************************************************/
+      expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
+      const heroAfterQuest = findArmyByHero(gameStateStub, hero.name)!.heroes[0];
+      expect(heroAfterQuest.level).toBe(32);
+      expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
+      const item = getTurnOwner(gameStateStub).empireTreasures[0];
+      expect(item.treasure.type).toBe(itemObtained);
+      expect(items.some((i) => i.type === itemObtained)).toBeTruthy(); // verify that get Item not other rewards type
+    });
 
     it('Items could be obtained more then once', () => {
       randomSpy.mockReturnValue(0.21); // to get the same Item
@@ -521,9 +489,7 @@ describe('Hero Quest', () => {
       /*********************************************************/
       expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
-      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-        TreasureName.SEED_OF_RENEWAL
-      );
+      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(TreasureName.SEED_OF_RENEWAL);
 
       /********************** SEND TO QUEST ********************/
       startQuest(gameStateStub, hero.name, hardQuest);
@@ -531,12 +497,8 @@ describe('Hero Quest', () => {
       /*********************************************************/
       expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(2);
-      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-        TreasureName.SEED_OF_RENEWAL
-      );
-      expect(getTurnOwner(gameStateStub).empireTreasures[1].treasure.type).toBe(
-        TreasureName.SEED_OF_RENEWAL
-      );
+      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(TreasureName.SEED_OF_RENEWAL);
+      expect(getTurnOwner(gameStateStub).empireTreasures[1].treasure.type).toBe(TreasureName.SEED_OF_RENEWAL);
     });
   });
 
@@ -548,25 +510,22 @@ describe('Hero Quest', () => {
       while (hero.level < MAX_HERO_LEVEL) levelUpHero(hero, Doctrine.MELEE);
     });
 
-    it.each([hardQuest, impossibleQuest])(
-      'Relic could be obtained in quest %s',
-      (questType: QuestType) => {
-        const questLen = getQuest(questType).length;
+    it.each([hardQuest, impossibleQuest])('Relic could be obtained in quest %s', (questType: QuestType) => {
+      const questLen = getQuest(questType).length;
 
-        randomSpy.mockReturnValue(0.01); // to get Relic
-        /********************** SEND TO QUEST ********************/
-        testTurnManagement.waitStartPhaseComplete();
-        startQuest(gameStateStub, hero.name, questType);
-        testTurnManagement.makeNTurns(questLen + 1);
-        /*********************************************************/
-        expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
-        const heroAfterQuest = findArmyByHero(gameStateStub, hero.name)!.heroes[0];
-        expect(heroAfterQuest.level).toBe(32);
-        expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
-        const relic = getTurnOwner(gameStateStub).empireTreasures[0];
-        expect(relic.treasure.type).toBe(TreasureName.MIRROR_OF_ILLUSION);
-      }
-    );
+      randomSpy.mockReturnValue(0.01); // to get Relic
+      /********************** SEND TO QUEST ********************/
+      testTurnManagement.waitStartPhaseComplete();
+      startQuest(gameStateStub, hero.name, questType);
+      testTurnManagement.makeNTurns(questLen + 1);
+      /*********************************************************/
+      expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
+      const heroAfterQuest = findArmyByHero(gameStateStub, hero.name)!.heroes[0];
+      expect(heroAfterQuest.level).toBe(32);
+      expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
+      const relic = getTurnOwner(gameStateStub).empireTreasures[0];
+      expect(relic.treasure.type).toBe(TreasureName.MIRROR_OF_ILLUSION);
+    });
 
     it('Relic could be obtained only once per game', () => {
       randomSpy.mockReturnValue(0.01); // try to get the same Relic
@@ -577,9 +536,7 @@ describe('Hero Quest', () => {
       /*********************************************************/
       expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
-      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-        TreasureName.MIRROR_OF_ILLUSION
-      );
+      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(TreasureName.MIRROR_OF_ILLUSION);
 
       /********************** SEND TO QUEST ********************/
       startQuest(gameStateStub, hero.name, hardQuest);
@@ -587,12 +544,8 @@ describe('Hero Quest', () => {
       /*********************************************************/
       expect(findArmyByHero(gameStateStub, hero.name)).toBeDefined();
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(2);
-      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
-        TreasureName.MIRROR_OF_ILLUSION
-      );
-      expect(getTurnOwner(gameStateStub).empireTreasures[1].treasure.type).toBe(
-        TreasureName.BANNER_OF_UNITY
-      );
+      expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(TreasureName.MIRROR_OF_ILLUSION);
+      expect(getTurnOwner(gameStateStub).empireTreasures[1].treasure.type).toBe(TreasureName.BANNER_OF_UNITY);
     });
 
     it('get all relicts in game', () => {
@@ -637,9 +590,7 @@ describe('Hero Quest', () => {
       testTurnManagement.makeNTurns(8);
       /*********************************************************/
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(8); // item obtained instead of relic
-      expect(getTurnOwner(gameStateStub).empireTreasures[7].treasure.type).toBe(
-        TreasureName.WAND_OF_TURN_UNDEAD
-      );
+      expect(getTurnOwner(gameStateStub).empireTreasures[7].treasure.type).toBe(TreasureName.WAND_OF_TURN_UNDEAD);
     });
   });
 
@@ -689,15 +640,9 @@ describe('Hero Quest', () => {
     it('Hero survive if player has MERCY_OF_ORRIVANE in treasury and hero level >= 10', () => {
       Object.assign(
         gameStateStub,
-        addPlayerEmpireTreasure(
-          gameStateStub,
-          gameStateStub.turnOwner,
-          itemFactory(TreasureName.MERCY_OF_ORRIVANE)
-        )
+        addPlayerEmpireTreasure(gameStateStub, gameStateStub.turnOwner, itemFactory(TreasureName.MERCY_OF_ORRIVANE))
       );
-      expect(
-        hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)
-      ).toBeTruthy();
+      expect(hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)).toBeTruthy();
 
       randomSpy.mockReturnValue(1.0); // always die
 
@@ -720,23 +665,15 @@ describe('Hero Quest', () => {
       expect(findArmyByHero(gameStateStub, heroName)!.heroes[0].name).toBe(hero.name);
       expect(findArmyByHero(gameStateStub, heroName)!.heroes[0].level).toBe(hero.level); // level not incremented !!!
       // item disappeared
-      expect(
-        hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)
-      ).toBeFalsy();
+      expect(hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)).toBeFalsy();
     });
 
     it('Hero die even if player has MERCY_OF_ORRIVANE in treasury but hero level < 10', () => {
       Object.assign(
         gameStateStub,
-        addPlayerEmpireTreasure(
-          gameStateStub,
-          gameStateStub.turnOwner,
-          itemFactory(TreasureName.MERCY_OF_ORRIVANE)
-        )
+        addPlayerEmpireTreasure(gameStateStub, gameStateStub.turnOwner, itemFactory(TreasureName.MERCY_OF_ORRIVANE))
       );
-      expect(
-        hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)
-      ).toBeTruthy();
+      expect(hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)).toBeTruthy();
 
       randomSpy.mockReturnValue(1.0); // always die
 
@@ -757,31 +694,19 @@ describe('Hero Quest', () => {
 
       expect(findLandByHeroName(gameStateStub, hero.name)).toBeUndefined(); // hero is not survived
       // item still exists
-      expect(
-        hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)
-      ).toBeTruthy();
+      expect(hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)).toBeTruthy();
     });
 
     it('If player has two MERCY_OF_ORRIVANE in treasury only one should be used', () => {
       Object.assign(
         gameStateStub,
-        addPlayerEmpireTreasure(
-          gameStateStub,
-          gameStateStub.turnOwner,
-          itemFactory(TreasureName.MERCY_OF_ORRIVANE)
-        )
+        addPlayerEmpireTreasure(gameStateStub, gameStateStub.turnOwner, itemFactory(TreasureName.MERCY_OF_ORRIVANE))
       );
       Object.assign(
         gameStateStub,
-        addPlayerEmpireTreasure(
-          gameStateStub,
-          gameStateStub.turnOwner,
-          itemFactory(TreasureName.MERCY_OF_ORRIVANE)
-        )
+        addPlayerEmpireTreasure(gameStateStub, gameStateStub.turnOwner, itemFactory(TreasureName.MERCY_OF_ORRIVANE))
       );
-      expect(
-        hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)
-      ).toBeTruthy();
+      expect(hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)).toBeTruthy();
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(2);
 
       randomSpy.mockReturnValue(1.0); // always die
@@ -805,9 +730,7 @@ describe('Hero Quest', () => {
       expect(findArmyByHero(gameStateStub, heroName)!.heroes[0].name).toBe(hero.name);
       expect(findArmyByHero(gameStateStub, heroName)!.heroes[0].level).toBe(hero.level); // level not incremented !!!
       // item disappeared
-      expect(
-        hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)
-      ).toBeTruthy();
+      expect(hasTreasureByPlayer(getTurnOwner(gameStateStub), TreasureName.MERCY_OF_ORRIVANE)).toBeTruthy();
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
     });
   });

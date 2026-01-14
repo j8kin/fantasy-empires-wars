@@ -47,40 +47,37 @@ describe('castRedManaSpell', () => {
         [HeroUnitName.FIGHTER, BuildingName.BARRACKS, 4],
         [RegularUnitName.WARRIOR, BuildingName.BARRACKS, 2],
         [WarMachineName.CATAPULT, BuildingName.BARRACKS, 4],
-      ])(
-        'Recruiting %s in %s affected and became %s',
-        (unit: UnitType, building: BuildingType, newNTurn: number) => {
-          const homeLand = getPlayerLands(gameStateStub)[0];
-          const landToRecruit: LandPosition = {
-            row: homeLand.mapPos.row - 1,
-            col: homeLand.mapPos.col,
-          };
-          const targetLand = getLand(gameStateStub, landToRecruit);
-          if (isMageType(unit)) {
-            getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
-          }
-          construct(gameStateStub, building, landToRecruit);
-
-          startRecruiting(gameStateStub, landToRecruit, unit);
-
-          // change turnOwner and cast EMBER RAID spell
-          gameStateStub.turnOwner = gameStateStub.players[1].id;
-          castSpell(gameStateStub, SpellName.EMBER_RAID, landToRecruit);
-
-          // verify that recruiting in building was affected and became newNTurn
-          const reqLand = getLand(gameStateStub, landToRecruit);
-          expect(reqLand.effects).toHaveLength(1);
-          expect(reqLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
-          expect(reqLand.effects[0].appliedBy).toBe(gameStateStub.players[1].id);
-          expect(reqLand.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
-          expect(reqLand.effects[0].rules.duration).toBe(3);
-
-          expect(reqLand.buildings).toHaveLength(1);
-          expect(reqLand.buildings[0].slots![0].unit).toBe(unit);
-          expect(reqLand.buildings[0].slots![0].isOccupied).toBeTruthy();
-          expect(reqLand.buildings[0].slots![0].turnsRemaining).toBe(newNTurn);
+      ])('Recruiting %s in %s affected and became %s', (unit: UnitType, building: BuildingType, newNTurn: number) => {
+        const homeLand = getPlayerLands(gameStateStub)[0];
+        const landToRecruit: LandPosition = {
+          row: homeLand.mapPos.row - 1,
+          col: homeLand.mapPos.col,
+        };
+        const targetLand = getLand(gameStateStub, landToRecruit);
+        if (isMageType(unit)) {
+          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
         }
-      );
+        construct(gameStateStub, building, landToRecruit);
+
+        startRecruiting(gameStateStub, landToRecruit, unit);
+
+        // change turnOwner and cast EMBER RAID spell
+        gameStateStub.turnOwner = gameStateStub.players[1].id;
+        castSpell(gameStateStub, SpellName.EMBER_RAID, landToRecruit);
+
+        // verify that recruiting in building was affected and became newNTurn
+        const reqLand = getLand(gameStateStub, landToRecruit);
+        expect(reqLand.effects).toHaveLength(1);
+        expect(reqLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
+        expect(reqLand.effects[0].appliedBy).toBe(gameStateStub.players[1].id);
+        expect(reqLand.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
+        expect(reqLand.effects[0].rules.duration).toBe(3);
+
+        expect(reqLand.buildings).toHaveLength(1);
+        expect(reqLand.buildings[0].slots![0].unit).toBe(unit);
+        expect(reqLand.buildings[0].slots![0].isOccupied).toBeTruthy();
+        expect(reqLand.buildings[0].slots![0].turnsRemaining).toBe(newNTurn);
+      });
     });
     describe('EMBER RAID effects new recruiting if effect active', () => {
       it.each([
@@ -88,43 +85,40 @@ describe('castRedManaSpell', () => {
         [HeroUnitName.RANGER, BuildingName.BARRACKS, 4],
         [RegularUnitName.ELF, BuildingName.BARRACKS, 3],
         [WarMachineName.BALLISTA, BuildingName.BARRACKS, 4],
-      ])(
-        'Recruiting %s in %s affected and became %s',
-        (unit: UnitType, building: BuildingType, newNTurn: number) => {
-          const homeLand = getPlayerLands(gameStateStub)[0];
-          const landToRecruit: LandPosition = {
-            row: homeLand.mapPos.row - 1,
-            col: homeLand.mapPos.col,
-          };
-          // to be able to recruit ELVES and RANGERS
-          getLand(gameStateStub, landToRecruit).land = getLandById(LandName.GREEN_FOREST);
-          const targetLand = getLand(gameStateStub, landToRecruit);
-          if (isMageType(unit)) {
-            getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
-          }
-          construct(gameStateStub, building, landToRecruit);
-
-          // change turnOwner and cast EMBER RAID spell
-          gameStateStub.turnOwner = gameStateStub.players[1].id;
-          castSpell(gameStateStub, SpellName.EMBER_RAID, landToRecruit);
-
-          // return turn to player 0 and start recruiting
-          gameStateStub.turnOwner = gameStateStub.players[0].id;
-          startRecruiting(gameStateStub, landToRecruit, unit);
-
-          // verify that recruiting in building was affected and became newNTurn
-          const reqLand = getLand(gameStateStub, landToRecruit);
-          expect(reqLand.effects).toHaveLength(1);
-          expect(reqLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
-          expect(reqLand.effects[0].appliedBy).toBe(gameStateStub.players[1].id);
-          expect(reqLand.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
-          expect(reqLand.effects[0].rules.duration).toBe(3);
-
-          expect(reqLand.buildings).toHaveLength(1);
-          expect(reqLand.buildings[0].slots![0].unit).toBe(unit);
-          expect(reqLand.buildings[0].slots![0].turnsRemaining).toBe(newNTurn);
+      ])('Recruiting %s in %s affected and became %s', (unit: UnitType, building: BuildingType, newNTurn: number) => {
+        const homeLand = getPlayerLands(gameStateStub)[0];
+        const landToRecruit: LandPosition = {
+          row: homeLand.mapPos.row - 1,
+          col: homeLand.mapPos.col,
+        };
+        // to be able to recruit ELVES and RANGERS
+        getLand(gameStateStub, landToRecruit).land = getLandById(LandName.GREEN_FOREST);
+        const targetLand = getLand(gameStateStub, landToRecruit);
+        if (isMageType(unit)) {
+          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
         }
-      );
+        construct(gameStateStub, building, landToRecruit);
+
+        // change turnOwner and cast EMBER RAID spell
+        gameStateStub.turnOwner = gameStateStub.players[1].id;
+        castSpell(gameStateStub, SpellName.EMBER_RAID, landToRecruit);
+
+        // return turn to player 0 and start recruiting
+        gameStateStub.turnOwner = gameStateStub.players[0].id;
+        startRecruiting(gameStateStub, landToRecruit, unit);
+
+        // verify that recruiting in building was affected and became newNTurn
+        const reqLand = getLand(gameStateStub, landToRecruit);
+        expect(reqLand.effects).toHaveLength(1);
+        expect(reqLand.effects[0].sourceId).toBe(SpellName.EMBER_RAID);
+        expect(reqLand.effects[0].appliedBy).toBe(gameStateStub.players[1].id);
+        expect(reqLand.effects[0].rules.type).toBe(EffectKind.NEGATIVE);
+        expect(reqLand.effects[0].rules.duration).toBe(3);
+
+        expect(reqLand.buildings).toHaveLength(1);
+        expect(reqLand.buildings[0].slots![0].unit).toBe(unit);
+        expect(reqLand.buildings[0].slots![0].turnsRemaining).toBe(newNTurn);
+      });
     });
 
     describe('EMBER RAID is not possible to cast twice', () => {
@@ -143,16 +137,13 @@ describe('castRedManaSpell', () => {
       });
 
       it('Cast EMBER RAID on Land that has effect is not effects', () => {
-        const opponentLandPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1]
-          .mapPos;
+        const opponentLandPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1].mapPos;
 
         castSpell(gameStateStub, SpellName.EMBER_RAID, opponentLandPos);
 
         testTurnManagement.makeNTurns(1);
         expect(getLand(gameStateStub, opponentLandPos).effects).toHaveLength(1);
-        expect(getLand(gameStateStub, opponentLandPos).effects[0].sourceId).toBe(
-          SpellName.EMBER_RAID
-        );
+        expect(getLand(gameStateStub, opponentLandPos).effects[0].sourceId).toBe(SpellName.EMBER_RAID);
         expect(getLand(gameStateStub, opponentLandPos).effects[0].rules.duration).toBe(2);
 
         const opponentMana = getTurnOwner(gameStateStub).mana.red;
@@ -160,9 +151,7 @@ describe('castRedManaSpell', () => {
         expect(getTurnOwner(gameStateStub).mana.red).toBe(opponentMana); // mana not used
 
         expect(getLand(gameStateStub, opponentLandPos).effects).toHaveLength(1);
-        expect(getLand(gameStateStub, opponentLandPos).effects[0].sourceId).toBe(
-          SpellName.EMBER_RAID
-        );
+        expect(getLand(gameStateStub, opponentLandPos).effects[0].sourceId).toBe(SpellName.EMBER_RAID);
         expect(getLand(gameStateStub, opponentLandPos).effects[0].rules.duration).toBe(2); // not changed
       });
     });
@@ -213,44 +202,31 @@ describe('castRedManaSpell', () => {
       [LandName.MISTY_GLADES, RegularUnitName.WARRIOR],
       [LandName.SHADOW_MIRE, RegularUnitName.ORC],
       [LandName.BLIGHTED_FEN, RegularUnitName.ORC],
-    ])(
-      'Cast FORGE OF WAR on Land (%s) recruit 60 %s',
-      (landKind: LandType, recruitType: RegularUnitType) => {
-        const homeLand = getPlayerLands(gameStateStub)[0];
-        homeLand.land = getLandById(landKind);
-        expect(
-          getArmiesAtPosition(gameStateStub, homeLand.mapPos).flatMap((a) => a.regulars)
-        ).toHaveLength(0);
+    ])('Cast FORGE OF WAR on Land (%s) recruit 60 %s', (landKind: LandType, recruitType: RegularUnitType) => {
+      const homeLand = getPlayerLands(gameStateStub)[0];
+      homeLand.land = getLandById(landKind);
+      expect(getArmiesAtPosition(gameStateStub, homeLand.mapPos).flatMap((a) => a.regulars)).toHaveLength(0);
 
-        const redMana = getTurnOwner(gameStateStub).mana.red;
-        castSpell(gameStateStub, SpellName.FORGE_OF_WAR, homeLand.mapPos);
-        expect(getTurnOwner(gameStateStub).mana.red).toBe(
-          redMana - getSpellById(SpellName.FORGE_OF_WAR).manaCost
-        );
+      const redMana = getTurnOwner(gameStateStub).mana.red;
+      castSpell(gameStateStub, SpellName.FORGE_OF_WAR, homeLand.mapPos);
+      expect(getTurnOwner(gameStateStub).mana.red).toBe(redMana - getSpellById(SpellName.FORGE_OF_WAR).manaCost);
 
-        const regulars = getArmiesAtPosition(gameStateStub, homeLand.mapPos).flatMap(
-          (a) => a.regulars
-        );
-        expect(regulars).toHaveLength(1);
-        expect(regulars[0].type).toBe(recruitType);
-        expect(regulars[0].count).toBe(60);
-        expect(regulars[0].rank).toBe(UnitRank.REGULAR);
-      }
-    );
+      const regulars = getArmiesAtPosition(gameStateStub, homeLand.mapPos).flatMap((a) => a.regulars);
+      expect(regulars).toHaveLength(1);
+      expect(regulars[0].type).toBe(recruitType);
+      expect(regulars[0].count).toBe(60);
+      expect(regulars[0].rank).toBe(UnitRank.REGULAR);
+    });
   });
   describe('Cast FIRESTORM spell', () => {
     let opponentLands: LandPosition[];
 
     beforeEach(() => {
-      opponentLands = getPlayerLands(gameStateStub, gameStateStub.players[1].id).flatMap(
-        (l) => l.mapPos
-      );
+      opponentLands = getPlayerLands(gameStateStub, gameStateStub.players[1].id).flatMap((l) => l.mapPos);
 
       // change turn owner and place units on all lands to make sure that FIRESTORM affects all lands
       gameStateStub.turnOwner = gameStateStub.players[1].id;
-      opponentLands.forEach((l) =>
-        placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR, 100), gameStateStub, l)
-      );
+      opponentLands.forEach((l) => placeUnitsOnMap(regularsFactory(RegularUnitName.WARRIOR, 100), gameStateStub, l));
 
       // change turn Owner back
       gameStateStub.turnOwner = gameStateStub.players[0].id;
@@ -266,9 +242,7 @@ describe('castRedManaSpell', () => {
     it('FIRESTORM affect all lands in range 1', () => {
       const redMana = getTurnOwner(gameStateStub).mana.red;
       castSpell(gameStateStub, SpellName.FIRESTORM, opponentLands[0]);
-      expect(getTurnOwner(gameStateStub).mana.red).toBe(
-        redMana - getSpellById(SpellName.FIRESTORM).manaCost
-      );
+      expect(getTurnOwner(gameStateStub).mana.red).toBe(redMana - getSpellById(SpellName.FIRESTORM).manaCost);
 
       opponentLands.forEach((l) => {
         const army = getArmiesAtPosition(gameStateStub, l).find((a) => a.regulars.length > 0);
@@ -292,33 +266,28 @@ describe('castRedManaSpell', () => {
       [29, 26],
       [29, 27],
       [30, 32],
-    ])(
-      'Number of killed units (%s) related to max PYROMANCER Level (%s)',
-      (nKilled: number, maxPyrLvl: number) => {
-        // setup player
-        const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
-        if (maxPyrLvl > 0) {
-          // add PYROMANCER on Map
-          const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
-          while (hero.level < maxPyrLvl) levelUpHero(hero, Doctrine.MELEE);
-          placeUnitsOnMap(hero, gameStateStub, homeLandPos);
-        }
-
-        const redMana = getTurnOwner(gameStateStub).mana.red;
-        castSpell(gameStateStub, SpellName.FIRESTORM, opponentLands[0]);
-        expect(getTurnOwner(gameStateStub).mana.red).toBe(
-          redMana - getSpellById(SpellName.FIRESTORM).manaCost
-        );
-
-        opponentLands.forEach((l) => {
-          const army = getArmiesAtPosition(gameStateStub, l).find((a) => a.regulars.length > 0);
-
-          expect(army).toBeDefined();
-          expect(army!.regulars[0].type).toBe(RegularUnitName.WARRIOR);
-          expect(army!.regulars[0].count).toBe(100 - nKilled);
-        });
+    ])('Number of killed units (%s) related to max PYROMANCER Level (%s)', (nKilled: number, maxPyrLvl: number) => {
+      // setup player
+      const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
+      if (maxPyrLvl > 0) {
+        // add PYROMANCER on Map
+        const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
+        while (hero.level < maxPyrLvl) levelUpHero(hero, Doctrine.MELEE);
+        placeUnitsOnMap(hero, gameStateStub, homeLandPos);
       }
-    );
+
+      const redMana = getTurnOwner(gameStateStub).mana.red;
+      castSpell(gameStateStub, SpellName.FIRESTORM, opponentLands[0]);
+      expect(getTurnOwner(gameStateStub).mana.red).toBe(redMana - getSpellById(SpellName.FIRESTORM).manaCost);
+
+      opponentLands.forEach((l) => {
+        const army = getArmiesAtPosition(gameStateStub, l).find((a) => a.regulars.length > 0);
+
+        expect(army).toBeDefined();
+        expect(army!.regulars[0].type).toBe(RegularUnitName.WARRIOR);
+        expect(army!.regulars[0].count).toBe(100 - nKilled);
+      });
+    });
   });
   describe('Cast METEOR SHOWER spell', () => {
     let opponentLand: LandPosition;
@@ -353,33 +322,26 @@ describe('castRedManaSpell', () => {
       [54, 26],
       [54, 27],
       [55, 32],
-    ])(
-      'Number of killed units (%s) related to max PYROMANCER Level (%s)',
-      (nKilled: number, maxPyrLvl: number) => {
-        // setup player
-        const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
-        if (maxPyrLvl > 0) {
-          // add PYROMANCER on Map
-          const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
-          while (hero.level < maxPyrLvl) levelUpHero(hero, Doctrine.MELEE);
-          placeUnitsOnMap(hero, gameStateStub, homeLandPos);
-        }
-
-        const redMana = getTurnOwner(gameStateStub).mana.red;
-        castSpell(gameStateStub, SpellName.METEOR_SHOWER, opponentLand);
-        expect(getTurnOwner(gameStateStub).mana.red).toBe(
-          redMana - getSpellById(SpellName.METEOR_SHOWER).manaCost
-        );
-
-        const army = getArmiesAtPosition(gameStateStub, opponentLand).find(
-          (a) => a.regulars.length > 0
-        );
-
-        expect(army).toBeDefined();
-        expect(army!.regulars[0].type).toBe(RegularUnitName.WARRIOR);
-        expect(army!.regulars[0].count).toBe(100 - nKilled);
+    ])('Number of killed units (%s) related to max PYROMANCER Level (%s)', (nKilled: number, maxPyrLvl: number) => {
+      // setup player
+      const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
+      if (maxPyrLvl > 0) {
+        // add PYROMANCER on Map
+        const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
+        while (hero.level < maxPyrLvl) levelUpHero(hero, Doctrine.MELEE);
+        placeUnitsOnMap(hero, gameStateStub, homeLandPos);
       }
-    );
+
+      const redMana = getTurnOwner(gameStateStub).mana.red;
+      castSpell(gameStateStub, SpellName.METEOR_SHOWER, opponentLand);
+      expect(getTurnOwner(gameStateStub).mana.red).toBe(redMana - getSpellById(SpellName.METEOR_SHOWER).manaCost);
+
+      const army = getArmiesAtPosition(gameStateStub, opponentLand).find((a) => a.regulars.length > 0);
+
+      expect(army).toBeDefined();
+      expect(army!.regulars[0].type).toBe(RegularUnitName.WARRIOR);
+      expect(army!.regulars[0].count).toBe(100 - nKilled);
+    });
 
     it.each([
       [false, 50, 0], // the building is not destroyed in 50%
@@ -406,9 +368,7 @@ describe('castRedManaSpell', () => {
         randomSpy.mockReturnValue((100 - probability) / 100); // change probability to verify effect
         const redMana = getTurnOwner(gameStateStub).mana.red;
         castSpell(gameStateStub, SpellName.METEOR_SHOWER, opponentLand);
-        expect(getTurnOwner(gameStateStub).mana.red).toBe(
-          redMana - getSpellById(SpellName.METEOR_SHOWER).manaCost
-        );
+        expect(getTurnOwner(gameStateStub).mana.red).toBe(redMana - getSpellById(SpellName.METEOR_SHOWER).manaCost);
 
         // verify that the building was destroyed/not destroyed based on probability
         expect(getLand(gameStateStub, opponentLand).buildings).toHaveLength(destroy ? 0 : 1);

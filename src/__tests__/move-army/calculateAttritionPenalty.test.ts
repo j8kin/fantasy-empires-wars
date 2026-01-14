@@ -83,13 +83,7 @@ describe('Calculate Attrition Penalty', () => {
     [10000, 10, 401, 1, UnitRank.ELITE],
   ])(
     'armies on lands NOT owned by player should be affected, both armies are lost units in proportion to the number of units: %s, %s, %s, %s %s',
-    (
-      army1Initial: number,
-      army2Initial: number,
-      army1Loss: number,
-      army2Loss: number,
-      rank: UnitRankType
-    ) => {
+    (army1Initial: number, army2Initial: number, army1Loss: number, army2Loss: number, rank: UnitRankType) => {
       randomSpy.mockReturnValue(0.5); // to return the same result for all tests
 
       const armyLand = getLand(gameStateStub, armyLandPos);
@@ -104,14 +98,8 @@ describe('Calculate Attrition Penalty', () => {
         levelUpRegulars(regularUnit2, getTurnOwner(gameStateStub).playerProfile.doctrine);
 
       // place armies using centralized system
-      Object.assign(
-        gameStateStub,
-        addArmyToGameState(gameStateStub, addRegulars(army1, regularUnit1))
-      );
-      Object.assign(
-        gameStateStub,
-        addArmyToGameState(gameStateStub, addRegulars(army2, regularUnit2))
-      );
+      Object.assign(gameStateStub, addArmyToGameState(gameStateStub, addRegulars(army1, regularUnit1)));
+      Object.assign(gameStateStub, addArmyToGameState(gameStateStub, addRegulars(army2, regularUnit2)));
 
       calculateAttritionPenalty(gameStateStub);
 

@@ -2,11 +2,7 @@ import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelecto
 import { getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
 import { buildingFactory } from '../../factories/buildingFactory';
 import { getBuildingInfo } from '../../domain/building/buildingRepository';
-import {
-  addBuildingToLand,
-  addPlayerLand,
-  updatePlayerVault,
-} from '../../systems/gameStateActions';
+import { addBuildingToLand, addPlayerLand, updatePlayerVault } from '../../systems/gameStateActions';
 import { destroyBuilding } from './destroyBuilding';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
@@ -15,11 +11,7 @@ import { BuildingName } from '../../types/Building';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 
-export const construct = (
-  gameState: GameState,
-  buildingType: BuildingType,
-  position: LandPosition
-) => {
+export const construct = (gameState: GameState, buildingType: BuildingType, position: LandPosition) => {
   const map = gameState.map;
   const turnOwner = getTurnOwner(gameState);
   const building = getBuildingInfo(buildingType);

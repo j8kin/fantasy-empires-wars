@@ -35,11 +35,7 @@ export const calculateTileScreenPosition = (
   const availableHeightPerRow = (availableArea.height - 100) / effectiveRows;
   const calculatedWidthFromHeight = availableHeightPerRow / HEX_RATIO;
 
-  const tileWidth = Math.max(
-    DEFAULT_TILE_WIDTH,
-    calculatedWidthFromArea,
-    calculatedWidthFromHeight
-  );
+  const tileWidth = Math.max(DEFAULT_TILE_WIDTH, calculatedWidthFromArea, calculatedWidthFromHeight);
   const tileHeight = tileWidth * HEX_RATIO;
 
   // Calculate position in the hex grid

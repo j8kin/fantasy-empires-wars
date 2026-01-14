@@ -1,10 +1,7 @@
 import { isMoving, getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getPlayerLands } from '../../selectors/landSelectors';
 import { addHero, addRegulars, addWarMachines } from '../../systems/armyActions';
-import {
-  decrementPlayerRecruitmentSlots,
-  freePlayerCompletedRecruitmentSlots,
-} from '../../systems/gameStateActions';
+import { decrementPlayerRecruitmentSlots, freePlayerCompletedRecruitmentSlots } from '../../systems/gameStateActions';
 import { armyFactory } from '../../factories/armyFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
@@ -46,9 +43,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
 
         completedSlots.forEach((s) => {
           const armiesAtPosition = getArmiesAtPosition(updatedState, l.mapPos);
-          const stationedArmy = armiesAtPosition.find(
-            (a) => !isMoving(a) && a.controlledBy === turnOwner
-          );
+          const stationedArmy = armiesAtPosition.find((a) => !isMoving(a) && a.controlledBy === turnOwner);
 
           if (isHeroType(s.unit)) {
             const hero = heroFactory(s.unit, generateHeroName(s.unit));
@@ -101,10 +96,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
   // Step 3: Apply all army updates in a single state transition
   updatedState = {
     ...updatedState,
-    armies: [
-      ...updatedState.armies.map((army) => armiesToUpdate.get(army.id) || army),
-      ...newArmies,
-    ],
+    armies: [...updatedState.armies.map((army) => armiesToUpdate.get(army.id) || army), ...newArmies],
   };
 
   // Step 4: Free all completed recruitment slots

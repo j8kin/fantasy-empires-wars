@@ -24,8 +24,7 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     type: HeroUnitName.FIGHTER,
     doctrine: Doctrine.MELEE,
     level: 8,
-    description:
-      'A noble paladin who has sworn to protect the innocent and uphold justice across the realm.',
+    description: 'A noble paladin who has sworn to protect the innocent and uphold justice across the realm.',
     color: 'blue',
   },
   {
@@ -102,8 +101,7 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     type: HeroUnitName.ENCHANTER,
     doctrine: Doctrine.MAGIC,
     level: 9,
-    description:
-      'A wandering mage who seeks to master all schools of magic through experimentation.',
+    description: 'A wandering mage who seeks to master all schools of magic through experimentation.',
     color: 'blue',
   },
   {
@@ -114,8 +112,7 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     type: HeroUnitName.RANGER,
     doctrine: Doctrine.MAGIC,
     level: 6,
-    description:
-      'A sly rogue who uses wit and stealth to achieve goals through any means necessary.',
+    description: 'A sly rogue who uses wit and stealth to achieve goals through any means necessary.',
     color: 'gray',
   },
   {
@@ -148,8 +145,7 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     type: HeroUnitName.ENCHANTER,
     doctrine: Doctrine.MELEE,
     level: 9,
-    description:
-      'A manipulator of perception and dreams, weaving illusions that blur truth and deceit.',
+    description: 'A manipulator of perception and dreams, weaving illusions that blur truth and deceit.',
     color: 'darkSlateGray',
   },
   {

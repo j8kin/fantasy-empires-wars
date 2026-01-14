@@ -87,9 +87,7 @@ describe('Effect Duration Manager', () => {
         ];
 
         const army2 = armyFactory(turnOwnerId, { row: 2, col: 2 });
-        army2.effects = [
-          createEffect('effect3', EffectKind.NEGATIVE, SpellName.TORNADO, 2, turnOwnerId),
-        ];
+        army2.effects = [createEffect('effect3', EffectKind.NEGATIVE, SpellName.TORNADO, 2, turnOwnerId)];
 
         // Create army controlled by different player (should not be affected)
         const otherPlayerArmy = armyFactory(gameState.players[1].id, { row: 3, col: 3 });
@@ -145,13 +143,7 @@ describe('Effect Duration Manager', () => {
         ];
 
         gameState.map.lands[landId3].effects = [
-          createEffect(
-            'effect4',
-            EffectKind.NEGATIVE,
-            SpellName.TORNADO,
-            4,
-            gameState.players[1].id
-          ),
+          createEffect('effect4', EffectKind.NEGATIVE, SpellName.TORNADO, 4, gameState.players[1].id),
         ];
 
         decrementEffectDurations(gameState);
@@ -228,18 +220,12 @@ describe('Effect Duration Manager', () => {
         const otherPlayer = gameState.players[1];
 
         // Set up effects for both players
-        turnOwner.effects = [
-          createEffect('to1', EffectKind.POSITIVE, SpellName.BLESSING, 2, turnOwner.id),
-        ];
-        otherPlayer.effects = [
-          createEffect('op1', EffectKind.POSITIVE, SpellName.HEAL, 2, otherPlayer.id),
-        ];
+        turnOwner.effects = [createEffect('to1', EffectKind.POSITIVE, SpellName.BLESSING, 2, turnOwner.id)];
+        otherPlayer.effects = [createEffect('op1', EffectKind.POSITIVE, SpellName.HEAL, 2, otherPlayer.id)];
 
         // Set up army for other player
         const otherArmy = armyFactory(otherPlayer.id, { row: 1, col: 1 });
-        otherArmy.effects = [
-          createEffect('oa1', EffectKind.NEGATIVE, SpellName.TORNADO, 2, otherPlayer.id),
-        ];
+        otherArmy.effects = [createEffect('oa1', EffectKind.NEGATIVE, SpellName.TORNADO, 2, otherPlayer.id)];
         gameState.armies = [otherArmy];
 
         const landId = getLandId(getPlayerLands(gameState, otherPlayer.id)[0].mapPos);
@@ -261,9 +247,7 @@ describe('Effect Duration Manager', () => {
 
       it('should handle player with no owned lands or armies', () => {
         // Player has effects but no lands or armies
-        turnOwner.effects = [
-          createEffect('p1', EffectKind.POSITIVE, SpellName.BLESSING, 1, turnOwner.id),
-        ];
+        turnOwner.effects = [createEffect('p1', EffectKind.POSITIVE, SpellName.BLESSING, 1, turnOwner.id)];
         turnOwner.landsOwned.clear();
         gameState.armies = [];
 

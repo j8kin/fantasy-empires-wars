@@ -5,8 +5,7 @@ const ALL_QUESTS: Quest[] = [
     id: 'The Echoing Ruins',
     level: 1,
     length: 4,
-    description:
-      'Whispers of lost ages linger among crumbling halls where the past refuses to rest.',
+    description: 'Whispers of lost ages linger among crumbling halls where the past refuses to rest.',
   },
   {
     id: 'The Whispering Grove',
@@ -18,15 +17,13 @@ const ALL_QUESTS: Quest[] = [
     id: 'The Abyssal Crypt',
     level: 3,
     length: 6,
-    description:
-      'Shadows coil beneath the earth, guarding the silence of those who should not wake.',
+    description: 'Shadows coil beneath the earth, guarding the silence of those who should not wake.',
   },
   {
     id: 'The Shattered Sky',
     level: 4,
     length: 7,
-    description:
-      'The heavens cracked once, and from the wound still seeps the color of forgotten light.',
+    description: 'The heavens cracked once, and from the wound still seeps the color of forgotten light.',
   },
 ];
 
@@ -44,8 +41,7 @@ export const getQuestType = (questLevel: number): QuestType => {
  * @param questType - The type of quest to retrieve
  * @returns Complete quest data including level, length, and description
  */
-export const getQuest = (questType: QuestType): Quest =>
-  ALL_QUESTS.find((q) => q.id === questType) || ALL_QUESTS[0];
+export const getQuest = (questType: QuestType): Quest => ALL_QUESTS.find((q) => q.id === questType) || ALL_QUESTS[0];
 
 /**
  * Returns all available quests

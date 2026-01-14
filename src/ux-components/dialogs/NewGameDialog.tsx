@@ -61,9 +61,7 @@ const NewGameDialog: React.FC = () => {
     if (selectedOpponents.length === 0) {
       const availablePlayers = PREDEFINED_PLAYERS.filter((p) => p.id !== selectedPlayer.id);
       const usedColors = [selectedPlayer.color];
-      const availableColors = PLAYER_COLORS.filter((color) => !usedColors.includes(color.name)).map(
-        (c) => c.name
-      );
+      const availableColors = PLAYER_COLORS.filter((color) => !usedColors.includes(color.name)).map((c) => c.name);
       const uniqueColors = availableColors.slice(0, maxMapOpponents[mapSize]);
 
       const opponents: (PlayerProfile | null)[] = new Array(maxMapOpponents[mapSize]).fill(null);
@@ -83,9 +81,7 @@ const NewGameDialog: React.FC = () => {
   // Generate unique colors for opponents
   const getUniqueOpponentColors = useCallback((): PlayerColorName[] => {
     const usedColors = [selectedPlayer.color];
-    const availableColors = PLAYER_COLORS.filter((color) => !usedColors.includes(color.name)).map(
-      (c) => c.name
-    );
+    const availableColors = PLAYER_COLORS.filter((color) => !usedColors.includes(color.name)).map((c) => c.name);
     return availableColors.slice(0, maxMapOpponents[mapSize]);
   }, [mapSize, selectedPlayer.color]);
 
@@ -94,9 +90,7 @@ const NewGameDialog: React.FC = () => {
     (newMaxOpponents: number) => {
       const availablePlayers = PREDEFINED_PLAYERS.filter((p) => p.id !== selectedPlayer.id);
       const usedColors = [selectedPlayer.color];
-      const availableColors = PLAYER_COLORS.filter((color) => !usedColors.includes(color.name)).map(
-        (c) => c.name
-      );
+      const availableColors = PLAYER_COLORS.filter((color) => !usedColors.includes(color.name)).map((c) => c.name);
       const uniqueColors = availableColors.slice(0, newMaxOpponents);
 
       if (opponentSelectionMode === 'random') {
@@ -114,8 +108,7 @@ const NewGameDialog: React.FC = () => {
         // If we need more opponents than available unique players, fill with random duplicates
         // This shouldn't happen in practice since we have enough predefined players
         while (randomOpponents.length < newMaxOpponents) {
-          const randomPlayer =
-            availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
+          const randomPlayer = availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
           randomOpponents.push({
             ...randomPlayer,
             color: uniqueColors[randomOpponents.length] || randomPlayer.color,
@@ -180,9 +173,7 @@ const NewGameDialog: React.FC = () => {
     (index: number) => {
       const excludedPlayerIds = [
         selectedPlayer.id,
-        ...selectedOpponents
-          .filter((opponent) => opponent !== null)
-          .map((opponent) => opponent!.id),
+        ...selectedOpponents.filter((opponent) => opponent !== null).map((opponent) => opponent!.id),
       ];
 
       // Calculate current number of selected opponents
@@ -251,14 +242,8 @@ const NewGameDialog: React.FC = () => {
 
   // Calculate dialog dimensions (memoized to avoid recalculation on every render)
   const dialogDimensions = useMemo(() => {
-    const dialogWidth = Math.min(
-      900,
-      typeof window !== 'undefined' ? window.innerWidth * 0.9 : 900
-    );
-    const dialogHeight = Math.min(
-      650,
-      typeof window !== 'undefined' ? window.innerHeight * 0.75 : 650
-    );
+    const dialogWidth = Math.min(900, typeof window !== 'undefined' ? window.innerWidth * 0.9 : 900);
+    const dialogHeight = Math.min(650, typeof window !== 'undefined' ? window.innerHeight * 0.75 : 650);
     const dialogX = typeof window !== 'undefined' ? (window.innerWidth - dialogWidth) / 2 : 0;
     const dialogY = typeof window !== 'undefined' ? (window.innerHeight - dialogHeight) / 2 : 0;
 
@@ -271,9 +256,7 @@ const NewGameDialog: React.FC = () => {
       frameSize={{ width: dialogDimensions.dialogWidth, height: dialogDimensions.dialogHeight }}
       primaryButton={<GameButton buttonName={ButtonName.START} onClick={handleStartGame} />}
       secondaryButton={
-        gameState != null ? (
-          <GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} />
-        ) : undefined
+        gameState != null ? <GameButton buttonName={ButtonName.CANCEL} onClick={handleCancel} /> : undefined
       }
       zIndex={1005}
     >
@@ -316,15 +299,11 @@ const NewGameDialog: React.FC = () => {
 
               {/* Opponent Selection Mode */}
               <div>
-                <label
-                  className={`${styles.label} ${styles.checkboxContainer} ${styles.checkboxLabel}`}
-                >
+                <label className={`${styles.label} ${styles.checkboxContainer} ${styles.checkboxLabel}`}>
                   <input
                     type="checkbox"
                     checked={opponentSelectionMode === 'random'}
-                    onChange={(e) =>
-                      handleOpponentSelectionModeChange(e.target.checked ? 'random' : 'manual')
-                    }
+                    onChange={(e) => handleOpponentSelectionModeChange(e.target.checked ? 'random' : 'manual')}
                     className={styles.hiddenCheckbox}
                   />
                   <div
@@ -363,9 +342,7 @@ const NewGameDialog: React.FC = () => {
                       <div
                         className={styles.randomOpponentCircle}
                         style={{
-                          background:
-                            PLAYER_COLORS.find((c) => c.name === opponent.color)?.value ||
-                            '#8b7355',
+                          background: PLAYER_COLORS.find((c) => c.name === opponent.color)?.value || '#8b7355',
                         }}
                       />
                     ) : (
@@ -377,12 +354,7 @@ const NewGameDialog: React.FC = () => {
                       />
                     )
                   ) : (
-                    <Avatar
-                      player={NO_PLAYER}
-                      size={AVATAR_SIZE}
-                      shape="circle"
-                      borderColor="#8b7355"
-                    />
+                    <Avatar player={NO_PLAYER} size={AVATAR_SIZE} shape="circle" borderColor="#8b7355" />
                   )}
                 </div>
               ))}

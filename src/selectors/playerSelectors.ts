@@ -22,8 +22,7 @@ import type { UnitType } from '../types/UnitType';
 
 const NONE = playerFactory(NO_PLAYER, 'computer');
 
-export const getPlayer = (state: GameState, id: string): PlayerState =>
-  state.players.find((p) => p.id === id) ?? NONE;
+export const getPlayer = (state: GameState, id: string): PlayerState => state.players.find((p) => p.id === id) ?? NONE;
 
 export const getTurnOwner = (state: GameState): PlayerState => getPlayer(state, state.turnOwner);
 
@@ -33,27 +32,16 @@ export const getTurnOwner = (state: GameState): PlayerState => getPlayer(state, 
  * @param statuses - Array of diplomacy statuses to filter by
  * @returns Array of players matching the diplomacy criteria
  */
-export const getPlayersByDiplomacy = (
-  gameState: GameState,
-  statuses: DiplomacyStatusType[]
-): PlayerState[] => {
+export const getPlayersByDiplomacy = (gameState: GameState, statuses: DiplomacyStatusType[]): PlayerState[] => {
   const { turnOwner } = gameState;
   return gameState.players.filter(
-    (p) =>
-      p.id !== turnOwner &&
-      p.diplomacy[turnOwner] != null &&
-      statuses.includes(p.diplomacy[turnOwner].status)
+    (p) => p.id !== turnOwner && p.diplomacy[turnOwner] != null && statuses.includes(p.diplomacy[turnOwner].status)
   );
 };
 
-export const hasActiveEffectByPlayer = (
-  state: PlayerState,
-  effectSourceId: EffectSourceId
-): boolean => {
+export const hasActiveEffectByPlayer = (state: PlayerState, effectSourceId: EffectSourceId): boolean => {
   return state.effects.some(
-    (e) =>
-      e.sourceId === effectSourceId &&
-      (e.rules.duration > 0 || e.rules.type === EffectKind.PERMANENT)
+    (e) => e.sourceId === effectSourceId && (e.rules.duration > 0 || e.rules.type === EffectKind.PERMANENT)
   );
 };
 
@@ -88,11 +76,7 @@ export const getAllowedBuildings = (state: PlayerState): BuildingInfo[] => {
     .filter((b) => b.buildCost <= state.vault);
 };
 
-export const getUnitsAllowedToRecruit = (
-  player: PlayerState,
-  land: LandState,
-  building: BuildingState
-): UnitType[] => {
+export const getUnitsAllowedToRecruit = (player: PlayerState, land: LandState, building: BuildingState): UnitType[] => {
   const landUnits = player.traits.recruitedUnitsPerLand[land.land.id] ?? new Set<UnitType>();
   const slotTraits = player.traits.recruitmentSlots[building.type]!;
 
@@ -123,11 +107,7 @@ export const getUnitsAllowedToRecruit = (
   return [];
 };
 
-export const getDiplomacyStatus = (
-  state: GameState,
-  playerId: string,
-  opponent: string
-): DiplomacyStatusType => {
+export const getDiplomacyStatus = (state: GameState, playerId: string, opponent: string): DiplomacyStatusType => {
   if (playerId === opponent) return DiplomacyStatus.NO_TREATY;
   if (playerId === NO_PLAYER.id || opponent === NO_PLAYER.id) return DiplomacyStatus.NO_TREATY; // fallback to no treaty if player or opponent is not found
   return getPlayer(state, playerId).diplomacy[opponent].status;

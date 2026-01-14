@@ -1,11 +1,6 @@
 import { getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
 import { getLand, getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
-import {
-  addPlayerLand,
-  removeLandEffect,
-  updateLandEffect,
-  updatePlayer,
-} from '../../systems/gameStateActions';
+import { addPlayerLand, removeLandEffect, updateLandEffect, updatePlayer } from '../../systems/gameStateActions';
 import { decrementItemCharges, removeEmpireTreasureItem } from '../../systems/playerActions';
 import { effectFactory } from '../../factories/effectFactory';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
@@ -38,19 +33,14 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
     // remove item from player inventory when user trying to use it after all charges are used
     // it will be a surprise for the user: instead of using item the item scramble it dust and lost forever
     // cover this message in useItemDialog
-    Object.assign(
-      state,
-      updatePlayer(state, turnOwner.id, removeEmpireTreasureItem(turnOwner, treasureItem))
-    );
+    Object.assign(state, updatePlayer(state, turnOwner.id, removeEmpireTreasureItem(turnOwner, treasureItem)));
     return;
   }
 
   let updatedState: GameState = state;
   switch (treasureItem.treasure.type) {
     case TreasureName.WAND_OF_TURN_UNDEAD:
-      updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos, [
-        RegularUnitName.UNDEAD,
-      ]);
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos, [RegularUnitName.UNDEAD]);
       break;
 
     case TreasureName.ORB_OF_STORM:
@@ -75,9 +65,7 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
 
     case TreasureName.GLYPH_OF_SEVERANCE:
       // remove one negative effect from the land
-      const effectToCancel = getLand(updatedState, landPos).effects.find(
-        (e) => e.rules.type === EffectKind.NEGATIVE
-      );
+      const effectToCancel = getLand(updatedState, landPos).effects.find((e) => e.rules.type === EffectKind.NEGATIVE);
       if (effectToCancel) {
         updatedState = removeLandEffect(updatedState, landPos, effectToCancel.id);
       }
@@ -91,11 +79,7 @@ export const invokeItem = (state: GameState, itemId: string, landPos: LandPositi
       );
 
       landsToReveal.forEach((land) => {
-        updatedState = updateLandEffect(
-          updatedState,
-          land,
-          effectFactory(treasureItem.treasure.type, state.turnOwner)
-        );
+        updatedState = updateLandEffect(updatedState, land, effectFactory(treasureItem.treasure.type, state.turnOwner));
       });
       break;
 

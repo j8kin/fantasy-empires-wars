@@ -47,10 +47,7 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
               >
                 <div className={styles.playerName}>{player.name}</div>
                 <div className={styles.playerSummary}>
-                  <span
-                    className={styles.playerClass}
-                    style={{ color: getAlignmentColor(player.alignment) }}
-                  >
+                  <span className={styles.playerClass} style={{ color: getAlignmentColor(player.alignment) }}>
                     {player.race.toUpperCase()}
                   </span>
                   <span className={styles.playerLevel}>Level {player.level}</span>
@@ -65,12 +62,8 @@ const PlayerSelection: React.FC<PlayerSelectionProps> = ({
           <div className={styles.playerDetails}>
             <div className={styles.playerDetailHeader}>
               <h3 className={styles.selectedPlayerName}>{displayPlayer.name}</h3>
-              <div
-                className={styles.selectedPlayerClass}
-                style={{ color: getAlignmentColor(displayPlayer.alignment) }}
-              >
-                {displayPlayer.alignment.toUpperCase()} - {displayPlayer.type} - Level{' '}
-                {displayPlayer.level}
+              <div className={styles.selectedPlayerClass} style={{ color: getAlignmentColor(displayPlayer.alignment) }}>
+                {displayPlayer.alignment.toUpperCase()} - {displayPlayer.type} - Level {displayPlayer.level}
               </div>
             </div>
             <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>

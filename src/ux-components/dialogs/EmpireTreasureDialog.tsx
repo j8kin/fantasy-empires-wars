@@ -12,12 +12,8 @@ import { getTreasureImg } from '../../assets/getTreasureImg';
 import type { Item } from '../../types/Treasures';
 
 const EmpireTreasureDialog: React.FC = () => {
-  const {
-    showEmpireTreasureDialog,
-    setShowEmpireTreasureDialog,
-    setSelectedLandAction,
-    addGlowingTile,
-  } = useApplicationContext();
+  const { showEmpireTreasureDialog, setShowEmpireTreasureDialog, setSelectedLandAction, addGlowingTile } =
+    useApplicationContext();
 
   const handleDialogClose = useCallback(() => {
     setShowEmpireTreasureDialog(false);
@@ -45,9 +41,7 @@ const EmpireTreasureDialog: React.FC = () => {
 
   const turnOwner = getTurnOwner(gameState);
 
-  const availableItems = turnOwner.empireTreasures.sort(
-    (a, b) => Number(!isItem(a)) - Number(!isItem(b))
-  );
+  const availableItems = turnOwner.empireTreasures.sort((a, b) => Number(!isItem(a)) - Number(!isItem(b)));
 
   if (availableItems.length === 0) return null;
 
@@ -64,9 +58,7 @@ const EmpireTreasureDialog: React.FC = () => {
           onClose={handleDialogClose}
           // Relic items are permanent, and they are not "usable" that is why disable click on them
           onIconClick={
-            isItem(treasure) && treasure.treasure.isConsumable
-              ? createItemClickHandler(treasure)
-              : undefined
+            isItem(treasure) && treasure.treasure.isConsumable ? createItemClickHandler(treasure) : undefined
           }
         />
       ))}

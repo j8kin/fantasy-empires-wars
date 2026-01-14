@@ -1,10 +1,5 @@
 import { getLandId } from '../state/map/land/LandId';
-import {
-  getHostileLands,
-  getLandOwner,
-  getPlayerLands,
-  hasBuilding,
-} from '../selectors/landSelectors';
+import { getHostileLands, getLandOwner, getPlayerLands, hasBuilding } from '../selectors/landSelectors';
 import { heroFactory } from '../factories/heroFactory';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { BuildingName } from '../types/Building';
@@ -22,9 +17,7 @@ describe('getHostileLands', () => {
 
   beforeEach(() => {
     gameStateStub = createGameStateStub({ nPlayers: 2 });
-    homeLand = getPlayerLands(gameStateStub).find((l) =>
-      hasBuilding(l, BuildingName.STRONGHOLD)
-    )!.mapPos;
+    homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!.mapPos;
   });
   it('return no hostile lans when all armies are near strongholds', () => {
     expect(getHostileLands(gameStateStub)).toHaveLength(0);
@@ -57,10 +50,8 @@ describe('getHostileLands', () => {
   });
 
   it('ally land is not treated as hostile land', () => {
-    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id].status =
-      DiplomacyStatus.ALLIANCE;
-    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id].status =
-      DiplomacyStatus.ALLIANCE;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id].status = DiplomacyStatus.ALLIANCE;
+    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id].status = DiplomacyStatus.ALLIANCE;
 
     const hostileLand = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
     placeUnitsOnMap(heroFactory(HeroUnitName.FIGHTER, 'Hero 1'), gameStateStub, hostileLand);

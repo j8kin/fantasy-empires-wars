@@ -1,37 +1,29 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import type {
-  FlipBookPageProps,
-  Slot,
-} from '../../../ux-components/fantasy-book-dialog-template/FlipBookPage';
-import FlipBookPage, {
-  FlipBookPageTypeName,
-} from '../../../ux-components/fantasy-book-dialog-template/FlipBookPage';
+import type { FlipBookPageProps, Slot } from '../../../ux-components/fantasy-book-dialog-template/FlipBookPage';
+import FlipBookPage, { FlipBookPageTypeName } from '../../../ux-components/fantasy-book-dialog-template/FlipBookPage';
 
 // Mock CSS modules
-jest.mock(
-  '../../../ux-components/fantasy-book-dialog-template/css/FlipBookPage.module.css',
-  () => ({
-    pageStyle: 'pageStyle',
-    evenPage: 'evenPage',
-    oddPage: 'oddPage',
-    caption: 'caption',
-    imageSlotContainer: 'imageSlotContainer',
-    icon: 'icon',
-    slotsContainer: 'slotsContainer',
-    slotsScrollable: 'slotsScrollable',
-    slotsVisible: 'slotsVisible',
-    slot: 'slot',
-    description: 'description',
-    descriptionTitle: 'descriptionTitle',
-    descriptionText: 'descriptionText',
-    descriptionTextExpanded: 'descriptionTextExpanded',
-    costSection: 'costSection',
-    costTitle: 'costTitle',
-    costValue: 'costValue',
-    pageNumber: 'pageNumber',
-  })
-);
+jest.mock('../../../ux-components/fantasy-book-dialog-template/css/FlipBookPage.module.css', () => ({
+  pageStyle: 'pageStyle',
+  evenPage: 'evenPage',
+  oddPage: 'oddPage',
+  caption: 'caption',
+  imageSlotContainer: 'imageSlotContainer',
+  icon: 'icon',
+  slotsContainer: 'slotsContainer',
+  slotsScrollable: 'slotsScrollable',
+  slotsVisible: 'slotsVisible',
+  slot: 'slot',
+  description: 'description',
+  descriptionTitle: 'descriptionTitle',
+  descriptionText: 'descriptionText',
+  descriptionTextExpanded: 'descriptionTextExpanded',
+  costSection: 'costSection',
+  costTitle: 'costTitle',
+  costValue: 'costValue',
+  pageNumber: 'pageNumber',
+}));
 
 // Mock romanNumerals utility
 jest.mock('../../../utils/romanNumerals', () => ({
@@ -78,9 +70,7 @@ describe('FlipBookPage Component', () => {
     });
 
     it('should render description', () => {
-      render(
-        <FlipBookPage {...defaultProps} description="A powerful fire spell that deals damage" />
-      );
+      render(<FlipBookPage {...defaultProps} description="A powerful fire spell that deals damage" />);
       expect(screen.getByText('A powerful fire spell that deals damage')).toBeInTheDocument();
     });
 
@@ -219,14 +209,7 @@ describe('FlipBookPage Component', () => {
     it('should filter out used slots', () => {
       const onSlotClick = jest.fn();
       const usedSlots = new Set(['slot2']);
-      render(
-        <FlipBookPage
-          {...defaultProps}
-          slots={slots}
-          onSlotClick={onSlotClick}
-          usedSlots={usedSlots}
-        />
-      );
+      render(<FlipBookPage {...defaultProps} slots={slots} onSlotClick={onSlotClick} usedSlots={usedSlots} />);
 
       expect(screen.getByText('Slot 1')).toBeInTheDocument();
       expect(screen.queryByText('Slot 2')).not.toBeInTheDocument();
@@ -282,13 +265,7 @@ describe('FlipBookPage Component', () => {
       const usedSlots = new Set(['slot1', 'slot2']);
 
       render(
-        <FlipBookPage
-          {...defaultProps}
-          slots={slots}
-          onSlotClick={jest.fn()}
-          usedSlots={usedSlots}
-          onClose={onClose}
-        />
+        <FlipBookPage {...defaultProps} slots={slots} onSlotClick={jest.fn()} usedSlots={usedSlots} onClose={onClose} />
       );
 
       await waitFor(() => {
@@ -301,13 +278,7 @@ describe('FlipBookPage Component', () => {
       const usedSlots = new Set(['slot1']);
 
       render(
-        <FlipBookPage
-          {...defaultProps}
-          slots={slots}
-          onSlotClick={jest.fn()}
-          usedSlots={usedSlots}
-          onClose={onClose}
-        />
+        <FlipBookPage {...defaultProps} slots={slots} onSlotClick={jest.fn()} usedSlots={usedSlots} onClose={onClose} />
       );
 
       await waitFor(() => {

@@ -81,11 +81,7 @@ const FlipBook: React.FC<FlipBookProps> = ({
         }}
         onClick={handleBackdropClick}
       >
-        <div
-          data-testid="flipbook-container"
-          className={styles.flipbookContainer}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div data-testid="flipbook-container" className={styles.flipbookContainer} onClick={(e) => e.stopPropagation()}>
           <HTMLFlipBook
             width={width}
             height={height}

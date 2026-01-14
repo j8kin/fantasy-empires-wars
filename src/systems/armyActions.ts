@@ -20,10 +20,7 @@ export const addHero = (state: ArmyState, hero: HeroState): ArmyState => {
   };
 };
 
-export const getHero = (
-  state: ArmyState,
-  name: string
-): { updatedArmy: ArmyState; hero: HeroState } | undefined => {
+export const getHero = (state: ArmyState, name: string): { updatedArmy: ArmyState; hero: HeroState } | undefined => {
   const heroIdx = state.heroes.findIndex((h) => h.name === name);
   if (heroIdx === -1) return undefined;
   const hero = state.heroes[heroIdx];
@@ -35,9 +32,7 @@ export const getHero = (
 };
 
 export const addRegulars = (state: ArmyState, regulars: RegularsState): ArmyState => {
-  const unitIdx = state.regulars.findIndex(
-    (u) => u.type === regulars.type && u.rank === regulars.rank
-  );
+  const unitIdx = state.regulars.findIndex((u) => u.type === regulars.type && u.rank === regulars.rank);
   if (unitIdx !== -1) {
     // Update existing unit count
     return {
@@ -80,9 +75,7 @@ export const getRegulars = (
   rank: UnitRankType,
   count: number
 ): { updatedArmy: ArmyState; regulars: RegularsState } | undefined => {
-  const unitIdx = state.regulars.findIndex(
-    (u) => u.type === unitType && u.rank === rank && u.count >= count
-  );
+  const unitIdx = state.regulars.findIndex((u) => u.type === unitType && u.rank === rank && u.count >= count);
   if (unitIdx === -1) return undefined;
   const unit = state.regulars[unitIdx];
 
@@ -97,9 +90,7 @@ export const getRegulars = (
     // Reduce the unit count
     const updatedArmy = {
       ...state,
-      regulars: state.regulars.map((u, idx) =>
-        idx === unitIdx ? { ...u, count: u.count - count } : u
-      ),
+      regulars: state.regulars.map((u, idx) => (idx === unitIdx ? { ...u, count: u.count - count } : u)),
     };
     const regularsToReturn = { ...regularsFactory(unit.type, count), rank: unit.rank };
     return { updatedArmy, regulars: regularsToReturn };
@@ -127,9 +118,7 @@ export const getWarMachines = (
     // Reduce the unit count
     const updatedArmy = {
       ...state,
-      warMachines: state.warMachines.map((u, idx) =>
-        idx === unitIdx ? { ...u, count: u.count - count } : u
-      ),
+      warMachines: state.warMachines.map((u, idx) => (idx === unitIdx ? { ...u, count: u.count - count } : u)),
     };
     const warMachinesToReturn = { type: unit.type, count, durability };
     return { updatedArmy, warMachines: warMachinesToReturn };
@@ -143,9 +132,7 @@ export const mergeArmies = (target: ArmyState, source: ArmyState): ArmyState => 
   // Merge regulars
   const mergedRegulars = [...target.regulars];
   source.regulars.forEach((sourceUnit) => {
-    const existingIdx = mergedRegulars.findIndex(
-      (u) => u.type === sourceUnit.type && u.rank === sourceUnit.rank
-    );
+    const existingIdx = mergedRegulars.findIndex((u) => u.type === sourceUnit.type && u.rank === sourceUnit.rank);
     if (existingIdx !== -1) {
       // Update existing unit count
       mergedRegulars[existingIdx] = {

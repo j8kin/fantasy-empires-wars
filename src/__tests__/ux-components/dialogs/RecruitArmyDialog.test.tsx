@@ -4,12 +4,7 @@ import userEvent from '@testing-library/user-event';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
 
-import {
-  getLand,
-  getLandOwner,
-  getPlayerLands,
-  hasBuilding,
-} from '../../../selectors/landSelectors';
+import { getLand, getLandOwner, getPlayerLands, hasBuilding } from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
 import { addPlayer } from '../../../systems/gameStateActions';
 import { placeHomeland } from '../../../map/generation/placeHomeland';
@@ -272,11 +267,7 @@ describe('RecruitArmyDialog', () => {
       // Add mage units to the land but they should be filtered out for barracks
       const landPos: LandPosition = { row: 3, col: 3 };
       const land = getLand(gameStateStub, landPos);
-      land.land.unitsToRecruit = [
-        ...land.land.unitsToRecruit,
-        HeroUnitName.CLERIC,
-        HeroUnitName.PYROMANCER,
-      ];
+      land.land.unitsToRecruit = [...land.land.unitsToRecruit, HeroUnitName.CLERIC, HeroUnitName.PYROMANCER];
 
       renderWithProviders(<RecruitArmyDialog />);
 
@@ -316,9 +307,7 @@ describe('RecruitArmyDialog', () => {
 
       await user.click(slot1Button);
 
-      const barracks = getLand(gameStateStub, barracksPos).buildings.find(
-        (b) => b.type === BuildingName.BARRACKS
-      );
+      const barracks = getLand(gameStateStub, barracksPos).buildings.find((b) => b.type === BuildingName.BARRACKS);
       expect(barracks).toBeDefined();
       expect(barracks!.slots.filter((s) => s.isOccupied)).toHaveLength(1);
       expect(barracks!.slots[0].unit).toBe(RegularUnitName.WARD_HANDS);
@@ -631,14 +620,11 @@ describe('RecruitArmyDialog', () => {
         gameStateStub.players[0].landsOwned = lands; // copy lands
         gameStateStub.turnOwner = gameStateStub.players[0].id;
         expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.ZEALOT);
-        expect(
-          hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)
-        ).toBeTruthy();
+        expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
         expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
 
         // change landtype to be able to recruit different Nullwarden regular units
-        getLand(gameStateStub, mockApplicationContext.actionLandPosition).land =
-          getLandById(landName);
+        getLand(gameStateStub, mockApplicationContext.actionLandPosition).land = getLandById(landName);
 
         renderWithProviders(<RecruitArmyDialog />);
         expect(screen.getByTestId('flip-book')).toBeInTheDocument();
@@ -661,8 +647,7 @@ describe('RecruitArmyDialog', () => {
         const lands = gameStateStub.players[0].landsOwned;
         const playerProfile = { ...PREDEFINED_PLAYERS[4] }; // ELF
         playerProfile.type = playerType;
-        playerProfile.alignment =
-          playerType === HeroUnitName.SHADOW_BLADE ? Alignment.CHAOTIC : Alignment.LAWFUL;
+        playerProfile.alignment = playerType === HeroUnitName.SHADOW_BLADE ? Alignment.CHAOTIC : Alignment.LAWFUL;
         gameStateStub.players[0] = playerFactory(playerProfile, 'human'); // replace player
         gameStateStub.players[0].landsOwned = lands; // copy lands
         gameStateStub.turnOwner = gameStateStub.players[0].id;
@@ -671,9 +656,7 @@ describe('RecruitArmyDialog', () => {
         // set land where OGR(s)/ORC(s) could be recruited and then verify that they are not available for recruitment
         getLand(gameStateStub, barracksPos).land = getLandById(LandName.SWAMP);
 
-        expect(
-          hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)
-        ).toBeTruthy();
+        expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
         expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
 
         renderWithProviders(<RecruitArmyDialog />);
@@ -706,9 +689,7 @@ describe('RecruitArmyDialog', () => {
         [LandName.GREEN_FOREST, LandName.DARK_FOREST].forEach((landName) => {
           getLand(gameStateStub, barracksPos).land = getLandById(landName);
 
-          expect(
-            hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)
-          ).toBeTruthy();
+          expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
           expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
 
           const { unmount } = renderWithProviders(<RecruitArmyDialog />);

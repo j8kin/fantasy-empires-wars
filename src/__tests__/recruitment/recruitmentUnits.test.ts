@@ -46,12 +46,7 @@ describe('Recruitment', () => {
     // PREDEFINED_PLAYERS[3] - Anti-magic undead - able to recruit UNDEAD
     // PREDEFINED_PLAYERS[0] - LAWFUL player able to recruit Cleric/Druid/Enchanter
     gameStateStub = createGameStateStub({
-      gamePlayers: [
-        PREDEFINED_PLAYERS[2],
-        PREDEFINED_PLAYERS[1],
-        PREDEFINED_PLAYERS[3],
-        PREDEFINED_PLAYERS[0],
-      ],
+      gamePlayers: [PREDEFINED_PLAYERS[2], PREDEFINED_PLAYERS[1], PREDEFINED_PLAYERS[3], PREDEFINED_PLAYERS[0]],
     });
 
     testTurnManagement = new TestTurnManagement(gameStateStub);
@@ -95,11 +90,7 @@ describe('Recruitment', () => {
     // add  TreasureItem.CROWN_OF_DOMINION to player treasury
     Object.assign(
       gameStateStub,
-      addPlayerEmpireTreasure(
-        gameStateStub,
-        playerId,
-        relictFactory(TreasureName.CROWN_OF_DOMINION)
-      )
+      addPlayerEmpireTreasure(gameStateStub, playerId, relictFactory(TreasureName.CROWN_OF_DOMINION))
     );
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
@@ -188,12 +179,7 @@ describe('Recruitment', () => {
       [20, RegularUnitName.DARK_ELF, 2, LandName.DARK_FOREST],
     ])(
       '%s units (%s) should be start recruited in (%s) turns in Barracks',
-      (
-        nUnits: number,
-        unitType: RegularUnitType | WarMachineType,
-        nTurns: number,
-        landType: LandType
-      ) => {
+      (nUnits: number, unitType: RegularUnitType | WarMachineType, nTurns: number, landType: LandType) => {
         getLand(gameStateStub, barracksLand.mapPos).land = getLandById(landType);
         startRecruiting(gameStateStub, barracksLand.mapPos, unitType);
 
@@ -392,13 +378,8 @@ describe('Recruitment', () => {
 
       expect(barracksLand).toBeDefined();
       expect(armies).toHaveLength(0);
-      expect(barracksLand.buildings[0].slots).toHaveLength(
-        buildingType === BuildingName.BARRACKS ? 3 : 1
-      );
-      expect(
-        getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots.filter((s) => s.isOccupied)
-          .length
-      ).toBe(0);
+      expect(barracksLand.buildings[0].slots).toHaveLength(buildingType === BuildingName.BARRACKS ? 3 : 1);
+      expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots.filter((s) => s.isOccupied).length).toBe(0);
     };
     describe('Non-Mage heroes', () => {
       it.each([
@@ -497,18 +478,14 @@ describe('Recruitment', () => {
 
           gameStateStub.turnOwner = turnOwnerId;
           getTurnOwner(gameStateStub).playerType = 'human';
-          homeLand = getPlayerLands(gameStateStub).find((l) =>
-            hasBuilding(l, BuildingName.STRONGHOLD)
-          )!;
+          homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
 
           const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
           constructBuilding(BuildingName.MAGE_TOWER, mageTowerPos);
           // Mage towers cost 15000, which exhausts the initial 15000 vault, so add more gold for recruitment
           getTurnOwner(gameStateStub).vault += 5000;
           const mageTowerLand = getLand(gameStateStub, mageTowerPos);
-          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[mageTowerLand.land.id].add(
-            unitType
-          );
+          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[mageTowerLand.land.id].add(unitType);
 
           // Recruiting heroes in mage tower
           startRecruiting(gameStateStub, mageTowerLand.mapPos, unitType);

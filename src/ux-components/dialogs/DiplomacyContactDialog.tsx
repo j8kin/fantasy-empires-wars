@@ -14,16 +14,14 @@ import { ButtonName } from '../../types/ButtonName';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 
 const DiplomacyContactDialog: React.FC = () => {
-  const { diplomacyContactOpponent, showDiplomacyContactDialog, hideDiplomacyContact } =
-    useApplicationContext();
+  const { diplomacyContactOpponent, showDiplomacyContactDialog, hideDiplomacyContact } = useApplicationContext();
   const { gameState } = useGameContext();
 
   if (gameState == null) return null; // initial fallback when game not started
 
   const turnOwner = getTurnOwner(gameState);
   const diplomacyStatus =
-    turnOwner.diplomacy[diplomacyContactOpponent?.id ?? NO_PLAYER.id]?.status ??
-    DiplomacyStatus.NO_TREATY;
+    turnOwner.diplomacy[diplomacyContactOpponent?.id ?? NO_PLAYER.id]?.status ?? DiplomacyStatus.NO_TREATY;
 
   const handleClose = () => {
     hideDiplomacyContact();
@@ -107,9 +105,7 @@ const DiplomacyContactDialog: React.FC = () => {
                 <span
                   className={styles.value}
                   style={{
-                    color: getAlignmentColor(
-                      diplomacyContactOpponent?.playerProfile.alignment ?? NO_PLAYER.alignment
-                    ),
+                    color: getAlignmentColor(diplomacyContactOpponent?.playerProfile.alignment ?? NO_PLAYER.alignment),
                   }}
                 >
                   {diplomacyContactOpponent?.playerProfile.alignment}
@@ -123,9 +119,7 @@ const DiplomacyContactDialog: React.FC = () => {
 
               <div className={styles.infoRow}>
                 <span className={styles.label}>Diplomacy:</span>
-                <span className={`${styles.value} ${styles.diplomacyStatus}`}>
-                  {diplomacyStatus}
-                </span>
+                <span className={`${styles.value} ${styles.diplomacyStatus}`}>{diplomacyStatus}</span>
               </div>
 
               <div className={styles.infoRow}>

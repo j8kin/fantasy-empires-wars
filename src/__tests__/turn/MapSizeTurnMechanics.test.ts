@@ -20,48 +20,45 @@ describe('Turn Mechanics with Different Map Sizes', () => {
     });
   };
 
-  test.each(['small', 'medium', 'large', 'huge'])(
-    'Turn manager should work correctly with %s map',
-    (mapSize) => {
-      const gameState = createGameState(mapSize as 'small' | 'medium' | 'large' | 'huge');
+  test.each(['small', 'medium', 'large', 'huge'])('Turn manager should work correctly with %s map', (mapSize) => {
+    const gameState = createGameState(mapSize as 'small' | 'medium' | 'large' | 'huge');
 
-      let turnPhaseChanges: { gameState: GameState; phase: TurnPhaseType }[] = [];
-      let gameOverCalled = false;
-      let progressCalled = false;
+    let turnPhaseChanges: { gameState: GameState; phase: TurnPhaseType }[] = [];
+    let gameOverCalled = false;
+    let progressCalled = false;
 
-      const turnManager = new TurnManager({
-        onTurnPhaseChange: (gameState: GameState, phase: TurnPhaseType) => {
-          turnPhaseChanges.push({ gameState, phase });
-        },
-        onGameOver: (_message: string) => {
-          gameOverCalled = true;
-        },
-        onStartProgress: (_message: string) => {
-          progressCalled = true;
-        },
-        onHideProgress: () => {},
-        onComputerMainTurn: (_gameState: GameState) => {},
-        onEmpireEventResult: (_results) => {},
-      });
+    const turnManager = new TurnManager({
+      onTurnPhaseChange: (gameState: GameState, phase: TurnPhaseType) => {
+        turnPhaseChanges.push({ gameState, phase });
+      },
+      onGameOver: (_message: string) => {
+        gameOverCalled = true;
+      },
+      onStartProgress: (_message: string) => {
+        progressCalled = true;
+      },
+      onHideProgress: () => {},
+      onComputerMainTurn: (_gameState: GameState) => {},
+      onEmpireEventResult: (_results) => {},
+    });
 
-      // Start a new turn
-      turnManager.startNewTurn(gameState);
+    // Start a new turn
+    turnManager.startNewTurn(gameState);
 
-      // Should have called onTurnPhaseChange with START phase
-      expect(turnPhaseChanges).toHaveLength(1);
-      expect(progressCalled).toBe(true);
-      expect(gameOverCalled).toBe(false);
+    // Should have called onTurnPhaseChange with START phase
+    expect(turnPhaseChanges).toHaveLength(1);
+    expect(progressCalled).toBe(true);
+    expect(gameOverCalled).toBe(false);
 
-      // Game state should have the correct dimensions
-      expect(getMapDimensions(gameState)).toBeDefined();
-      expect(gameState.map.lands).toBeDefined();
-      expect(Object.keys(gameState.map.lands).length).toBeGreaterThan(0);
+    // Game state should have the correct dimensions
+    expect(getMapDimensions(gameState)).toBeDefined();
+    expect(gameState.map.lands).toBeDefined();
+    expect(Object.keys(gameState.map.lands).length).toBeGreaterThan(0);
 
-      // Turn owner should be set correctly
-      expect(gameState.turnOwner).toBe('alaric');
-      expect(gameState.turn).toBe(2);
-    }
-  );
+    // Turn owner should be set correctly
+    expect(gameState.turnOwner).toBe('alaric');
+    expect(gameState.turn).toBe(2);
+  });
 
   test.each(['small', 'medium', 'large', 'huge'])(
     'Turn manager should handle turn ending correctly with %s map',
@@ -124,8 +121,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
       const oddRows = Math.ceil(expectedDimensions[mapSize].rows / 2);
       const evenRows = Math.floor(expectedDimensions[mapSize].rows / 2);
       const expectedHexLandCount =
-        oddRows * expectedDimensions[mapSize].cols +
-        evenRows * (expectedDimensions[mapSize].cols - 1);
+        oddRows * expectedDimensions[mapSize].cols + evenRows * (expectedDimensions[mapSize].cols - 1);
 
       expect(actualLandCount).toBe(expectedHexLandCount);
 

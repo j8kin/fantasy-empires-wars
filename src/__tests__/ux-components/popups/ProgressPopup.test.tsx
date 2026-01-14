@@ -95,8 +95,7 @@ describe('ProgressPopup', () => {
     });
 
     it('displays long message', () => {
-      const longMessage =
-        'Please wait while we process your request. This may take several minutes.';
+      const longMessage = 'Please wait while we process your request. This may take several minutes.';
       render(<ProgressPopup screenPosition={mockScreenPosition} message={longMessage} />);
 
       expect(screen.getByText(longMessage)).toBeInTheDocument();
@@ -121,9 +120,7 @@ describe('ProgressPopup', () => {
       const multilineMessage = 'Loading...\nPlease wait';
       render(<ProgressPopup screenPosition={mockScreenPosition} message={multilineMessage} />);
 
-      const message = screen.getByText(
-        (content) => content.includes('Loading...') && content.includes('Please wait')
-      );
+      const message = screen.getByText((content) => content.includes('Loading...') && content.includes('Please wait'));
       expect(message).toBeInTheDocument();
       expect(message.textContent).toBe(multilineMessage);
     });
@@ -153,9 +150,7 @@ describe('ProgressPopup', () => {
     });
 
     it('renders at large coordinates', () => {
-      render(
-        <ProgressPopup screenPosition={{ x: 1920, y: 1080 }} message="Loading at large position" />
-      );
+      render(<ProgressPopup screenPosition={{ x: 1920, y: 1080 }} message="Loading at large position" />);
 
       const wrapper = screen.getByTestId('popup-wrapper');
       expect(wrapper).toHaveAttribute('data-x', '1920');
@@ -163,12 +158,7 @@ describe('ProgressPopup', () => {
     });
 
     it('renders at negative coordinates', () => {
-      render(
-        <ProgressPopup
-          screenPosition={{ x: -50, y: -100 }}
-          message="Loading at negative position"
-        />
-      );
+      render(<ProgressPopup screenPosition={{ x: -50, y: -100 }} message="Loading at negative position" />);
 
       const wrapper = screen.getByTestId('popup-wrapper');
       expect(wrapper).toHaveAttribute('data-x', '-50');
@@ -218,9 +208,7 @@ describe('ProgressPopup', () => {
 
   describe('Props Updates', () => {
     it('updates message when prop changes', () => {
-      const { rerender } = render(
-        <ProgressPopup screenPosition={mockScreenPosition} message="Initial message" />
-      );
+      const { rerender } = render(<ProgressPopup screenPosition={mockScreenPosition} message="Initial message" />);
 
       expect(screen.getByText('Initial message')).toBeInTheDocument();
 
@@ -231,9 +219,7 @@ describe('ProgressPopup', () => {
     });
 
     it('updates screen position when prop changes', () => {
-      const { rerender } = render(
-        <ProgressPopup screenPosition={{ x: 100, y: 100 }} message={mockMessage} />
-      );
+      const { rerender } = render(<ProgressPopup screenPosition={{ x: 100, y: 100 }} message={mockMessage} />);
 
       expect(screen.getByTestId('popup-wrapper')).toHaveAttribute('data-x', '100');
       expect(screen.getByTestId('popup-wrapper')).toHaveAttribute('data-y', '100');
@@ -245,9 +231,7 @@ describe('ProgressPopup', () => {
     });
 
     it('maintains structure when props change', () => {
-      const { rerender } = render(
-        <ProgressPopup screenPosition={mockScreenPosition} message="Message 1" />
-      );
+      const { rerender } = render(<ProgressPopup screenPosition={mockScreenPosition} message="Message 1" />);
 
       expect(screen.getByTestId('progress-popup-bar')).toBeInTheDocument();
 
@@ -316,10 +300,7 @@ describe('ProgressPopup', () => {
       render(<ProgressPopup screenPosition={mockScreenPosition} message={messageWithTabs} />);
 
       const message = screen.getByText(
-        (content) =>
-          content.includes('Loading...') &&
-          content.includes('Processing') &&
-          content.includes('Data')
+        (content) => content.includes('Loading...') && content.includes('Processing') && content.includes('Data')
       );
       expect(message).toBeInTheDocument();
     });
@@ -351,9 +332,7 @@ describe('ProgressPopup', () => {
     });
 
     it('always renders blocking overlay regardless of message', () => {
-      const { rerender } = render(
-        <ProgressPopup screenPosition={mockScreenPosition} message="Message 1" />
-      );
+      const { rerender } = render(<ProgressPopup screenPosition={mockScreenPosition} message="Message 1" />);
 
       expect(screen.getByTestId('progress-popup-overlay')).toBeInTheDocument();
 
@@ -372,9 +351,7 @@ describe('ProgressPopup', () => {
     });
 
     it('maintains accessible=false across re-renders', () => {
-      const { rerender } = render(
-        <ProgressPopup screenPosition={mockScreenPosition} message="Message 1" />
-      );
+      const { rerender } = render(<ProgressPopup screenPosition={mockScreenPosition} message="Message 1" />);
 
       expect(screen.getByTestId('popup-wrapper')).toHaveAttribute('data-accessible', 'false');
 

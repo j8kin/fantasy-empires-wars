@@ -35,20 +35,13 @@ const PlayerSummary: React.FC<PlayerSummaryProps> = ({ avatarSize }) => {
   return (
     <div className={styles.playerContainer}>
       <div onClick={handleAvatarClick} className={styles.clickableAvatar}>
-        <Avatar
-          player={turnOwner.playerProfile}
-          size={avatarSize}
-          shape="rectangle"
-          borderColor={turnOwner.color}
-        />
+        <Avatar player={turnOwner.playerProfile} size={avatarSize} shape="rectangle" borderColor={turnOwner.color} />
       </div>
       <div className={styles.playerDetails}>
         <div className={styles.playerName}>{turnOwner.playerProfile.name}</div>
         <div className={styles.moneyInfo}>
           <div className={styles.moneyItem}>Gold: {turnOwner.vault}</div>
-          <div className={styles.moneyItem}>
-            {currentIncome > 0 ? `+${currentIncome}` : currentIncome}/turn
-          </div>
+          <div className={styles.moneyItem}>{currentIncome > 0 ? `+${currentIncome}` : currentIncome}/turn</div>
         </div>
       </div>
     </div>

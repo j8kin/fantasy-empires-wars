@@ -43,35 +43,30 @@ describe('castGreenManaSpell', () => {
       [6, 22],
       [6, 26],
       [7, 27], // for level 27 and above all lands in radius 1 are affected by FERTILE LAND spell
-    ])(
-      'Number of affected lands(%s) related to hero level (%s)',
-      (nLands: number, maxDruidLvl: number) => {
-        const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
+    ])('Number of affected lands(%s) related to hero level (%s)', (nLands: number, maxDruidLvl: number) => {
+      const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
 
-        if (maxDruidLvl > 0) {
-          // add DRUID on Map
-          const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
-          while (hero.level < maxDruidLvl) levelUpHero(hero, Doctrine.MELEE);
-          placeUnitsOnMap(hero, gameStateStub, homeLandPos);
-        }
-
-        const greenMana = getTurnOwner(gameStateStub).mana.green;
-        castSpell(gameStateStub, SpellName.FERTILE_LAND, homeLandPos);
-        expect(getTurnOwner(gameStateStub).mana.green).toBe(
-          greenMana - getSpellById(SpellName.FERTILE_LAND).manaCost
-        );
-
-        const affectedLands = getPlayerLands(gameStateStub).filter((l) => l.effects.length > 0);
-        expect(affectedLands).toHaveLength(nLands);
-        affectedLands.forEach((l) => {
-          expect(l.effects).toHaveLength(1);
-          expect(l.effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
-          expect(l.effects[0].rules.type).toBe(EffectKind.POSITIVE);
-          expect(l.effects[0].rules.duration).toBe(2);
-          expect(l.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
-        });
+      if (maxDruidLvl > 0) {
+        // add DRUID on Map
+        const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
+        while (hero.level < maxDruidLvl) levelUpHero(hero, Doctrine.MELEE);
+        placeUnitsOnMap(hero, gameStateStub, homeLandPos);
       }
-    );
+
+      const greenMana = getTurnOwner(gameStateStub).mana.green;
+      castSpell(gameStateStub, SpellName.FERTILE_LAND, homeLandPos);
+      expect(getTurnOwner(gameStateStub).mana.green).toBe(greenMana - getSpellById(SpellName.FERTILE_LAND).manaCost);
+
+      const affectedLands = getPlayerLands(gameStateStub).filter((l) => l.effects.length > 0);
+      expect(affectedLands).toHaveLength(nLands);
+      affectedLands.forEach((l) => {
+        expect(l.effects).toHaveLength(1);
+        expect(l.effects[0].sourceId).toBe(SpellName.FERTILE_LAND);
+        expect(l.effects[0].rules.type).toBe(EffectKind.POSITIVE);
+        expect(l.effects[0].rules.duration).toBe(2);
+        expect(l.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
+      });
+    });
 
     it('Income from the land should be increased by 50%', () => {
       const totalIncomeBefore = calculateIncome(gameStateStub);
@@ -87,9 +82,7 @@ describe('castGreenManaSpell', () => {
       expect(getLand(gameStateStub, homeLand.mapPos).goldPerTurn).toBe(homeLandIncome);
 
       // check that income from the land increased by 50%
-      expect(calculateIncome(gameStateStub)).toBe(
-        Math.ceil(totalIncomeBefore + homeLandIncome * 0.5)
-      );
+      expect(calculateIncome(gameStateStub)).toBe(Math.ceil(totalIncomeBefore + homeLandIncome * 0.5));
     });
   });
 
@@ -101,8 +94,7 @@ describe('castGreenManaSpell', () => {
     it.each([0, 1, 32])(
       'ENTANGLING ROOTS affects only one land and not depends on max Druid Level (%s)',
       (maxDruidLvl: number) => {
-        const opponentHomeLandPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0]
-          .mapPos;
+        const opponentHomeLandPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
 
         const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
 
@@ -183,9 +175,7 @@ describe('castGreenManaSpell', () => {
         // Cast BEAST ATTACK
         const greenMana = getTurnOwner(gameStateStub).mana.green;
         castSpell(gameStateStub, SpellName.BEAST_ATTACK, opponentLand);
-        expect(getTurnOwner(gameStateStub).mana.green).toBe(
-          greenMana - getSpellById(SpellName.BEAST_ATTACK).manaCost
-        );
+        expect(getTurnOwner(gameStateStub).mana.green).toBe(greenMana - getSpellById(SpellName.BEAST_ATTACK).manaCost);
 
         const woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
         expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army
@@ -267,31 +257,26 @@ describe('castGreenManaSpell', () => {
       randomSpy.mockRestore();
     });
 
-    it.each([0, 1, 32])(
-      'EARTHQUAKE kill rate not depends on DRUID level (%s)',
-      (maxDruidLvl: number) => {
-        const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
-        if (maxDruidLvl > 0) {
-          // add DRUID on Map
-          const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
-          while (hero.level < maxDruidLvl) levelUpHero(hero, Doctrine.MELEE);
-          placeUnitsOnMap(hero, gameStateStub, homeLandPos);
-        }
-
-        randomSpy.mockReturnValue(0.99); // maximize damage from spell to make test stable
-        const greenMana = getTurnOwner(gameStateStub).mana.green;
-        castSpell(gameStateStub, SpellName.EARTHQUAKE, opponentLand);
-        expect(getTurnOwner(gameStateStub).mana.green).toBe(
-          greenMana - getSpellById(SpellName.EARTHQUAKE).manaCost
-        );
-
-        const woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
-        expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army
-        expect(woundedOpponentArmy[1].regulars).toHaveLength(1);
-        expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitName.ORC);
-        expect(woundedOpponentArmy[1].regulars[0].count).toBe(120 - 24);
+    it.each([0, 1, 32])('EARTHQUAKE kill rate not depends on DRUID level (%s)', (maxDruidLvl: number) => {
+      const homeLandPos = getPlayerLands(gameStateStub)[0].mapPos;
+      if (maxDruidLvl > 0) {
+        // add DRUID on Map
+        const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
+        while (hero.level < maxDruidLvl) levelUpHero(hero, Doctrine.MELEE);
+        placeUnitsOnMap(hero, gameStateStub, homeLandPos);
       }
-    );
+
+      randomSpy.mockReturnValue(0.99); // maximize damage from spell to make test stable
+      const greenMana = getTurnOwner(gameStateStub).mana.green;
+      castSpell(gameStateStub, SpellName.EARTHQUAKE, opponentLand);
+      expect(getTurnOwner(gameStateStub).mana.green).toBe(greenMana - getSpellById(SpellName.EARTHQUAKE).manaCost);
+
+      const woundedOpponentArmy = getArmiesAtPosition(gameStateStub, opponentLand);
+      expect(woundedOpponentArmy).toHaveLength(2); // first Hero army second regulars army
+      expect(woundedOpponentArmy[1].regulars).toHaveLength(1);
+      expect(woundedOpponentArmy[1].regulars[0].type).toBe(RegularUnitName.ORC);
+      expect(woundedOpponentArmy[1].regulars[0].count).toBe(120 - 24);
+    });
 
     it('EARTHQUAKE should could destroy buildings', () => {
       expect(getLand(gameStateStub, opponentLand).buildings).toHaveLength(1);
@@ -304,34 +289,30 @@ describe('castGreenManaSpell', () => {
     });
   });
 
-  it.each([
-    SpellName.FERTILE_LAND,
-    SpellName.BEAST_ATTACK,
-    SpellName.ENTANGLING_ROOTS,
-    SpellName.EARTHQUAKE,
-  ])('If VERDANT IDOL is in treasury GREEN spells (%s) cost 15% less', (spellName: SpellType) => {
-    let dummyLand: LandPosition =
-      spellName === SpellName.FERTILE_LAND
-        ? getPlayerLands(gameStateStub)[0].mapPos
-        : getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
+  it.each([SpellName.FERTILE_LAND, SpellName.BEAST_ATTACK, SpellName.ENTANGLING_ROOTS, SpellName.EARTHQUAKE])(
+    'If VERDANT IDOL is in treasury GREEN spells (%s) cost 15% less',
+    (spellName: SpellType) => {
+      let dummyLand: LandPosition =
+        spellName === SpellName.FERTILE_LAND
+          ? getPlayerLands(gameStateStub)[0].mapPos
+          : getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
 
-    castSpell(gameStateStub, spellName, dummyLand);
+      castSpell(gameStateStub, spellName, dummyLand);
 
-    expect(getTurnOwner(gameStateStub).mana.green).toBe(200 - getSpellById(spellName).manaCost);
+      expect(getTurnOwner(gameStateStub).mana.green).toBe(200 - getSpellById(spellName).manaCost);
 
-    getTurnOwner(gameStateStub).empireTreasures.push(relictFactory(TreasureName.VERDANT_IDOL));
+      getTurnOwner(gameStateStub).empireTreasures.push(relictFactory(TreasureName.VERDANT_IDOL));
 
-    // select another land to cast spell to avoid situation that it is not possible to cast spell on the same land
-    dummyLand =
-      spellName === SpellName.FERTILE_LAND
-        ? getPlayerLands(gameStateStub)[1].mapPos
-        : getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1].mapPos;
+      // select another land to cast spell to avoid situation that it is not possible to cast spell on the same land
+      dummyLand =
+        spellName === SpellName.FERTILE_LAND
+          ? getPlayerLands(gameStateStub)[1].mapPos
+          : getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1].mapPos;
 
-    getTurnOwner(gameStateStub).mana.green = 200;
+      getTurnOwner(gameStateStub).mana.green = 200;
 
-    castSpell(gameStateStub, spellName, dummyLand);
-    expect(getTurnOwner(gameStateStub).mana.green).toBe(
-      200 - Math.floor(getSpellById(spellName).manaCost * 0.85)
-    );
-  });
+      castSpell(gameStateStub, spellName, dummyLand);
+      expect(getTurnOwner(gameStateStub).mana.green).toBe(200 - Math.floor(getSpellById(spellName).manaCost * 0.85));
+    }
+  );
 });

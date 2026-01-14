@@ -2,13 +2,7 @@ import { isHeroType, isMageType } from '../domain/unit/unitTypeChecks';
 import { getLandById } from '../domain/land/landRepository';
 import { getAllUnitTypeByAlignment } from '../domain/unit/unitRepository';
 import { Doctrine, RaceName } from '../state/player/PlayerProfile';
-import {
-  HeroUnitName,
-  RegularUnitName,
-  RegularUnitType,
-  WarMachineName,
-  WarMachineType,
-} from '../types/UnitType';
+import { HeroUnitName, RegularUnitName, RegularUnitType, WarMachineName, WarMachineType } from '../types/UnitType';
 import { Alignment } from '../types/Alignment';
 import { LandName } from '../types/Land';
 import { Mana } from '../types/Mana';
@@ -19,11 +13,7 @@ import type { LandType } from '../types/Land';
 import { BuildingName, BuildingType } from '../types/Building';
 import type { UnitType, HeroUnitType } from '../types/UnitType';
 
-export const playerFactory = (
-  profile: PlayerProfile,
-  playerType: PlayerType,
-  vault: number = 0
-): PlayerState => {
+export const playerFactory = (profile: PlayerProfile, playerType: PlayerType, vault: number = 0): PlayerState => {
   return {
     id: Object.freeze(profile.id), // Fixed: was empty string before
     playerType: Object.freeze(playerType),
@@ -130,12 +120,8 @@ const getUnitsPerLand = (
   ) as Record<LandType, Set<UnitType>>;
 
   // mages are available for all lands and managed by constructed Mage Tower which also depends on Restricted Magic
-  const chaoticUnitType = getAllUnitTypeByAlignment(Alignment.CHAOTIC).filter(
-    (unit) => !isMageType(unit)
-  );
-  const lawfulUnitType = getAllUnitTypeByAlignment(Alignment.LAWFUL).filter(
-    (unit) => !isMageType(unit)
-  );
+  const chaoticUnitType = getAllUnitTypeByAlignment(Alignment.CHAOTIC).filter((unit) => !isMageType(unit));
+  const lawfulUnitType = getAllUnitTypeByAlignment(Alignment.LAWFUL).filter((unit) => !isMageType(unit));
 
   Object.values(LandName)
     .filter((land) => land !== LandName.NONE)
@@ -146,9 +132,7 @@ const getUnitsPerLand = (
         // for lack of resources only BATTERING_RAM is available from all war-machines
         unitsPerLand[landType].add(WarMachineName.BATTERING_RAM);
       } else {
-        Object.values(WarMachineName).forEach((warMachine) =>
-          unitsPerLand[landType].add(warMachine)
-        );
+        Object.values(WarMachineName).forEach((warMachine) => unitsPerLand[landType].add(warMachine));
       }
 
       // add other units depending on player type and alignment and land type
@@ -169,11 +153,7 @@ const getUnitsPerLand = (
         case HeroUnitName.ZEALOT:
           unitsPerLand[landType].add(HeroUnitName.ZEALOT);
           land.unitsToRecruit.forEach((unit) => {
-            if (
-              !isHeroType(unit) &&
-              unit !== RegularUnitName.HALFLING &&
-              unit !== RegularUnitName.WARD_HANDS
-            ) {
+            if (!isHeroType(unit) && unit !== RegularUnitName.HALFLING && unit !== RegularUnitName.WARD_HANDS) {
               unitsPerLand[landType].add(unit);
             }
           });

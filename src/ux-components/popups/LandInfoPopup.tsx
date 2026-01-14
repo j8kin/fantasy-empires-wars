@@ -126,10 +126,7 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
         <div className={commonStyles.characteristics}>
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Alignment:</span>
-            <span
-              className={commonStyles.value}
-              style={{ color: getAlignmentColor(landInfo.alignment) }}
-            >
+            <span className={commonStyles.value} style={{ color: getAlignmentColor(landInfo.alignment) }}>
               {landInfo.alignment}
             </span>
           </div>
@@ -146,11 +143,7 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
           </div>
           <div className={`${commonStyles.row} ${styles.row}`}>
             <span className={`${commonStyles.label} ${styles.label}`}>Controlled By:</span>
-            <span
-              className={commonStyles.value}
-              style={{ color: landInfo.color }}
-              data-testid="owner"
-            >
+            <span className={commonStyles.value} style={{ color: landInfo.color }} data-testid="owner">
               {landInfo.owner}
             </span>
           </div>
@@ -179,20 +172,14 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
                   <span className={`${commonStyles.label} ${styles.label}`}>Effects:</span>
                   <div className={styles.buildingsList}>
                     {landInfo.effects.map((effect, index) => (
-                      <span
-                        key={index}
-                        className={styles.hero}
-                        style={{ color: getEffectColor(effect.rules.type) }}
-                      >
+                      <span key={index} className={styles.hero} style={{ color: getEffectColor(effect.rules.type) }}>
                         {effect.sourceId} ({effect.rules.duration})
                       </span>
                     ))}
                   </div>
                 </div>
               )}
-              {(landInfo.heroes.length > 0 ||
-                landInfo.regulars.length > 0 ||
-                landInfo.warMachines.length > 0) && (
+              {(landInfo.heroes.length > 0 || landInfo.regulars.length > 0 || landInfo.warMachines.length > 0) && (
                 <>
                   {landInfo.heroes.length > 0 && (
                     <div className={`${commonStyles.row} ${styles.row}`}>

@@ -1,22 +1,12 @@
 import { getLandId } from '../../state/map/land/LandId';
-import {
-  getPlayer,
-  getTurnOwner,
-  hasActiveEffectByPlayer,
-  hasTreasureByPlayer,
-} from '../../selectors/playerSelectors';
+import { getPlayer, getTurnOwner, hasActiveEffectByPlayer, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import {
   getArmiesAtPosition,
   getArmiesAtPositionByPlayers,
   getMaxHeroLevelByType,
   isMoving,
 } from '../../selectors/armySelectors';
-import {
-  getLand,
-  getLandOwner,
-  getTilesInRadius,
-  hasActiveEffect,
-} from '../../selectors/landSelectors';
+import { getLand, getLandOwner, getTilesInRadius, hasActiveEffect } from '../../selectors/landSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import {
   removeLandEffect,
@@ -43,12 +33,7 @@ import { SpellName } from '../../types/Spell';
 import { Mana } from '../../types/Mana';
 import { TreasureName } from '../../types/Treasures';
 import { EffectKind } from '../../types/Effect';
-import {
-  HeroUnitName,
-  MAX_HERO_LEVEL,
-  RegularUnitName,
-  WarMachineName,
-} from '../../types/UnitType';
+import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName, WarMachineName } from '../../types/UnitType';
 
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
@@ -75,16 +60,11 @@ export const castSpell = (
   // https://github.com/j8kin/fantasy-empires-wars/wiki/Magic
 
   // double-check that land is correctly selected to reuse this method in AI turn
-  if (
-    spellName === SpellName.EXCHANGE ||
-    getValidMagicLands(state, spellName).includes(getLandId(mainAffectedLand!))
-  ) {
+  if (spellName === SpellName.EXCHANGE || getValidMagicLands(state, spellName).includes(getLandId(mainAffectedLand!))) {
     const spell = getSpellById(spellName);
 
     const isLandUnderProtection =
-      mainAffectedLand != null
-        ? hasActiveEffect(getLand(state, mainAffectedLand), TreasureName.AEGIS_SHARD)
-        : false;
+      mainAffectedLand != null ? hasActiveEffect(getLand(state, mainAffectedLand), TreasureName.AEGIS_SHARD) : false;
 
     if (spell.rules?.type === EffectKind.NEGATIVE && isLandUnderProtection) {
       // a negative spell should be canceled when land under protection
@@ -113,36 +93,22 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       if (hasActiveEffectByPlayer(player, SpellName.TURN_UNDEAD)) return;
 
       const maxClericLevel = getMaxHeroLevelByType(state, HeroUnitName.CLERIC);
-      updatedState = updatePlayerEffect(
-        updatedState,
-        player.id,
-        effectFactory(spell.type, state.turnOwner)
-      );
+      updatedState = updatePlayerEffect(updatedState, player.id, effectFactory(spell.type, state.turnOwner));
 
       const penaltyConfig = calculatePenaltyConfig(spell.penalty!, maxClericLevel);
 
-      updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos!, [
-        RegularUnitName.UNDEAD,
-      ]);
+      updatedState = applyArmyCasualtiesAtPosition(updatedState, penaltyConfig, landPos!, [RegularUnitName.UNDEAD]);
       break;
 
     case SpellName.VIEW_TERRITORY:
-      updatedState = updateLandEffect(
-        updatedState,
-        landPos,
-        effectFactory(spell.type, state.turnOwner)
-      );
+      updatedState = updateLandEffect(updatedState, landPos, effectFactory(spell.type, state.turnOwner));
       break;
 
     case SpellName.BLESSING:
       getTilesInRadius(getMapDimensions(updatedState), landPos, 1, false)
         .filter((l) => getLandOwner(updatedState, l) === updatedState.turnOwner)
         .forEach((l) => {
-          updatedState = updateLandEffect(
-            updatedState,
-            l,
-            effectFactory(spell.type, updatedState.turnOwner)
-          );
+          updatedState = updateLandEffect(updatedState, l, effectFactory(spell.type, updatedState.turnOwner));
         });
       break;
 
@@ -153,10 +119,7 @@ const castWhiteManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       return; // skip other school spells
   }
 
-  Object.assign(
-    state,
-    updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost)
-  );
+  Object.assign(state, updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost));
 };
 
 const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPosition): void => {
@@ -169,11 +132,7 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       break;
 
     case SpellName.ENTANGLING_ROOTS:
-      updatedState = updateLandEffect(
-        updatedState,
-        landPos,
-        effectFactory(spell.type, updatedState.turnOwner)
-      );
+      updatedState = updateLandEffect(updatedState, landPos, effectFactory(spell.type, updatedState.turnOwner));
       break;
 
     case SpellName.BEAST_ATTACK:
@@ -227,9 +186,7 @@ const castBlueManaSpell = (
     case SpellName.TELEPORT:
       // fallback should never happen
       if (secondLand != null && getLandOwner(updatedState, secondLand) === updatedState.turnOwner) {
-        const armiesToTeleport = getArmiesAtPositionByPlayers(updatedState, landPos!, [
-          updatedState.turnOwner,
-        ]);
+        const armiesToTeleport = getArmiesAtPositionByPlayers(updatedState, landPos!, [updatedState.turnOwner]);
         armiesToTeleport.forEach((army) => {
           updatedState = updateArmyInGameState(updatedState, {
             ...army,
@@ -245,10 +202,7 @@ const castBlueManaSpell = (
 
     case SpellName.EXCHANGE:
       const turnOwner = getTurnOwner(updatedState);
-      const addMana = calculateManaConversionAmount(
-        turnOwner.playerProfile.alignment,
-        exchangeMana!
-      );
+      const addMana = calculateManaConversionAmount(turnOwner.playerProfile.alignment, exchangeMana!);
 
       updatedState = updatePlayerMana(updatedState, updatedState.turnOwner, exchangeMana!, addMana);
       break;
@@ -257,21 +211,14 @@ const castBlueManaSpell = (
       return; // skip other school spells
   }
 
-  Object.assign(
-    state,
-    updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost)
-  );
+  Object.assign(state, updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost));
 };
 
 const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
   let updatedState: GameState = state;
   switch (spell.type) {
     case SpellName.EMBER_RAID:
-      updatedState = updateLandEffect(
-        updatedState,
-        landPos,
-        effectFactory(spell.type, updatedState.turnOwner)
-      );
+      updatedState = updateLandEffect(updatedState, landPos, effectFactory(spell.type, updatedState.turnOwner));
       // Delay all recruitment by incrementing turnsRemaining by 1
       updatedState = updateLandBuildingSlots(updatedState, landPos, (slots) =>
         slots.map((slot) => ({
@@ -284,8 +231,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
     case SpellName.FORGE_OF_WAR:
       const forgedUnitType: RegularUnitType =
         getLand(updatedState, landPos).land.unitsToRecruit.find(
-          (u) =>
-            isRegularUnit(u) && u !== RegularUnitName.WARD_HANDS && u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
+          (u) => isRegularUnit(u) && u !== RegularUnitName.WARD_HANDS && u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
         ) ?? RegularUnitName.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
 
       const newArmy = armyFactory(updatedState.turnOwner, landPos, {
@@ -319,10 +265,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       return; // skip other school spells
   }
 
-  Object.assign(
-    state,
-    updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost)
-  );
+  Object.assign(state, updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost));
 };
 
 const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPosition) => {
@@ -338,10 +281,7 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
         (a) => !isMoving(a) && a.controlledBy === updatedState.turnOwner
       );
       if (stationaryArmy != null) {
-        updatedState = updateArmyInGameState(
-          updatedState,
-          addRegulars(stationaryArmy, undeadSummoned)
-        );
+        updatedState = updateArmyInGameState(updatedState, addRegulars(stationaryArmy, undeadSummoned));
       } else {
         updatedState = addArmyToGameState(
           updatedState,
@@ -357,9 +297,7 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
     case SpellName.CORRUPTION:
       const land = getLand(updatedState, landPos);
       const isOwnedByTurnOwner = getLandOwner(updatedState, landPos) === updatedState.turnOwner;
-      const goldPerTurn = isOwnedByTurnOwner
-        ? land.land.goldPerTurn.max
-        : land.land.goldPerTurn.min;
+      const goldPerTurn = isOwnedByTurnOwner ? land.land.goldPerTurn.max : land.land.goldPerTurn.min;
 
       // change units to recruit based on land type
       const unitsToRecruit =
@@ -396,10 +334,7 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
       return; // skip other school spells
   }
 
-  Object.assign(
-    state,
-    updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost)
-  );
+  Object.assign(state, updatePlayerMana(updatedState, updatedState.turnOwner, spell.manaType, -spell.manaCost));
 };
 
 const applyEffectOnRandomLands = (

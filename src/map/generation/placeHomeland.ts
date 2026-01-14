@@ -86,9 +86,7 @@ export const placeHomeland = (gameState: GameState) => {
     if (freeToBuildLands.length === 0) {
       homeland = getRandomElement(
         Object.values(gameState.map.lands).filter(
-          (l) =>
-            gameState.players.every((p) => !hasLand(p, l.mapPos)) &&
-            l.land.alignment === playerProfile.alignment
+          (l) => gameState.players.every((p) => !hasLand(p, l.mapPos)) && l.land.alignment === playerProfile.alignment
         )
       );
     } else {

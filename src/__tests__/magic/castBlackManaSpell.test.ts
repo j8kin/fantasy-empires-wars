@@ -1,9 +1,5 @@
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import {
-  getArmiesAtPositionByPlayers,
-  getArmiesByPlayer,
-  getMaxHeroLevelByType,
-} from '../../selectors/armySelectors';
+import { getArmiesAtPositionByPlayers, getArmiesByPlayer, getMaxHeroLevelByType } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getLand, getPlayerLands } from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
@@ -54,19 +50,13 @@ describe('castBlackManaSpell', () => {
       expect(nNecromancers).toBeUndefined(); // no Necromancers on the map
 
       const playerLandPos = getPlayerLands(gameStateStub)[1].mapPos; // land[0] is Homeland and has default hero that is why use [1]
-      expect(
-        getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [gameStateStub.turnOwner])
-      ).toHaveLength(0);
+      expect(getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [gameStateStub.turnOwner])).toHaveLength(0);
 
       const blackMana = getTurnOwner(gameStateStub).mana.black;
       castSpell(gameStateStub, SpellName.SUMMON_UNDEAD, playerLandPos);
-      expect(getTurnOwner(gameStateStub).mana.black).toBe(
-        blackMana - getSpellById(SpellName.SUMMON_UNDEAD).manaCost
-      );
+      expect(getTurnOwner(gameStateStub).mana.black).toBe(blackMana - getSpellById(SpellName.SUMMON_UNDEAD).manaCost);
 
-      const undeadArmy = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
-        gameStateStub.turnOwner,
-      ]);
+      const undeadArmy = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [gameStateStub.turnOwner]);
       expect(undeadArmy).toHaveLength(1); // new army created
       expect(undeadArmy[0].regulars).toHaveLength(1); // only undead regulars
       expect(undeadArmy[0].regulars[0].type).toBe(RegularUnitName.UNDEAD);
@@ -80,9 +70,7 @@ describe('castBlackManaSpell', () => {
 
       castSpell(gameStateStub, SpellName.SUMMON_UNDEAD, playerLandPos);
 
-      const undeadArmies = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
-        gameStateStub.turnOwner,
-      ]);
+      const undeadArmies = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [gameStateStub.turnOwner]);
 
       expect(undeadArmies).toHaveLength(1); // not increased
       expect(undeadArmies[0].regulars).toHaveLength(1);
@@ -95,78 +83,64 @@ describe('castBlackManaSpell', () => {
       [1, 62],
       [16, 90],
       [32, 120],
-    ])(
-      'Number of UNDEAD units depends on max Necromancer level (%s): %s',
-      (maxLevel: number, summoned: number) => {
-        const playerLandPos = getPlayerLands(gameStateStub)[0].mapPos;
+    ])('Number of UNDEAD units depends on max Necromancer level (%s): %s', (maxLevel: number, summoned: number) => {
+      const playerLandPos = getPlayerLands(gameStateStub)[0].mapPos;
 
-        const necromancer = heroFactory(HeroUnitName.NECROMANCER, `Necromancer Level ${maxLevel}`);
+      const necromancer = heroFactory(HeroUnitName.NECROMANCER, `Necromancer Level ${maxLevel}`);
 
-        while (necromancer.level < maxLevel) {
-          levelUpHero(necromancer, Doctrine.MELEE);
-        }
-        expect(necromancer.level).toBe(maxLevel);
-        placeUnitsOnMap(necromancer, gameStateStub, playerLandPos);
-
-        castSpell(gameStateStub, SpellName.SUMMON_UNDEAD, playerLandPos);
-
-        const summonedUndead = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
-          gameStateStub.turnOwner,
-        ]).flatMap((r) => r.regulars);
-        expect(summonedUndead).toHaveLength(1);
-        expect(summonedUndead[0].type).toBe(RegularUnitName.UNDEAD);
-        expect(summonedUndead[0].rank).toBe(UnitRank.REGULAR);
-        expect(summonedUndead[0].count).toBe(summoned);
+      while (necromancer.level < maxLevel) {
+        levelUpHero(necromancer, Doctrine.MELEE);
       }
-    );
+      expect(necromancer.level).toBe(maxLevel);
+      placeUnitsOnMap(necromancer, gameStateStub, playerLandPos);
+
+      castSpell(gameStateStub, SpellName.SUMMON_UNDEAD, playerLandPos);
+
+      const summonedUndead = getArmiesAtPositionByPlayers(gameStateStub, playerLandPos, [
+        gameStateStub.turnOwner,
+      ]).flatMap((r) => r.regulars);
+      expect(summonedUndead).toHaveLength(1);
+      expect(summonedUndead[0].type).toBe(RegularUnitName.UNDEAD);
+      expect(summonedUndead[0].rank).toBe(UnitRank.REGULAR);
+      expect(summonedUndead[0].count).toBe(summoned);
+    });
   });
 
   describe('Cast PLAGUE spell', () => {
-    it.each([0, 1, 32])(
-      'Number of killed units NOT depends on max Necromancer level (%s)',
-      (maxLevel: number) => {
-        const playerLandPos = getPlayerLands(gameStateStub)[0].mapPos;
-        if (maxLevel > 0) {
-          const necromancer = heroFactory(HeroUnitName.NECROMANCER, `Necromancer Lvl ${maxLevel}`);
-          while (necromancer.level < maxLevel) {
-            levelUpHero(necromancer, Doctrine.MAGIC);
-          }
-          placeUnitsOnMap(necromancer, gameStateStub, playerLandPos);
+    it.each([0, 1, 32])('Number of killed units NOT depends on max Necromancer level (%s)', (maxLevel: number) => {
+      const playerLandPos = getPlayerLands(gameStateStub)[0].mapPos;
+      if (maxLevel > 0) {
+        const necromancer = heroFactory(HeroUnitName.NECROMANCER, `Necromancer Lvl ${maxLevel}`);
+        while (necromancer.level < maxLevel) {
+          levelUpHero(necromancer, Doctrine.MAGIC);
         }
-
-        // change turn Owner to Opponent and place Opponent army
-        const opponentLandPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0]
-          .mapPos;
-        gameStateStub.turnOwner = gameStateStub.players[1].id;
-        placeUnitsOnMap(regularsFactory(RegularUnitName.ORC, 120), gameStateStub, opponentLandPos);
-        gameStateStub.turnOwner = gameStateStub.players[0].id;
-
-        randomSpy.mockReturnValue(0.99); // maximize damage from spell to make test stable
-        castSpell(gameStateStub, SpellName.PLAGUE, opponentLandPos);
-
-        expect(
-          getArmiesAtPositionByPlayers(gameStateStub, opponentLandPos, [
-            gameStateStub.players[1].id,
-          ])
-        ).toHaveLength(2);
-
-        const regulars = getArmiesAtPositionByPlayers(gameStateStub, opponentLandPos, [
-          gameStateStub.players[1].id,
-        ]).flatMap((r) => r.regulars);
-
-        expect(regulars).toHaveLength(1); // only orcs
-        expect(regulars[0].count).toBe(120 - 48);
+        placeUnitsOnMap(necromancer, gameStateStub, playerLandPos);
       }
-    );
+
+      // change turn Owner to Opponent and place Opponent army
+      const opponentLandPos = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      placeUnitsOnMap(regularsFactory(RegularUnitName.ORC, 120), gameStateStub, opponentLandPos);
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+
+      randomSpy.mockReturnValue(0.99); // maximize damage from spell to make test stable
+      castSpell(gameStateStub, SpellName.PLAGUE, opponentLandPos);
+
+      expect(getArmiesAtPositionByPlayers(gameStateStub, opponentLandPos, [gameStateStub.players[1].id])).toHaveLength(
+        2
+      );
+
+      const regulars = getArmiesAtPositionByPlayers(gameStateStub, opponentLandPos, [
+        gameStateStub.players[1].id,
+      ]).flatMap((r) => r.regulars);
+
+      expect(regulars).toHaveLength(1); // only orcs
+      expect(regulars[0].count).toBe(120 - 48);
+    });
   });
 
   describe('Cast CORRUPTION spell', () => {
-    const affectedLandKinds: LandType[] = [
-      LandName.MOUNTAINS,
-      LandName.PLAINS,
-      LandName.GREEN_FOREST,
-      LandName.HILLS,
-    ];
+    const affectedLandKinds: LandType[] = [LandName.MOUNTAINS, LandName.PLAINS, LandName.GREEN_FOREST, LandName.HILLS];
 
     it('CORRUPTION Could be cast only radius 2 STRONGHOLD', () => {
       const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
@@ -176,9 +150,7 @@ describe('castBlackManaSpell', () => {
 
       const blackMana = getTurnOwner(gameStateStub).mana.black;
       castSpell(gameStateStub, SpellName.CORRUPTION, castPosition);
-      expect(getTurnOwner(gameStateStub).mana.black).toBe(
-        blackMana - getSpellById(SpellName.CORRUPTION).manaCost
-      );
+      expect(getTurnOwner(gameStateStub).mana.black).toBe(blackMana - getSpellById(SpellName.CORRUPTION).manaCost);
       expect(getLand(gameStateStub, castPosition).corrupted).toBeTruthy();
       expect(getLand(gameStateStub, castPosition).goldPerTurn).toBe(
         getLand(gameStateStub, castPosition).land.goldPerTurn.max
@@ -203,42 +175,39 @@ describe('castBlackManaSpell', () => {
       expect(getLand(gameStateStub, castPosition).corrupted).toBeFalsy();
     });
 
-    it.each([...affectedLandKinds])(
-      'Only %s land type is affected by CURRUPTION spell',
-      (landKind: LandType) => {
-        const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
-        let castPosition: LandPosition = { row: homelandPos.row + 1, col: homelandPos.col };
-        getLand(gameStateStub, castPosition).land = getLandById(landKind);
-        expect(getLand(gameStateStub, castPosition).corrupted).toBeFalsy();
+    it.each([...affectedLandKinds])('Only %s land type is affected by CURRUPTION spell', (landKind: LandType) => {
+      const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
+      let castPosition: LandPosition = { row: homelandPos.row + 1, col: homelandPos.col };
+      getLand(gameStateStub, castPosition).land = getLandById(landKind);
+      expect(getLand(gameStateStub, castPosition).corrupted).toBeFalsy();
 
-        castSpell(gameStateStub, SpellName.CORRUPTION, castPosition);
-        const corruptedLand = getLand(gameStateStub, castPosition);
-        expect(corruptedLand.corrupted).toBeTruthy();
+      castSpell(gameStateStub, SpellName.CORRUPTION, castPosition);
+      const corruptedLand = getLand(gameStateStub, castPosition);
+      expect(corruptedLand.corrupted).toBeTruthy();
 
-        let availableForRecruit: UnitType[];
-        if (landKind === LandName.GREEN_FOREST) {
-          availableForRecruit = [
-            RegularUnitName.ORC,
-            RegularUnitName.DARK_ELF,
-            WarMachineName.BALLISTA,
-            WarMachineName.CATAPULT,
-            WarMachineName.SIEGE_TOWER,
-            WarMachineName.BATTERING_RAM,
-            HeroUnitName.SHADOW_BLADE,
-          ];
-        } else {
-          availableForRecruit = [
-            RegularUnitName.ORC,
-            WarMachineName.BALLISTA,
-            WarMachineName.CATAPULT,
-            WarMachineName.SIEGE_TOWER,
-            WarMachineName.BATTERING_RAM,
-            HeroUnitName.OGR,
-          ];
-        }
-        expect(corruptedLand.land.unitsToRecruit).toEqual(availableForRecruit);
+      let availableForRecruit: UnitType[];
+      if (landKind === LandName.GREEN_FOREST) {
+        availableForRecruit = [
+          RegularUnitName.ORC,
+          RegularUnitName.DARK_ELF,
+          WarMachineName.BALLISTA,
+          WarMachineName.CATAPULT,
+          WarMachineName.SIEGE_TOWER,
+          WarMachineName.BATTERING_RAM,
+          HeroUnitName.SHADOW_BLADE,
+        ];
+      } else {
+        availableForRecruit = [
+          RegularUnitName.ORC,
+          WarMachineName.BALLISTA,
+          WarMachineName.CATAPULT,
+          WarMachineName.SIEGE_TOWER,
+          WarMachineName.BATTERING_RAM,
+          HeroUnitName.OGR,
+        ];
       }
-    );
+      expect(corruptedLand.land.unitsToRecruit).toEqual(availableForRecruit);
+    });
 
     it.each(
       Object.values(LandName)

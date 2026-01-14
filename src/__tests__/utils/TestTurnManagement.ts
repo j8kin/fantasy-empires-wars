@@ -77,9 +77,7 @@ export class TestTurnManagement {
     // new Owner's turn
     expect(this.gameStateStub!.turnPhase).toBe(TurnPhase.START);
     expect(this.gameStateStub!.turnOwner).not.toBe(cTurnOwner);
-    expect(this.gameStateStub!.turn).toBe(
-      getTurnOwner(this.gameStateStub!).playerType === 'human' ? cTurn + 1 : cTurn
-    );
+    expect(this.gameStateStub!.turn).toBe(getTurnOwner(this.gameStateStub!).playerType === 'human' ? cTurn + 1 : cTurn);
   };
 
   /**

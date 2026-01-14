@@ -161,9 +161,7 @@ describe('ErrorMessagePopup', () => {
       render(<ErrorMessagePopup screenPosition={mockScreenPosition} />);
 
       // Check that the message div contains the newline text
-      const message = screen.getByText(
-        (content) => content.includes('Line 1') && content.includes('Line 2')
-      );
+      const message = screen.getByText((content) => content.includes('Line 1') && content.includes('Line 2'));
       expect(message).toBeInTheDocument();
       expect(message.textContent).toBe('Line 1\nLine 2\nLine 3');
     });

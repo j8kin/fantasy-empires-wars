@@ -1,12 +1,7 @@
 import { getLandId } from '../../state/map/land/LandId';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { findArmyById, getArmiesAtPosition } from '../../selectors/armySelectors';
-import {
-  getLand,
-  getLandInfo,
-  getPlayerLands,
-  hasActiveEffect,
-} from '../../selectors/landSelectors';
+import { getLand, getLandInfo, getPlayerLands, hasActiveEffect } from '../../selectors/landSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';
@@ -123,17 +118,13 @@ describe('castWhiteManaSpell', () => {
       const armies = getArmiesAtPosition(gameStateStub, opponentLand);
       expect(armies).toHaveLength(3); // initial hero, undead army and warrior army
 
-      const undeadArmy = armies.find((a) =>
-        a.regulars.some((u) => u.type === RegularUnitName.UNDEAD)
-      );
+      const undeadArmy = armies.find((a) => a.regulars.some((u) => u.type === RegularUnitName.UNDEAD));
       expect(undeadArmy).toBeDefined();
       expect(undeadArmy?.regulars).toHaveLength(1);
       expect(undeadArmy?.regulars[0].type).toBe(RegularUnitName.UNDEAD);
       expect(undeadArmy?.regulars[0].count).toBe(58); // ceil(60 * (1 + 1 / 32)) = 62 - spell killed only 62 undead units
 
-      const warriorArmy = armies.find((a) =>
-        a.regulars.some((u) => u.type === RegularUnitName.WARRIOR)
-      );
+      const warriorArmy = armies.find((a) => a.regulars.some((u) => u.type === RegularUnitName.WARRIOR));
       expect(warriorArmy).toBeDefined();
       expect(warriorArmy?.regulars).toHaveLength(1);
       expect(warriorArmy?.regulars[0].type).toBe(RegularUnitName.WARRIOR);
@@ -158,27 +149,21 @@ describe('castWhiteManaSpell', () => {
       );
       const opponentLand = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[0].mapPos;
       let availableToCastSpellLands = getValidMagicLands(gameStateStub, SpellName.TURN_UNDEAD);
-      expect(
-        opponetLands.every((landId) => availableToCastSpellLands.includes(landId))
-      ).toBeTruthy();
+      expect(opponetLands.every((landId) => availableToCastSpellLands.includes(landId))).toBeTruthy();
 
       /*********** CALL SUT **************/
       castSpell(gameStateStub, SpellName.TURN_UNDEAD, opponentLand);
       /***********************************/
 
       availableToCastSpellLands = getValidMagicLands(gameStateStub, SpellName.TURN_UNDEAD);
-      expect(
-        opponetLands.every((landId) => availableToCastSpellLands.includes(landId))
-      ).toBeFalsy();
+      expect(opponetLands.every((landId) => availableToCastSpellLands.includes(landId))).toBeFalsy();
 
       /*********** MAKE A TURN **************/
       testTurnManagement.makeNTurns(1);
       /**************************************/
 
       availableToCastSpellLands = getValidMagicLands(gameStateStub, SpellName.TURN_UNDEAD);
-      expect(
-        opponetLands.every((landId) => availableToCastSpellLands.includes(landId))
-      ).toBeTruthy();
+      expect(opponetLands.every((landId) => availableToCastSpellLands.includes(landId))).toBeTruthy();
 
       /*********** CLEANUP **************/
       jest.runOnlyPendingTimers();
@@ -222,9 +207,7 @@ describe('castWhiteManaSpell', () => {
 
       const whiteMana = getTurnOwner(gameStateStub).mana.white;
       castSpell(gameStateStub, SpellName.VIEW_TERRITORY, opponentLand);
-      expect(getTurnOwner(gameStateStub).mana.white).toBe(
-        whiteMana - getSpellById(SpellName.VIEW_TERRITORY).manaCost
-      );
+      expect(getTurnOwner(gameStateStub).mana.white).toBe(whiteMana - getSpellById(SpellName.VIEW_TERRITORY).manaCost);
 
       // verify that effect added to the land
       const land = getLand(gameStateStub, opponentLand);
@@ -257,9 +240,7 @@ describe('castWhiteManaSpell', () => {
 
       const whiteMana = getTurnOwner(gameStateStub).mana.white;
       castSpell(gameStateStub, SpellName.BLESSING, homelandPos);
-      expect(getTurnOwner(gameStateStub).mana.white).toBe(
-        whiteMana - getSpellById(SpellName.BLESSING).manaCost
-      );
+      expect(getTurnOwner(gameStateStub).mana.white).toBe(whiteMana - getSpellById(SpellName.BLESSING).manaCost);
 
       // central land is affected
       const homeland = getLand(gameStateStub, homelandPos);
@@ -269,9 +250,7 @@ describe('castWhiteManaSpell', () => {
       expect(homeland.effects[0].appliedBy).toBe(gameStateStub.turnOwner);
       expect(homeland.effects[0].rules.duration).toBe(3);
 
-      expect(
-        getPlayerLands(gameStateStub).filter((l) => hasActiveEffect(l, SpellName.BLESSING))
-      ).toHaveLength(7);
+      expect(getPlayerLands(gameStateStub).filter((l) => hasActiveEffect(l, SpellName.BLESSING))).toHaveLength(7);
     });
   });
 });

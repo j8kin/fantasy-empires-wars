@@ -14,10 +14,7 @@ import { Mana } from '../types/Mana';
 import type { GameState } from '../state/GameState';
 import type { EmpireEvent } from '../types/EmpireEvent';
 
-export const startTurn = (
-  gameState: GameState,
-  onEmpireEventResults?: (results: EmpireEvent[]) => void
-) => {
+export const startTurn = (gameState: GameState, onEmpireEventResults?: (results: EmpireEvent[]) => void) => {
   if (gameState.turn === 1) {
     // on first turn place players randomly on a map
     placeHomeland(gameState);
@@ -38,10 +35,7 @@ export const startTurn = (
   changeOwner(gameState);
 
   const questStatus = completeQuest(gameState);
-  if (
-    player.playerType === 'human' &&
-    (questStatus.length > 0 || heroRecruitingStatus.length > 0)
-  ) {
+  if (player.playerType === 'human' && (questStatus.length > 0 || heroRecruitingStatus.length > 0)) {
     onEmpireEventResults?.([...questStatus, ...heroRecruitingStatus]);
   }
 
@@ -55,10 +49,7 @@ export const startTurn = (
   // OBSIDIAN_CHALICE effect: convert 10% of income to 0.1% of black mana
   if (hasObsidianChalice) {
     // 10% reduction is already applied in `calculatePlayerIncome`
-    Object.assign(
-      gameState,
-      updatePlayerMana(gameState, player.id, Mana.BLACK, currentIncome * 0.001)
-    );
+    Object.assign(gameState, updatePlayerMana(gameState, player.id, Mana.BLACK, currentIncome * 0.001));
   }
 
   // Update vault and mana after turn 2

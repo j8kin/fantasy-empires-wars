@@ -12,12 +12,8 @@ import { BuildingName } from '../../types/Building';
 import type { BuildingType } from '../../types/Building';
 
 const ConstructBuildingDialog: React.FC = () => {
-  const {
-    showConstructBuildingDialog,
-    setShowConstructBuildingDialog,
-    setSelectedLandAction,
-    addGlowingTile,
-  } = useApplicationContext();
+  const { showConstructBuildingDialog, setShowConstructBuildingDialog, setSelectedLandAction, addGlowingTile } =
+    useApplicationContext();
   const { gameState } = useGameContext();
 
   const handleClose = useCallback(() => {
@@ -56,8 +52,7 @@ const ConstructBuildingDialog: React.FC = () => {
     }
   }
 
-  const isStrongholdAllowed =
-    getAvailableToConstructLands(gameState, BuildingName.STRONGHOLD).length > 0;
+  const isStrongholdAllowed = getAvailableToConstructLands(gameState, BuildingName.STRONGHOLD).length > 0;
 
   const availableBuildings = getAllowedBuildings(turnOwner).filter(
     (building) => building.type !== BuildingName.STRONGHOLD || isStrongholdAllowed

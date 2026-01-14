@@ -116,13 +116,7 @@ jest.mock('../../../ux-components/fantasy-book-dialog-template/FlipBookPage', ()
         <h3>{header}</h3>
         <p>{description}</p>
         {iconPath && onIconClick && (
-          <img
-            data-testid="flipbook-icon"
-            src={iconPath}
-            alt={header}
-            onClick={onIconClick}
-            role="img"
-          />
+          <img data-testid="flipbook-icon" src={iconPath} alt={header} onClick={onIconClick} role="img" />
         )}
         {iconPath && !onIconClick && (
           <img data-testid="flipbook-icon-non-clickable" src={iconPath} alt={header} role="img" />
@@ -547,9 +541,7 @@ describe('EmpireTreasureDialog', () => {
 
       // Click first item and verify it sets the correct ID
       await user.click(icons[0]);
-      expect(mockApplicationContext.setSelectedLandAction).toHaveBeenCalledWith(
-        `ITEM: ${item1.id}`
-      );
+      expect(mockApplicationContext.setSelectedLandAction).toHaveBeenCalledWith(`ITEM: ${item1.id}`);
     });
   });
 

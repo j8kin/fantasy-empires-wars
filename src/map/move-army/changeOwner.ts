@@ -1,10 +1,4 @@
-import {
-  getHostileLands,
-  getLand,
-  getLandOwner,
-  getTilesInRadius,
-  hasBuilding,
-} from '../../selectors/landSelectors';
+import { getHostileLands, getLand, getLandOwner, getTilesInRadius, hasBuilding } from '../../selectors/landSelectors';
 import { addPlayerLand, removeLandEffect, removePlayerLand } from '../../systems/gameStateActions';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { hasArmiesAtPositionByPlayer } from '../../selectors/armySelectors';
@@ -24,9 +18,7 @@ export const changeOwner = (gameState: GameState): void => {
     const prevOwner = getLandOwner(updatedState, land.mapPos);
     if (prevOwner !== turnOwner.id && prevOwner !== NO_PLAYER.id) {
       updatedState = removePlayerLand(updatedState, prevOwner, land.mapPos);
-      const deedOfReclamation = land.effects.find(
-        (e) => e.sourceId === TreasureName.DEED_OF_RECLAMATION
-      );
+      const deedOfReclamation = land.effects.find((e) => e.sourceId === TreasureName.DEED_OF_RECLAMATION);
       if (deedOfReclamation != null) {
         updatedState = removeLandEffect(updatedState, land.mapPos, deedOfReclamation.id);
       }

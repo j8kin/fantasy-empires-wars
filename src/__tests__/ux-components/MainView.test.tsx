@@ -60,9 +60,7 @@ jest.mock('../../ux-components/dialogs/NewGameDialog', () => {
     return (
       <div data-testid="NewGameDialog">
         <button>Start Game</button>
-        <button onClick={() => showSelectOpponentDialogWithConfig([], () => {}, true)}>
-          Show Select Opponent
-        </button>
+        <button onClick={() => showSelectOpponentDialogWithConfig([], () => {}, true)}>Show Select Opponent</button>
       </div>
     );
   };

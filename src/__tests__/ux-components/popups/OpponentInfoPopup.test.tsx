@@ -74,14 +74,10 @@ describe('OpponentInfoPopup', () => {
       getPlayerTiles: jest.fn(),
     });
 
-    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id].status =
-      DiplomacyStatus.NO_TREATY;
-    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id].status =
-      DiplomacyStatus.NO_TREATY;
-    gameStateStub.players[2].diplomacy[gameStateStub.players[0].id].status =
-      DiplomacyStatus.NO_TREATY;
-    gameStateStub.players[0].diplomacy[gameStateStub.players[2].id].status =
-      DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[1].diplomacy[gameStateStub.players[0].id].status = DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[1].id].status = DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[2].diplomacy[gameStateStub.players[0].id].status = DiplomacyStatus.NO_TREATY;
+    gameStateStub.players[0].diplomacy[gameStateStub.players[2].id].status = DiplomacyStatus.NO_TREATY;
   });
 
   it('returns null when opponent is null or undefined', () => {
@@ -115,10 +111,7 @@ describe('OpponentInfoPopup', () => {
     expect(avatar).toHaveAttribute('data-player-name', gameStateStub.players[1].playerProfile.name);
     expect(avatar).toHaveAttribute('data-size', '55');
     expect(avatar).toHaveAttribute('data-shape', 'rectangle');
-    expect(avatar).toHaveAttribute(
-      'data-border-color',
-      getPlayerColorValue(gameStateStub.players[1].color)
-    );
+    expect(avatar).toHaveAttribute('data-border-color', getPlayerColorValue(gameStateStub.players[1].color));
   });
 
   it('displays race information', () => {
@@ -151,9 +144,7 @@ describe('OpponentInfoPopup', () => {
     );
 
     expect(screen.getByText('Level:')).toBeInTheDocument();
-    expect(
-      screen.getByText(gameStateStub.players[1].playerProfile.level.toString())
-    ).toBeInTheDocument();
+    expect(screen.getByText(gameStateStub.players[1].playerProfile.level.toString())).toBeInTheDocument();
   });
 
   describe('diplomacy status display', () => {
@@ -169,10 +160,8 @@ describe('OpponentInfoPopup', () => {
     });
 
     it('displays "Peace" status correctly', () => {
-      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id].status =
-        DiplomacyStatus.PEACE;
-      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id].status =
-        DiplomacyStatus.PEACE;
+      gameStateStub.players[2].diplomacy[gameStateStub.players[0].id].status = DiplomacyStatus.PEACE;
+      gameStateStub.players[0].diplomacy[gameStateStub.players[2].id].status = DiplomacyStatus.PEACE;
 
       render(
         <ApplicationContextProvider>

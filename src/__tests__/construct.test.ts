@@ -29,8 +29,7 @@ describe('Construct Buildings', () => {
   const player1Id = PREDEFINED_PLAYERS[0].id;
   const player2Id = PREDEFINED_PLAYERS[1].id;
 
-  const getLandsInRadius = (mapPos: LandPosition) =>
-    getTilesInRadius(gameStateStub.map.dimensions, mapPos, 1);
+  const getLandsInRadius = (mapPos: LandPosition) => getTilesInRadius(gameStateStub.map.dimensions, mapPos, 1);
 
   beforeEach(() => {
     // clear map to remove all armies and buildings
@@ -84,11 +83,7 @@ describe('Construct Buildings', () => {
 
       Object.assign(
         gameStateStub,
-        addPlayerEmpireTreasure(
-          gameStateStub,
-          player1Id,
-          relictFactory(TreasureName.CROWN_OF_DOMINION)
-        )
+        addPlayerEmpireTreasure(gameStateStub, player1Id, relictFactory(TreasureName.CROWN_OF_DOMINION))
       );
 
       expect(getTurnOwner(gameStateStub).vault).toBe(200000);
@@ -140,9 +135,7 @@ describe('Construct Buildings', () => {
       expect(gameStateStub.map.lands[getLandId(strongholdPos)].buildings).toHaveLength(0);
 
       // barracks is not destroyed
-      expect(gameStateStub.map.lands[getLandId(buildingPos)].buildings[0].type).toBe(
-        BuildingName.BARRACKS
-      );
+      expect(gameStateStub.map.lands[getLandId(buildingPos)].buildings[0].type).toBe(BuildingName.BARRACKS);
 
       // no player lands exist
       expect(getPlayerLands(gameStateStub, player1Id)).toHaveLength(0);

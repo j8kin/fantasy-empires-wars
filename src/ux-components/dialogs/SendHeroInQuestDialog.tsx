@@ -15,12 +15,8 @@ import type { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 import type { HeroState } from '../../state/army/HeroState';
 
 const SendHeroInQuestDialog: React.FC = () => {
-  const {
-    showSendHeroInQuestDialog,
-    setShowSendHeroInQuestDialog,
-    setActionLandPosition,
-    actionLandPosition,
-  } = useApplicationContext();
+  const { showSendHeroInQuestDialog, setShowSendHeroInQuestDialog, setActionLandPosition, actionLandPosition } =
+    useApplicationContext();
   const { gameState } = useGameContext();
 
   // Shared state to track used slots across all pages
@@ -75,9 +71,7 @@ const SendHeroInQuestDialog: React.FC = () => {
 
   if (!showSendHeroInQuestDialog || actionLandPosition == null || gameState == null) return null;
 
-  const availableUnits = getArmiesAtPosition(gameState, actionLandPosition).flatMap(
-    (armyUnit) => armyUnit.heroes
-  );
+  const availableUnits = getArmiesAtPosition(gameState, actionLandPosition).flatMap((armyUnit) => armyUnit.heroes);
 
   const slots: Slot[] = availableUnits.map((hero) => ({
     id: hero.name,

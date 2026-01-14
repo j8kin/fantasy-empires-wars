@@ -175,9 +175,7 @@ describe('TopPanel Component', () => {
   describe('Opponents Panel Integration', () => {
     it('renders with minimum opponents when no opponents array provided', () => {
       // Test with empty game state
-      const TestComponentWithMinOpponents: React.FC<{ children: React.ReactNode }> = ({
-        children,
-      }) => {
+      const TestComponentWithMinOpponents: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const { updateGameState, gameState } = useGameContext();
         React.useEffect(() => {
           if (!gameState) {

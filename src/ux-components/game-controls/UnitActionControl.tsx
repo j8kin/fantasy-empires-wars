@@ -8,24 +8,14 @@ import { useGameContext } from '../../contexts/GameContext';
 
 import { getLandId } from '../../state/map/land/LandId';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import {
-  findAllHeroesOnMap,
-  getArmiesByPlayer,
-  getPosition,
-  isMoving,
-} from '../../selectors/armySelectors';
+import { findAllHeroesOnMap, getArmiesByPlayer, getPosition, isMoving } from '../../selectors/armySelectors';
 import { hasAvailableSlot } from '../../selectors/buildingSelectors';
 import { getPlayerLands } from '../../selectors/landSelectors';
 import { ButtonName } from '../../types/ButtonName';
 
 const UnitActionControl: React.FC = () => {
-  const {
-    addGlowingTile,
-    clearAllGlow,
-    setSelectedLandAction,
-    setErrorMessagePopupMessage,
-    setShowErrorMessagePopup,
-  } = useApplicationContext();
+  const { addGlowingTile, clearAllGlow, setSelectedLandAction, setErrorMessagePopupMessage, setShowErrorMessagePopup } =
+    useApplicationContext();
   const { gameState } = useGameContext();
 
   const handleShowRecruitArmyDialog = useCallback(
@@ -38,9 +28,7 @@ const UnitActionControl: React.FC = () => {
       event.stopPropagation();
 
       // Get all lands owned by current player with BARRACKS or Mage Towers that have available slots
-      const recruitmentLands = getPlayerLands(gameState).filter((l) =>
-        l.buildings.some((b) => hasAvailableSlot(b))
-      );
+      const recruitmentLands = getPlayerLands(gameState).filter((l) => l.buildings.some((b) => hasAvailableSlot(b)));
       if (recruitmentLands.length === 0) {
         if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
           setErrorMessagePopupMessage('No mustering grounds stand ready here.');

@@ -14,12 +14,7 @@ import { startMovement } from '../../map/move-army/startMovement';
 import { ButtonName } from '../../types/ButtonName';
 import { UnitRank } from '../../state/army/RegularsState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
-import type {
-  ArmyBriefInfo,
-  HeroBriefInfo,
-  RegularsBriefInfo,
-  WarMachinesBriefInfo,
-} from '../../state/army/ArmyState';
+import type { ArmyBriefInfo, HeroBriefInfo, RegularsBriefInfo, WarMachinesBriefInfo } from '../../state/army/ArmyState';
 import type { HeroUnitType, RegularUnitType, WarMachineType } from '../../types/UnitType';
 import type { UnitRankType } from '../../state/army/RegularsState';
 import { EmpireEventKind } from '../../types/EmpireEvent';
@@ -33,9 +28,7 @@ const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {
   const consolidatedRegulars: { id: RegularUnitType; rank: UnitRankType; count: number }[] = [];
 
   army.regulars.forEach((unit) => {
-    const existingIdx = consolidatedRegulars.findIndex(
-      (u) => u.id === unit.id && u.rank === unit.rank
-    );
+    const existingIdx = consolidatedRegulars.findIndex((u) => u.id === unit.id && u.rank === unit.rank);
 
     if (existingIdx !== -1) {
       // Merge with existing unit
@@ -111,9 +104,7 @@ const MoveArmyDialog: React.FC = () => {
       return;
     }
 
-    const stationedArmy = getArmiesAtPosition(gameState, moveArmyPath.from).filter(
-      (a) => !isMoving(a)
-    );
+    const stationedArmy = getArmiesAtPosition(gameState, moveArmyPath.from).filter((a) => !isMoving(a));
 
     if (stationedArmy == null || stationedArmy.length === 0) {
       fromUnitsRef.current = undefined;
@@ -159,25 +150,19 @@ const MoveArmyDialog: React.FC = () => {
 
   if (!moveArmyPath || !gameState) return null;
 
-  const stationedArmy = getArmiesAtPosition(gameState, moveArmyPath.from).filter(
-    (a) => !isMoving(a)
-  );
+  const stationedArmy = getArmiesAtPosition(gameState, moveArmyPath.from).filter((a) => !isMoving(a));
 
   if (stationedArmy == null || stationedArmy.length === 0) return null;
 
   const handleMove = () => {
     if (!moveArmyPath || !toUnits) return;
     const toOwner = getLandOwner(gameState, moveArmyPath.to);
-    const isWar =
-      getDiplomacyStatus(gameState, gameState!.turnOwner, toOwner) === DiplomacyStatus.WAR;
+    const isWar = getDiplomacyStatus(gameState, gameState!.turnOwner, toOwner) === DiplomacyStatus.WAR;
 
     const newGameState = startMovement(gameState, moveArmyPath.from, moveArmyPath.to, toUnits);
     setMoveArmyPath(undefined);
 
-    if (
-      !isWar &&
-      getDiplomacyStatus(newGameState, newGameState?.turnOwner, toOwner) === DiplomacyStatus.WAR
-    ) {
+    if (!isWar && getDiplomacyStatus(newGameState, newGameState?.turnOwner, toOwner) === DiplomacyStatus.WAR) {
       showEmpireEvents([
         {
           status: EmpireEventKind.Negative,
@@ -364,9 +349,7 @@ const MoveArmyDialog: React.FC = () => {
       }
 
       // Add/Increment to destination
-      const existingUnitIndex = toArray.warMachines.findIndex(
-        (u) => u.type === warMachineUnit.type
-      );
+      const existingUnitIndex = toArray.warMachines.findIndex((u) => u.type === warMachineUnit.type);
 
       let newToWarMachines;
       if (existingUnitIndex >= 0) {
@@ -580,15 +563,9 @@ const MoveArmyDialog: React.FC = () => {
                   <div className={styles.emptyMessage}>No units selected</div>
                 ) : (
                   <>
-                    {fromUnits.heroes.map((hero, index) =>
-                      renderHeroUnit(hero, index, fromUnits, 'right')
-                    )}
-                    {fromUnits.regulars.map((unit, index) =>
-                      renderRegularUnit(unit, index, fromUnits, 'right')
-                    )}
-                    {fromUnits.warMachines.map((unit, index) =>
-                      renderWarMachineUnit(unit, index, fromUnits, 'right')
-                    )}
+                    {fromUnits.heroes.map((hero, index) => renderHeroUnit(hero, index, fromUnits, 'right'))}
+                    {fromUnits.regulars.map((unit, index) => renderRegularUnit(unit, index, fromUnits, 'right'))}
+                    {fromUnits.warMachines.map((unit, index) => renderWarMachineUnit(unit, index, fromUnits, 'right'))}
                   </>
                 )}
               </div>
@@ -596,35 +573,19 @@ const MoveArmyDialog: React.FC = () => {
 
             {/* Transfer buttons */}
             <div className={styles.transferButtons}>
-              <button
-                className={styles.transferButton}
-                onClick={() => moveAll('right')}
-                disabled={fromUnits == null}
-              >
+              <button className={styles.transferButton} onClick={() => moveAll('right')} disabled={fromUnits == null}>
                 Move All →
               </button>
 
-              <button
-                className={styles.transferButton}
-                onClick={() => moveHalf('right')}
-                disabled={fromUnits == null}
-              >
+              <button className={styles.transferButton} onClick={() => moveHalf('right')} disabled={fromUnits == null}>
                 Move Half →
               </button>
 
-              <button
-                className={styles.transferButton}
-                onClick={() => moveHalf('left')}
-                disabled={toUnits == null}
-              >
+              <button className={styles.transferButton} onClick={() => moveHalf('left')} disabled={toUnits == null}>
                 ← Move Half
               </button>
 
-              <button
-                className={styles.transferButton}
-                onClick={() => moveAll('left')}
-                disabled={toUnits == null}
-              >
+              <button className={styles.transferButton} onClick={() => moveAll('left')} disabled={toUnits == null}>
                 ← Move All
               </button>
             </div>
@@ -637,15 +598,9 @@ const MoveArmyDialog: React.FC = () => {
                   <div className={styles.emptyMessage}>No units selected</div>
                 ) : (
                   <>
-                    {toUnits.heroes.map((hero, index) =>
-                      renderHeroUnit(hero, index, toUnits, 'left')
-                    )}
-                    {toUnits.regulars.map((unit, index) =>
-                      renderRegularUnit(unit, index, toUnits, 'left')
-                    )}
-                    {toUnits.warMachines.map((unit, index) =>
-                      renderWarMachineUnit(unit, index, toUnits, 'left')
-                    )}
+                    {toUnits.heroes.map((hero, index) => renderHeroUnit(hero, index, toUnits, 'left'))}
+                    {toUnits.regulars.map((unit, index) => renderRegularUnit(unit, index, toUnits, 'left'))}
+                    {toUnits.warMachines.map((unit, index) => renderWarMachineUnit(unit, index, toUnits, 'left'))}
                   </>
                 )}
               </div>

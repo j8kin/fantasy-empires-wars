@@ -255,8 +255,7 @@ const descriptions: Record<UnitType, string> = {
     'Bearing hammers that have shattered both stone and legend, Hammerlords are dwarven paragons of strength and unyielding resolve.',
   [HeroUnitName.OGR]:
     'Once feared as destroyers, the Ogr champions now fight with grim purpose—seeking to silence all who dare wield the arcane.',
-  [HeroUnitName.SHADOW_BLADE]:
-    'A silent killer born of twilight, where loyalty is as thin as moonlight.',
+  [HeroUnitName.SHADOW_BLADE]: 'A silent killer born of twilight, where loyalty is as thin as moonlight.',
   [HeroUnitName.RANGER]:
     'Keepers of forgotten groves, Rangers walk unseen between root and shadow, striking swiftly to preserve the wild balance of Orrivane.',
   [HeroUnitName.PYROMANCER]:

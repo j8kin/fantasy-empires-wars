@@ -25,8 +25,7 @@ export const isMoving = (state: ArmyState): boolean => {
   return state.movement.path.length !== 1;
 };
 
-export const getPosition = (state: ArmyState): LandPosition =>
-  state.movement.path[state.movement.progress];
+export const getPosition = (state: ArmyState): LandPosition => state.movement.path[state.movement.progress];
 
 // GameState army selectors (operating on the entire game state)
 /**
@@ -42,9 +41,7 @@ export const getArmiesAtPosition = (gameState: GameState, position: LandPosition
       );
     } else {
       // For stationary armies, check if they're stationed at this position
-      return (
-        army.movement.path.length > 0 && getLandId(army.movement.path[0]) === getLandId(position)
-      );
+      return army.movement.path.length > 0 && getLandId(army.movement.path[0]) === getLandId(position);
     }
   });
 };
@@ -57,9 +54,7 @@ export const getArmiesAtPositionByPlayers = (
   position: LandPosition,
   players: string[]
 ): ArmyState[] => {
-  return getArmiesAtPosition(gameState, position).filter((army) =>
-    players.includes(army.controlledBy)
-  );
+  return getArmiesAtPosition(gameState, position).filter((army) => players.includes(army.controlledBy));
 };
 
 /**
@@ -70,9 +65,7 @@ export const hasArmiesAtPositionByPlayer = (
   position: LandPosition,
   players?: string[]
 ): boolean => {
-  return (
-    getArmiesAtPositionByPlayers(gameState, position, players ?? [gameState.turnOwner]).length > 0
-  );
+  return getArmiesAtPositionByPlayers(gameState, position, players ?? [gameState.turnOwner]).length > 0;
 };
 
 /**
@@ -100,9 +93,7 @@ export const getMovingArmies = (gameState: GameState): ArmyState[] => {
  * Get stationary armies
  */
 export const getStationaryArmies = (gameState: GameState, playerId?: string): ArmyState[] => {
-  return gameState.armies.filter(
-    (army) => !isMoving(army) && (!playerId || army.controlledBy === playerId)
-  );
+  return gameState.armies.filter((army) => !isMoving(army) && (!playerId || army.controlledBy === playerId));
 };
 
 export const hasArtifact = (hero: HeroState, artifact: TreasureType): boolean => {
@@ -171,16 +162,10 @@ export const getAllHeroes = (gameState: GameState, isMageUnit?: boolean): HeroSt
   // add all heroes in a quest
   allHeroes.push(...turnOwner.quests.flatMap((q) => q.hero));
 
-  return allHeroes.filter((h) =>
-    isMageUnit == null ? h : isMageUnit ? isMageType(h.type) : !isMageType(h.type)
-  );
+  return allHeroes.filter((h) => (isMageUnit == null ? h : isMageUnit ? isMageType(h.type) : !isMageType(h.type)));
 };
 
-export const findAllHeroesOnMap = (
-  gameState: GameState,
-  playerId?: string,
-  moving: boolean = false
-) => {
+export const findAllHeroesOnMap = (gameState: GameState, playerId?: string, moving: boolean = false) => {
   return getArmiesByPlayer(gameState, playerId ?? gameState.turnOwner)
     .filter((a) => isMoving(a) === moving)
     .flatMap((army) =>

@@ -9,8 +9,7 @@ import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { Alignment } from '../../types/Alignment';
 
-const renderWithProvider = (ui: React.ReactElement) =>
-  render(ui, { wrapper: ApplicationContextProvider });
+const renderWithProvider = (ui: React.ReactElement) => render(ui, { wrapper: ApplicationContextProvider });
 
 describe('PlayerSelection', () => {
   const mockOnPlayerChange = jest.fn();
@@ -21,28 +20,20 @@ describe('PlayerSelection', () => {
   });
 
   it('renders with default label', () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />
-    );
+    renderWithProvider(<PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />);
     expect(screen.getByText('Choose Your Character:')).toBeInTheDocument();
   });
 
   it('renders with custom label', () => {
     const customLabel = 'Select Your Hero:';
     renderWithProvider(
-      <PlayerSelection
-        label={customLabel}
-        selectedPlayer={mockSelectedPlayer}
-        onPlayerChange={mockOnPlayerChange}
-      />
+      <PlayerSelection label={customLabel} selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />
     );
     expect(screen.getByText(customLabel)).toBeInTheDocument();
   });
 
   it('displays all predefined players by default', () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />
-    );
+    renderWithProvider(<PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />);
 
     PREDEFINED_PLAYERS.forEach((player) => {
       const playerElements = screen.getAllByText(player.name);
@@ -70,9 +61,7 @@ describe('PlayerSelection', () => {
   });
 
   it('shows selected player both in list and details', () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />
-    );
+    renderWithProvider(<PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />);
 
     // The selected player's name should appear in the list and in the details section
     const occurrences = screen.getAllByText(mockSelectedPlayer.name);
@@ -80,9 +69,7 @@ describe('PlayerSelection', () => {
   });
 
   it('calls onPlayerChange when a player is clicked', () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />
-    );
+    renderWithProvider(<PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />);
 
     const secondPlayer = PREDEFINED_PLAYERS[1];
     fireEvent.click(screen.getByText(secondPlayer.name));
@@ -101,41 +88,29 @@ describe('PlayerSelection', () => {
 
     // The selectedPlayerClass div should contain the lawful alignment text with color styling
     const selectedPlayerClass = screen.getByText(
-      (content) =>
-        content.includes(lawfulPlayer.alignment.toUpperCase()) &&
-        content.includes(lawfulPlayer.type)
+      (content) => content.includes(lawfulPlayer.alignment.toUpperCase()) && content.includes(lawfulPlayer.type)
     );
     expect(selectedPlayerClass).toHaveStyle('color: rgb(74, 144, 226)');
 
     // Re-render with neutral player selected
-    rerender(
-      <PlayerSelection selectedPlayer={neutralPlayer} onPlayerChange={mockOnPlayerChange} />
-    );
+    rerender(<PlayerSelection selectedPlayer={neutralPlayer} onPlayerChange={mockOnPlayerChange} />);
 
     const neutralPlayerClass = screen.getByText(
-      (content) =>
-        content.includes(neutralPlayer.alignment.toUpperCase()) &&
-        content.includes(neutralPlayer.type)
+      (content) => content.includes(neutralPlayer.alignment.toUpperCase()) && content.includes(neutralPlayer.type)
     );
     expect(neutralPlayerClass).toHaveStyle('color: rgb(149, 165, 166)');
 
     // Re-render with chaotic player selected
-    rerender(
-      <PlayerSelection selectedPlayer={chaoticPlayer} onPlayerChange={mockOnPlayerChange} />
-    );
+    rerender(<PlayerSelection selectedPlayer={chaoticPlayer} onPlayerChange={mockOnPlayerChange} />);
 
     const chaoticPlayerClass = screen.getByText(
-      (content) =>
-        content.includes(chaoticPlayer.alignment.toUpperCase()) &&
-        content.includes(chaoticPlayer.type)
+      (content) => content.includes(chaoticPlayer.alignment.toUpperCase()) && content.includes(chaoticPlayer.type)
     );
     expect(chaoticPlayerClass).toHaveStyle('color: rgb(231, 76, 60)');
   });
 
   it('displays player level for each player', () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />
-    );
+    renderWithProvider(<PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />);
 
     PREDEFINED_PLAYERS.forEach((player) => {
       const levelElements = screen.getAllByText(`Level ${player.level}`);
@@ -144,9 +119,7 @@ describe('PlayerSelection', () => {
   });
 
   it('displays selected player details', () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />
-    );
+    renderWithProvider(<PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />);
 
     // Check selected player name in details section
     const detailsName = screen.getAllByText(mockSelectedPlayer.name);
@@ -164,9 +137,7 @@ describe('PlayerSelection', () => {
   });
 
   it('renders PlayerAvatar component for selected player', () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />
-    );
+    renderWithProvider(<PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} />);
 
     // PlayerAvatar should be rendered (we can't easily test the actual avatar without mocking the component)
     // But we can check the structure is there
@@ -186,9 +157,7 @@ describe('PlayerSelection', () => {
     expect(mockOnPlayerChange).toHaveBeenCalledWith(PREDEFINED_PLAYERS[1]);
 
     // Re-render with new selected player
-    rerender(
-      <PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[1]} onPlayerChange={mockOnPlayerChange} />
-    );
+    rerender(<PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[1]} onPlayerChange={mockOnPlayerChange} />);
 
     // Should show new player details
     expect(screen.getByText(PREDEFINED_PLAYERS[1].description)).toBeInTheDocument();
@@ -197,11 +166,7 @@ describe('PlayerSelection', () => {
 
   it('handles empty available players array', () => {
     renderWithProvider(
-      <PlayerSelection
-        selectedPlayer={mockSelectedPlayer}
-        onPlayerChange={mockOnPlayerChange}
-        availablePlayers={[]}
-      />
+      <PlayerSelection selectedPlayer={mockSelectedPlayer} onPlayerChange={mockOnPlayerChange} availablePlayers={[]} />
     );
 
     // Should not crash and should show the selected player details
@@ -210,9 +175,7 @@ describe('PlayerSelection', () => {
   });
 
   it('updates details panel when hovering over a different player', async () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />
-    );
+    renderWithProvider(<PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />);
 
     // Initially shows selected player details
     expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();
@@ -231,9 +194,7 @@ describe('PlayerSelection', () => {
   });
 
   it('reverts to selected player details when mouse leaves', async () => {
-    renderWithProvider(
-      <PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />
-    );
+    renderWithProvider(<PlayerSelection selectedPlayer={PREDEFINED_PLAYERS[0]} onPlayerChange={mockOnPlayerChange} />);
 
     // Initially shows selected player details
     expect(screen.getByText(PREDEFINED_PLAYERS[0].description)).toBeInTheDocument();

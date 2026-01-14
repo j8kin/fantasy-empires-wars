@@ -18,9 +18,7 @@ jest.mock('../../map/vault/calculateMaintenance');
 jest.mock('../../turn/TurnManager');
 
 const mockCalculateIncome = calculateIncome as jest.MockedFunction<typeof calculateIncome>;
-const mockCalculateMaintenance = calculateMaintenance as jest.MockedFunction<
-  typeof calculateMaintenance
->;
+const mockCalculateMaintenance = calculateMaintenance as jest.MockedFunction<typeof calculateMaintenance>;
 
 const mockTurnManager = {
   startNewTurn: jest.fn(),
@@ -113,8 +111,7 @@ describe('GameContext', () => {
         result.current.updateGameState(gameStateStub);
       });
 
-      const firstCallCount = (TurnManager as jest.MockedClass<typeof TurnManager>).mock.calls
-        .length;
+      const firstCallCount = (TurnManager as jest.MockedClass<typeof TurnManager>).mock.calls.length;
 
       act(() => {
         result.current.updateGameState({ ...gameStateStub, turn: 2 });

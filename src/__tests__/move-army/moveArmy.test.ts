@@ -166,11 +166,7 @@ describe('Move Army', () => {
       expect(getLandOwner(gameStateStub, to)).not.toBe(NO_PLAYER.id);
       expect(getLandOwner(gameStateStub, to)).not.toBe(getLandOwner(gameStateStub, from));
       expect([DiplomacyStatus.WAR, DiplomacyStatus.ALLIANCE]).not.toContain(
-        getDiplomacyStatus(
-          gameStateStub,
-          getLandOwner(gameStateStub, from),
-          getLandOwner(gameStateStub, to)
-        )
+        getDiplomacyStatus(gameStateStub, getLandOwner(gameStateStub, from), getLandOwner(gameStateStub, to))
       );
       expect(getTurnOwner(gameStateStub).playerProfile.alignment).not.toBe(Alignment.CHAOTIC);
 
@@ -209,12 +205,12 @@ describe('Move Army', () => {
       expect(isMoving(armies[1])).toBeTruthy();
 
       // WAR Declared
-      expect(
-        getDiplomacyStatus(gameStateStub, gameStateStub.players[0].id, gameStateStub.players[1].id)
-      ).toBe(DiplomacyStatus.WAR);
-      expect(
-        getDiplomacyStatus(gameStateStub, gameStateStub.players[1].id, gameStateStub.players[0].id)
-      ).toBe(DiplomacyStatus.WAR);
+      expect(getDiplomacyStatus(gameStateStub, gameStateStub.players[0].id, gameStateStub.players[1].id)).toBe(
+        DiplomacyStatus.WAR
+      );
+      expect(getDiplomacyStatus(gameStateStub, gameStateStub.players[1].id, gameStateStub.players[0].id)).toBe(
+        DiplomacyStatus.WAR
+      );
     });
 
     it('move all regular units', () => {
@@ -468,11 +464,9 @@ describe('Move Army', () => {
       expect(getPlayerLands(gameStateStub, opponent).map((l) => getLandId(l.mapPos))).toContain(
         getLandId(opponentLand.mapPos)
       );
-      const from: LandPosition = getTilesInRadius(
-        getMapDimensions(gameStateStub),
-        opponentLand.mapPos,
-        1
-      ).find((l) => getLandOwner(gameStateStub, l) !== opponent)!; // move from neutral land
+      const from: LandPosition = getTilesInRadius(getMapDimensions(gameStateStub), opponentLand.mapPos, 1).find(
+        (l) => getLandOwner(gameStateStub, l) !== opponent
+      )!; // move from neutral land
 
       placeUnitsOnMap(regularsFactory(RegularUnitName.WARD_HANDS, 120), gameStateStub, from);
 
@@ -490,10 +484,7 @@ describe('Move Army', () => {
       );
 
       /******************* Start Movement *********************/
-      Object.assign(
-        gameStateStub,
-        startMovement(gameStateStub, from, opponentLand.mapPos, armyBriefInfo)
-      );
+      Object.assign(gameStateStub, startMovement(gameStateStub, from, opponentLand.mapPos, armyBriefInfo));
       /******************* End Movement *********************/
       testTurnManagement.makeNTurns(1);
       /******************* Verify Ownership *********************/
@@ -530,12 +521,7 @@ describe('Move Army', () => {
       /********* Declare war **************/
       Object.assign(
         gameStateStub,
-        setDiplomacyStatus(
-          gameStateStub,
-          gameStateStub.turnOwner,
-          gameStateStub.players[1].id,
-          DiplomacyStatus.WAR
-        )
+        setDiplomacyStatus(gameStateStub, gameStateStub.turnOwner, gameStateStub.players[1].id, DiplomacyStatus.WAR)
       );
 
       /****************** Start Movement *********************/
@@ -567,10 +553,7 @@ describe('Move Army', () => {
         warMachines: [],
       };
 
-      Object.assign(
-        gameStateStub,
-        startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo)
-      );
+      Object.assign(gameStateStub, startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo));
       testTurnManagement.makeNTurns(1);
 
       armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
@@ -592,10 +575,7 @@ describe('Move Army', () => {
         warMachines: [{ type: WarMachineName.CATAPULT, count: 1, durability: 3 }],
       };
 
-      Object.assign(
-        gameStateStub,
-        startMovement(gameStateStub, barracksLand.mapPos, to, armyBriefInfo)
-      );
+      Object.assign(gameStateStub, startMovement(gameStateStub, barracksLand.mapPos, to, armyBriefInfo));
       testTurnManagement.makeNTurns(2); // 2 turn to destination from barrack land to "to" position
 
       const remainArmy = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
@@ -626,10 +606,7 @@ describe('Move Army', () => {
       armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
       expect(armies).toHaveLength(1);
 
-      Object.assign(
-        gameStateStub,
-        startMovement(gameStateStub, homeLand.mapPos, barracksLand.mapPos, armyBriefInfo)
-      );
+      Object.assign(gameStateStub, startMovement(gameStateStub, homeLand.mapPos, barracksLand.mapPos, armyBriefInfo));
 
       testTurnManagement.makeNTurns(1);
       armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
@@ -863,9 +840,7 @@ describe('Move Army', () => {
       castSpell(gameStateStub, SpellName.ENTANGLING_ROOTS, homeLand.mapPos);
       // roll-back turnOwner
       gameStateStub.turnOwner = gameStateStub.players[0].id;
-      expect(
-        hasActiveEffect(getLand(gameStateStub, homeLand.mapPos), SpellName.ENTANGLING_ROOTS)
-      ).toBeTruthy();
+      expect(hasActiveEffect(getLand(gameStateStub, homeLand.mapPos), SpellName.ENTANGLING_ROOTS)).toBeTruthy();
 
       const to = { row: homeLand.mapPos.row + 1, col: homeLand.mapPos.col };
       let armies = getArmiesAtPosition(gameStateStub, homeLand.mapPos);
@@ -875,10 +850,7 @@ describe('Move Army', () => {
         warMachines: [],
       };
 
-      Object.assign(
-        gameStateStub,
-        startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo)
-      );
+      Object.assign(gameStateStub, startMovement(gameStateStub, homeLand.mapPos, to, armyBriefInfo));
       expect(isMoving(getArmiesAtPosition(gameStateStub, homeLand.mapPos)[0])).toBeTruthy();
       testTurnManagement.makeNTurns(1);
 

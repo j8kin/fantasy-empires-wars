@@ -24,9 +24,7 @@ const GameButton: React.FC<GameButtonProps> = ({ buttonName, onClick }) => {
 
   const buttonTxt = Object.entries(ButtonName).filter((n) => n[1] === buttonName)[0][0];
   const isLongText = buttonTxt.length > 5;
-  const textClassName = isLongText
-    ? `${styles.buttonText} ${styles.buttonTextSmall}`
-    : styles.buttonText;
+  const textClassName = isLongText ? `${styles.buttonText} ${styles.buttonTextSmall}` : styles.buttonText;
 
   return (
     <div className={styles.buttonContainer} onClick={handleButton}>

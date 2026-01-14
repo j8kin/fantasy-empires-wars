@@ -76,15 +76,10 @@ describe('Calculate Income', () => {
       const player = getPlayer(pAlignment);
       addPlayerToGameState(gameStateStub, player, 'human');
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(LandName.PLAINS);
-      Object.assign(
-        gameStateStub,
-        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 4, col: 4 })
-      );
+      Object.assign(gameStateStub, addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 4, col: 4 }));
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
 
-      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [
-        buildingFactory(BuildingName.STRONGHOLD),
-      ];
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].buildings = [buildingFactory(BuildingName.STRONGHOLD)];
 
       let income = calculateIncome(gameStateStub);
       expect(income).toBe(incomeBefore);
@@ -110,10 +105,7 @@ describe('Calculate Income', () => {
     /************************************/
 
     const deedOfReclamation = itemFactory(TreasureName.DEED_OF_RECLAMATION);
-    Object.assign(
-      gameStateStub,
-      addPlayerEmpireTreasure(gameStateStub, gameStateStub.turnOwner, deedOfReclamation)
-    );
+    Object.assign(gameStateStub, addPlayerEmpireTreasure(gameStateStub, gameStateStub.turnOwner, deedOfReclamation));
     const farLand: LandPosition = { row: 0, col: 3 };
     expect(getLandOwner(gameStateStub, farLand)).toBe(NO_PLAYER.id);
     expect(calculateHexDistance(getMapDimensions(gameStateStub), homeLand, farLand)).toBe(3);
@@ -133,10 +125,7 @@ describe('Calculate Income', () => {
 
     it('No owned strongholds', () => {
       addPlayerToGameState(gameStateStub, PREDEFINED_PLAYERS[0], 'human');
-      Object.assign(
-        gameStateStub,
-        addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 5, col: 5 })
-      );
+      Object.assign(gameStateStub, addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 5, col: 5 }));
       expect(getPlayerLands(gameStateStub)).toHaveLength(1);
 
       expect(calculateIncome(gameStateStub)).toBe(0);

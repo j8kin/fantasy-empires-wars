@@ -56,12 +56,7 @@ const MapActionsControl: React.FC = () => {
         setShowErrorMessagePopup(true);
       }
     }
-  }, [
-    gameState,
-    setErrorMessagePopupMessage,
-    setShowConstructBuildingDialog,
-    setShowErrorMessagePopup,
-  ]);
+  }, [gameState, setErrorMessagePopupMessage, setShowConstructBuildingDialog, setShowErrorMessagePopup]);
 
   const handleShowEmpireTreasureDialog = useCallback(() => {
     if (gameState == null) return;
@@ -75,12 +70,7 @@ const MapActionsControl: React.FC = () => {
         setShowErrorMessagePopup(true);
       }
     }
-  }, [
-    gameState,
-    setErrorMessagePopupMessage,
-    setShowEmpireTreasureDialog,
-    setShowErrorMessagePopup,
-  ]);
+  }, [gameState, setErrorMessagePopupMessage, setShowEmpireTreasureDialog, setShowErrorMessagePopup]);
 
   const isHuman = gameState ? getTurnOwner(gameState).playerType === 'human' : false;
 

@@ -1,18 +1,7 @@
 import { findShortestPath, getLandOwner } from '../../selectors/landSelectors';
-import {
-  addHero,
-  addRegulars,
-  addWarMachines,
-  getHero,
-  getRegulars,
-  getWarMachines,
-} from '../../systems/armyActions';
+import { addHero, addRegulars, addWarMachines, getHero, getRegulars, getWarMachines } from '../../systems/armyActions';
 import { getArmiesAtPosition, getPosition, isMoving } from '../../selectors/armySelectors';
-import {
-  addArmyToGameState,
-  updateArmyInGameState,
-  removeArmyFromGameState,
-} from '../../systems/armyActions';
+import { addArmyToGameState, updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
 import { armyFactory } from '../../factories/armyFactory';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { setDiplomacyStatus } from '../../systems/playerActions';
@@ -42,10 +31,7 @@ export const startMovement = (
     const diplomacy = turnOwner.diplomacy[toOwner];
 
     // If no diplomacy or diplomacy is not WAR/ALLIANCE
-    if (
-      !diplomacy ||
-      (diplomacy.status !== DiplomacyStatus.WAR && diplomacy.status !== DiplomacyStatus.ALLIANCE)
-    ) {
+    if (!diplomacy || (diplomacy.status !== DiplomacyStatus.WAR && diplomacy.status !== DiplomacyStatus.ALLIANCE)) {
       // Check if turn owner is CHAOTIC
       if (turnOwner.playerProfile.alignment === Alignment.CHAOTIC) {
         // CHAOTIC characters automatically declare WAR
@@ -86,9 +72,7 @@ export const startMovement = (
   for (let i = 0; i < units.regulars.length; i++) {
     const regular = units.regulars[i];
     if (
-      !stationedArmy.regulars.some(
-        (u) => u.type === regular.id && u.rank === regular.rank && u.count >= regular.count
-      )
+      !stationedArmy.regulars.some((u) => u.type === regular.id && u.rank === regular.rank && u.count >= regular.count)
     ) {
       return gameState; // fallback: not enough units in the stationed army
     }
@@ -96,11 +80,7 @@ export const startMovement = (
 
   for (let i = 0; i < units.warMachines.length; i++) {
     const warMachine = units.warMachines[i];
-    if (
-      !stationedArmy.warMachines.some(
-        (u) => u.type === warMachine.type && u.count >= warMachine.count
-      )
-    ) {
+    if (!stationedArmy.warMachines.some((u) => u.type === warMachine.type && u.count >= warMachine.count)) {
       return gameState; // fallback: not enough war machines in the stationed army
     }
   }
@@ -124,12 +104,7 @@ export const startMovement = (
 
   // Add war machines to moving army and update stationed army
   units.warMachines.forEach((warMachine) => {
-    const warMachinesResult = getWarMachines(
-      stationedArmy,
-      warMachine.type,
-      warMachine.count,
-      warMachine.durability
-    )!;
+    const warMachinesResult = getWarMachines(stationedArmy, warMachine.type, warMachine.count, warMachine.durability)!;
     stationedArmy = warMachinesResult.updatedArmy;
     movingArmy = addWarMachines(movingArmy, warMachinesResult.warMachines);
   });

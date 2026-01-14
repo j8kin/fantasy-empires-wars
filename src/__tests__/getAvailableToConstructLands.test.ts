@@ -55,10 +55,7 @@ describe('getAvailableLands', () => {
       row: 3,
       col: 5,
     });
-    Object.assign(
-      gameStateStub,
-      addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 3, col: 5 })
-    );
+    Object.assign(gameStateStub, addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 3, col: 5 }));
     //gameStateStub.battlefield.lands['3-5'].controlledBy = gameStateStub.turnOwner;
 
     const availableLands = getAvailableToConstructLands(gameStateStub, BuildingName.STRONGHOLD);
