@@ -14,12 +14,11 @@ import { armyFactory } from '../../../factories/armyFactory';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
 import { warMachineFactory } from '../../../factories/warMachineFactory';
-
+import { Doctrine } from '../../../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
 import { Alignment } from '../../../types/Alignment';
 import { DiplomacyStatus } from '../../../types/Diplomacy';
 import { UnitRank } from '../../../state/army/RegularsState';
-
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 
@@ -173,7 +172,7 @@ describe('MoveArmyDialog', () => {
     dwarf.count = 5;
 
     const hero = heroFactory(HeroUnitName.FIGHTER, 'TestHero');
-    levelUpHero(hero, Alignment.LAWFUL);
+    levelUpHero(hero, Doctrine.MELEE);
 
     return { warrior, dwarf, hero };
   };
@@ -681,12 +680,12 @@ describe('MoveArmyDialog', () => {
       gameStateStub.armies = [];
 
       const veteranWarrior = regularsFactory(RegularUnitName.WARRIOR, 8);
-      levelUpRegulars(veteranWarrior, getTurnOwner(gameStateStub));
+      levelUpRegulars(veteranWarrior, getTurnOwner(gameStateStub).playerProfile.doctrine);
       expect(veteranWarrior.rank).toBe(UnitRank.VETERAN);
 
       const eliteWarrior = regularsFactory(RegularUnitName.WARRIOR, 3);
-      levelUpRegulars(eliteWarrior, getTurnOwner(gameStateStub));
-      levelUpRegulars(eliteWarrior, getTurnOwner(gameStateStub));
+      levelUpRegulars(eliteWarrior, getTurnOwner(gameStateStub).playerProfile.doctrine);
+      levelUpRegulars(eliteWarrior, getTurnOwner(gameStateStub).playerProfile.doctrine);
       expect(eliteWarrior.rank).toBe(UnitRank.ELITE);
 
       const rankedUnitsArmy = armyFactory(gameStateStub.turnOwner, fromPosition, {

@@ -14,10 +14,10 @@ import { calculateMaintenance } from '../map/vault/calculateMaintenance';
 import { construct } from '../map/building/construct';
 import { warMachineFactory } from '../factories/warMachineFactory';
 
+import { Doctrine } from '../state/player/PlayerProfile';
 import { UnitRank } from '../state/army/RegularsState';
 import { BuildingName } from '../types/Building';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
-import { Alignment } from '../types/Alignment';
 
 import { createGameStateStub } from './utils/createGameStateStub';
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
@@ -50,7 +50,7 @@ describe('Calculate Maintenance', () => {
       );
       const hero = heroFactory(heroType, heroType);
       while (hero.level < level) {
-        levelUpHero(hero, Alignment.LAWFUL);
+        levelUpHero(hero, Doctrine.MELEE);
       }
 
       gameStateStub.armies = [
@@ -82,7 +82,7 @@ describe('Calculate Maintenance', () => {
         );
         const regular = regularsFactory(regularType);
         while (regular.rank !== level) {
-          levelUpRegulars(regular, getTurnOwner(gameStateStub));
+          levelUpRegulars(regular, getTurnOwner(gameStateStub).playerProfile.doctrine);
         }
         regular.count = quantity;
 
@@ -116,8 +116,8 @@ describe('Calculate Maintenance', () => {
 
     it('Multiple units in one army', () => {
       const elitDwarf = regularsFactory(RegularUnitName.DWARF);
-      levelUpRegulars(elitDwarf, getTurnOwner(gameStateStub));
-      levelUpRegulars(elitDwarf, getTurnOwner(gameStateStub));
+      levelUpRegulars(elitDwarf, getTurnOwner(gameStateStub).playerProfile.doctrine);
+      levelUpRegulars(elitDwarf, getTurnOwner(gameStateStub).playerProfile.doctrine);
       expect(elitDwarf.rank).toBe(UnitRank.ELITE);
       elitDwarf.count = 17;
 

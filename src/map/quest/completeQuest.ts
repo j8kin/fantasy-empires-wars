@@ -167,7 +167,7 @@ const questResults = (state: GameState, quest: HeroQuest): EmpireEvent => {
 
     if (hero.level < quest.quest.level * 5) {
       do {
-        levelUpHero(hero, turnOwner.playerProfile.alignment);
+        levelUpHero(hero, turnOwner.playerProfile.doctrine);
       } while (hero.level < (quest.quest.level - 1) * 5); // promote to lower quest level for risky players!
     }
 

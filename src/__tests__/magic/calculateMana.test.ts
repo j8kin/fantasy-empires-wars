@@ -49,7 +49,7 @@ describe('Calculate Mana', () => {
 
   describe('only one initial mage', () => {
     it.each([
-      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 7],
+      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 6],
       [HeroUnitName.CLERIC, Mana.WHITE, PREDEFINED_PLAYERS[6], 6],
       [HeroUnitName.ENCHANTER, Mana.BLUE, PREDEFINED_PLAYERS[7], 7],
       [HeroUnitName.DRUID, Mana.GREEN, PREDEFINED_PLAYERS[12], 7],
@@ -82,7 +82,7 @@ describe('Calculate Mana', () => {
     );
 
     describe.each([
-      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 7],
+      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 6],
       [HeroUnitName.CLERIC, Mana.WHITE, PREDEFINED_PLAYERS[6], 6],
       [HeroUnitName.ENCHANTER, Mana.BLUE, PREDEFINED_PLAYERS[7], 7],
       [HeroUnitName.DRUID, Mana.GREEN, PREDEFINED_PLAYERS[12], 7],
@@ -122,7 +122,7 @@ describe('Calculate Mana', () => {
     );
 
     describe.each([
-      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 7],
+      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 6],
       [HeroUnitName.CLERIC, Mana.WHITE, PREDEFINED_PLAYERS[6], 6],
       [HeroUnitName.ENCHANTER, Mana.BLUE, PREDEFINED_PLAYERS[7], 7],
       [HeroUnitName.DRUID, Mana.GREEN, PREDEFINED_PLAYERS[12], 7],
@@ -167,7 +167,7 @@ describe('Calculate Mana', () => {
     );
 
     describe.each([
-      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 7],
+      [HeroUnitName.NECROMANCER, Mana.BLACK, PREDEFINED_PLAYERS[1], 6],
       [HeroUnitName.CLERIC, Mana.WHITE, PREDEFINED_PLAYERS[6], 6],
       [HeroUnitName.ENCHANTER, Mana.BLUE, PREDEFINED_PLAYERS[7], 7],
       [HeroUnitName.DRUID, Mana.GREEN, PREDEFINED_PLAYERS[12], 7],
@@ -296,7 +296,7 @@ describe('Calculate Mana', () => {
     testTurnManagement.makeNTurns(1);
 
     expect(gameStateStub.players[0].mana[Mana.RED]).toBe(1);
-    expect(gameStateStub.players[0].mana[Mana.BLACK]).toBe(7);
+    expect(gameStateStub.players[0].mana[Mana.BLACK]).toBe(6);
     expect(gameStateStub.players[0].mana[Mana.WHITE]).toBe(0);
     expect(gameStateStub.players[0].mana[Mana.BLUE]).toBe(0);
     expect(gameStateStub.players[0].mana[Mana.GREEN]).toBe(0);

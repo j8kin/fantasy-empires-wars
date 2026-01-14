@@ -15,8 +15,8 @@ import { warMachineFactory } from '../../factories/warMachineFactory';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { levelUpRegulars } from '../../systems/unitsActions';
 
-import { EmpireEventKind } from '../../types/EmpireEvent';
 import { Doctrine } from '../../state/player/PlayerProfile';
+import { EmpireEventKind } from '../../types/EmpireEvent';
 import type { EmpireEvent } from '../../types/EmpireEvent';
 import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
@@ -80,7 +80,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
               const regular = regularsFactory(s.unit);
               if (getTurnOwner(gameState).playerProfile.doctrine === Doctrine.ANTI_MAGIC) {
                 // all anti-magic coalition units are recruited as veteran units
-                levelUpRegulars(regular, getTurnOwner(gameState));
+                levelUpRegulars(regular, getTurnOwner(gameState).playerProfile.doctrine);
               }
 
               if (stationedArmy) {

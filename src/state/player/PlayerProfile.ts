@@ -21,6 +21,8 @@ export const Doctrine = {
   MAGIC: 'Magic',
   /** Anti-magic doctrine */
   ANTI_MAGIC: 'Anti Magic',
+  /** Focus on a magic army with no regular support **/
+  PURE_MAGIC: 'Pure Magic',
   /** Undead doctrine */
   UNDEAD: 'Undead',
 } as const;

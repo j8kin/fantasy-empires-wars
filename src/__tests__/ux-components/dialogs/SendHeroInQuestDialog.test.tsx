@@ -13,8 +13,8 @@ import { heroFactory } from '../../../factories/heroFactory';
 // Import as a mocked function to be able to spy on it and verify calls
 import { startQuest as mockStartQuest } from '../../../map/quest/startQuest';
 
+import { Doctrine } from '../../../state/player/PlayerProfile';
 import { HeroUnitName } from '../../../types/UnitType';
-import { Alignment } from '../../../types/Alignment';
 import type { GameState } from '../../../state/GameState';
 import type { HeroState } from '../../../state/army/HeroState';
 
@@ -593,7 +593,7 @@ describe('SendHeroInQuestDialog', () => {
 
       // Add a second hero to another land
       const secondHero: HeroState = heroFactory(HeroUnitName.FIGHTER, 'Additional Hero');
-      levelUpHero(secondHero, Alignment.LAWFUL);
+      levelUpHero(secondHero, Doctrine.MELEE);
       placeUnitsOnMap(secondHero, gameStateStub, currentPlayerLands[1].mapPos);
     });
 

@@ -11,10 +11,10 @@ import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';
 import { getLandById } from '../../domain/land/landRepository';
 import { castSpell } from '../../map/magic/castSpell';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { UnitRank } from '../../state/army/RegularsState';
 import { SpellName } from '../../types/Spell';
-import { Alignment } from '../../types/Alignment';
 import { BuildingName } from '../../types/Building';
 import { LandName } from '../../types/Land';
 import type { GameState } from '../../state/GameState';
@@ -103,7 +103,7 @@ describe('castBlackManaSpell', () => {
         const necromancer = heroFactory(HeroUnitName.NECROMANCER, `Necromancer Level ${maxLevel}`);
 
         while (necromancer.level < maxLevel) {
-          levelUpHero(necromancer, Alignment.LAWFUL);
+          levelUpHero(necromancer, Doctrine.MELEE);
         }
         expect(necromancer.level).toBe(maxLevel);
         placeUnitsOnMap(necromancer, gameStateStub, playerLandPos);
@@ -129,7 +129,7 @@ describe('castBlackManaSpell', () => {
         if (maxLevel > 0) {
           const necromancer = heroFactory(HeroUnitName.NECROMANCER, `Necromancer Lvl ${maxLevel}`);
           while (necromancer.level < maxLevel) {
-            levelUpHero(necromancer, Alignment.CHAOTIC);
+            levelUpHero(necromancer, Doctrine.MAGIC);
           }
           placeUnitsOnMap(necromancer, gameStateStub, playerLandPos);
         }

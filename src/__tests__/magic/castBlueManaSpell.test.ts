@@ -7,6 +7,7 @@ import { startMoving } from '../../systems/armyActions';
 import { heroFactory } from '../../factories/heroFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { castSpell } from '../../map/magic/castSpell';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
@@ -51,7 +52,7 @@ describe('castBlueManaSpell', () => {
         if (maxEnchanterLevel > 0) {
           // add ENCHANTER on Map
           const hero = heroFactory(HeroUnitName.ENCHANTER, `Enchanter Level ${maxEnchanterLevel}`);
-          while (hero.level < maxEnchanterLevel) levelUpHero(hero, Alignment.LAWFUL);
+          while (hero.level < maxEnchanterLevel) levelUpHero(hero, Doctrine.MAGIC);
           placeUnitsOnMap(hero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
         }
 
@@ -165,7 +166,7 @@ describe('castBlueManaSpell', () => {
         if (maxEnchanterLevel > 0) {
           // add ENCHANTER on Map
           const hero = heroFactory(HeroUnitName.ENCHANTER, `Enchanter Level ${maxEnchanterLevel}`);
-          while (hero.level < maxEnchanterLevel) levelUpHero(hero, Alignment.LAWFUL);
+          while (hero.level < maxEnchanterLevel) levelUpHero(hero, Doctrine.MELEE);
           placeUnitsOnMap(hero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
         }
 

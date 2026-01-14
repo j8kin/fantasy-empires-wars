@@ -19,11 +19,11 @@ import { heroFactory } from '../../factories/heroFactory';
 import { invokeItem } from '../../map/magic/invokeItem';
 import { castSpell } from '../../map/magic/castSpell';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { EffectKind } from '../../types/Effect';
 import { SpellName } from '../../types/Spell';
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
 import { TreasureName } from '../../types/Treasures';
-import { Alignment } from '../../types/Alignment';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
@@ -170,7 +170,7 @@ describe('invokeItems', () => {
       (clericLevel) => {
         if (clericLevel > 0) {
           const clericHero = heroFactory(HeroUnitName.CLERIC, `Cleric Level ${clericLevel}`);
-          while (clericHero.level < clericLevel) levelUpHero(clericHero, Alignment.LAWFUL);
+          while (clericHero.level < clericLevel) levelUpHero(clericHero, Doctrine.MELEE);
           placeUnitsOnMap(clericHero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
         }
         placeUnitsOnMap(regularsFactory(RegularUnitName.UNDEAD, 120), gameStateStub, opponentLand);
@@ -335,7 +335,7 @@ describe('invokeItems', () => {
             HeroUnitName.ENCHANTER,
             `Enchanter Level ${clericLevel}`
           );
-          while (enchanterHero.level < clericLevel) levelUpHero(enchanterHero, Alignment.LAWFUL);
+          while (enchanterHero.level < clericLevel) levelUpHero(enchanterHero, Doctrine.MELEE);
           placeUnitsOnMap(enchanterHero, gameStateStub, getPlayerLands(gameStateStub)[0].mapPos);
         }
         placeUnitsOnMap(

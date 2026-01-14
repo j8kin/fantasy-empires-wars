@@ -16,9 +16,9 @@ import { levelUpHero } from '../../systems/unitsActions';
 import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';
 import { itemFactory } from '../../factories/treasureFactory';
 import { getQuest } from '../../domain/quest/questRepository';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { items, relicts } from '../../domain/treasure/treasureRepository';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-import { Alignment } from '../../types/Alignment';
 import { TreasureName, TreasureType } from '../../types/Treasures';
 import { BuildingName } from '../../types/Building';
 import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName } from '../../types/UnitType';
@@ -158,24 +158,27 @@ describe('Hero Quest', () => {
       expect(armies).toHaveLength(1);
       expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
       expect(isMoving(armies[0])).toBeFalsy();
-      expect(armies[0].heroes[0].id).toBe(hero.id);
-      expect(armies[0].heroes[0].name).toBe(hero.name);
-      expect(armies[0].heroes[0].level).toBe(heroLevel + 1); // level incremented
-      expect(armies[0].heroes[0].artifacts).toHaveLength(0);
+      const heroAfterQuest = armies[0].heroes[0];
+      expect(heroAfterQuest.id).toBe(hero.id);
+      expect(heroAfterQuest.name).toBe(hero.name);
+      expect(heroAfterQuest.level).toBe(heroLevel + 1); // level incremented
+      expect(heroAfterQuest.artifacts).toHaveLength(0);
       expect(getTurnOwner(gameStateStub).empireTreasures).toHaveLength(1);
       expect(getTurnOwner(gameStateStub).empireTreasures[0].treasure.type).toBe(
         TreasureName.WAND_OF_TURN_UNDEAD
       ); // quest reward
 
       // verify that hero stats are incremented exact new stats calculation verified separately
-      expect(hero.combatStats.attack).toBeGreaterThan(heroBaseStatsBefore.attack);
-      expect(hero.combatStats.defense).toBe(heroBaseStatsBefore.defense); // in levelUpHero used Math.floor and 6.52 for level 9 is 6 (the same as previous level)
-      expect(hero.combatStats.health).toBeGreaterThan(heroBaseStatsBefore.health);
-      expect(hero.combatStats.rangeDamage).toBeGreaterThan(heroBaseStatsBefore.rangeDamage!);
+      expect(heroAfterQuest.combatStats.attack).toBeGreaterThan(heroBaseStatsBefore.attack);
+      expect(heroAfterQuest.combatStats.defense).toBeGreaterThan(heroBaseStatsBefore.defense);
+      expect(heroAfterQuest.combatStats.health).toBeGreaterThan(heroBaseStatsBefore.health);
+      expect(heroAfterQuest.combatStats.rangeDamage).toBeGreaterThan(
+        heroBaseStatsBefore.rangeDamage!
+      );
       // not changed parameters
-      expect(hero.combatStats.speed).toBe(heroBaseStatsBefore.speed);
-      expect(hero.combatStats.range).toBe(heroBaseStatsBefore.range);
-      expect(hero.mana).not.toBeDefined();
+      expect(heroAfterQuest.combatStats.speed).toBe(heroBaseStatsBefore.speed);
+      expect(heroAfterQuest.combatStats.range).toBe(heroBaseStatsBefore.range);
+      expect(heroAfterQuest.mana).not.toBeDefined();
     });
 
     const constructBuilding = (buildingType: BuildingType, pos: LandPosition): void => {
@@ -358,7 +361,7 @@ describe('Hero Quest', () => {
     beforeEach(() => {
       // level up till MAX_HERO_LEVEL in this case this hero always survives
       hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-      while (hero.level < MAX_HERO_LEVEL) levelUpHero(hero, Alignment.LAWFUL);
+      while (hero.level < MAX_HERO_LEVEL) levelUpHero(hero, Doctrine.MELEE);
     });
 
     it.each([easyQuest, mediumQuest, hardQuest, impossibleQuest])(
@@ -388,7 +391,7 @@ describe('Hero Quest', () => {
     beforeEach(() => {
       // level up till MAX_HERO_LEVEL in this case this hero always survives
       hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-      while (hero.level < MAX_HERO_LEVEL) levelUpHero(hero, Alignment.LAWFUL);
+      while (hero.level < MAX_HERO_LEVEL) levelUpHero(hero, Doctrine.MELEE);
     });
 
     it.each([
@@ -469,7 +472,7 @@ describe('Hero Quest', () => {
     beforeEach(() => {
       // level up till MAX_HERO_LEVEL in this case this hero always survives
       hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-      while (hero.level < MAX_HERO_LEVEL) levelUpHero(hero, Alignment.LAWFUL);
+      while (hero.level < MAX_HERO_LEVEL) levelUpHero(hero, Doctrine.MELEE);
     });
 
     it.each([
@@ -542,7 +545,7 @@ describe('Hero Quest', () => {
     beforeEach(() => {
       // level up till MAX_HERO_LEVEL in this case this hero always survives
       hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-      while (hero.level < MAX_HERO_LEVEL) levelUpHero(hero, Alignment.LAWFUL);
+      while (hero.level < MAX_HERO_LEVEL) levelUpHero(hero, Doctrine.MELEE);
     });
 
     it.each([hardQuest, impossibleQuest])(
@@ -663,7 +666,7 @@ describe('Hero Quest', () => {
 
     it('hero die when it returned from quest to uncontrolled by player land', () => {
       const maxLevelHero = heroFactory(HeroUnitName.FIGHTER, 'MaxLevelHero');
-      while (maxLevelHero.level < MAX_HERO_LEVEL) levelUpHero(maxLevelHero, Alignment.LAWFUL);
+      while (maxLevelHero.level < MAX_HERO_LEVEL) levelUpHero(maxLevelHero, Doctrine.MELEE);
       getTurnOwner(gameStateStub).vault = 100000;
       construct(gameStateStub, BuildingName.STRONGHOLD, { row: 0, col: 0 }); // far from player territory
       placeUnitsOnMap(maxLevelHero, gameStateStub, { row: 0, col: 0 });
@@ -703,7 +706,7 @@ describe('Hero Quest', () => {
 
       // get hero before quest start to verify that hero is not returned to the map and placed in Quest
       const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-      while (hero.level < 10) levelUpHero(hero, Alignment.LAWFUL); // increase level to 10
+      while (hero.level < 10) levelUpHero(hero, Doctrine.MELEE); // increase level to 10
       /********************** SEND TO QUEST ********************/
       startQuest(gameStateStub, heroName, hardQuest);
       checkQuest(hardQuest, hero, heroLandPos, 6);
@@ -788,7 +791,7 @@ describe('Hero Quest', () => {
 
       // get hero before quest start to verify that hero is not returned to the map and placed in Quest
       const hero = findArmyByHero(gameStateStub, heroName)!.heroes[0];
-      while (hero.level < 10) levelUpHero(hero, Alignment.LAWFUL); // increase level to 10 to be aligned with MERCY_OF_ORRIVANE
+      while (hero.level < 10) levelUpHero(hero, Doctrine.MELEE); // increase level to 10 to be aligned with MERCY_OF_ORRIVANE
       /********************** SEND TO QUEST ********************/
       startQuest(gameStateStub, heroName, hardQuest);
       checkQuest(hardQuest, hero, heroLandPos, 6);
