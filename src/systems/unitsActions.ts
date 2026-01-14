@@ -30,12 +30,16 @@ const calculateUpdatedStats = (
   statsToUpdate.forEach((key) => {
     const base = baseStats[key];
     const mult = multipliers[key];
-    // Range damage usually uses attack doctrine multiplier based on your original code
-    const doc = key === 'rangeDamage' ? doctrine.attack : doctrine[key as keyof LevelUpParams];
+    const doc = doctrine[key];
 
-    if (base !== undefined && mult !== undefined && currentStats[key] !== undefined) {
+    if (
+      base !== undefined &&
+      mult !== undefined &&
+      doc !== undefined &&
+      currentStats[key] !== undefined
+    ) {
       (updatedCombatStats[key] as number) = Math.floor(
-        base + (key !== 'speed' ? levelCurveModifier : 1.0) * mult * (doc as number)
+        base + (key !== 'speed' ? levelCurveModifier : 1.0) * mult * doc
       );
     }
   });
