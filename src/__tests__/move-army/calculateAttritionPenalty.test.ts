@@ -7,15 +7,14 @@ import { armyFactory } from '../../factories/armyFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { warMachineFactory } from '../../factories/warMachineFactory';
 import { levelUpRegulars } from '../../systems/unitsActions';
+import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
 import { UnitRank } from '../../state/army/RegularsState';
 import { WarMachineName } from '../../types/UnitType';
 import { RegularUnitName } from '../../types/UnitType';
-import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
 import type { UnitRankType } from '../../state/army/RegularsState';
 
-import { calculateAttritionPenalty } from '../../map/move-army/calculateAttritionPenalty';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
 describe('Calculate Attrition Penalty', () => {
@@ -97,10 +96,12 @@ describe('Calculate Attrition Penalty', () => {
       expect(getLandOwner(gameStateStub, armyLand.mapPos)).not.toBe(getTurnOwner(gameStateStub).id);
 
       const regularUnit1 = regularsFactory(RegularUnitName.WARRIOR, army1Initial);
-      while (regularUnit1.rank !== rank) levelUpRegulars(regularUnit1, Alignment.LAWFUL);
+      while (regularUnit1.rank !== rank)
+        levelUpRegulars(regularUnit1, getTurnOwner(gameStateStub).playerProfile.doctrine);
 
       const regularUnit2 = regularsFactory(RegularUnitName.WARRIOR, army2Initial);
-      while (regularUnit2.rank !== rank) levelUpRegulars(regularUnit2, Alignment.LAWFUL);
+      while (regularUnit2.rank !== rank)
+        levelUpRegulars(regularUnit2, getTurnOwner(gameStateStub).playerProfile.doctrine);
 
       // place armies using centralized system
       Object.assign(

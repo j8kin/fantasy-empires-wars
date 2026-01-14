@@ -48,7 +48,7 @@ export const createGameStateStub = ({
 
       const playerProfile = turnOwner.playerProfile;
       const hero = heroFactory(playerProfile.type, playerProfile.name);
-      while (hero.level < playerProfile.level) levelUpHero(hero, playerProfile.alignment);
+      while (hero.level < playerProfile.level) levelUpHero(hero, playerProfile.doctrine);
       placeUnitsOnMap(hero, stubGameState, homeland);
 
       nextPlayer(stubGameState);

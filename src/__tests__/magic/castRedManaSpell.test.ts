@@ -11,13 +11,13 @@ import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { isMageType } from '../../domain/unit/unitTypeChecks';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { UnitRank } from '../../state/army/RegularsState';
 import { LandName } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
 import { BuildingName } from '../../types/Building';
 import { EffectKind } from '../../types/Effect';
-import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { LandType } from '../../types/Land';
 import type { BuildingType } from '../../types/Building';
@@ -300,7 +300,7 @@ describe('castRedManaSpell', () => {
         if (maxPyrLvl > 0) {
           // add PYROMANCER on Map
           const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
-          while (hero.level < maxPyrLvl) levelUpHero(hero, Alignment.LAWFUL);
+          while (hero.level < maxPyrLvl) levelUpHero(hero, Doctrine.MELEE);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
 
@@ -361,7 +361,7 @@ describe('castRedManaSpell', () => {
         if (maxPyrLvl > 0) {
           // add PYROMANCER on Map
           const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
-          while (hero.level < maxPyrLvl) levelUpHero(hero, Alignment.LAWFUL);
+          while (hero.level < maxPyrLvl) levelUpHero(hero, Doctrine.MELEE);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
 
@@ -399,7 +399,7 @@ describe('castRedManaSpell', () => {
         if (maxPyrLvl > 0) {
           // add PYROMANCER on Map
           const hero = heroFactory(HeroUnitName.PYROMANCER, `Pyromancer Level ${maxPyrLvl}`);
-          while (hero.level < maxPyrLvl) levelUpHero(hero, Alignment.LAWFUL);
+          while (hero.level < maxPyrLvl) levelUpHero(hero, Doctrine.MELEE);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
 

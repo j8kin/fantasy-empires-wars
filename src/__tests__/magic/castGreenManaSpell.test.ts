@@ -9,8 +9,8 @@ import { relictFactory } from '../../factories/treasureFactory';
 import { castSpell } from '../../map/magic/castSpell';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName } from '../../types/UnitType';
-import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
 import { EffectKind } from '../../types/Effect';
 import { TreasureName } from '../../types/Treasures';
@@ -51,7 +51,7 @@ describe('castGreenManaSpell', () => {
         if (maxDruidLvl > 0) {
           // add DRUID on Map
           const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
-          while (hero.level < maxDruidLvl) levelUpHero(hero, Alignment.LAWFUL);
+          while (hero.level < maxDruidLvl) levelUpHero(hero, Doctrine.MELEE);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
 
@@ -109,7 +109,7 @@ describe('castGreenManaSpell', () => {
         if (maxDruidLvl > 0) {
           // add DRUID on Map
           const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
-          while (hero.level < maxDruidLvl) levelUpHero(hero, Alignment.LAWFUL);
+          while (hero.level < maxDruidLvl) levelUpHero(hero, Doctrine.MELEE);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
 
@@ -175,7 +175,7 @@ describe('castGreenManaSpell', () => {
         if (maxDruidLvl > 0) {
           // add DRUID on Map
           const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
-          while (hero.level < maxDruidLvl) levelUpHero(hero, Alignment.LAWFUL);
+          while (hero.level < maxDruidLvl) levelUpHero(hero, Doctrine.MELEE);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
 
@@ -274,7 +274,7 @@ describe('castGreenManaSpell', () => {
         if (maxDruidLvl > 0) {
           // add DRUID on Map
           const hero = heroFactory(HeroUnitName.DRUID, `Druid Level ${maxDruidLvl}`);
-          while (hero.level < maxDruidLvl) levelUpHero(hero, Alignment.LAWFUL);
+          while (hero.level < maxDruidLvl) levelUpHero(hero, Doctrine.MELEE);
           placeUnitsOnMap(hero, gameStateStub, homeLandPos);
         }
 

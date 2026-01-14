@@ -4,7 +4,7 @@ import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { getAvailableSlotsCount, getOccupiedSlotsCount } from '../../selectors/buildingSelectors';
 import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';
 import { relictFactory } from '../../factories/treasureFactory';
-import { unitsBaseStats } from '../../domain/unit/unitRepository';
+import { getRecruitInfo } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
@@ -108,14 +108,14 @@ describe('Recruitment', () => {
     startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
     // artifact has effect on regular units
     expect(getPlayer(gameStateStub, playerId).vault).toBe(
-      vault - Math.ceil(unitsBaseStats(RegularUnitName.WARRIOR).recruitCost * 0.85)
+      vault - Math.ceil(getRecruitInfo(RegularUnitName.WARRIOR).recruitCost * 0.85)
     );
 
     // artifact has effect on hero units
     vault = getPlayer(gameStateStub, playerId).vault;
     startRecruiting(gameStateStub, barracksPos, HeroUnitName.FIGHTER);
     expect(getPlayer(gameStateStub, playerId).vault).toBe(
-      vault - Math.ceil(unitsBaseStats(HeroUnitName.FIGHTER).recruitCost * 0.85)
+      vault - Math.ceil(getRecruitInfo(HeroUnitName.FIGHTER).recruitCost * 0.85)
     );
   });
 

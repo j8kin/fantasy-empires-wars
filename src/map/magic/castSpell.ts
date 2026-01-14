@@ -33,7 +33,7 @@ import { regularsFactory } from '../../factories/regularsFactory';
 import { armyFactory } from '../../factories/armyFactory';
 import { movementFactory } from '../../factories/movementFactory';
 import { getMultipleRandomElements, getRandomInt } from '../../domain/utils/random';
-import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
+import { isRegularUnit } from '../../domain/unit/unitTypeChecks';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
@@ -285,10 +285,7 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       const forgedUnitType: RegularUnitType =
         getLand(updatedState, landPos).land.unitsToRecruit.find(
           (u) =>
-            !isHeroType(u) &&
-            !isWarMachine(u) &&
-            u !== RegularUnitName.WARD_HANDS &&
-            u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
+            isRegularUnit(u) && u !== RegularUnitName.WARD_HANDS && u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
         ) ?? RegularUnitName.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
 
       const newArmy = armyFactory(updatedState.turnOwner, landPos, {

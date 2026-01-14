@@ -22,14 +22,17 @@ import { getLandById } from '../../../domain/land/landRepository';
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { BuildingName } from '../../../types/Building';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
-import { RaceName } from '../../../state/player/PlayerProfile';
-import { Alignment, AlignmentType } from '../../../types/Alignment';
+import { Doctrine, RaceName } from '../../../state/player/PlayerProfile';
+import { Alignment } from '../../../types/Alignment';
 import { LandName } from '../../../types/Land';
+import type { RegularUnitType } from '../../../types/UnitType';
+import type { LandType } from '../../../types/Land';
 
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 import type { HeroUnitType } from '../../../types/UnitType';
 import type { PlayerProfile } from '../../../state/player/PlayerProfile';
+import type { AlignmentType } from '../../../types/Alignment';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 
@@ -590,7 +593,7 @@ describe('RecruitArmyDialog', () => {
       gameStateStub.players[0].landsOwned = lands; // copy lands
       gameStateStub.turnOwner = gameStateStub.players[0].id;
       expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.WARSMITH);
-      expect(getTurnOwner(gameStateStub).playerProfile.undead).toBeTruthy();
+      expect(getTurnOwner(gameStateStub).playerProfile.doctrine).toBe(Doctrine.UNDEAD);
 
       expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
       expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
@@ -609,58 +612,48 @@ describe('RecruitArmyDialog', () => {
       expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
     });
 
-    it('should allow UNDEAD recruitment for WARSMITH-Undead only players', () => {
-      const lands = gameStateStub.players[0].landsOwned;
-      const liveWarthmith = { ...PREDEFINED_PLAYERS[3] };
-      liveWarthmith.undead = false;
-      gameStateStub.players[0] = playerFactory(liveWarthmith, 'human'); // replace player
-      gameStateStub.players[0].landsOwned = lands; // copy lands
-      gameStateStub.turnOwner = gameStateStub.players[0].id;
-      expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.WARSMITH);
-      expect(getTurnOwner(gameStateStub).playerProfile.undead).toBeFalsy();
+    it.each([
+      [LandName.SWAMP, RegularUnitName.ORC],
+      [LandName.BLIGHTED_FEN, RegularUnitName.ORC],
+      [LandName.SHADOW_MIRE, RegularUnitName.ORC],
+      [LandName.MOUNTAINS, RegularUnitName.DWARF],
+      [LandName.SUN_SPIRE_PEAKS, RegularUnitName.DWARF],
+      [LandName.PLAINS, RegularUnitName.WARRIOR],
+      [LandName.CRISTAL_BASIN, RegularUnitName.WARRIOR],
+      [LandName.MISTY_GLADES, RegularUnitName.WARRIOR],
+      [LandName.GREEN_FOREST, RegularUnitName.ELF],
+      [LandName.DARK_FOREST, RegularUnitName.DARK_ELF],
+    ])(
+      'should allow Nulwarden recruit in %s land %s Nullwarden regular',
+      (landName: LandType, unitName: RegularUnitType) => {
+        const lands = gameStateStub.players[0].landsOwned;
+        gameStateStub.players[0] = playerFactory(PREDEFINED_PLAYERS[16], 'human'); // replace player
+        gameStateStub.players[0].landsOwned = lands; // copy lands
+        gameStateStub.turnOwner = gameStateStub.players[0].id;
+        expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.ZEALOT);
+        expect(
+          hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)
+        ).toBeTruthy();
+        expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
 
-      expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
-      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
+        // change landtype to be able to recruit different Nullwarden regular units
+        getLand(gameStateStub, mockApplicationContext.actionLandPosition).land =
+          getLandById(landName);
 
-      renderWithProviders(<RecruitArmyDialog />);
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(7); // only 7 type of units could be recruited in barracks
-      // hero unit
-      expect(screen.getByTestId(`flipbook-page-Warsmith`)).toBeInTheDocument();
-      // regular unit
-      expect(screen.queryByTestId(`flipbook-page-Undead`)).not.toBeInTheDocument(); // undead not available
-      expect(screen.getByTestId('flipbook-page-Warrior')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Ward-hands')).toBeInTheDocument();
-      // war-machines
-      expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
-    });
-
-    it('should allow ZEALOT recruitment for ZEALOT players', () => {
-      const lands = gameStateStub.players[0].landsOwned;
-      gameStateStub.players[0] = playerFactory(PREDEFINED_PLAYERS[16], 'human'); // replace player
-      gameStateStub.players[0].landsOwned = lands; // copy lands
-      gameStateStub.turnOwner = gameStateStub.players[0].id;
-      expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.ZEALOT);
-
-      expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
-      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
-
-      renderWithProviders(<RecruitArmyDialog />);
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(6); // only 6 type of units could be recruited in barracks
-      // hero unit
-      expect(screen.getByTestId(`flipbook-page-Zealot`)).toBeInTheDocument();
-      // regular unit
-      expect(screen.getByTestId(`flipbook-page-Nullwarden`)).toBeInTheDocument();
-      // war-machines
-      expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
-    });
+        renderWithProviders(<RecruitArmyDialog />);
+        expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+        expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(6); // only 6 type of units could be recruited in barracks
+        // hero unit
+        expect(screen.getByTestId(`flipbook-page-Zealot`)).toBeInTheDocument();
+        // regular unit
+        expect(screen.getByTestId(`flipbook-page-${unitName} Nullwarden`)).toBeInTheDocument();
+        // war-machines
+        expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+        expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
+        expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
+        expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+      }
+    );
 
     it.each([HeroUnitName.RANGER, HeroUnitName.SHADOW_BLADE, HeroUnitName.DRUID])(
       'should not allow ELF players to recruit ORC(s)/OGR(s)',

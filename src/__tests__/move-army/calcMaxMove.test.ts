@@ -1,9 +1,9 @@
 import { levelUpRegulars } from '../../systems/unitsActions';
 import { calcMaxMove } from '../../map/move-army/calcMaxMove';
 import { regularsFactory } from '../../factories/regularsFactory';
-import { RegularUnitName } from '../../types/UnitType';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { UnitRank } from '../../state/army/RegularsState';
-import { Alignment } from '../../types/Alignment';
+import { RegularUnitName } from '../../types/UnitType';
 import type { UnitRankType } from '../../state/army/RegularsState';
 
 describe('calcMaxMove', () => {
@@ -25,7 +25,7 @@ describe('calcMaxMove', () => {
     [UnitRank.ELITE, 140, 4],
   ])('%s units: %s -> %s moves', (unitRank: UnitRankType, num: number, expTurns: number) => {
     const unit = regularsFactory(RegularUnitName.WARRIOR);
-    while (unit.rank !== unitRank) levelUpRegulars(unit, Alignment.LAWFUL);
+    while (unit.rank !== unitRank) levelUpRegulars(unit, Doctrine.MELEE);
     unit.count = num;
 
     const moves = calcMaxMove([unit]);

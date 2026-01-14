@@ -19,7 +19,7 @@ const assignPlayerHero = (homeland: LandState, gameState: GameState) => {
   const player = getTurnOwner(gameState);
   const playerProfile = player.playerProfile;
   const hero = heroFactory(playerProfile.type, playerProfile.name);
-  while (hero.level < playerProfile.level) levelUpHero(hero, playerProfile.alignment);
+  while (hero.level < playerProfile.level) levelUpHero(hero, playerProfile.doctrine);
   // initial Hero immediately available. In a normal game it tacks 3 turns to recruit
   const heroArmy = armyFactory(player.id, homeland.mapPos, { hero });
   Object.assign(gameState, addArmyToGameState(gameState, heroArmy));
