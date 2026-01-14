@@ -3,15 +3,14 @@ import { getPosition } from '../selectors/armySelectors';
 import { findShortestPath, getHostileLands } from '../selectors/landSelectors';
 import { move } from '../selectors/movementSelectors';
 import { regularsFactory } from '../factories/regularsFactory';
-
 import { EffectKind } from '../types/Effect';
-import { RegularUnitType, WarMachineType } from '../types/UnitType';
+import type { RegularUnitType, WarMachineType } from '../types/UnitType';
 import type { GameState } from '../state/GameState';
 import type { ArmyState } from '../state/army/ArmyState';
 import type { HeroState } from '../state/army/HeroState';
 import type { RegularsState, UnitRankType } from '../state/army/RegularsState';
+import type { WarMachineState } from '../state/army/WarMachineState';
 import type { LandPosition } from '../state/map/land/LandPosition';
-import { WarMachineState } from '../state/army/WarMachineState';
 
 export const addHero = (state: ArmyState, hero: HeroState): ArmyState => {
   return {

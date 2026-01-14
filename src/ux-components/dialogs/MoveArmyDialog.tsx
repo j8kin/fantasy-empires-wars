@@ -14,10 +14,10 @@ import { startMovement } from '../../map/move-army/startMovement';
 import { ButtonName } from '../../types/ButtonName';
 import { UnitRank } from '../../state/army/RegularsState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
+import { EmpireEventKind } from '../../types/EmpireEvent';
 import type { ArmyBriefInfo, HeroBriefInfo, RegularsBriefInfo, WarMachinesBriefInfo } from '../../state/army/ArmyState';
 import type { HeroUnitType, RegularUnitType, WarMachineType } from '../../types/UnitType';
 import type { UnitRankType } from '../../state/army/RegularsState';
-import { EmpireEventKind } from '../../types/EmpireEvent';
 
 // Consolidate units of the same type and rank
 const consolidateArmyBriefInfo = (army: ArmyBriefInfo): ArmyBriefInfo => {

@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
-import type { BuildingState, RecruitmentSlot } from '../state/map/building/BuildingState';
 import { BuildingName } from '../types/Building';
 import { RegularUnitName } from '../types/UnitType';
+import type { BuildingState, RecruitmentSlot } from '../state/map/building/BuildingState';
 import type { BuildingType } from '../types/Building';
 
 // Building slot constants

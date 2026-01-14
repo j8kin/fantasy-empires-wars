@@ -1,7 +1,6 @@
 import { getTurnOwner } from '../selectors/playerSelectors';
 import { getPlayerLands } from '../selectors/landSelectors';
 import { getArmiesByPlayer } from '../selectors/armySelectors';
-
 import { SpellName } from '../types/Spell';
 import { EffectKind } from '../types/Effect';
 import type { GameState } from '../state/GameState';

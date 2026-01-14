@@ -1,7 +1,7 @@
-import type { UnitType } from '../types/UnitType';
-import type { DoctrineType } from '../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
 import { Doctrine } from '../state/player/PlayerProfile';
+import type { UnitType } from '../types/UnitType';
+import type { DoctrineType } from '../state/player/PlayerProfile';
 
 import wardHandsImg from './army/ward-hands.png';
 import warriorImg from './army/warrior.png';

@@ -6,7 +6,6 @@ import Avatar from '../avatars/Avatar';
 import { getAlignmentColor } from '../../domain/ui/alignmentColors';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-
 import type { PlayerProfile } from '../../state/player/PlayerProfile';
 
 interface PlayerSelectionProps {

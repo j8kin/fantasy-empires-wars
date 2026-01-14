@@ -2,15 +2,17 @@ import { isHeroType, isMageType } from '../domain/unit/unitTypeChecks';
 import { getLandById } from '../domain/land/landRepository';
 import { getAllUnitTypeByAlignment } from '../domain/unit/unitRepository';
 import { Doctrine, RaceName } from '../state/player/PlayerProfile';
-import { HeroUnitName, RegularUnitName, RegularUnitType, WarMachineName, WarMachineType } from '../types/UnitType';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
+import { BuildingName } from '../types/Building';
 import { Alignment } from '../types/Alignment';
 import { LandName } from '../types/Land';
 import { Mana } from '../types/Mana';
 import type { PlayerState, PlayerTraits } from '../state/player/PlayerState';
 import type { PlayerProfile, PlayerType } from '../state/player/PlayerProfile';
+import type { RegularUnitType, WarMachineType } from '../types/UnitType';
 import type { ManaType } from '../types/Mana';
 import type { LandType } from '../types/Land';
-import { BuildingName, BuildingType } from '../types/Building';
+import type { BuildingType } from '../types/Building';
 import type { UnitType, HeroUnitType } from '../types/UnitType';
 
 export const playerFactory = (profile: PlayerProfile, playerType: PlayerType, vault: number = 0): PlayerState => {

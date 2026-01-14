@@ -1,8 +1,10 @@
 import React from 'react';
 import styles from './css/GameButton.module.css';
-import { ButtonType, ButtonName } from '../../types/ButtonName';
 
 import buttonImg from '../../assets/buttons/Button.png';
+
+import { ButtonName } from '../../types/ButtonName';
+import type { ButtonType } from '../../types/ButtonName';
 
 export interface GameButtonProps {
   buttonName: ButtonType;

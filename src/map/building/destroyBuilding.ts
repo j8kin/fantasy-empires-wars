@@ -5,7 +5,6 @@ import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { hasLand } from '../../systems/playerActions';
 import { clearLandBuildings, addPlayerLand, removePlayerLand } from '../../systems/gameStateActions';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
-
 import { BuildingName } from '../../types/Building';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';

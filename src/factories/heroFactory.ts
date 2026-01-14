@@ -1,7 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { isMageType } from '../domain/unit/unitTypeChecks';
 import { getRecruitInfo, unitsBaseCombatStats } from '../domain/unit/unitRepository';
-
 import type { HeroState } from '../state/army/HeroState';
 import type { HeroUnitType } from '../types/UnitType';
 

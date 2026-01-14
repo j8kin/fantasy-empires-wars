@@ -6,7 +6,6 @@ import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { BuildingName } from '../../types/Building';
 import { TreasureName } from '../../types/Treasures';
-
 import type { GameState } from '../../state/GameState';
 
 export const changeOwner = (gameState: GameState): void => {

@@ -7,7 +7,6 @@ import LandTile from './LandTile';
 
 import { useGameContext } from '../../contexts/GameContext';
 import { getLandId } from '../../state/map/land/LandId';
-
 import type { MapDimensions } from '../../state/map/MapDimensions';
 import type { FrameSize } from '../../contexts/ApplicationContext';
 

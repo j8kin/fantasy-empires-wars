@@ -4,7 +4,6 @@ import styles from './css/HeroOutcomePopup.module.css';
 import PopupWrapper from './PopupWrapper';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-
 import type { PopupProps } from './PopupWrapper';
 import type { EmpireEventType } from '../../types/EmpireEvent';
 

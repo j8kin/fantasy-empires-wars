@@ -6,7 +6,6 @@ import GameButton from '../buttons/GameButton';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-
 import { ButtonName } from '../../types/ButtonName';
 
 const GameControl: React.FC = () => {

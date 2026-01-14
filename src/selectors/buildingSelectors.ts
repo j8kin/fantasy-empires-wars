@@ -1,5 +1,5 @@
-import { BuildingState } from '../state/map/building/BuildingState';
-import { UnitType } from '../types/UnitType';
+import type { BuildingState } from '../state/map/building/BuildingState';
+import type { UnitType } from '../types/UnitType';
 
 /**
  * Check if a building has any available (unoccupied) recruitment slots

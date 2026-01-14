@@ -8,9 +8,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getAllQuests, getQuestType } from '../../domain/quest/questRepository';
 import { startQuest } from '../../map/quest/startQuest';
-
 import { getQuestImg } from '../../assets/getQuestImg';
-
 import type { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 import type { HeroState } from '../../state/army/HeroState';
 

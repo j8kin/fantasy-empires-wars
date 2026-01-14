@@ -34,7 +34,6 @@ import { Mana } from '../../types/Mana';
 import { TreasureName } from '../../types/Treasures';
 import { EffectKind } from '../../types/Effect';
 import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName, WarMachineName } from '../../types/UnitType';
-
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { Spell, SpellType } from '../../types/Spell';

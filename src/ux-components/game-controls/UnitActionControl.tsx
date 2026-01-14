@@ -5,7 +5,6 @@ import GameButton from '../buttons/GameButton';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-
 import { getLandId } from '../../state/map/land/LandId';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { findAllHeroesOnMap, getArmiesByPlayer, getPosition, isMoving } from '../../selectors/armySelectors';

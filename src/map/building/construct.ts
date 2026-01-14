@@ -6,10 +6,10 @@ import { addBuildingToLand, addPlayerLand, updatePlayerVault } from '../../syste
 import { destroyBuilding } from './destroyBuilding';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
-import type { BuildingType } from '../../types/Building';
 import { BuildingName } from '../../types/Building';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
+import type { BuildingType } from '../../types/Building';
 
 export const construct = (gameState: GameState, buildingType: BuildingType, position: LandPosition) => {
   const map = gameState.map;

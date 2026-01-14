@@ -25,7 +25,6 @@ import SpellCastAnimation from '../animations/SpellCastAnimation';
 import { ApplicationContextProvider, useApplicationContext } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
-
 import type { EmpireEvent } from '../../types/EmpireEvent';
 
 const MainViewContent: React.FC = () => {

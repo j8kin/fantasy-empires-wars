@@ -13,7 +13,6 @@ import {
 import { getRegularLandKinds } from '../../domain/land/landRelationships';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { getItem } from '../../domain/treasure/treasureRepository';
-
 import { SpellName } from '../../types/Spell';
 import { TreasureName } from '../../types/Treasures';
 import { MagicTarget } from '../../types/MagicTarget';

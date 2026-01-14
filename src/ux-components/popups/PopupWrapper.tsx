@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from 'react';
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-
 import type { FrameSize, ScreenPosition } from '../../contexts/ApplicationContext';
 
 export interface PopupProps {

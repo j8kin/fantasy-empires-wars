@@ -9,7 +9,6 @@ import {
 } from '../../domain/land/landRelationships';
 import { getRandomElement } from '../../domain/utils/random';
 import { LandName } from '../../types/Land';
-
 import type { LandType } from '../../types/Land';
 import type { Land } from '../../types/Land';
 import type { MapState } from '../../state/map/MapState';

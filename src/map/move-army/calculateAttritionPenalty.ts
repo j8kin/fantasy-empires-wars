@@ -3,7 +3,6 @@ import { getArmiesAtPositionByPlayers } from '../../selectors/armySelectors';
 import { getHostileLands } from '../../selectors/landSelectors';
 import { updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
 import { calculateAndApplyArmyPenalties } from '../../domain/army/armyPenaltyCalculator';
-
 import type { PenaltyConfig } from '../../domain/army/armyPenaltyCalculator';
 import type { GameState } from '../../state/GameState';
 

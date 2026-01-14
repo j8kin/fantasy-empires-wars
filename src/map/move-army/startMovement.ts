@@ -5,12 +5,10 @@ import { addArmyToGameState, updateArmyInGameState, removeArmyFromGameState } fr
 import { armyFactory } from '../../factories/armyFactory';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { setDiplomacyStatus } from '../../systems/playerActions';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { Alignment } from '../../types/Alignment';
-
-import { getMapDimensions } from '../../utils/screenPositionUtils';
-
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { ArmyBriefInfo } from '../../state/army/ArmyState';

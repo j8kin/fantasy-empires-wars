@@ -1,5 +1,4 @@
 import { getRandomElement } from '../../domain/utils/random';
-
 import type { HeroState } from '../../state/army/HeroState';
 
 export const heroRecruitingMessage = (heroUnit: HeroState): string => {

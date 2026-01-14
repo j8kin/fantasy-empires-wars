@@ -1,5 +1,5 @@
 import type { AlignmentType } from '../../types/Alignment';
-import { HeroUnitType } from '../../types/UnitType';
+import type { HeroUnitType } from '../../types/UnitType';
 import type { PlayerColorName } from '../../types/PlayerColors';
 
 export type PlayerType = 'human' | 'computer';

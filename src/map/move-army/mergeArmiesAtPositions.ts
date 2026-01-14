@@ -1,7 +1,6 @@
 import { getPosition, isMoving, getArmiesAtPosition, getArmiesByPlayer } from '../../selectors/armySelectors';
 import { mergeArmies } from '../../systems/armyActions';
 import { removeArmyFromGameState, updateArmyInGameState } from '../../systems/armyActions';
-
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 

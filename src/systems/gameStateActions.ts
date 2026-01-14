@@ -2,7 +2,6 @@ import { getLandId } from '../state/map/land/LandId';
 import { getPlayer, getTurnOwner } from '../selectors/playerSelectors';
 import { addEmpireTreasure } from './playerActions';
 import { MAX_MANA } from '../types/Mana';
-
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
 import type { LandPosition } from '../state/map/land/LandPosition';

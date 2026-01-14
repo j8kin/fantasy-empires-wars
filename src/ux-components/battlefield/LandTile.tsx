@@ -18,20 +18,18 @@ import { castSpell } from '../../map/magic/castSpell';
 import { invokeItem } from '../../map/magic/invokeItem';
 import { calcMaxMove } from '../../map/move-army/calcMaxMove';
 import { getRandomElement } from '../../domain/utils/random';
+import { getLandImg } from '../../assets/getLandImg';
 import { MAX_MOVE } from '../../map/move-army/calcMaxMove';
 import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
 import { SpellName } from '../../types/Spell';
 import { EmpireEventKind } from '../../types/EmpireEvent';
-
-import { getLandImg } from '../../assets/getLandImg';
-
+import { Alignment } from '../../types/Alignment';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
+import { DiplomacyStatus } from '../../types/Diplomacy';
 import type { SpellType } from '../../types/Spell';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { BuildingType } from '../../types/Building';
 import type { TreasureType } from '../../types/Treasures';
-import { Alignment } from '../../types/Alignment';
-import { NO_PLAYER } from '../../domain/player/playerRepository';
-import { DiplomacyStatus } from '../../types/Diplomacy';
 
 export interface HexTileProps {
   mapPosition: LandPosition;

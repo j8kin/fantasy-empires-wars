@@ -6,7 +6,6 @@ import GameButton from '../buttons/GameButton';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-
 import { ButtonName } from '../../types/ButtonName';
 import type { PlayerProfile } from '../../state/player/PlayerProfile';
 

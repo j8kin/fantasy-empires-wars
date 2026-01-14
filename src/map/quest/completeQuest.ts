@@ -16,16 +16,15 @@ import { artifacts, items, relicts } from '../../domain/treasure/treasureReposit
 import { getQuest } from '../../domain/quest/questRepository';
 import { getRandomElement, getRandomInt } from '../../domain/utils/random';
 import { emptyHanded, heroDieMessage, heroGainArtifact, heroGainItem, heroGainRelic } from './questCompleteMessages';
-
-import type { EmpireEvent } from '../../types/EmpireEvent';
 import { EmpireEventKind } from '../../types/EmpireEvent';
-import type { Artifact } from '../../types/Treasures';
 import { TreasureName } from '../../types/Treasures';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { HeroQuest, QuestType } from '../../types/Quest';
 import type { HeroState } from '../../state/army/HeroState';
+import type { Artifact } from '../../types/Treasures';
+import type { EmpireEvent } from '../../types/EmpireEvent';
 
 const surviveInQuest = (quest: HeroQuest): boolean => {
   return Math.random() <= 0.8 + (quest.hero.level - 1 - (quest.quest.level - 1) * 5) * 0.05;

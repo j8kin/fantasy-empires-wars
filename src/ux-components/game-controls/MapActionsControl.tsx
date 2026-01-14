@@ -5,7 +5,6 @@ import GameButton from '../buttons/GameButton';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-
 import { getAllowedBuildings, getTurnOwner } from '../../selectors/playerSelectors';
 import { AllSpells } from '../../domain/spell/spellsRepository';
 import { SpellName } from '../../types/Spell';

@@ -8,9 +8,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getTurnOwner, hasActiveEffectByPlayer } from '../../selectors/playerSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getValidMagicLands } from '../../map/magic/getValidMagicLands';
-
 import { getSpellImg } from '../../assets/getSpellImg';
-
 import { SpellName } from '../../types/Spell';
 import { AllSpells } from '../../domain/spell/spellsRepository';
 import type { SpellType } from '../../types/Spell';

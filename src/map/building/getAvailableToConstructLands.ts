@@ -1,10 +1,9 @@
 import { getLandId } from '../../state/map/land/LandId';
 import { getLandOwner, getPlayerLands, getTilesInRadius, hasBuilding } from '../../selectors/landSelectors';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
-
 import { BuildingName } from '../../types/Building';
-import type { BuildingType } from '../../types/Building';
 import type { GameState } from '../../state/GameState';
+import type { BuildingType } from '../../types/Building';
 
 export const getAvailableToConstructLands = (gameState: GameState, buildingType: BuildingType): string[] => {
   const { turnOwner } = gameState;

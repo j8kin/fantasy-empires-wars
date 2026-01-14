@@ -5,12 +5,9 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getMaxHeroLevelByType } from '../../selectors/armySelectors';
 import { getManaColor, getManaGradient } from '../../domain/ui/manaColors';
 import { getManaSource } from '../../domain/mana/manaSource';
-
 import { getManaVialImg } from '../../assets/getManaVialImg';
-
 import { Mana, MAX_MANA } from '../../types/Mana';
 import { AllSpells } from '../../domain/spell/spellsRepository';
-
 import type { GameState } from '../../state/GameState';
 import type { ManaType } from '../../types/Mana';
 

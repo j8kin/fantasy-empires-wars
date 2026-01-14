@@ -1,7 +1,7 @@
+import cn from 'classnames';
 import React, { useCallback, useState } from 'react';
 import styles from './css/ExchangeManaVialPanel.module.css';
 import vialPanelStyles from './css/VialPanel.module.css';
-import cn from 'classnames';
 
 import ManaVial from './ManaVial';
 import { useGameContext } from '../../contexts/GameContext';

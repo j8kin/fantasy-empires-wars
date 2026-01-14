@@ -11,7 +11,6 @@ import { heroRecruitingMessage } from './heroRecruitingMessage';
 import { warMachineFactory } from '../../factories/warMachineFactory';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { levelUpRegulars } from '../../systems/unitsActions';
-
 import { Doctrine } from '../../state/player/PlayerProfile';
 import { EmpireEventKind } from '../../types/EmpireEvent';
 import type { EmpireEvent } from '../../types/EmpireEvent';

@@ -2,12 +2,11 @@ import { hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getArmiesAtPositionByPlayers } from '../../selectors/armySelectors';
 import { calculateAndApplyArmyPenalties } from '../../domain/army/armyPenaltyCalculator';
 import { cleanupArmies, updateArmyInGameState } from '../../systems/armyActions';
-
 import { TreasureName } from '../../types/Treasures';
-import { RegularUnitType } from '../../types/UnitType';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { PenaltyConfig } from '../../domain/army/armyPenaltyCalculator';
+import type { RegularUnitType } from '../../types/UnitType';
 
 /**
  * Applies casualty penalties to all armies at a specific land position.

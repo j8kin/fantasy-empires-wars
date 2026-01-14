@@ -5,7 +5,6 @@ import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
 import GameButton from '../buttons/GameButton';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
-
 import { ButtonName } from '../../types/ButtonName';
 
 const SaveGameDialog: React.FC = () => {

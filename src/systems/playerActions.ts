@@ -3,7 +3,6 @@ import { playerFactory } from '../factories/playerFactory';
 import { addPlayer, setTurnOwner, incrementTurn } from './gameStateActions';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { DiplomacyStatus } from '../types/Diplomacy';
-
 import type { GameState } from '../state/GameState';
 import type { LandPosition } from '../state/map/land/LandPosition';
 import type { PlayerState } from '../state/player/PlayerState';

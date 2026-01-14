@@ -3,7 +3,6 @@ import { cleanupArmies, getHero } from '../../systems/armyActions';
 import { updateArmyInGameState } from '../../systems/armyActions';
 import { addPlayerQuest } from '../../systems/gameStateActions';
 import { heroQuestFactory } from '../../factories/heroQuestFactory';
-
 import type { GameState } from '../../state/GameState';
 import type { QuestType } from '../../types/Quest';
 
