@@ -78,8 +78,8 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
               }
             } else {
               const regular = regularsFactory(s.unit);
-              if (getTurnOwner(gameState).playerProfile.doctrine === Doctrine.NULLWARDEN) {
-                // all nullwarden units are recruited as veteran units
+              if (getTurnOwner(gameState).playerProfile.doctrine === Doctrine.ANTI_MAGIC) {
+                // all anti-magic coalition units are recruited as veteran units
                 levelUpRegulars(regular, getTurnOwner(gameState));
               }
 

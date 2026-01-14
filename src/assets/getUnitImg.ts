@@ -79,7 +79,7 @@ const nullwardenImgs: Record<UnitType, string> = {
 };
 
 export const getUnitImg = (unit: UnitType, doctrine: DoctrineType) => {
-  if (doctrine === Doctrine.NULLWARDEN) {
+  if (doctrine === Doctrine.ANTI_MAGIC) {
     return nullwardenImgs[unit];
   }
   return unitImg[unit];

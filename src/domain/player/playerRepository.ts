@@ -202,7 +202,7 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     alignment: Alignment.LAWFUL,
     race: RaceName.HUMAN,
     type: HeroUnitName.ZEALOT,
-    doctrine: Doctrine.NULLWARDEN,
+    doctrine: Doctrine.ANTI_MAGIC,
     level: 28,
     description: 'A zealot of iron faith, sworn to purge magic from Orrivane.',
     color: 'perl-white',

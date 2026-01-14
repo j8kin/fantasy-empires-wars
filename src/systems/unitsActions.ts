@@ -52,8 +52,8 @@ export const levelUpHero = (hero: HeroState, playerAlignment: AlignmentType): vo
 export const levelUpRegulars = (regular: RegularsState, player: PlayerState): void => {
   // Undead units can't be leveled up'
   if (regular.type === RegularUnitName.UNDEAD) return;
-  // Nullwarden units recruited as veteran and never promoted
-  if (regular.rank === UnitRank.VETERAN && player.playerProfile.doctrine === Doctrine.NULLWARDEN)
+  // Anti-Magic coalition units recruited as veteran and never promoted
+  if (regular.rank === UnitRank.VETERAN && player.playerProfile.doctrine === Doctrine.ANTI_MAGIC)
     return;
 
   if (regular.rank === UnitRank.REGULAR) {

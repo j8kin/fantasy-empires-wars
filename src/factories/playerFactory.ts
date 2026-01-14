@@ -258,9 +258,9 @@ const getRecruitmentSlots = (
         2: new Set([...allWarMachinesUnits, HeroUnitName.WARSMITH]),
       };
       break;
-    case Doctrine.NULLWARDEN:
+    case Doctrine.ANTI_MAGIC:
       buildingTraits[BuildingName.BARRACKS] = {
-        0: new Set([...allRegularUnits]), // all nullwarden units
+        0: new Set([...allRegularUnits]),
         1: new Set([...allWarMachinesUnits]),
         2: new Set([HeroUnitName.ZEALOT]),
       };
