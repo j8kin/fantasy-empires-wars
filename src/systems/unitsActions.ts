@@ -18,7 +18,7 @@ const levelCurve = (level: number): number => 1 + Math.log(level) * level * 0.3;
 
 const calculateUpdatedStats = (
   baseStats: CombatStats,
-  levelCurveModifier: number,
+  levelCurveMultiplier: number,
   multipliers: LevelUpParams,
   doctrine: LevelUpParams,
   currentStats: CombatStats,
@@ -28,25 +28,26 @@ const calculateUpdatedStats = (
   const updatedCombatStats = { ...currentStats };
 
   statsToUpdate.forEach((key) => {
-    const base = baseStats[key];
-    const mult = multipliers[key];
-    const doc = doctrine[key];
+    const baseStat = baseStats[key];
+    const unitTypeMultiplier = multipliers[key];
+    const doctrineMultiplier = doctrine[key];
 
     if (
-      base !== undefined &&
-      mult !== undefined &&
-      doc !== undefined &&
+      baseStat !== undefined &&
+      unitTypeMultiplier !== undefined &&
+      doctrineMultiplier !== undefined &&
       currentStats[key] !== undefined
     ) {
       (updatedCombatStats[key] as number) = Math.floor(
-        base + (key !== 'speed' ? levelCurveModifier : 1.0) * mult * doc
+        baseStat +
+          (key !== 'speed' ? levelCurveMultiplier : 1.0) * unitTypeMultiplier * doctrineMultiplier
       );
     }
   });
 
   const updatedMana =
     currentMana !== undefined
-      ? Math.floor(1 + levelCurveModifier * multipliers.mana! * doctrine.mana!)
+      ? Math.floor(1 + levelCurveMultiplier * multipliers.mana! * doctrine.mana!)
       : undefined;
 
   return { ...updatedCombatStats, mana: updatedMana };
