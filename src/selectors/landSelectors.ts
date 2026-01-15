@@ -20,6 +20,7 @@ import type { BuildingType } from '../types/Building';
 import type { Effect, EffectSourceId } from '../types/Effect';
 import type { AlignmentType } from '../types/Alignment';
 import type { WarMachineType } from '../types/UnitType';
+import type { UnitRankType } from '../state/army/RegularsState';
 
 export const getLand = (state: GameState, landPos: LandPosition) => state.map.lands[getLandId(landPos)];
 
@@ -37,7 +38,7 @@ interface LandInfo {
   alignment: AlignmentType;
   goldPerTurn: number;
   heroes: string[];
-  regulars: string[];
+  regulars: { rank: UnitRankType; info: string }[];
   warMachines: string[];
   buildings: BuildingType[];
   effects: Effect[];
@@ -87,7 +88,12 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       goldPerTurn: land.goldPerTurn,
       effects: [...land.effects],
       heroes: armies.flatMap((a) => a.heroes).map((h) => `${h.name} lvl: ${h.level}`),
-      regulars: armies.flatMap((a) => a.regulars).map((r) => `${r.type} (${r.count})`),
+      regulars: armies
+        .flatMap((a) => a.regulars)
+        .map((r) => ({
+          rank: r.rank,
+          info: `${r.type} (${r.count}) ${r.rank.charAt(0).toUpperCase()}`,
+        })),
       // ignore war-machines durability and return only type and count
       warMachines: Object.entries(
         armies

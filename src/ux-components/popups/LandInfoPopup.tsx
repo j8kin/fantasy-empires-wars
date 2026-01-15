@@ -198,8 +198,8 @@ const LandInfoPopup: React.FC<LandCharacteristicsPopupProps> = ({ landPos, scree
                       <span className={`${commonStyles.label} ${styles.label}`}>Units:</span>
                       <div className={styles.buildingsList}>
                         {landInfo.regulars.map((unit, index) => (
-                          <span key={index} className={commonStyles.value}>
-                            {unit}
+                          <span key={index} className={styles[unit.rank]}>
+                            {unit.info}
                           </span>
                         ))}
                       </div>
