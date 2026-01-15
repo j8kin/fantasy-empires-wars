@@ -280,8 +280,8 @@ describe('LandInfoPopup', () => {
       );
 
       expect(screen.getByText('Units:')).toBeInTheDocument();
-      expect(screen.getByText('Warrior (20)')).toBeInTheDocument();
-      expect(screen.getByText('Dwarf (20)')).toBeInTheDocument();
+      expect(screen.getByText('Warrior (20) R')).toBeInTheDocument();
+      expect(screen.getByText('Dwarf (20) R')).toBeInTheDocument();
     });
 
     it('displays both heroes and units when tile has mixed army', () => {
@@ -327,9 +327,9 @@ describe('LandInfoPopup', () => {
 
       // Check units section
       expect(screen.getByText('Units:')).toBeInTheDocument();
-      expect(screen.getByText('Warrior (5)')).toBeInTheDocument();
-      expect(screen.getByText('Dwarf (20)')).toBeInTheDocument(); // moving army should also be displayed
-      expect(screen.getByText('Elf (20)')).toBeInTheDocument();
+      expect(screen.getByText('Warrior (5) R')).toBeInTheDocument();
+      expect(screen.getByText('Dwarf (20) R')).toBeInTheDocument(); // moving army should also be displayed
+      expect(screen.getByText('Elf (20) R')).toBeInTheDocument();
     });
 
     it('does not display army sections when tile has no army', () => {
@@ -427,7 +427,7 @@ describe('LandInfoPopup', () => {
       renderWithProviders(<LandInfoPopup landPos={landPos} screenPosition={mockPosition} />, gameStateStub);
 
       expect(screen.getByText('Units:')).toBeInTheDocument();
-      expect(screen.getByText('Orc (20)')).toBeInTheDocument();
+      expect(screen.getByText('Orc (20) R')).toBeInTheDocument();
       expect(screen.getByText('War Machines:')).toBeInTheDocument();
       expect(screen.getByText('Ballista (1)')).toBeInTheDocument();
       expect(screen.queryByText('Heroes:')).not.toBeInTheDocument();
@@ -575,7 +575,7 @@ describe('LandInfoPopup', () => {
       expect(screen.getByText('Heroes:')).toBeInTheDocument();
       expect(screen.getByText('Fighter lvl: 1')).toBeInTheDocument();
       expect(screen.getByText('Units:')).toBeInTheDocument();
-      expect(screen.getByText('Warrior (20)')).toBeInTheDocument();
+      expect(screen.getByText('Warrior (20) R')).toBeInTheDocument();
     });
 
     it('displays effects with different durations correctly', () => {

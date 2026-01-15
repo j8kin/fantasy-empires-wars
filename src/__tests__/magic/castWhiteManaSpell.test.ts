@@ -19,6 +19,7 @@ import type { LandPosition } from '../../state/map/land/LandPosition';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { UnitRank } from '../../state/army/RegularsState';
 
 describe('castWhiteManaSpell', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -222,7 +223,8 @@ describe('castWhiteManaSpell', () => {
       expect(landInfoWithEffect.heroes).toHaveLength(1);
       expect(landInfoWithEffect.heroes[0]).toBe('Morgana Shadowweaver lvl: 12');
       expect(landInfoWithEffect.regulars).toHaveLength(1);
-      expect(landInfoWithEffect.regulars[0]).toBe(`${RegularUnitName.UNDEAD} (1)`);
+      expect(landInfoWithEffect.regulars[0].info).toBe(`${RegularUnitName.UNDEAD} (1) R`);
+      expect(landInfoWithEffect.regulars[0].rank).toBe(UnitRank.REGULAR);
       expect(landInfoWithEffect.buildings).toHaveLength(1);
       expect(landInfoWithEffect.buildings[0]).toBe(BuildingName.STRONGHOLD);
 
