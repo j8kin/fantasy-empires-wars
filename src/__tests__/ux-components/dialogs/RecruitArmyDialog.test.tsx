@@ -4,30 +4,27 @@ import userEvent from '@testing-library/user-event';
 
 import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog';
 
-import { getLand, getLandOwner, getPlayerLands, hasBuilding } from '../../../selectors/landSelectors';
+import { getLand, hasBuilding } from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
-import { addPlayer } from '../../../systems/gameStateActions';
-import { placeHomeland } from '../../../map/generation/placeHomeland';
 import { construct } from '../../../map/building/construct';
 import { startRecruiting } from '../../../map/recruiting/startRecruiting';
 import { playerFactory } from '../../../factories/playerFactory';
 import { getAvailableSlotsCount } from '../../../selectors/buildingSelectors';
 import { getLandById } from '../../../domain/land/landRepository';
-
+import { isMageType } from '../../../domain/unit/unitTypeChecks';
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { BuildingName } from '../../../types/Building';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
 import { Doctrine, RaceName } from '../../../state/player/PlayerProfile';
 import { Alignment } from '../../../types/Alignment';
 import { LandName } from '../../../types/Land';
+import type { GameState } from '../../../state/GameState';
+import type { DoctrineType } from '../../../state/player/PlayerProfile';
+import type { LandPosition } from '../../../state/map/land/LandPosition';
+import type { PlayerProfile } from '../../../state/player/PlayerProfile';
 import type { RegularUnitType } from '../../../types/UnitType';
 import type { LandType } from '../../../types/Land';
-
-import type { GameState } from '../../../state/GameState';
-import type { LandPosition } from '../../../state/map/land/LandPosition';
 import type { HeroUnitType } from '../../../types/UnitType';
-import type { PlayerProfile } from '../../../state/player/PlayerProfile';
-import type { AlignmentType } from '../../../types/Alignment';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 
@@ -507,71 +504,102 @@ describe('RecruitArmyDialog', () => {
   });
 
   describe('Mage Tower Units', () => {
-    it.each([
-      [HeroUnitName.CLERIC, Alignment.LAWFUL],
-      [HeroUnitName.DRUID, Alignment.LAWFUL],
-      [HeroUnitName.ENCHANTER, Alignment.LAWFUL],
-      [HeroUnitName.DRUID, Alignment.NEUTRAL],
-      [HeroUnitName.ENCHANTER, Alignment.NEUTRAL],
-      [HeroUnitName.PYROMANCER, Alignment.NEUTRAL],
-      [HeroUnitName.ENCHANTER, Alignment.CHAOTIC],
-      [HeroUnitName.PYROMANCER, Alignment.CHAOTIC],
-      [HeroUnitName.NECROMANCER, Alignment.CHAOTIC],
-    ])(
-      'should show mage units (%s) in mage tower for %s player',
-      (mageType: HeroUnitType, alignment: AlignmentType) => {
-        const newPlayer = PREDEFINED_PLAYERS.find(
-          (p) => p.alignment === alignment && p.id !== gameStateStub.turnOwner
-        )!;
-        Object.assign(gameStateStub, addPlayer(gameStateStub, playerFactory(newPlayer, 'human')));
-        gameStateStub.turnOwner = newPlayer.id;
-        getTurnOwner(gameStateStub).vault = 100000; // to be able to construct and recruit
-        placeHomeland(gameStateStub);
-        const landPos: LandPosition = getPlayerLands(gameStateStub, gameStateStub.turnOwner).find(
-          (l) => l.buildings.length === 0
-        )!.mapPos;
+    // Mage Tower Unit availability depends on the Players Doctrine and Player type
 
-        const land = getLand(gameStateStub, landPos);
-        expect(land.buildings).toHaveLength(0);
-        expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
+    const prepareGame = (playerType: HeroUnitType, doctrine: DoctrineType) => {
+      const player: PlayerProfile = { ...PREDEFINED_PLAYERS[0], type: playerType, doctrine: doctrine };
+      gameStateStub = createGameStateStub({ gamePlayers: [player, PREDEFINED_PLAYERS[1]] });
+      getTurnOwner(gameStateStub).vault = 100000;
 
-        // Give the player enough money to build the mage tower (costs 15000)
-        getTurnOwner(gameStateStub).vault = 20000;
-
-        construct(gameStateStub, BuildingName.MAGE_TOWER, landPos);
-        getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.id].add(mageType);
-
-        mockApplicationContext.actionLandPosition = landPos;
-
-        /********************** RENDER DIALOG ***********************/
-        renderWithProviders(<RecruitArmyDialog />);
-
-        // The dialog should render showing the mage which can be recruited in mage tower
-        expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-        expect(screen.getByTestId(`flipbook-page-${mageType}`)).toBeInTheDocument();
-      }
-    );
-
-    it('All available mage units should be shown in mage tower', () => {
       const landPos: LandPosition = { row: 4, col: 3 };
-      const land = getLand(gameStateStub, landPos);
-      expect(land.buildings).toHaveLength(0);
-      expect(getLandOwner(gameStateStub, landPos)).toBe(gameStateStub.turnOwner);
-
-      // Give the player enough money to build the mage tower (costs 15000)
-      getTurnOwner(gameStateStub).vault = 20000;
-
       construct(gameStateStub, BuildingName.MAGE_TOWER, landPos);
 
       mockApplicationContext.actionLandPosition = landPos;
+    };
+
+    const expectMageVisibility = (visible: HeroUnitType[], hidden: HeroUnitType[]) => {
+      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+
+      visible.forEach((mage) => expect(screen.getByTestId(`flipbook-page-${mage}`)).toBeInTheDocument());
+      hidden.forEach((mage) => expect(screen.queryByTestId(`flipbook-page-${mage}`)).not.toBeInTheDocument());
+    };
+
+    it.each([
+      [HeroUnitName.CLERIC, HeroUnitName.CLERIC],
+      [HeroUnitName.HAMMER_LORD, HeroUnitName.CLERIC],
+      [HeroUnitName.DRUID, HeroUnitName.DRUID],
+      [HeroUnitName.RANGER, HeroUnitName.DRUID],
+      [HeroUnitName.ENCHANTER, HeroUnitName.ENCHANTER],
+      [HeroUnitName.FIGHTER, HeroUnitName.ENCHANTER],
+      [HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER],
+      [HeroUnitName.OGR, HeroUnitName.PYROMANCER],
+      [HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER],
+      [HeroUnitName.SHADOW_BLADE, HeroUnitName.NECROMANCER],
+    ])('Player %s with MELEE Doctrine able to recruit only %s', (playerType: HeroUnitType, mageType: HeroUnitType) => {
+      prepareGame(playerType, Doctrine.MELEE);
+
+      /********************** RENDER DIALOG ***********************/
       renderWithProviders(<RecruitArmyDialog />);
 
-      // The dialog should render showing the mage which can be recruited in mage tower
-      // Lawful player on PLAN(s) are able to recruit Cleric, Druid and Enchanter
-      expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-      expect(screen.getByTestId(`flipbook-page-Cleric`)).toBeInTheDocument();
-      expect(screen.getByTestId(`flipbook-page-Druid`)).toBeInTheDocument();
-      expect(screen.getByTestId(`flipbook-page-Enchanter`)).toBeInTheDocument();
+      expectMageVisibility(
+        [mageType],
+        Object.values(HeroUnitName).filter((unit) => isMageType(unit) && unit !== mageType)
+      );
+    });
+
+    it.each([
+      [HeroUnitName.CLERIC, [HeroUnitName.CLERIC, HeroUnitName.DRUID, HeroUnitName.ENCHANTER]],
+      [HeroUnitName.HAMMER_LORD, [HeroUnitName.CLERIC, HeroUnitName.DRUID, HeroUnitName.ENCHANTER]],
+      [HeroUnitName.DRUID, [HeroUnitName.CLERIC, HeroUnitName.DRUID, HeroUnitName.ENCHANTER]],
+      [HeroUnitName.RANGER, [HeroUnitName.CLERIC, HeroUnitName.DRUID, HeroUnitName.ENCHANTER]],
+      [HeroUnitName.ENCHANTER, [HeroUnitName.DRUID, HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER]],
+      [HeroUnitName.FIGHTER, [HeroUnitName.DRUID, HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER]],
+      [HeroUnitName.OGR, [HeroUnitName.DRUID, HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER]],
+      [HeroUnitName.PYROMANCER, [HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER, HeroUnitName.NECROMANCER]],
+      [HeroUnitName.NECROMANCER, [HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER, HeroUnitName.NECROMANCER]],
+      [HeroUnitName.SHADOW_BLADE, [HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER, HeroUnitName.NECROMANCER]],
+    ])('Player %s with MAGIC Doctrine able to recruit %s', (playerType: HeroUnitType, mageTypes: HeroUnitType[]) => {
+      prepareGame(playerType, Doctrine.MAGIC);
+
+      /********************** RENDER DIALOG ***********************/
+      renderWithProviders(<RecruitArmyDialog />);
+
+      expectMageVisibility(
+        mageTypes,
+        Object.values(HeroUnitName).filter((unit) => isMageType(unit) && !mageTypes.includes(unit))
+      );
+    });
+
+    it.each([
+      [HeroUnitName.CLERIC],
+      [HeroUnitName.DRUID],
+      [HeroUnitName.ENCHANTER],
+      [HeroUnitName.PYROMANCER],
+      [HeroUnitName.NECROMANCER],
+    ])('Player %s with PURE MAGIC Doctrine able to recruit All Mages', (playerType: HeroUnitType) => {
+      prepareGame(playerType, Doctrine.PURE_MAGIC);
+
+      /********************** RENDER DIALOG ***********************/
+      renderWithProviders(<RecruitArmyDialog />);
+
+      expectMageVisibility(
+        Object.values(HeroUnitName).filter((unit) => isMageType(unit)),
+        []
+      );
+    });
+
+    it.each([
+      [HeroUnitName.WARSMITH, Doctrine.UNDEAD],
+      [HeroUnitName.ZEALOT, Doctrine.ANTI_MAGIC],
+    ])('Player %s with %s Doctrine NOT able to recruit Mages', (playerType: HeroUnitType, doctrine: DoctrineType) => {
+      prepareGame(playerType, doctrine);
+      /********************** RENDER DIALOG ***********************/
+      renderWithProviders(<RecruitArmyDialog />);
+
+      expectMageVisibility(
+        [],
+        Object.values(HeroUnitName).filter((unit) => isMageType(unit))
+      );
     });
   });
 

@@ -54,52 +54,69 @@ const getRestrictedMagic = (playerProfile: PlayerProfile): Set<ManaType> => {
   const restricted: Set<ManaType> = new Set();
   Object.values(Mana).forEach((mana) => restricted.add(mana));
 
-  switch (playerProfile.alignment) {
-    case Alignment.LAWFUL:
-      restricted.delete(Mana.WHITE);
-      restricted.delete(Mana.GREEN);
-      restricted.delete(Mana.BLUE);
+  switch (playerProfile.doctrine) {
+    case Doctrine.MELEE:
+      // only one "main" magic is available
+      switch (playerProfile.type) {
+        case HeroUnitName.CLERIC:
+        case HeroUnitName.HAMMER_LORD:
+          restricted.delete(Mana.WHITE);
+          break;
+        case HeroUnitName.DRUID:
+        case HeroUnitName.RANGER:
+          restricted.delete(Mana.GREEN);
+          break;
+        case HeroUnitName.ENCHANTER:
+        case HeroUnitName.FIGHTER:
+          restricted.delete(Mana.BLUE);
+          break;
+        case HeroUnitName.PYROMANCER:
+        case HeroUnitName.OGR:
+          restricted.delete(Mana.RED);
+          break;
+        case HeroUnitName.NECROMANCER:
+        case HeroUnitName.SHADOW_BLADE:
+          restricted.delete(Mana.BLACK);
+          break;
+        default:
+          break;
+      }
       break;
-    case Alignment.NEUTRAL:
-      restricted.delete(Mana.GREEN);
-      restricted.delete(Mana.BLUE);
-      restricted.delete(Mana.RED);
+    case Doctrine.MAGIC:
+      // "one primary magic" and and 2 neighboring magic are available
+      switch (playerProfile.type) {
+        case HeroUnitName.CLERIC:
+        case HeroUnitName.HAMMER_LORD:
+        case HeroUnitName.DRUID:
+        case HeroUnitName.RANGER:
+          restricted.delete(Mana.WHITE);
+          restricted.delete(Mana.GREEN);
+          restricted.delete(Mana.BLUE);
+          break;
+        case HeroUnitName.ENCHANTER:
+        case HeroUnitName.FIGHTER:
+        case HeroUnitName.OGR:
+          restricted.delete(Mana.GREEN);
+          restricted.delete(Mana.BLUE);
+          restricted.delete(Mana.RED);
+          break;
+        case HeroUnitName.PYROMANCER:
+        case HeroUnitName.NECROMANCER:
+        case HeroUnitName.SHADOW_BLADE:
+          restricted.delete(Mana.BLUE);
+          restricted.delete(Mana.RED);
+          restricted.delete(Mana.BLACK);
+          break;
+        default:
+          break;
+      }
       break;
-    case Alignment.CHAOTIC:
-      restricted.delete(Mana.BLUE);
-      restricted.delete(Mana.RED);
-      restricted.delete(Mana.BLACK);
+    case Doctrine.PURE_MAGIC:
+      // all magic is available
+      restricted.clear();
       break;
     default:
-      break;
-  }
-  switch (playerProfile.type) {
-    case HeroUnitName.CLERIC:
-      restricted.delete(Mana.WHITE);
-      break;
-    case HeroUnitName.DRUID:
-      restricted.delete(Mana.GREEN);
-      break;
-    case HeroUnitName.ENCHANTER:
-      restricted.delete(Mana.BLUE);
-      break;
-    case HeroUnitName.PYROMANCER:
-      restricted.delete(Mana.RED);
-      break;
-    case HeroUnitName.NECROMANCER:
-      restricted.delete(Mana.BLACK);
-      break;
-
-    // non-magic Players
-    case HeroUnitName.ZEALOT:
-    case HeroUnitName.WARSMITH:
-      restricted.add(Mana.WHITE);
-      restricted.add(Mana.GREEN);
-      restricted.add(Mana.BLUE);
-      restricted.add(Mana.RED);
-      restricted.add(Mana.BLACK);
-      break;
-    default:
+      // all magic is prohibited
       break;
   }
   return restricted;

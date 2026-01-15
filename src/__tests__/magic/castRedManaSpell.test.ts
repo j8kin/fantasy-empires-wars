@@ -43,7 +43,7 @@ describe('castRedManaSpell', () => {
   describe('Cast EMBER RAID spell', () => {
     describe('EMBER RAID effects current recruiting', () => {
       it.each([
-        [HeroUnitName.CLERIC, BuildingName.MAGE_TOWER, 4],
+        [HeroUnitName.ENCHANTER, BuildingName.MAGE_TOWER, 4],
         [HeroUnitName.FIGHTER, BuildingName.BARRACKS, 4],
         [RegularUnitName.WARRIOR, BuildingName.BARRACKS, 2],
         [WarMachineName.CATAPULT, BuildingName.BARRACKS, 4],
@@ -81,7 +81,7 @@ describe('castRedManaSpell', () => {
     });
     describe('EMBER RAID effects new recruiting if effect active', () => {
       it.each([
-        [HeroUnitName.CLERIC, BuildingName.MAGE_TOWER, 4],
+        [HeroUnitName.ENCHANTER, BuildingName.MAGE_TOWER, 4],
         [HeroUnitName.RANGER, BuildingName.BARRACKS, 4],
         [RegularUnitName.ELF, BuildingName.BARRACKS, 3],
         [WarMachineName.BALLISTA, BuildingName.BARRACKS, 4],

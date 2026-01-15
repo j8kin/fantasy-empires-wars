@@ -9,6 +9,8 @@ import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
 import { getLandById } from '../../domain/land/landRepository';
+import { isMageType } from '../../domain/unit/unitTypeChecks';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { LandName } from '../../types/Land';
 import { BuildingName } from '../../types/Building';
@@ -18,6 +20,7 @@ import { SpellName } from '../../types/Spell';
 import { UnitRank } from '../../state/army/RegularsState';
 import type { GameState } from '../../state/GameState';
 import type { LandState } from '../../state/map/land/LandState';
+import type { DoctrineType, PlayerProfile } from '../../state/player/PlayerProfile';
 import type { LandType } from '../../types/Land';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { BuildingType } from '../../types/Building';
@@ -447,67 +450,137 @@ describe('Recruitment', () => {
     });
 
     describe('Mage heroes', () => {
-      it.each([
-        [HeroUnitName.CLERIC, 'Rowena Ironhall', PREDEFINED_PLAYERS[0].id],
-        [HeroUnitName.DRUID, 'Olyssia Riverlight', PREDEFINED_PLAYERS[0].id],
-        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard', PREDEFINED_PLAYERS[0].id],
-        [HeroUnitName.DRUID, 'Olyssia Riverlight', PREDEFINED_PLAYERS[2].id],
-        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard', PREDEFINED_PLAYERS[2].id],
-        [HeroUnitName.PYROMANCER, 'Branna Ashfang', PREDEFINED_PLAYERS[2].id],
-        [HeroUnitName.ENCHANTER, 'Eldra Stonebeard', PREDEFINED_PLAYERS[1].id],
-        [HeroUnitName.PYROMANCER, 'Branna Ashfang', PREDEFINED_PLAYERS[1].id],
-        [HeroUnitName.NECROMANCER, 'Eldra Stonebeard', PREDEFINED_PLAYERS[1].id],
-      ])(
-        '"%s named \'%s\' should be start recruited in 3 turn in Mage Tower for %s player"',
-        (unitType: HeroUnitType, name: string, turnOwnerId: string) => {
-          gameStateStub = createGameStateStub({
-            gamePlayers: [
-              PREDEFINED_PLAYERS.find((p) => p.id === turnOwnerId)!,
-              PREDEFINED_PLAYERS[3],
-              PREDEFINED_PLAYERS[4],
-              PREDEFINED_PLAYERS[5],
-            ],
-          });
+      const landPos: LandPosition = { row: 4, col: 3 };
+      const prepareGame = (playerType: HeroUnitType, doctrine: DoctrineType) => {
+        const player: PlayerProfile = { ...PREDEFINED_PLAYERS[0], type: playerType, doctrine: doctrine };
+        gameStateStub = createGameStateStub({ gamePlayers: [player, PREDEFINED_PLAYERS[1]] });
+        getTurnOwner(gameStateStub).vault = 100000;
 
-          testTurnManagement = new TestTurnManagement(gameStateStub);
-          testTurnManagement.startNewTurn(gameStateStub);
-          testTurnManagement.waitStartPhaseComplete();
+        construct(gameStateStub, BuildingName.MAGE_TOWER, landPos);
+        expect(getLand(gameStateStub, landPos).buildings[0].type).toBe(BuildingName.MAGE_TOWER);
 
-          randomSpy.mockReturnValue(0.6); // to have the same name of the hero unit
-          getTurnOwner(gameStateStub).playerType = 'computer';
+        testTurnManagement = new TestTurnManagement(gameStateStub);
+        testTurnManagement.startNewTurn(gameStateStub);
+        testTurnManagement.waitStartPhaseComplete();
+      };
 
-          gameStateStub.turnOwner = turnOwnerId;
-          getTurnOwner(gameStateStub).playerType = 'human';
-          homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
+      describe('Mage recruitment restriction based on Doctrine', () => {
+        it.each([
+          [HeroUnitName.CLERIC, HeroUnitName.CLERIC],
+          [HeroUnitName.HAMMER_LORD, HeroUnitName.CLERIC],
+          [HeroUnitName.DRUID, HeroUnitName.DRUID],
+          [HeroUnitName.RANGER, HeroUnitName.DRUID],
+          [HeroUnitName.ENCHANTER, HeroUnitName.ENCHANTER],
+          [HeroUnitName.FIGHTER, HeroUnitName.ENCHANTER],
+          [HeroUnitName.PYROMANCER, HeroUnitName.PYROMANCER],
+          [HeroUnitName.OGR, HeroUnitName.PYROMANCER],
+          [HeroUnitName.NECROMANCER, HeroUnitName.NECROMANCER],
+          [HeroUnitName.SHADOW_BLADE, HeroUnitName.NECROMANCER],
+        ])(
+          'Player %s with MELEE Doctrine able to recruit only %s',
+          (playerType: HeroUnitType, allowedMageType: HeroUnitType) => {
+            prepareGame(playerType, Doctrine.MELEE);
 
-          const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
-          constructBuilding(BuildingName.MAGE_TOWER, mageTowerPos);
-          // Mage towers cost 15000, which exhausts the initial 15000 vault, so add more gold for recruitment
-          getTurnOwner(gameStateStub).vault += 5000;
-          const mageTowerLand = getLand(gameStateStub, mageTowerPos);
-          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[mageTowerLand.land.id].add(unitType);
+            startRecruiting(gameStateStub, landPos, allowedMageType);
 
-          // Recruiting heroes in mage tower
-          startRecruiting(gameStateStub, mageTowerLand.mapPos, unitType);
-          verifyRecruitSlot(mageTowerLand.mapPos, 0, 1, unitType, 3);
+            const slot = getLand(gameStateStub, landPos).buildings[0].slots[0];
+            expect(slot.unit).toBe(allowedMageType);
+            expect(slot.turnsRemaining).toBe(3);
+            expect(slot.isOccupied).toBeTruthy();
 
-          testTurnManagement.makeNTurns(3);
+            testTurnManagement.makeNTurns(3);
 
-          verifyOccupiedSlotsCount(mageTowerLand.mapPos, 0); // hero recruited
+            verifyOccupiedSlotsCount(landPos, 0); // hero recruited
 
-          const armies = getArmiesAtPosition(gameStateStub, mageTowerLand.mapPos);
-          expect(armies).toHaveLength(1);
-          expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
-          expect(isMoving(armies[0])).toBeFalsy();
-          const recruitedUnit = armies[0].heroes[0];
-          expect(recruitedUnit.type).toBe(unitType);
-          expect(recruitedUnit.name).toBe(name);
-          expect(recruitedUnit.level).toBe(1);
-          expect(recruitedUnit.mana).toBeDefined(); // magic units have mana
-          expect(recruitedUnit.mana).toBe(1); // one mana per turn
-          expect(recruitedUnit.artifacts).toHaveLength(0);
-        }
-      );
+            const heroes = getArmiesAtPosition(gameStateStub, landPos).flatMap((a) => a.heroes);
+            expect(heroes).toHaveLength(1);
+            expect(heroes[0].type).toBe(allowedMageType);
+
+            // try to recruit prohibited mage unit types
+            Object.values(HeroUnitName)
+              .filter((u) => isMageType(u) && u !== allowedMageType)
+              .forEach((unit) => {
+                startRecruiting(gameStateStub, landPos, unit);
+                getLand(gameStateStub, landPos).buildings[0].slots.every((s) => expect(s.isOccupied).toBeFalsy());
+              });
+          }
+        );
+
+        it.each([
+          [HeroUnitName.CLERIC, [HeroUnitName.CLERIC, HeroUnitName.DRUID, HeroUnitName.ENCHANTER]],
+          [HeroUnitName.HAMMER_LORD, [HeroUnitName.CLERIC, HeroUnitName.DRUID, HeroUnitName.ENCHANTER]],
+          [HeroUnitName.DRUID, [HeroUnitName.CLERIC, HeroUnitName.DRUID, HeroUnitName.ENCHANTER]],
+          [HeroUnitName.RANGER, [HeroUnitName.CLERIC, HeroUnitName.DRUID, HeroUnitName.ENCHANTER]],
+          [HeroUnitName.ENCHANTER, [HeroUnitName.DRUID, HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER]],
+          [HeroUnitName.FIGHTER, [HeroUnitName.DRUID, HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER]],
+          [HeroUnitName.OGR, [HeroUnitName.DRUID, HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER]],
+          [HeroUnitName.PYROMANCER, [HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER, HeroUnitName.NECROMANCER]],
+          [HeroUnitName.NECROMANCER, [HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER, HeroUnitName.NECROMANCER]],
+          [HeroUnitName.SHADOW_BLADE, [HeroUnitName.ENCHANTER, HeroUnitName.PYROMANCER, HeroUnitName.NECROMANCER]],
+        ])(
+          'Player %s with MAGIC Doctrine able to recruit %s',
+          (playerType: HeroUnitType, allowedMageTypes: HeroUnitType[]) => {
+            prepareGame(playerType, Doctrine.MAGIC);
+
+            allowedMageTypes.forEach((mage) => {
+              startRecruiting(gameStateStub, landPos, mage);
+
+              const slot = getLand(gameStateStub, landPos).buildings[0].slots[0];
+              expect(slot.unit).toBe(mage);
+              expect(slot.turnsRemaining).toBe(3);
+              expect(slot.isOccupied).toBeTruthy();
+
+              testTurnManagement.makeNTurns(3);
+
+              verifyOccupiedSlotsCount(landPos, 0); // hero recruited
+
+              const heroes = getArmiesAtPosition(gameStateStub, landPos).flatMap((a) => a.heroes);
+              expect(heroes.some((h) => h.type === mage)).toBeTruthy();
+            });
+
+            const heroes = getArmiesAtPosition(gameStateStub, landPos).flatMap((a) => a.heroes);
+            expect(heroes).toHaveLength(3);
+
+            // try to recruit prohibited mage unit types
+            Object.values(HeroUnitName)
+              .filter((u) => isMageType(u) && !allowedMageTypes.includes(u))
+              .forEach((unit) => {
+                startRecruiting(gameStateStub, landPos, unit);
+                getLand(gameStateStub, landPos).buildings[0].slots.every((s) => expect(s.isOccupied).toBeFalsy());
+              });
+          }
+        );
+
+        it.each([
+          [HeroUnitName.CLERIC],
+          [HeroUnitName.DRUID],
+          [HeroUnitName.ENCHANTER],
+          [HeroUnitName.PYROMANCER],
+          [HeroUnitName.NECROMANCER],
+        ])('Player %s with PURE MAGIC Doctrine able to recruit All Mages', (playerType: HeroUnitType) => {
+          prepareGame(playerType, Doctrine.PURE_MAGIC);
+
+          Object.values(HeroUnitName)
+            .filter((u) => isMageType(u))
+            .forEach((mage) => {
+              startRecruiting(gameStateStub, landPos, mage);
+
+              const slot = getLand(gameStateStub, landPos).buildings[0].slots[0];
+              expect(slot.unit).toBe(mage);
+              expect(slot.turnsRemaining).toBe(3);
+              expect(slot.isOccupied).toBeTruthy();
+
+              testTurnManagement.makeNTurns(3);
+
+              verifyOccupiedSlotsCount(landPos, 0); // hero recruited
+
+              const heroes = getArmiesAtPosition(gameStateStub, landPos).flatMap((a) => a.heroes);
+              expect(heroes.some((h) => h.type === mage)).toBeTruthy();
+            });
+          const heroes = getArmiesAtPosition(gameStateStub, landPos).flatMap((a) => a.heroes);
+          expect(heroes).toHaveLength(5);
+        });
+      });
     });
 
     describe('Corner cases', () => {
