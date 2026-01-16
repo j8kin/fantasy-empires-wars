@@ -24,7 +24,7 @@ export const startRecruiting = (state: GameState, landPos: LandPosition, unitTyp
   if (recruitBuilding) {
     const turnOwner = getTurnOwner(state);
     const availableGold = turnOwner.vault;
-    const recruitRules = getRecruitInfo(unitType);
+    const recruitRules = getRecruitInfo(unitType, land.type);
     if (availableGold >= recruitRules.recruitCost) {
       let newState: GameState = state;
       const hasCrownOfDominion = hasTreasureByPlayer(turnOwner, TreasureName.CROWN_OF_DOMINION);

@@ -385,6 +385,7 @@ describe('Recruitment', () => {
       expect(barracksLand.buildings[0].slots).toHaveLength(buildingType === BuildingName.BARRACKS ? 3 : 1);
       expect(getLand(gameStateStub, barracksLand.mapPos).buildings[0].slots.filter((s) => s.isOccupied).length).toBe(0);
     };
+
     describe('Non-Mage heroes', () => {
       it.each([
         [HeroUnitName.FIGHTER, 'Adela Ravenfell', LandName.PLAINS],
@@ -580,6 +581,51 @@ describe('Recruitment', () => {
             });
           const heroes = getArmiesAtPosition(gameStateStub, landPos).flatMap((a) => a.heroes);
           expect(heroes).toHaveLength(5);
+        });
+      });
+
+      describe('Mage recruitment restriction for special land types', () => {
+        it.each([
+          [LandName.SUN_SPIRE_PEAKS, HeroUnitName.CLERIC, 1],
+          [LandName.HEARTWOOD_GROVE, HeroUnitName.DRUID, 1],
+          [LandName.CRISTAL_BASIN, HeroUnitName.ENCHANTER, 1],
+          [LandName.VOLCANO, HeroUnitName.PYROMANCER, 1],
+          [LandName.SHADOW_MIRE, HeroUnitName.NECROMANCER, 1],
+
+          [LandName.GOLDEN_PLAINS, HeroUnitName.CLERIC, 2],
+          [LandName.GOLDEN_PLAINS, HeroUnitName.DRUID, 2],
+          [LandName.GOLDEN_PLAINS, HeroUnitName.ENCHANTER, 3], // it is possible to recruit enchanter, but it takes regular time
+          [LandName.VERDANT_GLADE, HeroUnitName.CLERIC, 2],
+          [LandName.VERDANT_GLADE, HeroUnitName.DRUID, 2],
+          [LandName.VERDANT_GLADE, HeroUnitName.ENCHANTER, 2],
+          [LandName.MISTY_GLADES, HeroUnitName.DRUID, 2],
+          [LandName.MISTY_GLADES, HeroUnitName.ENCHANTER, 2],
+          [LandName.MISTY_GLADES, HeroUnitName.PYROMANCER, 2],
+          [LandName.LAVA, HeroUnitName.ENCHANTER, 2],
+          [LandName.LAVA, HeroUnitName.PYROMANCER, 2],
+          [LandName.LAVA, HeroUnitName.NECROMANCER, 2],
+          [LandName.BLIGHTED_FEN, HeroUnitName.ENCHANTER, 3], // it is possible to recruit enchanter, but it takes regular time
+          [LandName.BLIGHTED_FEN, HeroUnitName.PYROMANCER, 2],
+          [LandName.BLIGHTED_FEN, HeroUnitName.NECROMANCER, 2],
+        ])('in %s land %s should be recruited in %s turn', (landType: LandType, mage: HeroUnitType, nTurn: number) => {
+          prepareGame(mage, Doctrine.PURE_MAGIC); // use Pure Magic doctrine since they could recruit any mage unit
+
+          getLand(gameStateStub, landPos).type = landType; // change type to special land
+
+          startRecruiting(gameStateStub, landPos, mage);
+
+          const slot = getLand(gameStateStub, landPos).buildings[0].slots[0];
+          expect(slot.unit).toBe(mage);
+          expect(slot.turnsRemaining).toBe(nTurn);
+          expect(slot.isOccupied).toBeTruthy();
+
+          testTurnManagement.makeNTurns(nTurn);
+
+          verifyOccupiedSlotsCount(landPos, 0); // hero recruited
+
+          const heroes = getArmiesAtPosition(gameStateStub, landPos).flatMap((a) => a.heroes);
+          expect(heroes).toHaveLength(1);
+          expect(heroes[0].type).toBe(mage);
         });
       });
     });
