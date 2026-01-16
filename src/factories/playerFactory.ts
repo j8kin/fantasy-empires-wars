@@ -247,30 +247,32 @@ const getRecruitmentSlots = (
     buildingTraits[BuildingName.MAGE_TOWER] = { 0: new Set(allowedMages) };
   }
 
-  const allRegularUnits: RegularUnitType[] = Object.values(RegularUnitName);
-  const allWarMachinesUnits: WarMachineType[] = Object.values(WarMachineName);
-  const allHeroesUnits: HeroUnitType[] = Object.values(HeroUnitName);
+  const allRegularUnits: RegularUnitType[] = Object.values(RegularUnitName).filter((u) => u !== RegularUnitName.UNDEAD);
+  const allWarMachines: WarMachineType[] = Object.values(WarMachineName);
+  const allMightHeroes: HeroUnitType[] = Object.values(HeroUnitName).filter(
+    (unit) => !isMageType(unit) && unit !== HeroUnitName.WARSMITH && unit !== HeroUnitName.ZEALOT
+  );
 
   switch (playerProfile.doctrine) {
     case Doctrine.UNDEAD:
       buildingTraits[BuildingName.BARRACKS] = {
-        0: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-        1: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-        2: new Set([...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+        0: new Set([RegularUnitName.UNDEAD, ...allWarMachines, HeroUnitName.WARSMITH]),
+        1: new Set([RegularUnitName.UNDEAD, ...allWarMachines, HeroUnitName.WARSMITH]),
+        2: new Set([...allWarMachines, HeroUnitName.WARSMITH]),
       };
       break;
     case Doctrine.ANTI_MAGIC:
       buildingTraits[BuildingName.BARRACKS] = {
         0: new Set([...allRegularUnits]),
-        1: new Set([...allWarMachinesUnits]),
+        1: new Set([...allWarMachines]),
         2: new Set([HeroUnitName.ZEALOT]),
       };
       break;
     default:
       buildingTraits[BuildingName.BARRACKS] = {
-        0: new Set([...allRegularUnits, ...allWarMachinesUnits, ...allHeroesUnits]),
-        1: new Set([...allRegularUnits, ...allWarMachinesUnits, ...allHeroesUnits]),
-        2: new Set([...allRegularUnits, ...allWarMachinesUnits, ...allHeroesUnits]),
+        0: new Set([...allRegularUnits, ...allWarMachines, ...allMightHeroes]),
+        1: new Set([...allRegularUnits, ...allWarMachines, ...allMightHeroes]),
+        2: new Set([...allRegularUnits, ...allWarMachines, ...allMightHeroes]),
       };
       break;
   }

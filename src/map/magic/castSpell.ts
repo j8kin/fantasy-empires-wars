@@ -231,7 +231,11 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       const land = getLand(updatedState, landPos);
       const forgedUnitType: RegularUnitType =
         getLandUnitsToRecruit(land.type, land.corrupted).find(
-          (u) => isRegularUnit(u) && u !== RegularUnitName.WARD_HANDS && u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
+          (u) =>
+            isRegularUnit(u) &&
+            u !== RegularUnitName.WARD_HANDS &&
+            u !== RegularUnitName.UNDEAD && // undead could be only summoned
+            u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
         ) ?? RegularUnitName.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
 
       const newArmy = armyFactory(updatedState.turnOwner, landPos, {

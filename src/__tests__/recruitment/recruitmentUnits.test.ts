@@ -113,10 +113,12 @@ describe('Recruitment', () => {
   });
 
   it('If land is CORRUPTED then it takes additional turn to recruit units', () => {
+    gameStateStub.turnOwner = gameStateStub.players[1].id; // chaotic player to be able recruit orcs
     const player = getTurnOwner(gameStateStub);
     player.mana.black = 200;
     player.vault = 100000;
 
+    homeLand = getPlayerLands(gameStateStub, player.id)[0];
     const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
     construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
     castSpell(gameStateStub, SpellName.CORRUPTION, barracksPos);

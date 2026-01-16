@@ -2,17 +2,16 @@ import { playerFactory } from '../factories/playerFactory';
 import { isMageType } from '../domain/unit/unitTypeChecks';
 import { getBuildingInfo } from '../domain/building/buildingRepository';
 import { isItem } from '../domain/treasure/treasureRepository';
+import { getLandUnitsToRecruit } from '../domain/land/landRepository';
 import { hasAvailableSlotForUnit } from './buildingSelectors';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { EffectKind } from '../types/Effect';
-import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
-import { Mana } from '../types/Mana';
-import { LandName } from '../types/Land';
 import { BuildingName } from '../types/Building';
 import { DiplomacyStatus } from '../types/Diplomacy';
 import type { GameState } from '../state/GameState';
 import type { PlayerState, PlayerTraits } from '../state/player/PlayerState';
 import type { LandState } from '../state/map/land/LandState';
+import type { LandType } from '../types/Land';
 import type { BuildingState } from '../state/map/building/BuildingState';
 import type { BuildingInfo } from '../domain/building/buildingRepository';
 import type { EffectSourceId } from '../types/Effect';
@@ -76,35 +75,23 @@ export const getAllowedBuildings = (state: PlayerState): BuildingInfo[] => {
     .filter((b) => b.buildCost <= state.vault);
 };
 
+const getAllPossibleUnitTypes = (traits: Record<LandType, Set<string>>): Set<string> => {
+  return Object.values(traits).reduce((resultSet, valueSet) => {
+    valueSet.forEach((value) => resultSet.add(value));
+    return resultSet;
+  }, new Set<string>());
+};
+
 export const getUnitsAllowedToRecruit = (player: PlayerState, land: LandState, building: BuildingState): UnitType[] => {
-  const landUnits = player.traits.recruitedUnitsPerLand[land.type] ?? new Set<UnitType>();
+  const unitsPerLand = getLandUnitsToRecruit(land.type, land.corrupted); // list of all possible unit type available on this land type
+  // if land corrupted check that user allow to recruit units from corrupted land
+  const unitsPlayerCouldRecruit = land.corrupted
+    ? getAllPossibleUnitTypes(player.traits.recruitedUnitsPerLand)
+    : (player.traits.recruitedUnitsPerLand[land.type] ?? new Set<UnitType>());
+  const allowedUnits = unitsPerLand.filter((unit) => unitsPlayerCouldRecruit.has(unit));
   const slotTraits = player.traits.recruitmentSlots[building.type]!;
 
-  if (building.type === BuildingName.BARRACKS) {
-    // non-magic players ignore corrupted lands
-    if (land.corrupted && player.traits.restrictedMagic.size !== Object.values(Mana).length) {
-      const availableUnits: Set<UnitType> = new Set(Object.values(WarMachineName));
-      if (land.type === LandName.GREEN_FOREST) {
-        availableUnits.add(RegularUnitName.DARK_ELF);
-        availableUnits.add(HeroUnitName.SHADOW_BLADE);
-      } else {
-        availableUnits.add(RegularUnitName.ORC);
-        availableUnits.add(HeroUnitName.OGR);
-      }
-      return Array.from(availableUnits).filter(
-        (unit) => !isMageType(unit) && hasAvailableSlotForUnit(building, unit, slotTraits)
-      );
-    }
-    return Array.from(landUnits).filter(
-      (unit) => !isMageType(unit) && hasAvailableSlotForUnit(building, unit, slotTraits)
-    );
-  }
-  if (building.type === BuildingName.MAGE_TOWER) {
-    return Array.from(landUnits).filter(
-      (unit) => isMageType(unit) && hasAvailableSlotForUnit(building, unit, slotTraits)
-    );
-  }
-  return [];
+  return Array.from(allowedUnits).filter((unit) => hasAvailableSlotForUnit(building, unit, slotTraits));
 };
 
 export const getDiplomacyStatus = (state: GameState, playerId: string, opponent: string): DiplomacyStatusType => {
