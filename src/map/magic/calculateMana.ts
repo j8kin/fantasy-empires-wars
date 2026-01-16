@@ -22,9 +22,9 @@ export const calculateMana = (gameState: GameState): GameState => {
   });
 
   getRealmLands(updatedState)
-    .filter((land) => getSpecialLandKinds().includes(land.land.id))
+    .filter((land) => getSpecialLandKinds().includes(land.type))
     .forEach((land) => {
-      const manaSource = getManaSource({ landKind: land.land.id })!;
+      const manaSource = getManaSource({ landKind: land.type })!;
       if (allHeroes.some((h) => manaSource.heroTypes.includes(h.type))) {
         updatedState = updatePlayerMana(updatedState, turnOwner.id, manaSource.type, 1); // each special land gives 1 mana of a related type
       }

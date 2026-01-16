@@ -4,7 +4,6 @@ import { nextPlayer } from '../../systems/playerActions';
 import { relictFactory } from '../../factories/treasureFactory';
 import { getManaSource } from '../../domain/mana/manaSource';
 import { getSpecialLandKinds } from '../../domain/land/landRelationships';
-import { getLandById } from '../../domain/land/landRepository';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { Mana, MAX_MANA } from '../../types/Mana';
 import { HeroUnitName } from '../../types/UnitType';
@@ -85,14 +84,14 @@ describe('Calculate Mana', () => {
     ])(
       'special land has no effect if player (%s) not own them',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
-        it.each(getSpecialLandKinds())('%s not add mana in mana pool', (LandKind: LandType) => {
+        it.each(getSpecialLandKinds())('%s not add mana in mana pool', (LandType: LandType) => {
           expect(player.type).toBe(heroType);
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
           const homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 2 }; // outside player land
-          getLand(gameStateStub, specialLand).land = getLandById(LandKind);
+          getLand(gameStateStub, specialLand).type = LandType;
 
           testTurnManagement.setGameState(gameStateStub);
           testTurnManagement.startNewTurn(gameStateStub);
@@ -121,7 +120,7 @@ describe('Calculate Mana', () => {
     ])(
       'special land has no effect if other player then current (%s) own it',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
-        it.each(getSpecialLandKinds())('%s not add mana in mana pool', (LandKind: LandType) => {
+        it.each(getSpecialLandKinds())('%s not add mana in mana pool', (LandType: LandType) => {
           expect(player.type).toBe(heroType);
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
@@ -133,7 +132,7 @@ describe('Calculate Mana', () => {
             row: homeLandPlayer2.mapPos.row,
             col: homeLandPlayer2.mapPos.col + 1,
           }; // player 2 land
-          getLand(gameStateStub, specialLand).land = getLandById(LandKind);
+          getLand(gameStateStub, specialLand).type = LandType;
 
           while (gameStateStub.turn < 2) nextPlayer(gameStateStub);
 
@@ -164,10 +163,10 @@ describe('Calculate Mana', () => {
     ])(
       'special land has effect if player (%s) own it and has hero of the related type',
       (heroType: HeroUnitType, manaType: ManaType, player: PlayerProfile, inc: number) => {
-        it.each(getSpecialLandKinds())('verify effect of %s on mana pool', (LandKind: LandType) => {
+        it.each(getSpecialLandKinds())('verify effect of %s on mana pool', (LandType: LandType) => {
           expect(player.type).toBe(heroType);
 
-          const hasEffect = getManaSource({ landKind: LandKind })?.heroTypes.includes(player.type)!;
+          const hasEffect = getManaSource({ landKind: LandType })?.heroTypes.includes(player.type)!;
 
           const players = [player, PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[13]];
           gameStateStub = createGameStateStub({ gamePlayers: players });
@@ -175,7 +174,7 @@ describe('Calculate Mana', () => {
           const homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
 
           const specialLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 }; // player land
-          getLand(gameStateStub, specialLand).land = getLandById(LandKind);
+          getLand(gameStateStub, specialLand).type = LandType;
 
           while (gameStateStub.turn < 2) nextPlayer(gameStateStub);
 
@@ -214,15 +213,15 @@ describe('Calculate Mana', () => {
     const playerSpecialLands = realmLands.filter(
       (l) =>
         (player.playerProfile.type === HeroUnitName.NECROMANCER &&
-          (l.land.id === LandName.BLIGHTED_FEN || l.land.id === LandName.SHADOW_MIRE)) ||
+          (l.type === LandName.BLIGHTED_FEN || l.type === LandName.SHADOW_MIRE)) ||
         (player.playerProfile.type === HeroUnitName.CLERIC &&
-          (l.land.id === LandName.SUN_SPIRE_PEAKS || l.land.id === LandName.GOLDEN_PLAINS)) ||
+          (l.type === LandName.SUN_SPIRE_PEAKS || l.type === LandName.GOLDEN_PLAINS)) ||
         (player.playerProfile.type === HeroUnitName.ENCHANTER &&
-          (l.land.id === LandName.CRISTAL_BASIN || l.land.id === LandName.MISTY_GLADES)) ||
+          (l.type === LandName.CRISTAL_BASIN || l.type === LandName.MISTY_GLADES)) ||
         (player.playerProfile.type === HeroUnitName.DRUID &&
-          (l.land.id === LandName.HEARTWOOD_GROVE || l.land.id === LandName.VERDANT_GLADE)) ||
+          (l.type === LandName.HEARTWOOD_GROVE || l.type === LandName.VERDANT_GLADE)) ||
         (player.playerProfile.type === HeroUnitName.PYROMANCER &&
-          (l.land.id === LandName.VOLCANO || l.land.id === LandName.LAVA))
+          (l.type === LandName.VOLCANO || l.type === LandName.LAVA))
     ).length;
     const playerHero = getArmiesByPlayer(gameStateStub, player.id)[0].heroes[0];
     return (playerHero.mana || 0) + playerSpecialLands;
@@ -265,7 +264,7 @@ describe('Calculate Mana', () => {
 
     const homeLand = getPlayerLands(gameStateStub).find((l) => hasBuilding(l, BuildingName.STRONGHOLD))!;
 
-    getLand(gameStateStub, homeLand.mapPos).land = getLandById(LandName.VOLCANO); // this should add red mana to player 0
+    getLand(gameStateStub, homeLand.mapPos).type = LandName.VOLCANO; // this should add red mana to player 0
 
     testTurnManagement.setGameState(gameStateStub);
     testTurnManagement.startNewTurn(gameStateStub);

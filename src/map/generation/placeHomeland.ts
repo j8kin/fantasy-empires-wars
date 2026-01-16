@@ -9,6 +9,7 @@ import { heroFactory } from '../../factories/heroFactory';
 import { getRandomElement } from '../../domain/utils/random';
 import { construct } from '../building/construct';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { getLandAlignment } from '../../domain/land/landRepository';
 import { BuildingName } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
@@ -73,12 +74,12 @@ export const placeHomeland = (gameState: GameState) => {
 
   let possibleHomelands = freeToBuildLands
     .map((key) => gameState.map.lands[key])
-    .filter((land) => land.land.alignment === playerProfile.alignment);
+    .filter((land) => getLandAlignment(land.type) === playerProfile.alignment);
 
   if (possibleHomelands.length === 0) {
     possibleHomelands = freeToBuildLands
       .map((key) => gameState.map.lands[key])
-      .filter((land) => land.land.alignment === Alignment.NEUTRAL);
+      .filter((land) => getLandAlignment(land.type) === Alignment.NEUTRAL);
   }
 
   if (possibleHomelands == null || possibleHomelands.length === 0) {
@@ -86,7 +87,9 @@ export const placeHomeland = (gameState: GameState) => {
     if (freeToBuildLands.length === 0) {
       homeland = getRandomElement(
         Object.values(gameState.map.lands).filter(
-          (l) => gameState.players.every((p) => !hasLand(p, l.mapPos)) && l.land.alignment === playerProfile.alignment
+          (l) =>
+            gameState.players.every((p) => !hasLand(p, l.mapPos)) &&
+            getLandAlignment(l.type) === playerProfile.alignment
         )
       );
     } else {
@@ -101,7 +104,7 @@ export const placeHomeland = (gameState: GameState) => {
 
   // Place Barracks on the same alignment land except homeland
   let possibleBarracksLands = getPlayerLands(gameState).filter(
-    (l) => l.land.alignment === playerProfile.alignment && l.buildings.length === 0
+    (l) => getLandAlignment(l.type) === playerProfile.alignment && l.buildings.length === 0
   );
   if (possibleBarracksLands.length === 0) {
     // fall back to any land if no alignment match

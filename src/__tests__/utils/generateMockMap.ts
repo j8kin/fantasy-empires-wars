@@ -1,24 +1,22 @@
 import { getLandId } from '../../state/map/land/LandId';
-import { getLandById } from '../../domain/land/landRepository';
 import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
-
 import type { MapState } from '../../state/map/MapState';
 import type { MapDimensions } from '../../state/map/MapDimensions';
 import type { LandPosition } from '../../state/map/land/LandPosition';
-import type { Land } from '../../types/Land';
+import type { LandType } from '../../types/Land';
 import type { AlignmentType } from '../../types/Alignment';
 
-const genLand = (alignment: AlignmentType | undefined): Land => {
+const genLand = (alignment: AlignmentType | undefined): LandType => {
   switch (alignment) {
     case Alignment.LAWFUL:
-      return getLandById(LandName.MOUNTAINS);
+      return LandName.MOUNTAINS;
     case Alignment.NEUTRAL:
-      return getLandById(LandName.HILLS);
+      return LandName.HILLS;
     case Alignment.CHAOTIC:
-      return getLandById(LandName.SWAMP);
+      return LandName.SWAMP;
     default:
-      return getLandById(LandName.PLAINS);
+      return LandName.PLAINS;
   }
 };
 export const generateMockMap = (
@@ -38,7 +36,7 @@ export const generateMockMap = (
       const key = getLandId(position);
       result.lands[key] = {
         mapPos: position,
-        land: genLand(alignment),
+        type: genLand(alignment),
         buildings: [],
         effects: [],
         goldPerTurn: income != null ? income : landNumber,

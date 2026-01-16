@@ -1,11 +1,13 @@
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { Alignment } from '../../types/Alignment';
 import { BuildingName } from '../../types/Building';
+import { LandName } from '../../types/Land';
 import type { CombatStats } from '../../types/CombatStats';
 import type { UnitType } from '../../types/UnitType';
 import type { HeroUnitType, RegularUnitType } from '../../types/UnitType';
 import type { AlignmentType } from '../../types/Alignment';
 import type { BuildingType } from '../../types/Building';
+import type { LandType } from '../../types/Land';
 
 interface RecruitmentInfo {
   /** The cost to recruit unit pack **/
@@ -280,7 +282,7 @@ export const getAllUnitTypeByAlignment = (alignment: AlignmentType): UnitType[] 
     .map(([unitType]) => unitType);
 };
 
-export const getRecruitInfo = (unitType: UnitType): RecruitmentInfo => {
+export const getRecruitInfo = (unitType: UnitType, landType: LandType = LandName.NONE): RecruitmentInfo => {
   switch (unitType) {
     // Melee units
     case RegularUnitName.WARD_HANDS:
@@ -415,7 +417,7 @@ export const getRecruitInfo = (unitType: UnitType): RecruitmentInfo => {
       return {
         maintainCost: 100,
         recruitCost: 2500,
-        recruitTime: 3,
+        recruitTime: calculateMageRecruitTime(unitType, landType),
         recruitedIn: BuildingName.MAGE_TOWER,
         recruitedUnits: 1,
         description: descriptions[unitType],
@@ -423,4 +425,40 @@ export const getRecruitInfo = (unitType: UnitType): RecruitmentInfo => {
     default:
       throw new Error(`Unknown unit type ${unitType}`);
   }
+};
+
+const MAGE_RECRUIT_TIME_BY_LAND: Partial<Record<HeroUnitType, Partial<Record<LandType, number>>>> = {
+  [HeroUnitName.CLERIC]: {
+    [LandName.SUN_SPIRE_PEAKS]: 1,
+    [LandName.GOLDEN_PLAINS]: 2,
+    [LandName.VERDANT_GLADE]: 2,
+  },
+  [HeroUnitName.DRUID]: {
+    [LandName.HEARTWOOD_GROVE]: 1,
+    [LandName.VERDANT_GLADE]: 2,
+    [LandName.GOLDEN_PLAINS]: 2,
+    [LandName.MISTY_GLADES]: 2,
+  },
+  [HeroUnitName.ENCHANTER]: {
+    [LandName.CRISTAL_BASIN]: 1,
+    [LandName.MISTY_GLADES]: 2,
+    [LandName.VERDANT_GLADE]: 2,
+    [LandName.LAVA]: 2,
+  },
+  [HeroUnitName.PYROMANCER]: {
+    [LandName.VOLCANO]: 1,
+    [LandName.LAVA]: 2,
+    [LandName.MISTY_GLADES]: 2,
+    [LandName.BLIGHTED_FEN]: 2,
+  },
+  [HeroUnitName.NECROMANCER]: {
+    [LandName.SHADOW_MIRE]: 1,
+    [LandName.BLIGHTED_FEN]: 2,
+    [LandName.LAVA]: 2,
+  },
+};
+
+const calculateMageRecruitTime = (unitType: HeroUnitType, landType: LandType): number => {
+  const mageLandsRules = MAGE_RECRUIT_TIME_BY_LAND[unitType];
+  return mageLandsRules ? (mageLandsRules[landType] ?? 3) : 3;
 };

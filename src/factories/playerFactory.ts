@@ -1,5 +1,5 @@
 import { isHeroType, isMageType } from '../domain/unit/unitTypeChecks';
-import { getLandById } from '../domain/land/landRepository';
+import { getLandAlignment, getLandUnitsToRecruit } from '../domain/land/landRepository';
 import { getAllUnitTypeByAlignment } from '../domain/unit/unitRepository';
 import { Doctrine, RaceName } from '../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
@@ -54,52 +54,69 @@ const getRestrictedMagic = (playerProfile: PlayerProfile): Set<ManaType> => {
   const restricted: Set<ManaType> = new Set();
   Object.values(Mana).forEach((mana) => restricted.add(mana));
 
-  switch (playerProfile.alignment) {
-    case Alignment.LAWFUL:
-      restricted.delete(Mana.WHITE);
-      restricted.delete(Mana.GREEN);
-      restricted.delete(Mana.BLUE);
+  switch (playerProfile.doctrine) {
+    case Doctrine.MELEE:
+      // only one "main" magic is available
+      switch (playerProfile.type) {
+        case HeroUnitName.CLERIC:
+        case HeroUnitName.HAMMER_LORD:
+          restricted.delete(Mana.WHITE);
+          break;
+        case HeroUnitName.DRUID:
+        case HeroUnitName.RANGER:
+          restricted.delete(Mana.GREEN);
+          break;
+        case HeroUnitName.ENCHANTER:
+        case HeroUnitName.FIGHTER:
+          restricted.delete(Mana.BLUE);
+          break;
+        case HeroUnitName.PYROMANCER:
+        case HeroUnitName.OGR:
+          restricted.delete(Mana.RED);
+          break;
+        case HeroUnitName.NECROMANCER:
+        case HeroUnitName.SHADOW_BLADE:
+          restricted.delete(Mana.BLACK);
+          break;
+        default:
+          break;
+      }
       break;
-    case Alignment.NEUTRAL:
-      restricted.delete(Mana.GREEN);
-      restricted.delete(Mana.BLUE);
-      restricted.delete(Mana.RED);
+    case Doctrine.MAGIC:
+      // "one primary magic" and and 2 neighboring magic are available
+      switch (playerProfile.type) {
+        case HeroUnitName.CLERIC:
+        case HeroUnitName.HAMMER_LORD:
+        case HeroUnitName.DRUID:
+        case HeroUnitName.RANGER:
+          restricted.delete(Mana.WHITE);
+          restricted.delete(Mana.GREEN);
+          restricted.delete(Mana.BLUE);
+          break;
+        case HeroUnitName.ENCHANTER:
+        case HeroUnitName.FIGHTER:
+        case HeroUnitName.OGR:
+          restricted.delete(Mana.GREEN);
+          restricted.delete(Mana.BLUE);
+          restricted.delete(Mana.RED);
+          break;
+        case HeroUnitName.PYROMANCER:
+        case HeroUnitName.NECROMANCER:
+        case HeroUnitName.SHADOW_BLADE:
+          restricted.delete(Mana.BLUE);
+          restricted.delete(Mana.RED);
+          restricted.delete(Mana.BLACK);
+          break;
+        default:
+          break;
+      }
       break;
-    case Alignment.CHAOTIC:
-      restricted.delete(Mana.BLUE);
-      restricted.delete(Mana.RED);
-      restricted.delete(Mana.BLACK);
+    case Doctrine.PURE_MAGIC:
+      // all magic is available
+      restricted.clear();
       break;
     default:
-      break;
-  }
-  switch (playerProfile.type) {
-    case HeroUnitName.CLERIC:
-      restricted.delete(Mana.WHITE);
-      break;
-    case HeroUnitName.DRUID:
-      restricted.delete(Mana.GREEN);
-      break;
-    case HeroUnitName.ENCHANTER:
-      restricted.delete(Mana.BLUE);
-      break;
-    case HeroUnitName.PYROMANCER:
-      restricted.delete(Mana.RED);
-      break;
-    case HeroUnitName.NECROMANCER:
-      restricted.delete(Mana.BLACK);
-      break;
-
-    // non-magic Players
-    case HeroUnitName.ZEALOT:
-    case HeroUnitName.WARSMITH:
-      restricted.add(Mana.WHITE);
-      restricted.add(Mana.GREEN);
-      restricted.add(Mana.BLUE);
-      restricted.add(Mana.RED);
-      restricted.add(Mana.BLACK);
-      break;
-    default:
+      // all magic is prohibited
       break;
   }
   return restricted;
@@ -128,7 +145,6 @@ const getUnitsPerLand = (
   Object.values(LandName)
     .filter((land) => land !== LandName.NONE)
     .forEach((landType) => {
-      const land = getLandById(landType);
       // add WarMachines
       if (landType === LandName.DESERT) {
         // for lack of resources only BATTERING_RAM is available from all war-machines
@@ -145,8 +161,8 @@ const getUnitsPerLand = (
             unitsPerLand[landType].add(RegularUnitName.UNDEAD);
           } else {
             unitsPerLand[landType].add(HeroUnitName.WARSMITH);
-            if (land.alignment !== Alignment.LAWFUL) {
-              land.unitsToRecruit
+            if (getLandAlignment(landType) !== Alignment.LAWFUL) {
+              getLandUnitsToRecruit(landType, false)
                 .filter((unit) => !isHeroType(unit))
                 .forEach((unit) => unitsPerLand[landType].add(unit));
             }
@@ -154,14 +170,14 @@ const getUnitsPerLand = (
           break;
         case HeroUnitName.ZEALOT:
           unitsPerLand[landType].add(HeroUnitName.ZEALOT);
-          land.unitsToRecruit.forEach((unit) => {
+          getLandUnitsToRecruit(landType, false).forEach((unit) => {
             if (!isHeroType(unit) && unit !== RegularUnitName.HALFLING && unit !== RegularUnitName.WARD_HANDS) {
               unitsPerLand[landType].add(unit);
             }
           });
           break;
         default:
-          land.unitsToRecruit.forEach((unit) => unitsPerLand[landType].add(unit));
+          getLandUnitsToRecruit(landType, false).forEach((unit) => unitsPerLand[landType].add(unit));
           // lawful units are not available for chaotic players
           if (playerProfile.alignment === Alignment.CHAOTIC) {
             lawfulUnitType.forEach((unit) => unitsPerLand[landType].delete(unit));
@@ -176,7 +192,6 @@ const getUnitsPerLand = (
       // add some restriction based on Race
       switch (playerProfile.race) {
         case RaceName.ELF:
-          land.unitsToRecruit.forEach((unit) => unitsPerLand[landType].add(unit));
           // elves hate orcs and ogres
           unitsPerLand[landType].delete(RegularUnitName.ORC);
           unitsPerLand[landType].delete(HeroUnitName.OGR);
@@ -188,15 +203,19 @@ const getUnitsPerLand = (
           if (playerProfile.alignment === Alignment.LAWFUL) {
             unitsPerLand[landType].delete(RegularUnitName.DARK_ELF);
             unitsPerLand[landType].delete(HeroUnitName.SHADOW_BLADE);
+            // also filter out any other chaotic units that might have been re-added or were there
+            chaoticUnitType.forEach((unit) => unitsPerLand[landType].delete(unit));
           }
           break;
         case RaceName.ORC:
-          land.unitsToRecruit.forEach((unit) => unitsPerLand[landType].add(unit));
           // elves hate orcs and ogres and never fight in one army
           unitsPerLand[landType].delete(RegularUnitName.ELF);
           unitsPerLand[landType].delete(RegularUnitName.DARK_ELF);
           unitsPerLand[landType].delete(HeroUnitName.RANGER);
           unitsPerLand[landType].delete(HeroUnitName.SHADOW_BLADE);
+          if (playerProfile.alignment === Alignment.CHAOTIC) {
+            lawfulUnitType.forEach((unit) => unitsPerLand[landType].delete(unit));
+          }
           break;
         default:
           break;
@@ -228,30 +247,32 @@ const getRecruitmentSlots = (
     buildingTraits[BuildingName.MAGE_TOWER] = { 0: new Set(allowedMages) };
   }
 
-  const allRegularUnits: RegularUnitType[] = Object.values(RegularUnitName);
-  const allWarMachinesUnits: WarMachineType[] = Object.values(WarMachineName);
-  const allHeroesUnits: HeroUnitType[] = Object.values(HeroUnitName);
+  const allRegularUnits: RegularUnitType[] = Object.values(RegularUnitName).filter((u) => u !== RegularUnitName.UNDEAD);
+  const allWarMachines: WarMachineType[] = Object.values(WarMachineName);
+  const allMightHeroes: HeroUnitType[] = Object.values(HeroUnitName).filter(
+    (unit) => !isMageType(unit) && unit !== HeroUnitName.WARSMITH && unit !== HeroUnitName.ZEALOT
+  );
 
   switch (playerProfile.doctrine) {
     case Doctrine.UNDEAD:
       buildingTraits[BuildingName.BARRACKS] = {
-        0: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-        1: new Set([RegularUnitName.UNDEAD, ...allWarMachinesUnits, HeroUnitName.WARSMITH]),
-        2: new Set([...allWarMachinesUnits, HeroUnitName.WARSMITH]),
+        0: new Set([RegularUnitName.UNDEAD, ...allWarMachines, HeroUnitName.WARSMITH]),
+        1: new Set([RegularUnitName.UNDEAD, ...allWarMachines, HeroUnitName.WARSMITH]),
+        2: new Set([...allWarMachines, HeroUnitName.WARSMITH]),
       };
       break;
     case Doctrine.ANTI_MAGIC:
       buildingTraits[BuildingName.BARRACKS] = {
         0: new Set([...allRegularUnits]),
-        1: new Set([...allWarMachinesUnits]),
+        1: new Set([...allWarMachines]),
         2: new Set([HeroUnitName.ZEALOT]),
       };
       break;
     default:
       buildingTraits[BuildingName.BARRACKS] = {
-        0: new Set([...allRegularUnits, ...allWarMachinesUnits, ...allHeroesUnits]),
-        1: new Set([...allRegularUnits, ...allWarMachinesUnits, ...allHeroesUnits]),
-        2: new Set([...allRegularUnits, ...allWarMachinesUnits, ...allHeroesUnits]),
+        0: new Set([...allRegularUnits, ...allWarMachines, ...allMightHeroes]),
+        1: new Set([...allRegularUnits, ...allWarMachines, ...allMightHeroes]),
+        2: new Set([...allRegularUnits, ...allWarMachines, ...allMightHeroes]),
       };
       break;
   }

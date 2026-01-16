@@ -13,6 +13,7 @@ import {
 import { getRegularLandKinds } from '../../domain/land/landRelationships';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { getItem } from '../../domain/treasure/treasureRepository';
+import { getLandAlignment } from '../../domain/land/landRepository';
 import { SpellName } from '../../types/Spell';
 import { TreasureName } from '../../types/Treasures';
 import { MagicTarget } from '../../types/MagicTarget';
@@ -87,9 +88,9 @@ export const getValidMagicLands = (gameState: GameState, magicSource: SpellType 
 
 const canBeCorrupted = (land: LandState): boolean => {
   return (
-    land.land.alignment !== Alignment.CHAOTIC &&
-    land.land.id !== LandName.DESERT &&
+    getLandAlignment(land.type) !== Alignment.CHAOTIC &&
+    land.type !== LandName.DESERT &&
     !land.corrupted &&
-    getRegularLandKinds().includes(land.land.id)
+    getRegularLandKinds().includes(land.type)
   );
 };

@@ -11,10 +11,10 @@ const surroundingLands: Partial<Record<LandType, LandType[]>> = {
 /**
  * Returns the land types that surround a special land type
  * @returns Array of land types that can surround the given special land
- * @param landKind
+ * @param landType
  */
-export const getSurroundingLands = (landKind: LandType): LandType[] => {
-  return surroundingLands[landKind] ?? [];
+export const getSurroundingLands = (landType: LandType): LandType[] => {
+  return surroundingLands[landType] ?? [];
 };
 
 const nearbySpecialLands: Partial<Record<LandType, LandType>> = {
@@ -26,11 +26,11 @@ const nearbySpecialLands: Partial<Record<LandType, LandType>> = {
 };
 /**
  * Maps main special lands to their nearby counterpart lands
- * @param id - The main special land type
+ * @param landType - The main special land type
  * @returns The corresponding nearby special land type
  */
-export const getNearSpecialLandKinds = (id: LandType): LandType => {
-  return nearbySpecialLands[id] ?? LandName.NONE;
+export const getNearSpecialLandKinds = (landType: LandType): LandType => {
+  return nearbySpecialLands[landType] ?? LandName.NONE;
 };
 
 /**

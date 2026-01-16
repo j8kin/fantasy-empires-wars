@@ -5,7 +5,6 @@ import { getSpellById } from '../../selectors/spellSelectors';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { levelUpHero } from '../../systems/unitsActions';
 import { heroFactory } from '../../factories/heroFactory';
-import { getLandById } from '../../domain/land/landRepository';
 import { castSpell } from '../../map/magic/castSpell';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
@@ -43,7 +42,7 @@ describe('castRedManaSpell', () => {
   describe('Cast EMBER RAID spell', () => {
     describe('EMBER RAID effects current recruiting', () => {
       it.each([
-        [HeroUnitName.CLERIC, BuildingName.MAGE_TOWER, 4],
+        [HeroUnitName.ENCHANTER, BuildingName.MAGE_TOWER, 4],
         [HeroUnitName.FIGHTER, BuildingName.BARRACKS, 4],
         [RegularUnitName.WARRIOR, BuildingName.BARRACKS, 2],
         [WarMachineName.CATAPULT, BuildingName.BARRACKS, 4],
@@ -55,7 +54,7 @@ describe('castRedManaSpell', () => {
         };
         const targetLand = getLand(gameStateStub, landToRecruit);
         if (isMageType(unit)) {
-          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
+          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.type].add(unit);
         }
         construct(gameStateStub, building, landToRecruit);
 
@@ -81,7 +80,7 @@ describe('castRedManaSpell', () => {
     });
     describe('EMBER RAID effects new recruiting if effect active', () => {
       it.each([
-        [HeroUnitName.CLERIC, BuildingName.MAGE_TOWER, 4],
+        [HeroUnitName.ENCHANTER, BuildingName.MAGE_TOWER, 4],
         [HeroUnitName.RANGER, BuildingName.BARRACKS, 4],
         [RegularUnitName.ELF, BuildingName.BARRACKS, 3],
         [WarMachineName.BALLISTA, BuildingName.BARRACKS, 4],
@@ -92,10 +91,10 @@ describe('castRedManaSpell', () => {
           col: homeLand.mapPos.col,
         };
         // to be able to recruit ELVES and RANGERS
-        getLand(gameStateStub, landToRecruit).land = getLandById(LandName.GREEN_FOREST);
+        getLand(gameStateStub, landToRecruit).type = LandName.GREEN_FOREST;
         const targetLand = getLand(gameStateStub, landToRecruit);
         if (isMageType(unit)) {
-          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
+          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.type].add(unit);
         }
         construct(gameStateStub, building, landToRecruit);
 
@@ -161,7 +160,7 @@ describe('castRedManaSpell', () => {
         (l) => l.buildings.length === 0
       )!.mapPos;
       // Morgana is Chaotic so we need to change land type to swamp to be able to recruit regular units (for example orcs)
-      getLand(gameStateStub, opponentLandPos).land = getLandById(LandName.SWAMP);
+      getLand(gameStateStub, opponentLandPos).type = LandName.SWAMP;
 
       castSpell(gameStateStub, SpellName.EMBER_RAID, opponentLandPos);
 
@@ -204,7 +203,7 @@ describe('castRedManaSpell', () => {
       [LandName.BLIGHTED_FEN, RegularUnitName.ORC],
     ])('Cast FORGE OF WAR on Land (%s) recruit 60 %s', (landKind: LandType, recruitType: RegularUnitType) => {
       const homeLand = getPlayerLands(gameStateStub)[0];
-      homeLand.land = getLandById(landKind);
+      homeLand.type = landKind;
       expect(getArmiesAtPosition(gameStateStub, homeLand.mapPos).flatMap((a) => a.regulars)).toHaveLength(0);
 
       const redMana = getTurnOwner(gameStateStub).mana.red;
