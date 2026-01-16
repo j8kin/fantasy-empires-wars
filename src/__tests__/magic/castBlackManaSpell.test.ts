@@ -187,18 +187,16 @@ describe('castBlackManaSpell', () => {
       expect(corruptedLand.corrupted).toBeTruthy();
 
       let availableForRecruit: UnitType[] = [
+        RegularUnitName.ORC,
+        HeroUnitName.OGR,
         ...Object.values(WarMachineName),
         ...Object.values(HeroUnitName).filter((unit) => isMageType(unit)),
       ];
       if (landType === LandName.GREEN_FOREST) {
         availableForRecruit.push(RegularUnitName.DARK_ELF);
-        availableForRecruit.push(RegularUnitName.ORC);
         availableForRecruit.push(HeroUnitName.SHADOW_BLADE);
-        availableForRecruit.push(HeroUnitName.OGR);
-      } else {
-        availableForRecruit.push(RegularUnitName.ORC);
-        availableForRecruit.push(HeroUnitName.OGR);
       }
+
       const corruptedLandUnits = getLandUnitsToRecruit(corruptedLand.type, corruptedLand.corrupted);
       corruptedLandUnits.forEach((unit) => expect(availableForRecruit).toContain(unit));
       availableForRecruit.forEach((unit) => expect(corruptedLandUnits).toContain(unit));
