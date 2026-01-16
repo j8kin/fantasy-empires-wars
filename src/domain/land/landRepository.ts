@@ -252,15 +252,10 @@ export const getLandGoldPerTurn = (landType: LandType): { min: number; max: numb
 export const getLandUnitsToRecruit = (landType: LandType, isCorrupted: boolean): UnitType[] => {
   if (!isCorrupted) return landRepository[landType].unitsToRecruit;
 
+  const corruptedLandUnits = [RegularUnitName.ORC, ...allWarMachines, HeroUnitName.OGR, ...allMageHeroes];
   if (landType === LandName.GREEN_FOREST) {
-    return [
-      RegularUnitName.ORC,
-      RegularUnitName.DARK_ELF,
-      ...allWarMachines,
-      HeroUnitName.SHADOW_BLADE,
-      HeroUnitName.OGR,
-      ...allMageHeroes,
-    ];
+    corruptedLandUnits.push(RegularUnitName.DARK_ELF);
+    corruptedLandUnits.push(HeroUnitName.SHADOW_BLADE);
   }
-  return [RegularUnitName.ORC, ...allWarMachines, HeroUnitName.OGR, ...allMageHeroes];
+  return corruptedLandUnits;
 };
