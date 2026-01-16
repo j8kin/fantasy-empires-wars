@@ -244,19 +244,12 @@ export const updateLand = (
   updates: {
     corrupted?: boolean;
     goldPerTurn?: number;
-    unitsToRecruit?: UnitType[];
   }
 ): GameState => {
   return updateLandState(gameState, landPos, (land) => ({
     ...land,
     ...(updates.corrupted !== undefined && { corrupted: updates.corrupted }),
     ...(updates.goldPerTurn !== undefined && { goldPerTurn: updates.goldPerTurn }),
-    ...(updates.unitsToRecruit !== undefined && {
-      land: {
-        ...land.land,
-        unitsToRecruit: updates.unitsToRecruit,
-      },
-    }),
   }));
 };
 

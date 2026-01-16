@@ -5,7 +5,7 @@ import { getLand, getPlayerLands } from '../../selectors/landSelectors';
 import { levelUpHero } from '../../systems/unitsActions';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { heroFactory } from '../../factories/heroFactory';
-import { getLandById } from '../../domain/land/landRepository';
+import { getLandGoldPerTurn, getLandUnitsToRecruit } from '../../domain/land/landRepository';
 import { castSpell } from '../../map/magic/castSpell';
 import { Doctrine } from '../../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
@@ -153,7 +153,7 @@ describe('castBlackManaSpell', () => {
       expect(getTurnOwner(gameStateStub).mana.black).toBe(blackMana - getSpellById(SpellName.CORRUPTION).manaCost);
       expect(getLand(gameStateStub, castPosition).corrupted).toBeTruthy();
       expect(getLand(gameStateStub, castPosition).goldPerTurn).toBe(
-        getLand(gameStateStub, castPosition).land.goldPerTurn.max
+        getLandGoldPerTurn(getLand(gameStateStub, castPosition).type).max
       ); // player land gold production maximized
 
       getTurnOwner(gameStateStub).mana.black = 200; // refill mana
@@ -163,7 +163,7 @@ describe('castBlackManaSpell', () => {
       castSpell(gameStateStub, SpellName.CORRUPTION, castPosition);
       expect(getLand(gameStateStub, castPosition).corrupted).toBeTruthy();
       expect(getLand(gameStateStub, castPosition).goldPerTurn).toBe(
-        getLand(gameStateStub, castPosition).land.goldPerTurn.min
+        getLandGoldPerTurn(getLand(gameStateStub, castPosition).type).min
       ); // non-player land gold production minimized
 
       getTurnOwner(gameStateStub).mana.black = 200; // refill mana
@@ -178,7 +178,7 @@ describe('castBlackManaSpell', () => {
     it.each([...affectedLandKinds])('Only %s land type is affected by CURRUPTION spell', (landKind: LandType) => {
       const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
       let castPosition: LandPosition = { row: homelandPos.row + 1, col: homelandPos.col };
-      getLand(gameStateStub, castPosition).land = getLandById(landKind);
+      getLand(gameStateStub, castPosition).type = landKind;
       expect(getLand(gameStateStub, castPosition).corrupted).toBeFalsy();
 
       castSpell(gameStateStub, SpellName.CORRUPTION, castPosition);
@@ -206,7 +206,7 @@ describe('castBlackManaSpell', () => {
           HeroUnitName.OGR,
         ];
       }
-      expect(corruptedLand.land.unitsToRecruit).toEqual(availableForRecruit);
+      expect(getLandUnitsToRecruit(corruptedLand.type, corruptedLand.corrupted)).toEqual(availableForRecruit);
     });
 
     it.each(
@@ -216,7 +216,7 @@ describe('castBlackManaSpell', () => {
     )('Land type %s is not affected by CURRUPTION spell', (landKind: LandType) => {
       const homelandPos = getPlayerLands(gameStateStub)[0].mapPos;
       let castPosition: LandPosition = { row: homelandPos.row + 1, col: homelandPos.col };
-      getLand(gameStateStub, castPosition).land = getLandById(landKind);
+      getLand(gameStateStub, castPosition).type = landKind;
       expect(getLand(gameStateStub, castPosition).corrupted).toBeFalsy();
 
       castSpell(gameStateStub, SpellName.CORRUPTION, castPosition);

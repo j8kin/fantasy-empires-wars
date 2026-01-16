@@ -3,7 +3,6 @@ import { addPlayerToGameState } from '../../systems/playerActions';
 import { addPlayerEmpireTreasure, addPlayerLand } from '../../systems/gameStateActions';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { buildingFactory } from '../../factories/buildingFactory';
-import { getLandById } from '../../domain/land/landRepository';
 import { construct } from '../../map/building/construct';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
@@ -75,7 +74,7 @@ describe('Calculate Income', () => {
     (pAlignment: AlignmentType, incomeBefore: number, incomeAfter: number) => {
       const player = getPlayer(pAlignment);
       addPlayerToGameState(gameStateStub, player, 'human');
-      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].land = getLandById(LandName.PLAINS);
+      gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].type = LandName.PLAINS;
       Object.assign(gameStateStub, addPlayerLand(gameStateStub, getTurnOwner(gameStateStub).id, { row: 4, col: 4 }));
       gameStateStub.map.lands[getLandId({ row: 4, col: 4 })].goldPerTurn = 100;
 

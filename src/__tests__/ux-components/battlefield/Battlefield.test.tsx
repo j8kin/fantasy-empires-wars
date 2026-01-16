@@ -39,7 +39,7 @@ jest.mock('../../../ux-components/battlefield/LandTile', () => {
         data-row={mapPosition.row}
         data-col={mapPosition.col}
         data-controlled-by={controlledBy}
-        data-land-type={tile?.land?.type}
+        data-land-type={tile?.type}
       />
     );
   };

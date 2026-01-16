@@ -8,7 +8,6 @@ import { getRecruitInfo } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
-import { getLandById } from '../../domain/land/landRepository';
 import { isMageType } from '../../domain/unit/unitTypeChecks';
 import { Doctrine } from '../../state/player/PlayerProfile';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
@@ -164,7 +163,7 @@ describe('Recruitment', () => {
     ])(
       'Regular unit (%s) should be start recruited in (%s) turns in Barracks',
       (unitType: RegularUnitType | WarMachineType, nTurns: number, landType: LandType) => {
-        getLand(gameStateStub, barracksLand.mapPos).land = getLandById(landType);
+        getLand(gameStateStub, barracksLand.mapPos).type = landType;
         startRecruiting(gameStateStub, barracksLand.mapPos, unitType);
 
         expect(getArmiesAtPosition(gameStateStub, barracksLand.mapPos)).toHaveLength(0); // no units are placed on the map yet
@@ -183,7 +182,7 @@ describe('Recruitment', () => {
     ])(
       '%s units (%s) should be start recruited in (%s) turns in Barracks',
       (nUnits: number, unitType: RegularUnitType | WarMachineType, nTurns: number, landType: LandType) => {
-        getLand(gameStateStub, barracksLand.mapPos).land = getLandById(landType);
+        getLand(gameStateStub, barracksLand.mapPos).type = landType;
         startRecruiting(gameStateStub, barracksLand.mapPos, unitType);
 
         verifyRecruitSlot(barracksLand.mapPos, 0, 1, unitType, nTurns);
@@ -396,7 +395,7 @@ describe('Recruitment', () => {
           randomSpy.mockReturnValue(0.99); // to have the same name of the hero unit
           const barracksPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
 
-          getLand(gameStateStub, barracksPos).land = getLandById(landType);
+          getLand(gameStateStub, barracksPos).type = landType;
           constructBuilding(BuildingName.BARRACKS, barracksPos);
 
           const barracksLand = getLand(gameStateStub, barracksPos);

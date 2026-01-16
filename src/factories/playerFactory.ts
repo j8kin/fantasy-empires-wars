@@ -1,5 +1,5 @@
 import { isHeroType, isMageType } from '../domain/unit/unitTypeChecks';
-import { getLandById } from '../domain/land/landRepository';
+import { getLandAlignment, getLandUnitsToRecruit } from '../domain/land/landRepository';
 import { getAllUnitTypeByAlignment } from '../domain/unit/unitRepository';
 import { Doctrine, RaceName } from '../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
@@ -145,7 +145,6 @@ const getUnitsPerLand = (
   Object.values(LandName)
     .filter((land) => land !== LandName.NONE)
     .forEach((landType) => {
-      const land = getLandById(landType);
       // add WarMachines
       if (landType === LandName.DESERT) {
         // for lack of resources only BATTERING_RAM is available from all war-machines
@@ -162,8 +161,8 @@ const getUnitsPerLand = (
             unitsPerLand[landType].add(RegularUnitName.UNDEAD);
           } else {
             unitsPerLand[landType].add(HeroUnitName.WARSMITH);
-            if (land.alignment !== Alignment.LAWFUL) {
-              land.unitsToRecruit
+            if (getLandAlignment(landType) !== Alignment.LAWFUL) {
+              getLandUnitsToRecruit(landType, false)
                 .filter((unit) => !isHeroType(unit))
                 .forEach((unit) => unitsPerLand[landType].add(unit));
             }
@@ -171,14 +170,14 @@ const getUnitsPerLand = (
           break;
         case HeroUnitName.ZEALOT:
           unitsPerLand[landType].add(HeroUnitName.ZEALOT);
-          land.unitsToRecruit.forEach((unit) => {
+          getLandUnitsToRecruit(landType, false).forEach((unit) => {
             if (!isHeroType(unit) && unit !== RegularUnitName.HALFLING && unit !== RegularUnitName.WARD_HANDS) {
               unitsPerLand[landType].add(unit);
             }
           });
           break;
         default:
-          land.unitsToRecruit.forEach((unit) => unitsPerLand[landType].add(unit));
+          getLandUnitsToRecruit(landType, false).forEach((unit) => unitsPerLand[landType].add(unit));
           // lawful units are not available for chaotic players
           if (playerProfile.alignment === Alignment.CHAOTIC) {
             lawfulUnitType.forEach((unit) => unitsPerLand[landType].delete(unit));
@@ -193,7 +192,6 @@ const getUnitsPerLand = (
       // add some restriction based on Race
       switch (playerProfile.race) {
         case RaceName.ELF:
-          land.unitsToRecruit.forEach((unit) => unitsPerLand[landType].add(unit));
           // elves hate orcs and ogres
           unitsPerLand[landType].delete(RegularUnitName.ORC);
           unitsPerLand[landType].delete(HeroUnitName.OGR);
@@ -205,15 +203,19 @@ const getUnitsPerLand = (
           if (playerProfile.alignment === Alignment.LAWFUL) {
             unitsPerLand[landType].delete(RegularUnitName.DARK_ELF);
             unitsPerLand[landType].delete(HeroUnitName.SHADOW_BLADE);
+            // also filter out any other chaotic units that might have been re-added or were there
+            chaoticUnitType.forEach((unit) => unitsPerLand[landType].delete(unit));
           }
           break;
         case RaceName.ORC:
-          land.unitsToRecruit.forEach((unit) => unitsPerLand[landType].add(unit));
           // elves hate orcs and ogres and never fight in one army
           unitsPerLand[landType].delete(RegularUnitName.ELF);
           unitsPerLand[landType].delete(RegularUnitName.DARK_ELF);
           unitsPerLand[landType].delete(HeroUnitName.RANGER);
           unitsPerLand[landType].delete(HeroUnitName.SHADOW_BLADE);
+          if (playerProfile.alignment === Alignment.CHAOTIC) {
+            lawfulUnitType.forEach((unit) => unitsPerLand[landType].delete(unit));
+          }
           break;
         default:
           break;

@@ -1,6 +1,6 @@
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { getRealmLands, hasActiveEffect, hasBuilding } from '../../selectors/landSelectors';
-
+import { getLandAlignment } from '../../domain/land/landRepository';
 import { BuildingName } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
@@ -14,13 +14,14 @@ export const calculateIncome = (gameState: GameState): number => {
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Buildings#stronghold
     let landIncome = land.goldPerTurn;
+    const landAligment = getLandAlignment(land.type);
 
     switch (playerAlignment) {
       case Alignment.LAWFUL:
-        if (land.land.alignment === Alignment.LAWFUL && !land.corrupted) {
+        if (landAligment === Alignment.LAWFUL && !land.corrupted) {
           landIncome = landIncome * 1.4;
         }
-        if (land.land.alignment === Alignment.CHAOTIC || land.corrupted) {
+        if (landAligment === Alignment.CHAOTIC || land.corrupted) {
           landIncome = landIncome * 0.8;
         }
         break;
@@ -28,10 +29,10 @@ export const calculateIncome = (gameState: GameState): number => {
         if (!hasBuilding(land, BuildingName.STRONGHOLD)) {
           landIncome = landIncome * 0.8;
         }
-        if (land.land.alignment === Alignment.CHAOTIC || land.corrupted) {
+        if (landAligment === Alignment.CHAOTIC || land.corrupted) {
           landIncome = landIncome * 1.9;
         }
-        if (land.land.alignment === Alignment.LAWFUL && !land.corrupted) {
+        if (landAligment === Alignment.LAWFUL && !land.corrupted) {
           landIncome = landIncome * 0.5;
         }
         break;

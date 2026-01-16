@@ -11,10 +11,12 @@ import { startMoving } from '../../../systems/armyActions';
 import { armyFactory } from '../../../factories/armyFactory';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
+import { warMachineFactory } from '../../../factories/warMachineFactory';
 import { effectFactory } from '../../../factories/effectFactory';
 import { relictFactory } from '../../../factories/treasureFactory';
 import { updateLandEffect } from '../../../systems/gameStateActions';
 import { construct } from '../../../map/building/construct';
+import { getLandAlignment } from '../../../domain/land/landRepository';
 import { NO_PLAYER } from '../../../domain/player/playerRepository';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
 import { BuildingName } from '../../../types/Building';
@@ -26,7 +28,6 @@ import type { ArmyState } from '../../../state/army/ArmyState';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
-import { warMachineFactory } from '../../../factories/warMachineFactory';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();
@@ -130,8 +131,8 @@ describe('LandInfoPopup', () => {
     renderWithProviders(<LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />, gameStateStub);
 
     // Check land type information - should display the actual land type name
-    expect(screen.getByText(mockTileState.land.type)).toBeInTheDocument();
-    expect(screen.getByText(mockTileState.land.alignment)).toBeInTheDocument();
+    expect(screen.getByText(mockTileState.type)).toBeInTheDocument();
+    expect(screen.getByText(getLandAlignment(mockTileState.type))).toBeInTheDocument();
   });
 
   it('displays position and gold information', () => {
@@ -152,8 +153,8 @@ describe('LandInfoPopup', () => {
 
       renderWithProviders(<LandInfoPopup landPos={landPos} screenPosition={mockPosition} />, gameStateStub);
 
-      expect(screen.getByText(land.land.type)).toBeInTheDocument();
-      expect(screen.getByText(land.land.alignment)).toBeInTheDocument();
+      expect(screen.getByText(land.type)).toBeInTheDocument();
+      expect(screen.getByText(getLandAlignment(land.type))).toBeInTheDocument();
       expect(screen.getByText('Position:')).toBeInTheDocument();
       expect(screen.getByText(land.mapPos.row + ', ' + land.mapPos.col)).toBeInTheDocument();
       expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();
@@ -175,8 +176,8 @@ describe('LandInfoPopup', () => {
 
       renderWithProviders(<LandInfoPopup landPos={landPos} screenPosition={mockPosition} />, gameStateStub);
 
-      expect(screen.getByText(land.land.type)).toBeInTheDocument();
-      expect(screen.getByText(land.land.alignment)).toBeInTheDocument();
+      expect(screen.getByText(land.type)).toBeInTheDocument();
+      expect(screen.getByText(getLandAlignment(land.type))).toBeInTheDocument();
       expect(screen.getByText('Position:')).toBeInTheDocument();
       expect(screen.getByText(land.mapPos.row + ', ' + land.mapPos.col)).toBeInTheDocument();
       expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();
@@ -653,7 +654,7 @@ describe('LandInfoPopup', () => {
         gameStateStub
       );
 
-      expect(screen.getByText('Corrupted ' + mockTileState.land.type)).toBeInTheDocument();
+      expect(screen.getByText('Corrupted ' + mockTileState.type)).toBeInTheDocument();
       expect(screen.getByText('Position:')).toBeInTheDocument();
       expect(screen.getByText(mockTileState.mapPos.row + ', ' + mockTileState.mapPos.col)).toBeInTheDocument();
       expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();

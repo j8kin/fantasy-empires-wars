@@ -1,6 +1,3 @@
-import type { AlignmentType } from './Alignment';
-import type { UnitType } from './UnitType';
-
 // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands
 
 export const LandName = {
@@ -27,11 +24,3 @@ export const LandName = {
 } as const;
 
 export type LandType = (typeof LandName)[keyof typeof LandName];
-
-export interface Land {
-  type: LandType;
-  alignment: AlignmentType;
-  unitsToRecruit: UnitType[];
-  goldPerTurn: { min: number; max: number };
-  description: string;
-}

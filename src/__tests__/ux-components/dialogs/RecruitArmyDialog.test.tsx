@@ -10,7 +10,6 @@ import { construct } from '../../../map/building/construct';
 import { startRecruiting } from '../../../map/recruiting/startRecruiting';
 import { playerFactory } from '../../../factories/playerFactory';
 import { getAvailableSlotsCount } from '../../../selectors/buildingSelectors';
-import { getLandById } from '../../../domain/land/landRepository';
 import { isMageType } from '../../../domain/unit/unitTypeChecks';
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { BuildingName } from '../../../types/Building';
@@ -147,18 +146,6 @@ describe('RecruitArmyDialog', () => {
 
     // Add a barracks with available slots to the first player's land
     construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
-
-    // Ensure the barracks has available slots (2 total, 0 used)
-    const land = getLand(gameStateStub, barracksPos);
-
-    // Set up some units to recruit - use units that would be available on Plains land
-    land.land.unitsToRecruit = [
-      RegularUnitName.WARRIOR,
-      WarMachineName.BALLISTA,
-      HeroUnitName.WARSMITH,
-      HeroUnitName.FIGHTER,
-      RegularUnitName.WARD_HANDS, // to make sure it will sorted
-    ];
   });
 
   describe('Dialog Visibility', () => {
@@ -262,10 +249,6 @@ describe('RecruitArmyDialog', () => {
 
     it('should not show mage units in barracks', () => {
       // Add mage units to the land but they should be filtered out for barracks
-      const landPos: LandPosition = { row: 3, col: 3 };
-      const land = getLand(gameStateStub, landPos);
-      land.land.unitsToRecruit = [...land.land.unitsToRecruit, HeroUnitName.CLERIC, HeroUnitName.PYROMANCER];
-
       renderWithProviders(<RecruitArmyDialog />);
 
       // Should not show mage heroes in barracks
@@ -642,7 +625,7 @@ describe('RecruitArmyDialog', () => {
       [LandName.DARK_FOREST, RegularUnitName.DARK_ELF],
     ])(
       'should allow Nulwarden recruit in %s land %s Nullwarden regular',
-      (landName: LandType, unitName: RegularUnitType) => {
+      (landType: LandType, unitName: RegularUnitType) => {
         const lands = gameStateStub.players[0].landsOwned;
         gameStateStub.players[0] = playerFactory(PREDEFINED_PLAYERS[16], 'human'); // replace player
         gameStateStub.players[0].landsOwned = lands; // copy lands
@@ -652,7 +635,7 @@ describe('RecruitArmyDialog', () => {
         expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
 
         // change landtype to be able to recruit different Nullwarden regular units
-        getLand(gameStateStub, mockApplicationContext.actionLandPosition).land = getLandById(landName);
+        getLand(gameStateStub, mockApplicationContext.actionLandPosition).type = landType;
 
         renderWithProviders(<RecruitArmyDialog />);
         expect(screen.getByTestId('flip-book')).toBeInTheDocument();
@@ -682,7 +665,7 @@ describe('RecruitArmyDialog', () => {
         expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(playerType);
         expect(getTurnOwner(gameStateStub).playerProfile.race).toBe(RaceName.ELF); // ELF players can't recruit OGR(s)/ORC(s)'
         // set land where OGR(s)/ORC(s) could be recruited and then verify that they are not available for recruitment
-        getLand(gameStateStub, barracksPos).land = getLandById(LandName.SWAMP);
+        getLand(gameStateStub, barracksPos).type = LandName.SWAMP;
 
         expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
         expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
@@ -714,8 +697,8 @@ describe('RecruitArmyDialog', () => {
         expect(getTurnOwner(gameStateStub).playerProfile.race).toBe(RaceName.ORC);
 
         // set land where ELFS(s)/RANGER(s) could be recruited and then verify that they are not available for recruitment
-        [LandName.GREEN_FOREST, LandName.DARK_FOREST].forEach((landName) => {
-          getLand(gameStateStub, barracksPos).land = getLandById(landName);
+        [LandName.GREEN_FOREST, LandName.DARK_FOREST].forEach((landType) => {
+          getLand(gameStateStub, barracksPos).type = landType;
 
           expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
           expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
@@ -769,8 +752,7 @@ describe('RecruitArmyDialog', () => {
   describe('Edge Cases', () => {
     it('should handle empty units to recruit', () => {
       const land = getLand(gameStateStub, barracksPos);
-      land.land.unitsToRecruit = [];
-      getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.type] = new Set();
+      getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.type] = new Set();
 
       renderWithProviders(<RecruitArmyDialog />);
 

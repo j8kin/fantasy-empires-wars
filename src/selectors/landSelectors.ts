@@ -3,6 +3,7 @@ import { getPlayer, getPlayersByDiplomacy, hasTreasureByPlayer } from './playerS
 import { getArmiesAtPosition, getArmiesByPlayer, getPosition } from './armySelectors';
 import { getPlayerColorValue } from '../domain/ui/playerColors';
 import { getRandomElement } from '../domain/utils/random';
+import { getLandAlignment } from '../domain/land/landRepository';
 import { NO_PLAYER } from '../domain/player/playerRepository';
 import { TreasureName } from '../types/Treasures';
 import { SpellName } from '../types/Spell';
@@ -64,8 +65,8 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       return {
         owner: landOwnerId,
         color: landOwnerColor,
-        type: land.land.type,
-        alignment: land.corrupted ? Alignment.CHAOTIC : land.land.alignment,
+        type: land.type,
+        alignment: land.corrupted ? Alignment.CHAOTIC : getLandAlignment(land.type),
         goldPerTurn: land.goldPerTurn,
         effects: [],
         heroes: [],
@@ -82,8 +83,8 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
     return {
       owner: landOwnerId,
       color: landOwnerColor,
-      type: land.land.type,
-      alignment: land.corrupted ? Alignment.CHAOTIC : land.land.alignment,
+      type: land.type,
+      alignment: land.corrupted ? Alignment.CHAOTIC : getLandAlignment(land.type),
       isCorrupted: land.corrupted,
       goldPerTurn: land.goldPerTurn,
       effects: [...land.effects],
@@ -112,8 +113,8 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
     return {
       owner: landOwnerId,
       color: landOwnerColor,
-      type: land.land.type,
-      alignment: land.corrupted ? Alignment.CHAOTIC : land.land.alignment,
+      type: land.type,
+      alignment: land.corrupted ? Alignment.CHAOTIC : getLandAlignment(land.type),
       isCorrupted: land.corrupted,
       goldPerTurn: land.goldPerTurn,
       effects: [],

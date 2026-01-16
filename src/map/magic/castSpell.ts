@@ -28,12 +28,12 @@ import { destroyBuilding } from '../building/destroyBuilding';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 import { getValidMagicLands } from './getValidMagicLands';
-import { LandName } from '../../types/Land';
+import { getLandGoldPerTurn, getLandUnitsToRecruit } from '../../domain/land/landRepository';
 import { SpellName } from '../../types/Spell';
 import { Mana } from '../../types/Mana';
 import { TreasureName } from '../../types/Treasures';
 import { EffectKind } from '../../types/Effect';
-import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName, WarMachineName } from '../../types/UnitType';
+import { HeroUnitName, MAX_HERO_LEVEL, RegularUnitName } from '../../types/UnitType';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { Spell, SpellType } from '../../types/Spell';
@@ -228,8 +228,9 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       break;
 
     case SpellName.FORGE_OF_WAR:
+      const land = getLand(updatedState, landPos);
       const forgedUnitType: RegularUnitType =
-        getLand(updatedState, landPos).land.unitsToRecruit.find(
+        getLandUnitsToRecruit(land.type, land.corrupted).find(
           (u) => isRegularUnit(u) && u !== RegularUnitName.WARD_HANDS && u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
         ) ?? RegularUnitName.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
 
@@ -296,33 +297,12 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
     case SpellName.CORRUPTION:
       const land = getLand(updatedState, landPos);
       const isOwnedByTurnOwner = getLandOwner(updatedState, landPos) === updatedState.turnOwner;
-      const goldPerTurn = isOwnedByTurnOwner ? land.land.goldPerTurn.max : land.land.goldPerTurn.min;
-
-      // change units to recruit based on land type
-      const unitsToRecruit =
-        land.land.type === LandName.GREEN_FOREST
-          ? [
-              RegularUnitName.ORC,
-              RegularUnitName.DARK_ELF,
-              WarMachineName.BALLISTA,
-              WarMachineName.CATAPULT,
-              WarMachineName.SIEGE_TOWER,
-              WarMachineName.BATTERING_RAM,
-              HeroUnitName.SHADOW_BLADE,
-            ]
-          : [
-              RegularUnitName.ORC,
-              WarMachineName.BALLISTA,
-              WarMachineName.CATAPULT,
-              WarMachineName.SIEGE_TOWER,
-              WarMachineName.BATTERING_RAM,
-              HeroUnitName.OGR,
-            ];
+      const landGoldPerTurn = getLandGoldPerTurn(land.type);
+      const goldPerTurn = isOwnedByTurnOwner ? landGoldPerTurn.max : landGoldPerTurn.min;
 
       updatedState = updateLand(updatedState, landPos, {
         corrupted: true,
         goldPerTurn,
-        unitsToRecruit,
       });
       break;
 

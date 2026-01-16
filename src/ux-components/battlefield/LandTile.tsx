@@ -64,7 +64,7 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
   }
 
   const imageSrc = getLandImg(battlefieldTile);
-  const altText = battlefieldTile.land.type;
+  const altText = battlefieldTile.type;
 
   // Get the controlling player's color or default to white if not controlled
   const getBackgroundColor = (): string => {
