@@ -82,15 +82,26 @@ const getAllPossibleUnitTypes = (traits: Record<LandType, Set<string>>): Set<str
   }, new Set<string>());
 };
 
-export const getUnitsAllowedToRecruit = (player: PlayerState, land: LandState, building: BuildingState): UnitType[] => {
+/**
+ * Return units Allowed to recruited on related land
+ * @param player
+ * @param land
+ * @param building - if null return all units if not return available for current building
+ */
+export const getUnitsAllowedToRecruit = (
+  player: PlayerState,
+  land: LandState,
+  building?: BuildingState
+): UnitType[] => {
   const unitsPerLand = getLandUnitsToRecruit(land.type, land.corrupted); // list of all possible unit type available on this land type
   // if land corrupted check that user allow to recruit units from corrupted land
   const unitsPlayerCouldRecruit = land.corrupted
     ? getAllPossibleUnitTypes(player.traits.recruitedUnitsPerLand)
     : (player.traits.recruitedUnitsPerLand[land.type] ?? new Set<UnitType>());
   const allowedUnits = unitsPerLand.filter((unit) => unitsPlayerCouldRecruit.has(unit));
-  const slotTraits = player.traits.recruitmentSlots[building.type]!;
+  if (building == null) return allowedUnits;
 
+  const slotTraits = player.traits.recruitmentSlots[building.type]!;
   return Array.from(allowedUnits).filter((unit) => hasAvailableSlotForUnit(building, unit, slotTraits));
 };
 

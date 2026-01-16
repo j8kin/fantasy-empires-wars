@@ -1,5 +1,11 @@
 import { getLandId } from '../state/map/land/LandId';
-import { getPlayer, getPlayersByDiplomacy, hasTreasureByPlayer } from './playerSelectors';
+import {
+  getPlayer,
+  getPlayersByDiplomacy,
+  getTurnOwner,
+  getUnitsAllowedToRecruit,
+  hasTreasureByPlayer,
+} from './playerSelectors';
 import { getArmiesAtPosition, getArmiesByPlayer, getPosition } from './armySelectors';
 import { getPlayerColorValue } from '../domain/ui/playerColors';
 import { getRandomElement } from '../domain/utils/random';
@@ -20,7 +26,7 @@ import type { LandType } from '../types/Land';
 import type { BuildingType } from '../types/Building';
 import type { Effect, EffectSourceId } from '../types/Effect';
 import type { AlignmentType } from '../types/Alignment';
-import type { WarMachineType } from '../types/UnitType';
+import type { UnitType, WarMachineType } from '../types/UnitType';
 import type { UnitRankType } from '../state/army/RegularsState';
 
 export const getLand = (state: GameState, landPos: LandPosition) => state.map.lands[getLandId(landPos)];
@@ -38,6 +44,7 @@ interface LandInfo {
   type: LandType;
   alignment: AlignmentType;
   goldPerTurn: number;
+  recruit: UnitType[];
   heroes: string[];
   regulars: { rank: UnitRankType; info: string }[];
   warMachines: string[];
@@ -60,6 +67,9 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
     hasActiveEffect(land, SpellName.VIEW_TERRITORY, state.turnOwner) ||
     hasActiveEffect(land, TreasureName.COMPASS_OF_DOMINION, state.turnOwner);
 
+  // turn owner and landowner can recruit different units that is why return info for turn owner
+  const unitsToRecruit = getUnitsAllowedToRecruit(getTurnOwner(state), land);
+
   if (landOwnerId !== NO_PLAYER.id && (landOwner.id === state.turnOwner || affectedByViewLand)) {
     if (isIllusion && landOwner.id !== state.turnOwner && affectedByViewLand) {
       return {
@@ -68,6 +78,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
         type: land.type,
         alignment: land.corrupted ? Alignment.CHAOTIC : getLandAlignment(land.type),
         goldPerTurn: land.goldPerTurn,
+        recruit: unitsToRecruit,
         effects: [],
         heroes: [],
         regulars: [],
@@ -87,6 +98,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       alignment: land.corrupted ? Alignment.CHAOTIC : getLandAlignment(land.type),
       isCorrupted: land.corrupted,
       goldPerTurn: land.goldPerTurn,
+      recruit: unitsToRecruit,
       effects: [...land.effects],
       heroes: armies.flatMap((a) => a.heroes).map((h) => `${h.name} lvl: ${h.level}`),
       regulars: armies
@@ -117,6 +129,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       alignment: land.corrupted ? Alignment.CHAOTIC : getLandAlignment(land.type),
       isCorrupted: land.corrupted,
       goldPerTurn: land.goldPerTurn,
+      recruit: unitsToRecruit,
       effects: [],
       heroes: [],
       regulars: [],
