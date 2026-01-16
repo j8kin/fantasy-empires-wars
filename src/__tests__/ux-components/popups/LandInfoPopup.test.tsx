@@ -130,7 +130,7 @@ describe('LandInfoPopup', () => {
     renderWithProviders(<LandInfoPopup landPos={mockTileState.mapPos} screenPosition={mockPosition} />, gameStateStub);
 
     // Check land type information - should display the actual land type name
-    expect(screen.getByText(mockTileState.land.id)).toBeInTheDocument();
+    expect(screen.getByText(mockTileState.land.type)).toBeInTheDocument();
     expect(screen.getByText(mockTileState.land.alignment)).toBeInTheDocument();
   });
 
@@ -152,7 +152,7 @@ describe('LandInfoPopup', () => {
 
       renderWithProviders(<LandInfoPopup landPos={landPos} screenPosition={mockPosition} />, gameStateStub);
 
-      expect(screen.getByText(land.land.id)).toBeInTheDocument();
+      expect(screen.getByText(land.land.type)).toBeInTheDocument();
       expect(screen.getByText(land.land.alignment)).toBeInTheDocument();
       expect(screen.getByText('Position:')).toBeInTheDocument();
       expect(screen.getByText(land.mapPos.row + ', ' + land.mapPos.col)).toBeInTheDocument();
@@ -175,7 +175,7 @@ describe('LandInfoPopup', () => {
 
       renderWithProviders(<LandInfoPopup landPos={landPos} screenPosition={mockPosition} />, gameStateStub);
 
-      expect(screen.getByText(land.land.id)).toBeInTheDocument();
+      expect(screen.getByText(land.land.type)).toBeInTheDocument();
       expect(screen.getByText(land.land.alignment)).toBeInTheDocument();
       expect(screen.getByText('Position:')).toBeInTheDocument();
       expect(screen.getByText(land.mapPos.row + ', ' + land.mapPos.col)).toBeInTheDocument();
@@ -653,7 +653,7 @@ describe('LandInfoPopup', () => {
         gameStateStub
       );
 
-      expect(screen.getByText('Corrupted ' + mockTileState.land.id)).toBeInTheDocument();
+      expect(screen.getByText('Corrupted ' + mockTileState.land.type)).toBeInTheDocument();
       expect(screen.getByText('Position:')).toBeInTheDocument();
       expect(screen.getByText(mockTileState.mapPos.row + ', ' + mockTileState.mapPos.col)).toBeInTheDocument();
       expect(screen.getByText('Gold per Turn:')).toBeInTheDocument();

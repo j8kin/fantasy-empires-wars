@@ -23,7 +23,7 @@ const calculateBaseLandGold = (land: Land): number => {
 };
 
 const getRandomEmptyLand = (tiles: MapLands): LandState | undefined => {
-  const emptyLands = Object.values(tiles).filter((tile) => tile.land.id === LandName.NONE);
+  const emptyLands = Object.values(tiles).filter((tile) => tile.land.type === LandName.NONE);
   if (emptyLands.length === 0) return undefined;
   return getRandomElement(emptyLands);
 };
@@ -31,7 +31,7 @@ const getRandomEmptyLand = (tiles: MapLands): LandState | undefined => {
 const getEmptyNeighbors = (battlefield: MapState, position: LandPosition): LandState[] => {
   return getTilesInRadius(battlefield.dimensions, position, 1)
     .map((pos) => battlefield.lands[getLandId(pos)])
-    .filter((tile) => tile.land.id === LandName.NONE);
+    .filter((tile) => tile.land.type === LandName.NONE);
 };
 
 const getRandomNoneNeighbor = (battlefield: MapState, pos: LandPosition): LandState | undefined => {
@@ -65,7 +65,7 @@ const createEmptyBattlefield = (dimensions: MapDimensions): MapLands => {
 
 const placeSpecialLand = (battlefield: MapState, landKind: LandType) => {
   const placedSpecialLands = Object.values(battlefield.lands).filter((land) =>
-    getMainSpecialLandKinds().includes(land.land.id)
+    getMainSpecialLandKinds().includes(land.land.type)
   );
 
   let freeToPlaceLands = Object.keys(battlefield.lands).filter(
@@ -80,7 +80,7 @@ const placeSpecialLand = (battlefield: MapState, landKind: LandType) => {
   if (freeToPlaceLands.length === 0) {
     // fallback to any land free land
     freeToPlaceLands = Object.values(battlefield.lands)
-      .filter((land) => land.land.id === LandName.NONE)
+      .filter((land) => land.land.type === LandName.NONE)
       .map((l) => getLandId(l.mapPos));
   }
 
@@ -98,7 +98,7 @@ const placeSpecialLand = (battlefield: MapState, landKind: LandType) => {
   }
 
   const specialLandNeighbors = Object.values(battlefield.lands)
-    .filter((l) => [landKind, getNearSpecialLandKinds(landKind)].includes(l.land.id))
+    .filter((l) => [landKind, getNearSpecialLandKinds(landKind)].includes(l.land.type))
     .flatMap((l) => getEmptyNeighbors(battlefield, l.mapPos));
 
   // set all Neighbors for just placed special lands
@@ -123,7 +123,7 @@ export const generateMap = (dimensions: MapDimensions): MapState => {
   const maxTilesPerType = Math.floor(Object.keys(battlefield.lands).length / remainingLandKinds.length);
 
   remainingLandKinds.forEach((LandKind) => {
-    while (Object.values(battlefield.lands).filter((l) => l.land.id === LandKind).length < maxTilesPerType) {
+    while (Object.values(battlefield.lands).filter((l) => l.land.type === LandKind).length < maxTilesPerType) {
       let startLand = getRandomEmptyLand(battlefield.lands);
       if (startLand == null) break;
       battlefield.lands[getLandId(startLand.mapPos)].land = getLandById(LandKind);
@@ -131,7 +131,7 @@ export const generateMap = (dimensions: MapDimensions): MapState => {
       // place 6 land of the same time nearby
       for (
         let i = 0;
-        i < 5 && Object.values(battlefield.lands).filter((l) => l.land.id === LandKind).length < maxTilesPerType;
+        i < 5 && Object.values(battlefield.lands).filter((l) => l.land.type === LandKind).length < maxTilesPerType;
         i++
       ) {
         const emptyNeighbor = getRandomNoneNeighbor(battlefield, startLand.mapPos);
@@ -146,7 +146,7 @@ export const generateMap = (dimensions: MapDimensions): MapState => {
 
   // if we have empty lands fill with deserts
   Object.values(battlefield.lands)
-    .filter((tile) => tile.land.id === LandName.NONE)
+    .filter((tile) => tile.land.type === LandName.NONE)
     .forEach((tile) => (tile.land = getLandById(LandName.DESERT)));
 
   // Calculate gold for all tiles

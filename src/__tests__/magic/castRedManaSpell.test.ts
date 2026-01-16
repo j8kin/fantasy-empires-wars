@@ -55,7 +55,7 @@ describe('castRedManaSpell', () => {
         };
         const targetLand = getLand(gameStateStub, landToRecruit);
         if (isMageType(unit)) {
-          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
+          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.type].add(unit);
         }
         construct(gameStateStub, building, landToRecruit);
 
@@ -95,7 +95,7 @@ describe('castRedManaSpell', () => {
         getLand(gameStateStub, landToRecruit).land = getLandById(LandName.GREEN_FOREST);
         const targetLand = getLand(gameStateStub, landToRecruit);
         if (isMageType(unit)) {
-          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.id].add(unit);
+          getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[targetLand.land.type].add(unit);
         }
         construct(gameStateStub, building, landToRecruit);
 

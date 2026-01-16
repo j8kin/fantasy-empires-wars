@@ -29,7 +29,7 @@ export const LandName = {
 export type LandType = (typeof LandName)[keyof typeof LandName];
 
 export interface Land {
-  id: LandType;
+  type: LandType;
   alignment: AlignmentType;
   unitsToRecruit: UnitType[];
   goldPerTurn: { min: number; max: number };

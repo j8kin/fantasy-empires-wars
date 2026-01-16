@@ -300,7 +300,7 @@ const castBlackManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
 
       // change units to recruit based on land type
       const unitsToRecruit =
-        land.land.id === LandName.GREEN_FOREST
+        land.land.type === LandName.GREEN_FOREST
           ? [
               RegularUnitName.ORC,
               RegularUnitName.DARK_ELF,

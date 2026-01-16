@@ -12,7 +12,7 @@ export const getLandById = (id: LandType): Land => {
   switch (id) {
     case LandName.PLAINS:
       return {
-        id: LandName.PLAINS,
+        type: LandName.PLAINS,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
         goldPerTurn: { min: 650, max: 1000 },
@@ -20,7 +20,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.MOUNTAINS:
       return {
-        id: LandName.MOUNTAINS,
+        type: LandName.MOUNTAINS,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
         goldPerTurn: { min: 900, max: 1150 },
@@ -28,7 +28,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.GREEN_FOREST:
       return {
-        id: LandName.GREEN_FOREST,
+        type: LandName.GREEN_FOREST,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.ELF, HeroUnitName.RANGER],
         goldPerTurn: { min: 800, max: 950 },
@@ -36,7 +36,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.DARK_FOREST:
       return {
-        id: LandName.DARK_FOREST,
+        type: LandName.DARK_FOREST,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.DARK_ELF, HeroUnitName.SHADOW_BLADE],
         goldPerTurn: { min: 800, max: 950 },
@@ -45,7 +45,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.HILLS:
       return {
-        id: LandName.HILLS,
+        type: LandName.HILLS,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.HALFLING, HeroUnitName.FIGHTER],
         goldPerTurn: { min: 500, max: 700 },
@@ -53,7 +53,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.SWAMP:
       return {
-        id: LandName.SWAMP,
+        type: LandName.SWAMP,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 350, max: 550 },
@@ -62,7 +62,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.DESERT:
       return {
-        id: LandName.DESERT,
+        type: LandName.DESERT,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [
           RegularUnitName.WARD_HANDS,
@@ -77,7 +77,7 @@ export const getLandById = (id: LandType): Land => {
     // special lands
     case LandName.VOLCANO:
       return {
-        id: LandName.VOLCANO,
+        type: LandName.VOLCANO,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 1000, max: 1000 },
@@ -85,7 +85,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.LAVA:
       return {
-        id: LandName.LAVA,
+        type: LandName.LAVA,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 500, max: 600 },
@@ -94,7 +94,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.SUN_SPIRE_PEAKS:
       return {
-        id: LandName.SUN_SPIRE_PEAKS,
+        type: LandName.SUN_SPIRE_PEAKS,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
         goldPerTurn: { min: 1000, max: 1000 },
@@ -102,7 +102,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.GOLDEN_PLAINS:
       return {
-        id: LandName.GOLDEN_PLAINS,
+        type: LandName.GOLDEN_PLAINS,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [
           RegularUnitName.WARD_HANDS,
@@ -115,7 +115,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.HEARTWOOD_GROVE:
       return {
-        id: LandName.HEARTWOOD_GROVE,
+        type: LandName.HEARTWOOD_GROVE,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.ELF, HeroUnitName.RANGER],
         goldPerTurn: { min: 1000, max: 1000 },
@@ -123,7 +123,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.VERDANT_GLADE:
       return {
-        id: LandName.VERDANT_GLADE,
+        type: LandName.VERDANT_GLADE,
         alignment: Alignment.LAWFUL,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.ELF, HeroUnitName.RANGER],
         goldPerTurn: { min: 500, max: 600 },
@@ -131,7 +131,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.CRISTAL_BASIN:
       return {
-        id: LandName.CRISTAL_BASIN,
+        type: LandName.CRISTAL_BASIN,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
         goldPerTurn: { min: 1000, max: 1000 },
@@ -139,7 +139,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.MISTY_GLADES:
       return {
-        id: LandName.MISTY_GLADES,
+        type: LandName.MISTY_GLADES,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
         goldPerTurn: { min: 500, max: 600 },
@@ -147,7 +147,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.SHADOW_MIRE:
       return {
-        id: LandName.SHADOW_MIRE,
+        type: LandName.SHADOW_MIRE,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 1000, max: 1000 },
@@ -155,7 +155,7 @@ export const getLandById = (id: LandType): Land => {
       };
     case LandName.BLIGHTED_FEN:
       return {
-        id: LandName.BLIGHTED_FEN,
+        type: LandName.BLIGHTED_FEN,
         alignment: Alignment.CHAOTIC,
         unitsToRecruit: [RegularUnitName.WARD_HANDS, RegularUnitName.ORC, HeroUnitName.OGR],
         goldPerTurn: { min: 500, max: 600 },
@@ -165,7 +165,7 @@ export const getLandById = (id: LandType): Land => {
     default:
       // used on map generation
       return {
-        id: LandName.NONE,
+        type: LandName.NONE,
         alignment: Alignment.NEUTRAL,
         unitsToRecruit: [],
         goldPerTurn: { min: 0, max: 0 },

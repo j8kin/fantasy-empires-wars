@@ -214,15 +214,15 @@ describe('Calculate Mana', () => {
     const playerSpecialLands = realmLands.filter(
       (l) =>
         (player.playerProfile.type === HeroUnitName.NECROMANCER &&
-          (l.land.id === LandName.BLIGHTED_FEN || l.land.id === LandName.SHADOW_MIRE)) ||
+          (l.land.type === LandName.BLIGHTED_FEN || l.land.type === LandName.SHADOW_MIRE)) ||
         (player.playerProfile.type === HeroUnitName.CLERIC &&
-          (l.land.id === LandName.SUN_SPIRE_PEAKS || l.land.id === LandName.GOLDEN_PLAINS)) ||
+          (l.land.type === LandName.SUN_SPIRE_PEAKS || l.land.type === LandName.GOLDEN_PLAINS)) ||
         (player.playerProfile.type === HeroUnitName.ENCHANTER &&
-          (l.land.id === LandName.CRISTAL_BASIN || l.land.id === LandName.MISTY_GLADES)) ||
+          (l.land.type === LandName.CRISTAL_BASIN || l.land.type === LandName.MISTY_GLADES)) ||
         (player.playerProfile.type === HeroUnitName.DRUID &&
-          (l.land.id === LandName.HEARTWOOD_GROVE || l.land.id === LandName.VERDANT_GLADE)) ||
+          (l.land.type === LandName.HEARTWOOD_GROVE || l.land.type === LandName.VERDANT_GLADE)) ||
         (player.playerProfile.type === HeroUnitName.PYROMANCER &&
-          (l.land.id === LandName.VOLCANO || l.land.id === LandName.LAVA))
+          (l.land.type === LandName.VOLCANO || l.land.type === LandName.LAVA))
     ).length;
     const playerHero = getArmiesByPlayer(gameStateStub, player.id)[0].heroes[0];
     return (playerHero.mana || 0) + playerSpecialLands;

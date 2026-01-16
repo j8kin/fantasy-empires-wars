@@ -77,14 +77,14 @@ export const getAllowedBuildings = (state: PlayerState): BuildingInfo[] => {
 };
 
 export const getUnitsAllowedToRecruit = (player: PlayerState, land: LandState, building: BuildingState): UnitType[] => {
-  const landUnits = player.traits.recruitedUnitsPerLand[land.land.id] ?? new Set<UnitType>();
+  const landUnits = player.traits.recruitedUnitsPerLand[land.land.type] ?? new Set<UnitType>();
   const slotTraits = player.traits.recruitmentSlots[building.type]!;
 
   if (building.type === BuildingName.BARRACKS) {
     // non-magic players ignore corrupted lands
     if (land.corrupted && player.traits.restrictedMagic.size !== Object.values(Mana).length) {
       const availableUnits: Set<UnitType> = new Set(Object.values(WarMachineName));
-      if (land.land.id === LandName.GREEN_FOREST) {
+      if (land.land.type === LandName.GREEN_FOREST) {
         availableUnits.add(RegularUnitName.DARK_ELF);
         availableUnits.add(HeroUnitName.SHADOW_BLADE);
       } else {

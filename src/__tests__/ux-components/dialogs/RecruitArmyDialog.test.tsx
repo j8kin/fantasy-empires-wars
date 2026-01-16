@@ -770,7 +770,7 @@ describe('RecruitArmyDialog', () => {
     it('should handle empty units to recruit', () => {
       const land = getLand(gameStateStub, barracksPos);
       land.land.unitsToRecruit = [];
-      getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.id] = new Set();
+      getTurnOwner(gameStateStub).traits.recruitedUnitsPerLand[land.land.type] = new Set();
 
       renderWithProviders(<RecruitArmyDialog />);
 

@@ -64,7 +64,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
       return {
         owner: landOwnerId,
         color: landOwnerColor,
-        type: land.land.id,
+        type: land.land.type,
         alignment: land.corrupted ? Alignment.CHAOTIC : land.land.alignment,
         goldPerTurn: land.goldPerTurn,
         effects: [],
@@ -82,7 +82,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
     return {
       owner: landOwnerId,
       color: landOwnerColor,
-      type: land.land.id,
+      type: land.land.type,
       alignment: land.corrupted ? Alignment.CHAOTIC : land.land.alignment,
       isCorrupted: land.corrupted,
       goldPerTurn: land.goldPerTurn,
@@ -112,7 +112,7 @@ export const getLandInfo = (state: GameState, landPos: LandPosition): LandInfo =
     return {
       owner: landOwnerId,
       color: landOwnerColor,
-      type: land.land.id,
+      type: land.land.type,
       alignment: land.corrupted ? Alignment.CHAOTIC : land.land.alignment,
       isCorrupted: land.corrupted,
       goldPerTurn: land.goldPerTurn,

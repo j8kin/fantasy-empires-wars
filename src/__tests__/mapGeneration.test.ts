@@ -19,22 +19,22 @@ describe('Map Generation', () => {
 
     // All tiles should be controlled by a neutral player
     Object.values(lands.lands).forEach((land) => {
-      expect(land.land.id).not.toBe(LandName.NONE);
+      expect(land.land.type).not.toBe(LandName.NONE);
       expect(land.goldPerTurn).toBeGreaterThan(0);
     });
 
     // Special lands should be generated
     getMainSpecialLandKinds().forEach((LandKind) => {
-      expect(Object.values(lands.lands).some((land) => land.land.id === LandKind)).toBeTruthy();
-      expect(Object.values(lands.lands).filter((land) => land.land.id === LandKind)).toHaveLength(1);
+      expect(Object.values(lands.lands).some((land) => land.land.type === LandKind)).toBeTruthy();
+      expect(Object.values(lands.lands).filter((land) => land.land.type === LandKind)).toHaveLength(1);
       expect(
-        Object.values(lands.lands).some((land) => land.land.id === getNearSpecialLandKinds(LandKind))
+        Object.values(lands.lands).some((land) => land.land.type === getNearSpecialLandKinds(LandKind))
       ).toBeTruthy();
       expect(
-        Object.values(lands.lands).filter((land) => land.land.id === getNearSpecialLandKinds(LandKind)).length
+        Object.values(lands.lands).filter((land) => land.land.type === getNearSpecialLandKinds(LandKind)).length
       ).toBeGreaterThan(1);
       expect(
-        Object.values(lands.lands).filter((land) => land.land.id === getNearSpecialLandKinds(LandKind)).length
+        Object.values(lands.lands).filter((land) => land.land.type === getNearSpecialLandKinds(LandKind)).length
       ).toBeLessThan(6);
     });
   });
