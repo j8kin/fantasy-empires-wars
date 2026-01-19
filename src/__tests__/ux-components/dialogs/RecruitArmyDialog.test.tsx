@@ -599,24 +599,25 @@ describe('RecruitArmyDialog', () => {
     });
 
     it.each([
-      [LandName.SWAMP, RegularUnitName.ORC],
-      [LandName.BLIGHTED_FEN, RegularUnitName.ORC],
-      [LandName.SHADOW_MIRE, RegularUnitName.ORC],
-      [LandName.MOUNTAINS, RegularUnitName.DWARF],
-      [LandName.SUN_SPIRE_PEAKS, RegularUnitName.DWARF],
-      [LandName.PLAINS, RegularUnitName.WARRIOR],
-      [LandName.CRISTAL_BASIN, RegularUnitName.WARRIOR],
-      [LandName.MISTY_GLADES, RegularUnitName.WARRIOR],
-      [LandName.GREEN_FOREST, RegularUnitName.ELF],
-      [LandName.DARK_FOREST, RegularUnitName.DARK_ELF],
+      [LandName.SWAMP, RegularUnitName.ORC, HeroUnitName.OGR],
+      [LandName.BLIGHTED_FEN, RegularUnitName.ORC, HeroUnitName.OGR],
+      [LandName.SHADOW_MIRE, RegularUnitName.ORC, HeroUnitName.OGR],
+      [LandName.MOUNTAINS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
+      [LandName.SUN_SPIRE_PEAKS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
+      [LandName.PLAINS, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
+      [LandName.CRISTAL_BASIN, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
+      [LandName.MISTY_GLADES, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
+      [LandName.GREEN_FOREST, RegularUnitName.ELF, HeroUnitName.RANGER],
+      [LandName.DARK_FOREST, RegularUnitName.DARK_ELF, HeroUnitName.SHADOW_BLADE],
     ])(
       'should allow Nulwarden recruit in %s land %s Nullwarden regular',
-      (landType: LandType, unitName: RegularUnitType) => {
+      (landType: LandType, regularUnitName: RegularUnitType, heroUnitName: HeroUnitType) => {
         const lands = gameStateStub.players[0].landsOwned;
         gameStateStub.players[0] = playerFactory(PREDEFINED_PLAYERS[16], 'human'); // replace player
         gameStateStub.players[0].landsOwned = lands; // copy lands
         gameStateStub.turnOwner = gameStateStub.players[0].id;
-        expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.ZEALOT);
+        expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.FIGHTER);
+        expect(getTurnOwner(gameStateStub).playerProfile.doctrine).toBe(Doctrine.ANTI_MAGIC);
         expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
         expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
 
@@ -627,9 +628,9 @@ describe('RecruitArmyDialog', () => {
         expect(screen.getByTestId('flip-book')).toBeInTheDocument();
         //expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(6); // only 6 type of units could be recruited in barracks
         // hero unit
-        expect(screen.getByTestId(`flipbook-page-Zealot`)).toBeInTheDocument();
+        expect(screen.getByTestId(`flipbook-page-${heroUnitName} Nullwarden`)).toBeInTheDocument();
         // regular unit
-        expect(screen.getByTestId(`flipbook-page-${unitName} Nullwarden`)).toBeInTheDocument();
+        expect(screen.getByTestId(`flipbook-page-${regularUnitName} Nullwarden`)).toBeInTheDocument();
         // war-machines
         expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
         expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();

@@ -99,14 +99,6 @@ const unitCombatStats: Record<RegularUnitType | HeroUnitType, CombatStats> = {
     health: 18,
     speed: 4,
   },
-  [HeroUnitName.ZEALOT]: {
-    attack: 30,
-    defense: 3,
-    range: 2,
-    rangeDamage: 30,
-    health: 18,
-    speed: 4,
-  },
   // Dwarf hero
   [HeroUnitName.HAMMER_LORD]: {
     attack: 40,
@@ -193,7 +185,6 @@ const unitCombatStats: Record<RegularUnitType | HeroUnitType, CombatStats> = {
 const unitsAlignment: Record<UnitType, AlignmentType> = {
   [RegularUnitName.DWARF]: Alignment.LAWFUL,
   [RegularUnitName.ELF]: Alignment.LAWFUL,
-  [HeroUnitName.ZEALOT]: Alignment.LAWFUL,
   [HeroUnitName.HAMMER_LORD]: Alignment.LAWFUL,
   [HeroUnitName.RANGER]: Alignment.LAWFUL,
   [HeroUnitName.CLERIC]: Alignment.LAWFUL,
@@ -251,8 +242,6 @@ const descriptions: Record<UnitType, string> = {
     'Forged in the fires of rebellion, Warsmiths temper chaos into strategy—each strike a protest against tyranny and weakness.',
   [HeroUnitName.FIGHTER]:
     'Champions of the common folk, Fighters carry the banners of law and honor into every battle, their courage as sharp as their blades.',
-  [HeroUnitName.ZEALOT]:
-    'Sworn to silence the arcane, Nullwardens fight not for faith, but for a world unchained from magic.',
   [HeroUnitName.HAMMER_LORD]:
     'Bearing hammers that have shattered both stone and legend, Hammerlords are dwarven paragons of strength and unyielding resolve.',
   [HeroUnitName.OGR]:
@@ -395,7 +384,6 @@ export const getRecruitInfo = (unitType: UnitType, landType: LandType = LandName
     // non-mages
     case HeroUnitName.FIGHTER:
     case HeroUnitName.WARSMITH:
-    case HeroUnitName.ZEALOT:
     case HeroUnitName.HAMMER_LORD:
     case HeroUnitName.OGR:
     case HeroUnitName.SHADOW_BLADE:

@@ -197,7 +197,7 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     name: 'Thane Nullwarden',
     alignment: Alignment.LAWFUL,
     race: RaceName.HUMAN,
-    type: HeroUnitName.ZEALOT,
+    type: HeroUnitName.FIGHTER,
     doctrine: Doctrine.ANTI_MAGIC,
     level: 28,
     description: 'A zealot of iron faith, sworn to purge magic from Orrivane.',

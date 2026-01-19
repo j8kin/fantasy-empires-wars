@@ -9,7 +9,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { getBuilding, getLand } from '../../selectors/landSelectors';
 import { getTurnOwner, getUnitsAllowedToRecruit } from '../../selectors/playerSelectors';
 import { getAvailableSlotsCount, hasAvailableSlot } from '../../selectors/buildingSelectors';
-import { isHeroType, isRegularUnit, isWarMachine } from '../../domain/unit/unitTypeChecks';
+import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { getRecruitInfo } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { getUnitImg } from '../../assets/getUnitImg';
@@ -120,8 +120,10 @@ const RecruitArmyDialog: React.FC = () => {
     [gameState]
   );
 
-  const isRegularAntiMagic = (unitType: UnitType) => {
-    return isRegularUnit(unitType) && turnOwner.playerProfile.doctrine === Doctrine.ANTI_MAGIC;
+  const createUnitHeader = (unitType: UnitType): string => {
+    return !isWarMachine(unitType) && turnOwner.playerProfile.doctrine === Doctrine.ANTI_MAGIC
+      ? `${unitType} Nullwarden`
+      : unitType;
   };
 
   if (!gameState || !showRecruitArmyDialog || !actionLandPosition) return null;
@@ -157,7 +159,7 @@ const RecruitArmyDialog: React.FC = () => {
           key={unit.type}
           pageNum={index}
           lorePage={617}
-          header={`${unit.type}${isRegularAntiMagic(unit.type) ? ' Nullwarden' : ''}`}
+          header={createUnitHeader(unit.type)}
           iconPath={getUnitImg(unit.type, turnOwner.playerProfile.doctrine)}
           description={unit.description}
           cost={unit.recruitCost}
