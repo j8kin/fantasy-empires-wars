@@ -10,6 +10,7 @@ import { getRandomElement } from '../../domain/utils/random';
 import { construct } from '../building/construct';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { getLandAlignment } from '../../domain/land/landRepository';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { BuildingName } from '../../types/Building';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
@@ -110,7 +111,12 @@ export const placeHomeland = (gameState: GameState) => {
     // fall back to any land if no alignment match
     possibleBarracksLands = getPlayerLands(gameState).filter((l) => l.buildings.length === 0);
   }
-  construct(gameState, BuildingName.BARRACKS, getRandomElement(possibleBarracksLands).mapPos);
+  construct(
+    gameState,
+    // Pure Magic doctrine players could recruit ONLY mages no other units are possible
+    playerProfile.doctrine === Doctrine.PURE_MAGIC ? BuildingName.MAGE_TOWER : BuildingName.BARRACKS,
+    getRandomElement(possibleBarracksLands).mapPos
+  );
 
   assignPlayerHero(homeland, gameState!);
 };

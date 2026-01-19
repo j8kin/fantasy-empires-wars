@@ -8,6 +8,7 @@ import { getAllowedBuildings, getTurnOwner } from '../../selectors/playerSelecto
 import { getPlayerLands } from '../../selectors/landSelectors';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 import { getBuildingImg } from '../../assets/getBuildingImg';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { BuildingName } from '../../types/Building';
 import type { BuildingType } from '../../types/Building';
 
@@ -55,7 +56,9 @@ const ConstructBuildingDialog: React.FC = () => {
   const isStrongholdAllowed = getAvailableToConstructLands(gameState, BuildingName.STRONGHOLD).length > 0;
 
   const availableBuildings = getAllowedBuildings(turnOwner).filter(
-    (building) => building.type !== BuildingName.STRONGHOLD || isStrongholdAllowed
+    (building) =>
+      (building.type !== BuildingName.STRONGHOLD || isStrongholdAllowed) &&
+      (building.type !== BuildingName.BARRACKS || turnOwner.playerProfile.doctrine !== Doctrine.PURE_MAGIC)
   );
 
   if (availableBuildings.length === 0) return null;

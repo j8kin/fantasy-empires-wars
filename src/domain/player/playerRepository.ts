@@ -203,4 +203,15 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     description: 'A zealot of iron faith, sworn to purge magic from Orrivane.',
     color: 'perl-white',
   },
+  {
+    id: 'sereth',
+    name: 'Sereth Vael',
+    alignment: Alignment.CHAOTIC,
+    race: RaceName.ELF,
+    type: HeroUnitName.NECROMANCER,
+    doctrine: Doctrine.PURE_MAGIC,
+    level: 18,
+    description: 'A Shadow Elf sorceress who dark arts are unspeakable.',
+    color: 'obsidian',
+  },
 ];
