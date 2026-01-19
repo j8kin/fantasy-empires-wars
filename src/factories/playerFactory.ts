@@ -1,5 +1,5 @@
-import { isHeroType, isMageType } from '../domain/unit/unitTypeChecks';
-import { getLandAlignment, getLandUnitsToRecruit } from '../domain/land/landRepository';
+import { isMageType } from '../domain/unit/unitTypeChecks';
+import { getLandUnitsToRecruit } from '../domain/land/landRepository';
 import { getAllUnitTypeByAlignment } from '../domain/unit/unitRepository';
 import { Doctrine, RaceName } from '../state/player/PlayerProfile';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../types/UnitType';
@@ -153,25 +153,15 @@ const getUnitsPerLand = (
         Object.values(WarMachineName).forEach((warMachine) => unitsPerLand[landType].add(warMachine));
       }
 
-      // add other units depending on player type and alignment and land type
-      switch (playerProfile.type) {
-        case HeroUnitName.WARSMITH:
-          if (playerProfile.doctrine === Doctrine.UNDEAD) {
-            unitsPerLand[landType].add(HeroUnitName.WARSMITH);
-            unitsPerLand[landType].add(RegularUnitName.UNDEAD);
-          } else {
-            unitsPerLand[landType].add(HeroUnitName.WARSMITH);
-            if (getLandAlignment(landType) !== Alignment.LAWFUL) {
-              getLandUnitsToRecruit(landType, false)
-                .filter((unit) => !isHeroType(unit))
-                .forEach((unit) => unitsPerLand[landType].add(unit));
-            }
-          }
+      // add other units depending on player doctrine and alignment and land type
+      switch (playerProfile.doctrine) {
+        case Doctrine.UNDEAD:
+          unitsPerLand[landType].add(HeroUnitName.WARSMITH);
+          unitsPerLand[landType].add(RegularUnitName.UNDEAD);
           break;
-        case HeroUnitName.ZEALOT:
-          unitsPerLand[landType].add(HeroUnitName.ZEALOT);
+        case Doctrine.ANTI_MAGIC:
           getLandUnitsToRecruit(landType, false).forEach((unit) => {
-            if (!isHeroType(unit) && unit !== RegularUnitName.HALFLING && unit !== RegularUnitName.WARD_HANDS) {
+            if (!isMageType(unit) && unit !== RegularUnitName.HALFLING && unit !== RegularUnitName.WARD_HANDS) {
               unitsPerLand[landType].add(unit);
             }
           });
@@ -250,7 +240,7 @@ const getRecruitmentSlots = (
   const allRegularUnits: RegularUnitType[] = Object.values(RegularUnitName).filter((u) => u !== RegularUnitName.UNDEAD);
   const allWarMachines: WarMachineType[] = Object.values(WarMachineName);
   const allMightHeroes: HeroUnitType[] = Object.values(HeroUnitName).filter(
-    (unit) => !isMageType(unit) && unit !== HeroUnitName.WARSMITH && unit !== HeroUnitName.ZEALOT
+    (unit) => !isMageType(unit) && unit !== HeroUnitName.WARSMITH
   );
 
   switch (playerProfile.doctrine) {
@@ -265,7 +255,7 @@ const getRecruitmentSlots = (
       buildingTraits[BuildingName.BARRACKS] = {
         0: new Set([...allRegularUnits]),
         1: new Set([...allWarMachines]),
-        2: new Set([HeroUnitName.ZEALOT]),
+        2: new Set([...allMightHeroes]),
       };
       break;
     default:

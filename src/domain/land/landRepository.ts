@@ -18,12 +18,7 @@ const allMageHeroes = Object.values(HeroUnitName).filter((unit) => isMageType(un
 const allMightHeroes = Object.values(HeroUnitName).filter((unit) => !isMageType(unit));
 
 // todo refactor base on Doctrine fraction for ZEALOT
-const defaultUnitsToRecruit = [
-  RegularUnitName.WARD_HANDS,
-  RegularUnitName.UNDEAD,
-  HeroUnitName.ZEALOT,
-  HeroUnitName.WARSMITH,
-]; // Undead available only for UNDEAD Doctrine;
+const defaultUnitsToRecruit = [RegularUnitName.WARD_HANDS, RegularUnitName.UNDEAD, HeroUnitName.WARSMITH]; // Undead available only for UNDEAD Doctrine;
 const landRepository: Record<LandType, LandRecordType> = {
   [LandName.PLAINS]: {
     alignment: Alignment.NEUTRAL,

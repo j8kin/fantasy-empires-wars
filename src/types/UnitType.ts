@@ -35,7 +35,6 @@ export const HeroUnitName = {
   NECROMANCER: 'Necromancer',
   // non-magic heroes (heroes who reject magic at all)
   WARSMITH: 'Warsmith',
-  ZEALOT: 'Zealot',
 } as const;
 
 export type HeroUnitType = (typeof HeroUnitName)[keyof typeof HeroUnitName];
