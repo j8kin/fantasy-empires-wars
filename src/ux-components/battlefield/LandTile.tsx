@@ -8,7 +8,7 @@ import LandInfoPopup from '../popups/LandInfoPopup';
 import { getLandId } from '../../state/map/land/LandId';
 import { getLandOwner, getPlayerLands, getRealmLands, getTilesInRadius } from '../../selectors/landSelectors';
 import { getDiplomacyStatus, getPlayer, getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
-import { getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
 import { getBuildingInfo } from '../../domain/building/buildingRepository';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
@@ -16,11 +16,10 @@ import { calculateTileScreenPosition, getMapDimensions } from '../../utils/scree
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
 import { invokeItem } from '../../map/magic/invokeItem';
-import { calcMaxMove } from '../../map/move-army/calcMaxMove';
+import { calcMaxMove, MAX_DISTANCE_FROM_REALM } from '../../map/move-army/calcMaxMove';
 import { getRandomElement } from '../../domain/utils/random';
 import { getLandImg } from '../../assets/getLandImg';
-import { MAX_MOVE } from '../../map/move-army/calcMaxMove';
-import { MIN_HERO_PACKS } from '../../map/move-army/startMovement';
+import { MIN_HERO_COMBINED_LEVEL_FOR_MOVEMENT } from '../../map/move-army/startMovement';
 import { SpellName } from '../../types/Spell';
 import { EmpireEventKind } from '../../types/EmpireEvent';
 import { Alignment } from '../../types/Alignment';
@@ -163,16 +162,19 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
         setSelectedLandAction('MoveArmyTo');
 
         const realmLands = getRealmLands(gameState).map((l) => l.mapPos);
-        const armiesAtPosition = getArmiesAtPosition(gameState!, mapPosition);
+        const armiesAtPosition = getArmiesAtPosition(gameState!, mapPosition).filter((a) => !isMoving(a));
         const maxMovements = calcMaxMove(armiesAtPosition.flatMap((a) => a.regulars));
-        const nHeroes = armiesAtPosition.reduce((acc, army) => acc + army.heroes.length, 0);
+        const cumulativeHeroesLevel = armiesAtPosition.reduce(
+          (acc, army) => acc + army.heroes.reduce((acc2, hero) => acc2 + hero.level, 0),
+          0
+        );
         const turnOwner = getTurnOwner(gameState);
         const isChaotic = turnOwner.playerProfile.alignment === Alignment.CHAOTIC;
 
         const landsInRadius = getTilesInRadius(
           gameState!.map.dimensions,
           mapPosition,
-          nHeroes >= MIN_HERO_PACKS ? MAX_MOVE : maxMovements
+          cumulativeHeroesLevel >= MIN_HERO_COMBINED_LEVEL_FOR_MOVEMENT ? MAX_DISTANCE_FROM_REALM : maxMovements
         ).filter((pos) => {
           if (isChaotic) return true;
           const landOwner = getLandOwner(gameState, pos);

@@ -1,4 +1,10 @@
-import { findShortestPath, getLandOwner } from '../../selectors/landSelectors';
+import {
+  calculateHexDistance,
+  findShortestPath,
+  getLandOwner,
+  getRealmLands,
+  getTilesInRadius,
+} from '../../selectors/landSelectors';
 import { addHero, addRegulars, addWarMachines, getHero, getRegulars, getWarMachines } from '../../systems/armyActions';
 import { getArmiesAtPosition, getPosition, isMoving } from '../../selectors/armySelectors';
 import { addArmyToGameState, updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
@@ -9,11 +15,12 @@ import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { Alignment } from '../../types/Alignment';
+import { MAX_DISTANCE_FROM_REALM } from './calcMaxMove';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { ArmyBriefInfo } from '../../state/army/ArmyState';
 
-export const MIN_HERO_PACKS = 10;
+export const MIN_HERO_COMBINED_LEVEL_FOR_MOVEMENT = 20;
 
 export const startMovement = (
   gameState: GameState,
@@ -41,15 +48,6 @@ export const startMovement = (
     }
   }
 
-  // Hero units could move on hostile territories only with Regular units or if there are more than 10 heroes are moved
-  if (
-    getLandOwner(gameState, to) !== gameState.turnOwner &&
-    units.regulars.length === 0 &&
-    units.heroes.length < MIN_HERO_PACKS
-  ) {
-    return gameState;
-  }
-
   // expect that there is a stationed army in from land
   const stationedArmies = getArmiesAtPosition(gameState, from).filter(
     (a) => !isMoving(a) && a.controlledBy === gameState.turnOwner
@@ -57,6 +55,28 @@ export const startMovement = (
   if (stationedArmies.length !== 1) {
     return gameState; // fallback: it should be the only one stationed Army
   }
+
+  // Hero units could move on hostile territories only with Regular units or if there are more than 10 heroes are moved
+  if (toOwner !== gameState.turnOwner && (units.regulars.length === 0 || stationedArmies[0].regulars.length === 0)) {
+    // calculate cumulative level of heroes planned to move
+    const canMove = units.heroes.reduce((acc, hero) => acc + hero.level, 0) >= MIN_HERO_COMBINED_LEVEL_FOR_MOVEMENT;
+    if (!canMove) {
+      return gameState;
+    }
+    // verify to position from realm lands
+    const mapDimensions = getMapDimensions(gameState);
+    const realmBorderLands = getRealmLands(gameState).filter((land) =>
+      getTilesInRadius(mapDimensions, land.mapPos, 1, true).some(
+        (tile) => getLandOwner(gameState, tile) !== gameState.turnOwner
+      )
+    );
+    if (
+      realmBorderLands.every((land) => calculateHexDistance(mapDimensions, to, land.mapPos) > MAX_DISTANCE_FROM_REALM)
+    ) {
+      return gameState;
+    }
+  }
+
   // todo refactor to use getStationedArmy
   let stationedArmy = stationedArmies[0];
   // expect that there are enough units in stationed army to move
