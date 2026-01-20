@@ -564,7 +564,7 @@ describe('Move Army', () => {
             const mapDimensions = getMapDimensions(gameStateStub);
 
             // Find a hostile land that is far from all realm borders
-            const farHostileLand = {row: barracksLand.mapPos.row, col: barracksLand.mapPos.col + 5};
+            const farHostileLand = { row: barracksLand.mapPos.row, col: barracksLand.mapPos.col + 5 };
             expect(calculateHexDistance(mapDimensions, barracksLand.mapPos, farHostileLand)).toBe(5);
 
             // If we found such a land, test that movement is blocked
