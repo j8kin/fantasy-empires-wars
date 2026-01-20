@@ -1,5 +1,6 @@
 import { getLandId } from '../../state/map/land/LandId';
 import {
+  calculateHexDistance,
   getLand,
   getLandOwner,
   getPlayerLands,
@@ -18,6 +19,8 @@ import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
 import { castSpell } from '../../map/magic/castSpell';
 import { setDiplomacyStatus } from '../../systems/playerActions';
+import { heroFactory } from '../../factories/heroFactory';
+import { addHero, updateArmyInGameState } from '../../systems/armyActions';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
@@ -25,6 +28,7 @@ import { BuildingName } from '../../types/Building';
 import { SpellName } from '../../types/Spell';
 import { UnitRank } from '../../state/army/RegularsState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
+import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
 import type { LandState } from '../../state/map/land/LandState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
@@ -33,7 +37,6 @@ import type { ArmyBriefInfo } from '../../state/army/ArmyState';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { Alignment } from '../../types/Alignment';
 
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;
@@ -355,6 +358,325 @@ describe('Move Army', () => {
         armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
         expect(armies).toHaveLength(1);
         expect(isMoving(armies[0])).toBeFalsy();
+      });
+
+      describe('Hero Level Movement Restrictions', () => {
+        const neutralHostileLand = { row: 3, col: 5 };
+
+        beforeEach(() => {
+          // Ensure target is hostile (not owned by turn owner)
+          expect(getLandOwner(gameStateStub, neutralHostileLand)).not.toBe(getTurnOwner(gameStateStub).id);
+        });
+
+        it('Single level 1 hero (total level < 20) cannot move to hostile territory without regulars', () => {
+          const heroArmy = getArmiesAtPosition(gameStateStub, barracksLand.mapPos)[0];
+          const hero = briefInfo(heroArmy).heroes[0];
+
+          // Verify hero is level 1
+          expect(heroArmy.heroes[0].level).toBe(1);
+
+          const armyBriefInfo: ArmyBriefInfo = {
+            heroes: [hero],
+            regulars: [],
+            warMachines: [],
+          };
+
+          Object.assign(
+            gameStateStub,
+            startMovement(gameStateStub, barracksLand.mapPos, neutralHostileLand, armyBriefInfo)
+          );
+
+          // Movement should be blocked - army stays in place
+          const armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          expect(armies).toHaveLength(1);
+          expect(isMoving(armies[0])).toBeFalsy();
+        });
+
+        it('Multiple heroes with combined level >= 20 can move to hostile territory without regulars', () => {
+          // Create multiple high-level heroes to reach combined level >= 20
+          const hero1 = heroFactory(HeroUnitName.FIGHTER, 'Hero Level 10 A');
+          hero1.level = 10;
+          const hero2 = heroFactory(HeroUnitName.CLERIC, 'Hero Level 11 B');
+          hero2.level = 11;
+
+          // Get the stationed army and add heroes to it
+          let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          let stationedArmy = armies.find((a) => !isMoving(a) && a.regulars.length > 0)!;
+
+          // Add heroes to the stationed army
+          stationedArmy = addHero(stationedArmy, hero1);
+          stationedArmy = addHero(stationedArmy, hero2);
+          Object.assign(gameStateStub, updateArmyInGameState(gameStateStub, stationedArmy));
+
+          armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          const mainArmy = armies.find((a) => a.heroes.length >= 3)!;
+
+          const armyBriefInfo: ArmyBriefInfo = {
+            heroes: [
+              briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 10 A')!,
+              briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 11 B')!,
+            ],
+            regulars: [],
+            warMachines: [],
+          };
+
+          // Verify combined level is >= 20
+          const combinedLevel = armyBriefInfo.heroes.reduce((acc, h) => acc + h.level, 0);
+          expect(combinedLevel).toBeGreaterThanOrEqual(20);
+
+          Object.assign(
+            gameStateStub,
+            startMovement(gameStateStub, barracksLand.mapPos, neutralHostileLand, armyBriefInfo)
+          );
+
+          // Movement should succeed
+          armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          const movingArmy = armies.find((a) => isMoving(a));
+          expect(movingArmy).toBeDefined();
+          expect(movingArmy!.heroes).toHaveLength(2);
+        });
+
+        it('Heroes with combined level exactly 20 can move to hostile territory without regulars', () => {
+          const hero1 = heroFactory(HeroUnitName.FIGHTER, 'Hero Level 10 C');
+          hero1.level = 10;
+          const hero2 = heroFactory(HeroUnitName.CLERIC, 'Hero Level 10 D');
+          hero2.level = 10;
+
+          let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          let stationedArmy = armies.find((a) => !isMoving(a) && a.regulars.length > 0)!;
+
+          stationedArmy = addHero(stationedArmy, hero1);
+          stationedArmy = addHero(stationedArmy, hero2);
+          Object.assign(gameStateStub, updateArmyInGameState(gameStateStub, stationedArmy));
+
+          armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          const mainArmy = armies.find((a) => a.heroes.length >= 3)!;
+
+          const armyBriefInfo: ArmyBriefInfo = {
+            heroes: [
+              briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 10 C')!,
+              briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 10 D')!,
+            ],
+            regulars: [],
+            warMachines: [],
+          };
+
+          // Verify combined level is exactly 20
+          const combinedLevel = armyBriefInfo.heroes.reduce((acc, h) => acc + h.level, 0);
+          expect(combinedLevel).toBe(20);
+
+          Object.assign(
+            gameStateStub,
+            startMovement(gameStateStub, barracksLand.mapPos, neutralHostileLand, armyBriefInfo)
+          );
+
+          // Movement should succeed
+          armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          const movingArmy = armies.find((a) => isMoving(a));
+          expect(movingArmy).toBeDefined();
+          expect(movingArmy!.heroes).toHaveLength(2);
+        });
+
+        it('Heroes with combined level 19 cannot move to hostile territory without regulars', () => {
+          const hero1 = heroFactory(HeroUnitName.FIGHTER, 'Hero Level 10 E');
+          hero1.level = 10;
+          const hero2 = heroFactory(HeroUnitName.CLERIC, 'Hero Level 9 F');
+          hero2.level = 9;
+
+          let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          let stationedArmy = armies.find((a) => !isMoving(a) && a.regulars.length > 0)!;
+
+          stationedArmy = addHero(stationedArmy, hero1);
+          stationedArmy = addHero(stationedArmy, hero2);
+          Object.assign(gameStateStub, updateArmyInGameState(gameStateStub, stationedArmy));
+
+          armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          const mainArmy = armies.find((a) => a.heroes.length >= 3)!;
+
+          const armyBriefInfo: ArmyBriefInfo = {
+            heroes: [
+              briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 10 E')!,
+              briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 9 F')!,
+            ],
+            regulars: [],
+            warMachines: [],
+          };
+
+          // Verify combined level is 19 (< 20)
+          const combinedLevel = armyBriefInfo.heroes.reduce((acc, h) => acc + h.level, 0);
+          expect(combinedLevel).toBe(19);
+
+          Object.assign(
+            gameStateStub,
+            startMovement(gameStateStub, barracksLand.mapPos, neutralHostileLand, armyBriefInfo)
+          );
+
+          // Movement should be blocked
+          armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          expect(armies.every((a) => !isMoving(a) || a.heroes.length !== 2)).toBeTruthy();
+        });
+
+        it('Single level 20+ hero can move to hostile territory without regulars', () => {
+          const highLevelHero = heroFactory(HeroUnitName.FIGHTER, 'Hero Level 20');
+          highLevelHero.level = 20;
+
+          let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          let stationedArmy = armies.find((a) => !isMoving(a) && a.regulars.length > 0)!;
+
+          stationedArmy = addHero(stationedArmy, highLevelHero);
+          Object.assign(gameStateStub, updateArmyInGameState(gameStateStub, stationedArmy));
+
+          armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          const mainArmy = armies.find((a) => a.heroes.some((h) => h.name === 'Hero Level 20'))!;
+
+          const armyBriefInfo: ArmyBriefInfo = {
+            heroes: [briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 20')!],
+            regulars: [],
+            warMachines: [],
+          };
+
+          expect(armyBriefInfo.heroes[0].level).toBe(20);
+
+          Object.assign(
+            gameStateStub,
+            startMovement(gameStateStub, barracksLand.mapPos, neutralHostileLand, armyBriefInfo)
+          );
+
+          // Movement should succeed
+          armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+          const movingArmy = armies.find((a) => isMoving(a) && a.heroes.some((h) => h.name === 'Hero Level 20'));
+          expect(movingArmy).toBeDefined();
+        });
+
+        describe('Homeland Distance Restriction', () => {
+          it('Heroes with level >= 20 cannot move beyond MAX_DISTANCE_FROM_REALM (4 tiles) from realm borders', () => {
+            // Create a high-level hero that meets the level requirement
+            const highLevelHero = heroFactory(HeroUnitName.FIGHTER, 'Hero Level 25');
+            highLevelHero.level = 25;
+
+            let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+            let stationedArmy = armies.find((a) => !isMoving(a) && a.regulars.length > 0)!;
+
+            stationedArmy = addHero(stationedArmy, highLevelHero);
+            Object.assign(gameStateStub, updateArmyInGameState(gameStateStub, stationedArmy));
+
+            // Find a hostile land that is too far from any realm border (> 4 tiles away)
+            const mapDimensions = getMapDimensions(gameStateStub);
+
+            // Find a hostile land that is far from all realm borders
+            const farHostileLand = {row: barracksLand.mapPos.row, col: barracksLand.mapPos.col + 5};
+            expect(calculateHexDistance(mapDimensions, barracksLand.mapPos, farHostileLand)).toBe(5);
+
+            // If we found such a land, test that movement is blocked
+            armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+            const mainArmy = armies.find((a) => a.heroes.some((h) => h.name === 'Hero Level 25'))!;
+
+            const armyBriefInfo: ArmyBriefInfo = {
+              heroes: [briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 25')!],
+              regulars: [],
+              warMachines: [],
+            };
+
+            expect(armyBriefInfo.heroes[0].level).toBeGreaterThanOrEqual(20);
+
+            Object.assign(
+              gameStateStub,
+              startMovement(gameStateStub, barracksLand.mapPos, farHostileLand, armyBriefInfo)
+            );
+
+            // Movement should be blocked due to distance restriction
+            armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+            const movingArmy = armies.find((a) => isMoving(a) && a.heroes.some((h) => h.name === 'Hero Level 25'));
+            expect(movingArmy).toBeUndefined();
+          });
+
+          it('Heroes with level >= 20 can move within MAX_DISTANCE_FROM_REALM (4 tiles) from realm borders', () => {
+            // Create a high-level hero that meets the level requirement
+            const highLevelHero = heroFactory(HeroUnitName.FIGHTER, 'Hero Level 25 B');
+            highLevelHero.level = 25;
+
+            let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+            let stationedArmy = armies.find((a) => !isMoving(a) && a.regulars.length > 0)!;
+
+            stationedArmy = addHero(stationedArmy, highLevelHero);
+            Object.assign(gameStateStub, updateArmyInGameState(gameStateStub, stationedArmy));
+
+            // barracksLand is adjacent to homeLand, which is a border land
+            // So neutral lands nearby should be within 4 tiles from realm border
+            const nearbyHostileLand = { row: 3, col: 5 }; // This should be close enough
+
+            const mapDimensions = getMapDimensions(gameStateStub);
+            const realmLands = getPlayerLands(gameStateStub, getTurnOwner(gameStateStub).id);
+            const realmBorderLands = realmLands.filter((land) =>
+              getTilesInRadius(mapDimensions, land.mapPos, 1, true).some(
+                (tile) => getLandOwner(gameStateStub, tile) !== getTurnOwner(gameStateStub).id
+              )
+            );
+
+            // Verify the target is within range
+            const isWithinRange = realmBorderLands.some((borderLand) => {
+              const distance = calculateHexDistance(mapDimensions, nearbyHostileLand, borderLand.mapPos);
+              return distance <= 4;
+            });
+            expect(isWithinRange).toBeTruthy();
+
+            armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+            const mainArmy = armies.find((a) => a.heroes.some((h) => h.name === 'Hero Level 25 B'))!;
+
+            const armyBriefInfo: ArmyBriefInfo = {
+              heroes: [briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 25 B')!],
+              regulars: [],
+              warMachines: [],
+            };
+
+            expect(armyBriefInfo.heroes[0].level).toBeGreaterThanOrEqual(20);
+
+            Object.assign(
+              gameStateStub,
+              startMovement(gameStateStub, barracksLand.mapPos, nearbyHostileLand, armyBriefInfo)
+            );
+
+            // Movement should succeed - within distance limit
+            armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+            const movingArmy = armies.find((a) => isMoving(a) && a.heroes.some((h) => h.name === 'Hero Level 25 B'));
+            expect(movingArmy).toBeDefined();
+          });
+
+          it('Heroes below level 20 are blocked even if within homeland distance', () => {
+            // This verifies that BOTH conditions must be met: level >= 20 AND within distance
+            const lowLevelHero = heroFactory(HeroUnitName.FIGHTER, 'Hero Level 5');
+            lowLevelHero.level = 5;
+
+            let armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+            let stationedArmy = armies.find((a) => !isMoving(a) && a.regulars.length > 0)!;
+
+            stationedArmy = addHero(stationedArmy, lowLevelHero);
+            Object.assign(gameStateStub, updateArmyInGameState(gameStateStub, stationedArmy));
+
+            const nearbyHostileLand = { row: 3, col: 5 }; // Within distance but hero level too low
+
+            armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+            const mainArmy = armies.find((a) => a.heroes.some((h) => h.name === 'Hero Level 5'))!;
+
+            const armyBriefInfo: ArmyBriefInfo = {
+              heroes: [briefInfo(mainArmy).heroes.find((h) => h.name === 'Hero Level 5')!],
+              regulars: [],
+              warMachines: [],
+            };
+
+            expect(armyBriefInfo.heroes[0].level).toBeLessThan(20);
+
+            Object.assign(
+              gameStateStub,
+              startMovement(gameStateStub, barracksLand.mapPos, nearbyHostileLand, armyBriefInfo)
+            );
+
+            // Movement should be blocked due to insufficient hero level
+            armies = getArmiesAtPosition(gameStateStub, barracksLand.mapPos);
+            const movingArmy = armies.find((a) => isMoving(a) && a.heroes.some((h) => h.name === 'Hero Level 5'));
+            expect(movingArmy).toBeUndefined();
+          });
+        });
       });
 
       it('move all units', () => {
