@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.ede95e74.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.38ef231f.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.18c3defd.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/CelticPatternVertical.png": "/fantasy-empires-wars/static/media/CelticPatternVertical.8f1fe8a5abcd3ac8d2e6.png",
     "static/media/kael.png": "/fantasy-empires-wars/static/media/kael.020c79f3591fb99ef9d7.png",
@@ -125,16 +125,17 @@
     "static/media/phoenix-feather.png": "/fantasy-empires-wars/static/media/phoenix-feather.0a9c7b06ec61f4f10648.png",
     "static/media/sereth.png": "/fantasy-empires-wars/static/media/sereth.80edfad82bb3f52f8d59.png",
     "static/media/hammer-lord.png": "/fantasy-empires-wars/static/media/hammer-lord.48354ef4be681ec47e3d.png",
+    "static/media/zarhka.png": "/fantasy-empires-wars/static/media/zarhka.88cd6a464e2d53b6ecfb.png",
     "static/media/nullwarden.png": "/fantasy-empires-wars/static/media/nullwarden.ff473a31ff7bec492548.png",
     "static/media/magic-tower.png": "/fantasy-empires-wars/static/media/magic-tower.9b3c29d498f374b38c0f.png",
     "static/media/mana-vial.png": "/fantasy-empires-wars/static/media/mana-vial.acdc30884558a3ecf7c0.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.ede95e74.css.map": "/fantasy-empires-wars/static/css/main.ede95e74.css.map",
-    "main.38ef231f.js.map": "/fantasy-empires-wars/static/js/main.38ef231f.js.map",
+    "main.18c3defd.js.map": "/fantasy-empires-wars/static/js/main.18c3defd.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ede95e74.css",
-    "static/js/main.38ef231f.js"
+    "static/js/main.18c3defd.js"
   ]
 }
