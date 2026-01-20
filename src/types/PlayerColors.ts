@@ -10,7 +10,8 @@ export type PlayerColorName =
   | 'gray'
   | 'burgundy'
   | 'darkSlateGray'
-  | 'obsidian';
+  | 'obsidian'
+  | 'cinderRust';
 
 export interface PlayerColor {
   name: PlayerColorName;
@@ -30,4 +31,5 @@ export const PLAYER_COLORS: PlayerColor[] = [
   { name: 'burgundy', value: '#8B1538', displayName: 'Bloody Burgundy' },
   { name: 'darkSlateGray', value: '#2F4F4F', displayName: 'Dark Slate Gray' },
   { name: 'obsidian', value: '#3a2f41', displayName: 'Black Obsidian' },
+  { name: 'cinderRust', value: '#7A2E1C', displayName: 'Cinder Rust' },
 ];

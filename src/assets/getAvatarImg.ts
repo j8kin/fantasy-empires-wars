@@ -16,6 +16,7 @@ import selene from '../assets/avatars/selene.png';
 import kaer from '../assets/avatars/kaer.png';
 import nullwarden from '../assets/avatars/nullwarden.png';
 import sereth from '../assets/avatars/sereth.png';
+import zarhka from '../assets/avatars/zarhka.png';
 
 const avatars: Record<string, string> = {
   alaric: alaric,
@@ -36,6 +37,7 @@ const avatars: Record<string, string> = {
   kaer: kaer,
   nullwarden: nullwarden,
   sereth: sereth,
+  zarhka: zarhka,
 };
 
 export const getAvatarImg = (name: string) => {

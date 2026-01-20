@@ -214,4 +214,15 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     description: 'A Shadow Elf sorceress who dark arts are unspeakable.',
     color: 'obsidian',
   },
+  {
+    id: 'zarhka',
+    name: 'Zarhka Cinder-Oath',
+    alignment: Alignment.CHAOTIC,
+    race: RaceName.ORC,
+    type: HeroUnitName.PYROMANCER,
+    doctrine: Doctrine.PURE_MAGIC,
+    level: 21,
+    description: 'Orc pyromancer who abandoned clan and steel, trusting only flame and doctrine.',
+    color: 'cinderRust',
+  },
 ];
