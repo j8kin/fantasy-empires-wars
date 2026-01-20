@@ -1,7 +1,7 @@
 import { UnitRank } from '../../state/army/RegularsState';
 import type { RegularsState, UnitRankType } from '../../state/army/RegularsState';
 
-export const MAX_MOVE = 4;
+export const MAX_DISTANCE_FROM_REALM = 4;
 
 const maxKill = (n: number, rank: UnitRankType) => {
   switch (rank) {
@@ -25,7 +25,7 @@ export const calcMaxMove = (army: RegularsState[]): number => {
 
   const acc = fullArmy.map((a) => ({ ...a }));
   let i = 1;
-  while (i < MAX_MOVE) {
+  while (i < MAX_DISTANCE_FROM_REALM) {
     Object.values(UnitRank).forEach((rank) => {
       const n = acc.find((a) => a.rank === rank)!;
       n.num = Math.max(n.num - maxKill(n.num, rank), 0);
