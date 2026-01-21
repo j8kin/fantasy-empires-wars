@@ -11,7 +11,8 @@ export type PlayerColorName =
   | 'burgundy'
   | 'darkSlateGray'
   | 'obsidian'
-  | 'cinderRust';
+  | 'cinderRust'
+  | 'aetherSteel';
 
 export interface PlayerColor {
   name: PlayerColorName;
@@ -32,4 +33,5 @@ export const PLAYER_COLORS: PlayerColor[] = [
   { name: 'darkSlateGray', value: '#2F4F4F', displayName: 'Dark Slate Gray' },
   { name: 'obsidian', value: '#3a2f41', displayName: 'Black Obsidian' },
   { name: 'cinderRust', value: '#7A2E1C', displayName: 'Cinder Rust' },
+  { name: 'aetherSteel', value: '#4F6F8F', displayName: 'Aether Steel' },
 ];

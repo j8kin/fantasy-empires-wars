@@ -225,4 +225,15 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     description: 'Orc pyromancer who abandoned clan and steel, trusting only flame and doctrine.',
     color: 'cinderRust',
   },
+  {
+    id: 'ilyra',
+    name: 'Ilyra von Caelorn',
+    alignment: Alignment.CHAOTIC,
+    race: RaceName.HUMAN,
+    type: HeroUnitName.ENCHANTER,
+    doctrine: Doctrine.PURE_MAGIC,
+    level: 16,
+    description: 'Bound to Pure Magic, she weaves spells calm, precise with measured detachment.',
+    color: 'aetherSteel',
+  },
 ];

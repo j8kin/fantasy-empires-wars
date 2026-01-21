@@ -15,8 +15,11 @@ import ember from '../assets/avatars/ember.png';
 import selene from '../assets/avatars/selene.png';
 import kaer from '../assets/avatars/kaer.png';
 import nullwarden from '../assets/avatars/nullwarden.png';
+
+// pure-magic doctrine players
 import sereth from '../assets/avatars/sereth.png';
 import zarhka from '../assets/avatars/zarhka.png';
+import ilyra from '../assets/avatars/ilyra.png';
 
 const avatars: Record<string, string> = {
   alaric: alaric,
@@ -38,6 +41,7 @@ const avatars: Record<string, string> = {
   nullwarden: nullwarden,
   sereth: sereth,
   zarhka: zarhka,
+  ilyra: ilyra,
 };
 
 export const getAvatarImg = (name: string) => {
