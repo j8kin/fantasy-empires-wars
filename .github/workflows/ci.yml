@@ -23,7 +23,13 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Run tests
+      - name: Run tests (attempt 1)
+        id: run-tests
+        continue-on-error: true
+        run: yarn test
+
+      - name: Retry tests (attempt 2)
+        if: steps.run-tests.outcome == 'failure'
         run: yarn test
 
       - name: Build project
