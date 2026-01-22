@@ -20,6 +20,8 @@ import nullwarden from '../assets/avatars/nullwarden.png';
 import sereth from '../assets/avatars/sereth.png';
 import zarhka from '../assets/avatars/zarhka.png';
 import ilyra from '../assets/avatars/ilyra.png';
+import aelthir from '../assets/avatars/aelthir.png';
+import brunna from '../assets/avatars/brunna.png';
 
 const avatars: Record<string, string> = {
   alaric: alaric,
@@ -42,6 +44,8 @@ const avatars: Record<string, string> = {
   sereth: sereth,
   zarhka: zarhka,
   ilyra: ilyra,
+  aelthir: aelthir,
+  brunna: brunna,
 };
 
 export const getAvatarImg = (name: string) => {

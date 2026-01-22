@@ -12,7 +12,9 @@ export type PlayerColorName =
   | 'darkSlateGray'
   | 'obsidian'
   | 'cinderRust'
-  | 'aetherSteel';
+  | 'aetherSteel'
+  | 'verdantAsh'
+  | 'sanctumLinen';
 
 export interface PlayerColor {
   name: PlayerColorName;
@@ -34,4 +36,6 @@ export const PLAYER_COLORS: PlayerColor[] = [
   { name: 'obsidian', value: '#3a2f41', displayName: 'Black Obsidian' },
   { name: 'cinderRust', value: '#7A2E1C', displayName: 'Cinder Rust' },
   { name: 'aetherSteel', value: '#4F6F8F', displayName: 'Aether Steel' },
+  { name: 'verdantAsh', value: '#6F8F6A', displayName: 'Verdant Ash' },
+  { name: 'sanctumLinen', value: '#D8CFAF', displayName: 'Sanctum Linen' },
 ];
