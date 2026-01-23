@@ -10,7 +10,7 @@ import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 import { warMachineFactory } from '../../factories/warMachineFactory';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { levelUpRegulars } from '../../systems/unitsActions';
+import { levelUpHero, levelUpRegulars } from '../../systems/unitsActions';
 import { Doctrine } from '../../state/player/PlayerProfile';
 import { EmpireEventKind } from '../../types/EmpireEvent';
 import type { EmpireEvent } from '../../types/EmpireEvent';
@@ -46,6 +46,10 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
 
           if (isHeroType(s.unit)) {
             const hero = heroFactory(s.unit, generateHeroName(s.unit));
+            if (getTurnOwner(gameState).playerProfile.doctrine === Doctrine.PURE_MAGIC) {
+              // all pure magic heroes recruited on level 10
+              while (hero.level < 10) levelUpHero(hero, getTurnOwner(gameState).playerProfile.doctrine);
+            }
             recruitEvents.push({
               status: EmpireEventKind.Success,
               message: heroRecruitingMessage(hero),

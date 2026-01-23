@@ -1,9 +1,12 @@
 import { getLand, getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
-import { getArmiesByPlayer } from '../../selectors/armySelectors';
+import { getAllHeroes, getArmiesByPlayer } from '../../selectors/armySelectors';
+import { getTurnOwner } from '../../selectors/playerSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { relictFactory } from '../../factories/treasureFactory';
 import { getManaSource } from '../../domain/mana/manaSource';
 import { getSpecialLandKinds } from '../../domain/land/landRelationships';
+import { construct } from '../../map/building/construct';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { Mana, MAX_MANA } from '../../types/Mana';
 import { HeroUnitName } from '../../types/UnitType';
@@ -280,5 +283,77 @@ describe('Calculate Mana', () => {
     expect(gameStateStub.players[0].mana[Mana.WHITE]).toBe(0);
     expect(gameStateStub.players[0].mana[Mana.BLUE]).toBe(0);
     expect(gameStateStub.players[0].mana[Mana.GREEN]).toBe(0);
+  });
+
+  describe('PURE Magic Doctrine', () => {
+    it.each([
+      [HeroUnitName.NECROMANCER, [13, 1.3, 1.3, 1.3, 1.3]],
+      [HeroUnitName.PYROMANCER, [1.6, 16, 1.6, 1.6, 1.6]],
+      [HeroUnitName.ENCHANTER, [1.8, 1.8, 18, 1.8, 1.8]],
+      [HeroUnitName.DRUID, [1, 1, 1, 10, 1]],
+      [HeroUnitName.CLERIC, [2.1, 2.1, 2.1, 2.1, 21]],
+    ])(
+      'Mages generate not only primary mana but also 10% for all other mana type',
+      (heroType: HeroUnitType, expectedMana: number[]) => {
+        const players = [
+          PREDEFINED_PLAYERS.find((p) => p.type === heroType && p.doctrine === Doctrine.PURE_MAGIC)!,
+          PREDEFINED_PLAYERS[0],
+        ];
+        gameStateStub = createGameStateStub({ gamePlayers: players });
+        testTurnManagement.setGameState(gameStateStub);
+        testTurnManagement.startNewTurn(gameStateStub);
+        testTurnManagement.waitStartPhaseComplete();
+
+        expect(getAllHeroes(gameStateStub)).toHaveLength(1);
+
+        expect(gameStateStub.players[0].mana[Mana.BLACK]).toBe(0);
+        expect(gameStateStub.players[0].mana[Mana.RED]).toBe(0);
+        expect(gameStateStub.players[0].mana[Mana.BLUE]).toBe(0);
+        expect(gameStateStub.players[0].mana[Mana.GREEN]).toBe(0);
+        expect(gameStateStub.players[0].mana[Mana.WHITE]).toBe(0);
+
+        testTurnManagement.makeNTurns(1);
+
+        expect(gameStateStub.players[0].mana[Mana.BLACK]).toBe(expectedMana[0]);
+        expect(gameStateStub.players[0].mana[Mana.RED]).toBe(expectedMana[1]);
+        expect(gameStateStub.players[0].mana[Mana.BLUE]).toBe(expectedMana[2]);
+        expect(gameStateStub.players[0].mana[Mana.GREEN]).toBe(expectedMana[3]);
+        expect(gameStateStub.players[0].mana[Mana.WHITE]).toBe(expectedMana[4]);
+      }
+    );
+
+    it.each(getSpecialLandKinds())('Special land generates mana even if no heroes exists', (landType: LandType) => {
+      const landManaSource = getManaSource({ landKind: landType })!.type;
+      const players = [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.PURE_MAGIC)!, PREDEFINED_PLAYERS[0]];
+
+      gameStateStub = createGameStateStub({ gamePlayers: players, addPlayersHomeland: false });
+      getTurnOwner(gameStateStub).vault = 100000;
+      expect(getAllHeroes(gameStateStub)).toHaveLength(0);
+      // place players Strongholds
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      construct(gameStateStub, BuildingName.STRONGHOLD, { row: 3, col: 3 });
+      getLand(gameStateStub, { row: 3, col: 3 }).type = landType;
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      construct(gameStateStub, BuildingName.STRONGHOLD, { row: 3, col: 6 });
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      gameStateStub.turn = 2;
+      // Start the game
+      testTurnManagement.setGameState(gameStateStub);
+      testTurnManagement.startNewTurn(gameStateStub);
+      testTurnManagement.waitStartPhaseComplete();
+
+      expect(gameStateStub.players[0].mana[Mana.BLACK]).toBe(0);
+      expect(gameStateStub.players[0].mana[Mana.RED]).toBe(0);
+      expect(gameStateStub.players[0].mana[Mana.BLUE]).toBe(0);
+      expect(gameStateStub.players[0].mana[Mana.GREEN]).toBe(0);
+      expect(gameStateStub.players[0].mana[Mana.WHITE]).toBe(0);
+
+      testTurnManagement.makeNTurns(1);
+
+      expect(gameStateStub.players[0].mana[landManaSource]).toBe(1);
+      Object.values(Mana)
+        .filter((m) => m !== landManaSource)
+        .forEach((mana) => expect(gameStateStub.players[0].mana[mana]).toBe(0));
+    });
   });
 });
