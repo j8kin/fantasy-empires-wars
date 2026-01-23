@@ -338,6 +338,33 @@ describe('Recruitment', () => {
       expect(armies[0].regulars[0].count).toBe(40); // verify that units are merged
     });
 
+    it('ANTI-MAGIC Doctrine players recruit veteran units', () => {
+      const players = [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.ANTI_MAGIC)!, PREDEFINED_PLAYERS[1]];
+      gameStateStub = createGameStateStub({ gamePlayers: players });
+      const homeLand = getPlayerLands(gameStateStub)[0].mapPos;
+      const barracksPos = { row: homeLand.row, col: homeLand.col + 1 };
+      construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+
+      testTurnManagement.setGameState(gameStateStub);
+      testTurnManagement.startNewTurn(gameStateStub);
+      testTurnManagement.waitStartPhaseComplete();
+
+      startRecruiting(gameStateStub, barracksPos, RegularUnitName.WARRIOR);
+      verifyRecruitSlot(barracksPos, 0, 1, RegularUnitName.WARRIOR, 1);
+
+      testTurnManagement.makeNTurns(1);
+      const armies = getArmiesAtPosition(gameStateStub, barracksPos);
+      expect(armies).toHaveLength(1);
+      expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+      expect(isMoving(armies[0])).toBeFalsy();
+      expect(armies[0].heroes).toHaveLength(0);
+      expect(armies[0].warMachines).toHaveLength(0);
+      expect(armies[0].regulars).toHaveLength(1);
+      expect(armies[0].regulars[0].type).toBe(RegularUnitName.WARRIOR);
+      expect(armies[0].regulars[0].count).toBe(20);
+      expect(armies[0].regulars[0].rank).toBe(UnitRank.VETERAN);
+    });
+
     describe('Corner cases', () => {
       it('regular units could not be recruited in mage towers', () => {
         const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col - 1 };
@@ -627,6 +654,44 @@ describe('Recruitment', () => {
           expect(heroes).toHaveLength(1);
           expect(heroes[0].type).toBe(mage);
         });
+      });
+    });
+
+    describe('PURE MAGIC Doctrine Heroes', () => {
+      it.each([
+        HeroUnitName.CLERIC,
+        HeroUnitName.DRUID,
+        HeroUnitName.ENCHANTER,
+        HeroUnitName.PYROMANCER,
+        HeroUnitName.NECROMANCER,
+      ])('recruited at level 10', (heroType: HeroUnitType) => {
+        const pureMagicPlayer: PlayerProfile = PREDEFINED_PLAYERS.find(
+          (p) => p.type === heroType && p.doctrine === Doctrine.PURE_MAGIC
+        )!;
+        gameStateStub = createGameStateStub({ gamePlayers: [pureMagicPlayer, PREDEFINED_PLAYERS[1]] });
+        getTurnOwner(gameStateStub).vault = 100000;
+        const homeLand = getPlayerLands(gameStateStub, pureMagicPlayer.id)[0];
+        const mageTowerLand = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+        construct(gameStateStub, BuildingName.MAGE_TOWER, mageTowerLand);
+
+        testTurnManagement.setGameState(gameStateStub);
+        testTurnManagement.startNewTurn(gameStateStub);
+        testTurnManagement.waitStartPhaseComplete();
+
+        startRecruiting(gameStateStub, mageTowerLand, heroType);
+        verifyRecruitSlot(mageTowerLand, 0, 1, heroType, 3);
+
+        testTurnManagement.makeNTurns(3);
+        verifyOccupiedSlotsCount(mageTowerLand, 0);
+        const armies = getArmiesAtPosition(gameStateStub, mageTowerLand);
+        expect(armies).toHaveLength(1);
+        expect(armies[0].controlledBy).toBe(getTurnOwner(gameStateStub).id);
+        expect(isMoving(armies[0])).toBeFalsy();
+        expect(armies[0].regulars).toHaveLength(0);
+        expect(armies[0].warMachines).toHaveLength(0);
+        expect(armies[0].heroes).toHaveLength(1);
+        expect(armies[0].heroes[0].type).toBe(heroType);
+        expect(armies[0].heroes[0].level).toBe(10);
       });
     });
 
