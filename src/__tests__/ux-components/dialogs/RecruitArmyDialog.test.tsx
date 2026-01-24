@@ -6,15 +6,16 @@ import RecruitArmyDialog from '../../../ux-components/dialogs/RecruitArmyDialog'
 
 import { getLand, hasBuilding } from '../../../selectors/landSelectors';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
-import { construct } from '../../../map/building/construct';
-import { startRecruiting } from '../../../map/recruiting/startRecruiting';
-import { playerFactory } from '../../../factories/playerFactory';
 import { getAvailableSlotsCount } from '../../../selectors/buildingSelectors';
+import { construct } from '../../../map/building/construct';
+import { heroFactory } from '../../../factories/heroFactory';
+import { playerFactory } from '../../../factories/playerFactory';
 import { isMageType } from '../../../domain/unit/unitTypeChecks';
+import { startRecruiting } from '../../../map/recruiting/startRecruiting';
+import { Doctrine, RaceName } from '../../../state/player/PlayerProfile';
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { BuildingName } from '../../../types/Building';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../../types/UnitType';
-import { Doctrine, RaceName } from '../../../state/player/PlayerProfile';
 import { Alignment } from '../../../types/Alignment';
 import { LandName } from '../../../types/Land';
 import type { GameState } from '../../../state/GameState';
@@ -26,6 +27,7 @@ import type { LandType } from '../../../types/Land';
 import type { HeroUnitType } from '../../../types/UnitType';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 
 // Mock context hooks
 const mockApplicationContext = {
@@ -378,9 +380,10 @@ describe('RecruitArmyDialog', () => {
 
     it("handles icon click to recruit, keeps dialog open if unit isn't in all slots, and shows remaining slots", async () => {
       gameStateStub = createGameStateStub({
-        gamePlayers: PREDEFINED_PLAYERS.slice(3, 4), // player 3 is Kaer and he is not able to recruit Undead in 3 slots
+        gamePlayers: PREDEFINED_PLAYERS.slice(3, 4), // player 3 is Kaer and he is not able to recruit Regular units on 3d slot
       });
       construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+      placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Hero 1'), gameStateStub, barracksPos); // DRIVEN Doctrine not able to recruit without Warsmith
 
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);

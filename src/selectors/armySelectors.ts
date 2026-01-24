@@ -5,7 +5,7 @@ import type { GameState } from '../state/GameState';
 import type { LandPosition } from '../state/map/land/LandPosition';
 import type { ArmyBriefInfo, ArmyState } from '../state/army/ArmyState';
 import type { HeroState } from '../state/army/HeroState';
-import type { HeroUnitType } from '../types/UnitType';
+import { HeroUnitName, HeroUnitType } from '../types/UnitType';
 import type { TreasureType } from '../types/Treasures';
 
 // Army state selectors (operating on individual army objects)
@@ -174,4 +174,10 @@ export const findAllHeroesOnMap = (gameState: GameState, playerId?: string, movi
         position: getPosition(army),
       }))
     );
+};
+
+export const isWarsmithPresent = (gameState: GameState, landPos: LandPosition): boolean => {
+  return getArmiesAtPosition(gameState, landPos).some((army) =>
+    army.heroes.some((h) => h.type === HeroUnitName.WARSMITH)
+  );
 };

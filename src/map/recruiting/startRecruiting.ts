@@ -1,9 +1,11 @@
 import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
 import { getTurnOwner, getUnitsAllowedToRecruit, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { hasAvailableSlotForUnit } from '../../selectors/buildingSelectors';
+import { isWarsmithPresent } from '../../selectors/armySelectors';
 import { startRecruitmentInSlot, updatePlayerVault } from '../../systems/gameStateActions';
 import { getRecruitInfo } from '../../domain/unit/unitRepository';
-
+import { isDrivenType, isRegularUnit } from '../../domain/unit/unitTypeChecks';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { TreasureName } from '../../types/Treasures';
 import { SpellName } from '../../types/Spell';
 import type { GameState } from '../../state/GameState';
@@ -13,6 +15,14 @@ import type { UnitType } from '../../types/UnitType';
 export const startRecruiting = (state: GameState, landPos: LandPosition, unitType: UnitType): void => {
   if (getLandOwner(state, landPos) !== state.turnOwner) {
     return; // fallback: a wrong Land Owner should never happen on real game
+  }
+
+  // For DRIVEN Doctrine recruiting regular units are allowed only if WARSMITH is present
+  if (
+    getTurnOwner(state).playerProfile.doctrine === Doctrine.DRIVEN &&
+    (!isDrivenType(unitType) || (isRegularUnit(unitType) && !isWarsmithPresent(state, landPos)))
+  ) {
+    return;
   }
   const land = getLand(state, landPos);
   const turnOwner = getTurnOwner(state);
