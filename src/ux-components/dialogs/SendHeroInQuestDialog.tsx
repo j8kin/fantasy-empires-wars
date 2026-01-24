@@ -13,8 +13,14 @@ import type { Slot } from '../fantasy-book-dialog-template/FlipBookPage';
 import type { HeroState } from '../../state/army/HeroState';
 
 const SendHeroInQuestDialog: React.FC = () => {
-  const { showSendHeroInQuestDialog, setShowSendHeroInQuestDialog, setActionLandPosition, actionLandPosition } =
-    useApplicationContext();
+  const {
+    showSendHeroInQuestDialog,
+    setShowSendHeroInQuestDialog,
+    setActionLandPosition,
+    actionLandPosition,
+    setSelectedLandAction,
+    selectedLandAction,
+  } = useApplicationContext();
   const { gameState } = useGameContext();
 
   // Shared state to track used slots across all pages
@@ -26,7 +32,12 @@ const SendHeroInQuestDialog: React.FC = () => {
     setUsedSlots(new Set());
     // Reset action land position when dialog closes
     setActionLandPosition(undefined);
-  }, [setShowSendHeroInQuestDialog, setActionLandPosition]);
+    // Clear the selected land action only if it's still the 'Quest' action
+    // This prevents clearing actions from other workflows (like MoveArmyTo)
+    if (selectedLandAction === 'Quest') {
+      setSelectedLandAction(null);
+    }
+  }, [setShowSendHeroInQuestDialog, setActionLandPosition, setSelectedLandAction, selectedLandAction]);
 
   // Use effect to close dialog when no heroes are available (moved from render to avoid state update during render)
   useEffect(() => {

@@ -41,8 +41,14 @@ const typeToRecruitProps = (unitType: UnitType): RecruitUnitProps => {
 };
 
 const RecruitArmyDialog: React.FC = () => {
-  const { showRecruitArmyDialog, setShowRecruitArmyDialog, actionLandPosition, setActionLandPosition } =
-    useApplicationContext();
+  const {
+    showRecruitArmyDialog,
+    setShowRecruitArmyDialog,
+    actionLandPosition,
+    setActionLandPosition,
+    setSelectedLandAction,
+    selectedLandAction,
+  } = useApplicationContext();
   const { gameState } = useGameContext();
 
   // Shared state to track used slots across all pages
@@ -63,7 +69,12 @@ const RecruitArmyDialog: React.FC = () => {
     setUsedSlots(new Set());
     // Clear the recruitment land position
     setActionLandPosition(undefined);
-  }, [setShowRecruitArmyDialog, setActionLandPosition]);
+    // Clear the selected land action only if it's still the 'Recruit' action
+    // This prevents clearing actions from other workflows (like MoveArmyTo)
+    if (selectedLandAction === 'Recruit') {
+      setSelectedLandAction(null);
+    }
+  }, [setShowRecruitArmyDialog, setActionLandPosition, setSelectedLandAction, selectedLandAction]);
 
   // Use effect to close dialog when no slots are available (moved from render to avoid state update during render)
   useEffect(() => {
