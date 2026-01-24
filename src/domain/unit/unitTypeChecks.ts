@@ -37,3 +37,12 @@ export const isMageType = (unitType: UnitType): boolean => {
     unitType === HeroUnitName.NECROMANCER
   );
 };
+
+export const isDrivenType = (unitType: UnitType): boolean => {
+  return (
+    unitType === RegularUnitName.GOLEM ||
+    unitType === RegularUnitName.GARGOYLE ||
+    unitType === RegularUnitName.DENDRITE ||
+    unitType === HeroUnitName.WARSMITH
+  );
+};

@@ -23,8 +23,8 @@ export const Doctrine = {
   ANTI_MAGIC: 'Anti Magic',
   /** Focus on a magic army with no regular support **/
   PURE_MAGIC: 'Pure Magic',
-  /** Undead doctrine */
-  UNDEAD: 'Undead',
+  /** Driven doctrine */
+  DRIVEN: 'Undead',
 } as const;
 export type DoctrineType = (typeof Doctrine)[keyof typeof Doctrine];
 

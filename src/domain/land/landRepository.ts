@@ -1,3 +1,4 @@
+import { not } from '../../utils/hooks';
 import { isMageType } from '../unit/unitTypeChecks';
 import { LandName } from '../../types/Land';
 import { Alignment } from '../../types/Alignment';
@@ -14,17 +15,17 @@ interface LandRecordType {
 }
 
 const allWarMachines = Object.values(WarMachineName);
-const allMageHeroes = Object.values(HeroUnitName).filter((unit) => isMageType(unit));
-const allMightHeroes = Object.values(HeroUnitName).filter((unit) => !isMageType(unit));
+const allMageHeroes = Object.values(HeroUnitName).filter(isMageType);
+const allMightHeroes = Object.values(HeroUnitName).filter(not(isMageType));
 
-// todo refactor base on Doctrine fraction for ZEALOT
-const defaultUnitsToRecruit = [RegularUnitName.WARD_HANDS, RegularUnitName.UNDEAD, HeroUnitName.WARSMITH]; // Undead available only for UNDEAD Doctrine;
+const defaultUnitsToRecruit = [RegularUnitName.WARD_HANDS, HeroUnitName.WARSMITH];
 const landRepository: Record<LandType, LandRecordType> = {
   [LandName.PLAINS]: {
     alignment: Alignment.NEUTRAL,
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.WARRIOR,
+      RegularUnitName.GOLEM, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.FIGHTER,
       ...allMageHeroes,
@@ -37,6 +38,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.DWARF,
+      RegularUnitName.GARGOYLE, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.HAMMER_LORD,
       ...allMageHeroes,
@@ -49,6 +51,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.ELF,
+      RegularUnitName.DENDRITE, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.RANGER,
       ...allMageHeroes,
@@ -61,6 +64,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.DARK_ELF,
+      RegularUnitName.DENDRITE, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.SHADOW_BLADE,
       ...allMageHeroes,
@@ -73,6 +77,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.HALFLING,
+      RegularUnitName.GARGOYLE, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.FIGHTER,
       ...allMageHeroes,
@@ -85,6 +90,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.ORC,
+      RegularUnitName.GOLEM, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.OGR,
       ...allMageHeroes,
@@ -94,7 +100,7 @@ const landRepository: Record<LandType, LandRecordType> = {
   },
   [LandName.DESERT]: {
     alignment: Alignment.NEUTRAL,
-    unitsToRecruit: [...defaultUnitsToRecruit, WarMachineName.BATTERING_RAM, ...allMightHeroes],
+    unitsToRecruit: [...defaultUnitsToRecruit, RegularUnitName.GOLEM, WarMachineName.BATTERING_RAM, ...allMightHeroes],
     goldPerTurn: { min: 150, max: 270 },
     description: 'Endless dunes scorched by merciless suns, hiding relics swallowed by empires long fallen.',
   },
@@ -104,6 +110,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.DWARF,
+      RegularUnitName.GARGOYLE, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.HAMMER_LORD,
       HeroUnitName.CLERIC,
@@ -117,6 +124,7 @@ const landRepository: Record<LandType, LandRecordType> = {
       ...defaultUnitsToRecruit,
       RegularUnitName.WARRIOR,
       RegularUnitName.DWARF,
+      RegularUnitName.GOLEM, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.FIGHTER,
       HeroUnitName.CLERIC,
@@ -131,6 +139,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.ELF,
+      RegularUnitName.DENDRITE, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.RANGER,
       HeroUnitName.DRUID,
@@ -143,6 +152,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.ELF,
+      RegularUnitName.DENDRITE, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.RANGER,
       HeroUnitName.CLERIC,
@@ -157,6 +167,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.WARRIOR,
+      RegularUnitName.GOLEM, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.FIGHTER,
       HeroUnitName.ENCHANTER,
@@ -169,6 +180,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.WARRIOR,
+      RegularUnitName.GOLEM, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.FIGHTER,
       HeroUnitName.DRUID,
@@ -183,6 +195,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.ORC,
+      RegularUnitName.GARGOYLE, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.OGR,
       HeroUnitName.PYROMANCER,
@@ -195,6 +208,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.ORC,
+      RegularUnitName.GARGOYLE, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.OGR,
       HeroUnitName.ENCHANTER,
@@ -209,6 +223,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.ORC,
+      RegularUnitName.GOLEM, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.OGR,
       HeroUnitName.NECROMANCER,
@@ -221,6 +236,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [
       ...defaultUnitsToRecruit,
       RegularUnitName.ORC,
+      RegularUnitName.GOLEM, // only for Driven Doctrine
       ...allWarMachines,
       HeroUnitName.OGR,
       HeroUnitName.ENCHANTER,

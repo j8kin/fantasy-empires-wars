@@ -1,3 +1,4 @@
+import { not } from '../../utils/hooks';
 import { getLandId } from '../../state/map/land/LandId';
 import { getPlayer, getTurnOwner, hasActiveEffectByPlayer, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import {
@@ -23,7 +24,7 @@ import { regularsFactory } from '../../factories/regularsFactory';
 import { armyFactory } from '../../factories/armyFactory';
 import { movementFactory } from '../../factories/movementFactory';
 import { getMultipleRandomElements, getRandomInt } from '../../domain/utils/random';
-import { isRegularUnit } from '../../domain/unit/unitTypeChecks';
+import { isDrivenType, isRegularUnit } from '../../domain/unit/unitTypeChecks';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
@@ -230,13 +231,12 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
     case SpellName.FORGE_OF_WAR:
       const land = getLand(updatedState, landPos);
       const forgedUnitType: RegularUnitType =
-        getLandUnitsToRecruit(land.type, land.corrupted).find(
-          (u) =>
-            isRegularUnit(u) &&
-            u !== RegularUnitName.WARD_HANDS &&
-            u !== RegularUnitName.UNDEAD && // undead could be only summoned
-            u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
-        ) ?? RegularUnitName.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
+        getLandUnitsToRecruit(land.type, land.corrupted)
+          .filter(isRegularUnit)
+          .filter(not(isDrivenType))
+          .find(
+            (u) => u !== RegularUnitName.WARD_HANDS && u !== RegularUnitName.WARRIOR // to recruit uniq type then WARRIOR
+          ) ?? RegularUnitName.WARRIOR; // fallback to WARRIOR if no uniq type of units available to recruit
 
       const newArmy = armyFactory(updatedState.turnOwner, landPos, {
         // the same as 3 slots in Barracks

@@ -123,8 +123,9 @@ const UnitTypeMultiplier = (unitType: HeroUnitType | RegularUnitType): LevelUpPa
       return { attack: 0.5, defense: 0.4, health: 2, rangeDamage: 1.8, speed: 1.0, mana: 0.5 };
     case RegularUnitName.WARD_HANDS:
       return { attack: 0.5, defense: 0.4, health: 0.8, rangeDamage: 0, speed: 1.0, mana: 0 };
-    case RegularUnitName.UNDEAD:
-      return { attack: 0, defense: 0, health: 0, rangeDamage: 0, speed: 1.0, mana: 0 }; // they can't be leveled up'
+    default:
+      // all units which could not be promoted (UNDEAD, Driven doctrine)
+      return { attack: 0, defense: 0, health: 0, rangeDamage: 0, speed: 1.0, mana: 0 };
   }
 };
 
@@ -162,7 +163,7 @@ const DoctrineMultiplier: Record<DoctrineType, LevelUpParams> = {
     speed: 1.0,
     mana: 1.5,
   },
-  [Doctrine.UNDEAD]: {
+  [Doctrine.DRIVEN]: {
     attack: 1.0,
     defense: 0.95,
     health: 0.95,

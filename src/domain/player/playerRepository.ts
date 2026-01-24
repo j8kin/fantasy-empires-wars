@@ -55,7 +55,7 @@ export const PREDEFINED_PLAYERS: PlayerProfile[] = [
     alignment: Alignment.NEUTRAL,
     race: RaceName.UNDEAD,
     type: HeroUnitName.WARSMITH,
-    doctrine: Doctrine.UNDEAD,
+    doctrine: Doctrine.DRIVEN,
     level: 28,
     description: 'A tired soul of bone and will, seeking silence at the edge of eterni',
     color: 'burgundy',
