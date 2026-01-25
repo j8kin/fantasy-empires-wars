@@ -395,9 +395,11 @@ const MoveArmyDialog: React.FC = () => {
     if (!selectedUnit) return;
 
     // Move one unit immediately using current refs
-    // Initialize toUnitsRef if it's undefined
-    if (toUnitsRef.current === undefined) {
+    // Initialize destination panel if it's undefined
+    if (direction === 'right' && toUnitsRef.current === undefined) {
       toUnitsRef.current = { heroes: [], regulars: [], warMachines: [] };
+    } else if (direction === 'left' && fromUnitsRef.current === undefined) {
+      fromUnitsRef.current = { heroes: [], regulars: [], warMachines: [] };
     }
 
     const currentFrom = direction === 'right' ? fromUnitsRef.current : toUnitsRef.current;
