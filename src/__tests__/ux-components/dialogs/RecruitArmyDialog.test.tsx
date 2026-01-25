@@ -10,7 +10,7 @@ import { getAvailableSlotsCount } from '../../../selectors/buildingSelectors';
 import { construct } from '../../../map/building/construct';
 import { heroFactory } from '../../../factories/heroFactory';
 import { playerFactory } from '../../../factories/playerFactory';
-import { isMageType } from '../../../domain/unit/unitTypeChecks';
+import { isDrivenType, isMageType } from '../../../domain/unit/unitTypeChecks';
 import { startRecruiting } from '../../../map/recruiting/startRecruiting';
 import { Doctrine, RaceName } from '../../../state/player/PlayerProfile';
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
@@ -576,88 +576,115 @@ describe('RecruitArmyDialog', () => {
   });
 
   describe('Player Type Restrictions', () => {
-    it.each([
-      [LandName.PLAINS, RegularUnitName.GOLEM],
-      [LandName.MOUNTAINS, RegularUnitName.GARGOYLE],
-      [LandName.GREEN_FOREST, RegularUnitName.DENDRITE],
-      [LandName.DARK_FOREST, RegularUnitName.DENDRITE],
-      [LandName.HILLS, RegularUnitName.GARGOYLE],
-
-      [LandName.VOLCANO, RegularUnitName.GARGOYLE],
-      [LandName.LAVA, RegularUnitName.GARGOYLE],
-      [LandName.SUN_SPIRE_PEAKS, RegularUnitName.GARGOYLE],
-      [LandName.GOLDEN_PLAINS, RegularUnitName.GOLEM],
-      [LandName.HEARTWOOD_GROVE, RegularUnitName.DENDRITE],
-      [LandName.VERDANT_GLADE, RegularUnitName.DENDRITE],
-      [LandName.CRISTAL_BASIN, RegularUnitName.GOLEM],
-      [LandName.MISTY_GLADES, RegularUnitName.GOLEM],
-      [LandName.SHADOW_MIRE, RegularUnitName.GOLEM],
-      [LandName.BLIGHTED_FEN, RegularUnitName.GOLEM],
-    ])(
-      'Player with DRIVEN Doctrine should be able to recruit on %s land only %s units and Warsmith',
-      (landType: LandType, regularUnit: RegularUnitType) => {
+    describe('Player with DRIVEN Doctrine', () => {
+      beforeEach(() => {
         const players = [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.DRIVEN)!, PREDEFINED_PLAYERS[1]];
         gameStateStub = createGameStateStub({ gamePlayers: players });
         expect(getTurnOwner(gameStateStub).playerProfile.doctrine).toBe(Doctrine.DRIVEN);
 
         construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
-        getLand(gameStateStub, barracksPos).type = landType;
+      });
 
+      it('should be able recruit only Warsmith when no Warsmith on Barrack Lands', () => {
         renderWithProviders(<RecruitArmyDialog />);
         expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-        expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(2);
+        expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(1);
         // hero unit
         expect(screen.getByTestId(`flipbook-page-Warsmith`)).toBeInTheDocument();
         // regular unit
-        expect(screen.getByTestId(`flipbook-page-${regularUnit}`)).toBeInTheDocument();
+        Object.values(RegularUnitName)
+          .filter(isDrivenType)
+          .forEach((regular) => {
+            expect(screen.queryByTestId(`flipbook-page-${regular}`)).not.toBeInTheDocument();
+          });
+
         // war-machines
-        expect(screen.queryByTestId('flipbook-page-Ballista')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('flipbook-page-Catapult')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('flipbook-page-Battering Ram')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('flipbook-page-Siege Tower')).not.toBeInTheDocument();
-      }
-    );
+        Object.values(WarMachineName).forEach((warMachine) => {
+          expect(screen.queryByTestId(`flipbook-page-${warMachine}`)).not.toBeInTheDocument();
+        });
+      });
 
-    it.each([
-      [LandName.SWAMP, RegularUnitName.ORC, HeroUnitName.OGR],
-      [LandName.BLIGHTED_FEN, RegularUnitName.ORC, HeroUnitName.OGR],
-      [LandName.SHADOW_MIRE, RegularUnitName.ORC, HeroUnitName.OGR],
-      [LandName.MOUNTAINS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
-      [LandName.SUN_SPIRE_PEAKS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
-      [LandName.PLAINS, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
-      [LandName.CRISTAL_BASIN, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
-      [LandName.MISTY_GLADES, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
-      [LandName.GREEN_FOREST, RegularUnitName.ELF, HeroUnitName.RANGER],
-      [LandName.DARK_FOREST, RegularUnitName.DARK_ELF, HeroUnitName.SHADOW_BLADE],
-    ])(
-      'should allow Nulwarden recruit in %s land %s Nullwarden regular',
-      (landType: LandType, regularUnitName: RegularUnitType, heroUnitName: HeroUnitType) => {
-        const lands = gameStateStub.players[0].landsOwned;
-        gameStateStub.players[0] = playerFactory(PREDEFINED_PLAYERS[16], 'human'); // replace player
-        gameStateStub.players[0].landsOwned = lands; // copy lands
-        gameStateStub.turnOwner = gameStateStub.players[0].id;
-        expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.FIGHTER);
-        expect(getTurnOwner(gameStateStub).playerProfile.doctrine).toBe(Doctrine.ANTI_MAGIC);
-        expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
-        expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
+      it.each([
+        [LandName.PLAINS, RegularUnitName.GOLEM],
+        [LandName.MOUNTAINS, RegularUnitName.GARGOYLE],
+        [LandName.GREEN_FOREST, RegularUnitName.DENDRITE],
+        [LandName.DARK_FOREST, RegularUnitName.DENDRITE],
+        [LandName.HILLS, RegularUnitName.GARGOYLE],
 
-        // change landtype to be able to recruit different Nullwarden regular units
-        getLand(gameStateStub, mockApplicationContext.actionLandPosition).type = landType;
+        [LandName.VOLCANO, RegularUnitName.GARGOYLE],
+        [LandName.LAVA, RegularUnitName.GARGOYLE],
+        [LandName.SUN_SPIRE_PEAKS, RegularUnitName.GARGOYLE],
+        [LandName.GOLDEN_PLAINS, RegularUnitName.GOLEM],
+        [LandName.HEARTWOOD_GROVE, RegularUnitName.DENDRITE],
+        [LandName.VERDANT_GLADE, RegularUnitName.DENDRITE],
+        [LandName.CRISTAL_BASIN, RegularUnitName.GOLEM],
+        [LandName.MISTY_GLADES, RegularUnitName.GOLEM],
+        [LandName.SHADOW_MIRE, RegularUnitName.GOLEM],
+        [LandName.BLIGHTED_FEN, RegularUnitName.GOLEM],
+      ])(
+        'should be able to recruit on %s land only %s units and Warsmith',
+        (landType: LandType, regularUnit: RegularUnitType) => {
+          getLand(gameStateStub, barracksPos).type = landType;
+          // place Warsmith on Barrack Lands otherwise Regular units are not available
+          placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Hero 1'), gameStateStub, barracksPos);
 
-        renderWithProviders(<RecruitArmyDialog />);
-        expect(screen.getByTestId('flip-book')).toBeInTheDocument();
-        //expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(6); // only 6 type of units could be recruited in barracks
-        // hero unit
-        expect(screen.getByTestId(`flipbook-page-${heroUnitName} Nullwarden`)).toBeInTheDocument();
-        // regular unit
-        expect(screen.getByTestId(`flipbook-page-${regularUnitName} Nullwarden`)).toBeInTheDocument();
-        // war-machines
-        expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
-        expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
-        expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
-        expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
-      }
-    );
+          renderWithProviders(<RecruitArmyDialog />);
+          expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+          expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(2);
+          // hero unit
+          expect(screen.getByTestId(`flipbook-page-Warsmith`)).toBeInTheDocument();
+          // regular unit
+          expect(screen.getByTestId(`flipbook-page-${regularUnit}`)).toBeInTheDocument();
+          // war-machines
+          Object.values(WarMachineName).forEach((warMachine) => {
+            expect(screen.queryByTestId(`flipbook-page-${warMachine}`)).not.toBeInTheDocument();
+          });
+        }
+      );
+    });
+
+    describe('Player with Anti-Magic Doctrine', () => {
+      it.each([
+        [LandName.SWAMP, RegularUnitName.ORC, HeroUnitName.OGR],
+        [LandName.BLIGHTED_FEN, RegularUnitName.ORC, HeroUnitName.OGR],
+        [LandName.SHADOW_MIRE, RegularUnitName.ORC, HeroUnitName.OGR],
+        [LandName.MOUNTAINS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
+        [LandName.SUN_SPIRE_PEAKS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
+        [LandName.PLAINS, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
+        [LandName.CRISTAL_BASIN, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
+        [LandName.MISTY_GLADES, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
+        [LandName.GREEN_FOREST, RegularUnitName.ELF, HeroUnitName.RANGER],
+        [LandName.DARK_FOREST, RegularUnitName.DARK_ELF, HeroUnitName.SHADOW_BLADE],
+      ])(
+        'should allow Nulwarden recruit in %s land %s Nullwarden regular',
+        (landType: LandType, regularUnitName: RegularUnitType, heroUnitName: HeroUnitType) => {
+          const lands = gameStateStub.players[0].landsOwned;
+          gameStateStub.players[0] = playerFactory(PREDEFINED_PLAYERS[16], 'human'); // replace player
+          gameStateStub.players[0].landsOwned = lands; // copy lands
+          gameStateStub.turnOwner = gameStateStub.players[0].id;
+          expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.FIGHTER);
+          expect(getTurnOwner(gameStateStub).playerProfile.doctrine).toBe(Doctrine.ANTI_MAGIC);
+          expect(hasBuilding(getLand(gameStateStub, barracksPos), BuildingName.BARRACKS)).toBeTruthy();
+          expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(3);
+
+          // change landtype to be able to recruit different Nullwarden regular units
+          getLand(gameStateStub, mockApplicationContext.actionLandPosition).type = landType;
+
+          renderWithProviders(<RecruitArmyDialog />);
+          expect(screen.getByTestId('flip-book')).toBeInTheDocument();
+          //expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(6); // only 6 type of units could be recruited in barracks
+          // hero unit
+          expect(screen.getByTestId(`flipbook-page-${heroUnitName} Nullwarden`)).toBeInTheDocument();
+          // regular unit
+          expect(screen.getByTestId(`flipbook-page-${regularUnitName} Nullwarden`)).toBeInTheDocument();
+          // war-machines
+          expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
+          expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
+          expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
+          expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+        }
+      );
+    });
 
     it.each([HeroUnitName.RANGER, HeroUnitName.SHADOW_BLADE, HeroUnitName.DRUID])(
       'should not allow ELF players to recruit ORC(s)/OGR(s)',
@@ -687,10 +714,9 @@ describe('RecruitArmyDialog', () => {
         // regular unit
         expect(screen.getByTestId(`flipbook-page-Ward-hands`)).toBeInTheDocument();
         // war-machines
-        expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
-        expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
-        expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
-        expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+        Object.values(WarMachineName).forEach((warMachine) => {
+          expect(screen.getByTestId(`flipbook-page-${warMachine}`)).toBeInTheDocument();
+        });
       }
     );
 
@@ -722,10 +748,9 @@ describe('RecruitArmyDialog', () => {
           // regular unit
           expect(screen.getByTestId(`flipbook-page-Ward-hands`)).toBeInTheDocument();
           // war-machines
-          expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
-          expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
-          expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
-          expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+          Object.values(WarMachineName).forEach((warMachine) => {
+            expect(screen.getByTestId(`flipbook-page-${warMachine}`)).toBeInTheDocument();
+          });
 
           unmount();
         });
@@ -749,10 +774,9 @@ describe('RecruitArmyDialog', () => {
       expect(screen.getByTestId('flipbook-page-Warrior')).toBeInTheDocument();
       expect(screen.getByTestId('flipbook-page-Ward-hands')).toBeInTheDocument();
       // war-machines
-      expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
-      expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+      Object.values(WarMachineName).forEach((warMachine) => {
+        expect(screen.getByTestId(`flipbook-page-${warMachine}`)).toBeInTheDocument();
+      });
     });
   });
 

@@ -429,6 +429,7 @@ describe('Recruitment', () => {
         }
       );
     });
+
     describe('Corner cases', () => {
       it('regular units could not be recruited in mage towers', () => {
         const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col - 1 };
