@@ -82,20 +82,6 @@ export const findArmyById = (gameState: GameState, armyId: string): ArmyState | 
   return gameState.armies.find((army) => army.id === armyId);
 };
 
-/**
- * Get moving armies
- */
-export const getMovingArmies = (gameState: GameState): ArmyState[] => {
-  return gameState.armies.filter(isMoving);
-};
-
-/**
- * Get stationary armies
- */
-export const getStationaryArmies = (gameState: GameState, playerId?: string): ArmyState[] => {
-  return gameState.armies.filter((army) => !isMoving(army) && (!playerId || army.controlledBy === playerId));
-};
-
 export const hasArtifact = (hero: HeroState, artifact: TreasureType): boolean => {
   return hero.artifacts.some((a) => a.treasure.type === artifact);
 };

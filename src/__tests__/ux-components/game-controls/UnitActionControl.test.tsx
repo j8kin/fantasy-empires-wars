@@ -1,20 +1,24 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import UnitActionControl from '../../../ux-components/game-controls/UnitActionControl';
+import { ButtonName } from '../../../types/ButtonName';
 
-import { ApplicationContextProvider } from '../../../contexts/ApplicationContext';
+import { ApplicationContextProvider, useApplicationContext } from '../../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../../contexts/GameContext';
 import { getTurnOwner } from '../../../selectors/playerSelectors';
+import { getLandId } from '../../../state/map/land/LandId';
 import { getArmiesAtPosition } from '../../../selectors/armySelectors';
+import { getPlayerLands } from '../../../selectors/landSelectors';
 import { startMoving } from '../../../systems/armyActions';
 import { heroFactory } from '../../../factories/heroFactory';
 import { regularsFactory } from '../../../factories/regularsFactory';
 import { startRecruiting } from '../../../map/recruiting/startRecruiting';
 import { construct } from '../../../map/building/construct';
 
-import { ButtonName } from '../../../types/ButtonName';
+import { Doctrine } from '../../../state/player/PlayerProfile';
 import { BuildingName } from '../../../types/Building';
 import { RegularUnitName } from '../../../types/UnitType';
+import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 
@@ -290,6 +294,63 @@ describe('UnitActionControl', () => {
 
       // Should render without errors even if no armies are available
       expect(moveButton).toBeInTheDocument();
+    });
+
+    it('filters out armies without Heroes for DRIVEN Doctrine', () => {
+      // Use player with DRIVEN doctrine (PREDEFINED_PLAYERS[3] - Kaer Dravane)
+      const gameState = createGameStateStub({
+        gamePlayers: [PREDEFINED_PLAYERS.find((player) => player.doctrine === Doctrine.DRIVEN)!, PREDEFINED_PLAYERS[0]],
+      });
+      const playerLands = getPlayerLands(gameState);
+
+      // Place only regular units on the second land
+      placeUnitsOnMap(regularsFactory(RegularUnitName.GOLEM), gameState, playerLands[1].mapPos);
+
+      // Verify that 2 lands have units: one has hero and another only regulars
+      expect(getArmiesAtPosition(gameState, playerLands[0].mapPos)).toHaveLength(1);
+      expect(getArmiesAtPosition(gameState, playerLands[0].mapPos)[0].heroes).toHaveLength(1);
+      expect(getArmiesAtPosition(gameState, playerLands[0].mapPos)[0].regulars).toHaveLength(0);
+
+      expect(getArmiesAtPosition(gameState, playerLands[1].mapPos)).toHaveLength(1);
+      expect(getArmiesAtPosition(gameState, playerLands[1].mapPos)[0].heroes).toHaveLength(0);
+      expect(getArmiesAtPosition(gameState, playerLands[1].mapPos)[0].regulars).toHaveLength(1);
+
+      const TestWrapperWithContext: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+        const { glowingTiles } = useApplicationContext();
+        (window as any).testGlowingTiles = glowingTiles;
+        return <>{children}</>;
+      };
+
+      const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+        const { updateGameState } = useGameContext();
+        React.useEffect(() => {
+          updateGameState(gameState);
+        }, [updateGameState]);
+        return <TestWrapperWithContext>{children}</TestWrapperWithContext>;
+      };
+
+      const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+        return (
+          <ApplicationContextProvider>
+            <GameProvider>
+              <Bootstrapper>{children}</Bootstrapper>
+            </GameProvider>
+          </ApplicationContextProvider>
+        );
+      };
+
+      render(<UnitActionControl />, { wrapper: TestWrapper });
+
+      const moveButton = screen.getByTestId(`game-button-${ButtonName.MOVE}`);
+      fireEvent.click(moveButton);
+
+      // Verify that only the land with a hero is glowing
+      const glowingTiles = (window as any).testGlowingTiles as Set<string>;
+      const landWithHeroId = getLandId(playerLands[0].mapPos);
+      const landWithoutHeroId = getLandId(playerLands[1].mapPos);
+
+      expect(glowingTiles.has(landWithHeroId)).toBe(true);
+      expect(glowingTiles.has(landWithoutHeroId)).toBe(false);
     });
 
     it('stops event propagation on move army button click', () => {

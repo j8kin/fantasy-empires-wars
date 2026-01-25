@@ -2,6 +2,7 @@ import React, { Activity, useCallback } from 'react';
 import styles from './css/GameControl.module.css';
 
 import GameButton from '../buttons/GameButton';
+import { ButtonName } from '../../types/ButtonName';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
@@ -10,7 +11,7 @@ import { getTurnOwner } from '../../selectors/playerSelectors';
 import { findAllHeroesOnMap, getArmiesByPlayer, getPosition, isMoving } from '../../selectors/armySelectors';
 import { hasAvailableSlot } from '../../selectors/buildingSelectors';
 import { getPlayerLands } from '../../selectors/landSelectors';
-import { ButtonName } from '../../types/ButtonName';
+import { Doctrine } from '../../state/player/PlayerProfile';
 
 const UnitActionControl: React.FC = () => {
   const { addGlowingTile, clearAllGlow, setSelectedLandAction, setErrorMessagePopupMessage, setShowErrorMessagePopup } =
@@ -95,6 +96,7 @@ const UnitActionControl: React.FC = () => {
       // Get all lands owned by current player that have a non-moving army
       const armyLands = getArmiesByPlayer(gameState)
         .filter((army) => !isMoving(army))
+        .filter((army) => getTurnOwner(gameState).playerProfile.doctrine !== Doctrine.DRIVEN || army.heroes.length > 0)
         .flatMap(getPosition);
 
       if (armyLands.length === 0) {
@@ -105,10 +107,7 @@ const UnitActionControl: React.FC = () => {
       } else {
         setSelectedLandAction('MoveArmyFrom');
         // Add glowing to all army lands
-        armyLands.forEach((land) => {
-          const tileId = getLandId(land);
-          addGlowingTile(tileId);
-        });
+        armyLands.forEach((land) => addGlowingTile(getLandId(land)));
       }
     },
     [
