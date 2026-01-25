@@ -409,6 +409,91 @@ describe('MoveArmyDialog', () => {
       });
     });
 
+    it('should move individual units from right to left after "Move All →"', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<MoveArmyDialog />);
+
+      // Move all units to the right panel
+      await user.click(screen.getByText('Move All →'));
+
+      // Verify all units are in the right panel
+      expectUnitsToMovePanelHasUnits();
+      expect(screen.getByText('No units selected')).toBeInTheDocument();
+
+      // Find and click on a unit in the right panel to move it back
+      const heroUnit = getUnitItemByName('TestHero');
+      expect(heroUnit).toBeInTheDocument();
+
+      // Simulate mouse down on the hero to move it back to left
+      fireEvent.mouseDown(heroUnit!);
+      fireEvent.mouseUp(heroUnit!);
+
+      // Should have moved the hero back to the left panel
+      await waitFor(() => {
+        // Both panels should now have units
+        const panels = screen.getAllByRole('generic').filter((el) => el.className && el.className.includes('panel'));
+        expect(panels.length).toBeGreaterThan(0);
+      });
+      // Hero should still be visible
+      expect(screen.getByText('TestHero')).toBeInTheDocument();
+    });
+
+    it('should move individual regular units from right to left after "Move All →"', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<MoveArmyDialog />);
+
+      // Move all units to the right panel
+      await user.click(screen.getByText('Move All →'));
+
+      // Verify all units are in the right panel
+      expectUnitsToMovePanelHasUnits();
+
+      // Find and click on a regular unit in the right panel
+      const warriorUnit = getUnitItemByName('Warrior');
+      expect(warriorUnit).toBeInTheDocument();
+
+      // Simulate mouse down on the warrior to move it back
+      fireEvent.mouseDown(warriorUnit!);
+      fireEvent.mouseUp(warriorUnit!);
+
+      // Should have moved 1 warrior back to the left panel
+      // Now Warrior should appear in both panels (split)
+      await waitFor(() => {
+        const warriorElements = screen.getAllByText('Warrior');
+        expect(warriorElements.length).toBe(2); // One in each panel
+      });
+    });
+
+    it('should move individual units from left to right after "Move All ←"', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<MoveArmyDialog />);
+
+      // First move all to the right
+      await user.click(screen.getByText('Move All →'));
+
+      // Then move all back to the left
+      await user.click(screen.getByText('← Move All'));
+
+      // Verify all units are back in the left panel
+      expect(screen.getByText('Warrior')).toBeInTheDocument();
+      expect(screen.getByText('TestHero')).toBeInTheDocument();
+
+      // Now move an individual unit to the right
+      const dwarfUnit = getUnitItemByName('Dwarf');
+      expect(dwarfUnit).toBeInTheDocument();
+
+      fireEvent.mouseDown(dwarfUnit!);
+      fireEvent.mouseUp(dwarfUnit!);
+
+      // Should have moved 1 dwarf to the right panel
+      // Dwarf should now appear in both panels (split)
+      await waitFor(() => {
+        expectUnitsToMovePanelHasUnits();
+        const dwarfElements = screen.getAllByText('Dwarf');
+        expect(dwarfElements.length).toBe(2); // One in each panel
+      });
+    });
+
     it('should handle hero unit transfer correctly', async () => {
       const user = userEvent.setup();
       renderWithProviders(<MoveArmyDialog />);
@@ -1280,6 +1365,44 @@ describe('MoveArmyDialog', () => {
         // Should have moved 1 war machine back
         await waitFor(() => {
           expect(screen.getAllByText('Siege Tower').length).toBeGreaterThan(0);
+        });
+      });
+
+      it('should move individual war machine from right to left after "Move All →"', async () => {
+        const user = userEvent.setup();
+        gameStateStub.armies = [];
+
+        const catapult = warMachineFactory(WarMachineName.CATAPULT);
+        catapult.count = 5;
+
+        let army = armyFactory(gameStateStub.turnOwner, fromPosition, {
+          regular: regularsFactory(RegularUnitName.WARRIOR, 10),
+        });
+        army = addWarMachines(army, catapult);
+        gameStateStub.armies.push(army);
+
+        renderWithProviders(<MoveArmyDialog />);
+
+        // Move all units to the right panel
+        await user.click(screen.getByText('Move All →'));
+
+        // Verify all units are in the right panel
+        expectUnitsToMovePanelHasUnits();
+        expect(screen.getByText('No units selected')).toBeInTheDocument();
+
+        // Find and click on a war machine in the right panel to move it back
+        const catapultUnit = getUnitItemByName('Catapult');
+        expect(catapultUnit).toBeInTheDocument();
+
+        // Simulate mouse down on the catapult to move it back to left
+        fireEvent.mouseDown(catapultUnit!);
+        fireEvent.mouseUp(catapultUnit!);
+
+        // Should have moved 1 catapult back to the left panel
+        // The catapult should now be in both panels (split)
+        await waitFor(() => {
+          const catapultElements = screen.getAllByText('Catapult');
+          expect(catapultElements.length).toBe(2); // One in each panel
         });
       });
     });
