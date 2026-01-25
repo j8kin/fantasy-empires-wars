@@ -377,7 +377,10 @@ describe('Recruitment', () => {
         getTurnOwner(gameStateStub).vault = 100000;
         const homeLand = getPlayerLands(gameStateStub)[0].mapPos;
         barracksPos = { row: homeLand.row, col: homeLand.col + 1 };
+
+        gameStateStub.turn = 1; // game not started yet build pre-conditioned buildings
         construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+        gameStateStub.turn = 2; // game started
       });
 
       it.each(Object.values(RegularUnitName).filter(isDrivenType))(
@@ -768,9 +771,12 @@ describe('Recruitment', () => {
         getTurnOwner(gameStateStub).vault = 100000;
         const homeLand = getPlayerLands(gameStateStub)[0].mapPos;
         barracksPos = { row: homeLand.row, col: homeLand.col + 1 };
+        gameStateStub.turn = 1; // game not started yet build pre-conditioned buildings
         construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+        gameStateStub.turn = 2; // game started
         expect(isWarsmithPresent(gameStateStub, barracksPos)).toBeFalsy();
       });
+
       it('WARSMITH could be recruited at any time', () => {
         /************** START RECRUITING **********************/
         startRecruiting(gameStateStub, barracksPos, HeroUnitName.WARSMITH);

@@ -2,13 +2,17 @@ import React, { Activity, useCallback } from 'react';
 import styles from './css/GameControl.module.css';
 
 import GameButton from '../buttons/GameButton';
+import { ButtonName } from '../../types/ButtonName';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getAllowedBuildings, getTurnOwner } from '../../selectors/playerSelectors';
+import { isWarsmithPresent } from '../../selectors/armySelectors';
+import { getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { AllSpells } from '../../domain/spell/spellsRepository';
 import { SpellName } from '../../types/Spell';
-import { ButtonName } from '../../types/ButtonName';
+import { BuildingName } from '../../types/Building';
 
 const MapActionsControl: React.FC = () => {
   const {
@@ -29,7 +33,6 @@ const MapActionsControl: React.FC = () => {
       AllSpells.some(
         (spell) =>
           // turn undead could only be cast if related mana is available
-          // todo it should be possible to cast turn undead only once per turn
           !(spell.type === SpellName.TURN_UNDEAD && playerMana[spell.manaType] === 0) &&
           spell.manaCost <= playerMana[spell.manaType]
       )
@@ -48,7 +51,22 @@ const MapActionsControl: React.FC = () => {
     const selectedPlayer = getTurnOwner(gameState);
     if (!selectedPlayer) return;
     if (getAllowedBuildings(selectedPlayer).length > 0) {
-      setShowConstructBuildingDialog(true);
+      if (selectedPlayer.playerProfile.doctrine === Doctrine.DRIVEN) {
+        if (
+          getPlayerLands(gameState).filter(
+            (land) => isWarsmithPresent(gameState, land.mapPos) && !hasBuilding(land, BuildingName.STRONGHOLD)
+          ).length === 0
+        ) {
+          if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+            setErrorMessagePopupMessage('No Lands under Warsmith control without buildings.');
+            setShowErrorMessagePopup(true);
+          }
+        } else {
+          setShowConstructBuildingDialog(true);
+        }
+      } else {
+        setShowConstructBuildingDialog(true);
+      }
     } else {
       if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
         setErrorMessagePopupMessage('Not enough money to construct a building!');

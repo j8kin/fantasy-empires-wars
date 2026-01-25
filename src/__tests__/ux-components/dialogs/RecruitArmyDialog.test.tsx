@@ -382,8 +382,10 @@ describe('RecruitArmyDialog', () => {
       gameStateStub = createGameStateStub({
         gamePlayers: PREDEFINED_PLAYERS.slice(3, 4), // player 3 is Kaer and he is not able to recruit Regular units on 3d slot
       });
+      gameStateStub.turn = 1; // game not start yet build pre-conditioned buildings
       construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
       placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Hero 1'), gameStateStub, barracksPos); // DRIVEN Doctrine not able to recruit without Warsmith
+      gameStateStub.turn = 2; // start the game
 
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
@@ -582,7 +584,9 @@ describe('RecruitArmyDialog', () => {
         gameStateStub = createGameStateStub({ gamePlayers: players });
         expect(getTurnOwner(gameStateStub).playerProfile.doctrine).toBe(Doctrine.DRIVEN);
 
+        gameStateStub.turn = 1; // game not start yet build pre-conditioned buildings
         construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+        gameStateStub.turn = 2; // start the game
       });
 
       it('should be able recruit only Warsmith when no Warsmith on Barrack Lands', () => {

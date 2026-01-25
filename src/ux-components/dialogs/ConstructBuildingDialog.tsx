@@ -4,8 +4,10 @@ import FlipBookPage, { FlipBookPageTypeName } from '../fantasy-book-dialog-templ
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
+import { landIdToPosition } from '../../state/map/land/LandId';
 import { getAllowedBuildings, getTurnOwner } from '../../selectors/playerSelectors';
 import { getPlayerLands } from '../../selectors/landSelectors';
+import { isWarsmithPresent } from '../../selectors/armySelectors';
 import { getAvailableToConstructLands } from '../../map/building/getAvailableToConstructLands';
 import { getBuildingImg } from '../../assets/getBuildingImg';
 import { Doctrine } from '../../state/player/PlayerProfile';
@@ -25,10 +27,16 @@ const ConstructBuildingDialog: React.FC = () => {
     (buildingType: BuildingType) => {
       return () => {
         setSelectedLandAction(`${FlipBookPageTypeName.BUILDING}: ${buildingType}`);
+        const turnOwner = getTurnOwner(gameState!);
 
         // Add tiles to the glowing tiles set for visual highlighting
         getAvailableToConstructLands(gameState!, buildingType).forEach((tileId) => {
-          addGlowingTile(tileId);
+          if (
+            turnOwner.playerProfile.doctrine !== Doctrine.DRIVEN ||
+            isWarsmithPresent(gameState!, landIdToPosition(tileId))
+          ) {
+            addGlowingTile(tileId);
+          }
         });
 
         handleClose();

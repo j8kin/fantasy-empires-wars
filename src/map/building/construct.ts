@@ -1,9 +1,11 @@
 import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
 import { getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
+import { isWarsmithPresent } from '../../selectors/armySelectors';
+import { addBuildingToLand, addPlayerLand, updatePlayerVault } from '../../systems/gameStateActions';
 import { buildingFactory } from '../../factories/buildingFactory';
 import { getBuildingInfo } from '../../domain/building/buildingRepository';
-import { addBuildingToLand, addPlayerLand, updatePlayerVault } from '../../systems/gameStateActions';
 import { destroyBuilding } from './destroyBuilding';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
 import { BuildingName } from '../../types/Building';
@@ -15,8 +17,16 @@ export const construct = (gameState: GameState, buildingType: BuildingType, posi
   const map = gameState.map;
   const turnOwner = getTurnOwner(gameState);
   const building = getBuildingInfo(buildingType);
-  if (turnOwner.vault < building.buildCost && gameState.turn > 1) {
-    return;
+
+  // while game is not started (turn === 1) it should be possible to build any building on any land
+  if (gameState.turn > 1) {
+    if (turnOwner.vault < building.buildCost) {
+      return;
+    }
+    // For DRIVEN Doctrine building could be created only if WARSMITH is present on Land
+    if (turnOwner.playerProfile.doctrine === Doctrine.DRIVEN && !isWarsmithPresent(gameState, position)) {
+      return;
+    }
   }
 
   // Accumulate all state changes
