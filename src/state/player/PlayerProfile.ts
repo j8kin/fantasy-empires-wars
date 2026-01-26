@@ -23,7 +23,7 @@ export const Doctrine = {
   ANTI_MAGIC: 'Anti Magic',
   /** Focus on a magic army with no regular support **/
   PURE_MAGIC: 'Pure Magic',
-  /** Driven doctrine */
+  /** Driven doctrine: all actions are performed only if Warsmith present on land */
   DRIVEN: 'Undead',
 } as const;
 export type DoctrineType = (typeof Doctrine)[keyof typeof Doctrine];

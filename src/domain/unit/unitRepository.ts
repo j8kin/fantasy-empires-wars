@@ -239,11 +239,11 @@ const descriptions: Record<UnitType, string> = {
   [RegularUnitName.UNDEAD]:
     'Raised beyond fear and freed from breath, the Undead march in silence—enduring not by life, but refusal to fall.',
   [RegularUnitName.GOLEM]:
-    'Raised beyond fear and freed from breath, the Undead march in silence—enduring not by life, but refusal to fall.',
+    'Hollowed of will and bound to command, Golems move only by the Warsmith’s word—where they tread, walls remember earth.',
   [RegularUnitName.GARGOYLE]:
-    'Raised beyond fear and freed from breath, the Undead march in silence—enduring not by life, but refusal to fall.',
+    'Formed to endure and denied intent, Gargoyles remain stone without command—wings folded in silence.',
   [RegularUnitName.DENDRITE]:
-    'Raised beyond fear and freed from breath, the Undead march in silence—enduring not by life, but refusal to fall.',
+    'Awakened without desire, Dendrites obey alone the Warsmith—rooted and still when the voice is gone.',
   [RegularUnitName.ORC]:
     'Forged in chaos and fire, Orcs live for the clash of steel—each battle a hymn to their untamed hunger for conquest.',
   [RegularUnitName.HALFLING]:
