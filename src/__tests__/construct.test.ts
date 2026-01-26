@@ -3,7 +3,7 @@ import { getLand, getPlayerLands, getTilesInRadius } from '../selectors/landSele
 import { getPlayer, getTurnOwner } from '../selectors/playerSelectors';
 import { getBuildingInfo } from '../domain/building/buildingRepository';
 import { addPlayerEmpireTreasure } from '../systems/gameStateActions';
-import { getArmiesAtPosition } from '../selectors/armySelectors';
+import { getArmiesAtPosition, isWarsmithPresent } from '../selectors/armySelectors';
 import { hasLand, nextPlayer } from '../systems/playerActions';
 import { regularsFactory } from '../factories/regularsFactory';
 import { relictFactory } from '../factories/treasureFactory';
@@ -11,7 +11,7 @@ import { construct } from '../map/building/construct';
 import { PREDEFINED_PLAYERS } from '../domain/player/playerRepository';
 
 import { BuildingName } from '../types/Building';
-import { RegularUnitName } from '../types/UnitType';
+import { HeroUnitName, RegularUnitName } from '../types/UnitType';
 import { TreasureName } from '../types/Treasures';
 import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
@@ -19,6 +19,8 @@ import type { LandPosition } from '../state/map/land/LandPosition';
 
 import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
 import { createGameStateStub } from './utils/createGameStateStub';
+import { Doctrine } from '../state/player/PlayerProfile';
+import { heroFactory } from '../factories/heroFactory';
 
 describe('Construct Buildings', () => {
   const homeLand1: LandPosition = { row: 3, col: 3 };
@@ -248,6 +250,37 @@ describe('Construct Buildings', () => {
       // player2 lands increased
       expect(getPlayer(gameStateStub, player2Id).landsOwned.size).toBe(5); // increased by 1 land
       expect(hasLand(getPlayer(gameStateStub, player2Id), { row: 4, col: 4 })).toBeTruthy();
+    });
+  });
+
+  describe('DRIVEN Doctrine Player', () => {
+    let emptyLand: LandPosition;
+
+    beforeEach(() => {
+      const players = [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.DRIVEN)!, PREDEFINED_PLAYERS[1]];
+      gameStateStub = createGameStateStub({ gamePlayers: players });
+      getTurnOwner(gameStateStub).vault = 100000;
+      emptyLand = getPlayerLands(gameStateStub).find((l) => l.buildings.length === 0)!.mapPos;
+    });
+
+    it('should not be able to construct building if no Warsmith present on the target Land', () => {
+      expect(isWarsmithPresent(gameStateStub, emptyLand)).toBeFalsy();
+
+      /****************** CONSTRUCT BUILDING ********************/
+      construct(gameStateStub, BuildingName.BARRACKS, emptyLand);
+
+      expect(getLand(gameStateStub, emptyLand).buildings).toHaveLength(0); // not constructed
+    });
+
+    it('should be able to construct building if Warsmith present on the target Land', () => {
+      placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Warsmith Hero'), gameStateStub, emptyLand);
+      expect(isWarsmithPresent(gameStateStub, emptyLand)).toBeTruthy();
+
+      /****************** CONSTRUCT BUILDING ********************/
+      construct(gameStateStub, BuildingName.BARRACKS, emptyLand);
+
+      expect(getLand(gameStateStub, emptyLand).buildings).toHaveLength(1);
+      expect(getLand(gameStateStub, emptyLand).buildings[0].type).toBe(BuildingName.BARRACKS);
     });
   });
 

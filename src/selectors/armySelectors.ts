@@ -5,7 +5,7 @@ import type { GameState } from '../state/GameState';
 import type { LandPosition } from '../state/map/land/LandPosition';
 import type { ArmyBriefInfo, ArmyState } from '../state/army/ArmyState';
 import type { HeroState } from '../state/army/HeroState';
-import type { HeroUnitType } from '../types/UnitType';
+import { HeroUnitName, HeroUnitType } from '../types/UnitType';
 import type { TreasureType } from '../types/Treasures';
 
 // Army state selectors (operating on individual army objects)
@@ -80,20 +80,6 @@ export const getArmiesByPlayer = (gameState: GameState, playerId?: string): Army
  */
 export const findArmyById = (gameState: GameState, armyId: string): ArmyState | undefined => {
   return gameState.armies.find((army) => army.id === armyId);
-};
-
-/**
- * Get moving armies
- */
-export const getMovingArmies = (gameState: GameState): ArmyState[] => {
-  return gameState.armies.filter(isMoving);
-};
-
-/**
- * Get stationary armies
- */
-export const getStationaryArmies = (gameState: GameState, playerId?: string): ArmyState[] => {
-  return gameState.armies.filter((army) => !isMoving(army) && (!playerId || army.controlledBy === playerId));
 };
 
 export const hasArtifact = (hero: HeroState, artifact: TreasureType): boolean => {
@@ -174,4 +160,10 @@ export const findAllHeroesOnMap = (gameState: GameState, playerId?: string, movi
         position: getPosition(army),
       }))
     );
+};
+
+export const isWarsmithPresent = (gameState: GameState, landPos: LandPosition): boolean => {
+  return getArmiesAtPosition(gameState, landPos).some((army) =>
+    army.heroes.some((h) => h.type === HeroUnitName.WARSMITH)
+  );
 };

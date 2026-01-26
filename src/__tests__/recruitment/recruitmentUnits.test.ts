@@ -1,14 +1,17 @@
+import { not } from '../../utils/hooks';
 import { getLand, getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
 import { getPlayer, getTurnOwner } from '../../selectors/playerSelectors';
-import { getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
+import { getArmiesAtPosition, isMoving, isWarsmithPresent } from '../../selectors/armySelectors';
 import { getAvailableSlotsCount, getOccupiedSlotsCount } from '../../selectors/buildingSelectors';
 import { addPlayerEmpireTreasure } from '../../systems/gameStateActions';
 import { relictFactory } from '../../factories/treasureFactory';
+import { heroFactory } from '../../factories/heroFactory';
 import { getRecruitInfo } from '../../domain/unit/unitRepository';
+import { getLandUnitsToRecruit } from '../../domain/land/landRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { construct } from '../../map/building/construct';
 import { castSpell } from '../../map/magic/castSpell';
-import { isMageType } from '../../domain/unit/unitTypeChecks';
+import { isDrivenType, isMageType } from '../../domain/unit/unitTypeChecks';
 import { Doctrine } from '../../state/player/PlayerProfile';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { LandName } from '../../types/Land';
@@ -27,6 +30,7 @@ import type { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitTy
 import type { WarMachineType } from '../../types/UnitType';
 
 import { createGameStateStub } from '../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 
 describe('Recruitment', () => {
@@ -365,6 +369,70 @@ describe('Recruitment', () => {
       expect(armies[0].regulars[0].rank).toBe(UnitRank.VETERAN);
     });
 
+    describe('DRIVEN Doctrine players restrictions', () => {
+      let barracksPos: LandPosition;
+      beforeEach(() => {
+        const players = [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.DRIVEN)!, PREDEFINED_PLAYERS[1]];
+        gameStateStub = createGameStateStub({ gamePlayers: players });
+        getTurnOwner(gameStateStub).vault = 100000;
+        const homeLand = getPlayerLands(gameStateStub)[0].mapPos;
+        barracksPos = { row: homeLand.row, col: homeLand.col + 1 };
+
+        gameStateStub.turn = 1; // game not started yet build pre-conditioned buildings
+        construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+        gameStateStub.turn = 2; // game started
+      });
+
+      it.each(Object.values(RegularUnitName).filter(isDrivenType))(
+        'Only driven unit type %s could be recruited only when WARSMITH is present on Land with BARRAKS',
+        (unitType: RegularUnitType) => {
+          // set Barack land type to land which support this unit type
+          getLand(gameStateStub, barracksPos).type = Object.values(LandName).find((l) =>
+            getLandUnitsToRecruit(l, false).some((u) => u === unitType)
+          )!;
+          expect(isWarsmithPresent(gameStateStub, barracksPos)).toBeFalsy();
+
+          /************** START RECRUITING **********************/
+          startRecruiting(gameStateStub, barracksPos, RegularUnitName.GOLEM);
+          verifyOccupiedSlotsCount(barracksPos, 0);
+
+          /************** PLACE WARSMITH **********************/
+          placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Hero 1'), gameStateStub, barracksPos);
+          expect(isWarsmithPresent(gameStateStub, barracksPos)).toBeTruthy();
+
+          /************** START RECRUITING **********************/
+          startRecruiting(gameStateStub, barracksPos, unitType);
+          verifyOccupiedSlotsCount(barracksPos, 1); // recruiting started
+        }
+      );
+
+      it.each(Object.values(RegularUnitName).filter(not(isDrivenType)))(
+        'Non-Driven unit type %s could not be recruited',
+        (unitType: RegularUnitType) => {
+          /************** PLACE WARSMITH **********************/
+          placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Hero 1'), gameStateStub, barracksPos);
+          expect(isWarsmithPresent(gameStateStub, barracksPos)).toBeTruthy();
+
+          /************** START RECRUITING **********************/
+          startRecruiting(gameStateStub, barracksPos, unitType);
+          verifyOccupiedSlotsCount(barracksPos, 0); // recruiting NOT started
+        }
+      );
+
+      it.each(Object.values(WarMachineName))(
+        'War-Machine unit type %s could not be recruited',
+        (unitType: WarMachineType) => {
+          /************** PLACE WARSMITH **********************/
+          placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Hero 1'), gameStateStub, barracksPos);
+          expect(isWarsmithPresent(gameStateStub, barracksPos)).toBeTruthy();
+
+          /************** START RECRUITING **********************/
+          startRecruiting(gameStateStub, barracksPos, unitType);
+          verifyOccupiedSlotsCount(barracksPos, 0); // recruiting NOT started
+        }
+      );
+    });
+
     describe('Corner cases', () => {
       it('regular units could not be recruited in mage towers', () => {
         const mageTowerPos = { row: homeLand.mapPos.row, col: homeLand.mapPos.col - 1 };
@@ -693,6 +761,44 @@ describe('Recruitment', () => {
         expect(armies[0].heroes[0].type).toBe(heroType);
         expect(armies[0].heroes[0].level).toBe(10);
       });
+    });
+
+    describe('DRIVEN Doctrine Heroes', () => {
+      let barracksPos: LandPosition;
+      beforeEach(() => {
+        const players = [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.DRIVEN)!, PREDEFINED_PLAYERS[1]];
+        gameStateStub = createGameStateStub({ gamePlayers: players });
+        getTurnOwner(gameStateStub).vault = 100000;
+        const homeLand = getPlayerLands(gameStateStub)[0].mapPos;
+        barracksPos = { row: homeLand.row, col: homeLand.col + 1 };
+        gameStateStub.turn = 1; // game not started yet build pre-conditioned buildings
+        construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
+        gameStateStub.turn = 2; // game started
+        expect(isWarsmithPresent(gameStateStub, barracksPos)).toBeFalsy();
+      });
+
+      it('WARSMITH could be recruited at any time', () => {
+        /************** START RECRUITING **********************/
+        startRecruiting(gameStateStub, barracksPos, HeroUnitName.WARSMITH);
+        verifyOccupiedSlotsCount(barracksPos, 1); // recruiting started
+      });
+
+      it.each(Object.values(HeroUnitName).filter(not(isDrivenType)))(
+        'Non-driven type %s hero could not be recruited',
+        (unitType: HeroUnitType) => {
+          /************** START RECRUITING **********************/
+          startRecruiting(gameStateStub, barracksPos, unitType);
+          verifyOccupiedSlotsCount(barracksPos, 0); // recruiting NOT started
+
+          /************** PLACE WARSMITH **********************/
+          placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Hero 1'), gameStateStub, barracksPos);
+          expect(isWarsmithPresent(gameStateStub, barracksPos)).toBeTruthy();
+
+          /************** START RECRUITING **********************/
+          startRecruiting(gameStateStub, barracksPos, unitType);
+          verifyOccupiedSlotsCount(barracksPos, 0); // recruiting still ISN'T started
+        }
+      );
     });
 
     describe('Corner cases', () => {

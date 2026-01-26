@@ -11,6 +11,7 @@ import elfImg from './army/elf.png';
 import darkElfImg from './army/dark-elf.png';
 import orcImg from './army/orc.png';
 import undeadImg from './army/undead.png';
+// ANTI MAGIC
 import nullwardenElfImg from './army/anti-magic/elf.png';
 import nullwardenOrcImg from './army/anti-magic/orc.png';
 import nullwardenWarriorImg from './army/anti-magic/warrior.png';
@@ -19,6 +20,10 @@ import nullwardenFighterImg from './army/anti-magic/fighter.png';
 import nullwardenOgrImg from './army/anti-magic/ogr.png';
 import nullwardenHammerLordImg from './army/anti-magic/hammer-lord.png';
 import nullwardenRangerImg from './army/anti-magic/ranger.png';
+// DRIVEN DOCTRINE
+import golemImg from './army/driven/golem.png';
+import gargoylesImg from './army/driven/gargoyle.png';
+import dendriteImg from './army/driven/dendrite.png';
 
 import ballistaImg from './army/ballista.png';
 import catapultImg from './army/catapult.png';
@@ -46,6 +51,11 @@ const unitImg: Record<UnitType, string> = {
   [RegularUnitName.DARK_ELF]: darkElfImg,
   [RegularUnitName.UNDEAD]: undeadImg,
   [RegularUnitName.ORC]: orcImg,
+
+  // Driven Doctrine
+  [RegularUnitName.GOLEM]: golemImg,
+  [RegularUnitName.GARGOYLE]: gargoylesImg,
+  [RegularUnitName.DENDRITE]: dendriteImg,
 
   [WarMachineName.BALLISTA]: ballistaImg,
   [WarMachineName.CATAPULT]: catapultImg,

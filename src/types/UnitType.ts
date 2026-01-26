@@ -6,6 +6,11 @@ export const RegularUnitName = {
   HALFLING: 'Halfling',
   ELF: 'Elf',
   DARK_ELF: 'Dark-Elf',
+  // Driven Doctrine units
+  GOLEM: 'Golem',
+  GARGOYLE: 'Gargoyle',
+  DENDRITE: 'Dendrite',
+  // available only via SUMMON UNDEAD Spell
   UNDEAD: 'Undead',
 } as const;
 

@@ -1,4 +1,4 @@
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner, isPlayerDoctrine } from '../../selectors/playerSelectors';
 import { getRealmLands, hasActiveEffect, hasBuilding } from '../../selectors/landSelectors';
 import { getLandAlignment } from '../../domain/land/landRepository';
 import { Doctrine } from '../../state/player/PlayerProfile';
@@ -12,7 +12,7 @@ export const calculateIncome = (gameState: GameState): number => {
   const playerAlignment = turnOwner.playerProfile.alignment;
   // Pure-Magic player dont have any penalties from alignment only bonuses as they are masked their true alignments
   //  since they are able to cast any magic and looks families for all territory habits
-  const isPureMagic = turnOwner.playerProfile.doctrine === Doctrine.PURE_MAGIC;
+  const isPureMagic = isPlayerDoctrine(gameState, Doctrine.PURE_MAGIC);
 
   return getRealmLands(gameState).reduce((acc, land) => {
     // https://github.com/j8kin/fantasy-empires-wars/wiki/Lands

@@ -9,7 +9,7 @@ import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { generateHeroName } from './heroNameGeneration';
 import { heroRecruitingMessage } from './heroRecruitingMessage';
 import { warMachineFactory } from '../../factories/warMachineFactory';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner, isPlayerDoctrine } from '../../selectors/playerSelectors';
 import { levelUpHero, levelUpRegulars } from '../../systems/unitsActions';
 import { Doctrine } from '../../state/player/PlayerProfile';
 import { EmpireEventKind } from '../../types/EmpireEvent';
@@ -46,7 +46,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
 
           if (isHeroType(s.unit)) {
             const hero = heroFactory(s.unit, generateHeroName(s.unit));
-            if (getTurnOwner(gameState).playerProfile.doctrine === Doctrine.PURE_MAGIC) {
+            if (isPlayerDoctrine(gameState, Doctrine.PURE_MAGIC)) {
               // all pure magic heroes recruited on level 10
               while (hero.level < 10) levelUpHero(hero, getTurnOwner(gameState).playerProfile.doctrine);
             }
@@ -76,7 +76,7 @@ export const completeRecruiting = (gameState: GameState): EmpireEvent[] => {
               }
             } else {
               const regular = regularsFactory(s.unit);
-              if (getTurnOwner(gameState).playerProfile.doctrine === Doctrine.ANTI_MAGIC) {
+              if (isPlayerDoctrine(gameState, Doctrine.ANTI_MAGIC)) {
                 // all anti-magic coalition units are recruited as veteran units
                 levelUpRegulars(regular, getTurnOwner(gameState).playerProfile.doctrine);
               }

@@ -45,6 +45,24 @@ const unitCombatStats: Record<RegularUnitType | HeroUnitType, CombatStats> = {
     health: 40,
     speed: 1,
   },
+  [RegularUnitName.GOLEM]: {
+    attack: 25,
+    defense: 50,
+    health: 10,
+    speed: 5,
+  },
+  [RegularUnitName.GARGOYLE]: {
+    attack: 25,
+    defense: 50,
+    health: 10,
+    speed: 5,
+  },
+  [RegularUnitName.DENDRITE]: {
+    attack: 25,
+    defense: 50,
+    health: 10,
+    speed: 5,
+  },
   [RegularUnitName.UNDEAD]: {
     attack: 25,
     defense: 50,
@@ -220,6 +238,12 @@ const descriptions: Record<UnitType, string> = {
     'Clad in runed steel and bound by oath, Dwarves hold the line like mountains given form—unyielding, proud, and slow to fall.',
   [RegularUnitName.UNDEAD]:
     'Raised beyond fear and freed from breath, the Undead march in silence—enduring not by life, but refusal to fall.',
+  [RegularUnitName.GOLEM]:
+    'Hollowed of will and bound to command, Golems move only by the Warsmith’s word—where they tread, walls remember earth.',
+  [RegularUnitName.GARGOYLE]:
+    'Formed to endure and denied intent, Gargoyles remain stone without command—wings folded in silence.',
+  [RegularUnitName.DENDRITE]:
+    'Awakened without desire, Dendrites obey alone the Warsmith—rooted and still when the voice is gone.',
   [RegularUnitName.ORC]:
     'Forged in chaos and fire, Orcs live for the clash of steel—each battle a hymn to their untamed hunger for conquest.',
   [RegularUnitName.HALFLING]:
@@ -296,6 +320,17 @@ export const getRecruitInfo = (unitType: UnitType, landType: LandType = LandName
       return {
         maintainCost: 5,
         recruitCost: 800,
+        recruitTime: 1,
+        recruitedIn: BuildingName.BARRACKS,
+        recruitedUnits: 20,
+        description: descriptions[unitType],
+      };
+    case RegularUnitName.GOLEM:
+    case RegularUnitName.GARGOYLE:
+    case RegularUnitName.DENDRITE:
+      return {
+        maintainCost: 0,
+        recruitCost: 1000,
         recruitTime: 1,
         recruitedIn: BuildingName.BARRACKS,
         recruitedUnits: 20,
@@ -411,7 +446,7 @@ export const getRecruitInfo = (unitType: UnitType, landType: LandType = LandName
         description: descriptions[unitType],
       };
     default:
-      throw new Error(`Unknown unit type ${unitType}`);
+      throw new Error(`getRecruitInfo: Unknown unit type ${unitType}`);
   }
 };
 

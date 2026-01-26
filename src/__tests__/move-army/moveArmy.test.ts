@@ -11,22 +11,24 @@ import {
 import { getDiplomacyStatus, getTurnOwner } from '../../selectors/playerSelectors';
 import { briefInfo, getArmiesAtPosition, isMoving } from '../../selectors/armySelectors';
 import { addPlayerLand, updateLandEffect } from '../../systems/gameStateActions';
-import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { addHero, updateArmyInGameState } from '../../systems/armyActions';
+import { setDiplomacyStatus } from '../../systems/playerActions';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { effectFactory } from '../../factories/effectFactory';
+import { heroFactory } from '../../factories/heroFactory';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { startMovement } from '../../map/move-army/startMovement';
 import { castSpell } from '../../map/magic/castSpell';
-import { setDiplomacyStatus } from '../../systems/playerActions';
-import { heroFactory } from '../../factories/heroFactory';
-import { addHero, updateArmyInGameState } from '../../systems/armyActions';
-import { NO_PLAYER } from '../../domain/player/playerRepository';
+import { mergeArmiesAtPositions } from '../../map/move-army/mergeArmiesAtPositions';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { Doctrine } from '../../state/player/PlayerProfile';
+import { UnitRank } from '../../state/army/RegularsState';
+import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { TreasureName } from '../../types/Treasures';
 import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { BuildingName } from '../../types/Building';
 import { SpellName } from '../../types/Spell';
-import { UnitRank } from '../../state/army/RegularsState';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { Alignment } from '../../types/Alignment';
 import type { GameState } from '../../state/GameState';
@@ -35,7 +37,7 @@ import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { ArmyBriefInfo } from '../../state/army/ArmyState';
 
 import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub, createGameStateStub } from '../utils/createGameStateStub';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 
 describe('Move Army', () => {
@@ -701,6 +703,98 @@ describe('Move Army', () => {
         expect(armies[0].warMachines[1].count).toBe(2);
 
         expect(isMoving(armies[0])).toBeTruthy();
+      });
+    });
+
+    describe('DRIVEN Player Doctrine', () => {
+      beforeEach(() => {
+        const players = [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.DRIVEN)!, PREDEFINED_PLAYERS[1]];
+        gameStateStub = createGameStateStub({ gamePlayers: players });
+        getTurnOwner(gameStateStub).vault = 100000;
+
+        testTurnManagement.setGameState(gameStateStub);
+        testTurnManagement.startNewTurn(gameStateStub);
+        testTurnManagement.waitStartPhaseComplete();
+      });
+
+      it('do not allow to move regulars without hero', () => {
+        const homeLand = getPlayerLands(gameStateStub)[0];
+        const from = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+        expect(getLandOwner(gameStateStub, from)).toBe(getTurnOwner(gameStateStub).id);
+
+        placeUnitsOnMap(regularsFactory(RegularUnitName.GOLEM, 20), gameStateStub, from);
+
+        const armyBriefInfo: ArmyBriefInfo = {
+          heroes: [],
+          regulars: [{ id: RegularUnitName.GOLEM, rank: UnitRank.REGULAR, count: 20 }],
+          warMachines: [],
+        };
+
+        /*************** START MOVEMENT ***************/
+        Object.assign(gameStateStub, startMovement(gameStateStub, from, homeLand.mapPos, armyBriefInfo));
+
+        // verify that regulars were not moved
+        const armies = getArmiesAtPosition(gameStateStub, from);
+        expect(armies).toHaveLength(1);
+        expect(isMoving(armies[0])).toBeFalsy();
+        expect(armies[0].regulars).toHaveLength(1);
+        expect(armies[0].regulars[0].count).toBe(20);
+        expect(armies[0].regulars[0].type).toBe(RegularUnitName.GOLEM);
+      });
+
+      it('allow to moved only with hero', () => {
+        const homeLand = getPlayerLands(gameStateStub)[0];
+        const from = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+        expect(getLandOwner(gameStateStub, from)).toBe(getTurnOwner(gameStateStub).id);
+
+        placeUnitsOnMap(regularsFactory(RegularUnitName.GOLEM, 20), gameStateStub, from);
+        placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Hero Warsmith'), gameStateStub, from);
+        mergeArmiesAtPositions(gameStateStub);
+
+        const armyBriefInfo: ArmyBriefInfo = {
+          heroes: [{ name: 'Hero Warsmith', type: HeroUnitName.WARSMITH, level: 1 }],
+          regulars: [{ id: RegularUnitName.GOLEM, rank: UnitRank.REGULAR, count: 20 }],
+          warMachines: [],
+        };
+
+        /*************** START MOVEMENT ***************/
+        Object.assign(gameStateStub, startMovement(gameStateStub, from, homeLand.mapPos, armyBriefInfo));
+
+        // verify that regulars were moved with hero
+        const armies = getArmiesAtPosition(gameStateStub, from);
+        expect(armies).toHaveLength(1);
+        expect(isMoving(armies[0])).toBeTruthy();
+        expect(armies[0].regulars).toHaveLength(1);
+        expect(armies[0].regulars[0].count).toBe(20);
+        expect(armies[0].regulars[0].type).toBe(RegularUnitName.GOLEM);
+        expect(armies[0].heroes).toHaveLength(1);
+        expect(armies[0].heroes[0].name).toBe('Hero Warsmith');
+        expect(armies[0].heroes[0].type).toBe(HeroUnitName.WARSMITH);
+      });
+
+      it('Hero allowed to move alone', () => {
+        const homeLand = getPlayerLands(gameStateStub)[0];
+        const from = { row: homeLand.mapPos.row, col: homeLand.mapPos.col + 1 };
+        expect(getLandOwner(gameStateStub, from)).toBe(getTurnOwner(gameStateStub).id);
+
+        placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Hero Warsmith'), gameStateStub, from);
+
+        const armyBriefInfo: ArmyBriefInfo = {
+          heroes: [{ name: 'Hero Warsmith', type: HeroUnitName.WARSMITH, level: 1 }],
+          regulars: [],
+          warMachines: [],
+        };
+
+        /*************** START MOVEMENT ***************/
+        Object.assign(gameStateStub, startMovement(gameStateStub, from, homeLand.mapPos, armyBriefInfo));
+
+        // verify that hero was moved alone
+        const armies = getArmiesAtPosition(gameStateStub, from);
+        expect(armies).toHaveLength(1);
+        expect(isMoving(armies[0])).toBeTruthy();
+        expect(armies[0].heroes).toHaveLength(1);
+        expect(armies[0].heroes[0].name).toBe('Hero Warsmith');
+        expect(armies[0].heroes[0].type).toBe(HeroUnitName.WARSMITH);
       });
     });
 

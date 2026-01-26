@@ -9,9 +9,10 @@ import { addHero, addRegulars, addWarMachines, getHero, getRegulars, getWarMachi
 import { getArmiesAtPosition, getPosition, isMoving } from '../../selectors/armySelectors';
 import { addArmyToGameState, updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
 import { armyFactory } from '../../factories/armyFactory';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner, isPlayerDoctrine } from '../../selectors/playerSelectors';
 import { setDiplomacyStatus } from '../../systems/playerActions';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
 import { DiplomacyStatus } from '../../types/Diplomacy';
 import { Alignment } from '../../types/Alignment';
@@ -29,6 +30,14 @@ export const startMovement = (
   units: ArmyBriefInfo
 ): GameState => {
   const turnOwner = getTurnOwner(gameState);
+  // DRIVEN Doctrine allow to move regular units only with hero
+  if (isPlayerDoctrine(gameState, Doctrine.DRIVEN)) {
+    if (units.regulars.length > 0 && units.heroes.length === 0) {
+      // no movements possible
+      return gameState;
+    }
+  }
+
   const toOwner = getLandOwner(gameState, to);
 
   // Check if destination is opponent's land
@@ -56,7 +65,7 @@ export const startMovement = (
     return gameState; // fallback: it should be the only one stationed Army
   }
 
-  // Hero units could move on hostile territories only with Regular units or if there are more than 10 heroes are moved
+  // Hero units could move on hostile territories only with Regular units or if COMBINED HEROES LEVEL more than MIN_HERO_COMBINED_LEVEL_FOR_MOVEMENT
   if (toOwner !== gameState.turnOwner && (units.regulars.length === 0 || stationedArmies[0].regulars.length === 0)) {
     // calculate cumulative level of heroes planned to move
     const canMove = units.heroes.reduce((acc, hero) => acc + hero.level, 0) >= MIN_HERO_COMBINED_LEVEL_FOR_MOVEMENT;
@@ -77,7 +86,6 @@ export const startMovement = (
     }
   }
 
-  // todo refactor to use getStationedArmy
   let stationedArmy = stationedArmies[0];
   // expect that there are enough units in stationed army to move
   for (let i = 0; i < units.heroes.length; i++) {

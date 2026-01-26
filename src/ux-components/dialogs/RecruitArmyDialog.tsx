@@ -7,8 +7,9 @@ import FlipBookPage from '../fantasy-book-dialog-template/FlipBookPage';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 import { getBuilding, getLand } from '../../selectors/landSelectors';
-import { getTurnOwner, getUnitsAllowedToRecruit } from '../../selectors/playerSelectors';
+import { getTurnOwner, getUnitsAllowedToRecruit, isPlayerDoctrine } from '../../selectors/playerSelectors';
 import { getAvailableSlotsCount, hasAvailableSlot } from '../../selectors/buildingSelectors';
+import { isWarsmithPresent } from '../../selectors/armySelectors';
 import { isHeroType, isWarMachine } from '../../domain/unit/unitTypeChecks';
 import { getRecruitInfo } from '../../domain/unit/unitRepository';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
@@ -132,7 +133,7 @@ const RecruitArmyDialog: React.FC = () => {
   );
 
   const createUnitHeader = (unitType: UnitType): string => {
-    return !isWarMachine(unitType) && turnOwner.playerProfile.doctrine === Doctrine.ANTI_MAGIC
+    return !isWarMachine(unitType) && isPlayerDoctrine(gameState!, Doctrine.ANTI_MAGIC)
       ? `${unitType} Nullwarden`
       : unitType;
   };
@@ -155,6 +156,12 @@ const RecruitArmyDialog: React.FC = () => {
   const turnOwner = getTurnOwner(gameState);
 
   const availableUnits: RecruitUnitProps[] = getUnitsAllowedToRecruit(turnOwner, land, recruitBuilding)
+    .filter(
+      (unit) =>
+        turnOwner.playerProfile.doctrine !== Doctrine.DRIVEN ||
+        isWarsmithPresent(gameState, land.mapPos) ||
+        isHeroType(unit)
+    )
     .map((unit) => typeToRecruitProps(unit))
     .sort((a, b) => sortArmyUnits(a) - sortArmyUnits(b));
 

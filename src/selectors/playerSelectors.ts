@@ -10,6 +10,7 @@ import { BuildingName } from '../types/Building';
 import { DiplomacyStatus } from '../types/Diplomacy';
 import type { GameState } from '../state/GameState';
 import type { PlayerState, PlayerTraits } from '../state/player/PlayerState';
+import type { DoctrineType } from '../state/player/PlayerProfile';
 import type { LandState } from '../state/map/land/LandState';
 import type { LandType } from '../types/Land';
 import type { BuildingState } from '../state/map/building/BuildingState';
@@ -25,6 +26,10 @@ export const getPlayer = (state: GameState, id: string): PlayerState => state.pl
 
 export const getTurnOwner = (state: GameState): PlayerState => getPlayer(state, state.turnOwner);
 
+export const isPlayerDoctrine = (state: GameState, doctrine: DoctrineType, playerId?: string): boolean => {
+  const player = playerId ? getPlayer(state, playerId) : getTurnOwner(state);
+  return player.playerProfile.doctrine === doctrine;
+};
 /**
  * Filters players by diplomacy status relative to turn owner
  * @param gameState - The current game state

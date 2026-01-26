@@ -1,4 +1,5 @@
-import { isMageType } from '../domain/unit/unitTypeChecks';
+import { not } from '../utils/hooks';
+import { isDrivenType, isMageType } from '../domain/unit/unitTypeChecks';
 import { getLandUnitsToRecruit } from '../domain/land/landRepository';
 import { getAllUnitTypeByAlignment } from '../domain/unit/unitRepository';
 import { Doctrine, RaceName } from '../state/player/PlayerProfile';
@@ -139,8 +140,8 @@ const getUnitsPerLand = (
   ) as Record<LandType, Set<UnitType>>;
 
   // mages are available for all lands and managed by constructed Mage Tower which also depends on Restricted Magic
-  const chaoticUnitType = getAllUnitTypeByAlignment(Alignment.CHAOTIC).filter((unit) => !isMageType(unit));
-  const lawfulUnitType = getAllUnitTypeByAlignment(Alignment.LAWFUL).filter((unit) => !isMageType(unit));
+  const chaoticUnitType = getAllUnitTypeByAlignment(Alignment.CHAOTIC).filter(not(isMageType));
+  const lawfulUnitType = getAllUnitTypeByAlignment(Alignment.LAWFUL).filter(not(isMageType));
 
   Object.values(LandName)
     .filter((land) => land !== LandName.NONE)
@@ -155,19 +156,26 @@ const getUnitsPerLand = (
 
       // add other units depending on player doctrine and alignment and land type
       switch (playerProfile.doctrine) {
-        case Doctrine.UNDEAD:
-          unitsPerLand[landType].add(HeroUnitName.WARSMITH);
-          unitsPerLand[landType].add(RegularUnitName.UNDEAD);
+        case Doctrine.DRIVEN:
+          getLandUnitsToRecruit(landType, false)
+            .filter(isDrivenType)
+            .forEach((unit) => unitsPerLand[landType].add(unit));
           break;
         case Doctrine.ANTI_MAGIC:
-          getLandUnitsToRecruit(landType, false).forEach((unit) => {
-            if (!isMageType(unit) && unit !== RegularUnitName.HALFLING && unit !== RegularUnitName.WARD_HANDS) {
-              unitsPerLand[landType].add(unit);
-            }
-          });
+          getLandUnitsToRecruit(landType, false)
+            .filter(not(isDrivenType))
+            .filter(not(isMageType))
+            .forEach((unit) => {
+              if (unit !== RegularUnitName.HALFLING && unit !== RegularUnitName.WARD_HANDS) {
+                unitsPerLand[landType].add(unit);
+              }
+            });
           break;
         default:
-          getLandUnitsToRecruit(landType, false).forEach((unit) => unitsPerLand[landType].add(unit));
+          getLandUnitsToRecruit(landType, false)
+            .filter(not(isDrivenType))
+            .forEach((unit) => unitsPerLand[landType].add(unit));
+
           // lawful units are not available for chaotic players
           if (playerProfile.alignment === Alignment.CHAOTIC) {
             lawfulUnitType.forEach((unit) => unitsPerLand[landType].delete(unit));
@@ -237,32 +245,42 @@ const getRecruitmentSlots = (
     buildingTraits[BuildingName.MAGE_TOWER] = { 0: new Set(allowedMages) };
   }
 
-  const allRegularUnits: RegularUnitType[] = Object.values(RegularUnitName).filter((u) => u !== RegularUnitName.UNDEAD);
+  const allRegularUnits: RegularUnitType[] = Object.values(RegularUnitName);
   const allWarMachines: WarMachineType[] = Object.values(WarMachineName);
-  const allMightHeroes: HeroUnitType[] = Object.values(HeroUnitName).filter(
-    (unit) => !isMageType(unit) && unit !== HeroUnitName.WARSMITH
-  );
+  const allMightHeroes: HeroUnitType[] = Object.values(HeroUnitName).filter(not(isMageType));
 
   switch (playerProfile.doctrine) {
-    case Doctrine.UNDEAD:
+    case Doctrine.DRIVEN:
       buildingTraits[BuildingName.BARRACKS] = {
-        0: new Set([RegularUnitName.UNDEAD, ...allWarMachines, HeroUnitName.WARSMITH]),
-        1: new Set([RegularUnitName.UNDEAD, ...allWarMachines, HeroUnitName.WARSMITH]),
-        2: new Set([...allWarMachines, HeroUnitName.WARSMITH]),
+        0: new Set([...allRegularUnits.filter(isDrivenType), ...allMightHeroes.filter(isDrivenType)]),
+        1: new Set([...allRegularUnits.filter(isDrivenType), ...allMightHeroes.filter(isDrivenType)]),
+        2: new Set([...allMightHeroes.filter(isDrivenType)]),
       };
       break;
     case Doctrine.ANTI_MAGIC:
       buildingTraits[BuildingName.BARRACKS] = {
-        0: new Set([...allRegularUnits]),
+        0: new Set([...allRegularUnits.filter(not(isDrivenType))]),
         1: new Set([...allWarMachines]),
-        2: new Set([...allMightHeroes]),
+        2: new Set([...allMightHeroes.filter(not(isDrivenType))]),
       };
       break;
     default:
       buildingTraits[BuildingName.BARRACKS] = {
-        0: new Set([...allRegularUnits, ...allWarMachines, ...allMightHeroes]),
-        1: new Set([...allRegularUnits, ...allWarMachines, ...allMightHeroes]),
-        2: new Set([...allRegularUnits, ...allWarMachines, ...allMightHeroes]),
+        0: new Set([
+          ...allRegularUnits.filter(not(isDrivenType)),
+          ...allWarMachines,
+          ...allMightHeroes.filter(not(isDrivenType)),
+        ]),
+        1: new Set([
+          ...allRegularUnits.filter(not(isDrivenType)),
+          ...allWarMachines,
+          ...allMightHeroes.filter(not(isDrivenType)),
+        ]),
+        2: new Set([
+          ...allRegularUnits.filter(not(isDrivenType)),
+          ...allWarMachines,
+          ...allMightHeroes.filter(not(isDrivenType)),
+        ]),
       };
       break;
   }

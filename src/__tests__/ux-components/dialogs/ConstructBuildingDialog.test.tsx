@@ -9,15 +9,19 @@ import { getTurnOwner } from '../../../selectors/playerSelectors';
 import { construct } from '../../../map/building/construct';
 import { getAvailableToConstructLands } from '../../../map/building/getAvailableToConstructLands';
 import { playerFactory } from '../../../factories/playerFactory';
+import { heroFactory } from '../../../factories/heroFactory';
 
+import { Doctrine } from '../../../state/player/PlayerProfile';
 import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import { BuildingName } from '../../../types/Building';
 import { Alignment } from '../../../types/Alignment';
+import { HeroUnitName } from '../../../types/UnitType';
 
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
+import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
 
 // Mock context hooks
 const mockApplicationContext = {
@@ -303,6 +307,46 @@ describe('ConstructBuildingDialog', () => {
       expect(mockApplicationContext.addGlowingTile).toHaveBeenCalled();
       const callCount = (mockApplicationContext.addGlowingTile as jest.Mock).mock.calls.length;
       expect(callCount).toBeGreaterThan(0);
+    });
+
+    it('should add glowing tiles only with lands with warthmith for DRIVEN Doctrine players', async () => {
+      gameStateStub = createGameStateStub({
+        gamePlayers: [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.DRIVEN)!, PREDEFINED_PLAYERS[0]],
+      });
+
+      const user = userEvent.setup();
+      renderWithProviders(<ConstructBuildingDialog />);
+
+      const icons = screen.getAllByTestId('flipbook-icon');
+      expect(icons.length).toBeGreaterThan(0);
+      const firstIcon = icons[0];
+      await user.click(firstIcon);
+
+      // Should add glowing tiles for lands where building can be constructed
+      expect(mockApplicationContext.addGlowingTile).not.toHaveBeenCalled();
+      const callCount = (mockApplicationContext.addGlowingTile as jest.Mock).mock.calls.length;
+      expect(callCount).toBe(0);
+    });
+
+    it('should add glowing tiles with lands with warthmith for DRIVEN Doctrine players', async () => {
+      gameStateStub = createGameStateStub({
+        gamePlayers: [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.DRIVEN)!, PREDEFINED_PLAYERS[0]],
+      });
+      const emptyLand = getPlayerLands(gameStateStub).find((l) => l.buildings.length === 0)!;
+      placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Warthmith Hero'), gameStateStub, emptyLand.mapPos);
+
+      const user = userEvent.setup();
+      renderWithProviders(<ConstructBuildingDialog />);
+
+      const icons = screen.getAllByTestId('flipbook-icon');
+      expect(icons.length).toBeGreaterThan(0);
+      const firstIcon = icons[0];
+      await user.click(firstIcon);
+
+      // Should add glowing tiles for ONLY one lands where building can be constructed since only one land has warthmith hero
+      expect(mockApplicationContext.addGlowingTile).toHaveBeenCalled();
+      const callCount = (mockApplicationContext.addGlowingTile as jest.Mock).mock.calls.length;
+      expect(callCount).toBe(1);
     });
   });
 

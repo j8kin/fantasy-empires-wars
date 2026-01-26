@@ -11,8 +11,9 @@ import { startRecruiting } from '../../map/recruiting/startRecruiting';
 import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
 import { isMageType } from '../../domain/unit/unitTypeChecks';
 import { Doctrine } from '../../state/player/PlayerProfile';
-import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { UnitRank } from '../../state/army/RegularsState';
+import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
+import { HeroUnitName, RegularUnitName, WarMachineName } from '../../types/UnitType';
 import { LandName } from '../../types/Land';
 import { SpellName } from '../../types/Spell';
 import { BuildingName } from '../../types/Building';
@@ -23,7 +24,7 @@ import type { BuildingType } from '../../types/Building';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { RegularUnitType, UnitType } from '../../types/UnitType';
 
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub, createGameStateStub } from '../utils/createGameStateStub';
 import { TestTurnManagement } from '../utils/TestTurnManagement';
 
 describe('castRedManaSpell', () => {
@@ -373,5 +374,39 @@ describe('castRedManaSpell', () => {
         expect(getLand(gameStateStub, opponentLand).buildings).toHaveLength(destroy ? 0 : 1);
       }
     );
+
+    it('should not destroy building if target land owner has DRIVEN Doctrine and Warsmith on land', () => {
+      /**************** PRE CONDITIONS *********************/
+      gameStateStub = createGameStateStub({
+        gamePlayers: [
+          PREDEFINED_PLAYERS.find((p) => p.type === HeroUnitName.PYROMANCER)!,
+          PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.DRIVEN)!,
+        ],
+      });
+      gameStateStub.turn = 1;
+      gameStateStub.turnOwner = gameStateStub.players[1].id;
+      const opponentLand = getPlayerLands(gameStateStub, gameStateStub.players[1].id)[1].mapPos;
+      construct(gameStateStub, BuildingName.BARRACKS, opponentLand);
+      expect(getLand(gameStateStub, opponentLand).buildings).toHaveLength(1);
+      placeUnitsOnMap(heroFactory(HeroUnitName.WARSMITH, 'Warsmith Hero'), gameStateStub, opponentLand);
+
+      gameStateStub.turn = 2;
+      gameStateStub.turnOwner = gameStateStub.players[0].id;
+      gameStateStub.players[0].mana.red = 200;
+      placeUnitsOnMap(
+        heroFactory(HeroUnitName.PYROMANCER, 'Pyromancer Hero'),
+        gameStateStub,
+        getPlayerLands(gameStateStub)[0].mapPos
+      );
+
+      // set probability to 0 which is less then 0.4 since building destroyed in 40% cases and 0 means it should always be destroyed
+      // but since target player Doctrine is DRIVEN and Warsmith present than the building is not destroyed
+      randomSpy.mockReturnValue(0);
+
+      /**************** EXECUTE *********************/
+      castSpell(gameStateStub, SpellName.METEOR_SHOWER, opponentLand);
+      /**************** VERIFY *********************/
+      expect(getLand(gameStateStub, opponentLand).buildings).toHaveLength(1);
+    });
   });
 });
