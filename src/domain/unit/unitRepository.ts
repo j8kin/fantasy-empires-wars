@@ -263,7 +263,7 @@ const descriptions: Record<UnitType, string> = {
     'Fortress crushers of war, Siege Towers breach defenses with relentless might, their siege engines a symbol of siege warfare’s brutal efficiency.',
   // HEROES
   [HeroUnitName.WARSMITH]:
-    'Forged in the fires of rebellion, Warsmiths temper chaos into strategy—each strike a protest against tyranny and weakness.',
+    'Older than kingdoms, Warsmiths speak the language of command—through them, the Driven move, endure, and unmake.',
   [HeroUnitName.FIGHTER]:
     'Champions of the common folk, Fighters carry the banners of law and honor into every battle, their courage as sharp as their blades.',
   [HeroUnitName.HAMMER_LORD]:
