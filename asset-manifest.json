@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fantasy-empires-wars/static/css/main.ede95e74.css",
-    "main.js": "/fantasy-empires-wars/static/js/main.e4f73ede.js",
+    "main.js": "/fantasy-empires-wars/static/js/main.c18eefbd.js",
     "static/js/488.c6b250ed.chunk.js": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js",
     "static/media/CelticPatternVertical.png": "/fantasy-empires-wars/static/media/CelticPatternVertical.8f1fe8a5abcd3ac8d2e6.png",
     "static/media/kael.png": "/fantasy-empires-wars/static/media/kael.020c79f3591fb99ef9d7.png",
@@ -122,6 +122,9 @@
     "static/media/catapult.png": "/fantasy-empires-wars/static/media/catapult.220c4e9e2e003253e304.png",
     "static/media/battering-ram.png": "/fantasy-empires-wars/static/media/battering-ram.28aa43c1175241cd5a18.png",
     "static/media/siege-tower.png": "/fantasy-empires-wars/static/media/siege-tower.fb6f220e3105478935d8.png",
+    "static/media/golem.png": "/fantasy-empires-wars/static/media/golem.ab0bf53a31312f599d78.png",
+    "static/media/gargoyle.png": "/fantasy-empires-wars/static/media/gargoyle.8824f03a04de3ab06ad9.png",
+    "static/media/dendrite.png": "/fantasy-empires-wars/static/media/dendrite.fa3ba585405060e45b86.png",
     "static/media/brunna.png": "/fantasy-empires-wars/static/media/brunna.cc988a75a9b99dced91b.png",
     "static/media/phoenix-feather.png": "/fantasy-empires-wars/static/media/phoenix-feather.0a9c7b06ec61f4f10648.png",
     "static/media/aelthir.png": "/fantasy-empires-wars/static/media/aelthir.b68b56b178d1f4c991cd.png",
@@ -134,11 +137,11 @@
     "static/media/mana-vial.png": "/fantasy-empires-wars/static/media/mana-vial.acdc30884558a3ecf7c0.png",
     "index.html": "/fantasy-empires-wars/index.html",
     "main.ede95e74.css.map": "/fantasy-empires-wars/static/css/main.ede95e74.css.map",
-    "main.e4f73ede.js.map": "/fantasy-empires-wars/static/js/main.e4f73ede.js.map",
+    "main.c18eefbd.js.map": "/fantasy-empires-wars/static/js/main.c18eefbd.js.map",
     "488.c6b250ed.chunk.js.map": "/fantasy-empires-wars/static/js/488.c6b250ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ede95e74.css",
-    "static/js/main.e4f73ede.js"
+    "static/js/main.c18eefbd.js"
   ]
 }
