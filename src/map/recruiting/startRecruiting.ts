@@ -1,5 +1,10 @@
 import { getLand, getLandOwner, hasActiveEffect } from '../../selectors/landSelectors';
-import { getTurnOwner, getUnitsAllowedToRecruit, hasTreasureByPlayer } from '../../selectors/playerSelectors';
+import {
+  getTurnOwner,
+  getUnitsAllowedToRecruit,
+  hasTreasureByPlayer,
+  isPlayerDoctrine,
+} from '../../selectors/playerSelectors';
 import { hasAvailableSlotForUnit } from '../../selectors/buildingSelectors';
 import { isWarsmithPresent } from '../../selectors/armySelectors';
 import { startRecruitmentInSlot, updatePlayerVault } from '../../systems/gameStateActions';
@@ -19,7 +24,7 @@ export const startRecruiting = (state: GameState, landPos: LandPosition, unitTyp
 
   // For DRIVEN Doctrine recruiting regular units are allowed only if WARSMITH is present
   if (
-    getTurnOwner(state).playerProfile.doctrine === Doctrine.DRIVEN &&
+    isPlayerDoctrine(state, Doctrine.DRIVEN) &&
     (!isDrivenType(unitType) || (isRegularUnit(unitType) && !isWarsmithPresent(state, landPos)))
   ) {
     return;

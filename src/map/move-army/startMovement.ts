@@ -9,7 +9,7 @@ import { addHero, addRegulars, addWarMachines, getHero, getRegulars, getWarMachi
 import { getArmiesAtPosition, getPosition, isMoving } from '../../selectors/armySelectors';
 import { addArmyToGameState, updateArmyInGameState, removeArmyFromGameState } from '../../systems/armyActions';
 import { armyFactory } from '../../factories/armyFactory';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner, isPlayerDoctrine } from '../../selectors/playerSelectors';
 import { setDiplomacyStatus } from '../../systems/playerActions';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { Doctrine } from '../../state/player/PlayerProfile';
@@ -31,7 +31,7 @@ export const startMovement = (
 ): GameState => {
   const turnOwner = getTurnOwner(gameState);
   // DRIVEN Doctrine allow to move regular units only with hero
-  if (turnOwner.playerProfile.doctrine === Doctrine.DRIVEN) {
+  if (isPlayerDoctrine(gameState, Doctrine.DRIVEN)) {
     if (units.regulars.length > 0 && units.heroes.length === 0) {
       // no movements possible
       return gameState;

@@ -1,5 +1,5 @@
 import { getLandId } from '../../state/map/land/LandId';
-import { getTurnOwner } from '../../selectors/playerSelectors';
+import { getTurnOwner, isPlayerDoctrine } from '../../selectors/playerSelectors';
 import { getPlayerLands, getTilesInRadius, hasBuilding } from '../../selectors/landSelectors';
 import { hasLand } from '../../systems/playerActions';
 import { levelUpHero } from '../../systems/unitsActions';
@@ -42,7 +42,7 @@ const isNotBorderLand = (landId: string, dimensions: MapDimensions): boolean => 
 
 export const placeHomeland = (gameState: GameState) => {
   const turnOwner = getTurnOwner(gameState);
-  const playerProfile = turnOwner.playerProfile;
+  const turnOwnerProfile = turnOwner.playerProfile;
 
   let homeland: LandState;
 
@@ -75,7 +75,7 @@ export const placeHomeland = (gameState: GameState) => {
 
   let possibleHomelands = freeToBuildLands
     .map((key) => gameState.map.lands[key])
-    .filter((land) => getLandAlignment(land.type) === playerProfile.alignment);
+    .filter((land) => getLandAlignment(land.type) === turnOwnerProfile.alignment);
 
   if (possibleHomelands.length === 0) {
     possibleHomelands = freeToBuildLands
@@ -90,7 +90,7 @@ export const placeHomeland = (gameState: GameState) => {
         Object.values(gameState.map.lands).filter(
           (l) =>
             gameState.players.every((p) => !hasLand(p, l.mapPos)) &&
-            getLandAlignment(l.type) === playerProfile.alignment
+            getLandAlignment(l.type) === turnOwnerProfile.alignment
         )
       );
     } else {
@@ -105,7 +105,7 @@ export const placeHomeland = (gameState: GameState) => {
 
   // Place Barracks on the same alignment land except homeland
   let possibleBarracksLands = getPlayerLands(gameState).filter(
-    (l) => getLandAlignment(l.type) === playerProfile.alignment && l.buildings.length === 0
+    (l) => getLandAlignment(l.type) === turnOwnerProfile.alignment && l.buildings.length === 0
   );
   if (possibleBarracksLands.length === 0) {
     // fall back to any land if no alignment match
@@ -114,7 +114,7 @@ export const placeHomeland = (gameState: GameState) => {
   construct(
     gameState,
     // Pure Magic doctrine players could recruit ONLY mages no other units are possible
-    playerProfile.doctrine === Doctrine.PURE_MAGIC ? BuildingName.MAGE_TOWER : BuildingName.BARRACKS,
+    isPlayerDoctrine(gameState, Doctrine.PURE_MAGIC) ? BuildingName.MAGE_TOWER : BuildingName.BARRACKS,
     getRandomElement(possibleBarracksLands).mapPos
   );
 

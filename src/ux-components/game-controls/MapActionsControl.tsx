@@ -6,7 +6,7 @@ import { ButtonName } from '../../types/ButtonName';
 
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
-import { getAllowedBuildings, getTurnOwner } from '../../selectors/playerSelectors';
+import { getAllowedBuildings, getTurnOwner, isPlayerDoctrine } from '../../selectors/playerSelectors';
 import { isWarsmithPresent } from '../../selectors/armySelectors';
 import { getPlayerLands, hasBuilding } from '../../selectors/landSelectors';
 import { Doctrine } from '../../state/player/PlayerProfile';
@@ -48,10 +48,10 @@ const MapActionsControl: React.FC = () => {
 
   const handleShowConstructBuildingDialog = useCallback(() => {
     if (gameState == null) return;
-    const selectedPlayer = getTurnOwner(gameState);
-    if (!selectedPlayer) return;
-    if (getAllowedBuildings(selectedPlayer).length > 0) {
-      if (selectedPlayer.playerProfile.doctrine === Doctrine.DRIVEN) {
+    const turnOwner = getTurnOwner(gameState);
+    if (!turnOwner) return;
+    if (getAllowedBuildings(turnOwner).length > 0) {
+      if (isPlayerDoctrine(gameState, Doctrine.DRIVEN)) {
         if (
           getPlayerLands(gameState).filter(
             (land) => isWarsmithPresent(gameState, land.mapPos) && !hasBuilding(land, BuildingName.STRONGHOLD)

@@ -1,4 +1,4 @@
-import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
+import { getTurnOwner, hasTreasureByPlayer, isPlayerDoctrine } from '../../selectors/playerSelectors';
 import { getAllHeroes } from '../../selectors/armySelectors';
 import { updatePlayerMana } from '../../systems/gameStateActions';
 import { getManaSource } from '../../domain/mana/manaSource';
@@ -21,7 +21,7 @@ export const calculateMana = (gameState: GameState): GameState => {
   allHeroes.forEach((mage) => {
     const manaSource = getManaSource({ heroType: mage.type })!;
     updatedState = updatePlayerMana(updatedState, turnOwner.id, manaSource.type, mage.mana ?? 0);
-    if (turnOwner.playerProfile.doctrine === Doctrine.PURE_MAGIC) {
+    if (isPlayerDoctrine(gameState, Doctrine.PURE_MAGIC)) {
       // mages from pure magic produce 10% of the main mage mana in all other mana schools
       Object.values(Mana)
         .filter((m) => m !== manaSource.type)
@@ -37,7 +37,7 @@ export const calculateMana = (gameState: GameState): GameState => {
       const manaSource = getManaSource({ landKind: land.type })!;
       // Special Lands generate mana only if the player is Pure Magic or has a hero of a related type
       if (
-        turnOwner.playerProfile.doctrine === Doctrine.PURE_MAGIC ||
+        isPlayerDoctrine(gameState, Doctrine.PURE_MAGIC) ||
         allHeroes.some((h) => manaSource.heroTypes.includes(h.type))
       ) {
         updatedState = updatePlayerMana(updatedState, turnOwner.id, manaSource.type, 1);

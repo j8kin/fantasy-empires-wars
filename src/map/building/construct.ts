@@ -1,4 +1,4 @@
-import { getTurnOwner, hasTreasureByPlayer } from '../../selectors/playerSelectors';
+import { getTurnOwner, hasTreasureByPlayer, isPlayerDoctrine } from '../../selectors/playerSelectors';
 import { getLandOwner, getTilesInRadius } from '../../selectors/landSelectors';
 import { isWarsmithPresent } from '../../selectors/armySelectors';
 import { addBuildingToLand, addPlayerLand, updatePlayerVault } from '../../systems/gameStateActions';
@@ -24,7 +24,7 @@ export const construct = (gameState: GameState, buildingType: BuildingType, posi
       return;
     }
     // For DRIVEN Doctrine building could be created only if WARSMITH is present on Land
-    if (turnOwner.playerProfile.doctrine === Doctrine.DRIVEN && !isWarsmithPresent(gameState, position)) {
+    if (isPlayerDoctrine(gameState, Doctrine.DRIVEN) && !isWarsmithPresent(gameState, position)) {
       return;
     }
   }

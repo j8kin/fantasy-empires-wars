@@ -1,11 +1,18 @@
 import { not } from '../../utils/hooks';
 import { getLandId } from '../../state/map/land/LandId';
-import { getPlayer, getTurnOwner, hasActiveEffectByPlayer, hasTreasureByPlayer } from '../../selectors/playerSelectors';
+import {
+  getPlayer,
+  getTurnOwner,
+  hasActiveEffectByPlayer,
+  hasTreasureByPlayer,
+  isPlayerDoctrine,
+} from '../../selectors/playerSelectors';
 import {
   getArmiesAtPosition,
   getArmiesAtPositionByPlayers,
   getMaxHeroLevelByType,
   isMoving,
+  isWarsmithPresent,
 } from '../../selectors/armySelectors';
 import { getLand, getLandOwner, getTilesInRadius, hasActiveEffect } from '../../selectors/landSelectors';
 import { getSpellById } from '../../selectors/spellSelectors';
@@ -30,6 +37,7 @@ import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
 import { getValidMagicLands } from './getValidMagicLands';
 import { getLandGoldPerTurn, getLandUnitsToRecruit } from '../../domain/land/landRepository';
+import { Doctrine } from '../../state/player/PlayerProfile';
 import { SpellName } from '../../types/Spell';
 import { Mana } from '../../types/Mana';
 import { TreasureName } from '../../types/Treasures';
@@ -146,9 +154,15 @@ const castGreenManaSpell = (state: GameState, spell: Spell, landPos: LandPositio
     case SpellName.EARTHQUAKE:
       // kill units
       updatedState = applyArmyCasualtiesAtPosition(updatedState, spell.penalty!, landPos!);
-      // try to destroy building if exists (40% probability)
-      if (Math.random() < 0.4) {
-        updatedState = destroyBuilding(updatedState, landPos!);
+      // it is not possible to destroy building if land Owner has Driven Doctrine and have Warsmith on the target land
+      if (
+        !isPlayerDoctrine(updatedState, Doctrine.DRIVEN, getLandOwner(updatedState, landPos)) ||
+        !isWarsmithPresent(updatedState, landPos!)
+      ) {
+        // try to destroy building if exists (40% probability)
+        if (Math.random() < 0.4) {
+          updatedState = destroyBuilding(updatedState, landPos!);
+        }
       }
       break;
 
@@ -259,9 +273,15 @@ const castRedManaSpell = (state: GameState, spell: Spell, landPos: LandPosition)
       const showerPenaltyCfg = calculatePenaltyConfig(spell.penalty!, maxMageLvl);
 
       updatedState = applyArmyCasualtiesAtPosition(updatedState, showerPenaltyCfg, landPos!);
-      // try to destroy building if exists (50-60% probability)
-      if (Math.random() < 0.5 + (0.1 * maxMageLvl) / MAX_HERO_LEVEL) {
-        updatedState = destroyBuilding(updatedState, landPos!);
+      // it is not possible to destroy building if land Owner has Driven Doctrine and have Warsmith on the target land
+      if (
+        !isPlayerDoctrine(updatedState, Doctrine.DRIVEN, getLandOwner(updatedState, landPos)) ||
+        !isWarsmithPresent(updatedState, landPos!)
+      ) {
+        // try to destroy building if exists (50-60% probability)
+        if (Math.random() < 0.5 + (0.1 * maxMageLvl) / MAX_HERO_LEVEL) {
+          updatedState = destroyBuilding(updatedState, landPos!);
+        }
       }
       break;
 
