@@ -24,9 +24,9 @@ describe('NewGame TurnManager Cleanup Integration', () => {
 
     return createGameStateStub({
       nPlayers: 2,
-      realBattlefield: true,
+      realStrategyMap: true,
       addPlayersHomeland: true,
-      battlefieldSize: dimensions[mapSize],
+      strategyMapSize: dimensions[mapSize],
     });
   };
 

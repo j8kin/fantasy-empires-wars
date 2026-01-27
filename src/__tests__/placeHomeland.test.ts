@@ -5,7 +5,7 @@ import { BuildingName } from '../types/Building';
 import type { GameState } from '../state/GameState';
 import type { MapDimensions } from '../state/map/MapDimensions';
 
-import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
+import { createGameStateStub, defaultStrategyMapSizeStub } from './utils/createGameStateStub';
 
 describe('Game Start: add player to map', () => {
   const getStrongholds = (gameState: GameState) =>
@@ -13,7 +13,7 @@ describe('Game Start: add player to map', () => {
 
   it('turnOwner should be placed on map on Turn 0', () => {
     const gameState = createGameStateStub({
-      realBattlefield: true,
+      realStrategyMap: true,
       addPlayersHomeland: false,
     });
 
@@ -26,7 +26,7 @@ describe('Game Start: add player to map', () => {
 
   it('all players should be placed on map on Turn 1', () => {
     const gameState = createGameStateStub({
-      realBattlefield: true,
+      realStrategyMap: true,
       addPlayersHomeland: false,
     });
 
@@ -43,14 +43,14 @@ describe('Game Start: add player to map', () => {
     ['medium', { rows: 9, cols: 18 }, 5],
     ['large', { rows: 11, cols: 23 }, 7],
     ['huge', { rows: 15, cols: 31 }, 8],
-    ['test default', defaultBattlefieldSizeStub, 8],
+    ['test default', defaultStrategyMapSizeStub, 8],
   ])(
     'max players should be placed on real map %s size',
     (_: string, dimensions: MapDimensions, maxPlayerNumber: number) => {
       const gameState = createGameStateStub({
         nPlayers: maxPlayerNumber,
-        realBattlefield: true,
-        battlefieldSize: dimensions,
+        realStrategyMap: true,
+        strategyMapSize: dimensions,
         addPlayersHomeland: false,
       });
 

@@ -1,26 +1,26 @@
 import { render, screen, within } from '@testing-library/react';
-import Battlefield from '../../../ux-components/battlefield/Battlefield';
+import StrategyMap from '../../../ux-components/strategy-map/StrategyMap';
 
 import { gameStateFactory } from '../../../factories/gameStateFactory';
 
 import type { GameState } from '../../../state/GameState';
 import type { MapDimensions } from '../../../state/map/MapDimensions';
 import type { FantasyBorderFrameProps } from '../../../ux-components/fantasy-border-frame/FantasyBorderFrame';
-import type { HexTileProps } from '../../../ux-components/battlefield/LandTile';
+import type { HexTileProps } from '../../../ux-components/strategy-map/LandTile';
 
 import { createGameStateStub } from '../../utils/createGameStateStub';
 
 // Mock CSS modules
-jest.mock('../../../ux-components/battlefield/css/Battlefield.module.css', () => ({
+jest.mock('../../../ux-components/strategy-map/css/StrategyMap.module.css', () => ({
   mapContainer: 'mocked-map-container',
 }));
 
-jest.mock('../../../ux-components/battlefield/css/Hexagonal.module.css', () => ({
+jest.mock('../../../ux-components/strategy-map/css/Hexagonal.module.css', () => ({
   'hex-row': 'mocked-hex-row',
 }));
 
 // Mock HexTile component
-jest.mock('../../../ux-components/battlefield/LandTile', () => {
+jest.mock('../../../ux-components/strategy-map/LandTile', () => {
   const { getLandId } = require('../../../state/map/land/LandId');
   const { useGameContext } = require('../../../contexts/GameContext');
   const { getLandOwner } = require('../../../selectors/landSelectors');
@@ -70,7 +70,7 @@ jest.mock('../../../ux-components/fantasy-border-frame/FantasyBorderFrame', () =
 const testTileDimensions = { width: 50, height: 180 };
 
 const createGameStateStubNewMapSize = (mapDimensions: MapDimensions): GameState =>
-  createGameStateStub({ battlefieldSize: mapDimensions, addPlayersHomeland: false });
+  createGameStateStub({ strategyMapSize: mapDimensions, addPlayersHomeland: false });
 
 let mockGameState: GameState;
 
@@ -83,7 +83,6 @@ jest.mock('../../../contexts/GameContext', () => ({
     setTileController: jest.fn(),
     addBuildingToTile: jest.fn(),
     updateTileArmy: jest.fn(),
-    changeBattlefieldSize: jest.fn(),
     nextTurn: jest.fn(),
     updateGameConfig: jest.fn(),
     getTile: jest.fn(),
@@ -91,7 +90,7 @@ jest.mock('../../../contexts/GameContext', () => ({
   }),
 }));
 
-describe('Battlefield Component', () => {
+describe('StrategyMap Component', () => {
   beforeEach(() => {
     // Mock window dimensions
     Object.defineProperty(window, 'innerWidth', {
@@ -113,27 +112,27 @@ describe('Battlefield Component', () => {
   describe('Basic Rendering', () => {
     it('renders battlefield with correct props', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 9, cols: 18 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       expect(screen.getByTestId('fantasy-border-frame')).toBeInTheDocument();
-      expect(screen.getByTestId('Battlefield')).toBeInTheDocument();
+      expect(screen.getByTestId('StrategyMap')).toBeInTheDocument();
     });
 
     it('renders with correct battlefield data attributes', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 11, cols: 23 });
-      render(<Battlefield topPanelHeight={200} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={200} tileSize={testTileDimensions} />);
 
-      const battlefield = screen.getByTestId('Battlefield');
-      expect(battlefield).toHaveAttribute('id', 'Battlefield');
+      const battlefield = screen.getByTestId('StrategyMap');
+      expect(battlefield).toHaveAttribute('id', 'StrategyMap');
     });
 
-    it('has the Battlefield container structure', () => {
+    it('has the StrategyMap container structure', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 6, cols: 13 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
-      const battlefield = screen.getByTestId('Battlefield');
-      expect(battlefield).toBeInTheDocument();
-      expect(battlefield.tagName).toBe('DIV');
+      const strategyMap = screen.getByTestId('StrategyMap');
+      expect(strategyMap).toBeInTheDocument();
+      expect(strategyMap.tagName).toBe('DIV');
     });
   });
 
@@ -141,7 +140,7 @@ describe('Battlefield Component', () => {
     it('passes correct props to FantasyBorderFrame', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 15, cols: 31 });
       const top = 150;
-      render(<Battlefield topPanelHeight={top} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={top} tileSize={testTileDimensions} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');
       expect(frame).toHaveAttribute('data-x', '0');
@@ -158,7 +157,7 @@ describe('Battlefield Component', () => {
   describe('Hex Tile Generation', () => {
     it('generates correct number of hex tiles for small map', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 6, cols: 13 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       // Small map should have some hex tiles
       const hexTiles = screen.getAllByTestId('hex-tile');
@@ -167,7 +166,7 @@ describe('Battlefield Component', () => {
 
     it('generates correct number of hex tiles for medium map', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 9, cols: 18 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexTiles = screen.getAllByTestId('hex-tile');
       expect(hexTiles.length).toBeGreaterThan(0);
@@ -175,7 +174,7 @@ describe('Battlefield Component', () => {
 
     it('generates correct number of hex tiles for large map', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 11, cols: 23 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexTiles = screen.getAllByTestId('hex-tile');
       expect(hexTiles.length).toBeGreaterThan(0);
@@ -183,7 +182,7 @@ describe('Battlefield Component', () => {
 
     it('generates correct number of hex tiles for huge map', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 15, cols: 31 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexTiles = screen.getAllByTestId('hex-tile');
       expect(hexTiles.length).toBeGreaterThan(0);
@@ -191,11 +190,11 @@ describe('Battlefield Component', () => {
 
     it('generates hex rows with correct CSS classes', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 9, cols: 18 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexRows = screen
-        .getAllByTestId('Battlefield')
-        .flatMap((battlefield) => within(battlefield).getAllByTestId('hex-row'));
+        .getAllByTestId('StrategyMap')
+        .flatMap((strategyMap) => within(strategyMap).getAllByTestId('hex-row'));
 
       expect(hexRows.length).toBeGreaterThan(0);
     });
@@ -220,10 +219,10 @@ describe('Battlefield Component', () => {
         });
 
         mockGameState = createGameStateStubNewMapSize(mapDimensions);
-        render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+        render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
-        const battlefield = screen.getByTestId('Battlefield');
-        const style = battlefield.style;
+        const strategyMap = screen.getByTestId('StrategyMap');
+        const style = strategyMap.style;
 
         const expectedHeight = expectedWidth * 1.1547;
 
@@ -242,7 +241,7 @@ describe('Battlefield Component', () => {
   describe('Tile State Integration', () => {
     it('passes tile states to HexTile components correctly', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 9, cols: 18 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const hexTiles = screen.getAllByTestId('hex-tile');
 
@@ -258,16 +257,16 @@ describe('Battlefield Component', () => {
       mockGameState = gameStateFactory({ dimensions: { rows: 0, cols: 0 }, lands: {} }); // Empty tiles object
 
       expect(() => {
-        render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+        render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
       }).not.toThrow();
 
-      const battlefield = screen.getByTestId('Battlefield');
-      expect(battlefield).toBeInTheDocument();
+      const strategyMap = screen.getByTestId('StrategyMap');
+      expect(strategyMap).toBeInTheDocument();
     });
 
     it('handles zero top position', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 9, cols: 18 });
-      render(<Battlefield topPanelHeight={0} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={0} tileSize={testTileDimensions} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');
       expect(frame).toHaveAttribute('data-y', '0');
@@ -276,7 +275,7 @@ describe('Battlefield Component', () => {
 
     it('handles negative top position', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 9, cols: 18 });
-      render(<Battlefield topPanelHeight={-50} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={-50} tileSize={testTileDimensions} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');
       expect(frame).toHaveAttribute('data-y', '-50');
@@ -286,7 +285,7 @@ describe('Battlefield Component', () => {
     it('handles custom tile size', () => {
       const customTileSize = { width: 75, height: 200 };
       mockGameState = createGameStateStubNewMapSize({ rows: 15, cols: 31 });
-      render(<Battlefield topPanelHeight={100} tileSize={customTileSize} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={customTileSize} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');
       expect(frame).toHaveAttribute('data-tile-size-width', '75');
@@ -297,39 +296,39 @@ describe('Battlefield Component', () => {
   describe('Component Integration', () => {
     it('renders all required child components', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 11, cols: 23 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       expect(screen.getByTestId('fantasy-border-frame')).toBeInTheDocument();
-      expect(screen.getByTestId('Battlefield')).toBeInTheDocument();
+      expect(screen.getByTestId('StrategyMap')).toBeInTheDocument();
       expect(screen.getAllByTestId('hex-tile').length).toBeGreaterThan(0);
     });
 
     it('maintains component hierarchy', () => {
       mockGameState = createGameStateStubNewMapSize({ rows: 9, cols: 18 });
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');
-      const battlefield = screen.getByTestId('Battlefield');
+      const strategyMap = screen.getByTestId('StrategyMap');
 
-      expect(frame).toContainElement(battlefield);
+      expect(frame).toContainElement(strategyMap);
     });
   });
 
-  describe('Create Battlefield which generated Map', () => {
+  describe('Create StrategyMap which generated Map', () => {
     it('renders all required child components', () => {
       mockGameState = createGameStateStub({
-        battlefieldSize: { rows: 9, cols: 18 },
-        realBattlefield: true,
+        strategyMapSize: { rows: 9, cols: 18 },
+        realStrategyMap: true,
         addPlayersHomeland: true,
       });
 
-      render(<Battlefield topPanelHeight={100} tileSize={testTileDimensions} />);
+      render(<StrategyMap topPanelHeight={100} tileSize={testTileDimensions} />);
 
       const frame = screen.getByTestId('fantasy-border-frame');
-      const battlefield = screen.getByTestId('Battlefield');
+      const strategyMap = screen.getByTestId('StrategyMap');
       const hexTiles = screen.getAllByTestId('hex-tile');
 
-      expect(frame).toContainElement(battlefield);
+      expect(frame).toContainElement(strategyMap);
       expect(hexTiles.length).toBeGreaterThan(0);
 
       // Verify that at least one Volcano HexTile exists on the battlefield

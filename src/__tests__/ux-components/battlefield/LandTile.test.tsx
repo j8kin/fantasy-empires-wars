@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import LandTile from '../../../ux-components/battlefield/LandTile';
+import LandTile from '../../../ux-components/strategy-map/LandTile';
 
 import { getLandId } from '../../../state/map/land/LandId';
 import { getLand, getPlayerLands } from '../../../selectors/landSelectors';
@@ -35,7 +35,7 @@ jest.mock('../../../contexts/ApplicationContext', () => ({
 }));
 
 // Mock CSS modules
-jest.mock('../../../ux-components/battlefield/css/Hexagonal.module.css', () => ({
+jest.mock('../../../ux-components/strategy-map/css/Hexagonal.module.css', () => ({
   hexTile: 'mocked-hex-tile',
   hexTileImg: 'mocked-hex-tile-img',
   'hexTile--glowing': 'mocked-hex-tile--glowing',

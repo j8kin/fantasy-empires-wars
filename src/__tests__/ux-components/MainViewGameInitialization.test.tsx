@@ -27,17 +27,17 @@ describe('MainView Game Initialization Logic', () => {
     // Mock game states with different configurations
     const game1: GameState = createGameStateStub({
       gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
-      battlefieldSize: { rows: 9, cols: 18 },
+      strategyMapSize: { rows: 9, cols: 18 },
     });
 
     const game2: GameState = createGameStateStub({
       gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
-      battlefieldSize: { rows: 11, cols: 23 }, // different map size
+      strategyMapSize: { rows: 11, cols: 23 }, // different map size
     });
 
     const game3: GameState = createGameStateStub({
       gamePlayers: [PREDEFINED_PLAYERS[2], PREDEFINED_PLAYERS[3]], // Different first player
-      battlefieldSize: { rows: 9, cols: 18 },
+      strategyMapSize: { rows: 9, cols: 18 },
     });
 
     const id1 = createGameId(game1);
@@ -86,7 +86,7 @@ describe('MainView Game Initialization Logic', () => {
     // First game - medium map
     const game1 = createGameStateStub({
       gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
-      battlefieldSize: { rows: 9, cols: 18 },
+      strategyMapSize: { rows: 9, cols: 18 },
       addPlayersHomeland: false, // Don't add homeland to keep turn at 1
     });
 
@@ -96,7 +96,7 @@ describe('MainView Game Initialization Logic', () => {
     // Second game - large map (this was the problematic case)
     const game2 = createGameStateStub({
       gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]],
-      battlefieldSize: { rows: 11, cols: 23 },
+      strategyMapSize: { rows: 11, cols: 23 },
       addPlayersHomeland: false, // Don't add homeland to keep turn at 1
     });
 

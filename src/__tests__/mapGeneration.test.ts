@@ -1,7 +1,7 @@
 import { getMainSpecialLandKinds, getNearSpecialLandKinds } from '../domain/land/landRelationships';
 import { generateMap } from '../map/generation/generateMap';
 import { LandName } from '../types/Land';
-import { defaultBattlefieldSizeStub } from './utils/createGameStateStub';
+import { defaultStrategyMapSizeStub } from './utils/createGameStateStub';
 import type { MapDimensions } from '../state/map/MapDimensions';
 
 describe('Map Generation', () => {
@@ -10,7 +10,7 @@ describe('Map Generation', () => {
     ['medium', { rows: 9, cols: 18 }],
     ['large', { rows: 11, cols: 23 }],
     ['huge', { rows: 15, cols: 31 }],
-    ['test default', defaultBattlefieldSizeStub],
+    ['test default', defaultStrategyMapSizeStub],
   ])('should generate map for %s size', (size: string, dimensions: MapDimensions) => {
     const lands = generateMap(dimensions);
 

@@ -3,7 +3,7 @@ import React, { Activity, useEffect, useRef } from 'react';
 import styles from './css/Background.module.css';
 
 import TopPanel from '../top-panel/TopPanel';
-import Battlefield from '../battlefield/Battlefield';
+import StrategyMap from '../strategy-map/StrategyMap';
 import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import CastSpellDialog from '../dialogs/CastSpellDialog';
@@ -124,7 +124,7 @@ const MainViewContent: React.FC = () => {
       {/* Content components */}
       <TopPanel height={TOP_PANEL_HEIGHT} tileDimensions={TILE_SIZE} />
 
-      <Battlefield
+      <StrategyMap
         topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
         tileSize={TILE_SIZE}
         key={`map-${gameStarted}`}

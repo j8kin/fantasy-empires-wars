@@ -240,8 +240,8 @@ describe('Calculate Mana', () => {
     ];
     gameStateStub = createGameStateStub({
       gamePlayers: players,
-      realBattlefield: true,
-      battlefieldSize: { rows: 5, cols: 30 },
+      realStrategyMap: true,
+      strategyMapSize: { rows: 5, cols: 30 },
     });
     // calculate baseMana per turn for each player
     const basePlayersMana = gameStateStub.players.map((p) => baseMana(p));

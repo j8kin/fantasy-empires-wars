@@ -67,7 +67,6 @@ describe('OpponentInfoPopup', () => {
       setTileController: jest.fn(),
       addBuildingToTile: jest.fn(),
       updateTileArmy: jest.fn(),
-      changeBattlefieldSize: jest.fn(),
       nextTurn: jest.fn(),
       updateGameState: jest.fn(),
       getTile: jest.fn(),

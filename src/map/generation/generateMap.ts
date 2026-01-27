@@ -41,7 +41,7 @@ const getRandomNoneNeighbor = (battlefield: MapState, pos: LandPosition): LandSt
   return getRandomElement(noneNeighbors);
 };
 
-const createEmptyBattlefield = (dimensions: MapDimensions): MapLands => {
+const createEmptyStrategyMap = (dimensions: MapDimensions): MapLands => {
   const battlefield: MapLands = {};
   for (let row = 0; row < dimensions.rows; row++) {
     const colsInRow = row % 2 === 0 ? dimensions.cols : dimensions.cols - 1;
@@ -111,7 +111,7 @@ const placeSpecialLand = (battlefield: MapState, landKind: LandType) => {
 export const generateMap = (dimensions: MapDimensions): MapState => {
   const battlefield: MapState = {
     dimensions: dimensions,
-    lands: createEmptyBattlefield(dimensions),
+    lands: createEmptyStrategyMap(dimensions),
   };
 
   getMainSpecialLandKinds().forEach((specialLandKind) => placeSpecialLand(battlefield, specialLandKind));

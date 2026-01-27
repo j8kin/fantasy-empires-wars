@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MainView from '../../ux-components/main-view/MainView';
-import { BattlefieldProps } from '../../ux-components/battlefield/Battlefield';
+import { StrategyMapProps } from '../../ux-components/strategy-map/StrategyMap';
 import { OpponentInfoProps } from '../../ux-components/popups/OpponentInfoPopup';
 import { SelectOpponentDialogProps } from '../../ux-components/dialogs/SelectOpponentDialog';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
@@ -47,9 +47,9 @@ jest.mock('../../ux-components/top-panel/TopPanel', () => {
   };
 });
 
-jest.mock('../../ux-components/battlefield/Battlefield', () => {
-  return (props: BattlefieldProps) => {
-    return <div data-testid="Battlefield" data-top={props.topPanelHeight} />;
+jest.mock('../../ux-components/strategy-map/StrategyMap', () => {
+  return (props: StrategyMapProps) => {
+    return <div data-testid="StrategyMap" data-top={props.topPanelHeight} />;
   };
 });
 
@@ -129,10 +129,10 @@ describe('MainView Component', () => {
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
   });
 
-  it('renders Battlefield with correct props', () => {
+  it('renders StrategyMap with correct props', () => {
     renderWithProvider(<MainView />);
-    const battlefield = screen.getByTestId('Battlefield');
-    expect(battlefield).toBeInTheDocument();
+    const strategyMap = screen.getByTestId('StrategyMap');
+    expect(strategyMap).toBeInTheDocument();
   });
 
   it('shows NewGameDialog initially', () => {
@@ -152,7 +152,7 @@ describe('MainView Component', () => {
       expect(screen.getByTestId('NewGameDialog')).toBeInTheDocument();
     });
 
-    it('updates battlefield size based on game config', () => {
+    it('updates StrategyMap size based on game config', () => {
       renderWithProvider(<MainView />);
 
       // Mock a different map size by modifying the mock
@@ -268,16 +268,16 @@ describe('MainView Component', () => {
   });
 
   describe('Component Integration', () => {
-    it('calculates battlefield top position correctly', () => {
+    it('calculates StrategyMap top position correctly', () => {
       renderWithProvider(<MainView />);
 
-      const battlefield = screen.getByTestId('Battlefield');
+      const strategyMap = screen.getByTestId('StrategyMap');
       // TOP_PANEL_HEIGHT (300) - Math.min(defaultTileSize.height, defaultTileSize.width)
       // Assuming defaultTileSize has reasonable dimensions
-      expect(battlefield).toHaveAttribute('data-top');
+      expect(strategyMap).toHaveAttribute('data-top');
     });
 
-    it('updates battlefield key when game restarts', () => {
+    it('updates StrategyMap key when game restarts', () => {
       renderWithProvider(<MainView />);
 
       // Start game
@@ -287,8 +287,8 @@ describe('MainView Component', () => {
       fireEvent.click(screen.getByText('New Game'));
       fireEvent.click(screen.getByText('Start Game'));
 
-      // Battlefield should be re-rendered (React key change triggers re-mount)
-      expect(screen.getByTestId('Battlefield')).toBeInTheDocument();
+      // StrategyMap should be re-rendered (React key change triggers re-mount)
+      expect(screen.getByTestId('StrategyMap')).toBeInTheDocument();
     });
   });
 
@@ -330,8 +330,8 @@ describe('MainView Component', () => {
 
     it('handles defaultTileSize configuration', () => {
       renderWithProvider(<MainView />);
-      const battlefield = screen.getByTestId('Battlefield');
-      expect(battlefield).toBeInTheDocument();
+      const strategyMap = screen.getByTestId('StrategyMap');
+      expect(strategyMap).toBeInTheDocument();
       // The tileSize should be passed as defaultTileSize
     });
   });

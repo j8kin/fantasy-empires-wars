@@ -78,7 +78,7 @@ describe('Hero Quest', () => {
   };
 
   describe('Base Quest Mechanics', () => {
-    it('When player send hero to Quest it should "disappear" from Battlefield', () => {
+    it('When player send hero to Quest it should "disappear" from StrategyMap', () => {
       expect(gameStateStub.turn).toBe(2);
       expect(getTurnOwner(gameStateStub).quests).toHaveLength(0); // no quests at the game start
 

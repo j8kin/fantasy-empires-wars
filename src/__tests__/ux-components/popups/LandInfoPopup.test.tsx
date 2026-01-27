@@ -72,7 +72,7 @@ describe('LandInfoPopup', () => {
 
   beforeEach(() => {
     // Create fresh game state with real battlefield for each test
-    gameStateStub = createGameStateStub({ realBattlefield: true });
+    gameStateStub = createGameStateStub({ realStrategyMap: true });
 
     // Find a tile controlled by player 1 (Morgana Shadowweaver) AND has buildings
     mockTileState = getPlayerLands(gameStateStub, gameStateStub.players[1].id).find((l) =>

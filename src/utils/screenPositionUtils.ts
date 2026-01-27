@@ -11,11 +11,11 @@ const DEFAULT_TILE_WIDTH = 100;
 const HEX_RATIO = 1.1547;
 
 /**
- * Calculate the screen position of a hex tile's center based on its battlefield position
- * This matches the CSS layout logic in Battlefield.tsx and Hexagonal.module.css
+ * Calculate the screen position of a hex tile's center based on its StrategyMap position
+ * This matches the CSS layout logic in StrategyMap.tsx and Hexagonal.module.css
  */
 export const calculateTileScreenPosition = (
-  battlefieldPosition: LandPosition,
+  strategyMapPosition: LandPosition,
   mapDimensions: { rows: number; cols: number },
   windowDimensions: { width: number; height: number } = {
     width: typeof window !== 'undefined' ? window.innerWidth : 1920,
@@ -27,7 +27,7 @@ export const calculateTileScreenPosition = (
     height: windowDimensions.height - TOP_PANEL_HEIGHT,
   };
 
-  // Calculate hex tile size (matches getHexTileSize from Battlefield.tsx)
+  // Calculate hex tile size (matches getHexTileSize from StrategyMap.tsx)
   const effectiveCols = mapDimensions.cols + 0.5;
   const calculatedWidthFromArea = (availableArea.width - 100) / effectiveCols;
 
@@ -39,7 +39,7 @@ export const calculateTileScreenPosition = (
   const tileHeight = tileWidth * HEX_RATIO;
 
   // Calculate position in the hex grid
-  const { row, col } = battlefieldPosition;
+  const { row, col } = strategyMapPosition;
 
   // Calculate X position
   let x: number;

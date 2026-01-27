@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './css/Battlefield.module.css';
+import styles from './css/StrategyMap.module.css';
 import hexStyles from './css/Hexagonal.module.css';
 
 import FantasyBorderFrame from '../fantasy-border-frame/FantasyBorderFrame';
@@ -10,23 +10,23 @@ import { getLandId } from '../../state/map/land/LandId';
 import type { MapDimensions } from '../../state/map/MapDimensions';
 import type { FrameSize } from '../../contexts/ApplicationContext';
 
-export interface BattlefieldProps {
+export interface StrategyMapProps {
   topPanelHeight: number;
   tileSize: FrameSize;
 }
 
-const getHexTileSize = (battlefieldDimensions: MapDimensions, availableArea: FrameSize): FrameSize => {
+const getHexTileSize = (strategyMapDimensions: MapDimensions, availableArea: FrameSize): FrameSize => {
   const defaultWidth = 100;
   const hexRatio = 1.1547; // sqrt(3) for pointy-topped hexagon
 
   // Calculate width based on available horizontal space
   // Account for hex row offset (even rows are offset by 0.5 tile width) and some padding
-  const effectiveCols = battlefieldDimensions.cols + 0.5; // Add 0.5 for the offset
+  const effectiveCols = strategyMapDimensions.cols + 0.5; // Add 0.5 for the offset
   const calculatedWidthFromArea = (availableArea.width - 100) / effectiveCols; // 40px for padding
 
   // Calculate width based on available vertical space
   // Account for row overlap (rows overlap by 25% of tile height)
-  const effectiveRows = battlefieldDimensions.rows + 0.25; // Overlap calculation
+  const effectiveRows = strategyMapDimensions.rows + 0.25; // Overlap calculation
   const availableHeightPerRow = (availableArea.height - 100) / effectiveRows; // 40px for padding
   const calculatedWidthFromHeight = availableHeightPerRow / hexRatio;
 
@@ -37,10 +37,10 @@ const getHexTileSize = (battlefieldDimensions: MapDimensions, availableArea: Fra
   return { width, height };
 };
 
-const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) => {
+const StrategyMap: React.FC<StrategyMapProps> = ({ topPanelHeight, tileSize }) => {
   const { gameState } = useGameContext();
 
-  // Battlefield generated at application startup, but gameState is not initialized yet - use dummy map size
+  // StrategyMap generated at application startup, but gameState is not initialized yet - use dummy map size
   const { rows, cols } = gameState?.map.dimensions || { rows: 1, cols: 1 };
   const availableArea = {
     width: window.innerWidth,
@@ -79,8 +79,8 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
       zIndex={90}
     >
       <div
-        id="Battlefield"
-        data-testid="Battlefield"
+        id="StrategyMap"
+        data-testid="StrategyMap"
         className={styles.mapContainer}
         style={
           {
@@ -98,4 +98,4 @@ const Battlefield: React.FC<BattlefieldProps> = ({ topPanelHeight, tileSize }) =
     </FantasyBorderFrame>
   );
 };
-export default Battlefield;
+export default StrategyMap;

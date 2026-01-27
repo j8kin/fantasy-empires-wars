@@ -16,25 +16,25 @@ import { BuildingName } from '../../types/Building';
 import { generateMockMap } from './generateMockMap';
 import { placeUnitsOnMap } from './placeUnitsOnMap';
 
-export const defaultBattlefieldSizeStub = { rows: 10, cols: 20 };
+export const defaultStrategyMapSizeStub = { rows: 10, cols: 20 };
 export const createDefaultGameStateStub = (): GameState => createGameStateStub({});
 
 export const createGameStateStub = ({
   nPlayers = 3,
   gamePlayers,
-  battlefieldSize = defaultBattlefieldSizeStub,
-  realBattlefield = false,
+  strategyMapSize = defaultStrategyMapSizeStub,
+  realStrategyMap = false,
   addPlayersHomeland = true,
 }: {
   nPlayers?: number;
   gamePlayers?: PlayerProfile[];
-  battlefieldSize?: MapDimensions;
-  realBattlefield?: boolean;
+  strategyMapSize?: MapDimensions;
+  realStrategyMap?: boolean;
   addPlayersHomeland?: boolean;
 }): GameState => {
   const playersProfile = gamePlayers ?? PREDEFINED_PLAYERS.slice(0, nPlayers);
 
-  const map = realBattlefield ? generateMap(battlefieldSize) : generateMockMap(battlefieldSize);
+  const map = realStrategyMap ? generateMap(strategyMapSize) : generateMockMap(strategyMapSize);
   const stubGameState: GameState = gameStateFactory(map);
   playersProfile.forEach((p, idx) => addPlayerToGameState(stubGameState, p, idx === 0 ? 'human' : 'computer'));
 

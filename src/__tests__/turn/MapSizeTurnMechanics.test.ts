@@ -16,7 +16,7 @@ describe('Turn Mechanics with Different Map Sizes', () => {
 
     return createGameStateStub({
       nPlayers: 2,
-      battlefieldSize: dimensions[mapSize],
+      strategyMapSize: dimensions[mapSize],
     });
   };
 
