@@ -260,8 +260,8 @@ const getRecruitmentSlots = (
     case Doctrine.ANTI_MAGIC:
       buildingTraits[BuildingName.BARRACKS] = {
         0: new Set([...allRegularUnits.filter(not(isDrivenType))]),
-        1: new Set([...allWarMachines]),
-        2: new Set([...allMightHeroes.filter(not(isDrivenType))]),
+        1: new Set([...allRegularUnits.filter(not(isDrivenType)), ...allWarMachines]),
+        2: new Set([...allWarMachines]),
       };
       break;
     default:

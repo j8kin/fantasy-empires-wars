@@ -408,71 +408,91 @@ describe('RecruitArmyDialog', () => {
       expect(screen.queryByTestId('flipbook-slot-buildSlot3')).not.toBeInTheDocument();
     });
 
-    it("handles icon click to recruit, keeps dialog open if unit isn't in all slots, and shows remaining slots for Nullwarden", async () => {
+    it('handles icon click to recruit to recruit regulars and then warmachines', async () => {
       gameStateStub = createGameStateStub({
-        // player 16 is Nullwarden and his recruit restrictions are:
-        // one slot for regular units only
-        // one slot for war-machines only
-        // one slot for hero units only
-        gamePlayers: [PREDEFINED_PLAYERS[16], PREDEFINED_PLAYERS[0]],
+        // first 2 slots are available for regular units
+        // the last 2 slots for war-machines
+        gamePlayers: [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.ANTI_MAGIC)!, PREDEFINED_PLAYERS[0]],
       });
       construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
 
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
 
-      // click on icon to recruit all posible units the same type
+      expect(screen.getByTestId(`flipbook-page-Warrior Nullwarden`)).toBeInTheDocument();
+      Object.values(WarMachineName).forEach((warMachine) => {
+        expect(screen.getByTestId(`flipbook-page-${warMachine}`)).toBeInTheDocument();
+      });
+
+      // click on icon to recruit all possible regular units (they are first in list) the same type
       await user.click(screen.getAllByTestId('flipbook-icon')[0]);
 
-      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(2);
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(1);
+      // verify available units to recruit
+      expect(screen.queryByText(`flipbook-page-Warrior Nullwarden`)).not.toBeInTheDocument();
+      Object.values(WarMachineName).forEach((warMachine) => {
+        expect(screen.getByTestId(`flipbook-page-${warMachine}`)).toBeInTheDocument();
+      });
+
       expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(5); // 4 war-machines + Zealot-hero
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(5); // 4 war-machines + Zealot-hero
+      expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(4); // 4 war-machines
 
       // click on Icon one more time to use the rest of the slots
       await user.click(screen.getAllByTestId('flipbook-icon')[0]);
 
-      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(1);
+      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(0);
+      // verify available units to recruit
+      expect(screen.queryByText(`flipbook-page-Warrior Nullwarden`)).not.toBeInTheDocument();
+      Object.values(WarMachineName).forEach((warMachine) => {
+        expect(screen.queryByText(`flipbook-page-${warMachine}`)).not.toBeInTheDocument();
+      });
+
       expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
       expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(1); // Zealot-hero
+      expect(screen.queryByTestId('flipbook-slot-buildSlot3')).not.toBeInTheDocument();
     });
 
-    it('handles icon click to recruit, when click 3 times on Icon for Nullwarden', async () => {
+    it('handles icon click to recruit warmachins and then regulars', async () => {
       gameStateStub = createGameStateStub({
-        // player 16 is Nullwarden and his recruit restrictions are:
-        // one slot for regular units only
-        // one slot for war-machines only
-        // one slot for hero units only
-        gamePlayers: [PREDEFINED_PLAYERS[16], PREDEFINED_PLAYERS[0]],
+        // first 2 slots are available for regular units
+        // the last 2 slots for war-machines
+        gamePlayers: [PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.ANTI_MAGIC)!, PREDEFINED_PLAYERS[0]],
       });
       construct(gameStateStub, BuildingName.BARRACKS, barracksPos);
 
       const user = userEvent.setup();
       renderWithProviders(<RecruitArmyDialog />);
 
-      /******************* click on icon to recruit all posible units the same type *******************/
-      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
-
-      expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(2);
-      expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot2')).toHaveLength(5); // 4 war-machines + Zealot-hero
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(5); // 4 war-machines + Zealot-hero
-
-      /****************** click on Icon one more time to use the rest of the slots *******************/
-      await user.click(screen.getAllByTestId('flipbook-icon')[0]);
+      // verify available units to recruit
+      expect(screen.getByTestId(`flipbook-page-Warrior Nullwarden`)).toBeInTheDocument();
+      Object.values(WarMachineName).forEach((warMachine) => {
+        expect(screen.getByTestId(`flipbook-page-${warMachine}`)).toBeInTheDocument();
+      });
+      /******************* click on icon to recruit all possible warmchines units the same type *******************/
+      await user.click(screen.getAllByTestId('flipbook-icon')[1]);
 
       expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(1);
+      // verify available units to recruit
+      expect(screen.getByTestId(`flipbook-page-Warrior Nullwarden`)).toBeInTheDocument();
+      Object.values(WarMachineName).forEach((warMachine) => {
+        expect(screen.queryByTestId(`flipbook-page-${warMachine}`)).not.toBeInTheDocument();
+      });
+
+      // only one slot remian available for recruiting (regulars)
       expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
       expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
-      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(1); // Zealot-hero
+      expect(screen.getAllByTestId('flipbook-slot-buildSlot3')).toHaveLength(1); // regulars are available
 
       /****************** click on Icon one more time to use the rest of the slots *******************/
       await user.click(screen.getAllByTestId('flipbook-icon')[0]);
 
-      expect(screen.queryByTestId('flip-book')).not.toBeInTheDocument(); // dialog closed
-
       expect(getAvailableSlotsCount(getLand(gameStateStub, barracksPos).buildings[0])).toBe(0);
+      // verify available units to recruit
+      expect(screen.queryByText(`flipbook-page-Warrior Nullwarden`)).not.toBeInTheDocument();
+      Object.values(WarMachineName).forEach((warMachine) => {
+        expect(screen.queryByText(`flipbook-page-${warMachine}`)).not.toBeInTheDocument();
+      });
       expect(screen.queryByTestId('flipbook-slot-buildSlot1')).not.toBeInTheDocument();
       expect(screen.queryByTestId('flipbook-slot-buildSlot2')).not.toBeInTheDocument();
       expect(screen.queryByTestId('flipbook-slot-buildSlot3')).not.toBeInTheDocument();
@@ -649,21 +669,24 @@ describe('RecruitArmyDialog', () => {
 
     describe('Player with Anti-Magic Doctrine', () => {
       it.each([
-        [LandName.SWAMP, RegularUnitName.ORC, HeroUnitName.OGR],
-        [LandName.BLIGHTED_FEN, RegularUnitName.ORC, HeroUnitName.OGR],
-        [LandName.SHADOW_MIRE, RegularUnitName.ORC, HeroUnitName.OGR],
-        [LandName.MOUNTAINS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
-        [LandName.SUN_SPIRE_PEAKS, RegularUnitName.DWARF, HeroUnitName.HAMMER_LORD],
-        [LandName.PLAINS, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
-        [LandName.CRISTAL_BASIN, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
-        [LandName.MISTY_GLADES, RegularUnitName.WARRIOR, HeroUnitName.FIGHTER],
-        [LandName.GREEN_FOREST, RegularUnitName.ELF, HeroUnitName.RANGER],
-        [LandName.DARK_FOREST, RegularUnitName.DARK_ELF, HeroUnitName.SHADOW_BLADE],
+        [LandName.SWAMP, RegularUnitName.ORC],
+        [LandName.BLIGHTED_FEN, RegularUnitName.ORC],
+        [LandName.SHADOW_MIRE, RegularUnitName.ORC],
+        [LandName.MOUNTAINS, RegularUnitName.DWARF],
+        [LandName.SUN_SPIRE_PEAKS, RegularUnitName.DWARF],
+        [LandName.PLAINS, RegularUnitName.WARRIOR],
+        [LandName.CRISTAL_BASIN, RegularUnitName.WARRIOR],
+        [LandName.MISTY_GLADES, RegularUnitName.WARRIOR],
+        [LandName.GREEN_FOREST, RegularUnitName.ELF],
+        [LandName.DARK_FOREST, RegularUnitName.DARK_ELF],
       ])(
-        'should allow Nulwarden recruit in %s land %s Nullwarden regular',
-        (landType: LandType, regularUnitName: RegularUnitType, heroUnitName: HeroUnitType) => {
+        'should allow Nulwarden recruit in %s land %s Nullwarden regular and not allow hero units',
+        (landType: LandType, regularUnitName: RegularUnitType) => {
           const lands = gameStateStub.players[0].landsOwned;
-          gameStateStub.players[0] = playerFactory(PREDEFINED_PLAYERS[16], 'human'); // replace player
+          gameStateStub.players[0] = playerFactory(
+            PREDEFINED_PLAYERS.find((p) => p.doctrine === Doctrine.ANTI_MAGIC)!,
+            'human'
+          ); // replace player
           gameStateStub.players[0].landsOwned = lands; // copy lands
           gameStateStub.turnOwner = gameStateStub.players[0].id;
           expect(getTurnOwner(gameStateStub).playerProfile.type).toBe(HeroUnitName.FIGHTER);
@@ -678,14 +701,15 @@ describe('RecruitArmyDialog', () => {
           expect(screen.getByTestId('flip-book')).toBeInTheDocument();
           //expect(screen.getAllByTestId('flipbook-slot-buildSlot1')).toHaveLength(6); // only 6 type of units could be recruited in barracks
           // hero unit
-          expect(screen.getByTestId(`flipbook-page-${heroUnitName} Nullwarden`)).toBeInTheDocument();
+          Object.values(HeroUnitName).forEach((unit) => {
+            expect(screen.queryByText(`flipbook-page-${unit} Nullwarden`)).not.toBeInTheDocument();
+          });
           // regular unit
           expect(screen.getByTestId(`flipbook-page-${regularUnitName} Nullwarden`)).toBeInTheDocument();
           // war-machines
-          expect(screen.getByTestId('flipbook-page-Ballista')).toBeInTheDocument();
-          expect(screen.getByTestId('flipbook-page-Catapult')).toBeInTheDocument();
-          expect(screen.getByTestId('flipbook-page-Battering Ram')).toBeInTheDocument();
-          expect(screen.getByTestId('flipbook-page-Siege Tower')).toBeInTheDocument();
+          Object.values(WarMachineName).forEach((warMachine) => {
+            expect(screen.getByTestId(`flipbook-page-${warMachine}`)).toBeInTheDocument();
+          });
         }
       );
     });
