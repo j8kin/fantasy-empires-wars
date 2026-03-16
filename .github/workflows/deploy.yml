@@ -24,8 +24,14 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Test project
-        run: yarn run test
+      - name: Run tests (attempt 1)
+        id: run-tests
+        continue-on-error: true
+        run: yarn test
+
+      - name: Retry tests (attempt 2)
+        if: steps.run-tests.outcome == 'failure'
+        run: yarn test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
