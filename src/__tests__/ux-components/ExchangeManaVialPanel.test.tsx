@@ -10,7 +10,7 @@ import ExchangeManaVialPanel from '../../ux-components/vial-panel/ExchangeManaVi
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { nextPlayer } from '../../systems/playerActions';
 import { castSpell } from '../../map/magic/castSpell';
-import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
+import { calculateManaConversionAmount } from '../../map/magic/manaConversion';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { Mana } from '../../types/Mana';
 import { Alignment } from '../../types/Alignment';

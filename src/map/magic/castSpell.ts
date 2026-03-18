@@ -25,18 +25,18 @@ import {
   updatePlayerMana,
 } from '../../systems/gameStateActions';
 import { addArmyToGameState, addRegulars, updateArmyInGameState } from '../../systems/armyActions';
-import { applyArmyCasualtiesAtPosition } from './applyArmyCasualties';
 import { effectFactory } from '../../factories/effectFactory';
 import { regularsFactory } from '../../factories/regularsFactory';
 import { armyFactory } from '../../factories/armyFactory';
 import { movementFactory } from '../../factories/movementFactory';
 import { getMultipleRandomElements, getRandomInt } from '../../domain/utils/random';
 import { isDrivenType, isRegularUnit } from '../../domain/unit/unitTypeChecks';
+import { getLandGoldPerTurn, getLandUnitsToRecruit } from '../../domain/land/landRepository';
 import { destroyBuilding } from '../building/destroyBuilding';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
-import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
+import { applyArmyCasualtiesAtPosition } from './applyArmyCasualties';
+import { calculateManaConversionAmount } from './manaConversion';
 import { getValidMagicLands } from './getValidMagicLands';
-import { getLandGoldPerTurn, getLandUnitsToRecruit } from '../../domain/land/landRepository';
 import { Doctrine } from '../../state/player/PlayerProfile';
 import { SpellName } from '../../types/Spell';
 import { Mana } from '../../types/Mana';

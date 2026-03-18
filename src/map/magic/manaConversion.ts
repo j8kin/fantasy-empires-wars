@@ -1,7 +1,7 @@
-import { Mana } from '../types/Mana';
-import { Alignment } from '../types/Alignment';
-import type { ManaType } from '../types/Mana';
-import type { AlignmentType } from '../types/Alignment';
+import { Mana } from '../../types/Mana';
+import { Alignment } from '../../types/Alignment';
+import type { ManaType } from '../../types/Mana';
+import type { AlignmentType } from '../../types/Alignment';
 
 /**
  * Calculates the mana conversion amount based on player alignment and target mana type.

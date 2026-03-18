@@ -8,7 +8,7 @@ import { useGameContext } from '../../contexts/GameContext';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { castSpell } from '../../map/magic/castSpell';
-import { calculateManaConversionAmount } from '../../utils/manaConversionUtils';
+import { calculateManaConversionAmount } from '../../map/magic/manaConversion';
 import { Mana } from '../../types/Mana';
 import { SpellName } from '../../types/Spell';
 
