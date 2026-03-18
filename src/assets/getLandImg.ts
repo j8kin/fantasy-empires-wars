@@ -56,3 +56,6 @@ const landCorruptedImg: Partial<Record<LandType, string>> = {
 export const getLandImg = (land: LandState): string | undefined => {
   return land.corrupted ? landCorruptedImg[land.type] : landNormalImg[land.type];
 };
+
+export const getAllLandImages = (): string[] =>
+  [...Object.values(landNormalImg), ...Object.values(landCorruptedImg)] as string[];

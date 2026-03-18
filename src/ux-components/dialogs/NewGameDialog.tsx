@@ -12,6 +12,7 @@ import { addPlayerToGameState } from '../../systems/playerActions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { generateMap } from '../../map/generation/generateMap';
+import { preloadGameImages } from '../../assets/preloadGameImages';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { PLAYER_COLORS } from '../../types/PlayerColors';
 import { ButtonName } from '../../types/ButtonName';
@@ -204,15 +205,22 @@ const NewGameDialog: React.FC = () => {
     ]
   );
 
-  const handleStartGame = useCallback(() => {
+  const handleStartGame = useCallback(async () => {
     const opponents =
       opponentSelectionMode === 'random'
         ? selectedOpponents.filter((o) => o != null)
         : selectedOpponents.filter((o) => o != null).filter((o) => o.id !== NO_PLAYER.id);
 
     setShowStartWindow(false);
-    setProgressMessage('Creating new game...');
+    setProgressMessage('Loading game assets... 0%');
     setShowProgressPopup(true);
+
+    await preloadGameImages((loaded, total) => {
+      const pct = Math.round((loaded / total) * 100);
+      setProgressMessage(`Loading game assets... ${pct}%`);
+    });
+
+    setProgressMessage('Creating new game...');
 
     setTimeout(() => {
       const map = generateMap(mapSizeDimension[mapSize]);

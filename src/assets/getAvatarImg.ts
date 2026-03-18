@@ -51,3 +51,5 @@ const avatars: Record<string, string> = {
 export const getAvatarImg = (name: string) => {
   return avatars[name];
 };
+
+export const getAllAvatarImages = (): string[] => Object.values(avatars);
