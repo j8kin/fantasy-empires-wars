@@ -105,7 +105,7 @@ describe('FlipBookPage Component', () => {
     it('should apply custom style prop', () => {
       render(<FlipBookPage {...defaultProps} style={{ backgroundColor: 'red' }} />);
       const page = screen.getByTestId('flipbook-page-' + defaultProps.header);
-      expect(page).toHaveStyle({ backgroundColor: 'red' });
+      expect(page.style.backgroundColor).toBe('red');
     });
   });
 
