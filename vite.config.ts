@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/fantasy-empires-wars/',
+  base: process.env.VITE_BASE ?? '/fantasy-empires-wars/',
   resolve: {
     alias: {
       'react-native': 'react-native-web',
