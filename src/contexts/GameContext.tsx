@@ -1,4 +1,5 @@
-import React, { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { phaserEventBus, PhaserEvents } from '../phaser/phaserEventBus';
 import { TurnManager, TurnManagerCallbacks } from '../turn/TurnManager';
 import type { GameState } from '../state/GameState';
 import type { TurnPhaseType } from '../turn/TurnPhase';
@@ -103,6 +104,12 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const setTurnManagerCallbacks = useCallback((callbacks: Partial<TurnManagerCallbacks>) => {
     turnManagerCallbacksRef.current = { ...turnManagerCallbacksRef.current, ...callbacks };
   }, []);
+
+  useEffect(() => {
+    if (gameState && phaserEventBus.listenerCount(PhaserEvents.STATE_UPDATE) > 0) {
+      phaserEventBus.emit(PhaserEvents.STATE_UPDATE, gameState);
+    }
+  }, [gameState]);
 
   const contextValue: GameContextType = {
     gameState,
