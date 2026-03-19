@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - 'release/**'
-
+  pull_request:
+    types: [ closed ]
+    branches:
+      - 'release/**'
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
