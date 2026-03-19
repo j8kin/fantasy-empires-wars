@@ -22,6 +22,7 @@ import RealmEventsPopup from '../popups/RealmEventsPopup';
 
 import SpellCastAnimation from '../animations/SpellCastAnimation';
 
+import { PhaserGameInstance } from '../../phaser/PhaserGameInstance';
 import { ApplicationContextProvider, useApplicationContext } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
@@ -129,6 +130,13 @@ const MainViewContent: React.FC = () => {
         tileSize={TILE_SIZE}
         key={`map-${gameStarted}`}
       />
+
+      {/* Phase 2 dev: Phaser canvas stub below existing Battlefield for side-by-side QA */}
+      {gameStarted && (
+        <div style={{ width: '100%', height: '60vh', marginTop: '1rem' }}>
+          <PhaserGameInstance />
+        </div>
+      )}
 
       {/*Game Dialogs */}
 
