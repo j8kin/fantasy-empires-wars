@@ -87,7 +87,7 @@ No canvas, no WebGL.
 | Hex tile rendering         | `Battlefield.tsx` CSS     | Phaser `OverworldScene`     |
 | Land type texture          | CSS background-image      | Phaser sprite/graphic       |
 | Player colour tint         | CSS `::after` overlay     | Phaser tint                 |
-| Army badge (count)         | DOM elements              | Phaser text + sprite        |
+| Army presence marker       | DOM elements              | Phaser flag/banner sprite   |
 | Building icons             | DOM `<img>`               | Phaser sprite on tile layer |
 | Selection glow / highlight | CSS class toggle          | Phaser graphics outline     |
 | Army movement animation    | None                      | Phaser tween along path     |
@@ -315,14 +315,21 @@ const drawHexCell = (graphics: Phaser.GameObjects.Graphics, cell: LandState) => 
 
 ### 5.4 Army Layer
 
-Each `ArmyState` becomes a sprite group positioned at its hex tile centre:
+> **Rollback candidate** — evaluate visually during Phase 5 QA before committing.
 
-- Player-coloured circular token or avatar sprite
-- Text badge showing total unit count
-- Hero name label if hero present
+Each `ArmyState` is represented by a small flag/banner sprite positioned at its
+hex tile centre:
+
+- Single shared flag/banner asset (~20–24 px), tinted with the owning player's colour
+- No text badge, no unit count, no hero label — army details are available via
+  right-click popup (existing behaviour, unchanged)
+- Chosen over figurine/token approaches because it has a low visual footprint and
+  can be swapped for a different sprite (shield, crest, avatar) with minimal effort
 - Tweened position during movement animation
 
 ### 5.5 Building Icons
+
+> **Rollback candidate** — evaluate visually during Phase 5 QA before committing.
 
 Building sprites rendered on a dedicated layer above terrain, below armies.
 One sprite per building type per tile; coordinates are the tile centre offset
@@ -801,17 +808,21 @@ files. Set up alongside RTS scene implementation, not TBS migration.
 
 ### Phase 5 — Army & Building Sprites
 
-| #   | Task                                                                            | Files Affected                                       |
-|-----|---------------------------------------------------------------------------------|------------------------------------------------------|
-| 5.1 | Implement `ArmyLayer`: one sprite/token per `ArmyState` at hex tile centre      | `OverworldScene.ts`                                  |
-| 5.2 | Add unit-count text badge on army token                                         | `OverworldScene.ts`                                  |
-| 5.3 | Emit `ARMY_CLICKED(army)` on army sprite click (differentiated from tile click) | `OverworldScene.ts`                                  |
-| 5.4 | Implement building icon sprites on tile layer                                   | `OverworldScene.ts`                                  |
-| 5.5 | Implement army movement tween (triggered by position delta in `STATE_UPDATE`)   | `OverworldScene.ts`                                  |
-| 5.6 | Replace `SpellCastAnimation.tsx` with Phaser particle emitter per spell school  | `OverworldScene.ts`, delete `SpellCastAnimation.tsx` |
-| 5.7 | Camera drag + scroll-zoom for large maps                                        | `OverworldScene.ts`                                  |
-| 5.8 | `yarn test` — must stay green                                                   | —                                                    |
-| 5.9 | `yarn build` — must stay green                                                  | —                                                    |
+> §5.1 and §5.4 are rollback candidates — if the map looks too cluttered during
+> QA, remove the sprites and rely on the glow/selection system alone.
+
+| #   | Task                                                                                                      | Files Affected                                       |
+|-----|-----------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| 5.1 | Implement `ArmyLayer`: one flag/banner sprite per `ArmyState`, tinted to player colour, no text           | `OverworldScene.ts`                                  |
+| 5.2 | Emit `ARMY_CLICKED(army)` on army sprite click (differentiated from tile click)                           | `OverworldScene.ts`                                  |
+| 5.3 | **Visual QA checkpoint**: assess map noise from army flags; roll back 5.1 if too cluttered                | manual                                               |
+| 5.4 | Implement building icon sprites on tile layer                                                             | `OverworldScene.ts`                                  |
+| 5.5 | **Visual QA checkpoint**: assess map noise from building icons; roll back 5.4 if too cluttered            | manual                                               |
+| 5.6 | Implement army movement tween (triggered by position delta in `STATE_UPDATE`)                             | `OverworldScene.ts`                                  |
+| 5.7 | Replace `SpellCastAnimation.tsx` with Phaser particle emitter per spell school                            | `OverworldScene.ts`, delete `SpellCastAnimation.tsx` |
+| 5.8 | Camera drag + scroll-zoom for large maps                                                                  | `OverworldScene.ts`                                  |
+| 5.9 | `yarn test` — must stay green                                                                             | —                                                    |
+| 5.10| `yarn build` — must stay green                                                                            | —                                                    |
 
 ### Phase 6 — Auto-Resolve Battle (TBS)
 
