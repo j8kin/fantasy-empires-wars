@@ -28,7 +28,10 @@ describe('phaserEventBus', () => {
 
   it('emits GLOW_TILES with an array of positions', () => {
     const listener = jest.fn();
-    const positions = [{ row: 0, col: 0 }, { row: 1, col: 1 }];
+    const positions = [
+      { row: 0, col: 0 },
+      { row: 1, col: 1 },
+    ];
 
     phaserEventBus.on(PhaserEvents.GLOW_TILES, listener);
     phaserEventBus.emit(PhaserEvents.GLOW_TILES, positions);
