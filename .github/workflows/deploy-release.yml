@@ -1,0 +1,42 @@
+name: Deploy Release to GitHub Pages
+
+on:
+  push:
+    branches:
+      - 'release/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Extract release version from branch name
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#release/}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build project
+        run: yarn run build
+        env:
+          VITE_BASE: /fantasy-empires-wars/releases/${{ steps.version.outputs.version }}/
+
+      - name: Deploy to GitHub Pages (release subdirectory)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: releases/${{ steps.version.outputs.version }}
+          keep_files: true
