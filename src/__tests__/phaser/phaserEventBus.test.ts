@@ -1,4 +1,4 @@
-import { phaserEventBus, PhaserEvents } from '../phaserEventBus';
+import { phaserEventBus, PhaserEvents } from '../../phaser/phaserEventBus';
 
 describe('phaserEventBus', () => {
   afterEach(() => {
