@@ -12,6 +12,7 @@ interface LandRecordType {
   unitsToRecruit: UnitType[];
   goldPerTurn: { min: number; max: number };
   description: string;
+  color: number;
 }
 
 const allWarMachines = Object.values(WarMachineName);
@@ -32,6 +33,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 650, max: 1000 },
     description: 'Wide open fields where wind carries old war songs, and wanderers vanish beneath endless sky.',
+    color: 0x90ee90, // Light green
   },
   [LandName.MOUNTAINS]: {
     alignment: Alignment.LAWFUL,
@@ -45,6 +47,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 900, max: 1150 },
     description: 'Stone giants forged in ancient upheaval; their frozen peaks guard secrets older than kingdoms.',
+    color: 0x8b7355, // Brown
   },
   [LandName.GREEN_FOREST]: {
     alignment: Alignment.LAWFUL,
@@ -58,6 +61,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 800, max: 950 },
     description: 'Sunlit woods where gentle spirits linger, guiding hunters, wanderers, and the lost.',
+    color: 0x228b22, // Forest green
   },
   [LandName.DARK_FOREST]: {
     alignment: Alignment.CHAOTIC,
@@ -71,6 +75,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 800, max: 950 },
     description: 'A brooding woodland where moonlight falters, and unseen things watch from between twisted boughs.',
+    color: 0x1a4d1a, // Dark green
   },
   [LandName.HILLS]: {
     alignment: Alignment.NEUTRAL,
@@ -84,6 +89,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 500, max: 700 },
     description: 'Rolling highlands shaped by time and storms, favored by scouts who read stories in every ridge.',
+    color: 0xbdb76b, // Khaki/tan
   },
   [LandName.SWAMP]: {
     alignment: Alignment.CHAOTIC,
@@ -97,12 +103,14 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 350, max: 550 },
     description: 'Murk and moss entwine here, where each step sinks into whispers of forgotten, half-drowned tales.',
+    color: 0x6b8e23, // Olive drab
   },
   [LandName.DESERT]: {
     alignment: Alignment.NEUTRAL,
     unitsToRecruit: [...defaultUnitsToRecruit, RegularUnitName.GOLEM, WarMachineName.BATTERING_RAM, ...allMightHeroes],
     goldPerTurn: { min: 150, max: 270 },
     description: 'Endless dunes scorched by merciless suns, hiding relics swallowed by empires long fallen.',
+    color: 0xdaa520, // Goldenrod
   },
   // special lands
   [LandName.SUN_SPIRE_PEAKS]: {
@@ -117,6 +125,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 1000, max: 1000 },
     description: 'Radiant heights bathed in celestial fire, said to echo with the hymns of the first dawn.',
+    color: 0xd4af37, // Gold
   },
   [LandName.GOLDEN_PLAINS]: {
     alignment: Alignment.LAWFUL,
@@ -133,6 +142,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 500, max: 600 },
     description: "Grasses shimmer like sun-forged metal, nurturing harvests blessed by the land's ancient warmth.",
+    color: 0xffd700, // Gold
   },
   [LandName.HEARTWOOD_GROVE]: {
     alignment: Alignment.LAWFUL,
@@ -146,6 +156,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 1000, max: 1000 },
     description: 'The cradle of living forests, where colossal trees whisper the pulse of Orrivane itself.',
+    color: 0x556b2f, // Dark olive green
   },
   [LandName.VERDANT_GLADE]: {
     alignment: Alignment.LAWFUL,
@@ -161,6 +172,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 500, max: 600 },
     description: 'A lush sanctuary bursting with wild growth, where nature unfurls in joyous, untamed abundance.',
+    color: 0x32cd32, // Lime green
   },
   [LandName.CRISTAL_BASIN]: {
     alignment: Alignment.NEUTRAL,
@@ -174,6 +186,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 1000, max: 1000 },
     description: 'A hollow of shimmering crystal veins that catch stray moonlight, bending it into spectral hues.',
+    color: 0x87ceeb, // Sky blue
   },
   [LandName.MISTY_GLADES]: {
     alignment: Alignment.NEUTRAL,
@@ -189,6 +202,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 500, max: 600 },
     description: 'Cool lowlands veiled in drifting blue mist, where sound softens and time feels strangely thin.',
+    color: 0xb0c4de, // Light steel blue
   },
   [LandName.VOLCANO]: {
     alignment: Alignment.CHAOTIC,
@@ -202,6 +216,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 1000, max: 1000 },
     description: 'A furious mountain whose molten heart roars beneath the world, hungry for offerings of stone.',
+    color: 0xa0522d, // Sienna
   },
   [LandName.LAVA]: {
     alignment: Alignment.CHAOTIC,
@@ -217,6 +232,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 500, max: 600 },
     description: "A seething river of fire where earth's skin tears open, leaving only heat, ruin, and trembling air.",
+    color: 0xff4500, // Orange-red
   },
   [LandName.SHADOW_MIRE]: {
     alignment: Alignment.CHAOTIC,
@@ -230,6 +246,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 1000, max: 1000 },
     description: 'A stagnant bog where shadows cling to the water, feeding on fear as readily as decay.',
+    color: 0x2f4f4f, // Dark slate gray
   },
   [LandName.BLIGHTED_FEN]: {
     alignment: Alignment.CHAOTIC,
@@ -245,6 +262,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     ],
     goldPerTurn: { min: 500, max: 600 },
     description: 'Rot-soaked marshland cursed by old sorcery, where every root and reed seems to wither in despair.',
+    color: 0x4a4a2a, // Dark brownish
   },
   // used on map generation
   [LandName.NONE]: {
@@ -252,6 +270,7 @@ const landRepository: Record<LandType, LandRecordType> = {
     unitsToRecruit: [],
     goldPerTurn: { min: 0, max: 0 },
     description: '',
+    color: 0x1a1a2e, // Dark background
   },
 };
 
@@ -269,4 +288,8 @@ export const getLandUnitsToRecruit = (landType: LandType, isCorrupted: boolean):
     corruptedLandUnits.push(HeroUnitName.SHADOW_BLADE);
   }
   return corruptedLandUnits;
+};
+
+export const getLandColor = (landType: LandType): number => {
+  return landRepository[landType].color ?? 0x888888; // Default gray if not found
 };
