@@ -749,7 +749,7 @@ files. Set up alongside RTS scene implementation, not TBS migration.
 
 ## 13. Step-by-Step Development Migration Plan
 
-### Phase 0 — Preparation (no user-facing changes)
+### Phase 0 — Preparation (no user-facing changes) ✅ COMPLETED
 
 | #   | Task                                         | Files Affected      |
 |-----|----------------------------------------------|---------------------|
@@ -760,7 +760,7 @@ files. Set up alongside RTS scene implementation, not TBS migration.
 | 0.5 | `yarn test` — must stay green                | —                   |
 | 0.6 | `yarn build` — must stay green               | —                   |
 
-### Phase 1 — Event Bus (no visual change)
+### Phase 1 — Event Bus (no visual change) ✅ COMPLETED
 
 | #   | Task                                                                                             | Files Affected                 |
 |-----|--------------------------------------------------------------------------------------------------|--------------------------------|
@@ -769,7 +769,7 @@ files. Set up alongside RTS scene implementation, not TBS migration.
 | 1.3 | Add `STATE_UPDATE` emitter to `GameContext.tsx` (behind a check: only if Phaser instance exists) | `src/contexts/GameContext.tsx` |
 | 1.4 | `yarn test` — must stay green                                                                    | —                              |
 
-### Phase 2 — Phaser Canvas Stub (canvas appears, empty)
+### Phase 2 — Phaser Canvas Stub (canvas appears, empty) ✅ COMPLETED
 
 | #   | Task                                                                                                                | Files Affected |
 |-----|---------------------------------------------------------------------------------------------------------------------|----------------|
@@ -779,7 +779,7 @@ files. Set up alongside RTS scene implementation, not TBS migration.
 | 2.4 | Smoke test: `PhaserGameInstance` renders a `<div>` container (mock Phaser.Game)                                     | new test       |
 | 2.5 | Visual QA: both old grid and new canvas visible                                                                     | manual         |
 
-### Phase 3 — Hex Grid Rendering in Phaser
+### Phase 3 — Hex Grid Rendering in Phaser ✅ COMPLETED
 
 | #   | Task                                                                                                  | Files Affected                   |
 |-----|-------------------------------------------------------------------------------------------------------|----------------------------------|
@@ -788,73 +788,150 @@ files. Set up alongside RTS scene implementation, not TBS migration.
 | 3.3 | Implement `landTypeToColor()` mapping                                                                 | `src/phaser/utils/landColors.ts` |
 | 3.4 | Implement `HexGrid` in `OverworldScene.create()`: draws all tiles as filled hexagons from `GameState` | `OverworldScene.ts`              |
 | 3.5 | Subscribe to `STATE_UPDATE`: diff + redraw only changed tiles                                         | `OverworldScene.ts`              |
-| 3.6 | Preload land images from `src/assets/` and apply as tile textures                                     | `OverworldScene.ts`              |
+| 3.6 | Preload land images from `src/assets/` (for future use)                                               | `OverworldScene.ts`              |
 | 3.7 | Render player ownership tint overlay per cell                                                         | `OverworldScene.ts`              |
-| 3.8 | Visual QA: Phaser canvas matches current Battlefield appearance                                       | manual                           |
+| 3.8 | Add comprehensive unit tests for `OverworldScene`                                                      | new test                         |
+| 3.9 | Visual QA: Phaser canvas with solid-color hexagons matches current Battlefield appearance             | manual                           |
 
-### Phase 4 — Tile Interaction (click wiring)
+---
+
+## Phase 4 — Sprite-Based Land Images (Texture Rendering)
+
+> **Status: In planning. Ready for implementation after Phase 3.**
+
+### 4.1 Overview
+
+Replace solid-color hex tiles with land-type texture images. Land images already exist in `src/assets/lands/`
+and are imported in `src/assets/getLandImg.ts`. This phase loads them as Phaser textures and renders them
+on each hex tile instead of solid colors. Borders and ownership tints remain as Graphics overlays.
+
+### 4.2 Approach: Image-Based (Hybrid Graphics + Sprites)
+
+**Rendering Stack:**
+1. **Background**: Land texture image (Phaser.Image) placed at hex center, scaled to fit hex size
+2. **Border**: Graphics.strokePoints() for hex outline (1px, dark gray)
+3. **Ownership Tint**: Graphics overlay for player color tint (alpha 0.25)
+
+**Why Hybrid?**
+- Images provide visual richness (all terrain types pre-rendered)
+- Graphics provide clean borders and tints without asset modifications
+- Performant for typical maps (small to medium)
+- Easy to debug and test
+
+### 4.2.1 Dynamic Battlefield Sizing
+
+The battlefield size (grid dimensions in rows and columns) is determined by the user's selection during game creation and is stored in `GameState.map`. The hex grid rendering must:
+
+1. **Read map dimensions** from `GameState.map.lands` (not hardcoded)
+   - Determine grid size by counting unique rows and columns in the lands data
+   - Example: 12×12 map = 144 land tiles, 10×10 = 100 tiles, etc.
+
+2. **Support various map sizes** as selected by player during game creation
+   - Small maps: 8×8 (64 tiles)
+   - Standard maps: 10×10, 12×12 (100, 144 tiles)
+   - Large maps: 15×15, 20×20 (225, 400 tiles)
+   - Maximum: determined by game settings (TBD)
+
+3. **Calculate camera bounds dynamically** based on grid dimensions
+   - Instead of hardcoded `setBounds(0, 0, 2000, 2000)`
+   - Calculate based on hex positioning: `maxX = col * hexSize * spacing`, `maxY = row * hexSize * spacing`
+
+4. **Maintain aspect ratio** and responsive sizing
+   - Camera bounds should accommodate all tiles with proper margins
+   - Same approach as current solid-color rendering (no changes to interaction model)
+
+### 4.3 Performance
+
+| Metric | Current (Solid Color) | With Images | Notes |
+|--------|-------|---------|---------|
+| 10×10 map | 1 graphics draw call | 100 image sprites + 1 graphics | 100 tiles acceptable |
+| 20×20 map | 1 graphics draw call | 400 image sprites + 1 graphics | May need optimization in Phase 8 |
+| FPS (60 target) | 60 | 55-60 | Acceptable; optimize if < 50 |
+| Draw calls | ~5 | ~400 + border graphics | Within budget for single Phaser instance |
+
+**Future Optimization (Phase 8):**
+If performance is sub-optimal on 20×20+ maps, migrate to Tilemap system with single draw call.
+
+| #   | Task                                                                                                  | Files Affected                   |
+|-----|-------------------------------------------------------------------------------------------------------|----------------------------------|
+| 4.1 | Calculate grid dimensions dynamically from `GameState.map.lands` (rows/cols, not hardcoded)          | `OverworldScene.ts`              |
+| 4.2 | Calculate camera bounds dynamically based on grid size and hex spacing                                 | `OverworldScene.ts`              |
+| 4.3 | Create `src/phaser/utils/landImageManager.ts`: map land type → image key (with corrupted variants)   | new                              |
+| 4.4 | Update `OverworldScene.preload()` to load all land type images as textures                            | `OverworldScene.ts`              |
+| 4.5 | Refactor `drawHexTile()` to render image instead of solid color                                       | `OverworldScene.ts`              |
+| 4.6 | Update `drawHexTile()` to scale and center image on hex center point                                  | `OverworldScene.ts`              |
+| 4.7 | Ensure borders (Graphics.strokePoints) render on top of images                                         | `OverworldScene.ts`              |
+| 4.8 | Ensure ownership tint overlay renders on top of borders                                                | `OverworldScene.ts`              |
+| 4.9 | Handle corrupted land variants (load corrupted images for corrupted lands)                             | `OverworldScene.ts`              |
+| 4.10| Update `OverworldScene` unit tests for image-based rendering + dynamic sizing                        | `OverworldScene.test.ts`         |
+| 4.11| Performance check: various map sizes render at ≥ 55 fps (8×8, 12×12, 20×20)                           | manual                           |
+| 4.12| Visual QA: Image-based hexes match original Battlefield appearance (compare side-by-side)             | manual                           |
+
+---
+
+### Phase 5 — Tile Interaction (click wiring)
 
 | #   | Task                                                                                 | Files Affected           |
 |-----|--------------------------------------------------------------------------------------|--------------------------|
-| 4.1 | Add left-click pointer handler per hex: emit `TILE_CLICKED(pos)`                     | `OverworldScene.ts`      |
-| 4.2 | Add right-click handler: emit `TILE_RIGHT_CLICKED(pos)`                              | `OverworldScene.ts`      |
-| 4.3 | Subscribe to `TILE_CLICKED` in `ApplicationContext.tsx` (replaces React onClick)     | `ApplicationContext.tsx` |
-| 4.4 | Subscribe to `TILE_RIGHT_CLICKED` in `ApplicationContext.tsx`                        | `ApplicationContext.tsx` |
-| 4.5 | Implement glow: listen `GLOW_TILES` → draw hex outlines; `CLEAR_GLOW` → remove       | `OverworldScene.ts`      |
-| 4.6 | Wire `glowingTiles` from `ApplicationContext` to `phaserEventBus.emit(GLOW_TILES)`   | `ApplicationContext.tsx` |
-| 4.7 | End-to-end manual QA: click tile → dialog opens; glow visible                        | manual                   |
-| 4.8 | Remove `<Battlefield>` from `MainView.tsx`; delete `Battlefield.tsx`, `LandTile.tsx` | `MainView.tsx` + delete  |
-| 4.9 | `yarn test` — fix any regressions from removed components                            | —                        |
+| 5.1 | Add left-click pointer handler per hex: emit `TILE_CLICKED(pos)`                     | `OverworldScene.ts`      |
+| 5.2 | Add right-click handler: emit `TILE_RIGHT_CLICKED(pos)`                              | `OverworldScene.ts`      |
+| 5.3 | Subscribe to `TILE_CLICKED` in `ApplicationContext.tsx` (replaces React onClick)     | `ApplicationContext.tsx` |
+| 5.4 | Subscribe to `TILE_RIGHT_CLICKED` in `ApplicationContext.tsx`                        | `ApplicationContext.tsx` |
+| 5.5 | Implement glow: listen `GLOW_TILES` → draw hex outlines; `CLEAR_GLOW` → remove       | `OverworldScene.ts`      |
+| 5.6 | Wire `glowingTiles` from `ApplicationContext` to `phaserEventBus.emit(GLOW_TILES)`   | `ApplicationContext.tsx` |
+| 5.7 | End-to-end manual QA: click tile → dialog opens; glow visible                        | manual                   |
+| 5.8 | Remove `<Battlefield>` from `MainView.tsx`; delete `Battlefield.tsx`, `LandTile.tsx` | `MainView.tsx` + delete  |
+| 5.9 | `yarn test` — fix any regressions from removed components                            | —                        |
 
-### Phase 5 — Army & Building Sprites
+### Phase 6 — Army & Building Sprites
 
-> §5.1 and §5.4 are rollback candidates — if the map looks too cluttered during
+> §6.1 and §6.4 are rollback candidates — if the map looks too cluttered during
 > QA, remove the sprites and rely on the glow/selection system alone.
 
 | #   | Task                                                                                                      | Files Affected                                       |
 |-----|-----------------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| 5.1 | Implement `ArmyLayer`: one flag/banner sprite per `ArmyState`, tinted to player colour, no text           | `OverworldScene.ts`                                  |
-| 5.2 | Emit `ARMY_CLICKED(army)` on army sprite click (differentiated from tile click)                           | `OverworldScene.ts`                                  |
-| 5.3 | **Visual QA checkpoint**: assess map noise from army flags; roll back 5.1 if too cluttered                | manual                                               |
-| 5.4 | Implement building icon sprites on tile layer                                                             | `OverworldScene.ts`                                  |
-| 5.5 | **Visual QA checkpoint**: assess map noise from building icons; roll back 5.4 if too cluttered            | manual                                               |
-| 5.6 | Implement army movement tween (triggered by position delta in `STATE_UPDATE`)                             | `OverworldScene.ts`                                  |
-| 5.7 | Replace `SpellCastAnimation.tsx` with Phaser particle emitter per spell school                            | `OverworldScene.ts`, delete `SpellCastAnimation.tsx` |
-| 5.8 | Camera drag + scroll-zoom for large maps                                                                  | `OverworldScene.ts`                                  |
-| 5.9 | `yarn test` — must stay green                                                                             | —                                                    |
-| 5.10| `yarn build` — must stay green                                                                            | —                                                    |
+| 6.1 | Implement `ArmyLayer`: one flag/banner sprite per `ArmyState`, tinted to player colour, no text           | `OverworldScene.ts`                                  |
+| 6.2 | Emit `ARMY_CLICKED(army)` on army sprite click (differentiated from tile click)                           | `OverworldScene.ts`                                  |
+| 6.3 | **Visual QA checkpoint**: assess map noise from army flags; roll back 6.1 if too cluttered                | manual                                               |
+| 6.4 | Implement building icon sprites on tile layer                                                             | `OverworldScene.ts`                                  |
+| 6.5 | **Visual QA checkpoint**: assess map noise from building icons; roll back 6.4 if too cluttered            | manual                                               |
+| 6.6 | Implement army movement tween (triggered by position delta in `STATE_UPDATE`)                             | `OverworldScene.ts`                                  |
+| 6.7 | Replace `SpellCastAnimation.tsx` with Phaser particle emitter per spell school                            | `OverworldScene.ts`, delete `SpellCastAnimation.tsx` |
+| 6.8 | Camera drag + scroll-zoom for large maps                                                                  | `OverworldScene.ts`                                  |
+| 6.9 | `yarn test` — must stay green                                                                             | —                                                    |
+| 6.10| `yarn build` — must stay green                                                                            | —                                                    |
 
-### Phase 6 — Auto-Resolve Battle (TBS)
+### Phase 7 — Auto-Resolve Battle (TBS)
 
 | #    | Task                                                                                     | Files Affected                                     |
 |------|------------------------------------------------------------------------------------------|----------------------------------------------------|
-| 6.1  | Define `BattleResult`, `BattleConfig` in `src/map/battle/battleTypes.ts`                 | new                                                |
-| 6.2  | Implement `autoResolveBattle(attacker, defender, terrain): BattleResult` (pure function) | `src/map/battle/autoResolveBattle.ts`              |
-| 6.3  | Write unit tests for auto-resolve formula (multiple scenarios)                           | new test                                           |
-| 6.4  | Implement `applyBattleResult(gameState, result): GameState` (pure function)              | `src/map/battle/applyBattleResult.ts`              |
-| 6.5  | Write unit tests for `applyBattleResult`                                                 | new test                                           |
-| 6.6  | Add collision detection to `performMovements.ts`                                         | `src/map/move-army/performMovements.ts`            |
-| 6.7  | Wire `BattleChoiceDialog` into `endTurn.ts` END phase for human player                   | `src/turn/endTurn.ts`                              |
-| 6.8  | Create `BattleChoiceDialog.tsx` ("Fight! (RTS)" disabled for now, "Auto-Resolve" active) | `src/ux-components/dialogs/BattleChoiceDialog.tsx` |
-| 6.9  | AI vs AI: call `autoResolveBattle()` directly, no dialog                                 | `endTurn.ts`                                       |
-| 6.10 | Integration test: two armies collide → auto-resolve → game state updated                 | new test                                           |
-| 6.11 | `yarn test` — must stay green                                                            | —                                                  |
+| 7.1  | Define `BattleResult`, `BattleConfig` in `src/map/battle/battleTypes.ts`                 | new                                                |
+| 7.2  | Implement `autoResolveBattle(attacker, defender, terrain): BattleResult` (pure function) | `src/map/battle/autoResolveBattle.ts`              |
+| 7.3  | Write unit tests for auto-resolve formula (multiple scenarios)                           | new test                                           |
+| 7.4  | Implement `applyBattleResult(gameState, result): GameState` (pure function)              | `src/map/battle/applyBattleResult.ts`              |
+| 7.5  | Write unit tests for `applyBattleResult`                                                 | new test                                           |
+| 7.6  | Add collision detection to `performMovements.ts`                                         | `src/map/move-army/performMovements.ts`            |
+| 7.7  | Wire `BattleChoiceDialog` into `endTurn.ts` END phase for human player                   | `src/turn/endTurn.ts`                              |
+| 7.8  | Create `BattleChoiceDialog.tsx` ("Fight! (RTS)" disabled for now, "Auto-Resolve" active) | `src/ux-components/dialogs/BattleChoiceDialog.tsx` |
+| 7.9  | AI vs AI: call `autoResolveBattle()` directly, no dialog                                 | `endTurn.ts`                                       |
+| 7.10 | Integration test: two armies collide → auto-resolve → game state updated                 | new test                                           |
+| 7.11 | `yarn test` — must stay green                                                            | —                                                  |
 
-### Phase 7 — Polish & Stabilisation (TBS)
+### Phase 8 — Polish & Stabilisation (TBS)
 
 | #   | Task                                                                          | Files Affected           |
 |-----|-------------------------------------------------------------------------------|--------------------------|
-| 7.1 | Responsive canvas sizing: Phaser canvas fills available height after TopPanel | `PhaserGameInstance.tsx` |
-| 7.2 | Performance check: 20×20 map renders at ≥ 60 fps                              | manual                   |
-| 7.3 | Verify all 10 dialogs and 4 popups work end-to-end                            | manual                   |
-| 7.4 | Verify save/load: `GameState` round-trips and Phaser re-renders correctly     | manual                   |
-| 7.5 | Full `yarn test` pass                                                         | —                        |
-| 7.6 | `yarn build` + `yarn preview`                                                 | —                        |
-| 7.7 | Update `TBS_SPEC.md §14` migration checklist to reflect completion            | `spec/TBS_SPEC.md`       |
+| 8.1 | Responsive canvas sizing: Phaser canvas fills available height after TopPanel | `PhaserGameInstance.tsx` |
+| 8.2 | Performance check: 20×20 map renders at ≥ 60 fps                              | manual                   |
+| 8.3 | Verify all 10 dialogs and 4 popups work end-to-end                            | manual                   |
+| 8.4 | Verify save/load: `GameState` round-trips and Phaser re-renders correctly     | manual                   |
+| 8.5 | Full `yarn test` pass                                                         | —                        |
+| 8.6 | `yarn build` + `yarn preview`                                                 | —                        |
+| 8.7 | Update `TBS_SPEC.md §14` migration checklist to reflect completion            | `spec/TBS_SPEC.md`       |
 
-### Phase 8 — RTS Scenes (separate workstream, future)
+### Phase 9 — RTS Scenes (separate workstream, future)
 
-Phases 8+ (Deploy Scene, Battle Scene, full RTS integration) are documented in
+Phases 9+ (Deploy Scene, Battle Scene, full RTS integration) are documented in
 §9–11 as concepts. A separate detailed spec will be written before implementation
 begins.
 
