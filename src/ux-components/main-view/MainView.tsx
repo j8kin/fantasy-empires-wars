@@ -133,7 +133,7 @@ const MainViewContent: React.FC = () => {
 
       {/* Phase 2 dev: Phaser canvas stub below existing Battlefield for side-by-side QA */}
       {gameStarted && (
-        <div style={{ width: '100%', height: '60vh', marginTop: '1rem' }}>
+        <div style={{ width: '100%', height: '60vh', marginTop: '1rem', zIndex: 2000 }}>
           <PhaserGameInstance />
         </div>
       )}
