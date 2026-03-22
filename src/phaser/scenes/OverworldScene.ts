@@ -17,7 +17,7 @@ interface HexTile {
   landPos: LandPosition;
 }
 
-export class OverworldScene extends Scene {
+export class OverworldScene extends Phaser.Scene {
   static readonly KEY = 'OverworldScene';
 
   private hexSize = 64;
