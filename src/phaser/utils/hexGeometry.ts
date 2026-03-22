@@ -7,6 +7,9 @@
 import Phaser from 'phaser';
 import { LandPosition } from '../../state/map/land/LandPosition';
 
+import Phaser from 'phaser';
+import { LandPosition } from '../../state/map/land/LandPosition';
+
 /**
  * Convert offset coordinates (row, col) to cube coordinates for hex math
  * Uses standard even-r offset system where even rows are at x=0
@@ -21,7 +24,7 @@ export const offsetToAxial = (landPos: LandPosition): { q: number; r: number } =
 };
 
 /**
- * Convert axial coordinates (q, r) to pixel coordinates (x, y)
+ * Convert axial coordinates (q, r) of the center of Hexagon to pixel coordinates (x, y)
  * Assumes pointy-top hexagons with size = half-width
  * Accounts for hex overlap: rows overlap by 25% (0.75 * height)
  */
