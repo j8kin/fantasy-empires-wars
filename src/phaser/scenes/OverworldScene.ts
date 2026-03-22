@@ -4,6 +4,9 @@ import { getLandColor } from '../../domain/land/landRepository';
 import { getLandAssetKey, getLandAssetPaths } from '../utils/landImageManager';
 import { offsetToAxial, axialToPixel, hexCorners } from '../utils/hexGeometry';
 import { phaserEventBus, PhaserEvents } from '../phaserEventBus';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { NO_PLAYER } from '../../domain/player/playerRepository';
+import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { LandState } from '../../state/map/land/LandState';
@@ -173,21 +176,13 @@ export class OverworldScene extends Phaser.Scene {
     // Step 1: Render land image (scaled to fit hex)
     this.renderLandImage(land, center);
 
-    // Step 2: Draw hex border (on top of image)
-    this.graphics.lineStyle(1, 0x333333, 0.5);
+    // Step 2: Draw ownership-colored border (white if unowned)
+    const ownerId = getLandOwner(state, land.mapPos);
+    const owner = ownerId !== NO_PLAYER.id ? state.players.find((p) => p.id === ownerId) : undefined;
+    const borderHex = owner ? getPlayerColorValue(owner.color) : '#FFFFFF';
+    const borderColor = parseInt(borderHex.replace('#', ''), 16);
+    this.graphics.lineStyle(3, borderColor, 1);
     this.graphics.strokePoints(corners, true);
-
-    // Step 3: Apply ownership tint overlay (on top of border)
-    if ((land as any).ownerId) {
-      const ownerId = (land as any).ownerId;
-      const player = state.players.find((p) => p.id === ownerId);
-      if (player && (player as any).color?.value) {
-        const hexColor = (player as any).color.value;
-        const phaserColor = parseInt(hexColor.replace('#', '0x'), 16);
-        this.graphics.fillStyle(phaserColor, 0.25);
-        this.graphics.fillPoints(corners, true);
-      }
-    }
   }
 
   /**

@@ -255,17 +255,13 @@ describe('OverworldScene', () => {
       expect(mockGraphics.strokePoints).toHaveBeenCalled();
     });
 
-    it('should apply ownership tint to owned tiles', () => {
+    it('should apply ownership border color to owned tiles', () => {
       const scene = new OverworldScene();
       const gameState = createDefaultGameStateStub();
-      const landPos = { row: 0, col: 1 };
+      // Player 0 (alaric, color 'blue'=#4A90E2) owns the stronghold at { row: 3, col: 3 }
+      const landPos = { row: 3, col: 3 };
       const landId = getLandId(landPos);
       const land = gameState.map.lands[landId];
-
-      // Explicitly set an owner for this tile
-      (land as any).ownerId = gameState.players[0].id;
-      // Ensure player color is set for the tinting logic
-      (gameState.players[0] as any).color = { value: '#ff0000' };
 
       const mockGraphics = {
         fillStyle: jest.fn(),
@@ -290,18 +286,15 @@ describe('OverworldScene', () => {
         })),
       };
 
-      // Draw tile 0,1 which is owned by player1
-      const { q: q01, r: r01 } = offsetToAxial(landPos);
-      (scene as any).drawHexTile(land, q01, r01, gameState);
+      const { q, r } = offsetToAxial(landPos);
+      (scene as any).drawHexTile(land, q, r, gameState);
 
-      // For an owned tile, fillStyle should be called once for the ownership tint
-      expect(mockGraphics.fillStyle).toHaveBeenCalled();
-
-      // Verify the tint color (should be the player's color converted to hex)
-      const calls = mockGraphics.fillStyle.mock.calls;
-      // Last call should be the ownership tint with alpha 0.25
-      const lastCall = calls[calls.length - 1];
-      expect(lastCall[1]).toBe(0.25);
+      // Border should be called with the player's color (blue=#4A90E2), not white
+      const lineStyleCalls = mockGraphics.lineStyle.mock.calls;
+      const lastCall = lineStyleCalls[lineStyleCalls.length - 1];
+      const expectedColor = parseInt('4A90E2', 16);
+      expect(lastCall[1]).toBe(expectedColor);
+      expect(lastCall[2]).toBe(1); // full opacity
     });
 
     it('should not apply ownership tint to unowned tiles', () => {
@@ -335,9 +328,10 @@ describe('OverworldScene', () => {
       // Draw tile 0,0 which is not owned
       (scene as any).drawHexTile(land, 0, 0, gameState);
 
-      // fillStyle should not be called (or only for line styles, not fill)
-      // The only fillStyle calls should be from lineStyle for borders
-      expect(mockGraphics.lineStyle).toHaveBeenCalled();
+      // Border should be white (0xFFFFFF) for unowned tiles
+      const lineStyleCalls = mockGraphics.lineStyle.mock.calls;
+      const lastCall = lineStyleCalls[lineStyleCalls.length - 1];
+      expect(lastCall[1]).toBe(0xffffff);
     });
   });
 
