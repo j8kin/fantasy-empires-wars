@@ -195,13 +195,16 @@ export class OverworldScene extends Phaser.Scene {
       this.graphics.fillPoints(corners, true);
     }
 
-    // Ownership-colored border (white if unowned)
+    // Ownership-colored border (white if unowned).
+    // Use a polygon inset by 2px so the 3px stroke stays entirely within the hex
+    // boundary and never bleeds onto adjacent tiles regardless of draw order.
     const ownerId = getLandOwner(state, land.mapPos);
     const owner = ownerId !== NO_PLAYER.id ? state.players.find((p) => p.id === ownerId) : undefined;
     const borderHex = owner ? getPlayerColorValue(owner.color) : '#FFFFFF';
     const borderColor = parseInt(borderHex.replace('#', ''), 16);
+    const borderCorners = hexCorners(center, this.hexSize - 2);
     this.graphics.lineStyle(3, borderColor, 1);
-    this.graphics.strokePoints(corners, true);
+    this.graphics.strokePoints(borderCorners, true);
   }
 
   /**
