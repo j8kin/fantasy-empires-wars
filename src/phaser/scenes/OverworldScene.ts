@@ -113,17 +113,15 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   private updateTiles(state: GameState): void {
-    if (!this.graphics || !this.spriteLayer) return;
+    if (!this.graphics) return;
 
-    // Clear and redraw all tiles
+    // Only redraw the graphics layer (borders + fallback fills).
+    // Land image sprites don't change between turns, so the sprite layer is left intact.
     this.graphics.clear();
-    this.spriteLayer.removeAll(true);
 
-    const { lands } = state.map;
-
-    Object.values(lands).forEach((land) => {
+    Object.values(state.map.lands).forEach((land) => {
       const { q, r } = offsetToAxial(land.mapPos);
-      this.drawHexTile(land, q, r, state);
+      this.drawHexGraphics(land, q, r, state);
     });
   }
 
@@ -171,12 +169,33 @@ export class OverworldScene extends Phaser.Scene {
     if (!this.graphics || !this.spriteLayer) return;
 
     const center = axialToPixel(q, r, this.hexSize);
-    const corners = hexCorners(center, this.hexSize);
 
-    // Step 1: Render land image (scaled to fit hex)
+    // Step 1: Render land image sprite (only during init — not recreated on updates)
     this.renderLandImage(land, center);
 
-    // Step 2: Draw ownership-colored border (white if unowned)
+    // Step 2: Render graphics layer (fallback fill + ownership border)
+    this.drawHexGraphics(land, q, r, state);
+  }
+
+  /**
+   * Draw the graphics layer for a hex tile: fallback solid fill (if no texture)
+   * and the ownership-colored border. Called both during init and on every state update.
+   */
+  private drawHexGraphics(land: LandState, q: number, r: number, state: GameState): void {
+    if (!this.graphics) return;
+
+    const center = axialToPixel(q, r, this.hexSize);
+    const corners = hexCorners(center, this.hexSize);
+
+    // Fallback fill when texture is unavailable (e.g. test environment)
+    const assetKey = getLandAssetKey(land.type, land.corrupted);
+    if (!this.textures?.exists(assetKey)) {
+      const color = getLandColor(land.type as any);
+      this.graphics.fillStyle(color, 1);
+      this.graphics.fillPoints(corners, true);
+    }
+
+    // Ownership-colored border (white if unowned)
     const ownerId = getLandOwner(state, land.mapPos);
     const owner = ownerId !== NO_PLAYER.id ? state.players.find((p) => p.id === ownerId) : undefined;
     const borderHex = owner ? getPlayerColorValue(owner.color) : '#FFFFFF';
@@ -186,43 +205,23 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   /**
-   * Render the land image sprite for a hex tile.
-   * Images are scaled and centered on the hex center point.
-   * Falls back to solid color hex if texture is unavailable.
+   * Render the land image sprite for a hex tile (called once during initHexGrid).
+   * Falls back silently — solid fill handled by drawHexGraphics.
    */
   private renderLandImage(land: LandState, center: Phaser.Geom.Point): void {
-    if (!this.spriteLayer || !this.graphics) return;
+    if (!this.spriteLayer) return;
 
-    // Get the appropriate asset key for this land (normal or corrupted)
     const assetKey = getLandAssetKey(land.type, land.corrupted);
+    if (!this.textures?.exists(assetKey)) return;
 
-    // Check if texture exists in the cache (may not exist in test environment)
-    const textureExists = this.textures?.exists(assetKey) || false;
-
-    if (textureExists) {
-      try {
-        // Create and add image sprite to the layer
-        const image = this.add.image(center.x, center.y, assetKey);
-
-        // Scale image to fit within hex tile
-        // Hex radius is this.hexSize, so scale image to be slightly smaller (90% of hex size)
-        const scale = (this.hexSize * 1.8) / Math.max(image.width, image.height);
-        image.setScale(scale);
-
-        // Add to sprite layer for proper layering
-        this.spriteLayer.add(image);
-        return; // Success, don't render fallback
-      } catch (e) {
-        // Texture exists but creation failed, log and fall through to fallback
-        console.warn(`Failed to render land image for ${land.type}:`, e);
-      }
+    try {
+      const image = this.add.image(center.x, center.y, assetKey);
+      const scale = (this.hexSize * 1.8) / Math.max(image.width, image.height);
+      image.setScale(scale);
+      this.spriteLayer.add(image);
+    } catch (e) {
+      console.warn(`Failed to render land image for ${land.type}:`, e);
     }
-
-    // Fallback: if texture not found or creation failed, draw colored placeholder
-    const color = getLandColor(land.type as any);
-    this.graphics.fillStyle(color, 1);
-    const corners = hexCorners(center, this.hexSize);
-    this.graphics.fillPoints(corners, true);
   }
 
   private handlePointerDown(pointer: Phaser.Input.Pointer): void {

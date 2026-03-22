@@ -447,8 +447,8 @@ describe('OverworldScene', () => {
       // clear() should have been called again (from updateTiles)
       expect(mockGraphics.clear).toHaveBeenCalledTimes(2);
 
-      // spriteLayer.removeAll should also have been called
-      expect(mockSpriteLayer.removeAll).toHaveBeenCalled();
+      // spriteLayer.removeAll should NOT be called on updates — sprites are reused
+      expect(mockSpriteLayer.removeAll).not.toHaveBeenCalledTimes(2);
     });
   });
 
