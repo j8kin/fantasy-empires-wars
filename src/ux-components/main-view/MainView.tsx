@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import React, { Activity, useEffect, useRef } from 'react';
 import styles from './css/Background.module.css';
 
@@ -57,7 +56,6 @@ const MainViewContent: React.FC = () => {
   const TOP_PANEL_HEIGHT = 300;
   const TILE_SIZE = defaultTileDimensions;
   const gameInitializedRef = useRef(false);
-  const lastGameStateRef = useRef<string | null>(null);
 
   // Initialize turn manager callbacks
   useEffect(() => {
@@ -93,23 +91,12 @@ const MainViewContent: React.FC = () => {
   // Start the first turn when game begins (only once per game)
   useEffect(() => {
     if (gameStarted && gameState && gameState.turn === 1) {
-      const currentGameId = uuid();
-
-      // Check if this is a different game than the last one
-      if (lastGameStateRef.current !== currentGameId) {
-        lastGameStateRef.current = currentGameId;
-        gameInitializedRef.current = false; // Reset for new game
-      }
-
-      // Start turn only once per game
       if (!gameInitializedRef.current) {
         gameInitializedRef.current = true;
         startNewTurn();
       }
     } else if (!gameStarted) {
-      // Reset the flags when game is not started
       gameInitializedRef.current = false;
-      lastGameStateRef.current = null;
     }
   }, [gameStarted, gameState, startNewTurn]);
 

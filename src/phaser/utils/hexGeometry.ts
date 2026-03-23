@@ -4,6 +4,8 @@
  * - Even rows (0, 2, 4...): standard columns
  * - Odd rows (1, 3, 5...): shifted right by 0.5 tile width, one fewer tile
  */
+import Phaser from 'phaser';
+import { LandPosition } from '../../state/map/land/LandPosition';
 
 import Phaser from 'phaser';
 import { LandPosition } from '../../state/map/land/LandPosition';
