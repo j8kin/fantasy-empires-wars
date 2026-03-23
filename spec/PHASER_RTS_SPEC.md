@@ -790,14 +790,12 @@ files. Set up alongside RTS scene implementation, not TBS migration.
 | 3.5 | Subscribe to `STATE_UPDATE`: diff + redraw only changed tiles                                         | `OverworldScene.ts`              |
 | 3.6 | Preload land images from `src/assets/` (for future use)                                               | `OverworldScene.ts`              |
 | 3.7 | Render player ownership tint overlay per cell                                                         | `OverworldScene.ts`              |
-| 3.8 | Add comprehensive unit tests for `OverworldScene`                                                      | new test                         |
+| 3.8 | Add comprehensive unit tests for `OverworldScene`                                                     | new test                         |
 | 3.9 | Visual QA: Phaser canvas with solid-color hexagons matches current Battlefield appearance             | manual                           |
 
 ---
 
-## Phase 4 — Sprite-Based Land Images (Texture Rendering)
-
-> **Status: In planning. Ready for implementation after Phase 3.**
+## Phase 4 — Sprite-Based Land Images (Texture Rendering) ✅ COMPLETED
 
 ### 4.1 Overview
 
@@ -808,11 +806,13 @@ on each hex tile instead of solid colors. Borders and ownership tints remain as 
 ### 4.2 Approach: Image-Based (Hybrid Graphics + Sprites)
 
 **Rendering Stack:**
+
 1. **Background**: Land texture image (Phaser.Image) placed at hex center, scaled to fit hex size
 2. **Border**: Graphics.strokePoints() for hex outline (1px, dark gray)
 3. **Ownership Tint**: Graphics overlay for player color tint (alpha 0.25)
 
 **Why Hybrid?**
+
 - Images provide visual richness (all terrain types pre-rendered)
 - Graphics provide clean borders and tints without asset modifications
 - Performant for typical maps (small to medium)
@@ -820,52 +820,53 @@ on each hex tile instead of solid colors. Borders and ownership tints remain as 
 
 ### 4.2.1 Dynamic Battlefield Sizing
 
-The battlefield size (grid dimensions in rows and columns) is determined by the user's selection during game creation and is stored in `GameState.map`. The hex grid rendering must:
+The battlefield size (grid dimensions in rows and columns) is determined by the user's selection during game creation
+and is stored in `GameState.map`. The hex grid rendering must:
 
 1. **Read map dimensions** from `GameState.map.lands` (not hardcoded)
-   - Determine grid size by counting unique rows and columns in the lands data
-   - Example: 12×12 map = 144 land tiles, 10×10 = 100 tiles, etc.
+    - Determine grid size by counting unique rows and columns in the lands data
+    - Example: 12×12 map = 144 land tiles, 10×10 = 100 tiles, etc.
 
 2. **Support various map sizes** as selected by player during game creation
-   - Small maps: 8×8 (64 tiles)
-   - Standard maps: 10×10, 12×12 (100, 144 tiles)
-   - Large maps: 15×15, 20×20 (225, 400 tiles)
-   - Maximum: determined by game settings (TBD)
+    - Small maps: 8×8 (64 tiles)
+    - Standard maps: 10×10, 12×12 (100, 144 tiles)
+    - Large maps: 15×15, 20×20 (225, 400 tiles)
+    - Maximum: determined by game settings (TBD)
 
 3. **Calculate camera bounds dynamically** based on grid dimensions
-   - Instead of hardcoded `setBounds(0, 0, 2000, 2000)`
-   - Calculate based on hex positioning: `maxX = col * hexSize * spacing`, `maxY = row * hexSize * spacing`
+    - Instead of hardcoded `setBounds(0, 0, 2000, 2000)`
+    - Calculate based on hex positioning: `maxX = col * hexSize * spacing`, `maxY = row * hexSize * spacing`
 
 4. **Maintain aspect ratio** and responsive sizing
-   - Camera bounds should accommodate all tiles with proper margins
-   - Same approach as current solid-color rendering (no changes to interaction model)
+    - Camera bounds should accommodate all tiles with proper margins
+    - Same approach as current solid-color rendering (no changes to interaction model)
 
 ### 4.3 Performance
 
-| Metric | Current (Solid Color) | With Images | Notes |
-|--------|-------|---------|---------|
-| 10×10 map | 1 graphics draw call | 100 image sprites + 1 graphics | 100 tiles acceptable |
-| 20×20 map | 1 graphics draw call | 400 image sprites + 1 graphics | May need optimization in Phase 8 |
-| FPS (60 target) | 60 | 55-60 | Acceptable; optimize if < 50 |
-| Draw calls | ~5 | ~400 + border graphics | Within budget for single Phaser instance |
+| Metric          | Current (Solid Color) | With Images                    | Notes                                    |
+|-----------------|-----------------------|--------------------------------|------------------------------------------|
+| 10×10 map       | 1 graphics draw call  | 100 image sprites + 1 graphics | 100 tiles acceptable                     |
+| 20×20 map       | 1 graphics draw call  | 400 image sprites + 1 graphics | May need optimization in Phase 8         |
+| FPS (60 target) | 60                    | 55-60                          | Acceptable; optimize if < 50             |
+| Draw calls      | ~5                    | ~400 + border graphics         | Within budget for single Phaser instance |
 
 **Future Optimization (Phase 8):**
 If performance is sub-optimal on 20×20+ maps, migrate to Tilemap system with single draw call.
 
-| #   | Task                                                                                                  | Files Affected                   |
-|-----|-------------------------------------------------------------------------------------------------------|----------------------------------|
-| 4.1 | Calculate grid dimensions dynamically from `GameState.map.lands` (rows/cols, not hardcoded)          | `OverworldScene.ts`              |
-| 4.2 | Calculate camera bounds dynamically based on grid size and hex spacing                                 | `OverworldScene.ts`              |
-| 4.3 | Create `src/phaser/utils/landImageManager.ts`: map land type → image key (with corrupted variants)   | new                              |
-| 4.4 | Update `OverworldScene.preload()` to load all land type images as textures                            | `OverworldScene.ts`              |
-| 4.5 | Refactor `drawHexTile()` to render image instead of solid color                                       | `OverworldScene.ts`              |
-| 4.6 | Update `drawHexTile()` to scale and center image on hex center point                                  | `OverworldScene.ts`              |
-| 4.7 | Ensure borders (Graphics.strokePoints) render on top of images                                         | `OverworldScene.ts`              |
-| 4.8 | Ensure ownership tint overlay renders on top of borders                                                | `OverworldScene.ts`              |
-| 4.9 | Handle corrupted land variants (load corrupted images for corrupted lands)                             | `OverworldScene.ts`              |
-| 4.10| Update `OverworldScene` unit tests for image-based rendering + dynamic sizing                        | `OverworldScene.test.ts`         |
-| 4.11| Performance check: various map sizes render at ≥ 55 fps (8×8, 12×12, 20×20)                           | manual                           |
-| 4.12| Visual QA: Image-based hexes match original Battlefield appearance (compare side-by-side)             | manual                           |
+| #    | Task                                                                                               | Files Affected           |
+|------|----------------------------------------------------------------------------------------------------|--------------------------|
+| 4.1  | Calculate grid dimensions dynamically from `GameState.map.lands` (rows/cols, not hardcoded)        | `OverworldScene.ts`      |
+| 4.2  | Calculate camera bounds dynamically based on grid size and hex spacing                             | `OverworldScene.ts`      |
+| 4.3  | Create `src/phaser/utils/landImageManager.ts`: map land type → image key (with corrupted variants) | new                      |
+| 4.4  | Update `OverworldScene.preload()` to load all land type images as textures                         | `OverworldScene.ts`      |
+| 4.5  | Refactor `drawHexTile()` to render image instead of solid color                                    | `OverworldScene.ts`      |
+| 4.6  | Update `drawHexTile()` to scale and center image on hex center point                               | `OverworldScene.ts`      |
+| 4.7  | Ensure borders (Graphics.strokePoints) render on top of images                                     | `OverworldScene.ts`      |
+| 4.8  | Ensure ownership tint overlay renders on top of borders                                            | `OverworldScene.ts`      |
+| 4.9  | Handle corrupted land variants (load corrupted images for corrupted lands)                         | `OverworldScene.ts`      |
+| 4.10 | Update `OverworldScene` unit tests for image-based rendering + dynamic sizing                      | `OverworldScene.test.ts` |
+| 4.11 | Performance check: various map sizes render at ≥ 55 fps (8×8, 12×12, 20×20)                        | manual                   |
+| 4.12 | Visual QA: Image-based hexes match original Battlefield appearance (compare side-by-side)          | manual                   |
 
 ---
 
@@ -888,18 +889,18 @@ If performance is sub-optimal on 20×20+ maps, migrate to Tilemap system with si
 > §6.1 and §6.4 are rollback candidates — if the map looks too cluttered during
 > QA, remove the sprites and rely on the glow/selection system alone.
 
-| #   | Task                                                                                                      | Files Affected                                       |
-|-----|-----------------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| 6.1 | Implement `ArmyLayer`: one flag/banner sprite per `ArmyState`, tinted to player colour, no text           | `OverworldScene.ts`                                  |
-| 6.2 | Emit `ARMY_CLICKED(army)` on army sprite click (differentiated from tile click)                           | `OverworldScene.ts`                                  |
-| 6.3 | **Visual QA checkpoint**: assess map noise from army flags; roll back 6.1 if too cluttered                | manual                                               |
-| 6.4 | Implement building icon sprites on tile layer                                                             | `OverworldScene.ts`                                  |
-| 6.5 | **Visual QA checkpoint**: assess map noise from building icons; roll back 6.4 if too cluttered            | manual                                               |
-| 6.6 | Implement army movement tween (triggered by position delta in `STATE_UPDATE`)                             | `OverworldScene.ts`                                  |
-| 6.7 | Replace `SpellCastAnimation.tsx` with Phaser particle emitter per spell school                            | `OverworldScene.ts`, delete `SpellCastAnimation.tsx` |
-| 6.8 | Camera drag + scroll-zoom for large maps                                                                  | `OverworldScene.ts`                                  |
-| 6.9 | `yarn test` — must stay green                                                                             | —                                                    |
-| 6.10| `yarn build` — must stay green                                                                            | —                                                    |
+| #    | Task                                                                                            | Files Affected                                       |
+|------|-------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| 6.1  | Implement `ArmyLayer`: one flag/banner sprite per `ArmyState`, tinted to player colour, no text | `OverworldScene.ts`                                  |
+| 6.2  | Emit `ARMY_CLICKED(army)` on army sprite click (differentiated from tile click)                 | `OverworldScene.ts`                                  |
+| 6.3  | **Visual QA checkpoint**: assess map noise from army flags; roll back 6.1 if too cluttered      | manual                                               |
+| 6.4  | Implement building icon sprites on tile layer                                                   | `OverworldScene.ts`                                  |
+| 6.5  | **Visual QA checkpoint**: assess map noise from building icons; roll back 6.4 if too cluttered  | manual                                               |
+| 6.6  | Implement army movement tween (triggered by position delta in `STATE_UPDATE`)                   | `OverworldScene.ts`                                  |
+| 6.7  | Replace `SpellCastAnimation.tsx` with Phaser particle emitter per spell school                  | `OverworldScene.ts`, delete `SpellCastAnimation.tsx` |
+| 6.8  | Camera drag + scroll-zoom for large maps                                                        | `OverworldScene.ts`                                  |
+| 6.9  | `yarn test` — must stay green                                                                   | —                                                    |
+| 6.10 | `yarn build` — must stay green                                                                  | —                                                    |
 
 ### Phase 7 — Auto-Resolve Battle (TBS)
 
