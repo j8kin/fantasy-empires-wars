@@ -3,8 +3,6 @@ import styles from './css/Hexagonal.module.css';
 import { useApplicationContext } from '../../contexts/ApplicationContext';
 import { useGameContext } from '../../contexts/GameContext';
 
-import LandInfoPopup from '../popups/LandInfoPopup';
-
 import { getLandId } from '../../state/map/land/LandId';
 import { getLandOwner, getPlayerLands, getRealmLands, getTilesInRadius } from '../../selectors/landSelectors';
 import { getDiplomacyStatus, getPlayer, getTreasureItemById, getTurnOwner } from '../../selectors/playerSelectors';
@@ -36,8 +34,6 @@ export interface HexTileProps {
 
 const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
   const {
-    landPopupPosition,
-    landPopupScreenPosition,
     showLandPopup,
     glowingTiles,
     clearAllGlow,
@@ -53,8 +49,6 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
     showEmpireEvents,
   } = useApplicationContext();
   const { gameState, updateGameState } = useGameContext();
-
-  const showPopup = landPopupPosition?.row === mapPosition.row && landPopupPosition?.col === mapPosition.col;
 
   const battlefieldTile = gameState!.map.lands[getLandId(mapPosition)];
 
@@ -205,18 +199,15 @@ const LandTile: React.FC<HexTileProps> = ({ mapPosition }) => {
   const tileClassName = `${styles.hexTile} ${isGlowing ? styles['hexTile--glowing'] : styles['hexTile--normal']}`;
 
   return (
-    <>
-      <div
-        className={tileClassName}
-        onContextMenu={handleRightClick}
-        onClick={handleClick}
-        style={{ backgroundColor: getBackgroundColor() }}
-        data-testid="land-tile"
-      >
-        {imageSrc ? <img src={imageSrc} alt={altText} className={styles.hexTileImg} /> : <p>no image</p>}
-      </div>
-      {showPopup && <LandInfoPopup landPos={mapPosition} screenPosition={landPopupScreenPosition} />}
-    </>
+    <div
+      className={tileClassName}
+      onContextMenu={handleRightClick}
+      onClick={handleClick}
+      style={{ backgroundColor: getBackgroundColor() }}
+      data-testid="land-tile"
+    >
+      {imageSrc ? <img src={imageSrc} alt={altText} className={styles.hexTileImg} /> : <p>no image</p>}
+    </div>
   );
 };
 

@@ -36,7 +36,7 @@ const TopPanel: React.FC<TopPanelProps> = ({ height, tileDimensions }) => {
       primaryButton={endTurnButton}
       tileDimensions={tileDimensions}
       accessible={true}
-      zIndex={100}
+      zIndex={120}
     >
       <div id="TopPanel" data-testid="TopPanel" className={`${styles.frameContainer} ${styles.fullSize} top-bar-panel`}>
         <div className={styles.panelContainer}>

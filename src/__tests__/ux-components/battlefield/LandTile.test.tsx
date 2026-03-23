@@ -42,17 +42,6 @@ jest.mock('../../../ux-components/battlefield/css/Hexagonal.module.css', () => (
   'hexTile--normal': 'mocked-hex-tile--normal',
 }));
 
-// Mock LandInfoPopup
-jest.mock('../../../ux-components/popups/LandInfoPopup', () => {
-  return ({ landPos, screenPosition }: any) => (
-    <div
-      data-testid="land-info-popup"
-      data-land-pos={`${landPos.row},${landPos.col}`}
-      data-screen-pos={`${screenPosition.x},${screenPosition.y}`}
-    />
-  );
-});
-
 // Mock castSpell
 jest.mock('../../../map/magic/castSpell', () => ({
   castSpell: jest.fn(),
@@ -73,8 +62,6 @@ const renderWithProviders = (ui: React.ReactElement, gameState: GameState, conte
 
   // Create mock context values
   const mockContext = {
-    landPopupPosition: contextValues?.landPopupPosition,
-    landPopupScreenPosition: contextValues?.landPopupScreenPosition || { x: 0, y: 0 },
     showLandPopup: contextValues?.showLandPopup ?? jest.fn(),
     glowingTiles: contextValues?.glowingTiles ?? new Set<string>(),
     clearAllGlow: contextValues?.clearAllGlow ?? jest.fn(),
@@ -145,31 +132,6 @@ describe('LandTile Component', () => {
   });
 
   describe('Popup Display', () => {
-    it('shows popup when landPopupPosition matches tile position', () => {
-      const contextValues = {
-        landPopupPosition: testLandPosition,
-        landPopupScreenPosition: { x: 100, y: 200 },
-      };
-
-      renderWithProviders(<LandTile mapPosition={testLandPosition} />, gameStateStub, contextValues);
-
-      const popup = screen.getByTestId('land-info-popup');
-      expect(popup).toBeInTheDocument();
-      expect(popup).toHaveAttribute('data-land-pos', '3,3');
-      expect(popup).toHaveAttribute('data-screen-pos', '100,200');
-    });
-
-    it('does not show popup when landPopupPosition does not match tile position', () => {
-      const contextValues = {
-        landPopupPosition: { row: 5, col: 5 },
-        landPopupScreenPosition: { x: 100, y: 200 },
-      };
-
-      renderWithProviders(<LandTile mapPosition={testLandPosition} />, gameStateStub, contextValues);
-
-      expect(screen.queryByTestId('land-info-popup')).not.toBeInTheDocument();
-    });
-
     it('calls showLandPopup on right click', () => {
       const mockShowLandPopup = jest.fn();
       const contextValues = {
