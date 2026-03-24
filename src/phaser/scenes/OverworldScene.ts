@@ -156,6 +156,18 @@ export class OverworldScene extends Phaser.Scene {
       this.pendingClickTile = undefined;
     });
 
+    // wheel: scroll camera with mouse wheel and trackpad (including Apple Magic Mouse / trackpad
+    // two-finger horizontal swipe which populates deltaX)
+    this.input.on(
+      'wheel',
+      (_pointer: Phaser.Input.Pointer, _gameObjects: unknown[], deltaX: number, deltaY: number) => {
+        if (this.cameras?.main) {
+          this.cameras.main.scrollX += deltaX;
+          this.cameras.main.scrollY += deltaY;
+        }
+      }
+    );
+
     phaserEventBus.emit(PhaserEvents.SCENE_READY, OverworldScene.KEY);
   }
 
