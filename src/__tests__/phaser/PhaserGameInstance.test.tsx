@@ -37,7 +37,7 @@ describe('PhaserGameInstance', () => {
     );
     const [config] = MockGame.mock.calls[0];
     expect(config).toMatchObject({
-      backgroundColor: '#1a1a2e',
+      backgroundColor: '#2b2b2b',
       width: '100%',
       height: '100%',
     });

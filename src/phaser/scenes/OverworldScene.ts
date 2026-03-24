@@ -11,6 +11,8 @@ import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { LandState } from '../../state/map/land/LandState';
 
+import celticBackgroundPng from '../../assets/border/CelticBackground.png';
+
 interface HexTile {
   q: number;
   r: number;
@@ -29,6 +31,7 @@ export class OverworldScene extends Phaser.Scene {
   private graphics?: Phaser.GameObjects.Graphics;
   private glowGraphics?: Phaser.GameObjects.Graphics;
   private spriteLayer?: Phaser.GameObjects.Container;
+  private backgroundTile?: Phaser.GameObjects.TileSprite;
   private mapWidth = 0;
   private mapHeight = 0;
 
@@ -44,6 +47,7 @@ export class OverworldScene extends Phaser.Scene {
   preload(): void {
     // Load all land type images as textures (normal and corrupted variants)
     try {
+      this.load.image('celtic-background', celticBackgroundPng);
       // todo replace with getLandImg or remove getLandImg
       const assetPaths = getLandAssetPaths();
       assetPaths.forEach(([key, path]) => {
@@ -57,6 +61,13 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Create tiling background (sized later in calculateGridBounds)
+    if (this.textures?.exists('celtic-background')) {
+      this.backgroundTile = this.add.tileSprite(0, 0, 1, 1, 'celtic-background');
+      this.backgroundTile.setOrigin(0, 0);
+      this.backgroundTile.setDepth(-1);
+    }
+
     // Create graphics layer for hex borders and ownership tints
     this.graphics = this.add.graphics();
 
@@ -223,6 +234,13 @@ export class OverworldScene extends Phaser.Scene {
     if (this.cameras?.main) {
       this.cameras.main.setBounds(0, 0, this.mapWidth, this.mapHeight);
     }
+
+    // Resize background tile to cover both the map area and the full canvas viewport.
+    // The canvas can be wider/taller than the map, so we take the max of both to avoid
+    // the Phaser backgroundColor showing through at the edges.
+    const canvasWidth = this.scale?.width ?? 0;
+    const canvasHeight = this.scale?.height ?? 0;
+    this.backgroundTile?.setSize(Math.max(this.mapWidth, canvasWidth), Math.max(this.mapHeight, canvasHeight));
   }
 
   /**
