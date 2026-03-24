@@ -2,7 +2,6 @@ import React, { Activity, useEffect, useRef } from 'react';
 import styles from './css/Background.module.css';
 
 import TopPanel from '../top-panel/TopPanel';
-import Battlefield from '../battlefield/Battlefield';
 import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import CastSpellDialog from '../dialogs/CastSpellDialog';
@@ -126,14 +125,8 @@ const MainViewContent: React.FC = () => {
       {/* Content components */}
       <TopPanel height={TOP_PANEL_HEIGHT} tileDimensions={TILE_SIZE} />
 
-      <Battlefield
-        topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
-        tileSize={TILE_SIZE}
-        key={`map-${gameStarted}`}
-      />
-
-      {/* Phaser canvas — same position/size as Battlefield, with FantasyBorderFrame border */}
-      {/* zIndex: 100 — above Battlefield (zIndex: 90) but below all dialogs (which start at 999) */}
+      {/* Phaser canvas — positioned below TopPanel, filling available area */}
+      {/* zIndex: 100 — below all dialogs (which start at 999) */}
       {/* stopPropagation: prevent Phaser clicks bubbling to <main>'s handleMainViewClick */}
       {gameStarted && (
         <div onClick={(e) => e.stopPropagation()}>
