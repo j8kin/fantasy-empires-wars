@@ -23,7 +23,7 @@ const DRAG_THRESHOLD = 5;
 export class OverworldScene extends Phaser.Scene {
   static readonly KEY = 'OverworldScene';
 
-  private hexSize = 64;
+  private hexSize = 60;
   private hexTiles: Map<string, HexTile> = new Map();
   private gameState?: GameState;
   private graphics?: Phaser.GameObjects.Graphics;
@@ -211,12 +211,13 @@ export class OverworldScene extends Phaser.Scene {
    */
   private calculateGridBounds(rows: number, cols: number): void {
     // Derived from axialToPixel formulas:
-    //   LEFT_MARGIN = ceil(hexSize * sqrt(3) / 2)
-    //   x_right of last even-col tile = sqrt(3) * hexSize * cols
-    //   TOP_OFFSET = hexSize
-    //   y_bottom of last row = hexSize * (1.5 * rows + 0.5)
-    this.mapWidth = Math.ceil(Math.sqrt(3) * this.hexSize * cols);
-    this.mapHeight = Math.ceil(this.hexSize * (1.5 * rows + 0.5));
+    //   LEFT_MARGIN = ceil(hexSize * sqrt(3) / 2) + PADDING
+    //   x_right of last even-col tile = sqrt(3) * hexSize * cols + PADDING
+    //   TOP_OFFSET = hexSize + PADDING
+    //   y_bottom of last row = hexSize * (1.5 * rows + 0.5) + PADDING
+    const PADDING = 4;
+    this.mapWidth = Math.ceil(Math.sqrt(3) * this.hexSize * cols) + PADDING;
+    this.mapHeight = Math.ceil(this.hexSize * (1.5 * rows + 0.5)) + PADDING;
 
     // Set camera bounds (only if cameras exist - they may not in test environment)
     if (this.cameras?.main) {

@@ -36,8 +36,9 @@ export const axialToPixel = (q: number, r: number, size: number): Phaser.Geom.Po
   // Horizontal spacing multiplier
   const HORIZONTAL_SPACING = Math.sqrt(3);
   const ODD_ROW_OFFSET = HORIZONTAL_SPACING / 2; // Half of horizontal spacing
-  // Derived from hexSize: leftmost corner of tile (0,0) lands at x≈0 on the canvas
-  const LEFT_MARGIN = Math.ceil((size * HORIZONTAL_SPACING) / 2);
+  // Derived from hexSize: leftmost corner of tile (0,0) lands at x≈PADDING on the canvas
+  const PADDING = 5;
+  const LEFT_MARGIN = Math.ceil((size * HORIZONTAL_SPACING) / 2) + PADDING;
 
   // Row-dependent offset to prevent leftward drift
   // Each even row (0, 2, 4...) gets more negative q values, so we add an offset
@@ -45,8 +46,8 @@ export const axialToPixel = (q: number, r: number, size: number): Phaser.Geom.Po
 
   const x = LEFT_MARGIN + HORIZONTAL_SPACING * size * (q + rowOffset) + (r % 2) * ODD_ROW_OFFSET * size;
 
-  // Derived from hexSize: topmost corner of tile (0,0) lands at y=0 on the canvas
-  const TOP_OFFSET = size;
+  // Derived from hexSize: topmost corner of tile (0,0) lands at y=PADDING on the canvas
+  const TOP_OFFSET = size + PADDING;
   const y = TOP_OFFSET + (HORIZONTAL_SPACING / 2) * height * r;
 
   return new Phaser.Geom.Point(x, y);

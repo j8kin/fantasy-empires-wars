@@ -32,7 +32,7 @@ describe('OverworldScene', () => {
       const scene = new OverworldScene();
       // Access private hexSize through type assertion
       const hexSize = (scene as any).hexSize;
-      expect(hexSize).toBe(64);
+      expect(hexSize).toBe(60);
     });
 
     it('should initialize empty hex tiles map', () => {
