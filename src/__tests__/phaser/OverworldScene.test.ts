@@ -386,6 +386,7 @@ describe('OverworldScene', () => {
       const mockSpriteLayer = {
         removeAll: jest.fn(),
         add: jest.fn(),
+        getByName: jest.fn().mockReturnValue(null),
       } as any;
 
       (scene as any).graphics = mockGraphics;
@@ -395,6 +396,7 @@ describe('OverworldScene', () => {
       (scene as any).add = {
         image: jest.fn(() => ({
           setScale: jest.fn().mockReturnThis(),
+          setName: jest.fn(),
           width: 64,
           height: 64,
         })),
@@ -410,8 +412,8 @@ describe('OverworldScene', () => {
       // clear() should have been called again (from updateTiles)
       expect(mockGraphics.clear).toHaveBeenCalledTimes(2);
 
-      // spriteLayer.removeAll should NOT be called on updates — sprites are reused
-      expect(mockSpriteLayer.removeAll).not.toHaveBeenCalledTimes(2);
+      // spriteLayer.removeAll only called during initHexGrid, not on subsequent updates
+      expect(mockSpriteLayer.removeAll).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -552,7 +554,11 @@ describe('OverworldScene', () => {
         strokePoints: jest.fn(),
       } as any;
 
-      const mockSpriteLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      const mockSpriteLayer = {
+        removeAll: jest.fn(),
+        add: jest.fn(),
+        getByName: jest.fn().mockReturnValue(null),
+      } as any;
       const mockFigureLayer = { removeAll: jest.fn(), add: jest.fn(), setDepth: jest.fn() } as any;
 
       (scene as any).graphics = mockGraphics;
@@ -604,6 +610,7 @@ describe('OverworldScene', () => {
       const mockImage = {
         setScale: jest.fn().mockReturnThis(),
         setTint: jest.fn().mockReturnThis(),
+        setName: jest.fn(),
         width: 64,
         height: 64,
       };

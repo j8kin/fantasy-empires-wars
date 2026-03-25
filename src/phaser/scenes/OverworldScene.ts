@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { getLandId } from '../../state/map/land/LandId';
 import { getLandInfo, getLandOwner, getVisibleLands } from '../../selectors/landSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getPlayer } from '../../selectors/playerSelectors';
@@ -212,12 +213,22 @@ export class OverworldScene extends Phaser.Scene {
   private updateTiles(state: GameState): void {
     if (!this.graphics) return;
 
-    // Redraw graphics layer (borders + fallback fills).
-    // Land image sprites don't change between turns, so spriteLayer is left intact.
     this.graphics.clear();
 
     Object.values(state.map.lands).forEach((land) => {
       const { q, r } = offsetToAxial(land.mapPos);
+
+      // Swap texture in-place if corruption changed (avoids rebuilding entire sprite layer).
+      const sprite = this.spriteLayer?.getByName(getLandId(land.mapPos)) as Phaser.GameObjects.Image | null;
+      if (sprite) {
+        const newKey = getLandAssetKey(land.type, land.corrupted);
+        if (sprite.texture?.key !== newKey && this.textures?.exists(newKey)) {
+          sprite.setTexture(newKey);
+          const scale = (this.hexSize * 1.8) / Math.max(sprite.width, sprite.height);
+          sprite.setScale(scale);
+        }
+      }
+
       this.drawHexGraphics(land, q, r, state);
     });
 
@@ -314,6 +325,7 @@ export class OverworldScene extends Phaser.Scene {
 
     try {
       const image = this.add.image(center.x, center.y, assetKey);
+      image.setName(getLandId(land.mapPos));
       const scale = (this.hexSize * 1.8) / Math.max(image.width, image.height);
       image.setScale(scale);
       this.spriteLayer.add(image);
