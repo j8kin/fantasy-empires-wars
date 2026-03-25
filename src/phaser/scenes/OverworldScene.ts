@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { getLandId } from '../../state/map/land/LandId';
 import { getLandInfo, getLandOwner, getVisibleLands } from '../../selectors/landSelectors';
 import { getArmiesAtPosition } from '../../selectors/armySelectors';
 import { getPlayer } from '../../selectors/playerSelectors';
@@ -16,12 +15,6 @@ import type { LandState } from '../../state/map/land/LandState';
 
 import celticBackgroundPng from '../../assets/border/CelticBackground.png';
 
-interface HexTile {
-  q: number;
-  r: number;
-  landPos: LandPosition;
-}
-
 /** Pixels of movement required to distinguish a drag-pan from a tap/click */
 const DRAG_THRESHOLD = 5;
 
@@ -29,7 +22,7 @@ export class OverworldScene extends Phaser.Scene {
   static readonly KEY = 'OverworldScene';
 
   private hexSize = 60;
-  private hexTiles: Map<string, HexTile> = new Map();
+  private isInitialized = false;
   private gameState?: GameState;
   private graphics?: Phaser.GameObjects.Graphics;
   private glowGraphics?: Phaser.GameObjects.Graphics;
@@ -40,7 +33,7 @@ export class OverworldScene extends Phaser.Scene {
   private mapHeight = 0;
 
   /** Tile under the cursor at the last pointerdown — cleared on pointerup */
-  private pendingClickTile?: HexTile;
+  private pendingClickTile?: LandPosition;
   /** Set to true once the pointer moves more than DRAG_THRESHOLD pixels while held */
   private isDragging = false;
 
@@ -125,7 +118,7 @@ export class OverworldScene extends Phaser.Scene {
           const screenX = mouseEvent?.clientX ?? pointer.x;
           const screenY = mouseEvent?.clientY ?? pointer.y;
           phaserEventBus.emit(PhaserEvents.TILE_RIGHT_CLICKED, {
-            pos: this.pendingClickTile.landPos,
+            pos: this.pendingClickTile,
             screenX,
             screenY,
           });
@@ -160,7 +153,7 @@ export class OverworldScene extends Phaser.Scene {
         return;
       }
       if (!this.isDragging && this.pendingClickTile) {
-        phaserEventBus.emit(PhaserEvents.TILE_CLICKED, this.pendingClickTile.landPos);
+        phaserEventBus.emit(PhaserEvents.TILE_CLICKED, this.pendingClickTile);
       }
       this.isDragging = false;
       this.pendingClickTile = undefined;
@@ -185,7 +178,7 @@ export class OverworldScene extends Phaser.Scene {
     this.gameState = state;
 
     // Initialize hex tiles if not done yet
-    if (this.hexTiles.size === 0 && this.graphics) {
+    if (!this.isInitialized && this.graphics) {
       this.initHexGrid(state);
     } else if (this.graphics) {
       // Update tiles
@@ -199,7 +192,6 @@ export class OverworldScene extends Phaser.Scene {
     const { lands, dimensions } = state.map;
 
     // Clear existing tiles
-    this.hexTiles.clear();
     this.graphics.clear();
     this.spriteLayer.removeAll(true);
 
@@ -209,20 +201,11 @@ export class OverworldScene extends Phaser.Scene {
 
     // Draw all land tiles
     Object.values(lands).forEach((land) => {
-      const tileKey = getLandId(land.mapPos);
       const { q, r } = offsetToAxial(land.mapPos);
-
-      // Store tile info for click detection
-      this.hexTiles.set(tileKey, {
-        q,
-        r,
-        landPos: land.mapPos,
-      });
-
-      // Draw the tile
       this.drawHexTile(land, q, r, state);
     });
 
+    this.isInitialized = true;
     this.drawArmyFigures(state);
   }
 
@@ -350,9 +333,8 @@ export class OverworldScene extends Phaser.Scene {
 
     const visibleLands = getVisibleLands(state);
     for (const landPos of visibleLands) {
-      const tile = this.hexTiles.get(getLandId(landPos));
-      if (!tile) continue;
-      const center = axialToPixel(tile.q, tile.r, this.hexSize);
+      const { q, r } = offsetToAxial(landPos);
+      const center = axialToPixel(q, r, this.hexSize);
 
       const info = getLandInfo(state, landPos);
       if (info.heroes.length > 0 || info.regulars.length > 0 || info.illusionMsg != null) {
@@ -375,14 +357,16 @@ export class OverworldScene extends Phaser.Scene {
     }
   }
 
-  /** Returns the HexTile at the given world coordinates, or undefined if none. */
-  private findTileAt(worldX: number, worldY: number): HexTile | undefined {
-    for (const [, tile] of this.hexTiles.entries()) {
-      const corners = hexCorners(axialToPixel(tile.q, tile.r, this.hexSize), this.hexSize);
+  /** Returns the LandPosition at the given world coordinates, or undefined if none. */
+  private findTileAt(worldX: number, worldY: number): LandPosition | undefined {
+    if (!this.gameState) return undefined;
+    for (const land of Object.values(this.gameState.map.lands)) {
+      const { q, r } = offsetToAxial(land.mapPos);
+      const corners = hexCorners(axialToPixel(q, r, this.hexSize), this.hexSize);
       const points = corners.map((c) => new Phaser.Geom.Point(c.x, c.y));
       const poly = new Phaser.Geom.Polygon(points);
       if (Phaser.Geom.Polygon.Contains(poly, worldX, worldY)) {
-        return tile;
+        return land.mapPos;
       }
     }
     return undefined;

@@ -38,11 +38,9 @@ describe('OverworldScene', () => {
       expect(hexSize).toBe(60);
     });
 
-    it('should initialize empty hex tiles map', () => {
+    it('should start as not initialized', () => {
       const scene = new OverworldScene();
-      const hexTiles = (scene as any).hexTiles;
-      expect(hexTiles).toBeInstanceOf(Map);
-      expect(hexTiles.size).toBe(0);
+      expect((scene as any).isInitialized).toBe(false);
     });
 
     it('should have undefined graphics, spriteLayer, and gameState on construction', () => {
@@ -105,11 +103,10 @@ describe('OverworldScene', () => {
   });
 
   describe('Hex Tile Management', () => {
-    it('should store hex tiles with correct coordinates', () => {
+    it('should set isInitialized to true after initHexGrid', () => {
       const scene = new OverworldScene();
       const gameState = createDefaultGameStateStub();
 
-      // Mock required Phaser objects
       const mockGraphics = {
         clear: jest.fn(),
         fillStyle: jest.fn(),
@@ -125,8 +122,6 @@ describe('OverworldScene', () => {
 
       (scene as any).graphics = mockGraphics;
       (scene as any).spriteLayer = mockSpriteLayer;
-
-      // Mock add.image for renderLandImage
       (scene as any).add = {
         image: jest.fn(() => ({
           setScale: jest.fn().mockReturnThis(),
@@ -135,46 +130,16 @@ describe('OverworldScene', () => {
         })),
       };
 
-      // Manually call initHexGrid to test the logic
+      expect((scene as any).isInitialized).toBe(false);
       (scene as any).initHexGrid(gameState);
+      expect((scene as any).isInitialized).toBe(true);
 
-      const hexTiles = (scene as any).hexTiles as Map<string, any>;
-
-      // Verify all tiles were added
-      expect(hexTiles.size).toBe(195);
-
-      // Verify tile at 0,0
-      const landPos00 = { row: 0, col: 0 };
-      const tile00 = hexTiles.get(getLandId(landPos00));
-      expect(tile00).toBeDefined();
-      expect(tile00.landPos).toEqual(landPos00);
-
-      const { q: q00, r: r00 } = offsetToAxial(landPos00);
-      expect(tile00.q).toBe(q00);
-      expect(tile00.r).toBe(r00);
-
-      // Verify tile at 0,1
-      const landPos01 = { row: 0, col: 1 };
-      const tile01 = hexTiles.get(getLandId(landPos01));
-      expect(tile01).toBeDefined();
-      expect(tile01.landPos).toEqual(landPos01);
-
-      const { q: q01, r: r01 } = offsetToAxial(landPos01);
-      expect(tile01.q).toBe(q01);
-      expect(tile01.r).toBe(r01);
-
-      // Verify tile at 1,0
-      const landPos10 = { row: 1, col: 0 };
-      const tile10 = hexTiles.get(getLandId(landPos10));
-      expect(tile10).toBeDefined();
-      expect(tile10.landPos).toEqual(landPos10);
-
-      const { q: q10, r: r10 } = offsetToAxial(landPos10);
-      expect(tile10.q).toBe(q10);
-      expect(tile10.r).toBe(r10);
+      // Verify graphics were called for all 195 tiles
+      expect(mockGraphics.lineStyle).toHaveBeenCalledTimes(195);
+      expect(mockGraphics.strokePoints).toHaveBeenCalledTimes(195);
     });
 
-    it('should clear hex tiles on re-initialization', () => {
+    it('should clear and reinitialize graphics on re-initialization', () => {
       const scene = new OverworldScene();
       const gameState = createDefaultGameStateStub();
 
@@ -193,8 +158,6 @@ describe('OverworldScene', () => {
 
       (scene as any).graphics = mockGraphics;
       (scene as any).spriteLayer = mockSpriteLayer;
-
-      // Mock add.image for renderLandImage
       (scene as any).add = {
         image: jest.fn(() => ({
           setScale: jest.fn().mockReturnThis(),
@@ -205,19 +168,17 @@ describe('OverworldScene', () => {
 
       // First initialization
       (scene as any).initHexGrid(gameState);
-      let hexTiles = (scene as any).hexTiles as Map<string, any>;
-      expect(hexTiles.size).toBe(195);
+      expect((scene as any).isInitialized).toBe(true);
 
-      // Second initialization should clear and reinitialize
+      // Second initialization
       (scene as any).initHexGrid(gameState);
-      hexTiles = (scene as any).hexTiles as Map<string, any>;
-      expect(hexTiles.size).toBe(195);
+      expect((scene as any).isInitialized).toBe(true);
 
-      // Verify graphics.clear was called during second initialization
-      expect(mockGraphics.clear).toHaveBeenCalled();
+      // graphics.clear called once per initHexGrid call
+      expect(mockGraphics.clear).toHaveBeenCalledTimes(2);
 
-      // Verify spriteLayer.removeAll was called
-      expect(mockSpriteLayer.removeAll).toHaveBeenCalled();
+      // spriteLayer.removeAll called once per initHexGrid call
+      expect(mockSpriteLayer.removeAll).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -406,8 +367,7 @@ describe('OverworldScene', () => {
       // First update should initialize
       (scene as any).handleStateUpdate(gameState);
 
-      const hexTiles = (scene as any).hexTiles as Map<string, any>;
-      expect(hexTiles.size).toBe(195);
+      expect((scene as any).isInitialized).toBe(true);
     });
 
     it('should update tiles on subsequent STATE_UPDATE calls', () => {
@@ -485,7 +445,7 @@ describe('OverworldScene', () => {
 
     it('should return undefined from findTileAt when no tile exists at the given coords', () => {
       const scene = new OverworldScene();
-      // hexTiles is empty — no tile will match
+      // gameState is undefined — no tile will match
       const result = (scene as any).findTileAt(0, 0);
       expect(result).toBeUndefined();
     });
@@ -497,17 +457,13 @@ describe('OverworldScene', () => {
 
       // Simulate drag state: pendingClickTile set but isDragging true
       (scene as any).isDragging = true;
-      (scene as any).pendingClickTile = { q: 0, r: 0, landPos: { row: 0, col: 0 } };
+      (scene as any).pendingClickTile = { row: 0, col: 0 };
 
-      // Directly test the pointerup logic by emitting a left-button-released pointer
-      const mockPointer = {
-        leftButtonReleased: () => true,
-      } as any;
       // Trigger the pointerup callback manually by simulating its logic
       const isDragging = (scene as any).isDragging;
       const pendingClickTile = (scene as any).pendingClickTile;
       if (!isDragging && pendingClickTile) {
-        phaserEventBus.emit(PhaserEvents.TILE_CLICKED, pendingClickTile.landPos);
+        phaserEventBus.emit(PhaserEvents.TILE_CLICKED, pendingClickTile);
       }
       (scene as any).isDragging = false;
       (scene as any).pendingClickTile = undefined;
@@ -653,7 +609,7 @@ describe('OverworldScene', () => {
       };
       (scene as any).add = { image: jest.fn().mockReturnValue(mockImage) };
 
-      // initHexGrid so hexTiles are populated
+      // initHexGrid so isInitialized is set to true
       (scene as any).initHexGrid(gameState);
 
       return { scene, gameState };
