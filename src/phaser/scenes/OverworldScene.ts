@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import { getLandId } from '../../state/map/land/LandId';
-import { getLandOwner } from '../../selectors/landSelectors';
-import { getPosition } from '../../selectors/armySelectors';
+import { getLandInfo, getLandOwner, getVisibleLands } from '../../selectors/landSelectors';
+import { getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getPlayer } from '../../selectors/playerSelectors';
 import { getLandColor } from '../../domain/land/landRepository';
 import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { getLandAssetKey, getLandAssetPaths } from '../utils/landImageManager';
@@ -12,8 +13,6 @@ import { NO_PLAYER } from '../../domain/player/playerRepository';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { LandState } from '../../state/map/land/LandState';
-import type { PlayerRace } from '../../state/player/PlayerProfile';
-import type { HeroState } from '../../state/army/HeroState';
 
 import celticBackgroundPng from '../../assets/border/CelticBackground.png';
 
@@ -349,58 +348,30 @@ export class OverworldScene extends Phaser.Scene {
     if (!this.figureLayer) return;
     this.figureLayer.removeAll(true);
 
-    // Aggregate armies: posKey → playerId → { heroes, hasRegulars, race, tintColor }
-    type ArmyEntry = { heroes: HeroState[]; hasRegulars: boolean; race: PlayerRace };
-    const tilePlayerMap = new Map<string, Map<string, ArmyEntry>>();
-
-    for (const army of state.armies) {
-      const pos = getPosition(army);
-      if (!pos) continue;
-      const posKey = getLandId(pos);
-
-      const player = state.players.find((p) => p.id === army.controlledBy);
-      if (!player) continue;
-
-      let playerMap = tilePlayerMap.get(posKey);
-      if (!playerMap) {
-        playerMap = new Map();
-        tilePlayerMap.set(posKey, playerMap);
-      }
-
-      let entry = playerMap.get(army.controlledBy);
-      if (!entry) {
-        entry = { heroes: [], hasRegulars: false, race: player.playerProfile.race };
-        playerMap.set(army.controlledBy, entry);
-      }
-
-      entry.heroes.push(...army.heroes);
-      if (army.regulars.length > 0) entry.hasRegulars = true;
-    }
-
-    // Render one figure per player per tile
-    for (const [posKey, playerMap] of tilePlayerMap) {
-      const tile = this.hexTiles.get(posKey);
+    const visibleLands = getVisibleLands(state);
+    for (const landPos of visibleLands) {
+      const tile = this.hexTiles.get(getLandId(landPos));
       if (!tile) continue;
-
       const center = axialToPixel(tile.q, tile.r, this.hexSize);
-      const entries = Array.from(playerMap.values());
 
-      entries.forEach((entry, index) => {
-        const assetKey = getFigureAssetKey(entry.race, entry.heroes, entry.hasRegulars);
+      const info = getLandInfo(state, landPos);
+      if (info.heroes.length > 0 || info.regulars.length > 0 || info.illusionMsg != null) {
+        // place figure
+        const isIllusion = info.illusionMsg != null;
+        const landOwnerRace = getPlayer(state, getLandOwner(state, landPos)).playerProfile.race;
+        const heroes = !isIllusion ? getArmiesAtPosition(state, landPos).flatMap((a) => a.heroes) : [];
+        const assetKey = getFigureAssetKey(landOwnerRace, heroes, isIllusion || info.regulars.length > 0);
         if (!this.textures?.exists(assetKey)) return;
 
-        // When multiple players share a tile, space figures horizontally
-        const offsetX = entries.length > 1 ? (index - (entries.length - 1) / 2) * 16 : 0;
-
         try {
-          const img = this.add.image(center.x + offsetX, center.y - 20, assetKey);
+          const img = this.add.image(center.x, center.y - 20, assetKey);
           const scale = (this.hexSize * 1.7) / Math.max(img.width, img.height);
           img.setScale(scale);
           this.figureLayer!.add(img);
         } catch (e) {
-          console.warn(`Failed to render figure for race ${entry.race}:`, e);
+          console.warn(`Failed to render figure for race ${landOwnerRace}:`, e);
         }
-      });
+      }
     }
   }
 

@@ -2,6 +2,9 @@ import Phaser from 'phaser';
 import { getLandId } from '../../state/map/land/LandId';
 import { offsetToAxial, axialToPixel } from '../../phaser/utils/hexGeometry';
 import { phaserEventBus, PhaserEvents } from '../../phaser/phaserEventBus';
+import { SpellName } from '../../types/Spell';
+import { TreasureName } from '../../types/Treasures';
+import { EffectKind, EffectTarget } from '../../types/Effect';
 import { OverworldScene } from '../../phaser/scenes/OverworldScene';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
@@ -622,6 +625,169 @@ describe('OverworldScene', () => {
     it('should have drawArmyFigures method', () => {
       const scene = new OverworldScene();
       expect(typeof (scene as any).drawArmyFigures).toBe('function');
+    });
+  });
+
+  describe('Opponents Army Figures', () => {
+    /** Build a scene with mocked Phaser internals ready for drawArmyFigures calls. */
+    function buildSceneWithMocks() {
+      const scene = new OverworldScene();
+      const gameState = createDefaultGameStateStub(); // 3 players, each has one hero army
+
+      (scene as any).graphics = {
+        clear: jest.fn(),
+        fillStyle: jest.fn(),
+        fillPoints: jest.fn(),
+        lineStyle: jest.fn(),
+        strokePoints: jest.fn(),
+      } as any;
+      (scene as any).spriteLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn(), setDepth: jest.fn() } as any;
+      // textures.exists returns true so figures would actually be drawn if not filtered out
+      (scene as any).textures = { exists: jest.fn().mockReturnValue(true) };
+      const mockImage = {
+        setScale: jest.fn().mockReturnThis(),
+        setTint: jest.fn().mockReturnThis(),
+        width: 64,
+        height: 64,
+      };
+      (scene as any).add = { image: jest.fn().mockReturnValue(mockImage) };
+
+      // initHexGrid so hexTiles are populated
+      (scene as any).initHexGrid(gameState);
+
+      return { scene, gameState };
+    }
+
+    it('should render own army figure regardless of effects', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+      const figureLayer = (scene as any).figureLayer;
+      const addImage = (scene as any).add.image;
+
+      figureLayer.add.mockClear();
+      addImage.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      // Default stub: turnOwner = player[0] (alaric). At least his army should produce a figure.
+      expect(figureLayer.add).toHaveBeenCalled();
+    });
+
+    it('should NOT render opponent army figure without visibility effect', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      // Confirm there are opponent armies
+      const opponentArmies = gameState.armies.filter((a) => a.controlledBy !== gameState.turnOwner);
+      expect(opponentArmies.length).toBeGreaterThan(0);
+
+      // Count figures added — only turn owner's army should appear
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      // Only 1 figure (turn owner) — opponents are hidden
+      expect(figureLayer.add).toHaveBeenCalledTimes(1);
+    });
+
+    it('should render opponent army figure when VIEW_TERRITORY is active on the land', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      // Add VIEW_TERRITORY effect (applied by turn owner) to an opponent's land
+      const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
+      const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
+      const land = gameState.map.lands[getLandId(opponentPos)];
+      land.effects.push({
+        id: 'test-view',
+        sourceId: SpellName.VIEW_TERRITORY,
+        appliedBy: gameState.turnOwner,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
+      });
+
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      // Now 2 figures: turn owner + the revealed opponent
+      expect(figureLayer.add).toHaveBeenCalledTimes(2);
+    });
+
+    it('should render opponent army figure when ILLUSION spell is active on the land', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
+      const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
+      const land = gameState.map.lands[getLandId(opponentPos)];
+      land.effects.push({
+        id: 'test-illusion',
+        sourceId: SpellName.ILLUSION,
+        appliedBy: opponentArmy.controlledBy,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 3 },
+      });
+      land.effects.push({
+        id: 'test-view-territory',
+        sourceId: SpellName.VIEW_TERRITORY,
+        appliedBy: gameState.turnOwner,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
+      });
+
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      expect(figureLayer.add).toHaveBeenCalledTimes(2);
+    });
+
+    it('should render opponent army figure when MIRROR_OF_ILLUSION effect is on the land', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
+      const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
+      const land = gameState.map.lands[getLandId(opponentPos)];
+      land.effects.push({
+        id: 'test-mirror',
+        sourceId: TreasureName.MIRROR_OF_ILLUSION,
+        appliedBy: opponentArmy.controlledBy,
+        rules: { type: EffectKind.PERMANENT, target: EffectTarget.LAND, duration: 0 },
+      });
+      land.effects.push({
+        id: 'test-view-territory',
+        sourceId: SpellName.VIEW_TERRITORY,
+        appliedBy: gameState.turnOwner,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
+      });
+
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      expect(figureLayer.add).toHaveBeenCalledTimes(2);
+    });
+
+    it('should NOT reveal opponent if VIEW_TERRITORY was applied by a different player', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
+      const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
+      const land = gameState.map.lands[getLandId(opponentPos)];
+      // Effect applied by the opponent themselves — not by turn owner
+      land.effects.push({
+        id: 'test-view-wrong',
+        sourceId: SpellName.VIEW_TERRITORY,
+        appliedBy: opponentArmy.controlledBy,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
+      });
+
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      // Still only 1 (own army) — wrong appliedBy doesn't count
+      expect(figureLayer.add).toHaveBeenCalledTimes(1);
     });
   });
 

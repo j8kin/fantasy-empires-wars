@@ -57,7 +57,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
 
   const updateGameConfig = useCallback(
     (config: GameState) => {
-      setGameState(config);
+      setGameState({ ...config });
 
       // Initialize TurnManager when gameState is set (only if not already exists)
       if (!turnManager && config) {
