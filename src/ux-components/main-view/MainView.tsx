@@ -2,7 +2,6 @@ import React, { Activity, useEffect, useRef } from 'react';
 import styles from './css/Background.module.css';
 
 import TopPanel from '../top-panel/TopPanel';
-import Battlefield from '../battlefield/Battlefield';
 import NewGameDialog from '../dialogs/NewGameDialog';
 import SaveGameDialog from '../dialogs/SaveGameDialog';
 import CastSpellDialog from '../dialogs/CastSpellDialog';
@@ -14,6 +13,7 @@ import SelectOpponentDialog from '../dialogs/SelectOpponentDialog';
 import SendHeroInQuestDialog from '../dialogs/SendHeroInQuestDialog';
 import DiplomacyContactDialog from '../dialogs/DiplomacyContactDialog';
 
+import LandInfoPopup from '../popups/LandInfoPopup';
 import OpponentInfoPopup from '../popups/OpponentInfoPopup';
 import ProgressPopup from '../popups/ProgressPopup';
 import ErrorMessagePopup from '../popups/ErrorMessagePopup';
@@ -24,7 +24,9 @@ import SpellCastAnimation from '../animations/SpellCastAnimation';
 import { PhaserGameInstance } from '../../phaser/PhaserGameInstance';
 import { ApplicationContextProvider, useApplicationContext } from '../../contexts/ApplicationContext';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
-import { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
+import { useLandAction } from '../battlefield/useLandAction';
+import { phaserEventBus, PhaserEvents } from '../../phaser/phaserEventBus';
+import FantasyBorderFrame, { defaultTileDimensions } from '../fantasy-border-frame/FantasyBorderFrame';
 import type { EmpireEvent } from '../../types/EmpireEvent';
 
 const MainViewContent: React.FC = () => {
@@ -40,6 +42,8 @@ const MainViewContent: React.FC = () => {
     showErrorMessagePopup,
     showEmpireEventsPopup,
     gameStarted,
+    landPopupPosition,
+    landPopupScreenPosition,
     clearAllGlow,
     setSelectedLandAction,
     setIsArcaneExchangeMode,
@@ -100,6 +104,15 @@ const MainViewContent: React.FC = () => {
     }
   }, [gameStarted, gameState, startNewTurn]);
 
+  // Task 5.3: Bridge Phaser TILE_CLICKED → same action logic as LandTile.handleClick
+  const { performActionAtPosition } = useLandAction();
+  useEffect(() => {
+    phaserEventBus.on(PhaserEvents.TILE_CLICKED, performActionAtPosition);
+    return () => {
+      phaserEventBus.off(PhaserEvents.TILE_CLICKED, performActionAtPosition);
+    };
+  }, [performActionAtPosition]);
+
   const handleMainViewClick = () => {
     // Clear glow and selected item when clicking on the main background
     clearAllGlow();
@@ -112,16 +125,23 @@ const MainViewContent: React.FC = () => {
       {/* Content components */}
       <TopPanel height={TOP_PANEL_HEIGHT} tileDimensions={TILE_SIZE} />
 
-      <Battlefield
-        topPanelHeight={TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)}
-        tileSize={TILE_SIZE}
-        key={`map-${gameStarted}`}
-      />
-
-      {/* Phase 2 dev: Phaser canvas stub below existing Battlefield for side-by-side QA */}
+      {/* Phaser canvas — positioned below TopPanel, filling available area */}
+      {/* zIndex: 100 — below all dialogs (which start at 999) */}
+      {/* stopPropagation: prevent Phaser clicks bubbling to <main>'s handleMainViewClick */}
       {gameStarted && (
-        <div style={{ width: '100%', height: '60vh', marginTop: '1rem', zIndex: 2000 }}>
-          <PhaserGameInstance />
+        <div onClick={(e) => e.stopPropagation()}>
+          <FantasyBorderFrame
+            screenPosition={{ x: 0, y: TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width) }}
+            frameSize={{
+              width: window.innerWidth,
+              height: window.innerHeight - (TOP_PANEL_HEIGHT - Math.min(TILE_SIZE.height, TILE_SIZE.width)),
+            }}
+            tileDimensions={TILE_SIZE}
+            accessible={true}
+            zIndex={100}
+          >
+            <PhaserGameInstance />
+          </FantasyBorderFrame>
         </div>
       )}
 
@@ -157,6 +177,9 @@ const MainViewContent: React.FC = () => {
 
       {/* Diplomacy Contact Dialog - shown as overlay */}
       <DiplomacyContactDialog />
+
+      {/* Land Info Popup - shown on right-click (React tile or Phaser hex) */}
+      {landPopupPosition && <LandInfoPopup landPos={landPopupPosition} screenPosition={landPopupScreenPosition} />}
 
       {/* Opponent Info Dialog - shown as overlay */}
       <OpponentInfoPopup opponent={selectedOpponent} screenPosition={opponentScreenPosition} />

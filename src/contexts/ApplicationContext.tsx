@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
+import { phaserEventBus, PhaserEvents } from '../phaser/phaserEventBus';
+import { landIdToPosition } from '../state/map/land/LandId';
 import type { PlayerState } from '../state/player/PlayerState';
 import type { EmpireEvent } from '../types/EmpireEvent';
 import type { PlayerProfile } from '../state/player/PlayerProfile';
@@ -296,6 +298,27 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({ 
   const hideSpellAnimation = useCallback(() => {
     setSpellAnimation(null);
   }, []);
+
+  // Task 5.6: Emit GLOW_TILES / CLEAR_GLOW to Phaser whenever glowingTiles changes
+  useEffect(() => {
+    if (glowingTiles.size > 0) {
+      const positions = Array.from(glowingTiles).map(landIdToPosition);
+      phaserEventBus.emit(PhaserEvents.GLOW_TILES, positions);
+    } else {
+      phaserEventBus.emit(PhaserEvents.CLEAR_GLOW);
+    }
+  }, [glowingTiles]);
+
+  // Task 5.4: Handle right-click on Phaser tile → open land popup
+  useEffect(() => {
+    const onRightClick = ({ pos, screenX, screenY }: { pos: LandPosition; screenX: number; screenY: number }) => {
+      showLandPopup(pos, { x: screenX, y: screenY });
+    };
+    phaserEventBus.on(PhaserEvents.TILE_RIGHT_CLICKED, onRightClick);
+    return () => {
+      phaserEventBus.off(PhaserEvents.TILE_RIGHT_CLICKED, onRightClick);
+    };
+  }, [showLandPopup]);
 
   return (
     <ApplicationContext.Provider

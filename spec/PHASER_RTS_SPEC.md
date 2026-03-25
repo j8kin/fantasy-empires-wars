@@ -870,7 +870,7 @@ If performance is sub-optimal on 20×20+ maps, migrate to Tilemap system with si
 
 ---
 
-### Phase 5 — Tile Interaction (click wiring)
+### Phase 5 — Tile Interaction (click wiring) ✅ COMPLETED
 
 | #   | Task                                                                                 | Files Affected           |
 |-----|--------------------------------------------------------------------------------------|--------------------------|

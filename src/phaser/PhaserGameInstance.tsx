@@ -17,7 +17,7 @@ export function PhaserGameInstance() {
       parent: containerRef.current!,
       width: '100%',
       height: '100%',
-      backgroundColor: '#1a1a2e',
+      backgroundColor: '#2b2b2b',
       scene: [OverworldScene],
     });
     gameRef.current = game;
