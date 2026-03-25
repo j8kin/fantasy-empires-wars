@@ -1,15 +1,19 @@
 import Phaser from 'phaser';
 import { getLandId } from '../../state/map/land/LandId';
+import { getLandOwner } from '../../selectors/landSelectors';
+import { getPosition } from '../../selectors/armySelectors';
 import { getLandColor } from '../../domain/land/landRepository';
+import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { getLandAssetKey, getLandAssetPaths } from '../utils/landImageManager';
+import { getFigureAssetKey, getFigureAssetPaths } from '../utils/armyFigureManager';
 import { offsetToAxial, axialToPixel, hexCorners } from '../utils/hexGeometry';
 import { phaserEventBus, PhaserEvents } from '../phaserEventBus';
-import { getLandOwner } from '../../selectors/landSelectors';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
-import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { LandState } from '../../state/map/land/LandState';
+import type { PlayerRace } from '../../state/player/PlayerProfile';
+import type { HeroState } from '../../state/army/HeroState';
 
 import celticBackgroundPng from '../../assets/border/CelticBackground.png';
 
@@ -31,6 +35,7 @@ export class OverworldScene extends Phaser.Scene {
   private graphics?: Phaser.GameObjects.Graphics;
   private glowGraphics?: Phaser.GameObjects.Graphics;
   private spriteLayer?: Phaser.GameObjects.Container;
+  private figureLayer?: Phaser.GameObjects.Container;
   private backgroundTile?: Phaser.GameObjects.TileSprite;
   private mapWidth = 0;
   private mapHeight = 0;
@@ -51,7 +56,9 @@ export class OverworldScene extends Phaser.Scene {
       // todo replace with getLandImg or remove getLandImg
       const assetPaths = getLandAssetPaths();
       assetPaths.forEach(([key, path]) => {
-        // Use dynamic import resolution for Vite
+        this.load.image(key, path);
+      });
+      getFigureAssetPaths().forEach(([key, path]) => {
         this.load.image(key, path);
       });
     } catch (e) {
@@ -73,6 +80,10 @@ export class OverworldScene extends Phaser.Scene {
 
     // Create sprite layer container for land images
     this.spriteLayer = this.add.container(0, 0);
+
+    // Create figure layer container for army figures (depth 5: above land+borders, below glow)
+    this.figureLayer = this.add.container(0, 0);
+    this.figureLayer.setDepth(5);
 
     // Create dedicated glow graphics layer (rendered above all tiles)
     this.glowGraphics = this.add.graphics();
@@ -212,19 +223,24 @@ export class OverworldScene extends Phaser.Scene {
       // Draw the tile
       this.drawHexTile(land, q, r, state);
     });
+
+    this.drawArmyFigures(state);
   }
 
   private updateTiles(state: GameState): void {
     if (!this.graphics) return;
 
-    // Only redraw the graphics layer (borders + fallback fills).
-    // Land image sprites don't change between turns, so the sprite layer is left intact.
+    // Redraw graphics layer (borders + fallback fills).
+    // Land image sprites don't change between turns, so spriteLayer is left intact.
     this.graphics.clear();
 
     Object.values(state.map.lands).forEach((land) => {
       const { q, r } = offsetToAxial(land.mapPos);
       this.drawHexGraphics(land, q, r, state);
     });
+
+    // Armies move each turn — rebuild figure layer from scratch
+    this.drawArmyFigures(state);
   }
 
   /**
@@ -321,6 +337,70 @@ export class OverworldScene extends Phaser.Scene {
       this.spriteLayer.add(image);
     } catch (e) {
       console.warn(`Failed to render land image for ${land.type}:`, e);
+    }
+  }
+
+  /**
+   * Rebuild the figure layer for the current game state.
+   * Called on every state update because armies move each turn.
+   * Groups armies by tile position and player, then renders one figure per player per tile.
+   */
+  private drawArmyFigures(state: GameState): void {
+    if (!this.figureLayer) return;
+    this.figureLayer.removeAll(true);
+
+    // Aggregate armies: posKey → playerId → { heroes, hasRegulars, race, tintColor }
+    type ArmyEntry = { heroes: HeroState[]; hasRegulars: boolean; race: PlayerRace };
+    const tilePlayerMap = new Map<string, Map<string, ArmyEntry>>();
+
+    for (const army of state.armies) {
+      const pos = getPosition(army);
+      if (!pos) continue;
+      const posKey = getLandId(pos);
+
+      const player = state.players.find((p) => p.id === army.controlledBy);
+      if (!player) continue;
+
+      let playerMap = tilePlayerMap.get(posKey);
+      if (!playerMap) {
+        playerMap = new Map();
+        tilePlayerMap.set(posKey, playerMap);
+      }
+
+      let entry = playerMap.get(army.controlledBy);
+      if (!entry) {
+        entry = { heroes: [], hasRegulars: false, race: player.playerProfile.race };
+        playerMap.set(army.controlledBy, entry);
+      }
+
+      entry.heroes.push(...army.heroes);
+      if (army.regulars.length > 0) entry.hasRegulars = true;
+    }
+
+    // Render one figure per player per tile
+    for (const [posKey, playerMap] of tilePlayerMap) {
+      const tile = this.hexTiles.get(posKey);
+      if (!tile) continue;
+
+      const center = axialToPixel(tile.q, tile.r, this.hexSize);
+      const entries = Array.from(playerMap.values());
+
+      entries.forEach((entry, index) => {
+        const assetKey = getFigureAssetKey(entry.race, entry.heroes, entry.hasRegulars);
+        if (!this.textures?.exists(assetKey)) return;
+
+        // When multiple players share a tile, space figures horizontally
+        const offsetX = entries.length > 1 ? (index - (entries.length - 1) / 2) * 16 : 0;
+
+        try {
+          const img = this.add.image(center.x + offsetX, center.y - 20, assetKey);
+          const scale = (this.hexSize * 1.7) / Math.max(img.width, img.height);
+          img.setScale(scale);
+          this.figureLayer!.add(img);
+        } catch (e) {
+          console.warn(`Failed to render figure for race ${entry.race}:`, e);
+        }
+      });
     }
   }
 

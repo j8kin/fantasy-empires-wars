@@ -575,6 +575,56 @@ describe('OverworldScene', () => {
     });
   });
 
+  describe('Army Figure Layer', () => {
+    it('should have undefined figureLayer on construction', () => {
+      const scene = new OverworldScene();
+      expect((scene as any).figureLayer).toBeUndefined();
+    });
+
+    it('should clear and rebuild figureLayer on each state update', () => {
+      const scene = new OverworldScene();
+      const gameState = createDefaultGameStateStub();
+
+      const mockGraphics = {
+        clear: jest.fn(),
+        fillStyle: jest.fn(),
+        fillPoints: jest.fn(),
+        lineStyle: jest.fn(),
+        strokePoints: jest.fn(),
+      } as any;
+
+      const mockSpriteLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      const mockFigureLayer = { removeAll: jest.fn(), add: jest.fn(), setDepth: jest.fn() } as any;
+
+      (scene as any).graphics = mockGraphics;
+      (scene as any).spriteLayer = mockSpriteLayer;
+      (scene as any).figureLayer = mockFigureLayer;
+      (scene as any).add = {
+        image: jest.fn(() => ({ setScale: jest.fn().mockReturnThis(), width: 64, height: 64 })),
+      };
+
+      // First state update (initHexGrid path)
+      (scene as any).handleStateUpdate(gameState);
+      expect(mockFigureLayer.removeAll).toHaveBeenCalledTimes(1);
+
+      // Second state update (updateTiles path) — figureLayer is rebuilt again
+      (scene as any).handleStateUpdate(gameState);
+      expect(mockFigureLayer.removeAll).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not throw when figureLayer is undefined during drawArmyFigures', () => {
+      const scene = new OverworldScene();
+      const gameState = createDefaultGameStateStub();
+      // figureLayer is not set — method must exit gracefully
+      expect(() => (scene as any).drawArmyFigures(gameState)).not.toThrow();
+    });
+
+    it('should have drawArmyFigures method', () => {
+      const scene = new OverworldScene();
+      expect(typeof (scene as any).drawArmyFigures).toBe('function');
+    });
+  });
+
   describe('Hex Geometry Coordinates', () => {
     it('should correctly convert offset coordinates to axial', () => {
       // Verify coordinate conversion works
