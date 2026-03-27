@@ -38,6 +38,23 @@ export const getBuilding = (state: LandState, id: string): BuildingState | undef
   return state.buildings.find((b) => b.id === id);
 };
 
+export const getVisibleLands = (state: GameState): LandPosition[] => {
+  const turnOwner = getTurnOwner(state);
+  if (turnOwner.playerType === 'computer') return []; // return empty array if computer player to avoid display army on computer player's turn'
+
+  const lands = getPlayerLands(state).map((l) => l.mapPos);
+  const opponentsLands = state.players
+    .filter((p) => p.id !== state.turnOwner)
+    .flatMap((p) => getPlayerLands(state, p.id))
+    .filter(
+      (land) =>
+        hasActiveEffect(land, SpellName.VIEW_TERRITORY, state.turnOwner) ||
+        hasActiveEffect(land, TreasureName.COMPASS_OF_DOMINION, state.turnOwner)
+    )
+    .map((l) => l.mapPos);
+  return [...lands, ...opponentsLands];
+};
+
 interface LandInfo {
   owner: string;
   color: string;

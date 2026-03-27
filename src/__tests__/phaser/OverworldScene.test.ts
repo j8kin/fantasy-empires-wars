@@ -2,6 +2,9 @@ import Phaser from 'phaser';
 import { getLandId } from '../../state/map/land/LandId';
 import { offsetToAxial, axialToPixel } from '../../phaser/utils/hexGeometry';
 import { phaserEventBus, PhaserEvents } from '../../phaser/phaserEventBus';
+import { SpellName } from '../../types/Spell';
+import { TreasureName } from '../../types/Treasures';
+import { EffectKind, EffectTarget } from '../../types/Effect';
 import { OverworldScene } from '../../phaser/scenes/OverworldScene';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
@@ -35,11 +38,9 @@ describe('OverworldScene', () => {
       expect(hexSize).toBe(60);
     });
 
-    it('should initialize empty hex tiles map', () => {
+    it('should start as not initialized', () => {
       const scene = new OverworldScene();
-      const hexTiles = (scene as any).hexTiles;
-      expect(hexTiles).toBeInstanceOf(Map);
-      expect(hexTiles.size).toBe(0);
+      expect((scene as any).isInitialized).toBe(false);
     });
 
     it('should have undefined graphics, spriteLayer, and gameState on construction', () => {
@@ -102,11 +103,10 @@ describe('OverworldScene', () => {
   });
 
   describe('Hex Tile Management', () => {
-    it('should store hex tiles with correct coordinates', () => {
+    it('should set isInitialized to true after initHexGrid', () => {
       const scene = new OverworldScene();
       const gameState = createDefaultGameStateStub();
 
-      // Mock required Phaser objects
       const mockGraphics = {
         clear: jest.fn(),
         fillStyle: jest.fn(),
@@ -122,8 +122,6 @@ describe('OverworldScene', () => {
 
       (scene as any).graphics = mockGraphics;
       (scene as any).spriteLayer = mockSpriteLayer;
-
-      // Mock add.image for renderLandImage
       (scene as any).add = {
         image: jest.fn(() => ({
           setScale: jest.fn().mockReturnThis(),
@@ -132,46 +130,16 @@ describe('OverworldScene', () => {
         })),
       };
 
-      // Manually call initHexGrid to test the logic
+      expect((scene as any).isInitialized).toBe(false);
       (scene as any).initHexGrid(gameState);
+      expect((scene as any).isInitialized).toBe(true);
 
-      const hexTiles = (scene as any).hexTiles as Map<string, any>;
-
-      // Verify all tiles were added
-      expect(hexTiles.size).toBe(195);
-
-      // Verify tile at 0,0
-      const landPos00 = { row: 0, col: 0 };
-      const tile00 = hexTiles.get(getLandId(landPos00));
-      expect(tile00).toBeDefined();
-      expect(tile00.landPos).toEqual(landPos00);
-
-      const { q: q00, r: r00 } = offsetToAxial(landPos00);
-      expect(tile00.q).toBe(q00);
-      expect(tile00.r).toBe(r00);
-
-      // Verify tile at 0,1
-      const landPos01 = { row: 0, col: 1 };
-      const tile01 = hexTiles.get(getLandId(landPos01));
-      expect(tile01).toBeDefined();
-      expect(tile01.landPos).toEqual(landPos01);
-
-      const { q: q01, r: r01 } = offsetToAxial(landPos01);
-      expect(tile01.q).toBe(q01);
-      expect(tile01.r).toBe(r01);
-
-      // Verify tile at 1,0
-      const landPos10 = { row: 1, col: 0 };
-      const tile10 = hexTiles.get(getLandId(landPos10));
-      expect(tile10).toBeDefined();
-      expect(tile10.landPos).toEqual(landPos10);
-
-      const { q: q10, r: r10 } = offsetToAxial(landPos10);
-      expect(tile10.q).toBe(q10);
-      expect(tile10.r).toBe(r10);
+      // Verify graphics were called for all 195 tiles
+      expect(mockGraphics.lineStyle).toHaveBeenCalledTimes(195);
+      expect(mockGraphics.strokePoints).toHaveBeenCalledTimes(195);
     });
 
-    it('should clear hex tiles on re-initialization', () => {
+    it('should clear and reinitialize graphics on re-initialization', () => {
       const scene = new OverworldScene();
       const gameState = createDefaultGameStateStub();
 
@@ -190,8 +158,6 @@ describe('OverworldScene', () => {
 
       (scene as any).graphics = mockGraphics;
       (scene as any).spriteLayer = mockSpriteLayer;
-
-      // Mock add.image for renderLandImage
       (scene as any).add = {
         image: jest.fn(() => ({
           setScale: jest.fn().mockReturnThis(),
@@ -202,19 +168,17 @@ describe('OverworldScene', () => {
 
       // First initialization
       (scene as any).initHexGrid(gameState);
-      let hexTiles = (scene as any).hexTiles as Map<string, any>;
-      expect(hexTiles.size).toBe(195);
+      expect((scene as any).isInitialized).toBe(true);
 
-      // Second initialization should clear and reinitialize
+      // Second initialization
       (scene as any).initHexGrid(gameState);
-      hexTiles = (scene as any).hexTiles as Map<string, any>;
-      expect(hexTiles.size).toBe(195);
+      expect((scene as any).isInitialized).toBe(true);
 
-      // Verify graphics.clear was called during second initialization
-      expect(mockGraphics.clear).toHaveBeenCalled();
+      // graphics.clear called once per initHexGrid call
+      expect(mockGraphics.clear).toHaveBeenCalledTimes(2);
 
-      // Verify spriteLayer.removeAll was called
-      expect(mockSpriteLayer.removeAll).toHaveBeenCalled();
+      // spriteLayer.removeAll called once per initHexGrid call
+      expect(mockSpriteLayer.removeAll).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -403,8 +367,7 @@ describe('OverworldScene', () => {
       // First update should initialize
       (scene as any).handleStateUpdate(gameState);
 
-      const hexTiles = (scene as any).hexTiles as Map<string, any>;
-      expect(hexTiles.size).toBe(195);
+      expect((scene as any).isInitialized).toBe(true);
     });
 
     it('should update tiles on subsequent STATE_UPDATE calls', () => {
@@ -423,6 +386,7 @@ describe('OverworldScene', () => {
       const mockSpriteLayer = {
         removeAll: jest.fn(),
         add: jest.fn(),
+        getByName: jest.fn().mockReturnValue(null),
       } as any;
 
       (scene as any).graphics = mockGraphics;
@@ -432,6 +396,7 @@ describe('OverworldScene', () => {
       (scene as any).add = {
         image: jest.fn(() => ({
           setScale: jest.fn().mockReturnThis(),
+          setName: jest.fn(),
           width: 64,
           height: 64,
         })),
@@ -447,8 +412,8 @@ describe('OverworldScene', () => {
       // clear() should have been called again (from updateTiles)
       expect(mockGraphics.clear).toHaveBeenCalledTimes(2);
 
-      // spriteLayer.removeAll should NOT be called on updates — sprites are reused
-      expect(mockSpriteLayer.removeAll).not.toHaveBeenCalledTimes(2);
+      // spriteLayer.removeAll only called during initHexGrid, not on subsequent updates
+      expect(mockSpriteLayer.removeAll).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -482,7 +447,7 @@ describe('OverworldScene', () => {
 
     it('should return undefined from findTileAt when no tile exists at the given coords', () => {
       const scene = new OverworldScene();
-      // hexTiles is empty — no tile will match
+      // gameState is undefined — no tile will match
       const result = (scene as any).findTileAt(0, 0);
       expect(result).toBeUndefined();
     });
@@ -494,17 +459,13 @@ describe('OverworldScene', () => {
 
       // Simulate drag state: pendingClickTile set but isDragging true
       (scene as any).isDragging = true;
-      (scene as any).pendingClickTile = { q: 0, r: 0, landPos: { row: 0, col: 0 } };
+      (scene as any).pendingClickTile = { row: 0, col: 0 };
 
-      // Directly test the pointerup logic by emitting a left-button-released pointer
-      const mockPointer = {
-        leftButtonReleased: () => true,
-      } as any;
       // Trigger the pointerup callback manually by simulating its logic
       const isDragging = (scene as any).isDragging;
       const pendingClickTile = (scene as any).pendingClickTile;
       if (!isDragging && pendingClickTile) {
-        phaserEventBus.emit(PhaserEvents.TILE_CLICKED, pendingClickTile.landPos);
+        phaserEventBus.emit(PhaserEvents.TILE_CLICKED, pendingClickTile);
       }
       (scene as any).isDragging = false;
       (scene as any).pendingClickTile = undefined;
@@ -572,6 +533,224 @@ describe('OverworldScene', () => {
 
       phaserEventBus.removeListener(PhaserEvents.GLOW_TILES, glowListener);
       phaserEventBus.removeListener(PhaserEvents.CLEAR_GLOW, clearListener);
+    });
+  });
+
+  describe('Army Figure Layer', () => {
+    it('should have undefined figureLayer on construction', () => {
+      const scene = new OverworldScene();
+      expect((scene as any).figureLayer).toBeUndefined();
+    });
+
+    it('should clear and rebuild figureLayer on each state update', () => {
+      const scene = new OverworldScene();
+      const gameState = createDefaultGameStateStub();
+
+      const mockGraphics = {
+        clear: jest.fn(),
+        fillStyle: jest.fn(),
+        fillPoints: jest.fn(),
+        lineStyle: jest.fn(),
+        strokePoints: jest.fn(),
+      } as any;
+
+      const mockSpriteLayer = {
+        removeAll: jest.fn(),
+        add: jest.fn(),
+        getByName: jest.fn().mockReturnValue(null),
+      } as any;
+      const mockFigureLayer = { removeAll: jest.fn(), add: jest.fn(), setDepth: jest.fn() } as any;
+
+      (scene as any).graphics = mockGraphics;
+      (scene as any).spriteLayer = mockSpriteLayer;
+      (scene as any).figureLayer = mockFigureLayer;
+      (scene as any).add = {
+        image: jest.fn(() => ({ setScale: jest.fn().mockReturnThis(), width: 64, height: 64 })),
+      };
+
+      // First state update (initHexGrid path)
+      (scene as any).handleStateUpdate(gameState);
+      expect(mockFigureLayer.removeAll).toHaveBeenCalledTimes(1);
+
+      // Second state update (updateTiles path) — figureLayer is rebuilt again
+      (scene as any).handleStateUpdate(gameState);
+      expect(mockFigureLayer.removeAll).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not throw when figureLayer is undefined during drawArmyFigures', () => {
+      const scene = new OverworldScene();
+      const gameState = createDefaultGameStateStub();
+      // figureLayer is not set — method must exit gracefully
+      expect(() => (scene as any).drawArmyFigures(gameState)).not.toThrow();
+    });
+
+    it('should have drawArmyFigures method', () => {
+      const scene = new OverworldScene();
+      expect(typeof (scene as any).drawArmyFigures).toBe('function');
+    });
+  });
+
+  describe('Opponents Army Figures', () => {
+    /** Build a scene with mocked Phaser internals ready for drawArmyFigures calls. */
+    function buildSceneWithMocks() {
+      const scene = new OverworldScene();
+      const gameState = createDefaultGameStateStub(); // 3 players, each has one hero army
+
+      (scene as any).graphics = {
+        clear: jest.fn(),
+        fillStyle: jest.fn(),
+        fillPoints: jest.fn(),
+        lineStyle: jest.fn(),
+        strokePoints: jest.fn(),
+      } as any;
+      (scene as any).spriteLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn(), setDepth: jest.fn() } as any;
+      // textures.exists returns true so figures would actually be drawn if not filtered out
+      (scene as any).textures = { exists: jest.fn().mockReturnValue(true) };
+      const mockImage = {
+        setScale: jest.fn().mockReturnThis(),
+        setTint: jest.fn().mockReturnThis(),
+        setName: jest.fn(),
+        width: 64,
+        height: 64,
+      };
+      (scene as any).add = { image: jest.fn().mockReturnValue(mockImage) };
+
+      // initHexGrid so isInitialized is set to true
+      (scene as any).initHexGrid(gameState);
+
+      return { scene, gameState };
+    }
+
+    it('should render own army figure regardless of effects', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+      const figureLayer = (scene as any).figureLayer;
+      const addImage = (scene as any).add.image;
+
+      figureLayer.add.mockClear();
+      addImage.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      // Default stub: turnOwner = player[0] (alaric). At least his army should produce a figure.
+      expect(figureLayer.add).toHaveBeenCalled();
+    });
+
+    it('should NOT render opponent army figure without visibility effect', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      // Confirm there are opponent armies
+      const opponentArmies = gameState.armies.filter((a) => a.controlledBy !== gameState.turnOwner);
+      expect(opponentArmies.length).toBeGreaterThan(0);
+
+      // Count figures added — only turn owner's army should appear
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      // Only 1 figure (turn owner) — opponents are hidden
+      expect(figureLayer.add).toHaveBeenCalledTimes(1);
+    });
+
+    it('should render opponent army figure when VIEW_TERRITORY is active on the land', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      // Add VIEW_TERRITORY effect (applied by turn owner) to an opponent's land
+      const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
+      const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
+      const land = gameState.map.lands[getLandId(opponentPos)];
+      land.effects.push({
+        id: 'test-view',
+        sourceId: SpellName.VIEW_TERRITORY,
+        appliedBy: gameState.turnOwner,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
+      });
+
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      // Now 2 figures: turn owner + the revealed opponent
+      expect(figureLayer.add).toHaveBeenCalledTimes(2);
+    });
+
+    it('should render opponent army figure when ILLUSION spell is active on the land', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
+      const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
+      const land = gameState.map.lands[getLandId(opponentPos)];
+      land.effects.push({
+        id: 'test-illusion',
+        sourceId: SpellName.ILLUSION,
+        appliedBy: opponentArmy.controlledBy,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 3 },
+      });
+      land.effects.push({
+        id: 'test-view-territory',
+        sourceId: SpellName.VIEW_TERRITORY,
+        appliedBy: gameState.turnOwner,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
+      });
+
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      expect(figureLayer.add).toHaveBeenCalledTimes(2);
+    });
+
+    it('should render opponent army figure when MIRROR_OF_ILLUSION effect is on the land', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
+      const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
+      const land = gameState.map.lands[getLandId(opponentPos)];
+      land.effects.push({
+        id: 'test-mirror',
+        sourceId: TreasureName.MIRROR_OF_ILLUSION,
+        appliedBy: opponentArmy.controlledBy,
+        rules: { type: EffectKind.PERMANENT, target: EffectTarget.LAND, duration: 0 },
+      });
+      land.effects.push({
+        id: 'test-view-territory',
+        sourceId: SpellName.VIEW_TERRITORY,
+        appliedBy: gameState.turnOwner,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
+      });
+
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      expect(figureLayer.add).toHaveBeenCalledTimes(2);
+    });
+
+    it('should NOT reveal opponent if VIEW_TERRITORY was applied by a different player', () => {
+      const { scene, gameState } = buildSceneWithMocks();
+
+      const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
+      const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
+      const land = gameState.map.lands[getLandId(opponentPos)];
+      // Effect applied by the opponent themselves — not by turn owner
+      land.effects.push({
+        id: 'test-view-wrong',
+        sourceId: SpellName.VIEW_TERRITORY,
+        appliedBy: opponentArmy.controlledBy,
+        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
+      });
+
+      const figureLayer = (scene as any).figureLayer;
+      figureLayer.add.mockClear();
+
+      (scene as any).drawArmyFigures(gameState);
+
+      // Still only 1 (own army) — wrong appliedBy doesn't count
+      expect(figureLayer.add).toHaveBeenCalledTimes(1);
     });
   });
 

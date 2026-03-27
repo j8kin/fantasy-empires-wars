@@ -1,23 +1,20 @@
 import Phaser from 'phaser';
 import { getLandId } from '../../state/map/land/LandId';
+import { getLandInfo, getLandOwner, getVisibleLands } from '../../selectors/landSelectors';
+import { getArmiesAtPosition } from '../../selectors/armySelectors';
+import { getPlayer } from '../../selectors/playerSelectors';
 import { getLandColor } from '../../domain/land/landRepository';
+import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import { getLandAssetKey, getLandAssetPaths } from '../utils/landImageManager';
+import { getFigureAssetKey, getFigureAssetPaths } from '../utils/armyFigureManager';
 import { offsetToAxial, axialToPixel, hexCorners } from '../utils/hexGeometry';
 import { phaserEventBus, PhaserEvents } from '../phaserEventBus';
-import { getLandOwner } from '../../selectors/landSelectors';
 import { NO_PLAYER } from '../../domain/player/playerRepository';
-import { getPlayerColorValue } from '../../domain/ui/playerColors';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { LandState } from '../../state/map/land/LandState';
 
 import celticBackgroundPng from '../../assets/border/CelticBackground.png';
-
-interface HexTile {
-  q: number;
-  r: number;
-  landPos: LandPosition;
-}
 
 /** Pixels of movement required to distinguish a drag-pan from a tap/click */
 const DRAG_THRESHOLD = 5;
@@ -26,17 +23,18 @@ export class OverworldScene extends Phaser.Scene {
   static readonly KEY = 'OverworldScene';
 
   private hexSize = 60;
-  private hexTiles: Map<string, HexTile> = new Map();
+  private isInitialized = false;
   private gameState?: GameState;
   private graphics?: Phaser.GameObjects.Graphics;
   private glowGraphics?: Phaser.GameObjects.Graphics;
   private spriteLayer?: Phaser.GameObjects.Container;
+  private figureLayer?: Phaser.GameObjects.Container;
   private backgroundTile?: Phaser.GameObjects.TileSprite;
   private mapWidth = 0;
   private mapHeight = 0;
 
   /** Tile under the cursor at the last pointerdown — cleared on pointerup */
-  private pendingClickTile?: HexTile;
+  private pendingClickTile?: LandPosition;
   /** Set to true once the pointer moves more than DRAG_THRESHOLD pixels while held */
   private isDragging = false;
 
@@ -51,7 +49,9 @@ export class OverworldScene extends Phaser.Scene {
       // todo replace with getLandImg or remove getLandImg
       const assetPaths = getLandAssetPaths();
       assetPaths.forEach(([key, path]) => {
-        // Use dynamic import resolution for Vite
+        this.load.image(key, path);
+      });
+      getFigureAssetPaths().forEach(([key, path]) => {
         this.load.image(key, path);
       });
     } catch (e) {
@@ -73,6 +73,10 @@ export class OverworldScene extends Phaser.Scene {
 
     // Create sprite layer container for land images
     this.spriteLayer = this.add.container(0, 0);
+
+    // Create figure layer container for army figures (depth 5: above land+borders, below glow)
+    this.figureLayer = this.add.container(0, 0);
+    this.figureLayer.setDepth(5);
 
     // Create dedicated glow graphics layer (rendered above all tiles)
     this.glowGraphics = this.add.graphics();
@@ -115,7 +119,7 @@ export class OverworldScene extends Phaser.Scene {
           const screenX = mouseEvent?.clientX ?? pointer.x;
           const screenY = mouseEvent?.clientY ?? pointer.y;
           phaserEventBus.emit(PhaserEvents.TILE_RIGHT_CLICKED, {
-            pos: this.pendingClickTile.landPos,
+            pos: this.pendingClickTile,
             screenX,
             screenY,
           });
@@ -150,7 +154,7 @@ export class OverworldScene extends Phaser.Scene {
         return;
       }
       if (!this.isDragging && this.pendingClickTile) {
-        phaserEventBus.emit(PhaserEvents.TILE_CLICKED, this.pendingClickTile.landPos);
+        phaserEventBus.emit(PhaserEvents.TILE_CLICKED, this.pendingClickTile);
       }
       this.isDragging = false;
       this.pendingClickTile = undefined;
@@ -175,7 +179,7 @@ export class OverworldScene extends Phaser.Scene {
     this.gameState = state;
 
     // Initialize hex tiles if not done yet
-    if (this.hexTiles.size === 0 && this.graphics) {
+    if (!this.isInitialized && this.graphics) {
       this.initHexGrid(state);
     } else if (this.graphics) {
       // Update tiles
@@ -189,7 +193,6 @@ export class OverworldScene extends Phaser.Scene {
     const { lands, dimensions } = state.map;
 
     // Clear existing tiles
-    this.hexTiles.clear();
     this.graphics.clear();
     this.spriteLayer.removeAll(true);
 
@@ -199,32 +202,38 @@ export class OverworldScene extends Phaser.Scene {
 
     // Draw all land tiles
     Object.values(lands).forEach((land) => {
-      const tileKey = getLandId(land.mapPos);
       const { q, r } = offsetToAxial(land.mapPos);
-
-      // Store tile info for click detection
-      this.hexTiles.set(tileKey, {
-        q,
-        r,
-        landPos: land.mapPos,
-      });
-
-      // Draw the tile
       this.drawHexTile(land, q, r, state);
     });
+
+    this.isInitialized = true;
+    this.drawArmyFigures(state);
   }
 
   private updateTiles(state: GameState): void {
     if (!this.graphics) return;
 
-    // Only redraw the graphics layer (borders + fallback fills).
-    // Land image sprites don't change between turns, so the sprite layer is left intact.
     this.graphics.clear();
 
     Object.values(state.map.lands).forEach((land) => {
       const { q, r } = offsetToAxial(land.mapPos);
+
+      // Swap texture in-place if corruption changed (avoids rebuilding entire sprite layer).
+      const sprite = this.spriteLayer?.getByName(getLandId(land.mapPos)) as Phaser.GameObjects.Image | null;
+      if (sprite) {
+        const newKey = getLandAssetKey(land.type, land.corrupted);
+        if (sprite.texture?.key !== newKey && this.textures?.exists(newKey)) {
+          sprite.setTexture(newKey);
+          const scale = (this.hexSize * 1.8) / Math.max(sprite.width, sprite.height);
+          sprite.setScale(scale);
+        }
+      }
+
       this.drawHexGraphics(land, q, r, state);
     });
+
+    // Armies move each turn — rebuild figure layer from scratch
+    this.drawArmyFigures(state);
   }
 
   /**
@@ -316,6 +325,7 @@ export class OverworldScene extends Phaser.Scene {
 
     try {
       const image = this.add.image(center.x, center.y, assetKey);
+      image.setName(getLandId(land.mapPos));
       const scale = (this.hexSize * 1.8) / Math.max(image.width, image.height);
       image.setScale(scale);
       this.spriteLayer.add(image);
@@ -324,14 +334,51 @@ export class OverworldScene extends Phaser.Scene {
     }
   }
 
-  /** Returns the HexTile at the given world coordinates, or undefined if none. */
-  private findTileAt(worldX: number, worldY: number): HexTile | undefined {
-    for (const [, tile] of this.hexTiles.entries()) {
-      const corners = hexCorners(axialToPixel(tile.q, tile.r, this.hexSize), this.hexSize);
+  /**
+   * Rebuild the figure layer for the current game state.
+   * Called on every state update because armies move each turn.
+   * Groups armies by tile position and player, then renders one figure per player per tile.
+   */
+  private drawArmyFigures(state: GameState): void {
+    if (!this.figureLayer) return;
+    this.figureLayer.removeAll(true);
+
+    const visibleLands = getVisibleLands(state);
+    for (const landPos of visibleLands) {
+      const { q, r } = offsetToAxial(landPos);
+      const center = axialToPixel(q, r, this.hexSize);
+
+      const info = getLandInfo(state, landPos);
+      if (info.heroes.length > 0 || info.regulars.length > 0 || info.illusionMsg != null) {
+        // place figure
+        const isIllusion = info.illusionMsg != null;
+        const landOwnerRace = getPlayer(state, getLandOwner(state, landPos)).playerProfile.race;
+        const heroes = !isIllusion ? getArmiesAtPosition(state, landPos).flatMap((a) => a.heroes) : [];
+        const assetKey = getFigureAssetKey(landOwnerRace, heroes, isIllusion || info.regulars.length > 0);
+        if (!this.textures?.exists(assetKey)) return;
+
+        try {
+          const img = this.add.image(center.x, center.y - 20, assetKey);
+          const scale = (this.hexSize * 1.7) / Math.max(img.width, img.height);
+          img.setScale(scale);
+          this.figureLayer!.add(img);
+        } catch (e) {
+          console.warn(`Failed to render figure for race ${landOwnerRace}:`, e);
+        }
+      }
+    }
+  }
+
+  /** Returns the LandPosition at the given world coordinates, or undefined if none. */
+  private findTileAt(worldX: number, worldY: number): LandPosition | undefined {
+    if (!this.gameState) return undefined;
+    for (const land of Object.values(this.gameState.map.lands)) {
+      const { q, r } = offsetToAxial(land.mapPos);
+      const corners = hexCorners(axialToPixel(q, r, this.hexSize), this.hexSize);
       const points = corners.map((c) => new Phaser.Geom.Point(c.x, c.y));
       const poly = new Phaser.Geom.Polygon(points);
       if (Phaser.Geom.Polygon.Contains(poly, worldX, worldY)) {
-        return tile;
+        return land.mapPos;
       }
     }
     return undefined;
