@@ -5,11 +5,11 @@ import { phaserEventBus, PhaserEvents } from '../../phaser/phaserEventBus';
 import { SpellName } from '../../types/Spell';
 import { TreasureName } from '../../types/Treasures';
 import { EffectKind, EffectTarget } from '../../types/Effect';
-import { OverworldScene } from '../../phaser/scenes/OverworldScene';
+import { WorldMapScene } from '../../phaser/scenes/WorldMapScene';
 
 import { createDefaultGameStateStub } from '../utils/createGameStateStub';
 
-describe('OverworldScene', () => {
+describe('WorldMapScene', () => {
   beforeEach(() => {
     // Clear all event listeners before each test
     phaserEventBus.removeAllListeners();
@@ -17,53 +17,40 @@ describe('OverworldScene', () => {
 
   describe('Scene Class Definition', () => {
     it('should have the correct scene KEY', () => {
-      expect(OverworldScene.KEY).toBe('OverworldScene');
+      expect(WorldMapScene.KEY).toBe('WorldMapScene');
     });
 
     it('should extend Phaser.Scene', () => {
-      expect(OverworldScene.prototype instanceof Phaser.Scene).toBe(true);
+      expect(WorldMapScene.prototype instanceof Phaser.Scene).toBe(true);
     });
 
     it('should have required methods', () => {
-      expect(typeof OverworldScene.prototype.preload).toBe('function');
-      expect(typeof OverworldScene.prototype.create).toBe('function');
+      expect(typeof WorldMapScene.prototype.preload).toBe('function');
+      expect(typeof WorldMapScene.prototype.create).toBe('function');
     });
   });
 
   describe('Hex Grid State Management', () => {
-    it('should have a default hex size', () => {
-      const scene = new OverworldScene();
-      // Access private hexSize through type assertion
-      const hexSize = (scene as any).hexSize;
-      expect(hexSize).toBe(60);
-    });
-
     it('should start as not initialized', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       expect((scene as any).isInitialized).toBe(false);
     });
 
-    it('should have undefined graphics, spriteLayer, and gameState on construction', () => {
-      const scene = new OverworldScene();
-      expect((scene as any).graphics).toBeUndefined();
-      expect((scene as any).spriteLayer).toBeUndefined();
+    it('should have undefined landGraphics, landsLayer, and gameState on construction', () => {
+      const scene = new WorldMapScene();
+      expect((scene as any).landGraphics).toBeUndefined();
+      expect((scene as any).landsLayer).toBeUndefined();
       expect((scene as any).gameState).toBeUndefined();
-    });
-
-    it('should initialize map dimensions as zero on construction', () => {
-      const scene = new OverworldScene();
-      expect((scene as any).mapWidth).toBe(0);
-      expect((scene as any).mapHeight).toBe(0);
     });
   });
 
   describe('Event Bus Integration', () => {
     it('should listen to STATE_UPDATE events', (done) => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       const gameState = createDefaultGameStateStub();
 
-      // Mock the required methods to avoid Phaser initialization
-      (scene as any).graphics = {
+      // Mock the required fields to avoid Phaser initialization
+      (scene as any).landGraphics = {
         clear: jest.fn(),
         fillStyle: jest.fn(),
         fillPoints: jest.fn(),
@@ -92,334 +79,128 @@ describe('OverworldScene', () => {
       phaserEventBus.on(PhaserEvents.SCENE_READY, listener);
 
       // Create a scene (which should emit SCENE_READY in its create method)
-      new OverworldScene();
+      new WorldMapScene();
 
       // We can't easily test the create() without full Phaser setup,
       // but we can verify the scene key exists
-      expect(OverworldScene.KEY).toBe('OverworldScene');
+      expect(WorldMapScene.KEY).toBe('WorldMapScene');
 
       phaserEventBus.removeListener(PhaserEvents.SCENE_READY, listener);
     });
   });
 
   describe('Hex Tile Management', () => {
-    it('should set isInitialized to true after initHexGrid', () => {
-      const scene = new OverworldScene();
-      const gameState = createDefaultGameStateStub();
-
-      const mockGraphics = {
+    function buildBasicMocks(scene: WorldMapScene) {
+      (scene as any).landGraphics = {
         clear: jest.fn(),
         fillStyle: jest.fn(),
         fillPoints: jest.fn(),
         lineStyle: jest.fn(),
         strokePoints: jest.fn(),
       } as any;
-
-      const mockSpriteLayer = {
+      (scene as any).landsLayer = {
         removeAll: jest.fn(),
         add: jest.fn(),
+        getByName: jest.fn().mockReturnValue(null),
       } as any;
+      (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).backgroundTile = { setSize: jest.fn() } as any;
+    }
 
-      (scene as any).graphics = mockGraphics;
-      (scene as any).spriteLayer = mockSpriteLayer;
-      (scene as any).add = {
-        image: jest.fn(() => ({
-          setScale: jest.fn().mockReturnThis(),
-          width: 64,
-          height: 64,
-        })),
-      };
+    it('should set isInitialized to true after first STATE_UPDATE', () => {
+      const scene = new WorldMapScene();
+      const gameState = createDefaultGameStateStub();
+      buildBasicMocks(scene);
 
       expect((scene as any).isInitialized).toBe(false);
-      (scene as any).initHexGrid(gameState);
+      (scene as any).handleStateUpdate(gameState);
       expect((scene as any).isInitialized).toBe(true);
-
-      // Verify graphics were called for all 195 tiles
-      expect(mockGraphics.lineStyle).toHaveBeenCalledTimes(195);
-      expect(mockGraphics.strokePoints).toHaveBeenCalledTimes(195);
     });
 
-    it('should clear and reinitialize graphics on re-initialization', () => {
-      const scene = new OverworldScene();
+    it('should clear graphics and sprite layer on init, then only clear graphics on updates', () => {
+      const scene = new WorldMapScene();
       const gameState = createDefaultGameStateStub();
+      buildBasicMocks(scene);
 
-      const mockGraphics = {
-        clear: jest.fn(),
-        fillStyle: jest.fn(),
-        fillPoints: jest.fn(),
-        lineStyle: jest.fn(),
-        strokePoints: jest.fn(),
-      } as any;
+      const mockLandGraphics = (scene as any).landGraphics;
+      const mockLandsLayer = (scene as any).landsLayer;
 
-      const mockSpriteLayer = {
-        removeAll: jest.fn(),
-        add: jest.fn(),
-      } as any;
-
-      (scene as any).graphics = mockGraphics;
-      (scene as any).spriteLayer = mockSpriteLayer;
-      (scene as any).add = {
-        image: jest.fn(() => ({
-          setScale: jest.fn().mockReturnThis(),
-          width: 64,
-          height: 64,
-        })),
-      };
-
-      // First initialization
-      (scene as any).initHexGrid(gameState);
+      // First STATE_UPDATE — init path
+      (scene as any).handleStateUpdate(gameState);
       expect((scene as any).isInitialized).toBe(true);
+      expect(mockLandGraphics.clear).toHaveBeenCalledTimes(1);
+      expect(mockLandsLayer.removeAll).toHaveBeenCalledTimes(1);
 
-      // Second initialization
-      (scene as any).initHexGrid(gameState);
-      expect((scene as any).isInitialized).toBe(true);
-
-      // graphics.clear called once per initHexGrid call
-      expect(mockGraphics.clear).toHaveBeenCalledTimes(2);
-
-      // spriteLayer.removeAll called once per initHexGrid call
-      expect(mockSpriteLayer.removeAll).toHaveBeenCalledTimes(2);
-    });
-  });
-
-  describe('Hex Tile Drawing', () => {
-    it('should call graphics methods when drawing a tile', () => {
-      const scene = new OverworldScene();
-      const gameState = createDefaultGameStateStub();
-      const land = gameState.map.lands[getLandId({ row: 0, col: 0 })];
-
-      const mockGraphics = {
-        fillStyle: jest.fn(),
-        fillPoints: jest.fn(),
-        lineStyle: jest.fn(),
-        strokePoints: jest.fn(),
-      } as any;
-
-      const mockSpriteLayer = {
-        add: jest.fn(),
-      } as any;
-
-      (scene as any).graphics = mockGraphics;
-      (scene as any).spriteLayer = mockSpriteLayer;
-
-      // Mock add.image for renderLandImage
-      (scene as any).add = {
-        image: jest.fn(() => ({
-          setScale: jest.fn().mockReturnThis(),
-          width: 64,
-          height: 64,
-        })),
-      };
-
-      // Draw a tile
-      (scene as any).drawHexTile(land, 0, 0, gameState);
-
-      // Verify graphics methods were called (lineStyle and strokePoints for border)
-      expect(mockGraphics.lineStyle).toHaveBeenCalled();
-      expect(mockGraphics.strokePoints).toHaveBeenCalled();
-    });
-
-    it('should apply ownership border color to owned tiles', () => {
-      const scene = new OverworldScene();
-      const gameState = createDefaultGameStateStub();
-      // Player 0 (alaric, color 'blue'=#4A90E2) owns the stronghold at { row: 3, col: 3 }
-      const landPos = { row: 3, col: 3 };
-      const landId = getLandId(landPos);
-      const land = gameState.map.lands[landId];
-
-      const mockGraphics = {
-        fillStyle: jest.fn(),
-        fillPoints: jest.fn(),
-        lineStyle: jest.fn(),
-        strokePoints: jest.fn(),
-      } as any;
-
-      const mockSpriteLayer = {
-        add: jest.fn(),
-      } as any;
-
-      (scene as any).graphics = mockGraphics;
-      (scene as any).spriteLayer = mockSpriteLayer;
-
-      // Mock add.image for renderLandImage
-      (scene as any).add = {
-        image: jest.fn(() => ({
-          setScale: jest.fn().mockReturnThis(),
-          width: 64,
-          height: 64,
-        })),
-      };
-
-      const { q, r } = offsetToAxial(landPos);
-      (scene as any).drawHexTile(land, q, r, gameState);
-
-      // Border should be called with the player's color (blue=#4A90E2), not white
-      const lineStyleCalls = mockGraphics.lineStyle.mock.calls;
-      const lastCall = lineStyleCalls[lineStyleCalls.length - 1];
-      const expectedColor = parseInt('4A90E2', 16);
-      expect(lastCall[1]).toBe(expectedColor);
-      expect(lastCall[2]).toBe(1); // full opacity
-    });
-
-    it('should not apply ownership tint to unowned tiles', () => {
-      const scene = new OverworldScene();
-      const gameState = createDefaultGameStateStub();
-      const land = gameState.map.lands[getLandId({ row: 0, col: 0 })]; // This tile is not owned
-
-      const mockGraphics = {
-        fillStyle: jest.fn(),
-        fillPoints: jest.fn(),
-        lineStyle: jest.fn(),
-        strokePoints: jest.fn(),
-      } as any;
-
-      const mockSpriteLayer = {
-        add: jest.fn(),
-      } as any;
-
-      (scene as any).graphics = mockGraphics;
-      (scene as any).spriteLayer = mockSpriteLayer;
-
-      // Mock add.image for renderLandImage
-      (scene as any).add = {
-        image: jest.fn(() => ({
-          setScale: jest.fn().mockReturnThis(),
-          width: 64,
-          height: 64,
-        })),
-      };
-
-      // Draw tile 0,0 which is not owned
-      (scene as any).drawHexTile(land, 0, 0, gameState);
-
-      // Border should be white (0xFFFFFF) for unowned tiles
-      const lineStyleCalls = mockGraphics.lineStyle.mock.calls;
-      const lastCall = lineStyleCalls[lineStyleCalls.length - 1];
-      expect(lastCall[1]).toBe(0xffffff);
+      // Second STATE_UPDATE — update path: graphics cleared again, sprite layer NOT rebuilt
+      (scene as any).handleStateUpdate(gameState);
+      expect(mockLandGraphics.clear).toHaveBeenCalledTimes(2);
+      expect(mockLandsLayer.removeAll).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('State Updates', () => {
-    it('should cache game state after STATE_UPDATE', () => {
-      const scene = new OverworldScene();
-      const gameState = createDefaultGameStateStub();
-
-      const mockGraphics = {
+    function buildStateMocks(scene: WorldMapScene) {
+      (scene as any).landGraphics = {
         clear: jest.fn(),
         fillStyle: jest.fn(),
         fillPoints: jest.fn(),
         lineStyle: jest.fn(),
         strokePoints: jest.fn(),
       } as any;
-
-      const mockSpriteLayer = {
+      (scene as any).landsLayer = {
         removeAll: jest.fn(),
         add: jest.fn(),
+        getByName: jest.fn().mockReturnValue(null),
       } as any;
+      (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).backgroundTile = { setSize: jest.fn() } as any;
+    }
 
-      (scene as any).graphics = mockGraphics;
-      (scene as any).spriteLayer = mockSpriteLayer;
+    it('should cache game state after STATE_UPDATE', () => {
+      const scene = new WorldMapScene();
+      const gameState = createDefaultGameStateStub();
+      buildStateMocks(scene);
 
-      // Mock add.image for renderLandImage
-      (scene as any).add = {
-        image: jest.fn(() => ({
-          setScale: jest.fn().mockReturnThis(),
-          width: 64,
-          height: 64,
-        })),
-      };
-
-      // Simulate STATE_UPDATE
       (scene as any).handleStateUpdate(gameState);
 
-      expect((scene as any).gameState).toBe(gameState);
+      expect((scene as any).mapLandPositions).toHaveLength(Object.values(gameState.map.lands).length);
     });
 
     it('should initialize hex grid on first STATE_UPDATE', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       const gameState = createDefaultGameStateStub();
+      buildStateMocks(scene);
 
-      const mockGraphics = {
-        clear: jest.fn(),
-        fillStyle: jest.fn(),
-        fillPoints: jest.fn(),
-        lineStyle: jest.fn(),
-        strokePoints: jest.fn(),
-      } as any;
-
-      const mockSpriteLayer = {
-        removeAll: jest.fn(),
-        add: jest.fn(),
-      } as any;
-
-      (scene as any).graphics = mockGraphics;
-      (scene as any).spriteLayer = mockSpriteLayer;
-
-      // Mock add.image for renderLandImage
-      (scene as any).add = {
-        image: jest.fn(() => ({
-          setScale: jest.fn().mockReturnThis(),
-          width: 64,
-          height: 64,
-        })),
-      };
-
-      // First update should initialize
       (scene as any).handleStateUpdate(gameState);
 
       expect((scene as any).isInitialized).toBe(true);
     });
 
     it('should update tiles on subsequent STATE_UPDATE calls', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       const gameState1 = createDefaultGameStateStub();
       const gameState2 = createDefaultGameStateStub();
+      buildStateMocks(scene);
 
-      const mockGraphics = {
-        clear: jest.fn(),
-        fillStyle: jest.fn(),
-        fillPoints: jest.fn(),
-        lineStyle: jest.fn(),
-        strokePoints: jest.fn(),
-      } as any;
+      const mockLandGraphics = (scene as any).landGraphics;
+      const mockLandsLayer = (scene as any).landsLayer;
 
-      const mockSpriteLayer = {
-        removeAll: jest.fn(),
-        add: jest.fn(),
-        getByName: jest.fn().mockReturnValue(null),
-      } as any;
-
-      (scene as any).graphics = mockGraphics;
-      (scene as any).spriteLayer = mockSpriteLayer;
-
-      // Mock add.image for renderLandImage
-      (scene as any).add = {
-        image: jest.fn(() => ({
-          setScale: jest.fn().mockReturnThis(),
-          setName: jest.fn(),
-          width: 64,
-          height: 64,
-        })),
-      };
-
-      // First update
+      // First update — init path
       (scene as any).handleStateUpdate(gameState1);
-      expect(mockGraphics.clear).toHaveBeenCalledTimes(1);
+      expect(mockLandGraphics.clear).toHaveBeenCalledTimes(1);
 
-      // Second update
+      // Second update — update path
       (scene as any).handleStateUpdate(gameState2);
+      expect(mockLandGraphics.clear).toHaveBeenCalledTimes(2);
 
-      // clear() should have been called again (from updateTiles)
-      expect(mockGraphics.clear).toHaveBeenCalledTimes(2);
-
-      // spriteLayer.removeAll only called during initHexGrid, not on subsequent updates
-      expect(mockSpriteLayer.removeAll).toHaveBeenCalledTimes(1);
+      // landsLayer.removeAll only called during init, not on subsequent updates
+      expect(mockLandsLayer.removeAll).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('Pointer Interaction', () => {
     it('should have a findTileAt method', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       expect(typeof (scene as any).findTileAt).toBe('function');
     });
 
@@ -446,14 +227,14 @@ describe('OverworldScene', () => {
     });
 
     it('should return undefined from findTileAt when no tile exists at the given coords', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       // gameState is undefined — no tile will match
       const result = (scene as any).findTileAt(0, 0);
       expect(result).toBeUndefined();
     });
 
     it('should not emit TILE_CLICKED when isDragging is true on pointerup', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       const listener = jest.fn();
       phaserEventBus.on(PhaserEvents.TILE_CLICKED, listener);
 
@@ -477,13 +258,13 @@ describe('OverworldScene', () => {
 
   describe('Glow Management', () => {
     it('should have handleGlowTiles and handleClearGlow methods', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       expect(typeof (scene as any).handleGlowTiles).toBe('function');
       expect(typeof (scene as any).handleClearGlow).toBe('function');
     });
 
     it('should draw hex outlines for each position when handleGlowTiles is called', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       const mockGlowGraphics = {
         clear: jest.fn(),
         lineStyle: jest.fn(),
@@ -503,7 +284,7 @@ describe('OverworldScene', () => {
     });
 
     it('should clear glow graphics when handleClearGlow is called', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       const mockGlowGraphics = { clear: jest.fn() } as any;
       (scene as any).glowGraphics = mockGlowGraphics;
 
@@ -513,7 +294,7 @@ describe('OverworldScene', () => {
     });
 
     it('should not throw when handleGlowTiles is called without glowGraphics', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       // No glowGraphics set — should be a no-op
       expect(() => (scene as any).handleGlowTiles([{ row: 0, col: 0 }])).not.toThrow();
     });
@@ -538,86 +319,68 @@ describe('OverworldScene', () => {
 
   describe('Army Figure Layer', () => {
     it('should have undefined figureLayer on construction', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       expect((scene as any).figureLayer).toBeUndefined();
     });
 
     it('should clear and rebuild figureLayer on each state update', () => {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       const gameState = createDefaultGameStateStub();
 
-      const mockGraphics = {
+      (scene as any).landGraphics = {
         clear: jest.fn(),
         fillStyle: jest.fn(),
         fillPoints: jest.fn(),
         lineStyle: jest.fn(),
         strokePoints: jest.fn(),
       } as any;
-
-      const mockSpriteLayer = {
+      (scene as any).landsLayer = {
         removeAll: jest.fn(),
         add: jest.fn(),
         getByName: jest.fn().mockReturnValue(null),
       } as any;
-      const mockFigureLayer = { removeAll: jest.fn(), add: jest.fn(), setDepth: jest.fn() } as any;
+      (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).backgroundTile = { setSize: jest.fn() } as any;
 
-      (scene as any).graphics = mockGraphics;
-      (scene as any).spriteLayer = mockSpriteLayer;
-      (scene as any).figureLayer = mockFigureLayer;
-      (scene as any).add = {
-        image: jest.fn(() => ({ setScale: jest.fn().mockReturnThis(), width: 64, height: 64 })),
-      };
+      const mockFigureLayer = (scene as any).figureLayer;
 
-      // First state update (initHexGrid path)
+      // First state update — init path
       (scene as any).handleStateUpdate(gameState);
       expect(mockFigureLayer.removeAll).toHaveBeenCalledTimes(1);
 
-      // Second state update (updateTiles path) — figureLayer is rebuilt again
+      // Second state update — update path — figureLayer is rebuilt again
       (scene as any).handleStateUpdate(gameState);
       expect(mockFigureLayer.removeAll).toHaveBeenCalledTimes(2);
-    });
-
-    it('should not throw when figureLayer is undefined during drawArmyFigures', () => {
-      const scene = new OverworldScene();
-      const gameState = createDefaultGameStateStub();
-      // figureLayer is not set — method must exit gracefully
-      expect(() => (scene as any).drawArmyFigures(gameState)).not.toThrow();
-    });
-
-    it('should have drawArmyFigures method', () => {
-      const scene = new OverworldScene();
-      expect(typeof (scene as any).drawArmyFigures).toBe('function');
     });
   });
 
   describe('Opponents Army Figures', () => {
-    /** Build a scene with mocked Phaser internals ready for drawArmyFigures calls. */
+    /** Build a scene with mocked Phaser internals ready for drawArmyFiguresLayer calls. */
     function buildSceneWithMocks() {
-      const scene = new OverworldScene();
+      const scene = new WorldMapScene();
       const gameState = createDefaultGameStateStub(); // 3 players, each has one hero army
 
-      (scene as any).graphics = {
+      (scene as any).landGraphics = {
         clear: jest.fn(),
         fillStyle: jest.fn(),
         fillPoints: jest.fn(),
         lineStyle: jest.fn(),
         strokePoints: jest.fn(),
       } as any;
-      (scene as any).spriteLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
-      (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn(), setDepth: jest.fn() } as any;
+      (scene as any).landsLayer = {
+        removeAll: jest.fn(),
+        add: jest.fn(),
+        getByName: jest.fn().mockReturnValue(null),
+      } as any;
+      (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).backgroundTile = { setSize: jest.fn() } as any;
       // textures.exists returns true so figures would actually be drawn if not filtered out
       (scene as any).textures = { exists: jest.fn().mockReturnValue(true) };
-      const mockImage = {
-        setScale: jest.fn().mockReturnThis(),
-        setTint: jest.fn().mockReturnThis(),
-        setName: jest.fn(),
-        width: 64,
-        height: 64,
-      };
+      const mockImage = { setScale: jest.fn().mockReturnThis(), width: 64, height: 64 };
       (scene as any).add = { image: jest.fn().mockReturnValue(mockImage) };
 
-      // initHexGrid so isInitialized is set to true
-      (scene as any).initHexGrid(gameState);
+      // Mark as initialized so handleStateUpdate takes the update path
+      (scene as any).isInitialized = true;
 
       return { scene, gameState };
     }
@@ -625,12 +388,11 @@ describe('OverworldScene', () => {
     it('should render own army figure regardless of effects', () => {
       const { scene, gameState } = buildSceneWithMocks();
       const figureLayer = (scene as any).figureLayer;
-      const addImage = (scene as any).add.image;
 
       figureLayer.add.mockClear();
-      addImage.mockClear();
+      (scene as any).add.image.mockClear();
 
-      (scene as any).drawArmyFigures(gameState);
+      (scene as any).handleStateUpdate(gameState);
 
       // Default stub: turnOwner = player[0] (alaric). At least his army should produce a figure.
       expect(figureLayer.add).toHaveBeenCalled();
@@ -647,7 +409,7 @@ describe('OverworldScene', () => {
       const figureLayer = (scene as any).figureLayer;
       figureLayer.add.mockClear();
 
-      (scene as any).drawArmyFigures(gameState);
+      (scene as any).handleStateUpdate(gameState);
 
       // Only 1 figure (turn owner) — opponents are hidden
       expect(figureLayer.add).toHaveBeenCalledTimes(1);
@@ -670,7 +432,7 @@ describe('OverworldScene', () => {
       const figureLayer = (scene as any).figureLayer;
       figureLayer.add.mockClear();
 
-      (scene as any).drawArmyFigures(gameState);
+      (scene as any).handleStateUpdate(gameState);
 
       // Now 2 figures: turn owner + the revealed opponent
       expect(figureLayer.add).toHaveBeenCalledTimes(2);
@@ -698,7 +460,7 @@ describe('OverworldScene', () => {
       const figureLayer = (scene as any).figureLayer;
       figureLayer.add.mockClear();
 
-      (scene as any).drawArmyFigures(gameState);
+      (scene as any).handleStateUpdate(gameState);
 
       expect(figureLayer.add).toHaveBeenCalledTimes(2);
     });
@@ -725,7 +487,7 @@ describe('OverworldScene', () => {
       const figureLayer = (scene as any).figureLayer;
       figureLayer.add.mockClear();
 
-      (scene as any).drawArmyFigures(gameState);
+      (scene as any).handleStateUpdate(gameState);
 
       expect(figureLayer.add).toHaveBeenCalledTimes(2);
     });
@@ -747,7 +509,7 @@ describe('OverworldScene', () => {
       const figureLayer = (scene as any).figureLayer;
       figureLayer.add.mockClear();
 
-      (scene as any).drawArmyFigures(gameState);
+      (scene as any).handleStateUpdate(gameState);
 
       // Still only 1 (own army) — wrong appliedBy doesn't count
       expect(figureLayer.add).toHaveBeenCalledTimes(1);
@@ -781,7 +543,7 @@ describe('OverworldScene', () => {
 
     it('should correctly convert axial coordinates to pixel positions', () => {
       // Test pixel conversion
-      const { x: x00, y: y00 } = axialToPixel(0, 0, 64);
+      const { x: x00, y: y00 } = axialToPixel(0, 0);
       expect(typeof x00).toBe('number');
       expect(typeof y00).toBe('number');
       expect(x00).toBeGreaterThan(0); // Should have left margin

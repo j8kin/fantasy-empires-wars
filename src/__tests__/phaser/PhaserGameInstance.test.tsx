@@ -29,7 +29,7 @@ describe('PhaserGameInstance', () => {
     expect(MockGame).toHaveBeenCalledTimes(1);
   });
 
-  it('passes the OverworldScene and correct config to Phaser.Game', () => {
+  it('passes the WorldMapScene and correct config to Phaser.Game', () => {
     render(
       <GameProvider>
         <PhaserGameInstance />

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { useEffect, useRef } from 'react';
-import { OverworldScene } from './scenes/OverworldScene';
+import { WorldMapScene } from './scenes/WorldMapScene';
 import { useGameContext } from '../contexts/GameContext';
 import { phaserEventBus, PhaserEvents } from './phaserEventBus';
 
@@ -18,7 +18,7 @@ export function PhaserGameInstance() {
       width: '100%',
       height: '100%',
       backgroundColor: '#2b2b2b',
-      scene: [OverworldScene],
+      scene: [WorldMapScene],
     });
     gameRef.current = game;
 

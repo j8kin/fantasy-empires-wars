@@ -54,10 +54,10 @@ describe('phaserEventBus', () => {
 
     phaserEventBus.on(PhaserEvents.SCENE_READY, first);
     phaserEventBus.on(PhaserEvents.SCENE_READY, second);
-    phaserEventBus.emit(PhaserEvents.SCENE_READY, 'OverworldScene');
+    phaserEventBus.emit(PhaserEvents.SCENE_READY, 'WorldMapScene');
 
-    expect(first).toHaveBeenCalledWith('OverworldScene');
-    expect(second).toHaveBeenCalledWith('OverworldScene');
+    expect(first).toHaveBeenCalledWith('WorldMapScene');
+    expect(second).toHaveBeenCalledWith('WorldMapScene');
   });
 
   it('does not call listener after it is removed with off()', () => {

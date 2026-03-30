@@ -1,6 +1,7 @@
 import { LandName } from '../types/Land';
 import type { LandType } from '../types/Land';
 import type { LandState } from '../state/map/land/LandState';
+import type { ImmutablePair } from '../types/Pair';
 
 import darkForestImg from './lands/darkforest.png';
 import greenForestImg from './lands/greenforest.png';
@@ -26,36 +27,38 @@ import mountainsCorruptedImg from './lands/mountains-corrupted.png';
 import plainsCorruptedImg from './lands/plains-corrupted.png';
 import greenForestCorruptedImg from './lands/green-forest-corrupted.png';
 
-const landNormalImg: Partial<Record<LandType, string>> = {
-  [LandName.PLAINS]: plainsImg,
-  [LandName.HILLS]: hillsImg,
-  [LandName.DESERT]: desertImg,
-  [LandName.MOUNTAINS]: mountainsImg,
-  [LandName.GREEN_FOREST]: greenForestImg,
-  [LandName.SWAMP]: swampImg,
-  [LandName.DARK_FOREST]: darkForestImg,
+const landNormalImg: Partial<Record<LandType, ImmutablePair>> = {
+  [LandName.PLAINS]: ['land_plains', plainsImg],
+  [LandName.HILLS]: ['land_hills', hillsImg],
+  [LandName.DESERT]: ['land_desert', desertImg],
+  [LandName.MOUNTAINS]: ['land_mountains', mountainsImg],
+  [LandName.GREEN_FOREST]: ['land_greenforest', greenForestImg],
+  [LandName.SWAMP]: ['land_swamp', swampImg],
+  [LandName.DARK_FOREST]: ['land_darkforest', darkForestImg],
   // special lands
-  [LandName.VOLCANO]: volcanoImg,
-  [LandName.LAVA]: lavaImg,
-  [LandName.SUN_SPIRE_PEAKS]: sunSpirePeaksImg,
-  [LandName.GOLDEN_PLAINS]: goldenPlainsImg,
-  [LandName.CRISTAL_BASIN]: crystalBasinImg,
-  [LandName.MISTY_GLADES]: mistyGladesImg,
-  [LandName.SHADOW_MIRE]: shadowMireImg,
-  [LandName.BLIGHTED_FEN]: blightedFenImg,
-  [LandName.HEARTWOOD_GROVE]: heartwoodGroveImg,
-  [LandName.VERDANT_GLADE]: verdantGladeImg,
+  [LandName.VOLCANO]: ['land_volcano', volcanoImg],
+  [LandName.LAVA]: ['land_lava', lavaImg],
+  [LandName.SUN_SPIRE_PEAKS]: ['land_sunspire-peaks', sunSpirePeaksImg],
+  [LandName.GOLDEN_PLAINS]: ['land_golden-plains', goldenPlainsImg],
+  [LandName.CRISTAL_BASIN]: ['land_crystal-basin', crystalBasinImg],
+  [LandName.MISTY_GLADES]: ['land_misty-glades', mistyGladesImg],
+  [LandName.SHADOW_MIRE]: ['land_shadow-mire', shadowMireImg],
+  [LandName.BLIGHTED_FEN]: ['land_blighted-fen', blightedFenImg],
+  [LandName.HEARTWOOD_GROVE]: ['land_heartwood-grove', heartwoodGroveImg],
+  [LandName.VERDANT_GLADE]: ['land_verdant-glade', verdantGladeImg],
 };
-const landCorruptedImg: Partial<Record<LandType, string>> = {
-  [LandName.PLAINS]: plainsCorruptedImg,
-  [LandName.HILLS]: hillsCorruptedImg,
-  [LandName.MOUNTAINS]: mountainsCorruptedImg,
-  [LandName.GREEN_FOREST]: greenForestCorruptedImg,
-};
-
-export const getLandImg = (land: LandState): string | undefined => {
-  return land.corrupted ? landCorruptedImg[land.type] : landNormalImg[land.type];
+const landCorruptedImg: Partial<Record<LandType, ImmutablePair>> = {
+  [LandName.PLAINS]: ['land_plains-corrupted', plainsCorruptedImg],
+  [LandName.HILLS]: ['land_hills-corrupted', hillsCorruptedImg],
+  [LandName.MOUNTAINS]: ['land_mountains-corrupted', mountainsCorruptedImg],
+  [LandName.GREEN_FOREST]: ['land_green-forest-corrupted', greenForestCorruptedImg],
 };
 
-export const getAllLandImages = (): string[] =>
-  [...Object.values(landNormalImg), ...Object.values(landCorruptedImg)] as string[];
+export const getLandImg = (land: LandState): ImmutablePair => {
+  return land.corrupted ? landCorruptedImg[land.type]! : landNormalImg[land.type]!;
+};
+
+export const getAllLandImages = (): ImmutablePair[] => [
+  ...Object.values(landNormalImg),
+  ...Object.values(landCorruptedImg),
+];
