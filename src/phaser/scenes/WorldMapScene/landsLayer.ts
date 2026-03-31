@@ -1,4 +1,4 @@
-import type Phaser from 'phaser';
+import Phaser from 'phaser';
 import { getLandId } from '../../../state/map/land/LandId';
 import { getLand, getLandOwner } from '../../../selectors/landSelectors';
 import { getPlayer } from '../../../selectors/playerSelectors';
@@ -7,6 +7,7 @@ import { getPlayerColorValue } from '../../../domain/ui/playerColors';
 import { axialToPixel, HEX_SIZE, hexCorners, offsetToAxial } from '../../utils/hexGeometry';
 import { getLandImg } from '../../../assets/getLandImg';
 import type { GameState } from '../../../state/GameState';
+import type { MapDimensions } from '../../../state/map/MapDimensions';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 
 /**
@@ -98,7 +99,7 @@ export const initLandLayer = (
   landGraphics: Phaser.GameObjects.Graphics,
   scene: Phaser.Scene,
   state: GameState
-) => {
+): void => {
   const { lands } = state.map;
 
   // Clear existing tiles
@@ -116,7 +117,7 @@ export const drawLandLayer = (
   landGraphics: Phaser.GameObjects.Graphics,
   scene: Phaser.Scene,
   state: GameState
-) => {
+): void => {
   // todo: do we really need to clear the graphics layer every frame? probably only updated Land need to be redrawn
   landGraphics.clear();
 
@@ -134,4 +135,40 @@ export const drawLandLayer = (
 
     drawHexGraphics(landGraphics, scene, state, land.mapPos);
   });
+};
+
+/** Returns the LandPosition at the given world coordinates, or undefined if none. */
+export const getLandByPoint = (
+  worldPointer: Phaser.Input.Pointer,
+  mapDimensions: MapDimensions
+): LandPosition | undefined => {
+  for (let row = 0; row < mapDimensions.rows; row++) {
+    for (let col = 0; col < mapDimensions.cols; col++) {
+      const { q, r } = offsetToAxial({ row, col });
+      const corners = hexCorners(axialToPixel(q, r));
+      const points = corners.map((c) => new Phaser.Geom.Point(c.x, c.y));
+      const poly = new Phaser.Geom.Polygon(points);
+      if (Phaser.Geom.Polygon.Contains(poly, worldPointer.worldX, worldPointer.worldY)) {
+        return { row, col };
+      }
+    }
+  }
+  return undefined;
+};
+
+export const glowLands = (landGlowGraphics?: Phaser.GameObjects.Graphics, landPositions?: LandPosition[]): void => {
+  if (!landGlowGraphics) return;
+  landGlowGraphics.clear();
+
+  landPositions?.forEach((pos) => {
+    const { q, r } = offsetToAxial(pos);
+    const center = axialToPixel(q, r);
+    const corners = hexCorners(center);
+    landGlowGraphics.lineStyle(4, 0xffff00, 0.9);
+    landGlowGraphics.strokePoints(corners, true);
+  });
+};
+
+export const unGlowLands = (landGlowGraphics?: Phaser.GameObjects.Graphics): void => {
+  landGlowGraphics?.clear();
 };

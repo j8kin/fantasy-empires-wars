@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
 import { getFigureAssetPaths } from '../../assets/getArmyFigureImg';
-import { axialToPixel, hexCorners, offsetToAxial } from '../utils/hexGeometry';
 import { getAllLandImages } from '../../assets/getLandImg';
-import { drawLandLayer, initLandLayer } from './WorldMapScene/landsLayer';
+import { drawLandLayer, getLandByPoint, glowLands, initLandLayer, unGlowLands } from './WorldMapScene/landsLayer';
 import { drawBackgroundLayer } from './WorldMapScene/backgroundLayer';
 import { drawArmyFiguresLayer } from './WorldMapScene/armyFiguresLayer';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { phaserEventBus, PhaserEvents } from '../phaserEventBus';
 import type { GameState } from '../../state/GameState';
+import type { MapDimensions } from '../../state/map/MapDimensions';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 
 import celticBackgroundPng from '../../assets/border/CelticBackground.png';
@@ -19,7 +19,7 @@ export class WorldMapScene extends Phaser.Scene {
   static readonly KEY = 'WorldMapScene';
 
   private isInitialized = false;
-  private readonly mapLandPositions: LandPosition[] = [];
+  private mapDimensions: MapDimensions = { rows: 0, cols: 0 };
 
   private backgroundTile?: Phaser.GameObjects.TileSprite;
   private landsLayer?: Phaser.GameObjects.Container;
@@ -81,10 +81,10 @@ export class WorldMapScene extends Phaser.Scene {
       this.handleStateUpdate(state);
     };
     const onGlowTiles = (positions: LandPosition[]) => {
-      this.handleGlowTiles(positions);
+      glowLands(this.glowGraphics, positions);
     };
     const onClearGlow = () => {
-      this.handleClearGlow();
+      unGlowLands(this.glowGraphics);
     };
 
     phaserEventBus.on(PhaserEvents.STATE_UPDATE, onStateUpdate);
@@ -104,7 +104,7 @@ export class WorldMapScene extends Phaser.Scene {
     // pointerdown: record which tile was under cursor; handle right-click popup immediately
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       this.isDragging = false;
-      this.pendingClickTile = this.findTileAt(pointer.worldX, pointer.worldY);
+      this.pendingClickTile = getLandByPoint(pointer, this.mapDimensions);
 
       if (pointer.rightButtonDown()) {
         // Right-click → show land info popup right away (not deferred to pointerup)
@@ -173,8 +173,8 @@ export class WorldMapScene extends Phaser.Scene {
     if (!this.landGraphics || !this.landsLayer || !this.backgroundTile || !this.figureLayer) return;
 
     if (!this.isInitialized) {
-      this.mapLandPositions.push(...Object.values(state.map.lands).map((l) => l.mapPos));
-      drawBackgroundLayer(this.backgroundTile, this, getMapDimensions(state));
+      this.mapDimensions = getMapDimensions(state);
+      drawBackgroundLayer(this.backgroundTile, this, this.mapDimensions);
       initLandLayer(this.landsLayer, this.landGraphics, this, state);
       drawArmyFiguresLayer(this.figureLayer, this, state);
       this.isInitialized = true;
@@ -182,38 +182,5 @@ export class WorldMapScene extends Phaser.Scene {
       drawLandLayer(this.landsLayer, this.landGraphics, this, state);
       drawArmyFiguresLayer(this.figureLayer, this, state);
     }
-  }
-
-  /** Returns the LandPosition at the given world coordinates, or undefined if none. */
-  private findTileAt(worldX: number, worldY: number): LandPosition | undefined {
-    if (this.mapLandPositions.length === 0) return undefined;
-
-    for (const landPos of this.mapLandPositions) {
-      const { q, r } = offsetToAxial(landPos);
-      const corners = hexCorners(axialToPixel(q, r));
-      const points = corners.map((c) => new Phaser.Geom.Point(c.x, c.y));
-      const poly = new Phaser.Geom.Polygon(points);
-      if (Phaser.Geom.Polygon.Contains(poly, worldX, worldY)) {
-        return landPos;
-      }
-    }
-    return undefined;
-  }
-
-  private handleGlowTiles(positions: LandPosition[]): void {
-    if (!this.glowGraphics) return;
-    this.glowGraphics.clear();
-
-    positions.forEach((pos) => {
-      const { q, r } = offsetToAxial(pos);
-      const center = axialToPixel(q, r);
-      const corners = hexCorners(center);
-      this.glowGraphics!.lineStyle(4, 0xffff00, 0.9);
-      this.glowGraphics!.strokePoints(corners, true);
-    });
-  }
-
-  private handleClearGlow(): void {
-    this.glowGraphics?.clear();
   }
 }

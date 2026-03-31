@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { getLandId } from '../../state/map/land/LandId';
+import { glowLands, unGlowLands } from '../../phaser/scenes/WorldMapScene/landsLayer';
 import { offsetToAxial, axialToPixel } from '../../phaser/utils/hexGeometry';
+import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { phaserEventBus, PhaserEvents } from '../../phaser/phaserEventBus';
 import { SpellName } from '../../types/Spell';
 import { TreasureName } from '../../types/Treasures';
@@ -21,7 +23,7 @@ describe('WorldMapScene', () => {
     });
 
     it('should extend Phaser.Scene', () => {
-      expect(WorldMapScene.prototype instanceof Phaser.Scene).toBe(true);
+      expect(WorldMapScene.prototype).toBeInstanceOf(Phaser.Scene);
     });
 
     it('should have required methods', () => {
@@ -156,14 +158,16 @@ describe('WorldMapScene', () => {
       (scene as any).backgroundTile = { setSize: jest.fn() } as any;
     }
 
-    it('should cache game state after STATE_UPDATE', () => {
+    it('should store mapDimensions after first STATE_UPDATE', () => {
       const scene = new WorldMapScene();
       const gameState = createDefaultGameStateStub();
       buildStateMocks(scene);
 
       (scene as any).handleStateUpdate(gameState);
 
-      expect((scene as any).mapLandPositions).toHaveLength(Object.values(gameState.map.lands).length);
+      const dims = (scene as any).mapDimensions;
+      expect(dims.rows).toBe(getMapDimensions(gameState).rows);
+      expect(dims.cols).toBe(getMapDimensions(gameState).cols);
     });
 
     it('should initialize hex grid on first STATE_UPDATE', () => {
@@ -199,11 +203,6 @@ describe('WorldMapScene', () => {
   });
 
   describe('Pointer Interaction', () => {
-    it('should have a findTileAt method', () => {
-      const scene = new WorldMapScene();
-      expect(typeof (scene as any).findTileAt).toBe('function');
-    });
-
     it('should emit TILE_CLICKED for left-click (tap, no drag) via event bus', () => {
       const listener = jest.fn();
       phaserEventBus.on(PhaserEvents.TILE_CLICKED, listener);
@@ -224,13 +223,6 @@ describe('WorldMapScene', () => {
 
       expect(listener).toHaveBeenCalledWith(payload);
       phaserEventBus.removeListener(PhaserEvents.TILE_RIGHT_CLICKED, listener);
-    });
-
-    it('should return undefined from findTileAt when no tile exists at the given coords', () => {
-      const scene = new WorldMapScene();
-      // gameState is undefined — no tile will match
-      const result = (scene as any).findTileAt(0, 0);
-      expect(result).toBeUndefined();
     });
 
     it('should not emit TILE_CLICKED when isDragging is true on pointerup', () => {
@@ -257,46 +249,33 @@ describe('WorldMapScene', () => {
   });
 
   describe('Glow Management', () => {
-    it('should have handleGlowTiles and handleClearGlow methods', () => {
-      const scene = new WorldMapScene();
-      expect(typeof (scene as any).handleGlowTiles).toBe('function');
-      expect(typeof (scene as any).handleClearGlow).toBe('function');
-    });
-
-    it('should draw hex outlines for each position when handleGlowTiles is called', () => {
-      const scene = new WorldMapScene();
+    it('should draw hex outlines for each glow position', () => {
       const mockGlowGraphics = {
         clear: jest.fn(),
         lineStyle: jest.fn(),
         strokePoints: jest.fn(),
       } as any;
-      (scene as any).glowGraphics = mockGlowGraphics;
 
-      const positions = [
+      glowLands(mockGlowGraphics, [
         { row: 0, col: 0 },
         { row: 1, col: 1 },
-      ];
-      (scene as any).handleGlowTiles(positions);
+      ]);
 
       expect(mockGlowGraphics.clear).toHaveBeenCalledTimes(1);
       expect(mockGlowGraphics.lineStyle).toHaveBeenCalledTimes(2);
       expect(mockGlowGraphics.strokePoints).toHaveBeenCalledTimes(2);
     });
 
-    it('should clear glow graphics when handleClearGlow is called', () => {
-      const scene = new WorldMapScene();
+    it('should clear glow graphics when unGlowLands is called', () => {
       const mockGlowGraphics = { clear: jest.fn() } as any;
-      (scene as any).glowGraphics = mockGlowGraphics;
 
-      (scene as any).handleClearGlow();
+      unGlowLands(mockGlowGraphics);
 
       expect(mockGlowGraphics.clear).toHaveBeenCalledTimes(1);
     });
 
-    it('should not throw when handleGlowTiles is called without glowGraphics', () => {
-      const scene = new WorldMapScene();
-      // No glowGraphics set — should be a no-op
-      expect(() => (scene as any).handleGlowTiles([{ row: 0, col: 0 }])).not.toThrow();
+    it('should not throw when glowLands is called without graphics', () => {
+      expect(() => glowLands(undefined, [{ row: 0, col: 0 }])).not.toThrow();
     });
 
     it('should subscribe to GLOW_TILES and CLEAR_GLOW via event bus', () => {
