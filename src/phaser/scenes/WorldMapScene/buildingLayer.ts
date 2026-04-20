@@ -76,8 +76,7 @@ export const drawBuildingLayer = (
     land.buildings.forEach((building) => {
       let asset: [string, string] | undefined;
       if (building.type === BuildingName.MAGE_TOWER) {
-        const mages = getLandUnitsToRecruit(land.type, land.corrupted)
-          .filter(isMageType) as HeroUnitType[];
+        const mages = getLandUnitsToRecruit(land.type, land.corrupted).filter(isMageType) as HeroUnitType[];
         asset = getMageTowerImg(mages);
       } else {
         asset = getMapBuildingImg(building.type);
