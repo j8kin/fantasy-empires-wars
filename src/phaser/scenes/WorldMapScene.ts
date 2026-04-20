@@ -1,9 +1,13 @@
 import Phaser from 'phaser';
 import { getFigureAssetPaths } from '../../assets/getArmyFigureImg';
 import { getAllLandImages } from '../../assets/getLandImg';
+import { getWallSegmentImages } from '../../assets/getWallSegmentImg';
 import { drawLandLayer, getLandByPoint, glowLands, initLandLayer, unGlowLands } from './WorldMapScene/landsLayer';
 import { drawBackgroundLayer } from './WorldMapScene/backgroundLayer';
 import { drawArmyFiguresLayer } from './WorldMapScene/armyFiguresLayer';
+import { drawWallLayer } from './WorldMapScene/wallLayer';
+import { drawBuildingLayer } from './WorldMapScene/buildingLayer';
+import { getAllMapBuildingImages } from '../../assets/getMapBuildingImg';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { phaserEventBus, PhaserEvents } from '../phaserEventBus';
 import type { GameState } from '../../state/GameState';
@@ -24,6 +28,8 @@ export class WorldMapScene extends Phaser.Scene {
   private backgroundTile?: Phaser.GameObjects.TileSprite;
   private landsLayer?: Phaser.GameObjects.Container;
   private landGraphics?: Phaser.GameObjects.Graphics;
+  private wallLayer?: Phaser.GameObjects.Container;
+  private buildingLayer?: Phaser.GameObjects.Container;
   private glowGraphics?: Phaser.GameObjects.Graphics;
   private figureLayer?: Phaser.GameObjects.Container;
 
@@ -48,6 +54,14 @@ export class WorldMapScene extends Phaser.Scene {
       getFigureAssetPaths().forEach(([key, path]) => {
         this.load.image(key, path);
       });
+
+      getWallSegmentImages().forEach(([key, path]) => {
+        this.load.image(key, path);
+      });
+
+      getAllMapBuildingImages().forEach(([key, path]) => {
+        this.load.image(key, path);
+      });
     } catch (e) {
       // should never happen
       console.debug('Could not load land images');
@@ -67,6 +81,14 @@ export class WorldMapScene extends Phaser.Scene {
 
     // Create sprite layer container for land images
     this.landsLayer = this.add.container(0, 0);
+
+    // Create wall segment layer (depth 3: above land images and borders, below buildings)
+    this.wallLayer = this.add.container(0, 0);
+    this.wallLayer.setDepth(3);
+
+    // Create building sprite layer (depth 4: above wall segments, below figures)
+    this.buildingLayer = this.add.container(0, 0);
+    this.buildingLayer.setDepth(4);
 
     // Create figure layer container for army figures (depth 5: above land+borders, below glow)
     this.figureLayer = this.add.container(0, 0);
@@ -170,16 +192,28 @@ export class WorldMapScene extends Phaser.Scene {
   }
 
   private handleStateUpdate(state: GameState): void {
-    if (!this.landGraphics || !this.landsLayer || !this.backgroundTile || !this.figureLayer) return;
+    if (
+      !this.landGraphics ||
+      !this.landsLayer ||
+      !this.backgroundTile ||
+      !this.figureLayer ||
+      !this.wallLayer ||
+      !this.buildingLayer
+    )
+      return;
 
     if (!this.isInitialized) {
       this.mapDimensions = getMapDimensions(state);
       drawBackgroundLayer(this.backgroundTile, this, this.mapDimensions);
       initLandLayer(this.landsLayer, this.landGraphics, this, state);
+      drawWallLayer(this.wallLayer, this, state);
+      drawBuildingLayer(this.buildingLayer, this, state);
       drawArmyFiguresLayer(this.figureLayer, this, state);
       this.isInitialized = true;
     } else {
       drawLandLayer(this.landsLayer, this.landGraphics, this, state);
+      drawWallLayer(this.wallLayer, this, state);
+      drawBuildingLayer(this.buildingLayer, this, state);
       drawArmyFiguresLayer(this.figureLayer, this, state);
     }
   }
