@@ -1,10 +1,13 @@
 import Phaser from 'phaser';
 import { axialToPixel, offsetToAxial } from '../../utils/hexGeometry';
-import { getMapBuildingImg } from '../../../assets/getMapBuildingImg';
+import { getMapBuildingImg, getMageTowerImg } from '../../../assets/getMapBuildingImg';
+import { getLandUnitsToRecruit } from '../../../domain/land/landRepository';
+import { isMageType } from '../../../domain/unit/unitTypeChecks';
+import { BuildingName } from '../../../types/Building';
+import type { HeroUnitType } from '../../../types/UnitType';
 import { getVisibleLands } from '../../../selectors/landSelectors';
 import { getLandId } from '../../../state/map/land/LandId';
 import { HEX_SIZE } from '../../utils/hexGeometry';
-import { BuildingName } from '../../../types/Building';
 import type { BuildingType } from '../../../types/Building';
 import type { GameState } from '../../../state/GameState';
 
@@ -71,7 +74,14 @@ export const drawBuildingLayer = (
     const center = axialToPixel(q, r);
 
     land.buildings.forEach((building) => {
-      const asset = getMapBuildingImg(building.type);
+      let asset: [string, string] | undefined;
+      if (building.type === BuildingName.MAGE_TOWER) {
+        const mages = getLandUnitsToRecruit(land.type, land.corrupted)
+          .filter(isMageType) as HeroUnitType[];
+        asset = getMageTowerImg(mages);
+      } else {
+        asset = getMapBuildingImg(building.type);
+      }
       if (!asset) return; // Castle Wall / Demolition — no map sprite
 
       const [textureKey] = asset;
