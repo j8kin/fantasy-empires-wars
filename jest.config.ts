@@ -4,7 +4,7 @@ const config: Config = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   transform: {
-    '^.+\\.(ts|tsx|js|mjs)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json', allowJs: true }],
+    '^.+\\.(ts|tsx|js|mjs)$': 'babel-jest',
   },
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
