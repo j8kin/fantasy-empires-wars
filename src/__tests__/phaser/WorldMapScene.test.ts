@@ -106,6 +106,8 @@ describe('WorldMapScene', () => {
         getByName: jest.fn().mockReturnValue(null),
       } as any;
       (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).wallLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).buildingLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
       (scene as any).backgroundTile = { setSize: jest.fn() } as any;
     }
 
@@ -155,6 +157,8 @@ describe('WorldMapScene', () => {
         getByName: jest.fn().mockReturnValue(null),
       } as any;
       (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).wallLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).buildingLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
       (scene as any).backgroundTile = { setSize: jest.fn() } as any;
     }
 
@@ -319,6 +323,8 @@ describe('WorldMapScene', () => {
         getByName: jest.fn().mockReturnValue(null),
       } as any;
       (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).wallLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).buildingLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
       (scene as any).backgroundTile = { setSize: jest.fn() } as any;
 
       const mockFigureLayer = (scene as any).figureLayer;
@@ -352,6 +358,8 @@ describe('WorldMapScene', () => {
         getByName: jest.fn().mockReturnValue(null),
       } as any;
       (scene as any).figureLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).wallLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
+      (scene as any).buildingLayer = { removeAll: jest.fn(), add: jest.fn() } as any;
       (scene as any).backgroundTile = { setSize: jest.fn() } as any;
       // textures.exists returns true so figures would actually be drawn if not filtered out
       (scene as any).textures = { exists: jest.fn().mockReturnValue(true) };

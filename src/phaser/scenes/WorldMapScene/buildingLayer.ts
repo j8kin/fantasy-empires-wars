@@ -3,11 +3,11 @@ import { axialToPixel, offsetToAxial } from '../../utils/hexGeometry';
 import { getMapBuildingImg, getMageTowerImg } from '../../../assets/getMapBuildingImg';
 import { getLandUnitsToRecruit } from '../../../domain/land/landRepository';
 import { isMageType } from '../../../domain/unit/unitTypeChecks';
-import { BuildingName } from '../../../types/Building';
-import type { HeroUnitType } from '../../../types/UnitType';
 import { getVisibleLands } from '../../../selectors/landSelectors';
 import { getLandId } from '../../../state/map/land/LandId';
+import { BuildingName } from '../../../types/Building';
 import { HEX_SIZE } from '../../utils/hexGeometry';
+import type { HeroUnitType } from '../../../types/UnitType';
 import type { BuildingType } from '../../../types/Building';
 import type { GameState } from '../../../state/GameState';
 
