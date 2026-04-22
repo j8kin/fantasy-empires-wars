@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
-import { getLandId } from '../../state/map/land/LandId';
 import { glowLands, unGlowLands } from '../../phaser/scenes/WorldMapScene/landsLayer';
 import { offsetToAxial, axialToPixel } from '../../phaser/utils/hexGeometry';
+import { getLandId } from '../../state/map/land/LandId';
+import { addPlayerEmpireTreasure, updateLandEffect } from '../../systems/gameStateActions';
+import { effectFactory } from '../../factories/effectFactory';
+import { relictFactory } from '../../factories/treasureFactory';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 import { phaserEventBus, PhaserEvents } from '../../phaser/phaserEventBus';
 import { SpellName } from '../../types/Spell';
@@ -430,19 +433,15 @@ describe('WorldMapScene', () => {
 
       const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
       const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
-      const land = gameState.map.lands[getLandId(opponentPos)];
-      land.effects.push({
-        id: 'test-illusion',
-        sourceId: SpellName.ILLUSION,
-        appliedBy: opponentArmy.controlledBy,
-        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 3 },
-      });
-      land.effects.push({
-        id: 'test-view-territory',
-        sourceId: SpellName.VIEW_TERRITORY,
-        appliedBy: gameState.turnOwner,
-        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
-      });
+
+      Object.assign(
+        gameState,
+        updateLandEffect(gameState, opponentPos, effectFactory(SpellName.ILLUSION, opponentArmy.controlledBy))
+      );
+      Object.assign(
+        gameState,
+        updateLandEffect(gameState, opponentPos, effectFactory(SpellName.VIEW_TERRITORY, gameState.turnOwner))
+      );
 
       const figureLayer = (scene as any).figureLayer;
       figureLayer.add.mockClear();
@@ -457,19 +456,14 @@ describe('WorldMapScene', () => {
 
       const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
       const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
-      const land = gameState.map.lands[getLandId(opponentPos)];
-      land.effects.push({
-        id: 'test-mirror',
-        sourceId: TreasureName.MIRROR_OF_ILLUSION,
-        appliedBy: opponentArmy.controlledBy,
-        rules: { type: EffectKind.PERMANENT, target: EffectTarget.LAND, duration: 0 },
-      });
-      land.effects.push({
-        id: 'test-view-territory',
-        sourceId: SpellName.VIEW_TERRITORY,
-        appliedBy: gameState.turnOwner,
-        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
-      });
+      Object.assign(
+        gameState,
+        addPlayerEmpireTreasure(gameState, opponentArmy.controlledBy, relictFactory(TreasureName.MIRROR_OF_ILLUSION))
+      );
+      Object.assign(
+        gameState,
+        updateLandEffect(gameState, opponentPos, effectFactory(SpellName.VIEW_TERRITORY, gameState.turnOwner))
+      );
 
       const figureLayer = (scene as any).figureLayer;
       figureLayer.add.mockClear();
@@ -484,14 +478,11 @@ describe('WorldMapScene', () => {
 
       const opponentArmy = gameState.armies.find((a) => a.controlledBy !== gameState.turnOwner)!;
       const opponentPos = opponentArmy.movement.path[opponentArmy.movement.progress];
-      const land = gameState.map.lands[getLandId(opponentPos)];
       // Effect applied by the opponent themselves — not by turn owner
-      land.effects.push({
-        id: 'test-view-wrong',
-        sourceId: SpellName.VIEW_TERRITORY,
-        appliedBy: opponentArmy.controlledBy,
-        rules: { type: EffectKind.POSITIVE, target: EffectTarget.LAND, duration: 1 },
-      });
+      Object.assign(
+        gameState,
+        updateLandEffect(gameState, opponentPos, effectFactory(SpellName.VIEW_TERRITORY, opponentArmy.controlledBy))
+      );
 
       const figureLayer = (scene as any).figureLayer;
       figureLayer.add.mockClear();

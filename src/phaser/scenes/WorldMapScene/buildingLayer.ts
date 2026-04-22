@@ -1,13 +1,12 @@
 import Phaser from 'phaser';
 import { axialToPixel, offsetToAxial } from '../../utils/hexGeometry';
 import { getMapBuildingImg, getMageTowerImg } from '../../../assets/getMapBuildingImg';
-import { getLandUnitsToRecruit } from '../../../domain/land/landRepository';
 import { isMageType } from '../../../domain/unit/unitTypeChecks';
-import { getVisibleLands } from '../../../selectors/landSelectors';
+import { getLandOwner, getVisibleLands } from '../../../selectors/landSelectors';
+import { getPlayer, getUnitsAllowedToRecruit } from '../../../selectors/playerSelectors';
 import { getLandId } from '../../../state/map/land/LandId';
 import { BuildingName } from '../../../types/Building';
 import { HEX_SIZE } from '../../utils/hexGeometry';
-import type { HeroUnitType } from '../../../types/UnitType';
 import type { BuildingType } from '../../../types/Building';
 import type { GameState } from '../../../state/GameState';
 
@@ -73,10 +72,12 @@ export const drawBuildingLayer = (
     const { q, r } = offsetToAxial(land.mapPos);
     const center = axialToPixel(q, r);
 
+    const landPlayer = getPlayer(state, getLandOwner(state, land.mapPos));
+
     land.buildings.forEach((building) => {
       let asset: [string, string] | undefined;
       if (building.type === BuildingName.MAGE_TOWER) {
-        const mages = getLandUnitsToRecruit(land.type, land.corrupted).filter(isMageType) as HeroUnitType[];
+        const mages = getUnitsAllowedToRecruit(landPlayer, land).filter(isMageType);
         asset = getMageTowerImg(mages);
       } else {
         asset = getMapBuildingImg(building.type);
