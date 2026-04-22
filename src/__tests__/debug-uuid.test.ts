@@ -1,6 +1,6 @@
 import { armyFactory } from '../factories/armyFactory';
 import { getTurnOwner } from '../selectors/playerSelectors';
-import { createDefaultGameStateStub } from './utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../__mocks__/createGameStateStub';
 
 describe('UUID Debug Test', () => {
   it('should generate unique IDs for armies', () => {

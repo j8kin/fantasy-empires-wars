@@ -1,13 +1,13 @@
-import { getLandId } from '../../state/map/land/LandId';
-import { LandName } from '../../types/Land';
-import { Alignment } from '../../types/Alignment';
-import type { MapState } from '../../state/map/MapState';
-import type { MapDimensions } from '../../state/map/MapDimensions';
-import type { LandPosition } from '../../state/map/land/LandPosition';
-import type { LandType } from '../../types/Land';
-import type { AlignmentType } from '../../types/Alignment';
+import { getLandId } from '../state/map/land/LandId';
+import { LandName } from '../types/Land';
+import { Alignment } from '../types/Alignment';
+import type { MapState } from '../state/map/MapState';
+import type { MapDimensions } from '../state/map/MapDimensions';
+import type { LandPosition } from '../state/map/land/LandPosition';
+import type { LandType } from '../types/Land';
+import type { AlignmentType } from '../types/Alignment';
 
-const genLand = (alignment: AlignmentType | undefined): LandType => {
+const genLand = (alignment?: AlignmentType): LandType => {
   switch (alignment) {
     case Alignment.LAWFUL:
       return LandName.MOUNTAINS;
@@ -19,11 +19,8 @@ const genLand = (alignment: AlignmentType | undefined): LandType => {
       return LandName.PLAINS;
   }
 };
-export const generateMockMap = (
-  dimensions: MapDimensions,
-  alignment: AlignmentType | undefined = undefined,
-  income: number | undefined = undefined
-): MapState => {
+
+export const generateMockMap = (dimensions: MapDimensions, alignment?: AlignmentType, income?: number): MapState => {
   const result: MapState = {
     dimensions: dimensions,
     lands: {},

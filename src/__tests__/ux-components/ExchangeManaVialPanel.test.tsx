@@ -17,7 +17,7 @@ import { Alignment } from '../../types/Alignment';
 import { SpellName } from '../../types/Spell';
 import type { GameState } from '../../state/GameState';
 
-import { createGameStateStub } from '../utils/createGameStateStub';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
 
 // Mock dependencies
 jest.mock('../../map/magic/castSpell');

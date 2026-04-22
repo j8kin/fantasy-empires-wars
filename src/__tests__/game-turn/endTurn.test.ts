@@ -1,7 +1,7 @@
 import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
 import { endTurn } from '../../turn/endTurn';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
 import { nextPlayer } from '../../systems/playerActions';
 
 describe('End of Turn Phase', () => {

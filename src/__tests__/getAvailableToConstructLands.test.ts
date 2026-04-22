@@ -8,8 +8,8 @@ import { construct } from '../map/building/construct';
 import { BuildingName } from '../types/Building';
 import { HeroUnitName } from '../types/UnitType';
 
-import { createGameStateStub } from './utils/createGameStateStub';
-import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
+import { createGameStateStub } from '../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../__mocks__/placeUnitsOnMap';
 
 describe('getAvailableLands', () => {
   let gameStateStub: GameState;

@@ -90,7 +90,9 @@ const renderLandImage = (
     image.setScale(scale);
     landLayerContainer.add(image);
   } catch (e) {
-    console.warn(`Failed to render land image for ${land.type}:`, e);
+    if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+      console.warn(`Failed to render land image for ${land.type}:`, e);
+    }
   }
 };
 

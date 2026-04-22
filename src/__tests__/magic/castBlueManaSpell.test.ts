@@ -19,8 +19,8 @@ import type { PlayerState } from '../../state/player/PlayerState';
 import type { AlignmentType } from '../../types/Alignment';
 import type { ManaType } from '../../types/Mana';
 
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../__mocks__/placeUnitsOnMap';
 
 describe('castBlueManaSpell', () => {
   let gameStateStub: GameState;

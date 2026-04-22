@@ -8,8 +8,8 @@ import { DiplomacyStatus } from '../types/Diplomacy';
 import type { GameState } from '../state/GameState';
 import type { LandPosition } from '../state/map/land/LandPosition';
 
-import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { createGameStateStub } from './utils/createGameStateStub';
+import { placeUnitsOnMap } from '../__mocks__/placeUnitsOnMap';
+import { createGameStateStub } from '../__mocks__/createGameStateStub';
 
 describe('getHostileLands', () => {
   let gameStateStub: GameState;

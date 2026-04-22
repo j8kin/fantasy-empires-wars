@@ -1,7 +1,7 @@
 import { GameState } from '../../state/GameState';
 import { getTurnOwner } from '../../selectors/playerSelectors';
-import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { TestTurnManagement } from '../../__mocks__/TestTurnManagement';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
 
 describe('calculatePlayerIncome', () => {
   let testTurnManagement: TestTurnManagement;

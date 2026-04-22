@@ -16,8 +16,8 @@ import { Mana, ManaType } from '../../types/Mana';
 import { HeroUnitName } from '../../types/UnitType';
 import type { GameState } from '../../state/GameState';
 
-import { createGameStateStub } from '../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../__mocks__/placeUnitsOnMap';
 
 // Mock CSS modules
 jest.mock('../../ux-components/vial-panel/css/VialPanel.module.css', () => ({

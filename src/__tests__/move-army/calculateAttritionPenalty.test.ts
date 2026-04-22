@@ -15,7 +15,7 @@ import type { GameState } from '../../state/GameState';
 import type { ArmyState } from '../../state/army/ArmyState';
 import type { UnitRankType } from '../../state/army/RegularsState';
 
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
 
 describe('Calculate Attrition Penalty', () => {
   let randomSpy: jest.SpyInstance<number, []>;

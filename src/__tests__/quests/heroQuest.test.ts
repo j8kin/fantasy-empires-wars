@@ -23,9 +23,9 @@ import type { QuestType } from '../../types/Quest';
 import type { HeroState } from '../../state/army/HeroState';
 import type { BuildingType } from '../../types/Building';
 
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../__mocks__/placeUnitsOnMap';
+import { TestTurnManagement } from '../../__mocks__/TestTurnManagement';
 
 describe('Hero Quest', () => {
   const easyQuest: QuestType = 'The Echoing Ruins';

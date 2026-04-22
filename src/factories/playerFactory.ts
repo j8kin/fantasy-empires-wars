@@ -227,7 +227,10 @@ const getUnitsPerLand = (
   Object.values(LandName)
     .filter((landType) => landType !== LandName.NONE)
     .forEach((landType) => {
-      allowedMages.forEach((mage) => unitsPerLand[landType].add(mage));
+      const magesToDelete = unitsPerLand[landType]
+        .entries()
+        .filter(([, unit]) => isMageType(unit) && !allowedMages.includes(unit));
+      magesToDelete.forEach(([, unit]) => unitsPerLand[landType].delete(unit));
     });
 
   return unitsPerLand;

@@ -5,7 +5,7 @@ import { BuildingName } from '../types/Building';
 import type { GameState } from '../state/GameState';
 import type { MapDimensions } from '../state/map/MapDimensions';
 
-import { createGameStateStub, defaultBattlefieldSizeStub } from './utils/createGameStateStub';
+import { createGameStateStub, defaultBattlefieldSizeStub } from '../__mocks__/createGameStateStub';
 
 describe('Game Start: add player to map', () => {
   const getStrongholds = (gameState: GameState) =>

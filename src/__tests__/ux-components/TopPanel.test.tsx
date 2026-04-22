@@ -13,7 +13,7 @@ import { gameStateFactory } from '../../factories/gameStateFactory';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { Mana } from '../../types/Mana';
 
-import { generateMockMap } from '../utils/generateMockMap';
+import { generateMockMap } from '../../__mocks__/generateMockMap';
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const Bootstrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {

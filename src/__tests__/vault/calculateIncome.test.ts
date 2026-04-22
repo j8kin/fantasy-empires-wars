@@ -19,8 +19,8 @@ import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { PlayerProfile } from '../../state/player/PlayerProfile';
 import type { AlignmentType } from '../../types/Alignment';
 
-import { createGameStateStub } from '../utils/createGameStateStub';
-import { generateMockMap } from '../utils/generateMockMap';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
+import { generateMockMap } from '../../__mocks__/generateMockMap';
 
 describe('Calculate Income', () => {
   let gameStateStub: GameState;

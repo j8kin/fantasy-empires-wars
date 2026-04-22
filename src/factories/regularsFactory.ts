@@ -3,10 +3,7 @@ import { UnitRank } from '../state/army/RegularsState';
 import type { RegularsState } from '../state/army/RegularsState';
 import type { RegularUnitType } from '../types/UnitType';
 
-export const regularsFactory = (
-  unitType: RegularUnitType,
-  initialCount: number | undefined = undefined
-): RegularsState => {
+export const regularsFactory = (unitType: RegularUnitType, initialCount?: number): RegularsState => {
   const unitRecruitInfo = getRecruitInfo(unitType);
   return {
     type: Object.freeze(unitType),

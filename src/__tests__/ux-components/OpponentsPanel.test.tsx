@@ -11,7 +11,7 @@ import { PlayerProfile } from '../../state/player/PlayerProfile';
 import { addPlayerToGameState } from '../../systems/playerActions';
 import { gameStateFactory } from '../../factories/gameStateFactory';
 import { NO_PLAYER, PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-import { generateMockMap } from '../utils/generateMockMap';
+import { generateMockMap } from '../../__mocks__/generateMockMap';
 
 // Test wrapper that provides GameContext and ApplicationContext and allows updating game state
 const TestWrapper: React.FC<{

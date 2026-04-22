@@ -29,9 +29,9 @@ import type { BuildingType } from '../../types/Building';
 import type { HeroUnitType, RegularUnitType, UnitType } from '../../types/UnitType';
 import type { WarMachineType } from '../../types/UnitType';
 
-import { createGameStateStub } from '../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../__mocks__/placeUnitsOnMap';
+import { TestTurnManagement } from '../../__mocks__/TestTurnManagement';
 
 describe('Recruitment', () => {
   let randomSpy: jest.SpyInstance<number, []>;
