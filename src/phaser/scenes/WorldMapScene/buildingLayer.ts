@@ -96,7 +96,9 @@ export const drawBuildingLayer = (
         sprite.setScale(baseScale);
         container.add(sprite);
       } catch (e) {
-        console.warn(`buildingLayer: failed to render ${building.type}:`, e);
+        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+          console.warn(`buildingLayer: failed to render ${building.type}:`, e);
+        }
       }
     });
   });

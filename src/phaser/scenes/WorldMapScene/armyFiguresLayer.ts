@@ -33,7 +33,9 @@ export const drawArmyFiguresLayer = (
         img.setScale(scale);
         container.add(img);
       } catch (e) {
-        console.warn(`Failed to render figure for race ${landOwnerRace}:`, e);
+        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+          console.warn(`Failed to render figure for race ${landOwnerRace}:`, e);
+        }
       }
     }
   });

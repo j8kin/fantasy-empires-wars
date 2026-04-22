@@ -219,7 +219,9 @@ export const drawWallLayer = (container: Phaser.GameObjects.Container, scene: Ph
         sprite.setFlipX(cfg.flipX);
         container.add(sprite);
       } catch (e) {
-        console.warn(`wallLayer: failed to place segment on edge ${edgeKey}:`, e);
+        if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+          console.warn(`wallLayer: failed to place segment on edge ${edgeKey}:`, e);
+        }
       }
     }
   });
