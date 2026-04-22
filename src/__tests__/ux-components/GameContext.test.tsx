@@ -3,7 +3,7 @@ import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { TurnManager } from '../../turn/TurnManager';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 import { calculateMaintenance } from '../../map/vault/calculateMaintenance';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
 
 // Mock the mapGeneration module to return empty tiles initially
 jest.mock('../../map/generation/generateMap', () => ({

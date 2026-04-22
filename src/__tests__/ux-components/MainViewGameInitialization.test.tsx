@@ -14,7 +14,7 @@ import { GameState } from '../../state/GameState';
 import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
 import { getMapDimensions } from '../../utils/screenPositionUtils';
 
-import { createGameStateStub } from '../utils/createGameStateStub';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
 
 describe('MainView Game Initialization Logic', () => {
   // Test the game identification logic that's used in MainView

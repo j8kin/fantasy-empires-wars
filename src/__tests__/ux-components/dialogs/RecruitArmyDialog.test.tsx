@@ -26,8 +26,8 @@ import type { RegularUnitType } from '../../../types/UnitType';
 import type { LandType } from '../../../types/Land';
 import type { HeroUnitType } from '../../../types/UnitType';
 
-import { createGameStateStub } from '../../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { createGameStateStub } from '../../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../../__mocks__/placeUnitsOnMap';
 
 // Mock context hooks
 const mockApplicationContext = {

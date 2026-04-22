@@ -22,8 +22,8 @@ import { PREDEFINED_PLAYERS } from '../../../domain/player/playerRepository';
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 
-import { createGameStateStub } from '../../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { createGameStateStub } from '../../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../../__mocks__/placeUnitsOnMap';
 
 // Mock GameButton component
 jest.mock('../../../ux-components/buttons/GameButton', () => {

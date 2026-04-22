@@ -19,8 +19,8 @@ import type { LandType } from '../../types/Land';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { UnitType } from '../../types/UnitType';
 
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../__mocks__/placeUnitsOnMap';
 
 describe('castBlackManaSpell', () => {
   let randomSpy: jest.SpyInstance<number, []>;

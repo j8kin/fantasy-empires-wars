@@ -20,8 +20,8 @@ import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { SpellType } from '../../types/Spell';
 
-import { createDefaultGameStateStub, createGameStateStub } from '../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { createDefaultGameStateStub, createGameStateStub } from '../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../__mocks__/placeUnitsOnMap';
 
 describe('castGreenManaSpell', () => {
   let gameStateStub: GameState;

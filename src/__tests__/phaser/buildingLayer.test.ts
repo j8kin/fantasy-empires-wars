@@ -7,39 +7,15 @@ import { HeroUnitName } from '../../types/UnitType';
 import { BuildingName } from '../../types/Building';
 import { WorldMapScene } from '../../phaser/scenes/WorldMapScene';
 
-import { createGameStateStub } from '../utils/createGameStateStub';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
+import { mockWorldScene } from '../../__mocks__/mockWorldScene';
 
 describe('World Map Scene. Building Layer', () => {
   let scene: WorldMapScene;
 
   beforeEach(() => {
     phaserEventBus.removeAllListeners();
-    scene = new WorldMapScene();
-
-    const makeContainer = () => ({ add: jest.fn(), removeAll: jest.fn(), setDepth: jest.fn() });
-    (scene as any).landGraphics = {
-      clear: jest.fn(),
-      fillStyle: jest.fn(),
-      fillPoints: jest.fn(),
-      lineStyle: jest.fn(),
-      strokePoints: jest.fn(),
-    };
-    (scene as any).backgroundTile = { setSize: jest.fn() };
-    (scene as any).landsLayer = makeContainer();
-    (scene as any).wallLayer = makeContainer();
-    (scene as any).figureLayer = makeContainer();
-    (scene as any).buildingLayer = makeContainer();
-
-    (scene as any).textures = { exists: jest.fn().mockReturnValue(true) };
-    (scene as any).add.image = jest.fn().mockReturnValue({
-      setOrigin: jest.fn().mockReturnThis(),
-      setScale: jest.fn().mockReturnThis(),
-      setName: jest.fn().mockReturnThis(),
-      setRotation: jest.fn().mockReturnThis(),
-      setFlipX: jest.fn().mockReturnThis(),
-      width: 100,
-      height: 100,
-    });
+    scene = mockWorldScene();
   });
 
   it.each([
@@ -75,7 +51,6 @@ describe('World Map Scene. Building Layer', () => {
   ])(
     '%s player with %s doctrine allowed to build magic tower which rendered as: %s',
     (playerType, doctrine, expectedColor) => {
-      // Some hero+doctrine combos don't exist in PREDEFINED_PLAYERS — fall back to the MAGIC variant.
       const player = { ...PREDEFINED_PLAYERS[0], type: playerType, doctrine };
       const opponent = PREDEFINED_PLAYERS[1];
       const gameState = createGameStateStub({ gamePlayers: [player, opponent] });
@@ -94,4 +69,23 @@ describe('World Map Scene. Building Layer', () => {
       expect(renderedKeys).toContain(`map-building-mage-tower-${expectedColor}`);
     }
   );
+
+  it.each([
+    [BuildingName.STRONGHOLD, 'map-building-stronghold'],
+    [BuildingName.BARRACKS, 'map-building-barracks'],
+    [BuildingName.WATCH_TOWER, 'map-building-watch-tower'],
+    [BuildingName.OUTPOST, 'map-building-outpost'],
+  ])('constructs %s and renders it with texture key %s', (buildingName, expectedKey) => {
+    const gameState = createGameStateStub({ gamePlayers: [PREDEFINED_PLAYERS[0], PREDEFINED_PLAYERS[1]] });
+
+    const freePlayerLand = getPlayerLands(gameState).find((l) => l.buildings.length === 0)!;
+    construct(gameState, buildingName, freePlayerLand.mapPos);
+    expect(getLand(gameState, freePlayerLand.mapPos).buildings[0].type).toBe(buildingName);
+
+    (scene as any).handleStateUpdate(gameState);
+    expect((scene as any).isInitialized).toBe(true);
+
+    const renderedKeys = ((scene as any).add.image as jest.Mock).mock.calls.map((args: any[]) => args[2]);
+    expect(renderedKeys).toContain(expectedKey);
+  });
 });

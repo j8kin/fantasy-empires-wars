@@ -4,7 +4,7 @@ import { GameState } from '../../state/GameState';
 import { TurnManager } from '../../turn/TurnManager';
 import { calculateIncome } from '../../map/vault/calculateIncome';
 import { calculateMaintenance } from '../../map/vault/calculateMaintenance';
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
 import { nextPlayer } from '../../systems/playerActions';
 import { TurnPhaseType } from '../../turn/TurnPhase';
 

@@ -7,7 +7,7 @@ import { ApplicationContextProvider } from '../../../contexts/ApplicationContext
 import { getPlayerColorValue } from '../../../domain/ui/playerColors';
 import { DiplomacyStatus } from '../../../types/Diplomacy';
 
-import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../../../__mocks__/createGameStateStub';
 
 jest.mock('../../../ux-components/popups/css/OpponentInfoPopup.module.css', () => ({
   popupContent: 'mocked-popup-content',

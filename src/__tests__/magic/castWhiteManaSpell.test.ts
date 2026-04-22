@@ -16,9 +16,9 @@ import { EffectKind } from '../../types/Effect';
 import type { GameState } from '../../state/GameState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
-import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../__mocks__/placeUnitsOnMap';
+import { TestTurnManagement } from '../../__mocks__/TestTurnManagement';
 import { UnitRank } from '../../state/army/RegularsState';
 
 describe('castWhiteManaSpell', () => {

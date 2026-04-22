@@ -26,8 +26,8 @@ import type { GameState } from '../../../state/GameState';
 import type { LandState } from '../../../state/map/land/LandState';
 import type { ArmyState } from '../../../state/army/ArmyState';
 
-import { createGameStateStub } from '../../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { createGameStateStub } from '../../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../../__mocks__/placeUnitsOnMap';
 
 // Mock the useGameContext hook
 const mockUseGameContext = jest.fn();

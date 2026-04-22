@@ -8,7 +8,7 @@ import { SpellName } from '../../types/Spell';
 import type { SpellType } from '../../types/Spell';
 import type { Effect, EffectType } from '../../types/Effect';
 
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
 
 // todo remove after all spells implemented and tested
 describe('Effect Duration Manager', () => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { GameProvider, useGameContext } from '../../contexts/GameContext';
 import { GameState } from '../../state/GameState';
-import { createGameStateStub } from '../utils/createGameStateStub';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
 
 describe('NewGame TurnManager Cleanup Integration', () => {
   beforeEach(() => {

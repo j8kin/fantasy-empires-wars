@@ -18,8 +18,8 @@ import { HeroUnitName } from '../../../types/UnitType';
 import type { GameState } from '../../../state/GameState';
 import type { HeroState } from '../../../state/army/HeroState';
 
-import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../../utils/placeUnitsOnMap';
+import { createDefaultGameStateStub } from '../../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../../__mocks__/placeUnitsOnMap';
 
 // Mock modules
 jest.mock('../../../map/quest/startQuest', () => ({

@@ -12,7 +12,7 @@ import { TreasureName } from '../../types/Treasures';
 import { EffectKind, EffectTarget } from '../../types/Effect';
 import { WorldMapScene } from '../../phaser/scenes/WorldMapScene';
 
-import { createDefaultGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../../__mocks__/createGameStateStub';
 
 describe('WorldMapScene', () => {
   beforeEach(() => {

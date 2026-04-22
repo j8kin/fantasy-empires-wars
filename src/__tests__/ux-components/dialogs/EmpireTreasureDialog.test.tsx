@@ -11,7 +11,7 @@ import { TreasureName } from '../../../types/Treasures';
 import type { GameState } from '../../../state/GameState';
 import type { Item } from '../../../types/Treasures';
 
-import { createGameStateStub } from '../../utils/createGameStateStub';
+import { createGameStateStub } from '../../../__mocks__/createGameStateStub';
 
 jest.mock('../../../map/magic/getValidMagicLands');
 
