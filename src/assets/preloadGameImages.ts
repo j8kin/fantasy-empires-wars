@@ -16,7 +16,7 @@ const preloadImage = (url: string): Promise<void> =>
 
 export const preloadGameImages = async (onProgress?: (loaded: number, total: number) => void): Promise<void[]> => {
   const allImages: string[] = [
-    ...getAllLandImages(),
+    ...getAllLandImages().map(([, path]) => path),
     ...getAllAvatarImages(),
     CelticPatternVertical,
     CelticPatternCorner,

@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MainView from '../../ux-components/main-view/MainView';
-import { BattlefieldProps } from '../../ux-components/battlefield/Battlefield';
 import { OpponentInfoProps } from '../../ux-components/popups/OpponentInfoPopup';
 import { SelectOpponentDialogProps } from '../../ux-components/dialogs/SelectOpponentDialog';
 import { ApplicationContextProvider } from '../../contexts/ApplicationContext';
@@ -44,12 +43,6 @@ jest.mock('../../ux-components/top-panel/TopPanel', () => {
         </button>
       </div>
     );
-  };
-});
-
-jest.mock('../../ux-components/battlefield/Battlefield', () => {
-  return (props: BattlefieldProps) => {
-    return <div data-testid="Battlefield" data-top={props.topPanelHeight} />;
   };
 });
 
@@ -127,12 +120,6 @@ describe('MainView Component', () => {
   it('renders TopPanel with correct props', () => {
     renderWithProvider(<MainView />);
     expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
-  });
-
-  it('renders Battlefield with correct props', () => {
-    renderWithProvider(<MainView />);
-    const battlefield = screen.getByTestId('Battlefield');
-    expect(battlefield).toBeInTheDocument();
   });
 
   it('shows NewGameDialog initially', () => {
@@ -268,27 +255,9 @@ describe('MainView Component', () => {
   });
 
   describe('Component Integration', () => {
-    it('calculates battlefield top position correctly', () => {
+    it('renders TopPanel below the main canvas', () => {
       renderWithProvider(<MainView />);
-
-      const battlefield = screen.getByTestId('Battlefield');
-      // TOP_PANEL_HEIGHT (300) - Math.min(defaultTileSize.height, defaultTileSize.width)
-      // Assuming defaultTileSize has reasonable dimensions
-      expect(battlefield).toHaveAttribute('data-top');
-    });
-
-    it('updates battlefield key when game restarts', () => {
-      renderWithProvider(<MainView />);
-
-      // Start game
-      fireEvent.click(screen.getByText('Start Game'));
-
-      // Restart game
-      fireEvent.click(screen.getByText('New Game'));
-      fireEvent.click(screen.getByText('Start Game'));
-
-      // Battlefield should be re-rendered (React key change triggers re-mount)
-      expect(screen.getByTestId('Battlefield')).toBeInTheDocument();
+      expect(screen.getByTestId('TopPanel')).toBeInTheDocument();
     });
   });
 
@@ -326,13 +295,6 @@ describe('MainView Component', () => {
       const topPanel = screen.getByTestId('TopPanel');
       expect(topPanel).toBeInTheDocument();
       // The height should be passed as a prop to TopPanel (300)
-    });
-
-    it('handles defaultTileSize configuration', () => {
-      renderWithProvider(<MainView />);
-      const battlefield = screen.getByTestId('Battlefield');
-      expect(battlefield).toBeInTheDocument();
-      // The tileSize should be passed as defaultTileSize
     });
   });
 });

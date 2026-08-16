@@ -22,7 +22,7 @@ import { UnitRank } from '../../../state/army/RegularsState';
 import type { GameState } from '../../../state/GameState';
 import type { LandPosition } from '../../../state/map/land/LandPosition';
 
-import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../../../__mocks__/createGameStateStub';
 import { startMovement as mockStartMovement } from '../../../map/move-army/startMovement';
 
 // Mock the startMovement function

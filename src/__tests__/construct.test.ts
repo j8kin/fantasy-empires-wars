@@ -17,8 +17,8 @@ import type { GameState } from '../state/GameState';
 import type { PlayerState } from '../state/player/PlayerState';
 import type { LandPosition } from '../state/map/land/LandPosition';
 
-import { placeUnitsOnMap } from './utils/placeUnitsOnMap';
-import { createGameStateStub } from './utils/createGameStateStub';
+import { placeUnitsOnMap } from '../__mocks__/placeUnitsOnMap';
+import { createGameStateStub } from '../__mocks__/createGameStateStub';
 import { Doctrine } from '../state/player/PlayerProfile';
 import { heroFactory } from '../factories/heroFactory';
 

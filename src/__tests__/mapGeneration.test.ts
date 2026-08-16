@@ -1,7 +1,7 @@
 import { getMainSpecialLandKinds, getNearSpecialLandKinds } from '../domain/land/landRelationships';
 import { generateMap } from '../map/generation/generateMap';
 import { LandName } from '../types/Land';
-import { defaultBattlefieldSizeStub } from './utils/createGameStateStub';
+import { defaultBattlefieldSizeStub } from '../__mocks__/createGameStateStub';
 import type { MapDimensions } from '../state/map/MapDimensions';
 
 describe('Map Generation', () => {

@@ -8,7 +8,7 @@ import { heroFactory } from '../../factories/heroFactory';
 import { castSpell } from '../../map/magic/castSpell';
 import { construct } from '../../map/building/construct';
 import { startRecruiting } from '../../map/recruiting/startRecruiting';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { placeUnitsOnMap } from '../../__mocks__/placeUnitsOnMap';
 import { isMageType } from '../../domain/unit/unitTypeChecks';
 import { Doctrine } from '../../state/player/PlayerProfile';
 import { UnitRank } from '../../state/army/RegularsState';
@@ -24,8 +24,8 @@ import type { BuildingType } from '../../types/Building';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { RegularUnitType, UnitType } from '../../types/UnitType';
 
-import { createDefaultGameStateStub, createGameStateStub } from '../utils/createGameStateStub';
-import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { createDefaultGameStateStub, createGameStateStub } from '../../__mocks__/createGameStateStub';
+import { TestTurnManagement } from '../../__mocks__/TestTurnManagement';
 
 describe('castRedManaSpell', () => {
   let randomSpy: jest.SpyInstance<number, []>;

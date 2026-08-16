@@ -2,7 +2,7 @@ import { getTurnOwner } from '../../selectors/playerSelectors';
 import { startTurn } from '../../turn/startTurn';
 import { calculatePlayerIncome } from '../../map/vault/calculatePlayerIncome';
 import { construct } from '../../map/building/construct';
-import { createGameStateStub } from '../utils/createGameStateStub';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
 import { nextPlayer } from '../../systems/playerActions';
 import { BuildingName } from '../../types/Building';
 import type { GameState } from '../../state/GameState';

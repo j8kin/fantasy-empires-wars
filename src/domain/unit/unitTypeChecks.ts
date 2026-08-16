@@ -28,7 +28,7 @@ export const isRegularUnit = (unitType: UnitType): unitType is RegularUnitType =
  * @param unitType - The unit type to check
  * @returns true if the unit is one of the mage hero types
  */
-export const isMageType = (unitType: UnitType): boolean => {
+export const isMageType = (unitType: UnitType): unitType is HeroUnitType => {
   return (
     unitType === HeroUnitName.PYROMANCER ||
     unitType === HeroUnitName.DRUID ||

@@ -5,9 +5,9 @@ import * as startTurnModule from '../../turn/startTurn';
 import * as endTurnModule from '../../turn/endTurn';
 import * as mainAiTurnModule from '../../turn/mainAiTurn';
 import { TurnManager, TurnManagerCallbacks } from '../../turn/TurnManager';
-import { createDefaultGameStateStub, createGameStateStub } from '../utils/createGameStateStub';
+import { createDefaultGameStateStub, createGameStateStub } from '../../__mocks__/createGameStateStub';
 import { TurnPhase } from '../../turn/TurnPhase';
-import { nextTurnPhase } from '../utils/TestTurnManagement';
+import { nextTurnPhase } from '../../__mocks__/TestTurnManagement';
 
 // Mock the turn modules
 jest.mock('../../turn/startTurn');
@@ -26,7 +26,7 @@ describe('TurnManager', () => {
   let mockCallbacks: jest.Mocked<TurnManagerCallbacks>;
   let gameStateStub: GameState;
 
-  const createGameStateStubTunrManager = (turnOwner: number = 0, turn: number = 1): GameState => {
+  const createGameStateStubTurnManager = (turnOwner: number = 0, turn: number = 1): GameState => {
     // For turn 1, we don't want to place homelands as that increments turn counter
     // For turn > 1, we use the default stub which places homelands
     const gameStateStub =
@@ -60,7 +60,7 @@ describe('TurnManager', () => {
     };
 
     turnManager = new TurnManager(mockCallbacks);
-    gameStateStub = createGameStateStubTunrManager(0, 2);
+    gameStateStub = createGameStateStubTurnManager(0, 2);
   });
 
   afterEach(() => {
@@ -84,7 +84,7 @@ describe('TurnManager', () => {
     });
 
     it('should show place hero message during turn 1', () => {
-      const turn1GameState = createGameStateStubTunrManager(0, 1);
+      const turn1GameState = createGameStateStubTurnManager(0, 1);
       expect(turn1GameState.turn).toBe(1);
       turnManager.startNewTurn(turn1GameState);
 
@@ -110,7 +110,7 @@ describe('TurnManager', () => {
     });
 
     it('should transition to END phase after start turn execution on Turn 1', () => {
-      const turn1GameState = createGameStateStubTunrManager(0, 1);
+      const turn1GameState = createGameStateStubTurnManager(0, 1);
       expect(turn1GameState.turn).toBe(1);
       turnManager.startNewTurn(turn1GameState);
 
@@ -132,7 +132,7 @@ describe('TurnManager', () => {
 
   describe('startMainPhase (private method behavior)', () => {
     it('should NOT handle human player main phase on Turn 1', () => {
-      const turn1GameState = createGameStateStubTunrManager(0, 1);
+      const turn1GameState = createGameStateStubTurnManager(0, 1);
       expect(turn1GameState.turn).toBe(1);
       turnManager.startNewTurn(turn1GameState);
 
@@ -154,7 +154,7 @@ describe('TurnManager', () => {
     });
 
     it('should NOT handle computer player main phase on Turn 1', () => {
-      const aiGameState = createGameStateStubTunrManager(1, 1);
+      const aiGameState = createGameStateStubTurnManager(1, 1);
       expect(aiGameState.turn).toBe(1);
       turnManager.startNewTurn(aiGameState);
 
@@ -166,7 +166,7 @@ describe('TurnManager', () => {
     });
 
     it('should handle computer player main phase', () => {
-      const aiGameState = createGameStateStubTunrManager(1, 2);
+      const aiGameState = createGameStateStubTurnManager(1, 2);
       turnManager.startNewTurn(aiGameState);
 
       jest.advanceTimersByTime(1000);
@@ -177,7 +177,7 @@ describe('TurnManager', () => {
     });
 
     it('should auto-end computer turn after delay', () => {
-      const aiGameState = createGameStateStubTunrManager(1, 2); // Player 1 (computer), Turn 2
+      const aiGameState = createGameStateStubTurnManager(1, 2); // Player 1 (computer), Turn 2
       const endCurrentTurnSpy = jest.spyOn(turnManager, 'endCurrentTurn');
 
       turnManager.startNewTurn(aiGameState);
@@ -216,7 +216,7 @@ describe('TurnManager', () => {
     });
 
     it('should check for game over when no human players remain', () => {
-      const gameStateNoHumans = createGameStateStubTunrManager(0, 2);
+      const gameStateNoHumans = createGameStateStubTurnManager(0, 2);
       // Change all players to computer type
       gameStateNoHumans.players.forEach((p) => {
         (p as any).playerType = 'computer';
@@ -240,7 +240,7 @@ describe('TurnManager', () => {
     });
 
     it('should check for game over when no computer players remain', () => {
-      const gameStateNoComputers = createGameStateStubTunrManager(0, 2);
+      const gameStateNoComputers = createGameStateStubTurnManager(0, 2);
       // Change all players to human type
       gameStateNoComputers.players.forEach((p) => {
         (p as any).playerType = 'human';
@@ -265,7 +265,7 @@ describe('TurnManager', () => {
 
     it('should not start next turn when game ends', () => {
       const startNewTurnSpy = jest.spyOn(turnManager, 'startNewTurn');
-      const gameStateNoHumans = createGameStateStubTunrManager(0, 2);
+      const gameStateNoHumans = createGameStateStubTurnManager(0, 2);
       // Change all players to computer type
       gameStateNoHumans.players.forEach((p) => {
         (p as any).playerType = 'computer';
@@ -339,7 +339,7 @@ describe('TurnManager', () => {
     });
 
     it('should handle complete turn cycle for computer player', () => {
-      const aiGameState = createGameStateStubTunrManager(1, 2); // Player 1 (computer), Turn 2
+      const aiGameState = createGameStateStubTurnManager(1, 2); // Player 1 (computer), Turn 2
       const endCurrentTurnSpy = jest.spyOn(turnManager, 'endCurrentTurn');
 
       // Start turn

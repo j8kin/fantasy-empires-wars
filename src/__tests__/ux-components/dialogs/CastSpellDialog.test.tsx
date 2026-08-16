@@ -8,7 +8,7 @@ import { AllSpells } from '../../../domain/spell/spellsRepository';
 import { SpellName } from '../../../types/Spell';
 import type { GameState } from '../../../state/GameState';
 
-import { createDefaultGameStateStub } from '../../utils/createGameStateStub';
+import { createDefaultGameStateStub } from '../../../__mocks__/createGameStateStub';
 
 // Mock CSS modules
 jest.mock('../../../ux-components/fantasy-book-dialog-template/css/FlipBook.module.css', () => ({}));

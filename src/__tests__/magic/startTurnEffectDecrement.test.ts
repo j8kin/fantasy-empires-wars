@@ -9,7 +9,7 @@ import type { GameState } from '../../state/GameState';
 import type { SpellType } from '../../types/Spell';
 import type { Effect, EffectType } from '../../types/Effect';
 
-import { createGameStateStub } from '../utils/createGameStateStub';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
 
 // todo remove when all spells implemented and tested
 describe('StartTurn Effect Duration Decrement Integration', () => {

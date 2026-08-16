@@ -38,6 +38,7 @@ const PopupWrapper: React.FC<PopupWrapperProps> = ({
     };
 
     const handleClickOutside = (event: MouseEvent) => {
+      if (event.button === 2) return; // right-click opens popups, never dismisses them
       if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
         handleClosePopup();
       }

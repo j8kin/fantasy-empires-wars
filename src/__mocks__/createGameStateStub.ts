@@ -1,17 +1,16 @@
-import { GameState } from '../../state/GameState';
-import { PlayerProfile } from '../../state/player/PlayerProfile';
-import { LandPosition } from '../../state/map/land/LandPosition';
-import { MapDimensions } from '../../state/map/MapDimensions';
-
-import { getTurnOwner } from '../../selectors/playerSelectors';
-import { addPlayerToGameState, nextPlayer } from '../../systems/playerActions';
-import { levelUpHero } from '../../systems/unitsActions';
-import { gameStateFactory } from '../../factories/gameStateFactory';
-import { heroFactory } from '../../factories/heroFactory';
-import { construct } from '../../map/building/construct';
-import { generateMap } from '../../map/generation/generateMap';
-import { PREDEFINED_PLAYERS } from '../../domain/player/playerRepository';
-import { BuildingName } from '../../types/Building';
+import { getTurnOwner } from '../selectors/playerSelectors';
+import { addPlayerToGameState, nextPlayer } from '../systems/playerActions';
+import { levelUpHero } from '../systems/unitsActions';
+import { gameStateFactory } from '../factories/gameStateFactory';
+import { heroFactory } from '../factories/heroFactory';
+import { construct } from '../map/building/construct';
+import { generateMap } from '../map/generation/generateMap';
+import { PREDEFINED_PLAYERS } from '../domain/player/playerRepository';
+import { BuildingName } from '../types/Building';
+import type { GameState } from '../state/GameState';
+import type { PlayerProfile } from '../state/player/PlayerProfile';
+import type { LandPosition } from '../state/map/land/LandPosition';
+import type { MapDimensions } from '../state/map/MapDimensions';
 
 import { generateMockMap } from './generateMockMap';
 import { placeUnitsOnMap } from './placeUnitsOnMap';

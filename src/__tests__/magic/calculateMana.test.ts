@@ -21,8 +21,8 @@ import type { LandType } from '../../types/Land';
 import type { ManaType } from '../../types/Mana';
 import type { HeroUnitType } from '../../types/UnitType';
 
-import { createGameStateStub } from '../utils/createGameStateStub';
-import { TestTurnManagement } from '../utils/TestTurnManagement';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
+import { TestTurnManagement } from '../../__mocks__/TestTurnManagement';
 
 describe('Calculate Mana', () => {
   let testTurnManagement: TestTurnManagement;

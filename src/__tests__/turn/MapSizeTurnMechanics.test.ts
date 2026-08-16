@@ -3,7 +3,7 @@ import { TurnManager } from '../../turn/TurnManager';
 import type { GameState } from '../../state/GameState';
 import type { TurnPhaseType } from '../../turn/TurnPhase';
 
-import { createGameStateStub } from '../utils/createGameStateStub';
+import { createGameStateStub } from '../../__mocks__/createGameStateStub';
 
 describe('Turn Mechanics with Different Map Sizes', () => {
   const createGameState = (mapSize: 'small' | 'medium' | 'large' | 'huge'): GameState => {

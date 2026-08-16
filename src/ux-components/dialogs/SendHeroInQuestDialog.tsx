@@ -21,7 +21,7 @@ const SendHeroInQuestDialog: React.FC = () => {
     setSelectedLandAction,
     selectedLandAction,
   } = useApplicationContext();
-  const { gameState } = useGameContext();
+  const { gameState, updateGameState } = useGameContext();
 
   // Shared state to track used slots across all pages
   const [usedSlots, setUsedSlots] = useState<Set<string>>(new Set());
@@ -61,21 +61,23 @@ const SendHeroInQuestDialog: React.FC = () => {
       return (slot: Slot) => {
         // slot.id contain uniq Hero name, and slot name contains what is displayed in the dialog, e.g. "Alaric Lvl: 1"
         startQuest(gameState!, slot.id, getQuestType(questLvl + 1));
+        updateGameState(gameState!);
         // Mark the slot as used across all pages
         setUsedSlots((prev) => new Set(prev).add(slot.id));
       };
     },
-    [gameState]
+    [gameState, updateGameState]
   );
 
   const createQuestClickHandler = useCallback(
     (questLvl: number, units: HeroState[]) => {
       return () => {
         units.forEach((hero) => startQuest(gameState!, hero.name, getQuestType(questLvl + 1)));
+        updateGameState(gameState!);
         handleClose();
       };
     },
-    [gameState, handleClose]
+    [gameState, updateGameState, handleClose]
   );
 
   if (!showSendHeroInQuestDialog || actionLandPosition == null || gameState == null) return null;

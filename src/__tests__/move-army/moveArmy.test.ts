@@ -36,9 +36,9 @@ import type { LandState } from '../../state/map/land/LandState';
 import type { LandPosition } from '../../state/map/land/LandPosition';
 import type { ArmyBriefInfo } from '../../state/army/ArmyState';
 
-import { TestTurnManagement } from '../utils/TestTurnManagement';
-import { createDefaultGameStateStub, createGameStateStub } from '../utils/createGameStateStub';
-import { placeUnitsOnMap } from '../utils/placeUnitsOnMap';
+import { TestTurnManagement } from '../../__mocks__/TestTurnManagement';
+import { createDefaultGameStateStub, createGameStateStub } from '../../__mocks__/createGameStateStub';
+import { placeUnitsOnMap } from '../../__mocks__/placeUnitsOnMap';
 
 describe('Move Army', () => {
   let randomSpy: jest.SpyInstance<number, []>;

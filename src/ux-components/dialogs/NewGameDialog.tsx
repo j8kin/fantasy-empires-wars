@@ -214,6 +214,9 @@ const NewGameDialog: React.FC = () => {
     setShowStartWindow(false);
     setProgressMessage('Loading game assets... 0%');
     setShowProgressPopup(true);
+    // Reset gameStarted so the Phaser canvas unmounts (gives it a fresh scene on remount)
+    // and resets gameInitializedRef in MainViewContent so Turn 1 fires on the new game
+    setGameStarted(false);
 
     await preloadGameImages((loaded, total) => {
       const pct = Math.round((loaded / total) * 100);

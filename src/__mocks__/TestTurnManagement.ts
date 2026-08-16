@@ -1,10 +1,9 @@
-import { getTurnOwner } from '../../selectors/playerSelectors';
-import { nextPlayer } from '../../systems/playerActions';
-
-import { TurnManager } from '../../turn/TurnManager';
-import { TurnPhase } from '../../turn/TurnPhase';
-import type { GameState } from '../../state/GameState';
-import type { TurnManagerCallbacks } from '../../turn/TurnManager';
+import { getTurnOwner } from '../selectors/playerSelectors';
+import { nextPlayer } from '../systems/playerActions';
+import { TurnPhase } from '../turn/TurnPhase';
+import { TurnManager } from '../turn/TurnManager';
+import type { GameState } from '../state/GameState';
+import type { TurnManagerCallbacks } from '../turn/TurnManager';
 
 export class TestTurnManagement {
   private turnManager: TurnManager;
