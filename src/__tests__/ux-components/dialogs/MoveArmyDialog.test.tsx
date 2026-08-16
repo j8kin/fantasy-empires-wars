@@ -178,9 +178,7 @@ describe('MoveArmyDialog', () => {
     {
       gameState = gameStateStub,
       moveArmyPath = { from: fromPosition, to: toPosition } as
-        | { from: LandPosition; to: LandPosition }
-        | null
-        | undefined,
+        { from: LandPosition; to: LandPosition } | null | undefined,
     } = {}
   ) => {
     mockApplicationContext.moveArmyPath = moveArmyPath;
