@@ -1,0 +1,173 @@
+name: Create Release
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+
+jobs:
+  tag-release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Set branch names
+        id: branches
+        run: |
+          working_branch="${{ vars.WORKING_BRANCH }}"
+          release_branch="${{ vars.RELEASE_BRANCH }}"
+          echo "working-branch=${working_branch:-develop}" >> $GITHUB_OUTPUT
+          echo "release-branch=${release_branch:-main}" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.branches.outputs.release-branch }}
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Get version
+        id: get-version
+        uses: ./.github/actions/repository/get-version
+
+      - name: Determine version from PR selection
+        id: version
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          version=$(echo "$PR_BODY" | grep -oP '(?<=- \[x\] )\d+\.\d+\.\d+' | head -1)
+
+          if [ -z "$version" ]; then
+            current="${{ steps.get-version.outputs.release-version }}"
+            IFS='.' read -r major minor patch <<< "$current"
+            version="$major.$minor.$((patch + 1))"
+          fi
+
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          previous_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          filter='Merge pull request|chore: bump version'
+
+          if [ -z "$previous_tag" ]; then
+            notes=$(git log --pretty=format:"- %h: %s" | grep -vE "$filter" | head -20)
+          else
+            notes=$(git log ${previous_tag}..HEAD --pretty=format:"- %h: %s" | grep -vE "$filter")
+          fi
+
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$notes" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Update version file
+        if: vars.VERSION_FILE != ''
+        env:
+          VERSION_FILE: ${{ vars.VERSION_FILE }}
+          VERSION_FIELD: ${{ vars.VERSION_FIELD || 'version' }}
+          NEW_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if [ ! -f "$VERSION_FILE" ]; then
+            echo "VERSION_FILE '$VERSION_FILE' not found in repository, skipping."
+            exit 0
+          fi
+
+          ext="${VERSION_FILE##*.}"
+
+          if [ "$ext" = "json" ]; then
+            if ! jq -e --arg f "$VERSION_FIELD" 'has($f)' "$VERSION_FILE" > /dev/null 2>&1; then
+              echo "Field '$VERSION_FIELD' not found in '$VERSION_FILE', skipping."
+              exit 0
+            fi
+            tmp=$(mktemp)
+            jq --arg v "$NEW_VERSION" --arg f "$VERSION_FIELD" '.[$f] = $v' "$VERSION_FILE" > "$tmp"
+            mv "$tmp" "$VERSION_FILE"
+
+          elif [ "$ext" = "xml" ]; then
+            python3 <<'PYEOF'
+          import os, sys, re
+          import xml.etree.ElementTree as ET
+
+          filepath = os.environ['VERSION_FILE']
+          field    = os.environ['VERSION_FIELD']
+          version  = os.environ['NEW_VERSION']
+
+          tree = ET.parse(filepath)
+          root = tree.getroot()
+
+          ns_match = re.match(r'\{(.+?)\}', root.tag)
+          ns = ns_match.group(1) if ns_match else None
+          if ns:
+              ET.register_namespace('', ns)
+
+          tag = ('{' + ns + '}' + field) if ns else field
+          elem = root.find(tag)
+          if elem is None:
+              print(f"Field '{field}' not found as direct child of root in '{filepath}', skipping.")
+              sys.exit(0)
+
+          elem.text = version
+          tree.write(filepath, xml_declaration=True, encoding='UTF-8')
+          PYEOF
+
+          elif [ "$ext" = "yml" ] || [ "$ext" = "yaml" ]; then
+            python3 <<'PYEOF'
+          import os, sys, yaml
+
+          filepath = os.environ['VERSION_FILE']
+          field    = os.environ['VERSION_FIELD']
+          version  = os.environ['NEW_VERSION']
+
+          with open(filepath) as f:
+              data = yaml.safe_load(f)
+
+          if field not in data:
+              print(f"Field '{field}' not found in '{filepath}', skipping.")
+              sys.exit(0)
+
+          data[field] = version
+          with open(filepath, 'w') as f:
+              yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
+          PYEOF
+
+          else
+            echo "Unsupported file extension '.$ext' for VERSION_FILE, skipping."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$VERSION_FILE"
+          if git diff --cached --quiet; then
+            echo "No changes detected in '$VERSION_FILE', skipping commit."
+            exit 0
+          fi
+          git commit -m "chore: bump version to $NEW_VERSION"
+          git push origin ${{ steps.branches.outputs.release-branch }}
+
+      - name: Create and push git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" \
+            --target ${{ steps.branches.outputs.release-branch }} \
+            --title "Release v${{ steps.version.outputs.version }}" \
+            --notes "${{ steps.release-notes.outputs.notes }}"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
