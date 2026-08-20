@@ -1,9 +1,30 @@
 name: Deploy to GitHub Pages
 
+# Deploys are tag-driven. Both tag-creating workflows push with the GitHub App
+# token, so their pushes trigger this workflow (a GITHUB_TOKEN push would not):
+#
+#   bump-rc-version.yml  →  1.0.7-rc3  (on WORKING_BRANCH)  →  /develop
+#   create-release.yml   →  v1.0.7     (on RELEASE_BRANCH)  →  / (root)
+#
+# The target is derived from the pushed tag name, deliberately NOT from the
+# get-version action used by workflow-templates/deploy.yml. get-version relies
+# on `git describe`, which picks arbitrarily when an rc tag and a release tag
+# share a commit — and that is reachable, because create-release.yml skips its
+# version-bump commit when VERSION_FILE already holds the target version. On a
+# tag push the tag name is exact, so it is the safer source.
+
 on:
   push:
-    branches:
-      - master
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+' # release, e.g. v1.0.7
+      - '[0-9]+.[0-9]+.[0-9]+-rc[0-9]+' # release candidate, e.g. 1.0.7-rc3
+  workflow_dispatch: # run against a tag ref; branch refs are rejected below
+
+# gh-pages is a single branch: serialise deploys so concurrent runs cannot
+# reject each other's pushes.
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
@@ -14,7 +35,55 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
+
+      - name: Resolve deploy target
+        id: target
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [ "$REF_TYPE" != "tag" ]; then
+            echo "::error::Refusing to deploy '$REF_NAME' — not a tag." \
+                 "Re-run this workflow against a release or -rc tag."
+            exit 1
+          fi
+
+          version="${REF_NAME#v}"
+
+          case "$REF_NAME" in
+            *-rc*)
+              # Rolling preview: wipe and replace the develop subdirectory only.
+              base="/fantasy-empires-wars/develop/"
+              destination_dir="develop"
+              keep_files="false"
+              url_suffix="develop/"
+              prerelease="true"
+              ;;
+            *)
+              # Production: root of gh-pages. keep_files=true is what stops the
+              # root deploy from deleting the develop/ preview alongside it.
+              base="/fantasy-empires-wars/"
+              destination_dir=""
+              keep_files="true"
+              url_suffix=""
+              prerelease="false"
+              ;;
+          esac
+
+          {
+            echo "version=$version"
+            echo "base=$base"
+            echo "destination-dir=$destination_dir"
+            echo "keep-files=$keep_files"
+            echo "url-suffix=$url_suffix"
+            echo "prerelease=$prerelease"
+          } >> $GITHUB_OUTPUT
+
+          echo "Tag:         $REF_NAME"
+          echo "Version:     $version"
+          echo "Pre-release: $prerelease"
+          echo "Base path:   $base"
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -26,6 +95,7 @@ jobs:
 
       - name: Run tests (attempt 1)
         id: run-tests
+        if: steps.target.outputs.prerelease == 'false'
         continue-on-error: true
         run: yarn test
 
@@ -34,6 +104,7 @@ jobs:
         run: yarn test
 
       - name: Upload coverage to Codecov
+        if: steps.target.outputs.prerelease == 'false'
         uses: codecov/codecov-action@v5
         with:
           files: coverage/lcov.info
@@ -41,9 +112,19 @@ jobs:
 
       - name: Build project
         run: yarn run build
+        env:
+          VITE_BASE: ${{ steps.target.outputs.base }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          destination_dir: ${{ steps.target.outputs.destination-dir }}
+          keep_files: ${{ steps.target.outputs.keep-files }}
+
+      - name: Summary
+        run: |
+          echo "Deployed \`${{ steps.target.outputs.version }}\` (tag \`${{ github.ref_name }}\`) to" \
+            "https://${{ github.repository_owner }}.github.io/fantasy-empires-wars/${{ steps.target.outputs.url-suffix }}" \
+            >> $GITHUB_STEP_SUMMARY
