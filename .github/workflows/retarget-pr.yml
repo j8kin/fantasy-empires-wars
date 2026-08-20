@@ -1,0 +1,44 @@
+name: Retarget PR to WORKING_BRANCH
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - reopened
+
+jobs:
+  retarget:
+    if: github.head_ref != (vars.WORKING_BRANCH || 'develop')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Set branch names
+        id: branches
+        run: |
+          working_branch="${{ vars.WORKING_BRANCH }}"
+          release_branch="${{ vars.RELEASE_BRANCH }}"
+          echo "working-branch=${working_branch:-develop}" >> $GITHUB_OUTPUT
+          echo "release-branch=${release_branch:-main}" >> $GITHUB_OUTPUT
+
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Retarget PR to working branch
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} \
+            --base ${{ steps.branches.outputs.working-branch }} \
+            --repo ${{ github.repository }}
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "> [!NOTE]
+          > This PR has been automatically retargeted to \`${{ steps.branches.outputs.working-branch }}\`.
+          > Please merge feature branches into \`${{ steps.branches.outputs.working-branch }}\` first — only the automated release PR should target \`${{ steps.branches.outputs.release-branch }}\` directly." \
+            --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
