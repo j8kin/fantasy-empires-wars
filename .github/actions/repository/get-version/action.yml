@@ -1,0 +1,61 @@
+name: Get Version
+description: >
+  Extracts the current version from git tags using git describe.
+  Returns a clean tag on exactly-tagged commits (e.g. 1.1.0-rc2),
+  or tag-N-gSHA for untagged commits (e.g. 1.1.0-rc2-4-gabcdef).
+  Works on any branch: release, working, feature, or hotfix.
+
+outputs:
+  version:
+    description: >
+      Version string. Clean tag if HEAD is exactly on a tag (e.g. 1.1.0-rc2).
+      Extended form with commit distance if not (e.g. 1.1.0-rc2-4-gabcdef).
+    value: ${{ steps.extract.outputs.version }}
+  is-prerelease:
+    description: >
+      true if the version contains an rc suffix or a commit distance,
+      meaning it is not an exact release tag.
+    value: ${{ steps.extract.outputs.is-prerelease }}
+  release-version:
+    description: >
+      Latest clean release tag with no rc suffix or commit distance (e.g. 1.0.0).
+      Useful as a base for computing the next patch/minor/major version.
+      Returns 0.0.0 if no clean release tag exists yet.
+    value: ${{ steps.extract.outputs.release-version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Fetch tags
+      shell: bash
+      run: git fetch --tags --force 2>/dev/null || true
+
+    - name: Extract version
+      id: extract
+      shell: bash
+      run: |
+        raw=$(git describe --tags --long --match '*.*.*' 2>/dev/null \
+          || echo "0.0.0-0-g$(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')")
+
+        if [[ "$raw" =~ ^(.+)-([0-9]+)-g([0-9a-f]+)$ ]]; then
+          tag="${BASH_REMATCH[1]#v}"
+          commits="${BASH_REMATCH[2]}"
+          sha="g${BASH_REMATCH[3]}"
+          if [ "$commits" = "0" ]; then
+            version="$tag"
+          else
+            version="${tag}-${commits}-${sha}"
+          fi
+        else
+          version="0.0.0-unknown"
+        fi
+
+        is_prerelease=false
+        echo "$version" | grep -qE 'rc|-[0-9]+-g' && is_prerelease=true
+
+        release_version=$(git tag --sort=-v:refname \
+          | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -1 | sed 's/^v//')
+
+        echo "version=$version" >> $GITHUB_OUTPUT
+        echo "is-prerelease=$is_prerelease" >> $GITHUB_OUTPUT
+        echo "release-version=${release_version:-0.0.0}" >> $GITHUB_OUTPUT

@@ -1,0 +1,149 @@
+name: Bump RC Version
+
+on:
+  pull_request:
+    types:
+      - closed
+      - edited
+
+jobs:
+  bump-develop-rc:
+    name: Tag RC on develop merge
+    if: |
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true &&
+      (github.event.pull_request.base.ref == vars.WORKING_BRANCH ||
+       (vars.WORKING_BRANCH == '' && github.event.pull_request.base.ref == 'develop'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Set branch names
+        id: branches
+        run: |
+          working_branch="${{ vars.WORKING_BRANCH }}"
+          release_branch="${{ vars.RELEASE_BRANCH }}"
+          echo "working-branch=${working_branch:-develop}" >> $GITHUB_OUTPUT
+          echo "release-branch=${release_branch:-main}" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.branches.outputs.working-branch }}
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Get version
+        id: get-version
+        uses: ./.github/actions/repository/get-version
+
+      - name: Resolve base version from release PR
+        id: rc-version
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          release_branch="${{ steps.branches.outputs.release-branch }}"
+
+          selected=$(gh pr list \
+            --base "$release_branch" \
+            --state open \
+            --json body \
+            --jq '.[0].body // ""' \
+            | grep -oP '(?<=- \[x\] )\d+\.\d+\.\d+' | head -1)
+
+          if [ -z "$selected" ]; then
+            current="${{ steps.get-version.outputs.release-version }}"
+            IFS='.' read -r major minor patch <<< "$current"
+            selected="$major.$minor.$((patch + 1))"
+            echo "No open release PR with selection found, falling back to $selected"
+          fi
+
+          echo "base-version=$selected" >> $GITHUB_OUTPUT
+
+      - name: Create RC tag
+        run: |
+          base="${{ steps.rc-version.outputs.base-version }}"
+
+          head_sha=$(git rev-parse HEAD)
+          if git tag --points-at "$head_sha" | grep -q "^${base}-rc"; then
+            echo "HEAD already has an RC tag for $base, skipping."
+            exit 0
+          fi
+
+          highest=$(git tag --list "${base}-rc*" \
+            | grep -oP '(?<=rc)\d+' | sort -n | tail -1)
+          next_rc=$(( ${highest:-0} + 1 ))
+          new_tag="${base}-rc${next_rc}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$new_tag"
+          git push origin "$new_tag"
+          echo "Created tag $new_tag"
+
+  sync-rc-on-version-change:
+    name: Tag RC on release PR version change
+    if: |
+      github.event.action == 'edited' &&
+      (github.event.pull_request.base.ref == vars.RELEASE_BRANCH ||
+       (vars.RELEASE_BRANCH == '' && github.event.pull_request.base.ref == 'main'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Set branch names
+        id: branches
+        run: |
+          working_branch="${{ vars.WORKING_BRANCH }}"
+          release_branch="${{ vars.RELEASE_BRANCH }}"
+          echo "working-branch=${working_branch:-develop}" >> $GITHUB_OUTPUT
+          echo "release-branch=${release_branch:-main}" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.branches.outputs.working-branch }}
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Create RC tag for selected version
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          git fetch --tags
+
+          selected=$(echo "$PR_BODY" | grep -oP '(?<=- \[x\] )\d+\.\d+\.\d+' | head -1)
+
+          if [ -z "$selected" ]; then
+            echo "No version selected in release PR, skipping."
+            exit 0
+          fi
+
+          head_sha=$(git rev-parse HEAD)
+          if git tag --points-at "$head_sha" | grep -q "^${selected}-rc"; then
+            echo "HEAD already tagged for $selected, skipping."
+            exit 0
+          fi
+
+          highest=$(git tag --list "${selected}-rc*" \
+            | grep -oP '(?<=rc)\d+' | sort -n | tail -1)
+          next_rc=$(( ${highest:-0} + 1 ))
+          new_tag="${selected}-rc${next_rc}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$new_tag"
+          git push origin "$new_tag"
+          echo "Created tag $new_tag on ${{ steps.branches.outputs.working-branch }}"

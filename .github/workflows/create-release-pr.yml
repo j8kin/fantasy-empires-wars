@@ -1,0 +1,85 @@
+name: Create Release PR
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
+
+jobs:
+  create-pr:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Set branch names
+        id: branches
+        run: |
+          working_branch="${{ vars.WORKING_BRANCH }}"
+          release_branch="${{ vars.RELEASE_BRANCH }}"
+          echo "working-branch=${working_branch:-develop}" >> $GITHUB_OUTPUT
+          echo "release-branch=${release_branch:-main}" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.branches.outputs.working-branch }}
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Get version
+        id: get-version
+        uses: ./.github/actions/repository/get-version
+
+      - name: Compute version options from latest tag
+        id: versions
+        run: |
+          current="${{ steps.get-version.outputs.release-version }}"
+          IFS='.' read -r major minor patch <<< "$current"
+          echo "patch=$major.$minor.$((patch + 1))" >> $GITHUB_OUTPUT
+          echo "minor=$major.$((minor + 1)).0" >> $GITHUB_OUTPUT
+          echo "major=$((major + 1)).0.0" >> $GITHUB_OUTPUT
+
+      - name: Check for existing release PR
+        id: check-pr
+        run: |
+          pr_number=$(gh pr list \
+            --base ${{ steps.branches.outputs.release-branch }} \
+            --head ${{ steps.branches.outputs.working-branch }} \
+            --json number -q '.[0].number')
+          echo "pr_exists=${pr_number:+true}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Create Release PR
+        if: steps.check-pr.outputs.pr_exists != 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          RELEASE_BRANCH: ${{ steps.branches.outputs.release-branch }}
+          WORKING_BRANCH: ${{ steps.branches.outputs.working-branch }}
+          V_PATCH: ${{ steps.versions.outputs.patch }}
+          V_MINOR: ${{ steps.versions.outputs.minor }}
+          V_MAJOR: ${{ steps.versions.outputs.major }}
+        run: |
+          printf '%s\n\n%s\n%s\n%s\n%s\n%s\n' \
+            "Automated release PR. Merge to \`${RELEASE_BRANCH}\` to create a new release." \
+            "<!-- radiobutton-group:version -->" \
+            "- [x] ${V_PATCH} (patch — default)" \
+            "- [ ] ${V_MINOR} (minor)" \
+            "- [ ] ${V_MAJOR} (major)" \
+            "<!-- /radiobutton-group -->" > /tmp/pr-body.md
+
+          gh pr create \
+            --base "${RELEASE_BRANCH}" \
+            --head "${WORKING_BRANCH}" \
+            --title "chore: release" \
+            --body-file /tmp/pr-body.md \
+            --label release

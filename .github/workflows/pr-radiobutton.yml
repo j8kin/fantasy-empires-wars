@@ -1,0 +1,22 @@
+name: PR Radiobutton Checkboxes
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+
+jobs:
+  radiobutton:
+    if: contains(github.event.pull_request.labels.*.name, 'release')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: j8kin/GitHub-Actions-Radiobutton@v1.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
