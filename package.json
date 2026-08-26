@@ -16,7 +16,7 @@
     "react-native-web": "^0.21.2",
     "react-pageflip": "^2.0.3",
     "typescript": "^7.0.2",
-    "uuid": "^14.0.1",
+    "uuid": "^14.0.2",
     "web-vitals": "^5.3.0"
   },
   "scripts": {
