@@ -12,7 +12,7 @@
     "react": "^19.2.7",
     "react-bootstrap": "^2.7.2",
     "react-dom": "^19.2.7",
-    "react-native": "^0.86.0",
+    "react-native": "^0.87.1",
     "react-native-web": "^0.21.2",
     "react-pageflip": "^2.0.3",
     "typescript": "^7.0.2",
